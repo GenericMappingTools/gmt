@@ -47,6 +47,7 @@ cmake_minimum_required (VERSION 2.8.5)
 # Use NEW behavior with newer CMake releases
 foreach(p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
 	if(POLICY ${p})
 		cmake_policy(SET ${p} NEW)
@@ -71,8 +72,7 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 
 # Find UNIX commands
 include (FindUnixCommands)
-find_program (GIT git)
-find_program (GS gs gswin64)
+find_package (Git)
 find_program (XZ NAMES xz)
 
 # Include configuration options (default options and options overridden by user).
@@ -101,10 +101,10 @@ endif (EXISTS ${GMT_SOURCE_DIR}/test/)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
-if (GIT AND HAVE_GIT_VERSION)
+if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# Export git working tree
 	add_custom_target (git_export_release
-		COMMAND ${GIT} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
+		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
 	# Remove the test dir, so that it is not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
@@ -144,7 +144,7 @@ if (GIT AND HAVE_GIT_VERSION)
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			${_release_dirname}-src.tar.gz ${_release_dirname}-src.tar.xz)
 	endif (GNUTAR AND GZIP AND XZ)
-endif (GIT AND HAVE_GIT_VERSION)
+endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
 get_target_property (_location gmtlib LOCATION)
 get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
@@ -213,6 +213,12 @@ message(
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
+	"*  Found GhostScript          : ${GMT_CONFIG_GS_MESSAGE}\n"
+	"*  Found GraphicsMagick       : ${GMT_CONFIG_GM_MESSAGE}\n"
+	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
+	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"
+	"*  Found ogr2ogr              : ${GMT_CONFIG_OGR2OGR_MESSAGE}\n"
+	"*  Found gdal_translate       : ${GMT_CONFIG_GDAL_TRANSLATE_MESSAGE}\n"
 	"*\n"
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"

@@ -270,7 +270,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
 	GMT_Option (API, "X,a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
-	GMT_Option (API, "di,e,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "di,e,f,g,h,i,p,t");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, give no value.\n");
+	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -811,11 +813,16 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
-			delayed_unit_scaling[GMT_X] = (S.u_set && S.u != GMT_INCH);
+			if (S.u_set)
+				delayed_unit_scaling[GMT_X] = (S.u != GMT_INCH);
+			else if (GMT->current.setting.proj_length_unit != GMT_INCH) {
+				delayed_unit_scaling[GMT_X] = true;
+				S.u = GMT->current.setting.proj_length_unit;
+			}
 		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex2].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_FLOAT);
-			delayed_unit_scaling[GMT_Y] = (S.u_set && S.u != GMT_INCH);
+			delayed_unit_scaling[GMT_Y] = (S.u_set && S.u != GMT_INCH);	/* Since S.u will be set under GMT_X if that else branch kicked in */
 		}
 		
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;

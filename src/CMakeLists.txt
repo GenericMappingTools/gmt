@@ -39,6 +39,59 @@ endif (WIN32)
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
 
+# Find executable needed by gmt
+find_program (OGR2OGR ogr2ogr)
+if (NOT OGR2OGR)
+	message (WARNING "Cannot find program ogr2ogr - gmt will be unable convert Shapefiles to GMT/OGR format")
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "no" CACHE INTERNAL "OGR2OGR config message")
+else (NOT OGR2OGR)
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "yes" CACHE INTERNAL "OGR2OGR config message")
+endif (NOT OGR2OGR)
+# Find executable needed by psconvert
+find_program (GDAL_TRANSLATE gdal_translate)
+if (NOT GDAL_TRANSLATE)
+	message (WARNING "Cannot find program gdal_translate - psconvert will be unable convert TIFF to GeoTIFF")
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "no" CACHE INTERNAL "GDAL_TRANSLATE config message")
+else (NOT GDAL_TRANSLATE)
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "yes" CACHE INTERNAL "GDAL_TRANSLATE config message")
+endif (NOT GDAL_TRANSLATE)
+# Find executables needed by movie
+find_program (GM gm)
+if (NOT GM)
+	message (WARNING "Cannot find GraphicsMagick program gm - gmt movie will be unable make animated GIFs")
+	set (GMT_CONFIG_GM_MESSAGE "no" CACHE INTERNAL "GM config message")
+else (NOT GM)
+	set (GMT_CONFIG_GM_MESSAGE "yes" CACHE INTERNAL "GM config message")
+endif (NOT GM)
+find_program (FFMPEG ffmpeg)
+if (NOT FFMPEG)
+	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")
+	set (GMT_CONFIG_FFMPEG_MESSAGE "no" CACHE INTERNAL "FFMPEG config message")
+else (NOT FFMPEG)
+	set (GMT_CONFIG_FFMPEG_MESSAGE "yes" CACHE INTERNAL "FFMPEG config message")
+endif (NOT FFMPEG)
+if (LINUX)
+	# Find executable needed by docs
+	find_program (XDGOPEN xdg-open)
+	if (NOT XDGOPEN)
+		message (WARNING "Cannot find program xdg-open - gmt docs will be unable to open the documentation")
+		set (GMT_CONFIG_OPEN_MESSAGE "no" CACHE INTERNAL "OPEN config message")
+	else (NOT XDGOPEN)
+		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+	endif (NOT XDGOPEN)
+	# Find executable needed by psconvert
+	find_program (GS NAMES gs)
+	if (NOT GS)
+		message (WARNING "Cannot find program ghostscript - gmt psconvert will be unable convert PostScript to other formats")
+		set (GMT_CONFIG_GS_MESSAGE "no" CACHE INTERNAL "GS config message")
+	else (NOT GS)
+		set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
+	endif (NOT GS)
+else (LINUX)
+	set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+	set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
+endif (LINUX)
+
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
 # NetCDF is required
@@ -295,7 +348,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c fil
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
 	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
-	pscoast.c pscontour.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
+	pscoast.c pscontour.c psevents.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
 	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c pslegend.c ${EXTRA_MODULES})
 
 # Legacy modules for which to install compatibility links via

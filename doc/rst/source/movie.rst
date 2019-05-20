@@ -68,7 +68,7 @@ Required Arguments
     (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
     **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
-    We also accept **8k** to mean **4320p**, **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
+    We also accept **8k** pr **uhd-2** to mean **4320p**, **4k** or **uhd** to mean **2160p**, and **hd** to mean **1080p**.
     The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
     and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
@@ -87,12 +87,12 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
-    *mainscript* as named variables **MOVIE_COL1**, **MOVIE_COL2**, etc., while any trailing text
+    *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to also split the trailing
-    string into individual words that can be accessed via **MOVIE_WORD1**, **MOVIE_WORD2**, etc. The number of records equals
+    string into individual words that can be accessed via **MOVIE_WORD0**, **MOVIE_WORD1**, etc. The number of records equals
     the number of frames. Note that the *background* script is allowed to create the *timefile*,
     hence we check of its existence both before and after the background script has run.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
@@ -162,8 +162,11 @@ Optional Arguments
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
-    number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**).
+    number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
+    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
+    with an absolute time column, then the format of the timestamp will depend on the two default settings
+    :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
+    both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
     The label font is controlled via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
@@ -251,10 +254,10 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 **MOVIE_FRAME**\ : The current frame number (an integer),
 **MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
-Furthermore, if a *timefile* was given then variables **MOVIE_COL1**\ , **MOVIE_COL2**\ , etc. are
+Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** with the **+w** modifier then
-the trailing text is also split into individual word parameters **MOVIE_WORD1**\ , **MOVIE_WORD2**\ , etc.
+the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
 ----------

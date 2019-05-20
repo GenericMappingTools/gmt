@@ -518,7 +518,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
-	GMT_Option (API, "di,e,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "di,e,f,g,h,i,p,t");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, give no value.\n");
+	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1106,7 +1108,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
-			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
+			if (S.u_set)	/* Specified a particular unit, so scale values unless we chose inches */
+				delayed_unit_scaling = (S.u != GMT_INCH);
+			else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Gave no unit but default unit is not inch so we must scale */
+				delayed_unit_scaling = true;
+				S.u = GMT->current.setting.proj_length_unit;
+			}
 		}
 		if (QR_symbol) {
 			if (!Ctrl->G.active)	/* Default to black */

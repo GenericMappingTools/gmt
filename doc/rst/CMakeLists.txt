@@ -116,7 +116,7 @@ if (SPHINX_FOUND)
 	endif (GZIP)
 
 	# Install targets for release documentation
-	if (GIT AND HAVE_GIT_VERSION)
+	if (GIT_FOUND AND HAVE_GIT_VERSION)
 		# HTML
 		add_custom_target (_html_release
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -144,7 +144,7 @@ if (SPHINX_FOUND)
 			${GMT_RELEASE_PREFIX}/man_release
 			DEPENDS docs_man git_export_release)
 		add_depend_to_target (gmt_release _man_release)
-	endif (GIT AND HAVE_GIT_VERSION)
+	endif (GIT_FOUND AND HAVE_GIT_VERSION)
 endif (SPHINX_FOUND)
 
 # Install targets

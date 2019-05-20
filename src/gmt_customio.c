@@ -1852,7 +1852,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (complex_mode & GMT_GRID_IS_COMPLEX_MASK) {
-		to_gdalread->Z.active = true;		/* Force reading into a compex array */
+		to_gdalread->Z.active = true;		/* Force reading into a complex array */
 		to_gdalread->Z.complex_mode = (int)((complex_mode & GMT_GRID_IS_COMPLEX_MASK) >> 2);	/* Gives 0, 1, or 2 */
 	}
 

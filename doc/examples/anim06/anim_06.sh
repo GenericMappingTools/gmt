@@ -9,9 +9,9 @@
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 300
         opt="-M300,ps -Fnone"
 	ps=anim_06.ps
-else    # Make both movie formats and a thumbnail animated GIF using every 5th frame
-        opt="-Fmp4 -Fwebm -A+l+s5"
-fi      
+else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
+        opt="-Fmp4 -A+l+s5"
+fi
 rate=6			# Frames per seconds
 frames=`gmt math -Q 60 $rate MUL =`
 # 0. Initial parameters
@@ -42,7 +42,7 @@ EOF
 cat << EOF > main.sh
 gmt begin
 	# Shift the chirp in time to simulate paper movement
-	gmt math chirp.txt -C0 \${MOVIE_COL2} SUB = chirp_shifted.txt
+	gmt math chirp.txt -C0 \${MOVIE_COL1} SUB = chirp_shifted.txt
 	# Plot the shifted chirp
 	gmt plot \$R \$J chirp_shifted.txt -W1p,red -X0.2i -Y0.3i
 	# Compute index of most recent sample number
@@ -50,7 +50,7 @@ gmt begin
 	# Extract all the old samples before the present
 	gmt convert chirp_samples.txt -Z:\$last_sample > tmp.txt
 	if [ -s tmp.txt ]; then
-		gmt math tmp.txt -C0 \${MOVIE_COL2} SUB = samples.txt
+		gmt math tmp.txt -C0 \${MOVIE_COL1} SUB = samples.txt
 		gmt plot -Sc0.3c -Gblue samples.txt
 	fi
 	# Take a new sample every 12 frames = 0.5 seconds
@@ -60,13 +60,13 @@ gmt begin
 		gmt plot -W2.5p,blue resampled.txt
 	fi
 	if [ \$take_sample -eq 1 ]; then	# Take and plot sample at zero time
-		y=\`gmt math -Q \${MOVIE_COL2} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =\`
+		y=\`gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =\`
 		echo 0 \$y | gmt plot -Sc0.5c -Gred
 	fi
 	# Add time counter in upper left corner
-	printf "%4.1f 2 t = %6.3f s\n" -7.5 \${MOVIE_COL2} | gmt text -F+f18p,Helvetica-Bold+jTL -Dj0.1i/0.1i
+	printf "%4.1f 2 t = %6.3f s\n" -7.5 \${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL -Dj0.1i/0.1i
 	# Add cycles counter in upper right corner
-	fnow=\`gmt math -Q \${MOVIE_COL2} 60 DIV \$f MUL =\`
+	fnow=\`gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =\`
 	printf "2.5 2 f = %6.4f Hz\n" \$fnow | gmt text -F+f16p,Helvetica-Bold+jTR -Dj0.1i/0.1i
 	# Add frame counter in lower right corner
 	printf "2.5 -1.5 %04d\n" \${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR -Dj0.1i/0.1i

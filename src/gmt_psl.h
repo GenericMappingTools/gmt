@@ -56,12 +56,12 @@
 /*! PSL settings affected by GMT options -X -Y -U and clipping */
 struct GMT_PSL {
 	/* A structure pointer is passed to gmt_plotinit which calls ps_plotinit */
-	int nclip;				/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
+	int nclip;		/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
 	int clip_level;		/* Sum total clip level, should be zero at end of command sequence */
 	int figure;		/* Layer number starting at 1 and incremented for each GMT layer added */
 	int layer;		/* Layer number starting at 1 and incremented for each GMT layer added */
 	bool active;		/* true if current module writes PostScript */
-	bool initialize;		/* true for new plot (when -R -J must be set), false if overlay (when -R -J are found from history) */
+	bool initialize;	/* true for new plot (when -R -J must be set), false if overlay (when -R -J are found from history) */
 	bool oneliner;		/* true for new one-line modern plot using -<ext> <prefix> specification for output */
 	bool memory;		/* True of we are writing to memory instead of file/stdout */
 	bool switch_set;	/* True of we are to reissue a character set */

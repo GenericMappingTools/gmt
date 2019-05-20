@@ -119,15 +119,6 @@ if (NOT DEFINED GMT_DATA_URL)
 	set (GMT_DATA_URL "http://oceania.generic-mapping-tools.org")
 endif (NOT DEFINED GMT_DATA_URL)
 
-# The GMT copyright - string version to be used in a source file.
-set (GMT_COPYRIGHT_STRING)
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis and F. Wobbe\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}This program comes with NO WARRANTY, to the extent permitted by law.\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}You may redistribute copies of this program under the terms of the\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}GNU General Public License.\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}For more information about these matters, see the file named LICENSE.TXT.\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}\\n")
-
 
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.
 # If no build configuration type was given as a command-line option to 'cmake' then a default cache entry is set here.

@@ -32,7 +32,7 @@
 #define GMT_ERROR_CODES_H
 
 #include "declspec.h"
-/* external array with error descriptions */
+/* External array with error descriptions */
 EXTERN_MSC const char* gmt_api_error_string[];
 
 enum Gmt_api_error_code {

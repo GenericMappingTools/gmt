@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * File with definitions that allows compatibility between GMT 6 and
+ * File with definitions that allow compatibility between GMT 6 and
  * the MB-system programs mbcontour.c, mbgrdtiff.c, and mbswath.c.
  *
  * Author:      Paul Wessel
