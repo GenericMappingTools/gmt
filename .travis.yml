@@ -125,7 +125,7 @@ script:
         cmake --build . --target docs_html;
         #cmake --build . --target docs_man;
         cmake --build . --target docs_pdf;
-        cmake --build . --target docs_pdf_shrink;
+        #cmake --build . --target docs_pdf_shrink;
       fi
     - set +e
     - cd ..
