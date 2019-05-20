@@ -226,10 +226,3 @@ If no transparency is appended then we will read it from the last column per dat
 .. _Vec_attributes:
 
 .. include:: explain_vectors.rst_
-
-See Also
---------
-
-:doc:`gmt`, :doc:`gmt.conf`,
-:doc:`gmtcolors`,
-:doc:`basemap`, :doc:`plot3d`
