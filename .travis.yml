@@ -118,10 +118,10 @@ script:
     # The default action for Travis-CI is to continue running even if a command fails.
     - set -e
     - if [[ "$BUILD_DOCS" == "true" ]]; then
-        cmake --build . --target docs_depends;
-        (while sleep 300; do echo . ; done)&
-        cmake --build . --target animation;
-        kill %1;
+        #cmake --build . --target docs_depends;
+        #(while sleep 300; do echo . ; done)&
+        #cmake --build . --target animation;
+        #kill %1;
         cmake --build . --target docs_html;
         cmake --build . --target docs_man;
         cmake --build . --target docs_pdf;
