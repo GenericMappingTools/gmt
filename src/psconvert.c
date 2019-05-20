@@ -1574,7 +1574,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it
    	   right now and remove this conditional once it becomes the default */
 
-	/* INitial assignment of gs_params. NOte: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
+	/* INitial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
 		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
