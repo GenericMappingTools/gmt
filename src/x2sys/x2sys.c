@@ -410,7 +410,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 }
 
 void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
-	/* Free allcoated memory */
+	/* Free allocated memory */
 	unsigned int id;
 	gmt_M_free (GMT, X2SYS_HOME);
 	if (!X) return;

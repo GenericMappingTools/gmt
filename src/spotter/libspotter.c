@@ -609,7 +609,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 }
 
 /* hotspot_init: Reads a file with hotspot information and returns pointer to
- * array of structures.  Hotspot locations are stored as geodetic coordintaes
+ * array of structures.  Hotspot locations are stored as geodetic coordinates
  * but are converted to GEOCENTRIC by this function if geocentric == true */
 
 int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p) {

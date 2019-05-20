@@ -607,7 +607,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F) {
 	/* Parse the F option in pscoast */
 	unsigned int n_errors = 0, pos = 0, n;
-	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL, *q = NULL;
 	struct GMT_DCW_ITEM *this_item = NULL;
 
 	if ((a = strchr (args, '+'))) a[0] = '\0';	/* Temporarily chop off modifiers */
@@ -615,7 +615,25 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 	this_item->codes = strdup (args);
 	if (a) a[0] = '+';	/* Reset modifiers */
 
+	/* If +g is used with patterns and +r<dpi> is appended then there is conflict with +r for the deprecated region modification.
+	 * We avoid this by checking for this case and replacing +r with @r to avoid the strtok splitting off that modifier. */
+	
 	if (a && (c = strchr (a, '+'))) {	/* Handle modifiers */
+		if ((q = strstr (c, "+g")) && strchr ("Pp", q[2]) && strstr (&q[3], "+r")) {	/* There is a +r<dpi> that follows a +g pattern modifier */
+			char *t = &q[3];	/* First character of pattern name or number */
+			while (t[0] != '+') t++;	/* Wind to next modifier or run out of chars */
+			if (t[0] == '+' && t[1] == 'r') {	/* Found a +r<value> */
+				char *r = t++;		/* Now t is at the 'r' */
+				t++;	/* Now t is at first char afterwards */
+				while (t[0] && isdigit (t[0])) t++;	/* Wind pass all integers */
+				if (t[0] == '\0' || t[0] == '+') { /* The modifier could be +r<dpi> or +r<inc>, assume dpi */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
+					r[0] = GMT_ASCII_US;	/* Change +r<dpi> to ASCII31<dpi> to pass strtok splitting */
+				}
+				/* Else it is taken to be a deprecated region increment */
+			}
+		}
 		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				/* Listings*/
@@ -653,15 +671,16 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;
-                    F->mode |= GMT_DCW_PLOT;
+					F->mode |= GMT_DCW_PLOT;
 					break;
 				case 'g':
+					if ((q = strchr (p, GMT_ASCII_US))) q[0] = '+';	/* Restore +r<dpi> */
 					if (gmt_getfill (GMT, &p[1], &(this_item->fill))) {
 						gmt_fill_syntax (GMT, option, " ");
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_FILL;
-                    F->mode |= GMT_DCW_PLOT;
+					F->mode |= GMT_DCW_PLOT;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);

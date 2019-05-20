@@ -501,7 +501,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 							case 'a': Ctrl->G.mode |= GMT_MP_CUMUL_DIST;	break;	/* Cumulative distance */
 							case 'i': Ctrl->G.mode |= GMT_MP_INCR_DIST;	break;	/* Incremental distance */
 							case 'v': Ctrl->G.mode |= GMT_MP_PAIR_DIST;	break;	/* Variable coordinates */
-							case 'u': Ctrl->G.unit = set_unit_and_mode (API, &txt_a[1], &Ctrl->G.sph);	/* Unit specification */
+							case 'u': Ctrl->G.unit = txt_a[1];			/* Unit specification */
 								break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}

@@ -52,7 +52,8 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_tut_1.sh GMT_tut_2.sh GMT_tut_3.sh GMT_tut_4.sh GMT_tut_5.sh
 	GMT_tut_6.sh GMT_tut_7.sh GMT_tut_8.sh GMT_tut_9.sh GMT_tut_10.sh
 	GMT_tut_11.sh GMT_tut_12.sh GMT_tut_13.sh GMT_tut_14.sh GMT_tut_15.sh
-	GMT_tut_16.sh GMT_tut_17.sh GMT_tut_18.sh GMT_tut_19.sh)
+	GMT_tut_16.sh GMT_tut_17.sh GMT_tut_18.sh GMT_tut_19.sh
+	psevents_intensity.sh psevents_size.sh psevents_transparency.sh)
 
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
@@ -192,7 +193,7 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 # Install target for release documentation
-if (GIT AND HAVE_GIT_VERSION)
+if (GIT_FOUND AND HAVE_GIT_VERSION)
 	foreach (_fig ${_install_pdf})
 		add_custom_target (_${_fig}_release
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -201,6 +202,6 @@ if (GIT AND HAVE_GIT_VERSION)
 			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} git_export_release)
 		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
-endif (GIT AND HAVE_GIT_VERSION)
+endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

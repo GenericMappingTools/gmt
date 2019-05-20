@@ -196,7 +196,7 @@ enum GMT_enum_std {
 	GMT_IN	= 0,	/* stdin */
 	GMT_OUT	= 1,	/* stdout */
 	GMT_ERR	= 2,	/* stderr */
-	GMT_IO = 2	/* Both input and output */
+	GMT_IO	= 2	/* Both input and output */
 };
 
 /* There are 3 named columns */

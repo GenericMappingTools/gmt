@@ -9,9 +9,9 @@
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
 	ps=anim_04.ps
-else	# Make both movie formats and a thumbnail animated GIF using every 10th frame
-	opt="-Fmp4 -Fwebm -A+l+s10"
-fi	
+else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
+	opt="-Fmp4 -A+l+s10"
+fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 # Set up flight path
@@ -23,7 +23,7 @@ EOF
 cat << EOF > main.sh
 gmt begin
 	gmt set FONT_TAG 14p,Helvetica-Bold
-	gmt grdimage -JG\${MOVIE_COL1}/\${MOVIE_COL2}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
+	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
 		-Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 	gmt plot -W1p flight_path.txt
 gmt end

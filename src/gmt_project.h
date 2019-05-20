@@ -180,7 +180,7 @@ struct GMT_LATSWAP_CONSTS {
 	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
 	double	ra;			/* Authalic   radius (sphere for equal-area)  */
 	double	rm;			/* Meridional radius (sphere for N-S distance)  */
-	bool spherical;		/* True if no conversions need to be done.  */
+	bool spherical;			/* True if no conversions need to be done.  */
 };
 
 struct GMT_THREE_D {
@@ -198,7 +198,7 @@ struct GMT_THREE_D {
 	unsigned int quadrant;	/* quadrant we're looking from */
 	unsigned int z_axis;	/* Which z-axis to draw. */
 	unsigned int face[3];	/* Tells if this facet has normal in pos direction */
-	bool draw[4];	/* axes to draw */
+	bool draw[4];		/* axes to draw */
 	bool fixed;		/* true if we want a given point to be fixed in the projection [for animations] */
 	bool world_given;	/* true if a fixed world point was given in -E ..+glon/lat/z */
 	bool view_given;	/* true if a fixed projected point was given in -E ..+cx0/y0 */
@@ -211,7 +211,7 @@ struct GMT_DATUM {	/* Main parameter for a particular datum */
 };
 
 struct GMT_DATUM_CONV {
-	bool h_given;	/* true if we have incoming height data [h = 0] */
+	bool h_given;		/* true if we have incoming height data [h = 0] */
 	double da;		/* Major semi-axis in meters */
 	double df;		/* Flattening */
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
