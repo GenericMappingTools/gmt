@@ -17,6 +17,13 @@ GMT 6 has benefitted from the contributions of two new team members
 [Leonardo Uieda](https://www.leouieda.com) and
 [Dongdong Tian](https://msu.edu/~tiandong/).
 
+# Supplement Contributions
+
+[Tim Henstock](https://www.southampton.ac.uk/oes/research/staff/then.page)
+contributed the segyprogs supplement, while
+[Kurt Feigl](http://geoscience.wisc.edu/geoscience/people/faculty/feigl/) and
+Genevieve Patau wrote the meca supplement.
+
 # Further Acknowledgments
 
 We would also like to acknowledge feedback, suggestions and bug reports
@@ -28,7 +35,7 @@ Garry Vaughan, William Weibel, and many others, including their advice on how
 to make GMT portable to a wide range of platforms. John Lillibridge and Stephan
 Eickschen provided the original Examples (11) and (32), respectively; Hanno von
 Lom helped resolve early problems with DLL libraries for Win32; Lloyd Parkes
-enabled indexed color images in PostScript; Kurt Schwehr maintains the fink packages;
+enabled indexed color images in PostScript; Brent Wood developed the GMT/OGR format;
 Wayne Wilson implemented the full general perspective projection; and William Yip
 helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The SOEST RCF staff
 (Ross Ishida, Pat Townsend, and Sharon Stahl) provided valuable help on Linux and
