@@ -36,7 +36,6 @@ to make GMT portable to a wide range of platforms. John Lillibridge and Stephan
 Eickschen provided the original Examples (11) and (32), respectively; Hanno von
 Lom helped resolve early problems with DLL libraries for Win32; Lloyd Parkes
 enabled indexed color images in PostScript; Brent Wood developed the GMT/OGR format;
-Kurt Schwehr maintains the fink packages;
 Wayne Wilson implemented the full general perspective projection; and William Yip
 helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The SOEST RCF staff
 (Ross Ishida, Pat Townsend, and Sharon Stahl) provided valuable help on Linux and
