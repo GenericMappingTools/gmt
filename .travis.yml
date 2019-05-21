@@ -72,7 +72,7 @@ before_install:
         DEB_CACHE=$HOME/cache-deb
         DEB_PACKAGES="cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl"
         if [[ "$TEST" == "true" || "$BUILD_DOCS" == "true" ]]; then
-          DEB_PACKAGES="$DEB_PACKAGES graphicsmagick ffmpeg python python-pip texlive-latex-extra"
+          DEB_PACKAGES="$DEB_PACKAGES graphicsmagick ffmpeg python python-pip texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk"
         fi
         test -d $DEB_CACHE || mkdir $DEB_CACHE
         echo "Copy cached deb packages"
@@ -123,6 +123,8 @@ script:
         cmake --build . --target animation;
         kill %1;
         cmake --build . --target docs_html;
+        cmake --build . --target docs_man;
+        cmake --build . --target docs_pdf;
       fi
     - set +e
     - cd ..
