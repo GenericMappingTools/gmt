@@ -20,7 +20,7 @@ GMT 6 has benefitted from the contributions of two new team members
 # Further Acknowledgments
 
 We would also like to acknowledge feedback, suggestions and bug reports
-from Andreas B., Michael Barck, Manfred Brands, Allen Cogbill, Stephan Eickschen, John Helly,
+from Andreas Bjørnestad, Michael Barck, Manfred Brands, Allen Cogbill, Stephan Eickschen, John Helly,
 Ben Horner-Johnson, Kristof Koch, John Kuhn, Angel Li, Andrew Macrae, Alex Madon, Ken McLean,
 Greg Neumann, Ameet Raval, John Robbins, Georg Schwarz, Richard Signell, Peter Schmidt,
 Dirk Stoecker, Eduardo Suárez, Mikhail Tchernychev, Malte Thoma, David Townsend,
