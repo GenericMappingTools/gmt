@@ -5,7 +5,8 @@
 - [Build and runtime dependencies](#build-and-runtime-dependencies)
 - [Install dependencies](#install-dependencies)
   * [Ubuntu/Debian](#ubuntudebian)
-  * [RHEL/CentOS/Fedora](#rhelcentosfedora)
+  * [RHEL/CentOS/Fedora](#rhelcentos)
+  * [Fedora](#fedora)
   * [macOS with homebrew](#macos-with-homebrew)
 - [Get GMT source codes](#get-gmt-source-codes)
 - [Configuring](#configuring)
@@ -48,14 +49,14 @@ Optionally install for building GMT documentations and running tests:
 
 You also need download support data:
 
-- gshhg: A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
-- dcw-gmt: The Digital Chart of the World (optional, >=1.0.5)
+- [GSHHG](https://www.soest.hawaii.edu/pwessel/gshhg/): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
+- [DCW-GMT](https://www.soest.hawaii.edu/pwessel/dcw/): The Digital Chart of the World (optional, >=1.0.5)
 
 ## Install dependencies
 
 ### Ubuntu/Debian
 
-For Ubuntu/Debian, there are prepackaged development binaries available.
+For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
@@ -74,12 +75,12 @@ Install the GMT dependencies with:
     sudo apt-get install python-sphinx
 
     # to build the documentation in PDF format
-    sudo apt-get install texlive texlive-latex-extra
+    sudo apt-get install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
 
-### RHEL/CentOS/Fedora
+### RHEL/CentOS
 
-GMT's dependencies are available from Extra Packages for Enterprise Linux.
-For RHEL and CentOS you can add this repository by telling yum:
+For RHEL and CentOS, GMT's dependencies are available from Extra Packages for Enterprise Linux.
+You can add this repository by telling yum:
 
     sudo yum install epel-release
 
@@ -92,10 +93,9 @@ You then can install the GMT's dependencies with:
     sudo yum install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
     # to enable movie-making
-    # Fedora:       sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-    # CentOS/RHEL:  sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
-
-    sudo apt-get install GraphicsMagick ffmpeg
+    # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    sudo yum install GraphicsMagick ffmpeg
 
     # to enable testing
     sudo yum install GraphicsMagick
@@ -104,11 +104,36 @@ You then can install the GMT's dependencies with:
     sudo yum install python-sphinx
 
     # to build the documentation in PDF format
-    sudo yum install texlive texlive-latex-extra
+    sudo yum install python3-sphinx-latex
+
+### Fedora
+
+For Fedora, there are prepackaged development binaries available.
+Install the GMT dependencies with:
+
+    # Install necessary dependencies
+    sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
+
+    # Install optional dependencies
+    sudo dnf install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+
+    # to enable movie-making
+    # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install GraphicsMagick ffmpeg
+
+    # to enable testing
+    sudo dnf install GraphicsMagick
+
+    # to build the documentation
+    sudo dnf install python-sphinx
+
+    # to build the documentation in PDF format
+    sudo dnf install python-sphinx-latex
 
 ### macOS with homebrew
 
-For homebrew users, you can install the dependencies with:
+For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
     brew install cmake curl netcdf ghostscript
