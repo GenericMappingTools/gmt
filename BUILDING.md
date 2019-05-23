@@ -131,6 +131,46 @@ Install the GMT dependencies with:
     # to build the documentation in PDF format
     sudo dnf install python-sphinx-latex
 
+### Archlinux
+
+For Archlinux, there are prepackaged development binaries available.
+Install the gmt dependencies with:
+
+    # install necessary dependencies
+    sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
+
+    # install optional dependencies
+    sudo pacman -S gdal pcre fftw lapack openblas
+
+    # to enable movie-making
+    sudo pacman -S graphicsmagick ffmpeg
+
+    # to enable testing
+    sudo pacman -S graphicsmagick
+
+    # to build the documentation
+    sudo pacman -S python-sphinx
+
+### FreeBSD
+
+For FreeBSD, there are prepackaged development binaries available.
+Install the gmt dependencies with:
+
+    # install necessary dependencies
+    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf print/ghostscript9
+
+    # install optional dependencies
+    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas
+
+    # to enable movie-making
+    sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
+
+    # to enable testing
+    sudo pkg install graphics/GraphicsMagick
+
+    # to build the documentation
+    sudo pkg install py36-sphinx
+
 ### macOS with homebrew
 
 For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
