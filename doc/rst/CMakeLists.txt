@@ -85,20 +85,23 @@ if (SPHINX_FOUND)
 		add_dependencies (docs_pdf docs_depends)
 
 		# Shrink PDF files
-		set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf)
-		foreach (_pdf_file ${_docs_pdf_output})
-			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
-			set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
-			add_custom_target (_shrink_${_pdf_target}
-				COMMAND ${GS} -sDEVICE=pdfwrite
-				-dCompatibilityLevel=1.4
-				-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
-				-sOutputFile=${_pdf_file}.shrink ${_pdf_file}
-				COMMAND ${CMAKE_COMMAND} -E rename
-				${_pdf_file}.shrink ${_pdf_file}
-				DEPENDS ${_pdf_file} docs_pdf)
-			add_depend_to_target (docs_pdf_shrink _shrink_${_pdf_target})
-		endforeach (_pdf_file)
+		find_program(GS NAMES gs gswin32c gswin64c)
+		if (GS)
+			set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf)
+			foreach (_pdf_file ${_docs_pdf_output})
+				string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
+				set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
+				add_custom_target (_shrink_${_pdf_target}
+					COMMAND ${GS} -sDEVICE=pdfwrite
+					-dCompatibilityLevel=1.4
+					-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
+					-sOutputFile=${_pdf_file}.shrink ${_pdf_file}
+					COMMAND ${CMAKE_COMMAND} -E rename
+					${_pdf_file}.shrink ${_pdf_file}
+					DEPENDS ${_pdf_file} docs_pdf)
+				add_depend_to_target (docs_pdf_shrink _shrink_${_pdf_target})
+			endforeach (_pdf_file)
+		endif (GS)
 	endif (MAKE)
 
 	# Build and compress manpages
