@@ -6524,10 +6524,11 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
  	gmt_message (GMT, "\t-%c Place limits on coastline features from the GSHHG data base.\n", option);
 	gmt_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 	gmt_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
-	gmt_message (GMT, "\t   Append +as to skip Antarctica (all data south of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
-	gmt_message (GMT, "\t   Append +aS to skip anything BUT Antarctica (all data north of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
-	gmt_message (GMT, "\t   Append +ag to use shelf ice grounding line for Antarctica coastline.\n");
-	gmt_message (GMT, "\t   Append +ai to use ice/water front for Antarctica coastline [Default].\n");
+	gmt_message (GMT, "\t   Select +a and one or two codes to control how Antarctica is handled:\n");
+	gmt_message (GMT, "\t     Add g to use shelf ice grounding line for Antarctica coastline, or\n");
+	gmt_message (GMT, "\t     Add i to use ice/water front for Antarctica coastline [Default].\n");
+	gmt_message (GMT, "\t     Add s to skip Antarctica (all data south of %dS) [use all], or\n", abs(GSHHS_ANTARCTICA_LIMIT));
+	gmt_message (GMT, "\t     Add S to skip anything BUT Antarctica (all data north of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
 	gmt_message (GMT, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
 	gmt_message (GMT, "\t   Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].\n");
 }
