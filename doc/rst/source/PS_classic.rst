@@ -8,9 +8,9 @@ Classic Mode Mapping
    psbasemap
    psclip
    pscoast
-   psevents
    psscale
    pscontour
+   psevents
    grdimage_classic
    grdcontour_classic
    grdvector_classic
