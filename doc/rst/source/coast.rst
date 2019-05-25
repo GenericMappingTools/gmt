@@ -15,7 +15,7 @@ Synopsis
 
 **gmt coast** |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ *area* ]
+[ |SYN_OPT-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
 [ |-D|\ *resolution*\ [**+f**] ]

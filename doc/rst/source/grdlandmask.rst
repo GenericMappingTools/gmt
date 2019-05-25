@@ -16,7 +16,7 @@ Synopsis
 **gmt grdlandmask** |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ |SYN_OPT-A| ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [*bordervalues*] ]
 [ |-N|\ *maskvalues* ]
