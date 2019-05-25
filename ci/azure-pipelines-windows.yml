@@ -1,0 +1,66 @@
+# Template for the basic Windows steps in Azure Pipelines
+
+steps:
+
+- bash: |
+    set -x -e
+    # By default, vcpkg builds both release and debug configurations.
+    # Set VCPKG_BUILD_TYPE to build release only to save half time
+    echo 'set(VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
+    cat ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
+    # install libraries
+    vcpkg install netcdf-c gdal pcre clapack openblas --triplet x64-windows
+    # hook up user-wide integration
+    vcpkg integrate install
+    # list installed libraries
+    vcpkg list
+  displayName: Install dependencies via vcpkg
+
+# Executable files search for DLL files in the directories listed in the PATH environment variable.
+- bash: echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
+  displayName: Add vcpkg bin directory to PATH
+
+- bash: |
+    set -x -e
+    choco install ghostscript ninja
+  displayName: Install dependencies via chocolatey
+
+- bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
+  displayName: Set install location
+
+- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
+  displayName: Set coastline location
+
+- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+  displayName: Set PATH
+
+- bash: |
+    set -x -e
+    mkdir -p "$INSTALLDIR"
+    mkdir -p "$COASTLINEDIR"
+  displayName: Create install directories
+
+- bash: ci/download-coastlines.sh
+  displayName: Download coastlines
+
+- bash: ci/build-gmt-windows.sh
+  displayName: Configure GMT
+
+# Azure Pipelines cannot find Visual Studio correctly if Ninja is used.
+# Here, we need
+# 1. call the vcvars64.bat script
+# 2. define CMAKE_C_COMPILER
+- script: |
+    mkdir build
+    cd build
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release
+    cmake --build .
+    cmake --build . --target install
+  displayName: Compile GMT
+
+- bash: |
+    set -x -e
+    cd build
+    cmake --build . --target package
+  displayName: Package GMT

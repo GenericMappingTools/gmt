@@ -16,7 +16,7 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
 [ |-D|\ *displayrate*
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
@@ -44,9 +44,10 @@ that is repeated for all frames, with some variation using specific frame variab
 module simplifies (and hides) most of the steps normally needed to set up a full-blown
 animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
-Individual frames are converted from PostScript plots to lossless PNG images and optionally
-assembled into an animation (this step requires external tools that must be present in
-your path; see Technical Details below).
+Individual frames are converted from PostScript plots to lossless, transparent PNG images and optionally
+assembled into an animation (this last step requires external tools that must be present in
+your path; see Technical Details below).  For opaque PNG images, simply specify a background
+color via **-G**.
 
 Required Arguments
 ------------------
@@ -68,12 +69,12 @@ Required Arguments
     (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
     **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
-    We also accept **8k** pr **uhd-2** to mean **4320p**, **4k** or **uhd** to mean **2160p**, and **hd** to mean **1080p**.
+    We also accept **8k** or **uhd-2** to mean **4320p**, **4k** or **uhd** to mean **2160p**, and **hd** to mean **1080p**.
     The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
     and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
     **svga** (800 x 600), and **dvd** (640 x 480).
-    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
+    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density.
@@ -158,7 +159,7 @@ Optional Arguments
 
 **-L**\ *labelinfo*
 
-    Automatic labeling of individual frames.  Repeatable.  Places the chosen label at the frame perimeter:
+    Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
@@ -275,7 +276,7 @@ As you can see from **-C**, unless you specified a custom format you are given a
 or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
 frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
-the given canvas size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
+the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
 a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
@@ -298,8 +299,8 @@ access to the information in *movie_init* while the frame script in addition has
 specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on GraphicsMagick (http://www.graphicsmagick.org). 
-Thus, "gm" must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 movie (**-F**\ mp4) or WebM movie (**-F**\ webm) relies on ffmpeg (https://www.ffmpeg.org). 
+Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
+PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on ffmpeg (https://www.ffmpeg.org). 
 
 Hints for Movie Makers
 ----------------------
@@ -316,18 +317,18 @@ To test your movie, start by using options **-Q -M** to ensure your cover page l
 This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
-long to see the result.  Once things are working you can beef up number of frames and movie
-quality.
+long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
 Examples
 --------
 
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
-frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames, try
+frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
+and place a frame counter in the top left corner, try
 
    ::
 
-    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100
+    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
 as the center longitude:
@@ -343,7 +344,7 @@ longitudes.  The equivalent DOS batch script setup would be
 
   ::
 
-    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100
+    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
 Now, the globe.bat DOS script is simply
 
@@ -369,9 +370,9 @@ To explore more elaborate movies, see the Animations examples under our Gallery.
 Other Movie Formats
 -------------------
 
-As configured, movie only offers the MP4 and WebM formats for movies.  The conversion is performed by the
+As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool ffmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
-If you wish to run ffmpeg with other options, select mp4 and run movie with long verbose (**-Vl**).
+If you wish to run ffmpeg with other options, select mp4 and run **movie** with long verbose (**-Vl**).
 At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.

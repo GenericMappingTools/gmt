@@ -6617,7 +6617,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active;
 	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_labels = 0;
-	char *mode[2] = {"w","a"}, *movie_label_arg[GMT_LEN16];
+	char *mode[2] = {"w","a"}, *movie_label_arg[GMT_LEN32];
 	static char *ps_mode[2] = {"classic", "modern"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -6675,6 +6675,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
 				while (fgets (record, GMT_LEN128, fpl)) {
 					if (record[0] == '#') continue;	/* Skip header */
+					if (n_movie_labels == GMT_LEN32) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie labels exceed capacity [%d] - skipped.\n", n_movie_labels);
+						continue;
+					}
 					gmt_chop (record);		/* Chop off LF or CR/LF */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_labels, record);
 					movie_label_arg[n_movie_labels++] = strdup (record);
@@ -6895,7 +6899,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
 			return NULL;	/* Should never happen */
 	}
-	else if (n_movie_labels) {	/* Obtained movie frame label, implement it via a completion PostScript procedure */
+	else if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
 		/* Decode x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
 		double off[2] = {0.0, 0.0};
 		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
@@ -6905,7 +6909,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		
 		/* Create special PSL_movie_completion PostScript procedure and define it here in the output PS.
 		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
-		 * If not NULL then it will plot 1-16 labels set via movie.c's -L option */
+		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
 		
 		PSL_command (PSL, "/PSL_movie_completion {\nV\n");
 		PSL_comment (PSL, "Start of movie labels\n");

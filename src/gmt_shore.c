@@ -398,10 +398,30 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
-	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
-	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;	/* Skip everything BUT Antarctica data south of 60S */
-	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;	/* Use Antarctica ice boundary as coastline */
-	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
+	if ((p = strstr (info, "+a"))) {	/* On or more modifiers under +a */
+		p += 2;	/* Skip to first letter */
+		while (p[0] && p[0] != '+') {	/* Processes all codes until next modifier or we are done */
+			switch (p[0]) {
+				case 'g': I->antarctica_mode |= GSHHS_ANTARCTICA_GROUND;	break;	/* Use Antarctica shelf ice grounding line as coastline */
+				case 'i': I->antarctica_mode |= GSHHS_ANTARCTICA_ICE;		break;	/* Use Antarctica ice boundary as coastline */
+				case 's': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP;		break;	/* Skip Antarctica data south of 60S */
+				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Invalid code %c\n", p[0]);
+					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+					break;
+			}
+			p++;	/* Go to next code */
+		}
+		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both g and i\n");
+			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		}
+		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both s and S\n");
+			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		}
+	}
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p")) != NULL) {	/* Requested percentage limit on small features */
@@ -580,13 +600,26 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	c->fraction = info->fraction;
 	c->skip_feature = info->flag;
-	c->ant_mode = info->antarctica_mode;
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;
 	c->max_level = (info->low == info->high && info->high == 0) ? GSHHS_MAX_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
 	c->two_Antarcticas = (two_Antarcticas) ? 1 : 0;
 	c->ant_mode = info->antarctica_mode;
+	if ((c->ant_mode & GSHHS_ANTARCTICA_GROUND) == 0)	/* Groundline not set, default to ice front */
+		c->ant_mode |= GSHHS_ANTARCTICA_ICE;
+
+	if (two_Antarcticas && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report information regarding Antarctica */
+		if (c->ant_mode & GSHHS_ANTARCTICA_GROUND)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice grounding line as Antarctica coastline\n");
+		else
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice front line as Antarctica coastline\n");
+		if (c->ant_mode & GSHHS_ANTARCTICA_SKIP)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping Antarctica coastline entirely\n");
+		else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping all coastlines except Antarctica\n");
+	}
+
 	c->res = res;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
@@ -608,8 +641,8 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));	/* South limit of this bin */
 		if (this_south < is || this_south >= in) continue;
 		this_north = this_south + irint (c->bsize);
-		if (c->ant_mode == GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
-		else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
+		if (c->ant_mode & GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
@@ -666,7 +699,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	count[0] = c->n_bin;
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
 
-	if (c->ant_mode == GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
+	if (c->ant_mode & GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
 		err = nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp);
 	}
 	else {	/* Get node levels relevant for grounding line */
@@ -793,12 +826,12 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		if (c->two_Antarcticas) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
 			if (seg_info_ANT[i]) level = ANT_LEVEL_ICE;	/* Replace the 1 with 5 so Ant polygons now have levels 5 (ice) or 6 (ground) */
 			if (level == ANT_LEVEL_ICE || level == ANT_LEVEL_GROUND) {	/* Need more specific checking */
-				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Don't want anything to do with Antarctica */
-				else if (level == ANT_LEVEL_GROUND && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
-				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
+				if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) continue;	/* Don't want anything to do with Antarctica */
+				else if (level == ANT_LEVEL_GROUND && c->ant_mode & GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
+				else if (level == ANT_LEVEL_ICE && c->ant_mode & GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
 				level = 1;	/* Reset either shelf-ice or grounding line polygon level to land */
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
 		}
 		if (level < c->min_level) continue;	/* Test if level range was set */
 		if (level > c->max_level) continue;
@@ -1097,10 +1130,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			p[P].lat = gmt_M_memory (GMT, NULL, c->seg[id].n, double);
 			p[P].n = shore_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 			if (c->ant_special) {	/* Discard any pieces south of 60S */
-				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+				if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
 				}
-				else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+				else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
 				}
 			}
@@ -1226,10 +1259,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 		}
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+			if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] > -60.0) skip = false;
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] < -60.0) skip = false;
 			}
 		}
@@ -1263,10 +1296,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 		p[P].lat = gmt_M_memory (GMT, NULL, n_alloc, double);
 		p[P].n = shore_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+			if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
 			}
 		}

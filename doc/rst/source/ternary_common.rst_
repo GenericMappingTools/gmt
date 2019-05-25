@@ -54,7 +54,7 @@ Optional Arguments
 
 **-L**\ *a*\ /*b*\ /*c*
     Set the labels for the three diagram vertices [none].  These are placed a
-    distance of 3 times the MAP_LABEL_OFFSET :ref:`MAP_LABEL_OFFSET <MAP_LABEL_OFFSET>`
+    distance of 3 times the :ref:`MAP_LABEL_OFFSET <MAP_LABEL_OFFSET>`
     setting from their respective corners.
 
 .. _-M:
