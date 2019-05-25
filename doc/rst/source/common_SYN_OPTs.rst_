@@ -62,7 +62,7 @@
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
-.. |SYN_OPT-A| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+a**\ [**g**\ \|\ **i**\ ][**s**\ \|\ **S**]][\ **+r**\ \|\ **l**][\ **+p**\ *percent*]
+.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+a**\ [**g**\ \|\ **i**\ ][**s**\ \|\ **S**]][\ **+r**\ \|\ **l**][\ **+p**\ *percent*]
 
 
 .. |br| raw:: html
