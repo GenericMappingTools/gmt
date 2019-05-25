@@ -15,7 +15,7 @@ Synopsis
 
 **pscoast** |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ *area* ]
+[ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
 [ |-D|\ *resolution*\ [**+**] ]
