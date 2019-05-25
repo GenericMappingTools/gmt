@@ -186,7 +186,7 @@ illustrates how the symbol size may vary through the timespan of the movie.
    size during the fade and coda phases.
 
 Similarly, to draw attention to the newly arrived event you may want to whiten the color
-temporarily; this can be done via the **-I** option and Figure :ref:`Symbol intensity function <psevents_intensity>`
+temporarily; this can be done via the **-Mi** option and Figure :ref:`Symbol intensity function <psevents_intensity>`
 illustrates how intensity may vary accordingly.
 
 .. _psevents_intensity:

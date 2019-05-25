@@ -78,3 +78,32 @@ jobs:
       CODECOV_TOKEN: $(codecov.token)
     condition: succeededOrFailed()
     displayName: Upload test coverage
+
+# Windows - Compile + Package
+########################################################################################
+- job:
+  displayName: 'Windows | Compile + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  variables:
+    BUILD_DOCS: false
+    TEST: false
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-windows.yml
+
+  # Set HOME to avoid permission issue of azure-pipelines
+  - bash: echo "##vso[task.setvariable variable=HOME]D:/a/1/s/"
+    displayName: Set HOME
+
+  - script: |
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
