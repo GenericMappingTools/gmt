@@ -16,7 +16,7 @@ Synopsis
 **grdlandmask** |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |SYN_OPT-A| ]
+[ |SYN_OPT-Area| ]
 [ |-D|\ *resolution*\ [**+**] ]
 [ |-N| ]
 [ |-N|\ *maskvalues* ]

@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdmath**
-[ |SYN_OPT-A| ]
+[ |SYN_OPT-Area| ]
 [ |-D|\ *resolution*\ [**+**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
