@@ -2503,7 +2503,7 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 
 	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; i++); /* Goes to first - between yyyy and jjj or yyyy and mm */
 	dash = (unsigned int)i++;	/* Position of first character after the first dash (could be end of string if no dash) */
-    if ((dash-negate_year) > 4) return (GMT_IS_NAN);  /* Clearly got some junk or perhaps not using - as delimiter */
+    if (s[dash] && (dash-negate_year) > 4) return (GMT_IS_NAN);  /* Clearly got some junk or perhaps not using - as delimiter */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
 	got_yd = ((i - dash - 1) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
