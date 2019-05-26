@@ -5,8 +5,10 @@
 - [Build and runtime dependencies](#build-and-runtime-dependencies)
 - [Install dependencies](#install-dependencies)
   * [Ubuntu/Debian](#ubuntudebian)
-  * [RHEL/CentOS/Fedora](#rhelcentos)
+  * [RHEL/CentOS](#rhelcentos)
   * [Fedora](#fedora)
+  * [Archlinux](#archlinux)
+  * [FreeBSD](#freebsd)
   * [macOS with homebrew](#macos-with-homebrew)
 - [Get GMT source codes](#get-gmt-source-codes)
 - [Configuring](#configuring)
@@ -14,7 +16,7 @@
 - [Building documentation](#building-documentation)
 - [Install](#install)
 - [Set path](#set-path)
-- [Tests](#tests)
+- [Running tests](#running-tests)
 - [Updating the development source codes](#updating-the-development-source-codes)
 - [Packaging](#packaging)
 - [Creating a source package](#creating-a-source-package)
@@ -44,7 +46,7 @@ For movie-making capabilities these executables are needed:
 Optionally install for building GMT documentations and running tests:
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage, HTML and PDF documentation)
-- TeXLive (for building the PDF documentation)
+- [TeXLive](https://www.tug.org/texlive/) (for building the PDF documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need download support data:
@@ -84,7 +86,7 @@ You can add this repository by telling yum:
 
     sudo yum install epel-release
 
-You then can install the GMT's dependencies with:
+You then can install the GMT dependencies with:
 
     # Install necessary dependencies
     sudo yum install cmake libcurl-devel netcdf-devel ghostscript
@@ -218,12 +220,12 @@ GMT can be built on any platform supported by CMake. CMake is a cross-platform,
 open-source system for managing the build process. The building process is
 controlled by two configuration files in the `cmake` directory:
 
-- "ConfigDefault.cmake": is version controlled and used to add new default
+-   *ConfigDefault.cmake*: is version controlled and used to add new default
     variables and set defaults for everyone. **You should not edit this file.**
-- "ConfigUser.cmake": is not version controlled and used to override defaults
+-   *ConfigUser.cmake*: is not version controlled and used to override defaults
     on a per-user basis.
-    There is a template file, ConfigUserTemplate.cmake, that you should copy
-    to ConfigUser.cmake and make your changes therein.
+    There is a template file, *ConfigUserTemplate.cmake*, that you should copy
+    to *ConfigUser.cmake* and make your changes therein.
 
 In the source tree, copy `cmake/ConfigUserTemplate.cmake` to `cmake/ConfigUser.cmake`,
 and edit the file according to your demands. This is an example:
@@ -245,6 +247,10 @@ In the build subdirectory, type
 ```
 cmake ..
 ```
+
+For advanced users, you can append the option ``-G Ninja`` to use the
+build tool [Ninja](https://ninja-build.org/), which is a small build system
+with a focus on speed.
 
 ## Building GMT source codes
 
@@ -298,7 +304,7 @@ Make sure you set the PATH to include the directory containing the GMT executabl
 if this is not a standard directory like /usr/local/bin. Then, you should now be able to
 run GMT programs.
 
-## Tests
+## Running tests
 
 A complete set of the example scripts used to create all the example plots,
 including all necessary data files, are provided by the installation.
