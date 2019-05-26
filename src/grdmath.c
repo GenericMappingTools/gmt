@@ -426,7 +426,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Reduce the entire Stack to a single layer by applying the next operator to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   co-registered nodes across the stack.  You must select a reducing operator, i.e.,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB or XOR.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Select -S after you have placed all items of interest on the stack.\n");
 	GMT_Option (API, "V");
 	GMT_Option (API, "bi2,di,e,f,g,h,i");
@@ -651,6 +651,12 @@ GMT_LOCAL double stack_collapse_sub (struct GMT_CTRL *GMT, double *array, uint64
 	return sum;
 }
 
+GMT_LOCAL double stack_collapse_var (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double std = 0.0;
+	(void)gmt_mean_and_std (GMT, array, n, &std);
+	return (std * std);
+}
+
 GMT_LOCAL double stack_collapse_xor (struct GMT_CTRL *GMT, double *array, uint64_t n) {
 	uint64_t k;
 	double x = array[0];
@@ -663,21 +669,23 @@ GMT_LOCAL double stack_collapse_xor (struct GMT_CTRL *GMT, double *array, uint64
 /* -----------------------------------------------------------------
  *              Definitions of all operator functions
  * -----------------------------------------------------------------*/
-/* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
 
 GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, char *OP)
 {
 	/* Collapse stack will apply the given operator to all items on the stack, per node.
-	 * You may have 7 grids on the stack and you want to return the mean value per node
+	 * E.g., you may have 7 grids on the stack and you want to return the mean value per node
 	 * for all 7 grids, to be replaced by a single grid with those means.  You would do
-	 * gmt grdmath *.grd -S MEAN = means.grd
-	 * where the -S option turns on the collapsible stack operators.
+	 *	gmt grdmath *.grd -S MEAN = means.grd
+	 * where the -S option turns on the collapsible stack operators; it turns itself off
+	 * once the stack has been processed to yield a single new grid on the stack.
 	 */
 	
 	uint64_t node, s;
 	double *array = NULL;
 	double (*func) (struct GMT_CTRL *, double *, uint64_t);	/* Pointer to function returning a double */
 
+	/* First ensure we have a reducing operator */
+	
 	if (!strcmp (OP, "ADD"))
 		func = &stack_collapse_add;
 	else if (!strcmp (OP, "AND"))
@@ -706,6 +714,8 @@ GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		func = &stack_collapse_sub;
 	else if (!strcmp (OP, "RMS"))
 		func = &stack_collapse_rms;
+	else if (!strcmp (OP, "VAR"))
+		func = &stack_collapse_var;
 	else if (!strcmp (OP, "XOR"))
 		func = &stack_collapse_xor;
 	else {
@@ -715,14 +725,16 @@ GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 
 	array = gmt_M_memory (GMT, NULL, last, double);
 	for (node = 0; node < info->size; node++) {	/* For all nodes */
-		for (s = 0; s < last; s++)	/* For all items on stack */
+		for (s = 0; s < last; s++)	/* For all items on stack at this node */
 			array[s] = (stack[s]->constant) ? stack[last]->factor : stack[s]->G->data[node];
-		/* Now do operation on this stack array */
+		/* Now do reducing operation on this stack array */
 		stack[0]->G->data[node] = func (GMT, array, last);
 	}
 	gmt_M_free (GMT, array);
 	return 0;
 }
+
+/* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
 
 GMT_LOCAL void grd_ABS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ABS 1 1 abs (A).  */
@@ -5759,10 +5771,10 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* First check if we should skip optional arguments */
 
 		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
-		if (opt->option == 'S' && nstack > 1) {
+		if (opt->option == 'S' && nstack > 1) {	/* Turn on reducing stack behavior */
 			opt = opt->next;	/* Skip to actual operator */
 			if (collapse_stack (GMT, &info, stack, nstack, opt->arg)) continue;	/* Failed, just ignore */
-			nstack = 1;
+			nstack = 1;	/* Collapsed back to a single item on stack */
 			continue;
 		}
 
@@ -5771,7 +5783,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
 			if (nstack <= 0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No items on stack available for output!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No items on stack are available for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 
@@ -5802,7 +5814,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			continue;
 		}
 
-		if (op != GRDMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "The number or operator %s may be confused with an existing file %s!  The file will be ignored.\n", opt->arg, opt->arg);
+		if (op != GRDMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "The number or operator %s may be confused with an existing file named %s!  The file will be ignored.\n", opt->arg, opt->arg);
 
 		if (op < GRDMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 

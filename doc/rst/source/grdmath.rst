@@ -107,11 +107,11 @@ Optional Arguments
 .. _-S:
 
 **-S**
-    Reduce (collapse) the entire stack to a single grid by applying the
+    Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
     must specify **-S** *after* listing all of your grids.  Note: You can only
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
-    LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB or XOR.
+    LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
 .. _-V:
 
