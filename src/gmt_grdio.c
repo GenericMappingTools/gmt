@@ -2327,7 +2327,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	 */
 
 	int status, first_i;
-	unsigned int min, actual_col, n_cols, row, col;
+	unsigned int min, actual_col, n_cols, row, col, first;
 	uint64_t ij;
 	off_t n_skip;
 	int16_t *i2 = NULL;
@@ -2338,7 +2338,8 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	double wesn[4], wesn_all[4];
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (Grid->header);
 
-	if (!gmt_getdatapath (GMT, imgfile, file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	first = gmt_download_file_if_not_found (GMT, imgfile, GMT_CACHE_DIR);
+	if (!gmt_getdatapath (GMT, &imgfile[first], file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85.  Set exact latitude */
@@ -2384,7 +2385,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n",
-	            imgfile, scale, mode, lat);
+	            &imgfile[first], scale, mode, lat);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
 
 	if (init) {
