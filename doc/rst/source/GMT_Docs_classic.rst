@@ -1009,7 +1009,9 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. If no *date* is given
+    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    only applies to command-line arguments and not time coordinates given via
+    data files.If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
 
     The optional *clock* string is a 24-hour clock in
