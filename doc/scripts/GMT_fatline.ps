@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_5d87294-dirty_2019.04.04 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_be92a67_2019.05.25 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr  8 17:45:27 2019
+%%CreationDate: Sun May 26 08:56:59 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -659,6 +659,8 @@ V 0.06 0.06 scale
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
 /PSL_movie_completion {} def
+1 setlinecap
+1 setlinejoin
 %PSL_End_Header
 gsave
 0 A
@@ -667,15 +669,23 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R-85/82/-5/87+r -JM-45/84.5/2.5i -W30p gc.d
+%@GMT: gmt psxy -R-85/82/-5/87+r -JM-45/84.5/2.5i -W30p gc.d --PS_LINE_CAP=round --PS_LINE_JOIN=round
 %@PROJ: merc -85.00000000 -5.00000000 82.00000000 87.00000000 -428202.486 428202.486 1627636.742 2230056.046 +proj=merc +lon_0=-45 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: 72 72 180 126.617
 %%BeginObject PSL_Layer_1
-0 setlinecap
-0 setlinejoin
+1 setlinecap
+1 setlinejoin
 3.32551 setmiterlimit
 500 W
-0 1028 M
+clipsave
+0 0 M
+3000 0 D
+0 2110 D
+-3000 0 D
+P
+PSL_clip N
+-160 894 M
+160 134 D
 1 0 D
 0 1 D
 1 0 D
@@ -2641,7 +2651,8 @@ O0
 1 0 D
 0 -1 D
 1 0 D
-S
+160 -134 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2657,7 +2668,15 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-0 1028 M
+clipsave
+0 0 M
+3000 0 D
+0 2110 D
+-3000 0 D
+P
+PSL_clip N
+-5 1023 M
+5 5 D
 1 0 D
 0 1 D
 1 0 D
@@ -4623,7 +4642,8 @@ O0
 1 0 D
 0 -1 D
 1 0 D
-S
+5 -5 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -4638,7 +4658,15 @@ O0
 1 setlinejoin
 3.32551 setmiterlimit
 500 W
-0 1028 M
+clipsave
+0 0 M
+3000 0 D
+0 2110 D
+-3000 0 D
+P
+PSL_clip N
+-160 894 M
+160 134 D
 1 0 D
 0 1 D
 1 0 D
@@ -6604,7 +6632,8 @@ O0
 1 0 D
 0 -1 D
 1 0 D
-S
+160 -134 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -6620,7 +6649,15 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-0 1028 M
+clipsave
+0 0 M
+3000 0 D
+0 2110 D
+-3000 0 D
+P
+PSL_clip N
+-5 1023 M
+5 5 D
 1 0 D
 0 1 D
 1 0 D
@@ -8586,7 +8623,8 @@ O0
 1 0 D
 0 -1 D
 1 0 D
-S
+5 -5 D S
+PSL_cliprestore
 %%EndObject
 
 grestore
