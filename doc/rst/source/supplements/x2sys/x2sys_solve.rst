@@ -56,33 +56,33 @@ Required Arguments
 
 **-E**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **h**\ \|\ **s**\ \|\ **y**\ \|\ **z**
     The correction type you wish to model. Choose among the following
-    functions f(*p*) , where *p* are the *m*
+    functions f(**p**) , where **p** are the *m*
     parameters per track that we will fit simultaneously using a least
     squares approach.  Each type implies a certain input data record
     format:
 
-    **c** will fit f(*p*) = *a* (a constant offset);
+    **c** will fit f(**p**) = *a* (a constant offset);
     records must contain track COE, ID1, ID2.
 
-    **d** will fit f(*p*) = *a* + *b* \* *d* (linear
-    drift; *d* is distance; records must contain track d1, d2, COE, ID1, ID2.
+    **d** will fit f(**p**) = *a* + *b* \* *d* (linear
+    drift; *d* is distance along track; records must contain d1, d2, COE, ID1, ID2.
 
-    **g** will fit f(*p*) = *a* + *b* sin(y)^2
-    (1980-1930 gravity correction); records must contain track latitude y, COE, ID1, ID2.
+    **g** will fit f(**p**) = *a* + *b* sin(y)^2
+    (1980-1930 gravity correction); records must contain crossing latitude y, COE, ID1, ID2.
 
-    **h** will fit f(*p*) = *a* + *b* cos(H) + *c*
-    cos(2H) + *d* sin(H) + *e* sin(2H)
-    (magnetic heading correction); records must contain track heading H, COE, ID1, ID2.
+    **h** will fit f(**p**) = *a* + *b* cos(h) + *c*
+    cos(2h) + *d* sin(h) + *e* sin(2h)
+    (magnetic heading correction); *h* is heading at crossover; records must contain headings h1, h2, COE, ID1, ID2.
 
-    **s** will fit f(*p*) = *a* \* z (a unit scale
-    correction); records must contain track z1, z2, ID1, ID2.
+    **s** will fit f(**p**) = *a* \* z (a unit scale
+    correction); *z* is the data value at the crossover; records must contain z1, z2, ID1, ID2.
 
-    **t** will fit f(*p*) = *a* + *b* \* (*t - t0*)
-    (linear drift; *t0* is the start time of the track); records must
-    contain track It1-t0, t2-t0, COE, D1, ID2.
+    **t** will fit f(**p**) = *a* + *b* \* (*t - t0*)
+    (linear drift; *t - t0* is the time along the track since start of track at *t0*); records must
+    contain t1-t0, t2-t0, COE, D1, ID2.
 
-    **z** will fit f(*p*) = *a* + *b* \* z (an offset plus a unit scale
-    correction); records must contain track z1, z2, ID1, ID2.
+    **z** will fit f(**p**) = *a* + *b* \* z (an offset plus a unit scale
+    correction); *z* is the data value at the crossover; records must contain z1, z2, ID1, ID2.
 
 
 Optional Arguments

@@ -177,15 +177,20 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s[%s]\n\n",
 		name, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the column name to process (e.g., faa, mag).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Equation to fit: specify <flag> as c (constant), d (drift over distance),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g (latitude), h (heading), s (scale with data), t (drift over time),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     or z (scale with data plus offset), [c].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Equation to fit: specify <flag> to indicate model to fit per track:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c (constant offset):   Determine offset [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     d (drift by distance): Determine offset and drift-vs-distance rate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g (gravity latitude):  Determine amplitude of latitude gravity function.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h (magnetic heading):  Determine amplitude of heading magnetic function.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s (data scale):        Determine scaling factor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t (drift over time):   Determine offset and drift-vs-time rate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     z (data scale/offset): Determine offset and scaling factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the x2sys tag for the data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin].\n");
@@ -420,6 +425,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	for (k = 0; k < bin_expect; k++)	/* All input columns are floating point numbers here */
+		gmt_set_column (GMT, GMT_IN, k, GMT_IS_FLOAT);
+	
 	/* Open the crossover info */
 	
 	rec_mode = (GMT->common.b.ncol[GMT_IN]) ? GMT_READ_DATA : GMT_READ_MIXED;
@@ -441,17 +449,24 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			}
 			else if (gmt_M_rec_is_table_header (GMT)) {
 				if (first) {	/* Must parse the first header to see if content matches tag and selected column */
+					unsigned int bad = 0;
 					sscanf (&GMT->current.io.curr_text[6], "%s %s", file_TAG, file_column);
-					if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
-						GMT_Report (API, GMT_MSG_NORMAL,
-						            "The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
+					if (strcmp (Ctrl->T.TAG, file_TAG)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "The TAG in ASCII file %s is not compatible with -T\n", Ctrl->In.file);
+						bad++;
+					}
+					if (strcmp (Ctrl->C.col, file_column)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "The column in ASCII file %s is not compatible with -Cs\n", Ctrl->In.file);
+						bad++;
+					}
+					if (bad) {	/* Must bail */
 						gmt_M_free (GMT, trk_list);
 						Return (GMT_RUNTIME_ERROR);
 					}
 					first = false;
 				}
 			}
-			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+			else if (gmt_M_rec_is_eof (GMT))	/* Reached end of file */
 				break;
 			continue;
 		}
