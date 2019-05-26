@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-gmt psxy -R0/2.5/0/1.7 -Jx1i -P -K -Glightyellow -Wthinner << EOF >| GMT_-P.ps
+gmt psxy -R-0.01/2.5/-0.01/1.7 -Jx1i -P -K -Glightyellow -Wthinner << EOF >| GMT_-P.ps
 >
 0	0
 1	0
