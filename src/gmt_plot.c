@@ -4643,7 +4643,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	 * 2) The line must be a linear spline and not the Bezier spline
 	 * Hopefully we can work to avoid the first case soon */
 	
-	uint64_t i, j, im1, ip1;
+	uint64_t i, j, im1, ip1, k;
 	int way;
 	bool close, stop;
 	double x_cross[2], y_cross[2];
@@ -4709,6 +4709,15 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 
 	/* Here we must check for jumps, pen changes etc */
 
+    if (GMT->common.R.oblique) {
+        double www = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
+        for (k = i+1; k < n; k++) {
+            if (doubleAlmostEqual (fabs (x[k-1] - x[k]), www) && pen[k] & PSL_CLIP) {
+                if (pen[k] == PSL_CLIP) /* Fix a mistake made earlier */
+                    pen[k] = PSL_MOVE;
+            }
+        }
+    }
 	start_pen = pen[i];
 	if (pen[i] & PSL_CLIP) { 	/* Must add extra extension point before the first point */
 		get_outside_point_extension (GMT, x[i], y[i], x[i+1], y[i+1], &x_ext, &y_ext);
