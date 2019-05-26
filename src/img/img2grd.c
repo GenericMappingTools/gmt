@@ -401,7 +401,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	size_t n_expected;	/* Expected items per row */
 
-	double west, east, south, north, wesn[4], toplat, botlat, dx, central_meridian;
+	double west, east, south, north, wesn[4], toplat, botlat, dx;
 	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
 
 	int16_t *row = NULL;
@@ -782,8 +782,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	}
 	else	/* The output here is the final result */
 		strncpy (output, Ctrl->G.file, GMT_LEN256-1);
-	central_meridian = 0.5 * (west + east);	/* Since grdproject will reset it so we counter with -C */
-	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I -C%g/0 %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", west, east, south2, north2, central_meridian, input, output);
+	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", west, east, south2, north2, input, output);
 	GMT_Report (API, GMT_MSG_DEBUG, "Calling grdproject %s.\n", cmd);
 	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_NOERROR) {	/* Inverse project the grid or fail */
 		Return (API->error);
