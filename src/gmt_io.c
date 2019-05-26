@@ -2411,7 +2411,7 @@ GMT_LOCAL int gmtio_scanf_dim (struct GMT_CTRL *GMT, char *s, double *val) {
 }
 
 /*! . */
-GMT_LOCAL int gmtio_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
+int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 	/* s is a string from a command-line argument.
 	   The argument is known to refer to a time variable.  For example, the argument is
 	   a token from -R<t_min>/<t_max>/a/b[/c/d].  However, we will permit it to be in EITHER
@@ -2503,6 +2503,7 @@ GMT_LOCAL int gmtio_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 
 	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; i++); /* Goes to first - between yyyy and jjj or yyyy and mm */
 	dash = (unsigned int)i++;	/* Position of first character after the first dash (could be end of string if no dash) */
+    if (s[dash] && (dash-negate_year) > 4) return (GMT_IS_NAN);  /* Clearly got some junk or perhaps not using - as delimiter */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
 	got_yd = ((i - dash - 1) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
@@ -6587,7 +6588,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			break;
 
 	 	case GMT_IS_ARGTIME:
-			return (gmtio_scanf_argtime (GMT, s, val));
+			return (gmt_scanf_argtime (GMT, s, val));
 			break;
 
 		case  GMT_IS_UNKNOWN:
