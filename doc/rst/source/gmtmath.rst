@@ -184,7 +184,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 185 operators. "args" are the number of input
+Choose among the following 185 operators. Here, "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -556,6 +556,8 @@ The following symbols have special meaning:
 | **E**       | 2.7182818...                            |
 +-------------+-----------------------------------------+
 | **EULER**   | 0.5772156...                            |
++-------------+-----------------------------------------+
+| **PHI**     | 1.6180339... (golden ratio)             |
 +-------------+-----------------------------------------+
 | **EPS_F**   | 1.192092896e-07 (sgl. prec. eps)        |
 +-------------+-----------------------------------------+

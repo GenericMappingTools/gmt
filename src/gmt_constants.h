@@ -64,6 +64,9 @@
 #ifndef M_EULER
 #define M_EULER		0.577215664901532860606512	/* Euler's constant (gamma) */
 #endif
+#ifndef M_PHI
+#define M_PHI		1.618033988749894848204587	/* Golden ratio (phi) */
+#endif
 #define MAD_NORMALIZE	1.4826	/*  1/N^{-1}(0.75), where z = \N^{-1}(p) is the inverse cumulative normal distribution */
 
 #define GMT_CONV15_LIMIT 1.0e-15	/* Very tight convergence limit or "close to zero" limit */

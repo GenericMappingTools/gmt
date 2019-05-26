@@ -6091,8 +6091,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       u: ISO week - plot as 2-digit integer (1-53).\n");
 			gmt_message (GMT, "\t       r: Gregorian week - 7-day stride from chosen start of week (%s).\n",
 			             GMT_weekdays[GMT->current.setting.time_week_start]);
-			gmt_message (GMT, "\t       K: ISO weekday - format annotation according to FORMAT_DATE_MAP.\n");
-			gmt_message (GMT, "\t       k: weekday - plot name of weekdays in selected language [%s].\n", GMT->current.setting.language);
+			gmt_message (GMT, "\t       K: ISO weekday - plot name of weekdays in selected language [%s].\n", GMT->current.setting.language);
+			gmt_message (GMT, "\t       k: weekday - plot number of the day in the week (see TIME_WEEK_START).\n");
 			gmt_message (GMT, "\t       D: day - format annotation according to FORMAT_DATE_MAP, which also determines whether\n");
 			gmt_message (GMT, "\t                we should plot day of month (1-31) or day of year (1-366).\n");
 			gmt_message (GMT, "\t       d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");

@@ -835,7 +835,7 @@ letter, and number or string. *Do* space between options. Example:
 
    ::
 
-    gmt coast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -P > map.ps
+    gmt coast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -pdf map
 
 Standardized command line options
 ---------------------------------
@@ -1003,7 +1003,9 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. If no *date* is given
+    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    only applies to command-line arguments and not time coordinates given via
+    data files.  If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
 
     The optional *clock* string is a 24-hour clock in
@@ -1430,7 +1432,7 @@ Our first example shows a time period of almost two months in Spring
    ::
 
      gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
+     gmt basemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -pdf GMT_-B_time1
 
 These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
 Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
@@ -1449,8 +1451,10 @@ The next example shows two different ways to annotate an axis portraying 2 days 
    ::
 
      gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
-     gmt basemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps
+     gmt begin B_time2
+       gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS
+       gmt basemap -Bpa6Hf1h -Bsa1D -BS -Y0.65i
+    gmt end
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -1472,7 +1476,7 @@ both the years and every 3rd month.
    ::
 
      gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps
+     gmt basemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -pdf GMT_-B_time3
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -1497,7 +1501,7 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
    ::
 
      gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p TIME_UNIT d
-     gmt basemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps
+     gmt basemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -pdf GMT_-B_time4
 
 .. _cartesian_axis4:
 
@@ -1514,11 +1518,13 @@ The upper uses Gregorian weeks (which start at the day chosen by
 
    ::
 
-    gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
+    gmt begin GMT_-B_time5
+      gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
            FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
-    gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
-    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
-    gmt basemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
+      gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS
+      gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
+      gmt basemap -Bpa3Kf1k -Bsa1r -BS -Y0.65i
+    gmt end 
 
 .. _cartesian_axis5:
 
@@ -1535,7 +1541,7 @@ Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
    ::
 
     gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    gmt basemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps
+    gmt basemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -pdf GMT_-B_time6
 
 .. _cartesian_axis6:
 
@@ -1555,7 +1561,7 @@ least half of a full interval.
    ::
 
     gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    gmt basemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
+    gmt basemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -pdf GMT_-B_time7
 
 .. _cartesian_axis7:
 
@@ -1610,10 +1616,11 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
     6 f
     6.2831852 ag 2@~p@~
     EOF
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt \
-                  -BWS+glightblue -P -K > GMT_-B_custom.ps
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
-                  --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
+    gmt begin GMT_-B_custom
+    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
+    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -Bsy0 -BWS \
+        --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
+    gmt end
     rm -f [xy]annots.txt
 
 .. _Custom_annotations:
@@ -4414,8 +4421,10 @@ The complete commands given to produce this plot were
 
    ::
 
-    gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.txt > GMT_linear.ps
-    gmt plot -R -J -St0.1i -N -Gred -Wfaint -O sqrt10.txt >> GMT_linear.ps
+    gmt begin GMT_linear
+      gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- sqrt.txt
+      gmt plot -St0.1i -N -Gred -Wfaint sqrt10.txt
+    gmt end
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4454,8 +4463,8 @@ option. As an example, we want to plot a crude world map centered on
   ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
-    gmt coast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest
-            -P -Slightblue > GMT_linear_d.ps
+    gmt coast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest \
+        -Slightblue -pdf GMT_linear_d
 
 with the result reproduced in
 Figure :ref:`Linear transformation of map coordinates <GMT_Linear_d>`.
@@ -4500,7 +4509,7 @@ general, the options provided with **-JX** will prevail.
     gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham
             FORMAT_TIME_PRIMARY_MAP full
     gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d
-                -Bya1Hg1h -BWsNe+glightyellow -P > GMT_linear_cal.ps
+            -Bya1Hg1h -BWsNe+glightyellow -pdf GMT_linear_cal
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4523,9 +4532,11 @@ transformation <GMT_log>`)
 
    ::
 
-    gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque
-             -Wthick,blue,- -P -K -h sqrt.txt > GMT_log.ps
-    gmt plot -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
+    gmt begin GMT_log
+      gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque
+          -Wthick,blue,- -h sqrt.txt
+      gmt plot -Ss0.1i -N -Gred -W -h sqrt10.txt
+    gmt end
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -4556,9 +4567,10 @@ transformation <GMT_pow>`)
 
    ::
 
-    gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory
-             -Wthick -P -K sqrt.txt > GMT_pow.ps
-    gmt plot -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
+    gmt begin GMT_pow
+      gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt 
+      gmt plot -Sc0.075i -Ggreen -W sqrt10.txt
+    gmt end
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
@@ -4615,7 +4627,7 @@ operates on or creates grid files.
    ::
 
     gmt grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = tt.nc
-    gmt grdcontour tt.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
+    gmt grdcontour tt.nc -JP3i -B30 -BNs+ghoneydew -C2 -S4 --FORMAT_GEO_MAP=+ddd -pdf GMT_polar
 
 We used :doc:`grdcontour` to make a
 contour map of this data. Because the data file only contains values
@@ -4704,7 +4716,7 @@ therefore given by:
    ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 -P > GMT_albers.ps
+    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 -pdf GMT_albers
 
 .. figure:: /_images/GMT_albers.*
    :width: 500 px
@@ -4735,7 +4747,7 @@ small countries. As an example, we generate a map of Cuba:
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
+    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen -Wthinnest -pdf GMT_equidistant_conic
 
 .. figure:: /_images/GMT_equidistant_conic.*
    :width: 500 px
@@ -4774,7 +4786,7 @@ use degrees west for longitudes. The generating commands used were
    ::
 
     gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue > GMT_lambert_conic.ps
+    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -pdf GMT_lambert_conic
 
 .. figure:: /_images/GMT_lambert_conic.*
    :width: 500 px
@@ -4814,7 +4826,7 @@ every 10 and annotations only every 30º in longitude:
 
    ::
 
-    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest > GMT_polyconic.ps
+    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest -pdf GMT_polyconic
 
 .. figure:: /_images/GMT_polyconic.*
    :width: 500 px
@@ -4865,7 +4877,7 @@ rectangular by defining the corners of a rectangular map boundary. Using
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
     gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10
-              -Wthinnest -P > GMT_lambert_az_rect.ps
+              -Wthinnest -pdf GMT_lambert_az_rect
 
 .. figure:: /_images/GMT_lambert_az_rect.*
    :width: 500 px
@@ -4887,7 +4899,7 @@ Here, you must specify the world as your region (**-Rg** or
 
    ::
 
-    gmt coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy > GMT_lambert_az_hemi.ps
+    gmt coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -pdf GMT_lambert_az_hemi
 
 .. figure:: /_images/GMT_lambert_az_hemi.*
    :width: 400 px
@@ -4946,7 +4958,7 @@ An example is given by
 
    ::
 
-    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell > GMT_stereographic_polar.ps
+    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell -pdf GMT_stereographic_polar
 
 .. figure:: /_images/GMT_stereographic_polar.*
    :width: 500 px
@@ -4968,7 +4980,7 @@ Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
-    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray > GMT_stereographic_rect.ps
+    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
 
 .. _GMT_stereographic_rect:
 
@@ -4990,7 +5002,7 @@ hemispheric maps. Our example shows Australia using a projection pole at
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 0
-    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest > GMT_stereographic_general.ps
+    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest -pdf GMT_stereographic_general
 
 .. figure:: /_images/GMT_stereographic_general.*
    :width: 500 px
@@ -5044,7 +5056,7 @@ looking due east is thus accomplished by the following
 
    ::
 
-    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i -pdf GMT_perspective
 
 .. _GMT_perspective:
 
@@ -5085,7 +5097,7 @@ generated by the following :doc:`coast` command:
 
    ::
 
-    gmt coast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle > GMT_orthographic.ps
+    gmt coast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -pdf GMT_orthographic
 
 .. figure:: /_images/GMT_orthographic.*
    :width: 400 px
@@ -5123,7 +5135,7 @@ in this projection this point plots as the entire map perimeter:
 
    ::
 
-    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest > GMT_az_equidistant.ps
+    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -pdf GMT_az_equidistant
 
 .. figure:: /_images/GMT_az_equidistant.*
    :width: 400 px
@@ -5161,7 +5173,7 @@ Using a horizon of 60, our example of this projection centered on
 
    ::
 
-    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest > GMT_gnomonic.ps
+    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest -pdf GMT_gnomonic
 
 .. figure:: /_images/GMT_gnomonic.*
    :width: 500 px
@@ -5224,7 +5236,7 @@ which will give a map 4.32 inch wide. It was created with the command:
 
    ::
 
-    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred --MAP_FRAME_TYPE=fancy+ > GMT_mercator.ps
+    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred --MAP_FRAME_TYPE=fancy+ -pdf GMT_mercator
 
 .. figure:: /_images/GMT_mercator.*
    :width: 500 px
@@ -5263,7 +5275,7 @@ central meridian:
 
    ::
 
-    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell > GMT_transverse_merc.ps
+    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell -pdf GMT_transverse_merc
 
 .. figure:: /_images/GMT_transverse_merc.*
    :width: 500 px
@@ -5277,7 +5289,7 @@ equivalent of the 360º Mercator map. Using the command
 
    ::
 
-    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 > GMT_TM.ps
+    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 -pdf GMT_TM
 
 we made the map illustrated in Figure :ref:`Global transverse Mercator
 <GMT_TM>`. Note that
@@ -5382,7 +5394,7 @@ poles to their antipodes in the north hemisphere].  Our example was produced by 
 
    ::
 
-    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood -Wthinnest -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
+    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood -Wthinnest -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=0.05i -pdf GMT_obl_merc
 
 .. figure:: /_images/GMT_obl_merc.*
    :width: 500 px
@@ -5446,7 +5458,7 @@ using the Cassini projection can be obtained by running the command:
 
    ::
 
-    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen -Dh -Sazure -Wthinnest -Ia/thinner --FONT_LABEL=12p > GMT_cassini.ps
+    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen -Dh -Sazure -Wthinnest -Ia/thinner --FONT_LABEL=12p -pdf GMT_cassini
 
 .. figure:: /_images/GMT_cassini.*
    :width: 400 px
@@ -5481,7 +5493,7 @@ obtained by running the command:
 
    ::
 
-    gmt coast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan > GMT_equi_cyl.ps
+    gmt coast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -pdf GMT_equi_cyl
 
 .. figure:: /_images/GMT_equi_cyl.*
    :width: 500 px
@@ -5555,7 +5567,7 @@ can be obtained by running the command:
 
    ::
 
-    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest > GMT_general_cyl.ps
+    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -pdf GMT_general_cyl
 
 .. _GMT_general_cyl:
 
@@ -5591,7 +5603,7 @@ follows:
 
    ::
 
-    gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -Sazure > GMT_miller.ps
+    gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -Sazure -pdf GMT_miller
 
 .. _GMT_miller:
 
@@ -5649,7 +5661,7 @@ is obtained as follows:
    ::
 
     gmt set FORMAT_GEO_MAP dddA
-    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1 > GMT_gall_stereo.ps
+    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1 -pdf GMT_gall_stereo
 
 .. _GMT_gall_stereo:
 
@@ -5691,7 +5703,7 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
    ::
 
-    gmt coast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk > GMT_hammer.ps
+    gmt coast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -pdf GMT_hammer
 
 .. figure:: /_images/GMT_hammer.*
    :width: 500 px
@@ -5721,7 +5733,7 @@ An example centered on Greenwich can be generated thus:
 
    ::
 
-    gmt coast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue > GMT_mollweide.ps
+    gmt coast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -pdf GMT_mollweide
 
 .. figure:: /_images/GMT_mollweide.*
    :width: 500 px
@@ -5758,7 +5770,7 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
 
    ::
 
-    gmt coast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 > GMT_winkel.ps
+    gmt coast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -pdf GMT_winkel
 
 .. _GMT_winkel:
 
@@ -5791,7 +5803,7 @@ Again centered on Greenwich, the example below was created by this command:
 
    ::
 
-    gmt coast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 > GMT_robinson.ps
+    gmt coast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -pdf GMT_robinson
 
 .. figure:: /_images/GMT_robinson.*
    :width: 500 px
@@ -5823,7 +5835,7 @@ this command:
 
    ::
 
-    gmt coast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 > GMT_eckert4.ps
+    gmt coast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -pdf GMT_eckert4
 
 .. figure:: /_images/GMT_eckert4.*
    :width: 500 px
@@ -5860,7 +5872,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 > GMT_sinusoidal.ps
+     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 -pdf GMT_sinusoidal
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -5881,10 +5893,10 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
 
    ::
 
-     gmt begin GMT_sinus_int ps
-     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
-     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X1.96i
-     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X1.12i
+     gmt begin GMT_sinus_int
+       gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
+       gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X1.96i
+       gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X1.12i
      gmt end
 
 .. figure:: /_images/GMT_sinus_int.*
@@ -5915,7 +5927,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest > GMT_grinten.ps
+      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -pdf GMT_grinten
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
@@ -7647,10 +7659,12 @@ total file size of the coastlines, rivers, and borders database is only
 
   ::
 
-    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
-    gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
-                -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
-    gmt basemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
+    gmt begin GMT_App_K_1
+      gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
+      gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -Dc \
+        -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne 
+      echo 130.35 -0.2 | gmt psxy -SJ-4000 -Wthicker
+    gmt end
 
 .. figure:: /_images/GMT_App_K_1.*
    :width: 500 px
@@ -7679,9 +7693,10 @@ resolution in GMT. The plot is generated by the script:
 
   ::
 
-    gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
-                -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
-    gmt basemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
+    gmt begin GMT_App_K_2
+      gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -Dl -A100 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne 
+      echo 130.35 -0.2 | gmt psxy -SJ-1000 -Wthicker
+    gmt end
 
 .. figure:: /_images/GMT_App_K_2.*
    :width: 500 px
@@ -7706,12 +7721,14 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
 
   ::
 
-    gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
-                -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
-    echo 133 2 | gmt plot -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
-    gmt basemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
-                  -Tm133/2+w1i+t45/10/5+jCM --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
-    gmt basemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
+    gmt begin GMT_App_K_3
+      gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -Di -A20 \
+        -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne
+      echo 133 2 | gmt plot -Sc1.4i -Gwhite 
+      gmt basemap -Tm133/2+w1i+t45/10/5+jCM --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
+        --FONT_ANNOT_SECONDARY=8p 
+      echo 130.35 -0.2 | gmt psxy -SJ-200 -Wthicker
+    gmt end
 
 .. figure:: /_images/GMT_App_K_3.*
    :width: 500 px
@@ -7736,9 +7753,11 @@ generated by these commands:
 
   ::
 
-    gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
-                -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
-    gmt basemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
+    gmt begin GMT_App_K_4
+      gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -Dh -A1 \
+        -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne 
+      echo 130.35 -0.2 | gmt psxy -SJ-40 -Wthicker
+    gmt end
 
 .. figure:: /_images/GMT_App_K_4.*
    :width: 500 px
@@ -7761,8 +7780,8 @@ reproduced by the single command:
 
   ::
 
-    gmt coast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
-                -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
+    gmt coast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -Df -Gburlywood \
+                -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne -pdf GMT_App_K_5
 
 .. figure:: /_images/GMT_App_K_5.*
    :width: 500 px
@@ -8595,8 +8614,10 @@ lines:
 
     ::
 
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_1.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH >> GMT_App_O_1.ps
+     gmt begin GMT_App_O_1
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH 
+     gmt end
 
 As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
 placed rather arbitrary. The string of contours for -40 to
@@ -8621,8 +8642,10 @@ contour line should have:
 
     ::
 
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_2.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH >> GMT_App_O_2.ps
+     gmt begin GMT_App_O_2
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH
+     gmt end
 
 By selecting only one label per contour and requiring that labels only
 be placed on contour lines whose length exceed 1 inch, we achieve the
@@ -8654,8 +8677,10 @@ distance will host the label.
      102     0
      130     10.5
      EOF
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_3.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH >> GMT_App_O_3.ps
+     gmt begin GMT_App_O_3
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH 
+     gmt end
 
 The angle of the label is evaluated from the contour line geometry, and
 the final result is shown in Figure :ref:`Contour label 3 <Contour_label_3>`.
@@ -8681,8 +8706,10 @@ between the contour lines and a well-placed straight line segment. The
 
     ::
 
-      gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_4.ps
-      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH >> GMT_App_O_4.ps
+     gmt begin GMT_App_O_4
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH 
+     gmt end
 
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
@@ -8712,8 +8739,10 @@ sense:
 
     ::
 
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T+lLH >> GMT_App_O_5.ps
+     gmt begin GMT_App_O_5
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GX@App_O_cross.txt -S10 -T+lLH 
+     gmt end
 
 .. _Contour_label_5:
 
@@ -8749,10 +8778,11 @@ are placed normal to the line:
 
     ::
 
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
-     gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
-     -T+l"-+" >> GMT_App_O_6.ps
-     gmt plot -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
+     gmt begin GMT_App_O_6
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l 
+       gmt plot -SqD1000k:+g+LD+an+p -Wthick @App_O_transect.txt
+     gmt end
 
 .. _Contour_label_6:
 
@@ -8779,10 +8809,11 @@ inverse-video the label:
 
     ::
 
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
-     gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
-     -T+l"-+" >> GMT_App_O_7.ps
-     gmt plot -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u@. -Wthick transect.txt >> GMT_App_O_7.ps
+     gmt begin GMT_App_O_7
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l
+       gmt plot -SqD15d:+gblack+fwhite+Ld+o+u@. -Wthick @App_O_transect.txt
+     gmt end
 
 The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
 
@@ -8807,11 +8838,12 @@ labels. This is done with **awk**.
 
     ::
 
-     gmt convert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
-     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
-     gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S \
-                    -S10 -T+l"-+" >> GMT_App_O_8.ps
-     gmt plot -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
+     gmt begin GMT_App_O_8
+       gmt convert -i0,1,4 -Em150 @App_O_transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l 
+     gmt plot -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick @App_O_transect.txt
+     gmt end
 
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
 
@@ -8837,36 +8869,31 @@ well as a few quoted lines. The final script is
 
     ::
 
-     R=-R-85/5/10/55
-     gmt grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
-     gmt set FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
-     gmt project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.txt
-     gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
-     km=`echo -17 28 | gmt mapproject -G-74/41/k -fg --FORMAT_FLOAT_OUT=%.0f -o2`
-     cat << EOF > ttt.cpt
-     0	lightred	3	lightred
-     3	lightyellow	6	lightyellow
-     6	lightgreen	100	lightgreen
-     EOF
-     gmt grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
-     gmt grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
-                    -GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
-     gmt plot -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
-     gmt coast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
-                 -Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
-     gmt convert great_NY_*.txt -E | gmt plot -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
-     gmt plot -R -J -Wthick great_NY_Canaries.txt -O -K \
-              -Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
-     gmt plot -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
-     gmt plot -R -J -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white \
-              -O -K >> GMT_App_O_9.ps
-     cat << EOF | gmt text -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j \
-                             >> GMT_App_O_9.ps
-     74W	41N	RT	New York
-     2.33E	48.87N	CT	Paris
-     17W	28N	CT	Canaries
-     EOF
-     gmt plot -R -J -O -T >> GMT_App_O_9.ps
+     gmt begin GMT_App_O_9
+       R=-R-85/5/10/55
+       gmt grdgradient @App_O_topo5.nc -Nt1 -A45 -Gtopo5_int.nc
+       gmt set FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
+       gmt project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.txt
+       gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
+       km=`echo -17 28 | gmt mapproject -G-74/41+uk -fg --FORMAT_FLOAT_OUT=%.0f -o2`
+       gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N > ttt.cpt
+       gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -nc+t1 
+       gmt grdcontour @App_O_ttt.nc -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
+       	  -GL80W/31N/17W/26N,17W/28N/17W/50N -S2
+       gmt plot -Wfatter,white great_NY_Canaries.txt
+       gmt coast -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick \
+       	  -Glightgray -Wfaint -A500 
+       gmt convert great_NY_*.txt -E | gmt plot $R -Sa0.15i -Gred -Wthin
+       gmt plot -Wthick great_NY_Canaries.txt \
+       	-Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v 
+       gmt plot great_NY_Paris.txt -Sc0.08c -Gblack
+       gmt plot -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white 
+       cat << EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j 
+       74W	41N	RT	New York
+       2.33E	48.87N	CT	Paris
+       17W	28N	CT	Canaries
+       EOF
+     gmt end
 
 with the complete illustration presented as Figure
 :ref:`Contour label 9 <Contour_label_9>`.
