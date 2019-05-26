@@ -591,9 +591,9 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Set navgsq, rnavgsq, for the averaging */
 	navgsq = navg * navg;
 	rnavgsq = 1.0 / navgsq;
-
+	
 	/* Set up header with Mercatorized dimensions assuming -Jm1i  */
-	if (Ctrl->F.active) {	/* Backwards support for old behavior */
+	if (Ctrl->F.active || !Ctrl->M.active) {	/* Backwards support for old behavior in -M, or being internally consistent with central meridian */
 		wesn[XLO] = 0.0;
 		wesn[XHI] = n_columns * inc[GMT_X];
 		wesn[YLO] = 0.0;
