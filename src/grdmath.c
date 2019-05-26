@@ -54,25 +54,27 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GRDMATH_ARG_IS_E		-4
 #define GRDMATH_ARG_IS_F_EPS		-5
 #define GRDMATH_ARG_IS_EULER		-6
-#define GRDMATH_ARG_IS_XMIN		-7
-#define GRDMATH_ARG_IS_XMAX		-8
-#define GRDMATH_ARG_IS_XRANGE		-9
-#define GRDMATH_ARG_IS_XINC		-10
-#define GRDMATH_ARG_IS_NX		-11
-#define GRDMATH_ARG_IS_YMIN		-12
-#define GRDMATH_ARG_IS_YMAX		-13
-#define GRDMATH_ARG_IS_YRANGE		-14
-#define GRDMATH_ARG_IS_YINC		-15
-#define GRDMATH_ARG_IS_NY		-16
-#define GRDMATH_ARG_IS_X_MATRIX		-17
-#define GRDMATH_ARG_IS_x_MATRIX		-18
-#define GRDMATH_ARG_IS_Y_MATRIX		-19
-#define GRDMATH_ARG_IS_y_MATRIX		-20
-#define GRDMATH_ARG_IS_XCOL_MATRIX	-21
-#define GRDMATH_ARG_IS_YROW_MATRIX	-22
-#define GRDMATH_ARG_IS_NODE_MATRIX	-23
-#define GRDMATH_ARG_IS_ASCIIFILE	-24
-#define GRDMATH_ARG_IS_SAVE		-25
+#define GRDMATH_ARG_IS_PHI		-7
+#define GRDMATH_ARG_IS_XMIN		-8
+#define GRDMATH_ARG_IS_XMAX		-9
+#define GRDMATH_ARG_IS_XRANGE		-10
+#define GRDMATH_ARG_IS_XINC		-11
+#define GRDMATH_ARG_IS_NX		-12
+#define GRDMATH_ARG_IS_YMIN		-13
+#define GRDMATH_ARG_IS_YMAX		-14
+#define GRDMATH_ARG_IS_YRANGE		-15
+#define GRDMATH_ARG_IS_YINC		-16
+#define GRDMATH_ARG_IS_NY		-17
+#define GRDMATH_ARG_IS_X_MATRIX		-18
+#define GRDMATH_ARG_IS_x_MATRIX		-19
+#define GRDMATH_ARG_IS_Y_MATRIX		-20
+#define GRDMATH_ARG_IS_y_MATRIX		-21
+#define GRDMATH_ARG_IS_XCOL_MATRIX	-22
+#define GRDMATH_ARG_IS_YROW_MATRIX	-23
+#define GRDMATH_ARG_IS_NODE_MATRIX	-24
+#define GRDMATH_ARG_IS_NODEP_MATRIX	-25
+#define GRDMATH_ARG_IS_ASCIIFILE	-26
+#define GRDMATH_ARG_IS_SAVE		-27
 #define GRDMATH_ARG_IS_STORE		-50
 #define GRDMATH_ARG_IS_RECALL		-51
 #define GRDMATH_ARG_IS_CLEAR		-52
@@ -391,8 +393,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tE                      = 2.7182818...\n"
 		"\tF_EPS (single eps)     = 1.192092896e-07\n"
 		"\tEULER                  = 0.5772156...\n"
+		"\tPHI (golden ratio)     = 1.6180339...\n"
 		"\tXMIN, XMAX, XRANGE, XINC or NX = the corresponding constants.\n"
 		"\tYMIN, YMAX, YRANGE, YINC or NY = the corresponding constants.\n"
+		"\tNODE                   = grid with continuous node indices (0-(NX*NY-1)).\n"
+		"\tNODEP                  = grid with discontinuous node indices due to padding.\n"
 		"\tX                      = grid with x-coordinates.\n"
 		"\tY                      = grid with y-coordinates.\n"
 		"\tXNORM                  = grid with normalized [-1|+1] x-coordinates.\n"
@@ -5211,6 +5216,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!(strcmp (opt->arg, "F_EPS") && strcmp (opt->arg, "EPS"))) return GRDMATH_ARG_IS_F_EPS;
 	if (!strcmp (opt->arg, "EULER"))  return GRDMATH_ARG_IS_EULER;
+	if (!strcmp (opt->arg, "PHI"))    return GRDMATH_ARG_IS_PHI;
 	if (!strcmp (opt->arg, "XMIN"))   return GRDMATH_ARG_IS_XMIN;
 	if (!strcmp (opt->arg, "XMAX"))   return GRDMATH_ARG_IS_XMAX;
 	if (!strcmp (opt->arg, "XRANGE")) return GRDMATH_ARG_IS_XRANGE;
@@ -5228,6 +5234,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (!strcmp (opt->arg, "XCOL"))   return GRDMATH_ARG_IS_XCOL_MATRIX;
 	if (!strcmp (opt->arg, "YROW"))   return GRDMATH_ARG_IS_YROW_MATRIX;
 	if (!strcmp (opt->arg, "NODE"))   return GRDMATH_ARG_IS_NODE_MATRIX;
+	if (!strcmp (opt->arg, "NODEP"))  return GRDMATH_ARG_IS_NODEP_MATRIX;
 	if (!strcmp (opt->arg, "NaN")) {*value = GMT->session.d_NaN; return GRDMATH_ARG_IS_NUMBER;}
 
 	/* Preliminary test-conversion to a number */
@@ -5732,6 +5739,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_PI]    = M_PI;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_E]     = M_E;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_EULER] = M_EULER;
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_PHI]   = M_PHI;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_F_EPS] = FLT_EPSILON;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMIN]  = info.G->header->wesn[XLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMAX]  = info.G->header->wesn[XHI];
@@ -5928,10 +5936,15 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(row - stack[nstack]->G->header->pad[YHI]);
 			}
-			else if (op == GRDMATH_ARG_IS_NODE_MATRIX) {		/* Need to set up matrix of node numbers (pad will be zero)*/
+			else if (op == GRDMATH_ARG_IS_NODE_MATRIX) {		/* Need to set up matrix of continuous node numbers (pad not considered) */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "NODE ");
 				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				gmt_M_grd_loop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)gmt_M_ij0(stack[nstack]->G->header,row,col);
+			}
+			else if (op == GRDMATH_ARG_IS_NODEP_MATRIX) {		/* Need to set up matrix of node numbers (in presence of pad) */
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "NODEP ");
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
+				gmt_M_grd_loop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)gmt_M_ijp(stack[nstack]->G->header,row,col);
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				gmt_M_str_free (info.ASCII_file);

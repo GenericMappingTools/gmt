@@ -572,6 +572,8 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **EULER**   | 0.5772156...                                    |
 +-------------+-------------------------------------------------+
+| **PHI**     | 1.6180339... (golden ratio)                     |
++-------------+-------------------------------------------------+
 | **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
 +-------------+-------------------------------------------------+
 | **XMIN**    | Minimum x value                                 |
@@ -608,6 +610,8 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **NODE**    | Grid with node numbers 0, 1, ..., (NX*NY)-1     |
 +-------------+-------------------------------------------------+
+| **NODEP**   | Grid with node numbers in presence of pad       |
++-------------+-------------------------------------------------+
 
 Notes On Operators
 ------------------
@@ -625,7 +629,7 @@ Notes On Operators
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
    set or implied, else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is ellipsoidal then
+   :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
@@ -686,6 +690,9 @@ Notes On Operators
    of the ability to spread the load onto several cores.  At present, the
    list of such operators is: **LDIST**, **LDIST2**, **PDIST**, **PDIST2**,
    **SAZ**, **SBAZ**, **SDIST**, **YLM**, and **grd_YLMg**.
+
+#. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
+   is selected with :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`.
 
 .. include:: explain_float.rst_
 
