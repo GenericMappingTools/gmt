@@ -15644,7 +15644,7 @@ int gmtlib_get_num_processors() {
 }
 
 int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int)) {
-	/* Handle the way classic and modern mode modules report their usage msssages.
+	/* Handle the way classic and modern mode modules report their usage messages.
 	 * Set special == 1 if the classic module can be run with no options at all and still be expected to do things (e.g., silently read stdin) */
 	int code = GMT_NOERROR;	/* Default is no usage message was requested and we move on to parsing the arguments */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Under modern mode we always require an option like -? or -^ to call usage */
