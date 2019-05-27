@@ -186,7 +186,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] %s%s[-Q] [-S<fill>]\n", GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Td%s]\n\t[-Tm%s]\n", GMT_TROSE_DIR, GMT_TROSE_MAG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[<feature>/][<pen>]]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, GMT_do_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, GMT_rc_OPT, GMT_do_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
@@ -259,7 +259,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      3 = Island in lakes shores.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      4 = Lake in island in lake shores.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   When feature-specific pens are used, those not set are deactivated.\n");
-	GMT_Option (API, "X,bo,do,p,t");
+	GMT_Option (API, "X,bo,c,do,p,t");
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-+ Print only a single bin (debug option).\n");
 #endif
