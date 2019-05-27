@@ -33,7 +33,7 @@ The Generic Mapping Tools
 
    The five horsemen of the GMT apocalypse:
    Joaquim Luis, Walter H.F. Smith, Remko Scharroo, Florian Wobbe, and Paul Wessel
-   at the GMT Developer Summit in La Jolla, California, during August 15--19, 2016.
+   at the GMT Developer Summit in La Jolla, California, during August 15–19, 2016.
 
 
 Acknowledgments
@@ -47,7 +47,7 @@ original version 1.0 while they were their graduate students at
 Lamont-Doherty Earth Observatory. Doug Shearer and Roger Davis patiently
 answered many questions over e-mail. The subroutine ``gauss`` was
 written and supplied by Bill Menke. Further development of versions
-2.0--2.1 at SOEST would not have been possible without the support from
+2.0–2.1 at SOEST would not have been possible without the support from
 the HIGP/SOEST Post-Doctoral Fellowship program to Paul Wessel. Walter
 H. F. Smith gratefully acknowledges the generous support of the C. H.
 and I. M. Green Foundation for Earth Sciences at the Institute of
@@ -88,7 +88,7 @@ The EOS articles on GMT are
 
 -  Wessel, P., W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe,
    Generic Mapping Tools: Improved Version Released, *EOS Trans. AGU*, 94(45),
-   p. 409-410, 2013. `doi:10.1002/2013EO450001 <http://dx.doi.org/10.1002/2013EO450001>`_.
+   p. 409–410, 2013. `doi:10.1002/2013EO450001 <http://dx.doi.org/10.1002/2013EO450001>`_.
 
 -  Wessel, P., and W. H. F. Smith, New, improved version of Generic
    Mapping Tools released, *EOS Trans. AGU*, 79(47),
@@ -98,7 +98,7 @@ The EOS articles on GMT are
    Tools released, *EOS Trans. AGU*, 76(33), 329, 1995. `doi:10.1029/95EO00198 <http://dx.doi.org/10.1029/95EO00198>`_.
 
 -  Wessel, P., and W. H. F. Smith, Free software helps map and display
-   data, *EOS Trans. AGU*, 72(41), 445--446, 1991. `doi:10.1029/90EO00319 <http://dx.doi.org/10.1029/90EO00319>`_.
+   data, *EOS Trans. AGU*, 72(41), 445–446, 1991. `doi:10.1029/90EO00319 <http://dx.doi.org/10.1029/90EO00319>`_.
 
 
 Some GMT modules are based on algorithms we have developed and
@@ -116,20 +116,20 @@ published separately, such as
    [:doc:`grdredpol <supplements/potential/grdredpol>`, **potential** supplement]
 
 -  Smith, W. H. F., and P. Wessel, Gridding with continuous curvature
-   splines in tension, *Geophysics*, 55(3), 293--305, 1990. `doi:10.1190/1.1442837 <http://dx.doi.org/10.1190/1.1442837>`_.
+   splines in tension, *Geophysics*, 55(3), 293–305, 1990. `doi:10.1190/1.1442837 <http://dx.doi.org/10.1190/1.1442837>`_.
    [:doc:`surface`]
 
 -  Wessel, P., Tools for analyzing intersecting tracks: The x2sys
-   package, *Computers & Geosciences*, 36, 348--354, 2010. `doi:10.1016/j.cageo.2009.05.009 <http://dx.doi.org/10.1016/j.cageo.2009.05.009>`_.
+   package, *Computers & Geosciences*, 36, 348–354, 2010. `doi:10.1016/j.cageo.2009.05.009 <http://dx.doi.org/10.1016/j.cageo.2009.05.009>`_.
    [:doc:`x2sys <supplements/x2sys/x2sys_init>` supplement]
 
 -  Wessel, P., A General-purpose Green's function-based interpolator,
-   *Computers & Geosciences*, 35, 1247--1254, 2009. `doi:10.1016/j.cageo.2008.08.012 <http://dx.doi.org/10.1016/j.cageo.2008.08.012>`_.
+   *Computers & Geosciences*, 35, 1247–1254, 2009. `doi:10.1016/j.cageo.2008.08.012 <http://dx.doi.org/10.1016/j.cageo.2008.08.012>`_.
    [:doc:`greenspline`]
 
 -  Wessel, P. and J. M. Becker, Interpolation using a generalized
    Green's function for a spherical surface spline in tension, *Geophys.
-   J. Int.*, 174, 21--28, 2008. `doi:10.1111/j.1365-246X.2008.03829.x <http://dx.doi.org/10.1111/j.1365-246X.2008.03829.x>`_.
+   J. Int.*, 174, 21–28, 2008. `doi:10.1111/j.1365-246X.2008.03829.x <http://dx.doi.org/10.1111/j.1365-246X.2008.03829.x>`_.
    [:doc:`greenspline`]
 
 Finally, GMT includes some code supplied by others, in particular the
@@ -156,7 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991--2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
+Copyright ©1991–2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
 The Generic Mapping Tools (GMT) is free software; you can
@@ -199,7 +199,7 @@ versions. For a detailed history of the changes from release to release,
 see file ``ChangeLog`` in the main GMT directory. For a nightly snapshot of ongoing
 activity, see the online page. For a historical perspective of the
 origins and development of GMT see the video podcast "20 Years with
-GMT -- The Generic Mapping Tools" produced following a seminar given by
+GMT – The Generic Mapping Tools" produced following a seminar given by
 Paul Wessel on the 20th anniversary of GMT; a link is available on the
 GMT website.
 
@@ -275,7 +275,7 @@ can do only part of the job. To expedite this process we introduce the
 Generic Mapping Tools (GMT for short), which is a free [2]_ software
 package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
-of forms ranging from simple *x*--*y* plots to maps and color-coded,
+of forms ranging from simple *x*–*y* plots to maps and color-coded,
 perspective, and shaded-relief illustrations. GMT uses the
 PostScript page description language [*Adobe Systems Inc.*, 1990].
 With PostScript, multiple plot files can easily be superimposed to
@@ -344,7 +344,7 @@ PostScript files of each illustration are also provided. All programs
 have individual manual pages which can be installed as part of the
 on-line documentation under the UNIX **man** utility or as web
 pages. In addition, the programs offer friendly help messages which make
-them essentially self-teaching -- if a user enters invalid or ambiguous
+them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
 web browsing and may be installed at the user's site.
@@ -387,16 +387,16 @@ these types of output:
    filtered and the filtered values output. ASCII output is written to
    the standard output stream.
 
-*  2-D binary (netCDF or user-defined) grid files -- Programs that grid
+*  2-D binary (netCDF or user-defined) grid files – Programs that grid
    ASCII (*x,y,z*) data or operate on existing grid files produce
    this type of output.
 
-*  PostScript -- The plotting programs all use the PostScript page
+*  PostScript – The plotting programs all use the PostScript page
    description language to define plots. These commands are stored as
    ASCII text and can be edited should you want to customize the plot
    beyond the options available in the programs themselves.
 
-*  Reports -- Several GMT programs read input files and report
+*  Reports – Several GMT programs read input files and report
    statistics and other information. Nearly all programs have an
    optional "verbose" operation, which reports on the progress of
    computation. All programs feature usage messages, which prompt the
@@ -429,7 +429,7 @@ References
 
 *  Treinish, L. A., and M. L. Gough, A software package for the
    data-independent management of multidimensional data, *EOS Trans.
-   AGU*, 68(28), 633--635, 1987. `doi:10.1029/EO068i028p00633 <http://dx.doi.org/10.1029/EO068i028p00633>`_.
+   AGU*, 68(28), 633–635, 1987. `doi:10.1029/EO068i028p00633 <http://dx.doi.org/10.1029/EO068i028p00633>`_.
 
 
 Modern and Classic Mode
@@ -1135,7 +1135,7 @@ plotted at the most suitable map corner.  You can override this by appending
 any combination of corner ids **1234**, where **1** represents the lower left
 corner and the order goes counter-clockwise.  Append **+b** to draw the outline
 of the 3-D box defined by **-R**; this modifier is also needed to display
-gridlines in the x--z, y--z planes.  You may paint the
+gridlines in the x–z, y–z planes.  You may paint the
 map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
 If gridlines are specified via the Axes parameters (discussed below) then
 by default these are referenced to the North pole.  If, however, you wish
@@ -1211,7 +1211,7 @@ can be difficult to determine the appropriate *stride* in advance. Here
 GMT provides the opportunity to auto-select the spacing between the
 major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
-automatically for both axes. In case of longitude--latitude plots, this
+automatically for both axes. In case of longitude–latitude plots, this
 will keep the spacing the same on both axes. You can also use
 **-Bafg/afg** to auto-select them separately. Also note that given the
 myriad ways of specifying time-axis annotations, the automatic selections
@@ -1238,21 +1238,21 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+--------------------------------------------------------------------------+
 | **O**      | month            | Format annotation using **FORMAT_DATE_MAP**                              |
 +------------+------------------+--------------------------------------------------------------------------+
-| **o**      | month            | Plot as 2-digit integer (1--12)                                          |
+| **o**      | month            | Plot as 2-digit integer (1–12)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
 | **U**      | ISO week         | Format annotation using **FORMAT_DATE_MAP**                              |
 +------------+------------------+--------------------------------------------------------------------------+
-| **u**      | ISO week         | Plot as 2-digit integer (1--53)                                          |
+| **u**      | ISO week         | Plot as 2-digit integer (1–53)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
 | **r**      | Gregorian week   | 7-day stride from start of week (see **TIME_WEEK_START**)                |
 +------------+------------------+--------------------------------------------------------------------------+
 | **K**      | ISO weekday      | Plot name of weekday in selected language                                |
 +------------+------------------+--------------------------------------------------------------------------+
-| **k**      | weekday          | Plot number of day in the week (1--7) (see **TIME_WEEK_START**)          |
+| **k**      | weekday          | Plot number of day in the week (1–7) (see **TIME_WEEK_START**)           |
 +------------+------------------+--------------------------------------------------------------------------+
 | **D**      | date             | Format annotation using **FORMAT_DATE_MAP**                              |
 +------------+------------------+--------------------------------------------------------------------------+
-| **d**      | day              | Plot day of month (1--31) or day of year (1--366)                        |
+| **d**      | day              | Plot day of month (1–31) or day of year (1–366)                          |
 +------------+------------------+--------------------------------------------------------------------------+
 |            |                  | (see **FORMAT_DATE_MAP**                                                 |
 +------------+------------------+--------------------------------------------------------------------------+
@@ -1260,15 +1260,15 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+--------------------------------------------------------------------------+
 | **H**      | hour             | Format annotation using **FORMAT_CLOCK_MAP**                             |
 +------------+------------------+--------------------------------------------------------------------------+
-| **h**      | hour             | Plot as 2-digit integer (0--24)                                          |
+| **h**      | hour             | Plot as 2-digit integer (0–24)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
 | **M**      | minute           | Format annotation using **FORMAT_CLOCK_MAP**                             |
 +------------+------------------+--------------------------------------------------------------------------+
-| **m**      | minute           | Plot as 2-digit integer (0--60)                                          |
+| **m**      | minute           | Plot as 2-digit integer (0–60)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
 | **S**      | seconds          | Format annotation using **FORMAT_CLOCK_MAP**                             |
 +------------+------------------+--------------------------------------------------------------------------+
-| **s**      | seconds          | Plot as 2-digit integer (0--60)                                          |
+| **s**      | seconds          | Plot as 2-digit integer (0–60)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
 
 As mentioned, there may be two levels of annotations. Here, "primary" refers to the
@@ -1757,7 +1757,7 @@ option allows you to supply one or more comma-separated associations
 OGR/GMT file and whose value we wish to as data input for column *col*.
 The given aspatial field thus replaces any other value already set. Note
 that *col = 0* is the first data columns. Note that if no aspatial
-attributes are needed then the **-a** option is not needed -- GMT will
+attributes are needed then the **-a** option is not needed – GMT will
 still process and read such data files.
 
 OGR/GMT input with **-a** option
@@ -1872,11 +1872,11 @@ column (or range of columns) separated by commas. Each string starts
 with the column number (0 is first column) followed by either **x**
 (longitude), **y** (latitude), **T** (absolute calendar time) or **t**
 (relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column, i.e., 0--4
+may specify a range of columns rather than a single column, i.e., 0–4
 for the first 5 columns. For example, if our input file has geographic
 coordinates (latitude, longitude) with absolute calendar coordinates in
 the columns 3 and 4, we would specify
-**fi**\ 0\ **y**,1\ **x**,3--4\ **T**. All other columns are assumed to
+**fi**\ 0\ **y**,1\ **x**,3–4\ **T**. All other columns are assumed to
 have the default, floating point format and need not be set
 individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
 means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
@@ -2479,17 +2479,17 @@ option argument, with commas separating the given attributes, e.g.,
 
     The *color* can be specified in five different ways:
 
-    #. Gray. Specify a *gray* shade in the range 0--255 (linearly going
+    #. Gray. Specify a *gray* shade in the range 0–255 (linearly going
        from black [0] to white [255]).
 
-    #. RGB. Specify *r*/*g*/*b*, each ranging from 0--255. Here 0/0/0 is
+    #. RGB. Specify *r*/*g*/*b*, each ranging from 0–255. Here 0/0/0 is
        black, 255/255/255 is white, 255/0/0 is red, etc.
 
     #. HSV. Specify *hue*-*saturation*-*value*, with the former in the
-       0--360 degree range while the latter two take on the range 0--1 [17]_.
+       0–360 degree range while the latter two take on the range 0–1 [17]_.
 
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
-       from 0--100%.
+       from 0–100%.
 
     #. Name. Specify one of 663 valid color names. Use **man
        gmtcolors** to list all valid names. A very small yet versatile
@@ -2653,17 +2653,17 @@ Many plotting programs will allow the user to draw filled polygons or
 symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
-    In the first case we may specify a *gray* shade (0--255), RGB color
-    (*r*/*g*/*b* all in the 0--255 range or in hexadecimal *#rrggbb*),
-    HSV color (*hue*-*saturation*-*value* in the 0--360, 0--1, 0--1 range),
+    In the first case we may specify a *gray* shade (0–255), RGB color
+    (*r*/*g*/*b* all in the 0–255 range or in hexadecimal *#rrggbb*),
+    HSV color (*hue*-*saturation*-*value* in the 0–360, 0–1, 0–1 range),
     CMYK color (*cyan*/*magenta*/*yellow*/*black*, each ranging from
-    0--100%), or a valid color *name*; in that respect it is similar to
+    0–100%), or a valid color *name*; in that respect it is similar to
     specifying the pen color settings (see pen color discussion under
     Section `Specifying pen attributes`_).
 
 **-GP**\ \|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
     The second form allows us to use a predefined bit-image pattern.
-    *pattern* can either be a number in the range 1--90 or the name of a
+    *pattern* can either be a number in the range 1–90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
     reproduced in Chapter `Predefined Bit and Hachure Patterns in GMT`_.
@@ -2915,7 +2915,6 @@ interpolations, the format of the regular CPTs is:
 | z\ :sub:`n-2` | Color\ :sub:`min` | z\ :sub:`n-1` | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
 +---------------+-------------------+---------------+-------------------+----------+--------------+
 
-
 Thus, for each "*z*-slice", defined as the interval between two
 boundaries (e.g., :math:`z_0` to :math:`z_1`), the color can be
 constant (by letting Color\ :math:`_{max}` = Color\ :math:`_{min}` or -)
@@ -2950,8 +2949,8 @@ which can be inserted into the beginning or end of the CPT. If you
 prefer the HSV system, set the :doc:`gmt.conf` parameter accordingly and replace red,
 green, blue with hue, saturation, value. Color palette tables that
 contain gray-shades only may replace the *r/g/b* triplets with a single
-gray-shade in the 0--255 range. For CMYK, give *c/m/y/k* values in the
-0--100 range.
+gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
+0–100 range.
 
 A few programs (i.e., those that plot polygons such as
 :doc:`grdview`, :doc:`psscale`,
@@ -3902,7 +3901,7 @@ Everything looks clearer after a few examples:
 *  To read a Golden Software "surfer" format 6 grid file, just pass the
    file name, e.g., ``my_surferfile.grd``.
 
-*  To read a 8-bit standard Sun raster file (with values in the 0--255
+*  To read a 8-bit standard Sun raster file (with values in the 0–255
    range) and convert it to a 1 range, give the name as ``rasterfile+s7.84313725e-3+o-1``
    (i.e., 1/127.5).
 
@@ -4143,7 +4142,7 @@ Reading multi-band images
 
 :doc:`grdimage` and :doc:`psimage` both lets the user select
 individual bands in a multi-band image file and treats the result as an
-image (that is the values, in the 0--255 range, are treated as colors,
+image (that is the values, in the 0–255 range, are treated as colors,
 not data). To select individual bands you use the **+b**\ *band-number*
 mechanism that must be appended to the image filename. Here,
 *band-number* can be the number of one individual band (the counting
@@ -4332,7 +4331,7 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     the current directory. This allows maintainers to consolidate large
     data files and to simplify scripting that use these files since the
     absolute path need not be specified. Separate multiple directories
-    with colons (:) -- under Windows use semi-colons (;). Any directory
+    with colons (:) – under Windows use semi-colons (;). Any directory
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 
@@ -4572,7 +4571,7 @@ Cartesian logarithmic projection
    :width: 400 px
    :align: center
 
-   Logarithmic transformation of x--coordinates.
+   Logarithmic transformation of x–coordinates.
 
 
 The :math:`\log_{10}` transformation is simply
@@ -4602,7 +4601,7 @@ Cartesian power projection :ref:`... <-Jx_full>`
    :width: 400 px
    :align: center
 
-   Exponential or power transformation of x--coordinates.
+   Exponential or power transformation of x–coordinates.
 
 
 This projection uses :math:`u' = a u^b + c` and allows us to explore
@@ -4664,7 +4663,7 @@ Consequently, the polar transformation is defined by providing
 -  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
 
 -  Optionally, append **r** to reverse the radial direction (here,
-   *south* and *north* must be elevations in 0--90 range).
+   *south* and *north* must be elevations in 0–90 range).
 
 -  Optionally, append **z** to annotate depths rather than radius.
 
@@ -4848,7 +4847,7 @@ use degrees west for longitudes. The generating commands used were
 The choice for projection center does not affect the projection but it
 indicates which meridian (here 100ºW) will be vertical on the map. The
 standard parallels were originally selected by Adams to provide a
-maximum scale error between latitudes 30.5ºN and 47.5ºN of 0.5--1%. Some
+maximum scale error between latitudes 30.5ºN and 47.5ºN of 0.5–1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
 (American) polyconic projection (**-Jpoly** **-JPoly**) :ref:`... <-Jpoly_full>`
@@ -4856,7 +4855,7 @@ areas, like Florida, experience scale errors of up to 2.5%.
 
 The polyconic projection, in Europe usually referred to as the American
 polyconic projection, was introduced shortly before 1820 by the
-Swiss-American cartographer Ferdinand Rodulph Hassler (1770--1843). As
+Swiss-American cartographer Ferdinand Rodulph Hassler (1770–1843). As
 head of the Survey of the Coast, he was looking for a projection that
 would give the least distortion for mapping the coast of the United
 States. The projection acquired its name from the construction of each
@@ -5385,9 +5384,9 @@ for most cases. See Figure :ref:`Universal Transverse Mercator
 GMT implements both the transverse Mercator and the UTM projection.
 When selecting UTM you must specify:
 
--  UTM zone (A, B, 1--60, Y, Z). Use negative values for numerical zones
-   in the southern hemisphere or append the latitude modifiers C--H, J--N,
-   P--X) to specify an exact UTM grid zone.
+-  UTM zone (A, B, 1–60, Y, Z). Use negative values for numerical zones
+   in the southern hemisphere or append the latitude modifiers C–H, J–N,
+   P–X) to specify an exact UTM grid zone.
 
 -  Scale along the equator in inch/degree or 1:xxxxx (**-Ju**), or map
    width (**-JU**).
@@ -6334,7 +6333,7 @@ dependence (e.g. topography, potential fields, illustrated by blue and white
 cells in Figure :ref:`netcdf_chunking`) and deflation can greatly reduce the
 file size and hence the file access time (deflating/inflating is faster than
 hard disk I/O).  It is therefore convenient to deflate grids with spatial
-dependence (levels 1--3 give the best speed/size-tradeoff).
+dependence (levels 1–3 give the best speed/size-tradeoff).
 
 You may control the size of the chunks of data and compression with the
 configuration parameters :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>`
@@ -8360,7 +8359,7 @@ of their use.
 Label Placement
 ---------------
 
-While the previous GMT versions 1--3 allowed for a single algorithm
+While the previous GMT versions 1–3 allowed for a single algorithm
 that determined where labels would be placed, GMT 4 allows for five
 different algorithms. Furthermore, a new "symbol" option (**-Sq** for
 "quoted line") has been added to :doc:`psxy` and
@@ -9437,7 +9436,7 @@ Finally we show an example of a polygon file:
 .. [7]
    Vicenty, T. (1975), Direct and inverse solutions of geodesics on the
    ellipsoid with application of nested equations, *Surv. Rev.,
-   XXII(176)*, 88--93.
+   XXII(176)*, 88–93.
 
 .. [8]
    PostScript definition. In the typesetting industry a slightly
@@ -9524,16 +9523,16 @@ Finally we show an example of a polygon file:
 .. [25]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
    polyhedral bodies and translation into magnetic anomalies,
-   *Geophysics, 44*, 730--741.
+   *Geophysics, 44*, 730–741.
 
 .. [26]
    Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations
    for two-dimensional bodies with application to the Mendocino submarine fracture zone,
-   *J. Geophys. Res., 64*, 49-–59.
+   *J. Geophys. Res., 64*, 49–59.
 
 .. [27]
    Talwani, M., and M. Ewing (1960), Rapid computation of gravitational attraction of
-   three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203--225.
+   three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203–225.
 
 .. [28]
    `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
@@ -9553,7 +9552,7 @@ Finally we show an example of a polygon file:
 .. [32]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
    of the number of points required to represent a digitized line or its
-   caricature, *Canadian Cartographer*, 10, 112--122.
+   caricature, *Canadian Cartographer*, 10, 112–122.
 
 .. [33]
    The full and high resolution files are in separate archives because
@@ -9564,7 +9563,7 @@ Finally we show an example of a polygon file:
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
-   *J. Geophys. Res. 101*, 8741--8743).
+   *J. Geophys. Res. 101*, 8741–8743).
 
 .. [35]
    The 3rd palette is called *categorical* and produces a set of
