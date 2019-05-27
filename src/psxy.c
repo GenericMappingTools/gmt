@@ -1420,7 +1420,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
 							gmt_flip_angle_d (GMT, &dim[0]);
 							dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
-							dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
+							dim[2] = in[ex3] * GMT->current.proj.scale[GMT_Y];
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
