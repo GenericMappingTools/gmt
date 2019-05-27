@@ -915,7 +915,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
-						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
+						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_Y];
 						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					}
 					else {				/* Got axis in km */
