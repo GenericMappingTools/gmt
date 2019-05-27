@@ -175,7 +175,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K,O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Save intermediate events symbol and labels files; append file prefix [temporary files deleted].\n");
 	gmt_pen_syntax (API->GMT, 'W', "Set symbol outline pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "V,bi2,di,e,f,h,i,p,:,.");
+	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -263,7 +263,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) and multiply data by <fact> (via +s<fact> [1])\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   before contouring. Append + for z-data that are periodic in 360 (i.e., phase data).\n");
-	GMT_Option (API, "bo3,do,f,h,p,t,.");
+	GMT_Option (API, "bo3,c,do,f,h,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

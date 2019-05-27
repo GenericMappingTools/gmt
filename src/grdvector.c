@@ -149,7 +149,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (implies -A).\n");
-	GMT_Option (API, "f,p,t,.");
+	GMT_Option (API, "c,f,p,t,.");
 	
 	return (GMT_MODULE_USAGE);
 }

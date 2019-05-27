@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Option (API, "R");
-	GMT_Option (API, "U,V,X,f,n,p,t,.");
+	GMT_Option (API, "U,V,X,c,f,n,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

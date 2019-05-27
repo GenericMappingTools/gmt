@@ -199,7 +199,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +s<shift> shift all traces by <shift> seconds.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "X,h,p,t");
+	GMT_Option (API, "X,c,h,p,t");
 	GMT_Option (API, ".");
 
 	return (EXIT_FAILURE);

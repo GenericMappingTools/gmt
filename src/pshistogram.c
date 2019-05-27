@@ -517,7 +517,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,di,e,f,h,i,p,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,p,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

@@ -121,7 +121,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
 	gmt_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
-	GMT_Option (API, "U,V,X,f,p,t,.");
+	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

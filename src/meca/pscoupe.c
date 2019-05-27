@@ -503,7 +503,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT to assign colors based on depth-value in 3rd column.\n");
 
-	GMT_Option (API, "X,di,e,h,p,i,t,:,.");
+	GMT_Option (API, "X,c,di,e,h,p,i,t,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

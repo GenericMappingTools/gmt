@@ -467,7 +467,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_Option (API, "U,V,X,bi2,bo,d,e,h,i,p,r,s,t,:,.");
+	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,r,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

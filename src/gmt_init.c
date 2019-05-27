@@ -6352,6 +6352,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
 			break;
 
+		case 'c':	/* -c option advances subplot panel focus under modern mode */
+
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* -c has no use in classic */
+				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col of desired panel.\n");
+			break;
+
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
 
 			gmt_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");

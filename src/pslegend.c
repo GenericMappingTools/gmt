@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Option (API, "O,P,R");
-	GMT_Option (API, "U,V,X,p,t,.");
+	GMT_Option (API, "U,V,X,c,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

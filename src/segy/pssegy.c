@@ -168,7 +168,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Plot wiggle trace (must specify either -W or -F).\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Suppress plotting traces whose rms amplitude is 0.\n");
-	GMT_Option (API, "p,t,.");
+	GMT_Option (API, "c,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

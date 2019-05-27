@@ -146,7 +146,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
-	GMT_Option (API, "X,b,o,p");
+	GMT_Option (API, "X,b,c,o,p");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);

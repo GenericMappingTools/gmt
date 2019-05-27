@@ -217,7 +217,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot URL for GMT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
 	GMT_Option (API, "U,V");
-	GMT_Option (API, "X,f,t,.");
+	GMT_Option (API, "X,c,f,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

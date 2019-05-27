@@ -205,7 +205,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	             API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,p,t,.");
+	GMT_Option (API, "X,c,p,t,.");
 	
 	return (GMT_MODULE_USAGE);
 }
