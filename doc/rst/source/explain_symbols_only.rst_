@@ -1,0 +1,114 @@
+**-S**\ [*symbol*][\ *size*\ [**u**]]
+    Plot individual symbols.
+    If present, *size* is symbol size in the unit set in
+    :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
+    code (see below) is not given it will be read from the last column in
+    the input data; this cannot be used in conjunction with binary input.
+    Optionally, append **c**, **i**, or
+    **p** to indicate that the size information in the input data is in
+    units of cm, inch, or point, respectively [Default is
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Note: if you provide *both* size and symbol via the
+    input file you must use :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` to indicate the unit
+    used for the symbol size or append the units to the sizes in the file.
+    If symbol sizes are expected via the third data column then you may convert
+    those values to suitable symbol sizes via the **-i** mechanism.
+
+    The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
+    **S**, **T** are normalized to have the same area as a circle with
+    diameter *size*, while the size of the corresponding lowercase symbols
+    refers to the diameter of a circumscribed circle.
+
+    You can change symbols by adding the required **-S** option to any of
+    your multisegment headers.
+
+    Choose between these symbol codes:
+
+    **-S-**
+        x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
+
+    **-S+**
+        plus (+). *size* is diameter of circumscribing circle.
+
+    **-Sa**
+        st\ **a**\ r. *size* is diameter of circumscribing circle.
+
+    **-Sb**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
+        Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
+        Append **u** if *size* is in x-units [Default is plot-distance units].
+        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
+        value. If *base* is not appended then we read it from the last input
+        data column.  Use **+B**\ [*base*\ ] if the bar height is measured relative
+        to *base* [Relative to origin].
+
+    **-SB**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
+        Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
+        Append **u** if *size* is in y-units [Default is plot-distance units].
+        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
+        value. If *base* is not appended then we read it from the last input
+        data column.  Use **+B**\ [*base*\ ] if the bar length is measured relative
+        to *base* [Relative to origin].
+
+    **-Sc**
+        **c**\ ircle. *size* is diameter of circle.
+
+    **-Sd**
+        **d**\ iamond. *size* is diameter of circumscribing circle.
+
+    **-Se**
+        **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
+        major_axis, and minor_axis must be found in columns 3, 4, and 5.
+
+    **-Sg**
+        octa\ **g**\ on. *size* is diameter of circumscribing circle.
+
+    **-Sh**
+        **h**\ exagon. *size* is diameter of circumscribing circle.
+
+    **-Si**
+        **i**\ nverted triangle. *size* is diameter of circumscribing circle.
+
+    **-Sj**
+        Rotated rectangle. Direction (in degrees counter-clockwise from
+        horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
+
+    **-Sk**
+        **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
+        definition file called *name*\ .def in (1) the current
+        directory or (2) in ~/.gmt or (3) in
+        **$GMT_SHAREDIR**/custom. The symbol as defined in that file is of size
+        1.0 by default; the appended *size* will scale symbol accordingly. Users
+        may add their own custom \*.def files; see CUSTOM SYMBOLS below.
+
+    **-Sl**
+        **l**\ etter or text string (less than 256 characters). Give size, and
+        append **+t**\ *string* after the size. Note that the size is only approximate;
+        no individual scaling is done for different characters. Remember to
+        escape special characters like \*. Optionally, you may append **+f**\ *font*
+        to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
+        **+j**\ *justify* to change justification [CM].
+
+    **-Sn**
+        pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
+
+    **-Sp**
+        **p**\ oint. No size needs to be specified (1 pixel is used).
+
+    **-Sr**
+        **r**\ ectangle. No size needs to be specified, but the x- and
+        y-dimensions must be found in columns 3 and 4.
+
+    **-SR**
+        **R**\ ounded rectangle. No size needs to be specified, but the x-
+        and y-dimensions and corner radius must be found in columns 3, 4, and 5.
+
+    **-Ss**
+        **s**\ quare. *size* is diameter of circumscribing circle.
+
+    **-St**
+        **t**\ riangle. *size* is diameter of circumscribing circle.
+
+    **-Sx**
+        cross (x). *size* is diameter of circumscribing circle.
+
+    **-Sy**
+        y-dash (\|). *size* is the length of a short vertical (y-dir) line segment.
