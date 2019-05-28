@@ -13220,6 +13220,17 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				check = false;
 				p->w_active = true;
 			}
+			else if (symbol_type == 'W') {	/* Can take either plot diameter or geo diameter */
+				if (strchr (GMT_DIM_UNITS, txt_a[len-1]))	/* Gave a plot unit diameter */
+					p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
+				else {	/* Add the implicit k for km */
+					strcat (txt_a, "k");
+					p->w_mode = gmt_get_distance (GMT, txt_a, &(p->w_radius), &(p->w_unit));
+					p->size_y = p->given_size_y = 0.0;
+					check = false;
+					p->w_active = true;
+				}
+			}
 			else
 				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 		}
@@ -13425,7 +13436,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					p->size_x = p->size_y = atof (diameter);	/* In km */
+					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+					p->size_x = p->size_y;
 				}
 				else {	/* Must read diameter from data file */
 					p->n_required = 1;	/* Only expect diameter */

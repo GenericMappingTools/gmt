@@ -68,7 +68,7 @@
         For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
         The diameter is excepted to be given in column 3.  Alternatively, append
         the desired diameter to **-SE-** and this fixed diameter is used instead.
-	For allowable geographical units, see UNITS.
+	For allowable geographical units, see UNITS [Default is k for km].
 
     **-Sf**\ *gap*\ [/*size*][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
@@ -114,7 +114,7 @@
 	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
 	An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
-	For allowable geographical units, see UNITS.
+	For allowable geographical units, see UNITS [Default is k for km].
 
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
@@ -362,8 +362,9 @@
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged.) For geo-wedges, specify *size* as a radial
-        geographical distance. For allowable geographical units, see UNITS.
+        directions unchanged). Specify *size* as a geographical diameter.
+        For allowable geographical units, see UNITS [Default is k for km]. To instead
+        specify a diameter in plot units, you must append the desired unit.
         Append **+a** to just draw the arc or **+r** to just draw the radial lines.
 
     **-Sx**
