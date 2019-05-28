@@ -5381,7 +5381,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 	/* Remember current settings as we wish to restore at the end */
 	plot_savepen (GMT, &save_pen);
-	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_M_memset (&f, 1, struct GMT_FILL);
 	gmt_M_memset (&p, 1, struct GMT_PEN);
 	gmt_M_memset (skip, GMT_N_COND_LEVELS+1, bool);
@@ -5450,6 +5449,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 		x = s->x * size[0];
 		y = s->y * size[0];
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		dim[0] = s->p[0] * size[0];
 		dim[1] = s->p[1] * size[0];
 		dim[2] = s->p[2] * size[0];
