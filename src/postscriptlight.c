@@ -2835,26 +2835,52 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	 * param must hold up to 11 values:
 	 * param[0] = radius;
 	 * param[1] = start angle;	param[2] = end angle;
-	 * param[3] = status bit flags
+	 * param[3] = status bit flags;	param[4] = inner_radius [0]
+	 * param[5] = dr [0];		param[6] = da [0]
 	 */
 
 	double xx[3], yy[3];
 	int status = lrint (param[3]);
-	switch (status) {
-		case 1:		/* Just draw arc */
-			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arc */
-			break;
-		case 2:		/* Just draw radial lines */
+	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
+	if (status >= 10) {	/* Paint wedge given fill and/or outline */
+		status -= 10;
+		if (windshield) 
+			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P FO U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+		else
+			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+	}
+	if (status & 1) {	/* Draw arc(s) */
+		if (param[5] > 0.0) {	/* Array of arcs */
+			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];
+			while (r <= param[0]) {
+				PSL_plotarc (PSL, x, y, r, param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arc */
+				r += param[5];
+			}
+		}
+		else {	/* Just outer and possibly inner arcs */
+			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the outer arc */
+			if (windshield) 
+				PSL_plotarc (PSL, x, y, param[4], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the inner arc */
+		}
+	}
+	if (status & 2) {	/* Draw radii(s) */
+		if (param[6] > 0.0) {	/* Array of radii */
+			double a = ceil (param[1] / param[6]) * param[6];
+			while (a <= param[2]) {
+				xx[0] = x + param[4] * cos (D2R * a);	yy[0] = y + param[4] * sin (D2R * a);
+				xx[1] = x + param[0] * cos (D2R * a);	yy[1] = y + param[0] * sin (D2R * a);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot radial line */
+				a += param[6];
+			}
+		}
+		else {	/* Just start and stop radii */
 			xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
 			xx[1] = x;				yy[1] = y;
 			xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
 			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
-			break;
-		default:	/* Standard wedge operation */
-			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
-			break;
+		}
 	}
-
 	return (PSL_NO_ERROR);
 }
 

@@ -501,7 +501,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     For geo-wedges, specify <size><unit> with units from %s.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
@@ -1854,14 +1854,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 									dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 								}
-								if (S.w_active) {	/* Geo-wedge */
-									if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
-									gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius, S.w_unit, dim[1], dim[2], S.w_type);
-									if (Ctrl->G.active) gmt_setfill (GMT, &current_fill, outline_active);
-								}
+								if (S.w_active)	/* Geo-wedge */
+									gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, Ctrl->G.active);
 								else {
 									dim[0] *= 0.5;
 									dim[3] = S.w_type;
+									if (Ctrl->G.active || Ctrl->W.active) dim[3] += 10;	/* Flag that we are filling/outlining */
+									dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
 									PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 								}
 								break;

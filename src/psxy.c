@@ -345,6 +345,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
 	PSL_command (GMT->PSL, "V\n");
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
@@ -510,7 +511,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <size><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <size><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
@@ -1089,6 +1090,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
 
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
 		else
@@ -1605,14 +1607,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 							dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 						}
-						if (S.w_active) {	/* Geo-wedge */
-							if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
-							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius, S.w_unit, dim[1], dim[2], S.w_type);
-							if (Ctrl->G.active) gmt_setfill (GMT, &current_fill, outline_active);
-						}
+						if (S.w_active)	/* Geo-wedge */
+							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, Ctrl->G.active);
 						else {
 							dim[0] *= 0.5;
 							dim[3] = S.w_type;
+							if (item == 0 && (get_rgb || fill_active || outline_active)) dim[3] += 10;	/* Flag that we are filling/outlining */
+							dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
+							dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
+							dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						break;
