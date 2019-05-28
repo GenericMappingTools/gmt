@@ -598,8 +598,6 @@ EXTERN_MSC struct GMTAPI_CTRL *gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC const char * gmt_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
 EXTERN_MSC bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr);
 EXTERN_MSC unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode);
-/* These are used for -O -K -P -c and set to blank under modern/classic modes */
-EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT, *GMT_rc_OPT;
 
 /* From gmt_stat.c */
 EXTERN_MSC double gmt_bei (struct GMT_CTRL *GMT, double x);

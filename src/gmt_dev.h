@@ -168,6 +168,9 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
+/* These are used for -O -K -P -c and set to blank under modern/classic modes */
+EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT, *GMT_rc_OPT;
+
 /* If GLIBC compatible qsort_r is not available */
 #ifndef HAVE_QSORT_R_GLIBC
 #	include "compat/qsort.h"

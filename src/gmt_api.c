@@ -9932,15 +9932,10 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
 		sprintf (full_name, "gmt %s", mode_name);
 		mode_name = full_name;
-		GMT_K_OPT = GMT_O_OPT = GMT_P_OPT = "";	/* This are not part of modern mode */
-		GMT_rc_OPT = "[-c[<row>,<col>]] ";	/* -c option for setting next subplot panel */
-	}
-	else {
-		GMT_K_OPT = "[-K] "; GMT_O_OPT = "[-O] "; GMT_P_OPT = "[-P] ";
-		GMT_rc_OPT = "";	/* -c is not available in classic mode */
 	}
 	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
+	gmtlib_set_KOP_strings (API);
 	return mode_name;
 }
 
