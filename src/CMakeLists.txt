@@ -330,7 +330,7 @@ if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
 	set (GMT_TRIANGULATE "Shewchuk" PARENT_SCOPE)
 	set (GMT_TRIANGLE_SRCS triangle.c triangle.h)
-	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_DIR}/README.TRIANGLE)
+	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.TRIANGLE)
 else (NOT LICENSE_RESTRICTED) # on
 	# disable Shewchuk's triangle routine
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
