@@ -360,6 +360,7 @@
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
  	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
     **-SW**
         Same as **-Sw**, except azimuths (in degrees east of north) should
@@ -373,6 +374,7 @@
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
  	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.
