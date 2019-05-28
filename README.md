@@ -19,9 +19,8 @@ coastlines, rivers, and political boundaries and optionally
 [DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
 GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo,
-Joaquim Luis and Florian Wobbe, with help from a global set of
-[contributors](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Volunteers) and
-support by the [National Science Foundation](http://www.nsf.gov/).
+Joaquim Luis and Florian Wobbe, with help from a global set of [contributors](AUTHORS.md)
+and support by the [National Science Foundation](http://www.nsf.gov/).
 It is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
 version 3 or any later version.
