@@ -713,7 +713,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			}
 		}
 
-		/* prepare datas */
+		/* prepare data */
 		x = gmt_M_memory (GMT, NULL, hd.npts, double);
 		y = gmt_M_memory (GMT, NULL, hd.npts, double);
 

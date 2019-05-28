@@ -9594,7 +9594,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	K->delta_ky = 2.0 * M_PI / (F->n_rows * G->header->inc[GMT_Y]);
 	K->nx2 = F->n_columns;	K->ny2 = F->n_rows;
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters via Flat Earth assumtion  */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters via Flat Earth assumption  */
 		K->delta_kx /= (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI])));
 		K->delta_ky /= GMT->current.proj.DIST_M_PR_DEG;
 	}
