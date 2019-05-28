@@ -7142,6 +7142,8 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 	if (windshield)	/* Get a point P_i that is radius_i degrees away along the meridian through our point X */
 		get_far_point (GMT, xlon, xlat, radius_i, P_i);
 
+	PSL_command (GMT->PSL, "V\n");	/* Place spider under gsave/grestore since we will change pen */
+	PSL_command (GMT->PSL, "PSL_spiderpen\n");	/* Switch to spider web pen */
 	if (mode == GMT_WEDGE_RADII || mode == GMT_WEDGE_SPIDER) {	/* Need to draw radial start and end points */
 		double *azim = NULL;
 		if (da > 0.0)	/* Must draw several radial lines */
@@ -7229,6 +7231,7 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 		}
 		gmt_M_free (GMT, r);
 	}
+	PSL_command (GMT->PSL, "U\n");	/* End block */
 }
 
 GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double az_start, double az_stop) {

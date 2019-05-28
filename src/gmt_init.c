@@ -13203,7 +13203,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		else if (s_upper == 'W') {	/* Wedges and spiders: -Sw|W<diameter>[/<inner_diameter>][+a[<dr>][+r[<da>]]] */
 			unsigned int type = 0;
 			char *c = NULL;
-			if ((c = gmt_first_modifier (GMT, text, "ar"))) c[0] = '\0';	/* Chop off modifiers so we can parse the info */
+			if ((c = gmt_first_modifier (GMT, text, "apr"))) c[0] = '\0';	/* Chop off modifiers so we can parse the info */
 			n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);	/* Redo since we need txt_b without modifiers */
 			len = strlen (txt_a);
 			if (strchr (GMT_LEN_UNITS, txt_a[len-1])) {	/* Geo-wedge with radius given in a distance unit */
@@ -13235,7 +13235,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				char q[GMT_LEN256] = {""};
 				unsigned int pos = 0, error = 0;
 				c[0] = '+';	/* Restore that character */
-				while (gmt_getmodopt (GMT, 'S', c, "ar", &pos, q, &error) && error == 0) {
+				while (gmt_getmodopt (GMT, 'S', c, "apr", &pos, q, &error) && error == 0) {
 					switch (q[0]) {
 						case 'a':	/* Arc(s) */
 							type |= GMT_WEDGE_ARCS;	/* Arc only */
@@ -13245,6 +13245,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 								else
 									p->w_dr = gmt_M_to_inch (GMT, &q[1]);
 							}
+							break;
+						case 'p':	/* Spider pen, stored in the vector structure */
+							if (gmt_getpen (GMT, &q[1], &p->v.pen)) {
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &q[1]);
+								error++;
+							}
+							p->v.status = PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 							break;
 						case 'r':	/* Radial lines */
 							type |= GMT_WEDGE_RADII;	/* Radial lines */

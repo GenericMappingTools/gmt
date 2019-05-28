@@ -2850,6 +2850,7 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 		else
 			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
+	if (status) PSL_command (PSL, "V PSL_spiderpen\n");
 	if (status & 1) {	/* Draw arc(s) */
 		if (param[5] > 0.0) {	/* Array of arcs */
 			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];
@@ -2881,6 +2882,7 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
 		}
 	}
+	if (status) PSL_command (PSL, "U\n");
 	return (PSL_NO_ERROR);
 }
 

@@ -840,9 +840,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, d, *in = NULL;
-	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25, spiderpen_width = 0.25;
 
-	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen;
+	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -1070,13 +1070,27 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 		}
 	}
-
+	if (S.symbol == PSL_WEDGE) {
+		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+			spiderpen_width = S.v.pen.width;
+			last_spiderpen = S.v.pen;
+		}
+		else if (Ctrl->W.active) {	/* Reset to default pen */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+				headpen_width = 0.5 * current_pen.width;
+				last_spiderpen = current_pen;
+			}
+		}
+	}
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
 	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
-	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, Ctrl->D.dx, Ctrl->D.dy, 0.0, PSL_FWD);	/* Shift plot a bit */
 
@@ -1200,6 +1214,21 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length so need to undo dimension scaling */
 						in[pos2x] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+					}
+				}
+				else if (S.symbol == PSL_WEDGE) {
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+						spiderpen_width = S.v.pen.width;
+						last_spiderpen = S.v.pen;
+					}
+					else if (outline_active) {	/* Reset to default pen */
+						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+						if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+							PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							headpen_width = 0.5 * current_pen.width;
+							last_spiderpen = current_pen;
+						}
 					}
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
