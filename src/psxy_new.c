@@ -1855,14 +1855,19 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 								}
 								if (S.w_active)	/* Geo-wedge */
-									gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, Ctrl->G.active);
-								else {
-									dim[0] *= 0.5;
+									gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
+								else {	/* Cartesian wedge */
+									dim[0] *= 0.5;	/* Change from diameter to radius */
 									dim[3] = S.w_type;
-									if (Ctrl->G.active || Ctrl->W.active) dim[3] += 10;	/* Flag that we are filling/outlining */
 									dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
+									dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
+									dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+									dim[7] = 0.0;	/* Reset */
+									if (fill_active || get_rgb) dim[7] = 1;	/* Lay down filled wedge */
+									if (outline_active) dim[7] += 2;	/* Draw wedge outline */
 									PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 								}
+								break;
 								break;
 							case GMT_SYMBOL_CUSTOM:
 								for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Convert any azimuths to plot angles first */

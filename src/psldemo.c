@@ -96,7 +96,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_setfill (PSL, rgb[5], PSL_OUTLINE);
 	PSL_plotsymbol (PSL, 125.0, 30.0, size, PSL_ELLIPSE);
 
-	size[0] = 0.3; size[1] = 45.0; size[2] = 315.0;	size[3] = 10.0;
+	size[0] = 0.3; size[1] = 45.0; size[2] = 315.0;	size[3] = 0.0;	size[7] = 3.0;
 	rgb[5][1] = (double) PSL_setimage (PSL, 14, "14", NULL, 100, dim, rgb[1], rgb[0]);
 	PSL_plotsymbol (PSL, 140.0, 30.0, size, PSL_WEDGE);
 

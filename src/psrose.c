@@ -787,7 +787,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		dim[0] = (half_only) ? 0.5 * diameter : diameter;
 		dim[1] = 0.0;
 		dim[2] = (half_only) ? 180.0 : 360.0;
-		dim[3] = 10.0;	/* Do draw line */
+		dim[7] = 2;	/* Do draw line */
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 		gmt_setfill (GMT, &no_fill, true);
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
@@ -866,7 +866,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			gmt_setfill (GMT, &(Ctrl->G.fill), false);
-		if (Ctrl->G.active || Ctrl->W.active[0]) dim[3] = 10.0;
+		dim[7] = 0;
+		if (Ctrl->G.active) dim[7] = 1;
+		if (Ctrl->W.active[0]) dim[7] += 2;
 		for (bin = 0; bin < n_bins; bin++) {
 			if (Ctrl->C.active) {
 				index = gmt_get_rgb_from_z (GMT, P, sum[bin] * Ctrl->S.scale, rgb);

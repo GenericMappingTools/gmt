@@ -2832,57 +2832,82 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Takes care of plotting a wedge.
-	 * param must hold up to 11 values:
+	 * param may hold up to 11 values; only 8 used here.
 	 * param[0] = radius;
 	 * param[1] = start angle;	param[2] = end angle;
 	 * param[3] = status bit flags;	param[4] = inner_radius [0]
 	 * param[5] = dr [0];		param[6] = da [0]
+	 * param[7] = do_fill (1) | do_outline (2)
 	 */
 
 	double xx[3], yy[3];
-	int status = lrint (param[3]);
+	int status = lrint (param[3]), flags = lrint (param[7]);
 	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
-	if (status >= 10) {	/* Paint wedge given fill and/or outline */
-		status -= 10;
+	bool fill = flags & 1, outline = flags & 2;
+	
+	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
+		PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+		return (PSL_NO_ERROR);
+	}
+	/* Somewhat more involved */
+	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
 		if (windshield) 
-			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P FO U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
-			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
+	/* Next, if spiderweb is desired we need to set up a save/restore section and change the pen to PSL_spiderpen */
 	if (status) PSL_command (PSL, "V PSL_spiderpen\n");
-	if (status & 1) {	/* Draw arc(s) */
-		if (param[5] > 0.0) {	/* Array of arcs */
-			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];
-			while (r <= param[0]) {
-				PSL_plotarc (PSL, x, y, r, param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arc */
-				r += param[5];
+	if (status & 1) {	/* Draw one or more arcs */
+		if (param[5] > 0.0) {	/* Array of arcs requested */
+			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];	/* Either start at first arc inside windshield or the first zero-length arc of wedge */
+			while (r <= (param[0]+PSL_SMALL)) {
+				PSL_plotarc (PSL, x, y, r, param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arcs */
+				r += param[5];	/* Go to next radial distance */
 			}
 		}
-		else {	/* Just outer and possibly inner arcs */
+		else {	/* Just draw outer and possibly inner arcs */
 			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the outer arc */
-			if (windshield) 
-				PSL_plotarc (PSL, x, y, param[4], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the inner arc */
+			if (windshield)	/* Draw the inner arc */
+				PSL_plotarc (PSL, x, y, param[4], param[1], param[2], PSL_MOVE | PSL_STROKE);
 		}
 	}
-	if (status & 2) {	/* Draw radii(s) */
-		if (param[6] > 0.0) {	/* Array of radii */
-			double a = ceil (param[1] / param[6]) * param[6];
-			while (a <= param[2]) {
+	if (status & 2) {	/* Draw one or more radial lines */
+		if (param[6] > 0.0) {	/* Array of lines requestedii */
+			double a = ceil (param[1] / param[6]) * param[6];	/* First angle of desired multiple inside range */
+			while (a <= (param[2]+PSL_SMALL)) {
 				xx[0] = x + param[4] * cos (D2R * a);	yy[0] = y + param[4] * sin (D2R * a);
 				xx[1] = x + param[0] * cos (D2R * a);	yy[1] = y + param[0] * sin (D2R * a);
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot radial line */
-				a += param[6];
+				a += param[6];	/* Go to next angle */
 			}
 		}
-		else {	/* Just start and stop radii */
-			xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
-			xx[1] = x;				yy[1] = y;
-			xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
-			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+		else {	/* Just draw the start and stop radii */
+			if (windshield) {	/* These are two separate lines not connecting */
+				xx[0] = x + param[4] * cos (D2R * param[1]);	yy[0] = y + param[4] * sin (D2R * param[1]);
+				xx[1] = x + param[0] * cos (D2R * param[1]);	yy[1] = y + param[0] * sin (D2R * param[1]);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+				xx[0] = x + param[4] * cos (D2R * param[2]);	yy[0] = y + param[4] * sin (D2R * param[2]);
+				xx[1] = x + param[0] * cos (D2R * param[2]);	yy[1] = y + param[0] * sin (D2R * param[2]);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+			}
+			else {	/* Open triangular jaw */
+				xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
+				xx[1] = x;				yy[1] = y;
+				xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
+				PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+			}
 		}
 	}
-	if (status) PSL_command (PSL, "U\n");
+	if (status) PSL_command (PSL, "U\n");	/* Restore graphics state after messing with spiders */
+	if (outline) {	/* Draw wedge outline on top */
+		if (windshield) 
+			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+		else
+			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+	}
 	return (PSL_NO_ERROR);
 }
 

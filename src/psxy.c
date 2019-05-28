@@ -840,7 +840,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, d, *in = NULL;
-	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25, spiderpen_width = 0.25;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
 
 	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
@@ -1073,14 +1073,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == PSL_WEDGE) {
 		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
 			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
-			spiderpen_width = S.v.pen.width;
 			last_spiderpen = S.v.pen;
 		}
-		else if (Ctrl->W.active) {	/* Reset to default pen */
+		else if (Ctrl->W.active) {	/* use -W as wedge pen as well as outline */
 			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
 				PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
-				headpen_width = 0.5 * current_pen.width;
 				last_spiderpen = current_pen;
 			}
 		}
@@ -1219,16 +1217,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == PSL_WEDGE) {
 					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
 						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
-						spiderpen_width = S.v.pen.width;
 						last_spiderpen = S.v.pen;
 					}
-					else if (outline_active) {	/* Reset to default pen */
-						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
-						if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+					else if (outline_active && !gmt_M_same_pen (current_pen, last_spiderpen)) {	/* Reset to new pen */
 							PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
-							headpen_width = 0.5 * current_pen.width;
 							last_spiderpen = current_pen;
-						}
 					}
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
@@ -1637,14 +1630,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 						}
 						if (S.w_active)	/* Geo-wedge */
-							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, Ctrl->G.active);
-						else {
-							dim[0] *= 0.5;
+							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
+						else {	/* Cartesian wedge */
+							dim[0] *= 0.5;	/* Change from diameter to radius */
 							dim[3] = S.w_type;
-							if (item == 0 && (get_rgb || fill_active || outline_active)) dim[3] += 10;	/* Flag that we are filling/outlining */
 							dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
 							dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
 							dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+							dim[7] = 0.0;	/* Reset */
+							if (fill_active || get_rgb) dim[7] = 1;	/* Lay down filled wedge */
+							if (outline_active) dim[7] += 2;	/* Draw wedge outline */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						break;

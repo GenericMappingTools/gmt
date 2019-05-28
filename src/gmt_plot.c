@@ -5599,7 +5599,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
 				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
-				dim[3] = 10;
+				dim[3] = 0;
+				dim[7] = 3;
 				PSL_plotsymbol (PSL, x, y, dim, PSL_WEDGE);
 				break;
 
@@ -7142,8 +7143,8 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 	if (windshield)	/* Get a point P_i that is radius_i degrees away along the meridian through our point X */
 		get_far_point (GMT, xlon, xlat, radius_i, P_i);
 
-	PSL_command (GMT->PSL, "V\n");	/* Place spider under gsave/grestore since we will change pen */
-	PSL_command (GMT->PSL, "PSL_spiderpen\n");	/* Switch to spider web pen */
+	PSL_comment (GMT->PSL, "Placing Spider Web\n");
+	PSL_command (GMT->PSL, "V PSL_spiderpen\n");	/* Place spider under gsave/grestore and change to spiderpen */
 	if (mode == GMT_WEDGE_RADII || mode == GMT_WEDGE_SPIDER) {	/* Need to draw radial start and end points */
 		double *azim = NULL;
 		if (da > 0.0)	/* Must draw several radial lines */
@@ -7152,6 +7153,7 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 			azim = gmt_M_memory (GMT, NULL, n_seg = 2, double);
 			azim[0] = az_start;	azim[1] = az_stop;
 		}
+		PSL_comment (GMT->PSL, "Drawing Spider Radials\n");
 		for (k = 0; k < n_seg; k++) {	/* For each radial line */
 			S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, 2, NULL, NULL);	/* Segment with two rows */
 			gmt_make_rot_matrix2 (GMT, E, -azim[k], R);	/* Since we have a right-handed rotation but gave azimuths */
@@ -7195,6 +7197,7 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
 		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Arcs will be approximated by %d-point lines\n", n_arc);
+		PSL_comment (GMT->PSL, "Drawing Spider Arcs\n");
 		
 		if (dr > 0.0)	/* Must draw several arcs */
 			n_seg = gmtlib_linear_array (GMT, (radius_i > 0.0) ? radius_i : dr, radius_o, dr, 0.0, &r);
@@ -7231,10 +7234,10 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 		}
 		gmt_M_free (GMT, r);
 	}
-	PSL_command (GMT->PSL, "U\n");	/* End block */
+	PSL_command (GMT->PSL, "U\n");	/* End block where spiderpen is active; this resets previous pen (for outline) */
 }
 
-GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double az_start, double az_stop) {
+GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double az_start, double az_stop, bool fill, bool outline) {
 	/* gmt_geo_wedge takes the location, radius_i (in unit), radius_o (in unit), and start/stop azimuths of an geo-wedge
 	   and draws an approximate circluar wedge using N-sided polygon.
 	   mode = 3: Draw the entire closed wedge.
@@ -7306,12 +7309,26 @@ GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xla
 	S->n_rows = n_new;
 	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 2, S);	/* Update min/max of x/y only */
 
-	gmt_geo_polygons (GMT, S);
-
+	if (fill && outline) {
+		PSL_comment (GMT->PSL, "Drawing Wedge fill and outline\n");
+		gmt_geo_polygons (GMT, S);
+	}
+	else if (fill) {
+		PSL_comment (GMT->PSL, "Drawing Wedge fill only\n");
+		PSL_command (GMT->PSL, "V O0\n");	/* Temporarily disable outlines */
+		gmt_geo_polygons (GMT, S);
+		PSL_command (GMT->PSL, "U\n");		/* Undo */
+	}
+	else if (outline) {
+		PSL_comment (GMT->PSL, "Drawing Wedge outline only\n");
+		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)))
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+	}
+		
 	gmt_free_segment (GMT, &S);
 }
 
-void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double dr, double az_start, double az_stop, double da, unsigned int wmode, bool fill) {
+void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double dr, double az_start, double az_stop, double da, unsigned int wmode, bool fill, bool outline) {
 	/* gmt_geo_wedge takes the location, radius_i (in km), radius_o (in km), dr (in km) and start/stop/da azimuths of an geo-wedge
 	   and draws an approximate circular wedge or windshield using N-sided polygon.
 	   If fill is true then we paint this polygon.
@@ -7321,11 +7338,16 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 
 	enum GMT_enum_wedgetype mode = wmode;
 
-	//if (fill)	/* Do wedge fill separately below */
-		gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop);
+	if (mode == GMT_WEDGE_NORMAL) {	/* Just a regular filled/outlined geowedge */
+		gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, fill, outline);
+		return;
+	}
+	
+	/* Here we need to lay down fill first (if active), then spider web, then wedge outline (if active) */
 
-	if (mode != GMT_WEDGE_NORMAL)	/* Do spider web separately on top */
-		gmt_geo_spider (GMT, xlon, xlat, radius_i, radius_o, dr, az_start, az_stop, da, wmode);
+	if (fill) gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, true, false);	/* Just fill (if active) */
+	gmt_geo_spider (GMT, xlon, xlat, radius_i, radius_o, dr, az_start, az_stop, da, wmode);			/* Spiderweb */
+	if (outline) gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, false, true);	/* Just outline (if active) */
 }
 
 unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S) {
@@ -7544,7 +7566,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							dir1 = R2D * angle;
 							dir2 = dir1 + 180.0;
 							if (dir1 > dir2) dir1 -= 360.0;
-							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;	dim[3] = 10;
+							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;	dim[7] = 3;
 							PSL_plotsymbol (PSL, x0, y0, dim, PSL_WEDGE);
 							break;
 					}

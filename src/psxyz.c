@@ -552,7 +552,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base;
 
-	struct GMT_PEN default_pen, current_pen, last_headpen;
+	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -754,7 +754,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
-	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
 
 	if (Ctrl->D.active) {
 		/* Shift the plot a bit. This is a bit frustrating, since the only way to do this
@@ -805,6 +805,19 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			else {
 				gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 				gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
+			}
+		}
+		else if (S.symbol == PSL_WEDGE) {
+			if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+				PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+				last_spiderpen = S.v.pen;
+			}
+			else if (Ctrl->W.active) {	/* use -W as wedge pen as well as outline */
+				current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+				if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+					PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+					last_spiderpen = current_pen;
+				}
 			}
 		}
 		else if (QR_symbol) {
@@ -904,6 +917,16 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length so need to undo dimension scaling */
 						in[pos2x] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+					}
+				}
+				else if (S.symbol == PSL_WEDGE) {
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+						last_spiderpen = S.v.pen;
+					}
+					else if (outline_active && !gmt_M_same_pen (current_pen, last_spiderpen)) {	/* Reset to new pen */
+							PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							last_spiderpen = current_pen;
 					}
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
@@ -1231,6 +1254,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					data[n].dim[3] = S.w_type;
 					data[n].dim[4] = S.w_radius_i;
+					data[n].dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
+					data[n].dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+					data[n].dim[7] = 0.0;	/* Reset */
+					if (fill_active || get_rgb) data[n].dim[7] = 1;	/* Lay down filled wedge */
+					if (outline_active) data[n].dim[7] += 2;	/* Draw wedge outline */
+					if (!S.w_active) {	/* Not geowedge so scale to radii */
+						data[n].dim[0] *= 0.5;
+						data[n].dim[4] *= 0.5;
+					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					data[n].custom = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
@@ -1446,12 +1478,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						if (S.w_active)	{	/* Geo-wedge */
 							unsigned int status = lrint (data[i].dim[3]);
 							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
-							gmt_geo_wedge (GMT, dx, dy, S.w_radius_i, S.w_radius, S.w_dr, data[i].dim[1], data[i].dim[2], S.w_da, status, Ctrl->G.active);
+							gmt_geo_wedge (GMT, dx, dy, data[n].dim[4], S.w_radius, data[n].dim[5], data[i].dim[1], data[i].dim[2], data[n].dim[6], status, fill_active || get_rgb, outline_active);
 						}
 						else {
-							data[i].dim[0] *= 0.5;
-							data[i].dim[4] *= 0.5;
-							if (item == 0 && (get_rgb || fill_active || data[i].outline)) data[i].dim[3] += 10;	/* Flag that we are filling/outlining */
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
 						}
 						break;
