@@ -84,7 +84,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<specfile>] -D%s+w<width>[/<height>][+l<spacing>]%s [%s]\n", name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s%s%s[%s]\n", GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, API->P_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n\n");
 

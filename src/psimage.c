@@ -95,7 +95,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+b|+f|+t]] [-I] [%s] [%s] %s[-M] %s\n", GMT_J_OPT, GMT_Jz_OPT, API->K_OPT, API->O_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s]\n", API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, API->P_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

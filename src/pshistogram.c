@@ -469,7 +469,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
-		GMT_i_OPT, API->P_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
+		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
