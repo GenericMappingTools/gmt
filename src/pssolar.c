@@ -116,11 +116,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, GMT_K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] %s ", GMT_O_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_P_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] %s ", API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", API->P_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, GMT_rc_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, API->O_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

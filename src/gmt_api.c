@@ -249,8 +249,6 @@ static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Poi
 static const char *GMT_class[] = {"QUIET", "ERROR", "TIMING", "COMPATIBILITY", "WARNING", "INFORMATION", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 
-char *GMT_K_OPT = NULL, *GMT_O_OPT = NULL, *GMT_P_OPT = NULL, *GMT_rc_OPT = NULL;	/* Set in gmt_show_name_and_purpose */
-
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
 	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset or texset */
@@ -9932,15 +9930,10 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
 		sprintf (full_name, "gmt %s", mode_name);
 		mode_name = full_name;
-		GMT_K_OPT = GMT_O_OPT = GMT_P_OPT = "";	/* This are not part of modern mode */
-		GMT_rc_OPT = "[-c[<row>,<col>]] ";	/* -c option for setting next subplot panel */
-	}
-	else {
-		GMT_K_OPT = "[-K] "; GMT_O_OPT = "[-O] "; GMT_P_OPT = "[-P] ";
-		GMT_rc_OPT = "";	/* -c is not available in classic mode */
 	}
 	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
+	gmtlib_set_KOP_strings (API);
 	return mode_name;
 }
 

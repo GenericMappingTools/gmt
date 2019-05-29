@@ -87,17 +87,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, GMT_K_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, API->K_OPT);
 	}
 	else {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-F[l|t]%s]\n", GMT_PANEL);
-		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_Jz_OPT, GMT_K_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_Jz_OPT, API->K_OPT);
 	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_TROSE_DIR);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", API->O_OPT, API->P_OPT, GMT_TROSE_DIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s]\n", GMT_TROSE_MAG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] %s[%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-		GMT_X_OPT, GMT_Y_OPT, GMT_rc_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
