@@ -107,7 +107,7 @@ script:
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
     - gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     - if [[ "$TEST" == "true" ]]; then
-        cmake --build . --target check;
+        ctest --force-new-ctest-process -j4;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
