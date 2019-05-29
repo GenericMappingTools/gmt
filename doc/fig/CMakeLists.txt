@@ -18,13 +18,12 @@
 # Figure files
 set (_fig_fig GMT4_mode.png GMT5_Summit_2016.jpg GMT5_mode.png GMT5_external.png
 	GMT_Environment.png GMT_record.png gimp-sliders+panel.png hsv-cone.png
-	formatpicture.png formatting.png highres.png
-	noantialias.png rendering.png withantialias.png)
+	formatpicture.png rendering.png)
 
 # Copy figures without converting
+FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
 set (_fig_fig_out)
 foreach (_fig ${_fig_fig})
-	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_fig}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig} ${RST_BINARY_DIR}/_images/${_fig}
