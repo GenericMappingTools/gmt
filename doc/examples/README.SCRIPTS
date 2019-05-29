@@ -1,8 +1,8 @@
 	README file for GMT Examples directory
 
 There are born-again shell (bash) and DOS (bat)
-versions of all example scripts.  To run all bash scripts,
-you can execute "make examples".
+versions of all example scripts.
+To run all bash scripts, run do_examples.sh.
 To run all bat scripts, run do_examples.bat instead.
 
 Example 27 shows usage of img2grd.  Again, since the user may
