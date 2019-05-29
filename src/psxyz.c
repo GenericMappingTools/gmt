@@ -1072,7 +1072,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					dim[1] = in[ex2];
 					if (gmt_M_is_dnan (in[ex2])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle height = NaN near line %d\n", n_total_read);
 						continue;

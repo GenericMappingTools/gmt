@@ -1102,7 +1102,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
 
-		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
 		else
@@ -1342,6 +1341,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				S.size_x = in[ex1] * S.factor;	/* Got size from input column; scale by factor if area unifier is on */
 				if (delayed_unit_scaling) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
 			}
+			gmt_M_memset (dim, PSL_MAX_DIMS, double);
 			dim[0] = S.size_x;
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
