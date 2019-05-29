@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+EXTERN_MSC char *opt (char code);
+
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
 	
@@ -160,4 +162,16 @@ void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API) {
 		GMT_K_OPT = "[-K] "; GMT_O_OPT = "[-O] "; GMT_P_OPT = "[-P] ";
 		GMT_rc_OPT = "";	/* -c is not available in classic mode */
 	}
+	fprintf (stderr, "opt = %s\n", opt('K'));
+}
+
+char *opt (char code) {
+	char *result = "";
+	switch (code) {
+		case 'K': result = GMT_K_OPT; break;
+		case 'O': result = GMT_O_OPT; break;
+		case 'P': result = GMT_P_OPT; break;
+		case 'c': result = GMT_rc_OPT; break;
+	}
+	return result;
 }

@@ -48,6 +48,8 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC char *opt (char code);
+
 EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);
 EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module);
 EXTERN_MSC const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module);
