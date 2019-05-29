@@ -22,13 +22,13 @@ gmt math -T-1167/1169/1 -N1/0 = samp.x
 REM
 REM Now we can resample the gmt projected satellite data:
 REM
-gmt sample1d sat.pg -Nsamp.x > samp_sat.pg
+gmt sample1d sat.pg -Tsamp.x > samp_sat.pg
 REM
 REM For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample it
 REM because of the gaps over 1 km we found.  So we use gmt filter1d and gmt sample1d.  We also use the -E
 REM on gmt filter1d to use the data all the way out to sampr1/sampr2 :
 REM
-gmt filter1d ship.pg -Fm1 -T-1167/1169/1 -E | gmt sample1d -Nsamp.x > samp_ship.pg
+gmt filter1d ship.pg -Fm1 -T-1167/1169/1 -E | gmt sample1d -Tsamp.x > samp_ship.pg
 REM Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 REM data, we do this:
 REM 
