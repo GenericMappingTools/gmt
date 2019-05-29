@@ -249,8 +249,6 @@ static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Poi
 static const char *GMT_class[] = {"QUIET", "ERROR", "TIMING", "COMPATIBILITY", "WARNING", "INFORMATION", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 
-char *GMT_K_OPT = NULL, *GMT_O_OPT = NULL, *GMT_P_OPT = NULL, *GMT_rc_OPT = NULL;	/* Set in gmt_show_name_and_purpose */
-
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
 	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset or texset */

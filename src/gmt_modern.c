@@ -28,7 +28,7 @@
 
 #include "gmt_dev.h"
 
-EXTERN_MSC char *opt (char code);
+EXTERN_MSC char *opt (struct GMTAPI_CTRL *API, char code);
 
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
@@ -155,23 +155,23 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
 
 void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API) {
 	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
-		GMT_K_OPT = GMT_O_OPT = GMT_P_OPT = "";	/* This are not part of modern mode */
-		GMT_rc_OPT = "[-c[<row>,<col>]] ";	/* -c option for setting next subplot panel */
+		API->K_OPT = API->O_OPT = API->P_OPT = "";	/* This are not part of modern mode */
+		API->c_OPT = "[-c[<row>,<col>]] ";	/* -c option for setting next subplot panel */
 	}
 	else {
-		GMT_K_OPT = "[-K] "; GMT_O_OPT = "[-O] "; GMT_P_OPT = "[-P] ";
-		GMT_rc_OPT = "";	/* -c is not available in classic mode */
+		API->K_OPT = "[-K] "; API->O_OPT = "[-O] "; API->P_OPT = "[-P] ";
+		API->c_OPT = "";	/* -c is not available in classic mode */
 	}
-	fprintf (stderr, "opt = %s\n", opt('K'));
+	fprintf (stderr, "opt = %s\n", opt(API,'K'));
 }
 
-char *opt (char code) {
+char *opt (struct GMTAPI_CTRL *API, char code) {
 	char *result = "";
 	switch (code) {
-		case 'K': result = GMT_K_OPT; break;
-		case 'O': result = GMT_O_OPT; break;
-		case 'P': result = GMT_P_OPT; break;
-		case 'c': result = GMT_rc_OPT; break;
+		case 'K': result = API->K_OPT; break;
+		case 'O': result = API->O_OPT; break;
+		case 'P': result = API->P_OPT; break;
+		case 'c': result = API->c_OPT; break;
 	}
 	return result;
 }
