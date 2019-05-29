@@ -20,20 +20,11 @@ gmt makecpt -Clightgray -T-12000,12000 -N > g.cpt
 gmt sphtriangulate airports.txt -Qv > near_area.txt
 gmt grdimage @etopo10m_48.nc -I+a45+nt2 -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps
 gmt psxy -R -J -O -K near_area.txt -L -Ct.cpt -t65 >> $ps
-gmt psxy -R -J -O -K -SW2000k -Gwhite@40 airports.txt >> $ps
-gmt pscoast -R -J -Gblack -A500 -O -K -Bafg >> $ps
 # Make a 15 degrees by 250 km spiderweb grid around each airport
-# First to the arcs of different radii
-gmt math -T500/2000/250 -o0 T = tmp
-while read radius; do
-	gmt psxy -R -J -O -K -SW${radius}k+a -W0.5p airports.txt >> $ps
-done < tmp
-# Then do every 15 degree radial lines but in multiples of 15. Also place labels.
-daz=15
+gmt psxy -R -J -O -K -SW2000k/250k+a250k+r15 -W0.5p -Gwhite@40 airports.txt >> $ps
+gmt pscoast -R -J -Gblack -A500 -O -K -Bafg >> $ps
+# Then place custom labels.
 while read lon lat az1 az2 label just off; do
-	az1=`gmt math -Q $az1 $daz DIV CEIL  $daz MUL =`
-	az2=`gmt math -Q $az2 $daz DIV FLOOR $daz MUL =`
-	gmt math -T${az1}/${az2}/$daz -N4/2 -fg -C0 0 $lon ADD -C1 $lat ADD -C3 2000 ADD = | gmt psxy -Rg -JG205/-10/7i -O -K -S=0.1 -W0.5p >> $ps
 	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.5p,white -F+f16p+j${just} -N >> $ps
 	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.25p -F+f16p+j${just} -N -Gwhite -W0.25p -C+tO >> $ps
 done < airports.txt
@@ -44,4 +35,4 @@ gmt psxy airports.txt -R -J -O -K -SE-500 -Gorange -W0.25p >> $ps
 gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca 4.5 MUL = path.txt
 # Move up 3.5 inches so origin is at the map center
 gmt psxy -R-3.5/3.5/0/6 -Jx1i -O -Y3.5i path.txt -Sqn1:+l"IMPORTANT PACIFIC AIRPORTS"+v+f32p -Wfaint,white -N >> $ps
-rm -f airports.txt g.cpt t.cpt near_area.txt path.txt tmp
+rm -f airports.txt g.cpt t.cpt near_area.txt path.txt

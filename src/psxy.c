@@ -345,6 +345,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
 	PSL_command (GMT->PSL, "V\n");
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
@@ -510,7 +511,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <size><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <size><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
@@ -841,7 +842,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	double direction, length, dx, dy, d, *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
 
-	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen;
+	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -1069,13 +1070,25 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 		}
 	}
-
+	if (S.symbol == PSL_WEDGE) {
+		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+			last_spiderpen = S.v.pen;
+		}
+		else if (Ctrl->W.active) {	/* use -W as wedge pen as well as outline */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+				last_spiderpen = current_pen;
+			}
+		}
+	}
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
 	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
-	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, Ctrl->D.dx, Ctrl->D.dy, 0.0, PSL_FWD);	/* Shift plot a bit */
 
@@ -1200,6 +1213,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 					}
 				}
+				else if (S.symbol == PSL_WEDGE) {
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+						last_spiderpen = S.v.pen;
+					}
+					else if (outline_active && !gmt_M_same_pen (current_pen, last_spiderpen)) {	/* Reset to new pen */
+							PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							last_spiderpen = current_pen;
+					}
+				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
 					current_fill = black;
 			}
@@ -1318,6 +1341,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				S.size_x = in[ex1] * S.factor;	/* Got size from input column; scale by factor if area unifier is on */
 				if (delayed_unit_scaling) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
 			}
+			gmt_M_memset (dim, PSL_MAX_DIMS, double);
 			dim[0] = S.size_x;
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
@@ -1605,14 +1629,17 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 							dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 						}
-						if (S.w_active) {	/* Geo-wedge */
-							if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
-							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius, S.w_unit, dim[1], dim[2], S.w_type);
-							if (Ctrl->G.active) gmt_setfill (GMT, &current_fill, outline_active);
-						}
-						else {
-							dim[0] *= 0.5;
+						if (S.w_active)	/* Geo-wedge */
+							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
+						else {	/* Cartesian wedge */
+							dim[0] *= 0.5;	/* Change from diameter to radius */
 							dim[3] = S.w_type;
+							dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
+							dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
+							dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+							dim[7] = 0.0;	/* Reset */
+							if (fill_active || get_rgb) dim[7] = 1;	/* Lay down filled wedge */
+							if (outline_active) dim[7] += 2;	/* Draw wedge outline */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						break;

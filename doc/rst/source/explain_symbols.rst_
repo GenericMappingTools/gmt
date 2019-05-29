@@ -355,8 +355,12 @@
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
         counter-clockwise from horizontal) for pie slice must be found in
-        columns 3 and 4.  Append **+a** to just draw the arc line or **+r**
-        to just draw the radial lines.
+        columns 3 and 4.  Append /*inner* to select a separate inner diameter [0].
+        Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
+        if *dr* is appended then we draw all arc lines separated radially by *dr*.
+ 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        if *da* is appended then we draw all radial lines separated angularly by *da*.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
     **-SW**
         Same as **-Sw**, except azimuths (in degrees east of north) should
@@ -365,7 +369,12 @@
         directions unchanged). Specify *size* as a geographical diameter.
         For allowable geographical units, see UNITS [Default is k for km]. To instead
         specify a diameter in plot units, you must append the desired unit.
-        Append **+a** to just draw the arc or **+r** to just draw the radial lines.
+        Append /*inner* to select a separate inner diameter [0].
+        Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
+        if *dr* is appended then we draw all arc lines separated radially by *dr*.
+ 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        if *da* is appended then we draw all radial lines separated angularly by *da*.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.
