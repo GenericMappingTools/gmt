@@ -195,6 +195,8 @@ struct GMTAPI_CTRL {
 	struct GMT_VECTOR *current_get_V;
 	p_func_uint64_t current_get_V_index;
 	GMT_getfunction *current_get_V_val;
+	/* These are used for -O -K -P -c and set to blank under modern/classic modes */
+	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
 };
 
 /* Macro to test if filename is a special name indicating memory location */

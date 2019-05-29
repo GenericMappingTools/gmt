@@ -5592,7 +5592,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 	/* Remember current settings as we wish to restore at the end */
 	plot_savepen (GMT, &save_pen);
-	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_M_memset (&f, 1, struct GMT_FILL);
 	gmt_M_memset (&p, 1, struct GMT_PEN);
 	gmt_M_memset (skip, GMT_N_COND_LEVELS+1, bool);
@@ -5661,6 +5660,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 		x = s->x * size[0];
 		y = s->y * size[0];
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		dim[0] = s->p[0] * size[0];
 		dim[1] = s->p[1] * size[0];
 		dim[2] = s->p[2] * size[0];
@@ -5810,6 +5810,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
 				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
+				dim[3] = 0;
+				dim[7] = 3;
 				PSL_plotsymbol (PSL, x, y, dim, PSL_WEDGE);
 				break;
 
@@ -7315,77 +7317,248 @@ void gmt_plot_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 	gmt_free_segment (GMT, &S);
 }
 
-void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius, char unit, double az_start, double az_stop, unsigned int mode) {
-	/* gmt_geo_wedge takes the location, radius (in unit), and start/stop azimuths of an geo-wedge
+GMT_LOCAL void get_far_point (struct GMT_CTRL *GMT, double lon, double lat, double radius, double *P) {
+	/* Get a point P that is radius degrees away along the meridian through our point X */
+	double plat, plon;
+	plat = lat + radius;
+	plon = lon;
+	if (plat > 90.0) {	/* Went over the pole */
+		plon += 180.0;
+		plat = 180 - plat;
+	}
+	gmt_geo_to_cart (GMT, plat, plon, P, true);	/* Vector <radius> degrees away from (lon,lat) along meridian */
+}
+
+GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double dr, double az_start, double az_stop, double da, unsigned int wmode) {
+	/* gmt_geo_spider takes the location, radius_i (in unit), radius_o, dr, and start/stop azimuths of an geo-wedge and da
+	   and draws an approximate circular spider-web using N-sided polygon.
+	   mode & 1: Just draw arc(s)
+	   mode & 2: Just draw radii(s)
+ 	*/
+
+	int n_arc, k, ko, n_seg;
+	uint64_t n_new;
+	bool windshield = (radius_i > 0.0);	/* Windshield web */
+	enum GMT_enum_wedgetype mode = wmode;
+	double qlon, qlat, az, rot_start, E[3], P_o[3], P_i[3], Q[3], R[3][3];
+	struct GMT_DATASEGMENT *S = NULL;
+
+	radius_i = gmtlib_conv_distance (GMT, radius_i, 'k', 'd');	/* Convert inner radius from km to degrees */
+	radius_o = gmtlib_conv_distance (GMT, radius_o, 'k', 'd');	/* Convert outer radius from km to degrees */
+	dr = gmtlib_conv_distance (GMT, dr, 'k', 'd');			/* Convert radial increments from km to degrees */
+
+	gmt_geo_to_cart (GMT, xlat, xlon, E, true);	/* Euler rotation pole at point location */
+
+	/* Get a point P_o that is radius_o degrees away along the meridian through our point X */
+	get_far_point (GMT, xlon, xlat, radius_o, P_o);
+	if (windshield)	/* Get a point P_i that is radius_i degrees away along the meridian through our point X */
+		get_far_point (GMT, xlon, xlat, radius_i, P_i);
+
+	PSL_comment (GMT->PSL, "Placing Spider Web\n");
+	PSL_command (GMT->PSL, "V PSL_spiderpen\n");	/* Place spider under gsave/grestore and change to spiderpen */
+	if (mode == GMT_WEDGE_RADII || mode == GMT_WEDGE_SPIDER) {	/* Need to draw radial start and end points */
+		double *azim = NULL;
+		if (da > 0.0)	/* Must draw several radial lines */
+			n_seg = gmtlib_linear_array (GMT, az_start, az_stop, da, 0.0, &azim);
+		else {	/* Two radial lines only */
+			azim = gmt_M_memory (GMT, NULL, n_seg = 2, double);
+			azim[0] = az_start;	azim[1] = az_stop;
+		}
+		PSL_comment (GMT->PSL, "Drawing Spider Radials\n");
+		for (k = 0; k < n_seg; k++) {	/* For each radial line */
+			S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, 2, NULL, NULL);	/* Segment with two rows */
+			gmt_make_rot_matrix2 (GMT, E, -azim[k], R);	/* Since we have a right-handed rotation but gave azimuths */
+			if (windshield) {	/* Start at inner arc point */
+				gmt_matrix_vect_mult (GMT, 3U, R, P_i, Q);
+				gmt_cart_to_geo (GMT, &S->data[GMT_Y][0], &S->data[GMT_X][0], Q, true);	/* Rotated inner point */
+			}
+			else {	/* Start at origin */
+				S->data[GMT_X][0] = xlon;	S->data[GMT_Y][0] = xlat;
+			}
+			gmt_matrix_vect_mult (GMT, 3U, R, P_o, Q);
+			gmt_cart_to_geo (GMT, &S->data[GMT_Y][1], &S->data[GMT_X][1], Q, true);	/* Rotated outer point */
+			if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0)) == 0) {
+				gmt_free_segment (GMT, &S);
+				continue;
+			}
+			S->n_rows = n_new;
+			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == 0) continue;
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+			gmt_free_segment (GMT, &S);
+		}
+		gmt_M_free (GMT, azim);
+	}
+	if (mode == GMT_WEDGE_ARCS || mode == GMT_WEDGE_SPIDER) {	/* Need to draw one or more arcs */
+		double d_az, px, py, qx, qy, L, plon_o, plat_o;
+		double *r = NULL;
+		plat_o = xlat + radius_o;
+		plon_o = xlon;
+		if (plat_o > 90.0) {	/* Went over the pole */
+			plon_o += 180.0;
+			plat_o = 180 - plat_o;
+		}
+		/* Compute distance between P_o and Q and compare to map_line_step to determine azimuthal sampling */
+		gmt_make_rot_matrix2 (GMT, E, 1.0, R);		/* Test point 1 degree away */
+		gmt_matrix_vect_mult (GMT, 3U, R, P_o, Q);	/* Get Q = R * P_o */
+		gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
+		gmt_geo_to_xy (GMT, plon_o, plat_o, &px, &py);	/* P_o projected on map */
+		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
+		L = hypot (px - qx, py - qy);			/* Distance in inches along arc for 1 degree of azimuth change */
+		/* Estimate how many intermediate points by dividing the estinate arc length by line_step */
+		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
+		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Arcs will be approximated by %d-point lines\n", n_arc);
+		PSL_comment (GMT->PSL, "Drawing Spider Arcs\n");
+		
+		if (dr > 0.0)	/* Must draw several arcs */
+			n_seg = gmtlib_linear_array (GMT, (radius_i > 0.0) ? radius_i : dr, radius_o, dr, 0.0, &r);
+		else {	/* One or two arcs only */
+			if (radius_i > 0.0) {
+				r = gmt_M_memory (GMT, NULL, n_seg = 2, double);
+				r[0] = radius_i;	r[1] = radius_o;
+			}
+			else {
+				r = gmt_M_memory (GMT, NULL, n_seg = 1, double);
+				r[0] = radius_o;
+			}
+		}
+		
+		d_az = -d_az;	/* Since we have a right-handed rotation but gave azimuths */
+		for (k = 0; k < n_seg; k++) {
+			S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_arc, 2, NULL, NULL);
+			get_far_point (GMT, xlon, xlat, r[k], P_o);
+			rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
+			for (ko = 0; ko < n_arc; ko++) {
+				az = rot_start + ko * d_az;
+				gmt_make_rot_matrix2 (GMT, E, az, R);
+				gmt_matrix_vect_mult (GMT, 3U, R, P_o, Q);
+				gmt_cart_to_geo (GMT, &S->data[GMT_Y][ko], &S->data[GMT_X][ko], Q, true);	/* Rotated outer point */
+			}
+			if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0)) == 0) {
+				gmt_free_segment (GMT, &S);
+				continue;
+			}
+			S->n_rows = n_new;
+			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == 0) continue;
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+			gmt_free_segment (GMT, &S);
+		}
+		gmt_M_free (GMT, r);
+	}
+	PSL_command (GMT->PSL, "U\n");	/* End block where spiderpen is active; this resets previous pen (for outline) */
+}
+
+GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double az_start, double az_stop, bool fill, bool outline) {
+	/* gmt_geo_wedge takes the location, radius_i (in unit), radius_o (in unit), and start/stop azimuths of an geo-wedge
 	   and draws an approximate circluar wedge using N-sided polygon.
 	   mode = 3: Draw the entire closed wedge.
 	   mode = 1: Just draw arc [no fill possible]
 	   mode = 2: Just draw jaw [no fill possible]
  	*/
 
-	int n_arc, k, kk, n_path;
+	int n_arc, k, ki, ko, n_path;
 	uint64_t n_new;
-	double d_az, px, py, qx, qy, L, plat, plon, qlon, qlat, az, rot_start, E[3], P[3], Q[3], R[3][3];
+	bool windshield = (radius_i > 0.0);	/* Windshield plot */
+	double d_az, px, py, qx, qy, L, plon_o, plat_o, qlon, qlat, az, rot_start, E[3], P_o[3], P_i[3], Q[3], R[3][3];
 	struct GMT_DATASEGMENT *S = NULL;
 
-	radius = gmtlib_conv_distance (GMT, radius, unit, 'd');	/* Convert to degrees */
+	radius_i = gmtlib_conv_distance (GMT, radius_i, 'k', 'd');	/* Convert inner radius from km to degrees */
+	radius_o = gmtlib_conv_distance (GMT, radius_o, 'k', 'd');	/* Convert outer radius from km to degrees */
 
-	/* Get a point P that is radius degrees away along the meridian through our point X */
-	plat = xlat + radius;
-	plon = xlon;
-	if (plat > 90.0) {	/* Over the pole */
-		plon += 180.0;
-		plat = 180 - plat;
+	gmt_geo_to_cart (GMT, xlat, xlon, E, true);	/* Euler rotation pole at point location */
+
+	/* Get a point P_o that is radius_o degrees away along the meridian through our point X */
+	get_far_point (GMT, xlon, xlat, radius_o, P_o);
+	if (windshield)	/* Get a point P_i that is radius_i degrees away along the meridian through our point X */
+		get_far_point (GMT, xlon, xlat, radius_i, P_i);
+	/* Compute distance between P_o and Q and compare to map_line_step to determine azimuthal sampling */
+	plat_o = xlat + radius_o;
+	plon_o = xlon;
+	if (plat_o > 90.0) {	/* Went over the pole */
+		plon_o += 180.0;
+		plat_o = 180 - plat_o;
 	}
-	gmt_geo_to_cart (GMT, xlat, xlon, E, true);	/* Euler rotation pole */
-	gmt_geo_to_cart (GMT, plat, plon, P, true);	/* Vector <radius> degrees away from E along meridian */
-	if (mode == 2) {	/* No arc, only start and end point */
-		d_az = az_stop - az_start;
-		n_arc = 2;
-	}
-	else {	/* Compute distance between P and Q and compare to map_line_step to determine azimuthal sampling */
-		gmt_make_rot_matrix2 (GMT, E, 1.0, R);		/* Test point 1 degree away */
-		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);	/* Get Q = R * P */
-		gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
-		gmt_geo_to_xy (GMT, plon, plat, &px, &py);	/* P projected on map */
-		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
-		L = hypot (px - qx, py - qy);			/* Distance in inches along arc for 1 degree of azimuth change */
-		/* Estimate how many intermediate points by dividing the estinate arc length by line_step */
-		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
-		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
-	}
-	n_path = n_arc;				/* Total number of points */
-	if (mode > 1) n_path++;		/* Add apex */
-	if (mode == 3) n_path++;	/* Closed polygon */
+	gmt_make_rot_matrix2 (GMT, E, 1.0, R);		/* Test point 1 degree away */
+	gmt_matrix_vect_mult (GMT, 3U, R, P_o, Q);	/* Get Q = R * P_o */
+	gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
+	gmt_geo_to_xy (GMT, plon_o, plat_o, &px, &py);	/* P_o projected on map */
+	gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
+	L = hypot (px - qx, py - qy);			/* Distance in inches along arc for 1 degree of azimuth change */
+	/* Estimate how many intermediate points by dividing the estinate arc length by line_step */
+	n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
+	d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
+	n_path = n_arc;			/* Total number of points along outer arc */
+	if (windshield)	/* Need points along inner arc */
+		n_path *= 2;
+	else	/* Just place apex */
+		n_path++;
+	n_path++;	/* Closed the polygon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
-	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
+	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_path, 2, NULL, NULL);	/* Polygon array */
 	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
 	d_az = -d_az;		/* Same reason */
-	for (k = kk = 0; k < n_arc; k++, kk++) {
+	for (k = ko = 0; k < n_arc; k++, ko++) {
 		az = rot_start + k * d_az;
 		gmt_make_rot_matrix2 (GMT, E, az, R);
-		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);
-		gmt_cart_to_geo (GMT, &S->data[GMT_Y][kk], &S->data[GMT_X][kk], Q, true);	/* rotated point */
-		if (mode == 2 && k == 0) {	/* Add in the apex now */
-			S->data[GMT_X][++kk] = xlon;			S->data[GMT_Y][kk] = xlat;
+		gmt_matrix_vect_mult (GMT, 3U, R, P_o, Q);
+		gmt_cart_to_geo (GMT, &S->data[GMT_Y][ko], &S->data[GMT_X][ko], Q, true);	/* Rotated outer point */
+		if (windshield) {	/* Get the corresponding point on the inner arc but offset its index */
+			gmt_matrix_vect_mult (GMT, 3U, R, P_i, Q);
+			ki = n_path - 2 - ko;	/* Point index for this angle on the return arc */
+			gmt_cart_to_geo (GMT, &S->data[GMT_Y][ki], &S->data[GMT_X][ki], Q, true);	/* Rotated inner point */
 		}
 	}
-	if (mode == 3) {
-		/* Add apex of wedge */
-		S->data[GMT_X][kk] = xlon;			S->data[GMT_Y][kk++] = xlat;
-		/* Close polygon */
-		S->data[GMT_X][kk] = S->data[GMT_X][0];	S->data[GMT_Y][kk] = S->data[GMT_Y][0];
-	}
+	if (!windshield)	/* Add apex of wedge */
+		S->data[GMT_X][ko] = xlon, S->data[GMT_Y][ko++] = xlat;
+	/* Close polygon */
+	S->data[GMT_X][n_path-1] = S->data[GMT_X][0];	S->data[GMT_Y][n_path-1] = S->data[GMT_Y][0];
+	/* Resample along great circles */
 	if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0)) == 0) {
 		gmt_free_segment (GMT, &S);
 		return;
 	}
 	S->n_rows = n_new;
-	gmt_set_seg_minmax (GMT, (mode == 3) ? GMT_IS_POLY : GMT_IS_LINE, 2, S);	/* Update min/max of x/y only */
+	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 2, S);	/* Update min/max of x/y only */
 
-	gmt_geo_polygons (GMT, S);
-
+	if (fill && outline) {
+		PSL_comment (GMT->PSL, "Drawing Wedge fill and outline\n");
+		gmt_geo_polygons (GMT, S);
+	}
+	else if (fill) {
+		PSL_comment (GMT->PSL, "Drawing Wedge fill only\n");
+		PSL_command (GMT->PSL, "V O0\n");	/* Temporarily disable outlines */
+		gmt_geo_polygons (GMT, S);
+		PSL_command (GMT->PSL, "U\n");		/* Undo */
+	}
+	else if (outline) {
+		PSL_comment (GMT->PSL, "Drawing Wedge outline only\n");
+		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)))
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+	}
+		
 	gmt_free_segment (GMT, &S);
+}
+
+void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius_i, double radius_o, double dr, double az_start, double az_stop, double da, unsigned int wmode, bool fill, bool outline) {
+	/* gmt_geo_wedge takes the location, radius_i (in km), radius_o (in km), dr (in km) and start/stop/da azimuths of an geo-wedge
+	   and draws an approximate circular wedge or windshield using N-sided polygon.
+	   If fill is true then we paint this polygon.
+	   If mode is not GMT_WEDGE_NORMAL then we draw the spider web on top.
+	   The form of that depends on dr > 0 and da > 0, otherwise we just do the outline.
+ 	*/
+
+	enum GMT_enum_wedgetype mode = wmode;
+
+	if (mode == GMT_WEDGE_NORMAL) {	/* Just a regular filled/outlined geowedge */
+		gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, fill, outline);
+		return;
+	}
+	
+	/* Here we need to lay down fill first (if active), then spider web, then wedge outline (if active) */
+
+	if (fill) gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, true, false);	/* Just fill (if active) */
+	gmt_geo_spider (GMT, xlon, xlat, radius_i, radius_o, dr, az_start, az_stop, da, wmode);			/* Spiderweb */
+	if (outline) gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, false, true);	/* Just outline (if active) */
 }
 
 unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S) {
@@ -7492,11 +7665,12 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	bool skip;
 	uint64_t i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
-	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[4];
+	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[PSL_MAX_DIMS];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (n < 2) return;
 
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	s = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 1, s[0] = 0.0; i < n; i++) {
 		/* Watch out for longitude wraps */
@@ -7603,7 +7777,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							dir1 = R2D * angle;
 							dir2 = dir1 + 180.0;
 							if (dir1 > dir2) dir1 -= 360.0;
-							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;	dim[3] = 0.0;
+							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;	dim[7] = 3;
 							PSL_plotsymbol (PSL, x0, y0, dim, PSL_WEDGE);
 							break;
 					}

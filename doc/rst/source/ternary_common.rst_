@@ -11,6 +11,11 @@ as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see **-S** below) must be present as
 last column in the input.
 
+Required Arguments
+------------------
+
+Either **-M** (for dumping data) or **-R** and **-J** must be selected.
+
 Optional Arguments
 ------------------
 
@@ -62,7 +67,7 @@ Optional Arguments
 **-M**
     Do no plotting.  Instead, convert the input (*a*,\ *b*,\ *c*\ [,\ *z*]) records
     to Cartesian (*x*,\ *y*,\ [,\ *z*]) records, where *x, y* are normalized coordinates
-    on the triangle (i.e., 0-1 in *x*\ and 0-sqrt(3)/2 in *y*\ ).
+    on the triangle (i.e., 0–1 in *x* and 0–sqrt(3)/2 in *y*\ ).
 
 .. _-N:
 
@@ -77,7 +82,7 @@ Optional Arguments
 
 .. _-S:
 
-.. include:: explain_symbols.rst_
+.. include:: explain_symbols_only.rst_
 
 .. _-U:
 

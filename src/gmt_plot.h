@@ -75,6 +75,13 @@ enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
 	GMT_FRONT_CENTERED,
 	GMT_FRONT_LEFT};
 
+/*! Type of wedge symbols: */
+
+enum GMT_enum_wedgetype {GMT_WEDGE_NORMAL = 0,
+	GMT_WEDGE_ARCS = 1,
+	GMT_WEDGE_RADII = 2,
+	GMT_WEDGE_SPIDER = 3};
+
 /*! A sub-symbol for symbols along a front */
 struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
@@ -146,8 +153,10 @@ struct GMT_SYMBOL {
 	/* These apply to geo-wedges */
 	char w_unit;		/* Radius unit */
 	double w_radius;	/* In spherical degrees */
+	double w_radius_i;	/* Inner radius [0] */
+	double w_dr, w_da;	/* Angular and radial increments for spider web */
 	unsigned int w_mode;	/* Distance mode */
-	unsigned int w_type;	/* Wedge type */
+	enum GMT_enum_wedgetype w_type;	/* Wedge type */
 	bool w_active;
 	
 	/* These apply to vectors */

@@ -220,10 +220,10 @@ by examining the header structure (see the source code for details);
 they are also the only closed polygons in the WDBII river file. There
 are many levels (classes) in the river file: River-lakes (0), Permanent
 major rivers (1), Additional major rivers
-(2), Additional rivers (3), Minor rivers (4), Intermittent rivers -- major
-(6), Intermittent rivers -- additional (7), Intermittent rivers -- minor
+(2), Additional rivers (3), Minor rivers (4), Intermittent rivers – major
+(6), Intermittent rivers – additional (7), Intermittent rivers – minor
 (8), Major canals (10), Canals of lesser importance
-(11), and Canals -- irrigation type (12). For the border file there are
+(11), and Canals – irrigation type (12). For the border file there are
 three levels: National boundaries (1), Internal
 domestic boundaries (2), and international
 maritime boundaries (3). Individual levels or
@@ -234,17 +234,17 @@ References
 
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
-caricature, *Can. Cartogr., 10*, 112-122.
+caricature, *Can. Cartogr., 10*, 112–122.
 
 Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
 271869*, 10pp, Central Intelligence Agency, Washington, DC.
 
 Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
-Hydrograph. Rev., LXVII(1)*, 27-35.
+Hydrograph. Rev., LXVII(1)*, 27–35.
 
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
-101(B4)*, 8741-8743.
+101(B4)*, 8741–8743.
 
 See Also
 --------

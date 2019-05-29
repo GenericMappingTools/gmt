@@ -374,7 +374,7 @@ Exercises:
 Logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~
 
-We next will show how to do a basemap for a log--log plot.  We have
+We next will show how to do a basemap for a log–log plot.  We have
 no data set yet but we will
 imagine that the raw *x* data range from 3 to 9613 and that *y*
 ranges from 3.2 10^20 to 6.8 10^24.  One possibility is

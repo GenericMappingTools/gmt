@@ -70,7 +70,7 @@ with a warning under compatibility mode:
    three kinds of vectors that can be drawn: Cartesian (straight)
    vectors with **-Sv** or **-SV**, geo-vectors (great circles) with
    **-S=**, and circular vectors with **-Sm**. These are all composed of
-   a line (controlled by pen settings) and 0--2 arrow heads (control by
+   a line (controlled by pen settings) and 0–2 arrow heads (control by
    fill and outline settings). Many modifiers common to all arrows have
    been introduced using the **+key**\ [*arg*] format. The *size* of a
    vector refers to the length of its head; all other quantities are
