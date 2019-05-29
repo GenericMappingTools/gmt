@@ -6479,6 +6479,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
 			break;
 
+		case 'c':	/* -c option advances subplot panel focus under modern mode */
+
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* -c has no use in classic */
+				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col of desired panel.\n");
+			break;
+
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
 
 			gmt_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");
@@ -13320,28 +13326,70 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		s_upper = (char)toupper ((int)symbol_type);
 		if (strchr ("FVQM~", s_upper))	/* "Symbols" that do not take a normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
-		else if (s_upper == 'W' && n == 2) {
+		else if (s_upper == 'W') {	/* Wedges and spiders: -Sw|W<diameter>[/<inner_diameter>][+a[<dr>][+r[<da>]]] */
+			unsigned int type = 0;
 			char *c = NULL;
-			if ((c = strstr (txt_a, "+a"))) {
-				c[0] = '\0';	/* Chop it off */
-				p->w_type = 1;	/* Arc only */
-			}
-			else if ((c = strstr (txt_a, "+r"))) {
-				c[0] = '\0';	/* Chop it off */
-				p->w_type = 2;	/* Radial lines */
-			}
-			else
-				p->w_type = 3;	/* Wedge */
+			if ((c = gmt_first_modifier (GMT, text, "apr"))) c[0] = '\0';	/* Chop off modifiers so we can parse the info */
+			n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);	/* Redo since we need txt_b without modifiers */
 			len = strlen (txt_a);
-			if (strchr (GMT_LEN_UNITS, txt_a[len-1])) {
-				/* Geo-wedge with radius given in a distance unit */
-				p->w_mode = gmt_get_distance (GMT, txt_a, &(p->w_radius), &(p->w_unit));
+			if (strchr (GMT_LEN_UNITS, txt_a[len-1])) {	/* Geo-wedge with radius given in a distance unit */
+				(void)gmtlib_scanf_geodim (GMT, txt_a, &p->w_radius);
 				p->size_y = p->given_size_y = 0.0;
 				check = false;
 				p->w_active = true;
 			}
-			else
+			else if (symbol_type == 'W') {	/* Can take either plot diameter or geo diameter so must check */
+				if (strchr (GMT_DIM_UNITS, txt_a[len-1]))	/* Gave a plot unit diameter, convert to inches */
+					p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
+				else {	/* Add the missing k for km */
+					strcat (txt_a, "k");
+					(void)gmtlib_scanf_geodim (GMT, txt_a, &p->w_radius);
+					p->size_y = p->given_size_y = 0.0;
+					check = false;
+					p->w_active = true;
+				}
+			}
+			else	/* Cartesian wedge in plot units */
 				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
+			if (txt_b[0]) {	/* Gave an inner diameter as well instead of the default of 0 */
+				if (p->w_active) /* Geo-wedge with distance units */
+					(void)gmtlib_scanf_geodim (GMT, txt_b, &p->w_radius_i);
+				else	/* Gave plot units */
+					p->w_radius_i = gmt_M_to_inch (GMT, txt_b);
+			}
+			if (c) {	/* Now process any modifiers */
+				char q[GMT_LEN256] = {""};
+				unsigned int pos = 0, error = 0;
+				c[0] = '+';	/* Restore that character */
+				while (gmt_getmodopt (GMT, 'S', c, "apr", &pos, q, &error) && error == 0) {
+					switch (q[0]) {
+						case 'a':	/* Arc(s) */
+							type |= GMT_WEDGE_ARCS;	/* Arc only */
+							if (q[1]) {	/* Got delta_r */
+								if (p->w_active)	/* Geo-wedge */
+									(void)gmtlib_scanf_geodim (GMT, &q[1], &p->w_dr);
+								else
+									p->w_dr = gmt_M_to_inch (GMT, &q[1]);
+							}
+							break;
+						case 'p':	/* Spider pen, stored in the vector structure */
+							if (gmt_getpen (GMT, &q[1], &p->v.pen)) {
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &q[1]);
+								error++;
+							}
+							p->v.status = PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
+							break;
+						case 'r':	/* Radial lines */
+							type |= GMT_WEDGE_RADII;	/* Radial lines */
+							if (q[1])	/* Got delta_az */
+								p->w_da = atof (&q[1]);
+							break;
+						default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							break;
+					}
+				}
+			}
+			p->w_type = type;
 		}
 		else {
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
@@ -13545,7 +13593,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					p->size_x = p->size_y = atof (diameter);	/* In km */
+					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+					p->size_x = p->size_y;
 				}
 				else {	/* Must read diameter from data file */
 					p->n_required = 1;	/* Only expect diameter */
@@ -15764,7 +15813,7 @@ int gmtlib_get_num_processors() {
 }
 
 int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int)) {
-	/* Handle the way classic and modern mode modules report their usage msssages.
+	/* Handle the way classic and modern mode modules report their usage messages.
 	 * Set special == 1 if the classic module can be run with no options at all and still be expected to do things (e.g., silently read stdin) */
 	int code = GMT_NOERROR;	/* Default is no usage message was requested and we move on to parsing the arguments */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Under modern mode we always require an option like -? or -^ to call usage */

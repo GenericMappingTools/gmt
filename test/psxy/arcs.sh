@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Plot all the symbols on a 1x1 inch grid pattern
+# Plot a few ellipses and wedges with different fills and outlines
+# changed via segment headers
 
 ps=arcs.ps
 

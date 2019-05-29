@@ -157,10 +157,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width[u]>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width[u]>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting; use -Zu to set input radii to 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (API, "bi2,di,e,h,i,p,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,h,i,p,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -779,13 +779,15 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 	if (GMT->common.B.active[0]) {	/* Draw frame */
 		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE;
-		double dim[3];
+		double dim[PSL_MAX_DIMS];
 		struct GMT_FILL no_fill;
 
 		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		dim[0] = (half_only) ? 0.5 * diameter : diameter;
 		dim[1] = 0.0;
 		dim[2] = (half_only) ? 180.0 : 360.0;
+		dim[7] = 2;	/* Do draw line */
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 		gmt_setfill (GMT, &no_fill, true);
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
@@ -864,6 +866,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			gmt_setfill (GMT, &(Ctrl->G.fill), false);
+		dim[7] = 0;
+		if (Ctrl->G.active) dim[7] = 1;
+		if (Ctrl->W.active[0]) dim[7] += 2;
 		for (bin = 0; bin < n_bins; bin++) {
 			if (Ctrl->C.active) {
 				index = gmt_get_rgb_from_z (GMT, P, sum[bin] * Ctrl->S.scale, rgb);

@@ -9933,6 +9933,7 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	}
 	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
+	gmtlib_set_KOP_strings (API);
 	return mode_name;
 }
 

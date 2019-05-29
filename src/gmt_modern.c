@@ -28,9 +28,6 @@
 
 #include "gmt_dev.h"
 
-/* These are used for -O -K -P and set to blank under modern mode */
-char *GMT_O_OPT = "[-O] ", *GMT_K_OPT = "[-K] ", *GMT_P_OPT = "[-P] ";
-
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
 	
@@ -151,8 +148,16 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
 	else if (!strncmp (module, "plot3d",     5U)) is_modern = true;
 	else if (!strncmp (module, "plot",       4U)) is_modern = true;
 	else if (!strncmp (module, "sac",        3U)) is_modern = true;
-	if (is_modern || API->GMT->current.setting.run_mode == GMT_MODERN)	/* These don't exist in modern mode */
-		GMT_K_OPT = GMT_O_OPT = GMT_P_OPT = "";
-
 	return is_modern;
+}
+
+void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API) {
+	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
+		API->K_OPT = API->O_OPT = API->P_OPT = "";	/* This are not part of modern mode */
+		API->c_OPT = "[-c[<row>,<col>]] ";	/* -c option for setting next subplot panel */
+	}
+	else {
+		API->K_OPT = "[-K] "; API->O_OPT = "[-O] "; API->P_OPT = "[-P] ";
+		API->c_OPT = "";	/* -c is not available in classic mode */
+	}
 }

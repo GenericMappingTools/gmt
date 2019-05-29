@@ -110,13 +110,13 @@
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")
 
-# Copy GSHHG files to $/coast [FALSE]:
+# Copy GSHHG files to ${GMT_DATADIR}/coast [FALSE]:
 #set (COPY_GSHHG TRUE)
 
 # Set path to DCW Digital Chart of the World for GMT [auto]:
 #set (DCW_ROOT "dcw-gmt_path")
 
-# Copy DCW files to $/dcw [FALSE]:
+# Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
 #set (COPY_DCW TRUE)
 
 # FOR WINDOWS ONLY
@@ -183,7 +183,7 @@
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
-# build on non-x86:
+# build on non-x86):
 #set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 # Build GMT shared lib with supplemental modules [TRUE]:

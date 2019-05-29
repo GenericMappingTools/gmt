@@ -1,7 +1,7 @@
 .. _vertical_slice:
 
 A Vertical slice
-------------------------
+----------------
 
 This is an example of how to graph a function p=f(x, y, z)
 and include in the graph a slice of it using GMT.
