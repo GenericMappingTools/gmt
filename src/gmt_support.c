@@ -15838,7 +15838,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			case 1:	/* Must trim max to give a range in multiple of inc */
 				nt = floor ((t1 - t0) / inc);
 				t1 = t0 + inc * nt;
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Information from -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 				break;
 			case 2:
 				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
