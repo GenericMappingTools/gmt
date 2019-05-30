@@ -62,12 +62,12 @@ S 0.15c c 0.15c 196/80/80 0.25p 0.5c < 1 Million inhabitants
 S 0.15c c 0.15c 196/80/80 1.25p 0.5c > 1 Million inhabitants
 N 1
 G 0.15c
-L 8p,LinBiolinumOB L Population in Millions 
+L 8p,LinBiolinumOB L Population in Millions
 N 6
 EOF
 
 # append city names and population to legend
-$AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
+$AWK 'BEGIN {FS=","; f="L 8p,LinBiolinumO L"}
   $4 > 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}' \
   $capitals >> legend.txt
 
