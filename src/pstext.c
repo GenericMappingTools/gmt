@@ -346,7 +346,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List the font-numbers and font-names available, then exits.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set paragraph text mode [Default is single item mode].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Expects (x y fontinfo angle justify linespace parwidth parjust) in segment header\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   followed by lines with one or more paragraphs of text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
