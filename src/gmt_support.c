@@ -15816,27 +15816,29 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log2_array (GMT, t0, t1, inc, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/max/inc values harmonize */
+		unsigned int nt;
+		double range = t1 - t0;
 		if (T->exact_inc) {	/* Must enforce that max-min is a multiple of inc and adjust max if it is not */
-			double new, range = t1 - t0;
-			new = rint (range / inc) * inc;
+			double new = rint (range / inc) * inc;
 			if (!doubleAlmostEqualZero (new, range)) {	/* Must adjust t1 to match proper range */
 				t1 = t0 + new;
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 			}
 		}
 		else if (T->round) {	/* Must enforce an increment that fits the given range */
-			double new, range = t1 - t0;
-			unsigned int nt = urint (range / inc);
+			double new;
+			nt = urint (range / inc);
 			new = nt * inc;
 			if (nt && !doubleAlmostEqualZero (new, range)) {	/* Must adjust inc to match proper range */
 				inc = range / (nt - 1);
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted inc to %g\n", option, inc);
 			}
 		}
-		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
-				return (GMT_PARSE_ERROR);
+		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV8_LIMIT)) {
+			case 1:	/* Must trim max to give a range in multiple of inc */
+				nt = floor ((t1 - t0) / inc);
+				t1 = t0 + inc * nt;
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 				break;
 			case 2:
 				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
