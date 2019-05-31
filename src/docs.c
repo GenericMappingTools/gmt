@@ -133,8 +133,8 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 	else {	/* One of the fixed doc files */
 		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-		if (access (&URL[8], R_OK)) 	/* File does not exists, go to SOEST site */
-			sprintf (URL, "http://gmt.soest.hawaii.edu/doc/latest/%s", module);
+		if (access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
+			sprintf (URL, "%s/%s", GMT_DOC_URL, module);
 	}
 
 	if (opt->next) {	/* If an option request was made we position the doc there */
