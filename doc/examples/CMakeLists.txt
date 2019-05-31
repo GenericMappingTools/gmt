@@ -103,9 +103,12 @@ foreach (_script ${_examples})
 endforeach (_script ${_examples})
 
 # Add build target
-add_custom_target (_docs_examples_fig DEPENDS ${_examples_pdf} ${_examples_png})
 add_custom_target (_docs_examples_verbatim DEPENDS ${_examples_txt})
-add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
+add_custom_target (_docs_html_examples_fig DEPENDS ${_examples_png})
+add_custom_target (_docs_pdf_examples_fig DEPENDS ${_examples_pdf})
+add_depend_to_target (docs_html_depends _docs_html_examples_fig _docs_examples_verbatim)
+add_depend_to_target (docs_pdf_depends _docs_pdf_examples_fig _docs_examples_verbatim)
+add_depend_to_target (docs_man_depends _docs_examples_verbatim)
 
 # Animations
 if (UNIX AND DO_ANIMATIONS)
