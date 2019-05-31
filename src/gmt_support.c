@@ -7644,7 +7644,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recycle existing CPT file %s\n", file);
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No existing CPT file %s to recycle\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No existing CPT file %s to recycle\n", path);
 	return (file);
 }
 
