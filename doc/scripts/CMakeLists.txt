@@ -152,9 +152,11 @@ foreach (_script ${_scr_strip})
 endforeach (_script)
 
 # Add build target
-add_custom_target (_docs_scripts_fig DEPENDS ${_scripts_pdf} ${_scripts_png})
 add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
-add_depend_to_target (docs_depends _docs_scripts_fig _docs_scripts_verbatim)
+add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png})
+add_custom_target (_docs_pdf_scripts_fig DEPENDS ${_scripts_pdf})
+add_depend_to_target (docs_html_depends _docs_html_scripts_fig _docs_scripts_verbatim)
+add_depend_to_target (docs_pdf_depends _docs_pdf_scripts_fig _docs_scripts_verbatim)
 
 # run tests
 if (DO_TESTS)
