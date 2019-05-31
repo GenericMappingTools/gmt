@@ -61,8 +61,8 @@ set (GMT_LIB_SOVERSION 6)
 # The build version (VERSION) of the GMT libraries.
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
-# The GMT wiki location
-set (GMT_TRAC_WIKI "http://gmt.soest.hawaii.edu/")
+# The GMT documentation URL
+set (GMT_DOC_URL "http://docs.generic-mapping-tools.org/latest")
 
 # Use SI units per default
 if (NOT UNITS)
