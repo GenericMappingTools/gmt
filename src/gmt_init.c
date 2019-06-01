@@ -12876,13 +12876,19 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-				if (symbol == '=')	/* Since norm distance is in km we convert to spherical degrees */
+				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
+					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Vector shrink length limit for geovectors must be given in km!\n");
+						error++;
+					}
 					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;
+				}
 				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
 					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
 				else	/* Convert length from default unit to inches */
 					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g\n", S->v.v_norm);
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;
