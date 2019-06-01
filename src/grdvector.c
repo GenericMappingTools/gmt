@@ -434,7 +434,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				if (vec_length > v_max) v_max = vec_length;
 			}
 		}
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max, Ctrl->C.dz)) == NULL) {
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max, Ctrl->C.dz, GMT_DEFAULT_CPT)) == NULL) {
 			Return (API->error);
 		}
 	}

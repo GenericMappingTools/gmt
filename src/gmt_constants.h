@@ -211,6 +211,9 @@ enum GMT_swap_direction {
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
+#define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
+#define GMT_N_CPT		3	/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
+
 #define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
@@ -466,7 +469,5 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 #define GMT_SRTM_EXTENSION_REMOTE_LEN  3U			/* Length of JPEG2000 file extension */
 #define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
 #define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
-
-#define GMT_DEFAULT_CPT "rainbow"				/* When no CPT is given we choose this one */
 
 #endif  /* GMT_CONSTANTS_H */

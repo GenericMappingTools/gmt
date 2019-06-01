@@ -514,7 +514,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
 	if (is_srtm && srtm_local) {	/* Convert JP2 file to NC for local cache storage */
-		static char *args = "=ns -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+		static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 		char *cmd = gmt_M_memory (GMT, NULL, strlen (local_path) + strlen (srtm_local) + strlen(args) + 2, char);
 		sprintf (cmd, "%s %s%s", local_path, srtm_local, args);
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
