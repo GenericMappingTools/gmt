@@ -7612,6 +7612,22 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
+unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	/* Return which type of default CPT this data set should use */
+	unsigned int zmode = GMT_DEFAULT_CPT;
+	gmt_M_unused (GMT);
+	if (strstr (h->remark, "@earth_relief_"))	/* Detected a DEM grid blend */
+		zmode = 1;
+	else if (strstr (h->remark, "@srtm_relief_"))	/* Detected a SRTM land-only grid blend */
+		zmode = 2;
+	else if (strstr (h->command, "earth_relief_"))	/* Detected a DEM grid */
+		zmode = 1;
+	else if (strstr (h->command, "srtm_relief_"))	/* Detected a SRTM land-only grid */
+		zmode = 2;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Given grid header, select default CPT to be %s\n", GMT->init.cpt[zmode]);
+	return zmode;
+}
+
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL;
@@ -7649,7 +7665,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
+struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz, unsigned int zmode) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7664,7 +7680,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are four possibilities:
 	   1. A cpt in current directory is given - simply read it and return.
-	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT_DEFAULT_CPT.
+	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT->init.cpt[GMT_DEFAULT_CPT] (or a type-specific CPT).
 	   3. file is NULL and runmode is modern and a current cpt exists - use it.
 	   4. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
@@ -7693,20 +7709,20 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT_DEFAULT_CPT;	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT->init.cpt[zmode];	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
 		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */

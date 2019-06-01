@@ -5836,6 +5836,11 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->common.x.n_threads = gmtlib_get_num_processors();
 #endif
 
+	/* Set the names of the default CPTs */
+	strcpy (GMT->init.cpt[0], "rainbow");	/* GMT default CPT unless overridden by data type specific CPT */
+	strcpy (GMT->init.cpt[1], "geo");	/* GMT default CPT for earth_relief grids */
+	strcpy (GMT->init.cpt[2], "srtm");	/* GMT default CPT for srtm_relief grids */
+	
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
 	return (GMT);
 }
@@ -12495,7 +12500,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT->common.R.wesn[YHI] = sgn * ceil  (fabs (GMT->common.R.wesn[YHI]) / res[srtm_res]) * res[srtm_res];
 			/* Get a file with a list of all needed srtm tiles */
 			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean);
-			/* Replace the @earth_relief_0xs file name with this local list */
+			/* Replace the @[earth|srtm]_relief_0[1|3s file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
 			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
