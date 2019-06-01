@@ -15545,8 +15545,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
-			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-			gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+			/* Set output column type as time unless -fo has been set */
+			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 			T->temporal = true;
 		}
 		return (GMT_NOERROR);
@@ -15635,9 +15636,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
-		/* Set input column type as time */
-		gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-		gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+		/* Set output column type as time unless -fo has been set */
+		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 		if (has_inc) {
 			if (strchr (GMT_TIME_UNITS, T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
 				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
@@ -15693,9 +15694,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (ns >= 1) {
 		if (!strcmp (txt[GMT_X], "-"))	/* Must get this value later */
 			T->delay[GMT_X] = true;
-		else if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
-			return GMT_PARSE_ERROR;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
@@ -15703,9 +15706,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		if (!strcmp (txt[GMT_Y], "-"))	/* Must get this value later */
 			T->delay[GMT_Y] = true;
-		else if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
-			return GMT_PARSE_ERROR;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s (ISO datetime format required)\n", option, txt[GMT_Y]);
@@ -15722,9 +15727,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->set += 2;
 	}
 	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
-		if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
-			return GMT_PARSE_ERROR;
+		if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
@@ -15749,6 +15756,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 }
 
 unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
+	/* If min and max are not NULL then will override what T->min,max says */
 	char unit = GMT->current.setting.time_system.unit;
 	double scale = GMT->current.setting.time_system.scale, inc = T->inc, t0, t1;
 
@@ -15791,9 +15799,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 
-	if (T->set < 3 && ! (min == NULL && max == NULL)) {		/* Update min,max now */
-		T->min = *min;	T->max = *max;
-	}
+	if (min != NULL)	/* Update min now */
+		T->min = *min;
+	if (max != NULL)	/* Update max now */
+		T->max = *max;
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 
