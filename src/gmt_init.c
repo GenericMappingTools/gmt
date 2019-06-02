@@ -14663,6 +14663,10 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	struct GMT_CTRL *GMT = NULL;
 	char version[GMT_LEN8] = {""};
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+	char *path1 = NULL, *path2 = NULL, *paths[2] = {NULL, NULL};
+	int  local_count = 0;
+#endif
 
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -14693,6 +14697,30 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	GMT = gmtinit_new_GMT_ctrl (API, session, pad);	/* Allocate and initialize a new common control structure */
 	API->GMT = GMT;
+
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+	/* Here we allow users to declare a different location for the GDAL's GDAL_DATA and
+	   PROJ4 PROJ_LIB directories. The later may be particularly useful in these days of
+	   transition to GDAL3.0, which imply PROJ4 V6 but many (different) PROJ_LIB from PROJ4 < 6
+	   are still trailing around.
+	   If neither of those ENV var is provided, we default to GMT share/GDAL_DATA, if that
+	   dir exists. In case it does, then it's expected to contain both the files from GDAL's
+	   GDAL_DATA (data) and PROJ4 PRPJ_LIB (share). This will be the case on Windows where
+	   the installer will create and fill that directory.
+	*/
+	if ((path1 = getenv ("LOCAL_GDAL_DATA")) != NULL) paths[local_count++] = path1;
+	if ((path2 = getenv ("LOCAL_PROJ_LIB")) != NULL)  paths[local_count++] = path2;
+	if (!local_count) {			/* If none of the above was provided, default to share/GDAL_DATA */
+		char dir[GMT_LEN256];
+		sprintf (dir, "%s/GDAL_DATA", API->GMT->session.SHAREDIR);
+		if (access (dir, F_OK) == 0) {		/* ... if it exists */
+			paths[0] = strdup(dir);
+			local_count++;
+		}
+	}
+	if (local_count)		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
+		OSRSetPROJSearchPaths(paths);
+#endif
 
 	sprintf (version, "GMT%d", GMT_MAJOR_VERSION);
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: New_PSL_Ctrl\n");
