@@ -79,7 +79,9 @@ Optional Arguments
         The **-A** option offers the same list choice so they may be used together
         to plot only specific annotated and non-annotated contours.
 
-    (4) Otherwise, *contours* is interpreted as a constant contour interval.
+    (4) If no argument is given in modern mode then we select the current CPT.
+
+    (5) Otherwise, *contours* is interpreted as a constant contour interval.
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour

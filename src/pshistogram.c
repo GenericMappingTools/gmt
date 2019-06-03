@@ -649,6 +649,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 		}
 	}
 
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	/* Must handle some backwards compatible issues first. The problem is a change in syntax: 
 	 * Old syntax: -W<width>[+l|h|b] [-L<pen>] [-T<col>]
 	 * New syntax: -T<width> [-Ll|h|b] [-W<pen>]

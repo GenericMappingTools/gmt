@@ -616,6 +616,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 		}
 	}
 
+	if (gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file)))
+		Ctrl->C.cpt = true;
+
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");

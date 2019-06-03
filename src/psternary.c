@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				gmt_M_str_free (Ctrl->A.string);
 				Ctrl->A.string = strdup (opt->arg);
 				break;
-			case 'C':	/* Turn clipping off */
+			case 'C':	/* Use CPT for coloring symbols */
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				Ctrl->C.string = strdup (opt->arg);
@@ -192,6 +192,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				break;
 		}
 	}
+
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.string));
 
 	if (!Ctrl->M.active) {	/* Need -R -J for anything but dumping */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");

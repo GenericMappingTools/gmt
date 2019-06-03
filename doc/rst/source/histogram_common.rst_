@@ -44,7 +44,8 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT. The mid x-value for each bar is used to
-    look-up the bar color.
+    look-up the bar color.  If modern mode and no argument is given
+    then we select the current CPT.
 
 .. _-D:
 

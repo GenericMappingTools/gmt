@@ -41,7 +41,7 @@ Optional Arguments
     If **-S** is set, let symbol fill color be
     determined by the z-value in the fourth column. Additional fields are
     shifted over by one column (optional size would be 5th rather than 4th
-    field, etc.).
+    field, etc.).  If modern mode and no argument is given then we select the current CPT.
 
 .. _-G:
 

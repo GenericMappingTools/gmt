@@ -397,6 +397,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		}
 	}
 
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	/* Check that the options selected are mutually consistent */
 
 	GMT->common.R.wesn[XLO] = 0.0;
