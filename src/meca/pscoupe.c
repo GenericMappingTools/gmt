@@ -764,6 +764,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->Z.active, &(Ctrl->Z.file));
+
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active, "Syntax error: Must specify -A option\n");

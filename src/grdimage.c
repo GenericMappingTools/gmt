@@ -395,6 +395,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 		}
 	}
 	
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
 		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
 		n_errors += gmtinit_parse_n_option (GMT, "b+c");

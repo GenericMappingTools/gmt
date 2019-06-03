@@ -59,7 +59,8 @@ Optional Arguments
     If **-S** is not set, then we expect the user
     to supply a multisegment file (where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
-    polygon (if **-L** is set) via the CPT.
+    polygon (if **-L** is set) via the CPT.  If modern mode and no argument is given
+    then we select the current CPT.
 
 .. _-D:
 

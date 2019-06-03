@@ -724,6 +724,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		}
 	}
 	
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	if (Ctrl->G.active) {
 		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
 		if (Ctrl->G.n == 3)

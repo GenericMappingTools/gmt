@@ -1319,6 +1319,28 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
 }
 
+bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
+	/* Modern mode only: If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean
+	 * we want to use the current CPT.  If no current CPT exist then we do nothing
+	 * and the probgra with fail or create a CPT as needed. */
+	char *cpt = NULL;
+	
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* No such thing in classic mode */
+	if (!(*active)) return false;		/* Did not give that option so nothing to do */
+	if (arg == NULL) return false;	/* No text pointer to work with */
+	if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+	
+	if ((*arg)[0] =='+' && strchr ("uU", (*arg)[1])) {	/* Gave modifiers for a unit change) */
+		char string[GMT_LEN256] = {""};
+		sprintf (string, "%s/%s", cpt, *arg);	/* Append the modifers to the current CPT name */
+		gmt_M_str_free (*arg);
+		*arg = strdup (string);		/* Pass back the name of the current CPT with modifers */
+	}
+	else
+		*arg = strdup (cpt);		/* Pass back the name of the current CPT */
+	return true;
+}
+
 /*! . */
 GMT_LOCAL double support_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, double xp, uint64_t klo) {
 	uint64_t khi;

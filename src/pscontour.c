@@ -755,6 +755,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 		}
 	}
 
+	if (gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file)))
+		Ctrl->C.cpt = true;
+
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
 	/* Check that the options selected are mutually consistent */
