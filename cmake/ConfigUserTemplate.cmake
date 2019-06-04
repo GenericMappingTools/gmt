@@ -119,6 +119,12 @@
 # Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
 #set (COPY_DCW TRUE)
 
+# Copy GDAL's 'data' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (GDAL_DATA_PATH C:/programs/compa_libs/gdal_GIT/compileds/VC14_64/data)
+
+# Copy PROJ4's 'share' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
+
 # FOR WINDOWS ONLY
 # Set path to location where the gmtmex is located.
 #set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
