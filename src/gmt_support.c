@@ -1332,7 +1332,7 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	
 	if ((*arg)[0] =='+' && strchr ("uU", (*arg)[1])) {	/* Gave modifiers for a unit change) */
 		char string[GMT_LEN256] = {""};
-		sprintf (string, "%s/%s", cpt, *arg);	/* Append the modifers to the current CPT name */
+		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifers to the current CPT name */
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifers */
 	}
