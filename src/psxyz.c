@@ -326,11 +326,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Vary symbol color with z */
-				if (opt->arg[0]) {
-					gmt_M_str_free (Ctrl->C.file);
-					Ctrl->C.file = strdup (opt->arg);
-					Ctrl->C.active = true;
-				}
+				Ctrl->C.active = true;
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {

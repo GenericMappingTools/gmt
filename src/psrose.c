@@ -271,9 +271,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						break;
 					}
 				}
-				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
 				Ctrl->D.active = true;

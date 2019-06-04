@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'C':
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
 				Ctrl->D.active = true;

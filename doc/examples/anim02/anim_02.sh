@@ -14,8 +14,10 @@ else	# Make animated GIF
 fi	
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
-gmt math -T0/360/10 T 180 ADD = angles.txt
-gmt makecpt -Crainbow -T500/4500 > main.cpt
+gmt begin
+	gmt math -T0/360/10 T 180 ADD = angles.txt
+	gmt makecpt -Crainbow -T500/4500 -H > main.cpt
+gmt end
 EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh

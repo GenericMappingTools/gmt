@@ -21,9 +21,11 @@ TIME="starttime=2018-01-01%2000:00:00&endtime=2018-12-31%2000:00:00"
 MAG="minmagnitude=5"
 ORDER="orderby=time-asc"
 URL="\${SITE}?\${TIME}&\${MAG}&\${ORDER}"
-gmt convert \$URL -i2,1,3,4+s50,0 -hi1 > q.txt
-gmt makecpt -Cred,green,blue -T0,70,300,10000 > movie_dem.cpt
-gmt math -T2018-01-01T/2018-12-31T/2 --TIME_UNIT=d TNORM 40 MUL 200 ADD = times.txt
+gmt begin
+	gmt convert \$URL -i2,1,3,4+s50,0 -hi1 > q.txt
+	gmt makecpt -Cred,green,blue -T0,70,300,10000 -H > movie_dem.cpt
+	gmt math -T2018-01-01T/2018-12-31T/2 --TIME_UNIT=d TNORM 40 MUL 200 ADD = times.txt
+gmt end
 EOF
 # 2. Set up main script
 cat << EOF > main.sh

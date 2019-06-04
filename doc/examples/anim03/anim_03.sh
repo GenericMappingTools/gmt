@@ -14,9 +14,11 @@ else	# Make animated GIF, infinitely looping
 fi	
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
-gmt math -T0/355/5 -o1 T = angles.txt
-gmt makecpt -Crelief -T-2000/2000/20 > iceland.cpt
-gmt grdclip -Sb0/-1 -Gabove.nc @Iceland.nc
+gmt begin
+	gmt math -T0/355/5 -o1 T = angles.txt
+	gmt makecpt -Crelief -T-2000/2000/20 -H > iceland.cpt
+	gmt grdclip -Sb0/-1 -Gabove.nc @Iceland.nc
+gmt end
 EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
