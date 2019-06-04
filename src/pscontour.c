@@ -514,6 +514,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, id, reset = 0;
 	int k, j, n;
+	bool c_check = false;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, string[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -554,7 +555,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
-				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
+				if (GMT->current.setting.run_mode == GMT_MODERN && gmt_M_no_cpt_given (opt->arg))
+					c_check = true;
+				else if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
 					gmt_M_str_free (Ctrl->C.file);
@@ -755,7 +758,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 		}
 	}
 
-	if (gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file)))
+	if (c_check && gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file)))
 		Ctrl->C.cpt = true;
 
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
