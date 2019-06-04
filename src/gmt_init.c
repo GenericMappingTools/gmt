@@ -14715,11 +14715,13 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		sprintf (dir, "%s/GDAL_DATA", API->GMT->session.SHAREDIR);
 		if (access (dir, F_OK) == 0) {		/* ... if it exists */
 			paths[0] = strdup(dir);
-			local_count++;
+			local_count = -1;
 		}
 	}
-	if (local_count)		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
+	if (local_count) {		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
 		OSRSetPROJSearchPaths(paths);
+		if (local_count < 0)  free (paths[0]);		/* This case was strdup allocated, so it can be freed */
+	}
 #endif
 
 	sprintf (version, "GMT%d", GMT_MAJOR_VERSION);
