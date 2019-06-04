@@ -348,6 +348,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
+
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.cpt));
+
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
 	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
 	if (t_string) {	/* Do a special check for absolute time since auto-detection based on input file has not happened yet and user may have forgotten about -f */
