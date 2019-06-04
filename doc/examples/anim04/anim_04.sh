@@ -15,16 +15,18 @@ fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 # Set up flight path
-gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q > flight_path.txt
-gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_US.nc
-gmt makecpt -Cglobe > globe_US.cpt
+gmt begin
+	gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q > flight_path.txt
+	gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_US.nc
+	gmt makecpt -Cglobe
+gmt end
 EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
 	gmt set FONT_TAG 14p,Helvetica-Bold
 	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
-		-Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
+		-Rg @USEast_Coast.nc -Iint_US.nc -C -X0 -Y0
 	gmt plot -W1p flight_path.txt
 gmt end
 EOF

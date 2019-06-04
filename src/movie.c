@@ -341,14 +341,22 @@ GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, 
 
 GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 	/* Read script to determine if it is in GMT classic mode or not, then rewind */
-	bool classic = true;
+	bool modern = false;
 	char line[PATH_MAX] = {""};
-	while (classic && gmt_fgets (GMT, line, PATH_MAX, fp)) {
+	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
 		if (strstr (line, "gmt begin"))	/* A modern mode script */
-			classic = false;
+			modern = true;
+		else if (strstr (line, "gmt figure"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, "gmt subplot"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, "gmt inset"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, "gmt end"))	/* A modern mode script */
+			modern = true;
 	}
 	rewind (fp);	/* Go back to beginning of file */
-	return (classic);
+	return (!modern);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
