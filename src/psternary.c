@@ -159,7 +159,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 			case 'C':	/* Use CPT for coloring symbols */
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
-				Ctrl->C.string = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Fill */
 				Ctrl->G.active = true;

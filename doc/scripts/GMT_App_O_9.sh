@@ -9,8 +9,8 @@ gmt set FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
 gmt project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.txt
 gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
 km=`echo -17 28 | gmt mapproject -G-74/41+uk -fg --FORMAT_FLOAT_OUT=%.0f -o2`
-gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N > ttt.cpt
-gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -nc+t1 
+gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N
+gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -C $R -JM5.3i -nc+t1 
 gmt grdcontour @App_O_ttt.nc -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
 	-GL80W/31N/17W/26N,17W/28N/17W/50N -S2
 gmt plot -Wfatter,white great_NY_Canaries.txt

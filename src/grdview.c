@@ -508,7 +508,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					c[0] = '\0';	/* Temporarily chop off the modifier */
 				}
 				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */

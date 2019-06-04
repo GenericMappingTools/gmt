@@ -1338,7 +1338,7 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifers */
 	}
-	else if ((*arg)[0] == '\0') {	/* Noting given */
+	else if (*arg == NULL) {	/* Noting given */
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 		*arg = strdup (cpt);		/* Pass back the name of the current CPT */
 	}

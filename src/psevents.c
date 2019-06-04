@@ -58,7 +58,7 @@ enum Psevent {	/* Misc. named array indices */
 struct PSEVENTS_CTRL {
 	struct PSEVENTS_C {	/* 	-C<cpt> */
 		bool active;
-		char *cpt;
+		char *file;
 	} C;
 	struct PSEVENTS_D {	/*	-D[j]<dx>[/<dy>][v[<pen>]] */
 		bool active;
@@ -116,7 +116,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->C.cpt);	
+	gmt_M_str_free (C->C.file);	
 	gmt_M_str_free (C->D.string);	
 	gmt_M_str_free (C->F.string);	
 	gmt_M_str_free (C->G.color);	
@@ -202,7 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 			
 			case 'C':	/* Set a cpt for converting z column to color */
 				Ctrl->C.active = true;
-				Ctrl->C.cpt = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 
 			case 'D':
@@ -348,6 +348,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
+
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
 	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
 	if (t_string) {	/* Do a special check for absolute time since auto-detection based on input file has not happened yet and user may have forgotten about -f */
@@ -610,7 +613,7 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 		/* Build psxy command with fixed options and those that depend on -C -G -W.
 		 * We must set symbol unit as inch since we are passing sizes in inches directly (dimensions are in inches internally in GMT).  */
 		sprintf (cmd, "%s -R -J -O -K -I -t -S%s --GMT_HISTORY=false --PROJ_LENGTH_UNIT=inch", tmp_file_symbols, Ctrl->S.symbol);
-		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.cpt);}
+		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 		if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
 		if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt psxy %s\n", cmd);
