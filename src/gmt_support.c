@@ -1320,25 +1320,31 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 }
 
 bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
-	/* Modern mode only: If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean
+	/* Modern mode only: Detect if no CPT is given but -C was set.
+	 * If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean
 	 * we want to use the current CPT.  If no current CPT exist then we do nothing
-	 * and the probgra with fail or create a CPT as needed. */
+	 * and the module with fail or create a CPT as needed. */
 	char *cpt = NULL;
+	bool ret = true;
 	
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* No such thing in classic mode */
 	if (!(*active)) return false;		/* Did not give that option so nothing to do */
 	if (arg == NULL) return false;	/* No text pointer to work with */
-	if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 	
-	if ((*arg)[0] =='+' && strchr ("uU", (*arg)[1])) {	/* Gave modifiers for a unit change) */
+	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
 		char string[GMT_LEN256] = {""};
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifers to the current CPT name */
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifers */
 	}
-	else
+	else if ((*arg)[0] == '\0') {	/* Noting given */
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 		*arg = strdup (cpt);		/* Pass back the name of the current CPT */
-	return true;
+	}
+	else /* Got something already */
+		ret = false;
+	return ret;
 }
 
 /*! . */
