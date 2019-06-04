@@ -329,6 +329,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);
 EXTERN_MSC double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
 EXTERN_MSC int gmt_getfonttype (struct GMT_CTRL *GMT, char *name);

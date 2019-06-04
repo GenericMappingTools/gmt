@@ -714,6 +714,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
+	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
 	if (error == GMT_NOERROR)
