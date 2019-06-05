@@ -306,7 +306,7 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 
 	PSL_comment (PSL, "Placing plot title\n");
 
-	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW)
+	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW || GMT->current.setting.map_frame_type == GMT_IS_INSIDE)
 		PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
@@ -4660,7 +4660,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
 
-	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && !GMT->current.map.frame.header[0]) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);	/* Must clip to ensure things are inside */
 		clip_on = true;
 	}
