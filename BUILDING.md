@@ -329,6 +329,7 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
+set (DO_API_TESTS ON)
 ```
 
 Then run:
