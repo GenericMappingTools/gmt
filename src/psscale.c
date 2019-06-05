@@ -1592,7 +1592,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		stop_val  = pow (10.0, P->data[P->n_colors-1].z_high);
 	}
 	else {
-		sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+		if (P->mode & GMT_CPT_TIME)	/* Need time axis */
+			sprintf (text, "X%giT/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+		else
+			sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 		start_val = P->data[0].z_low;
 		stop_val  = P->data[P->n_colors-1].z_high;
 	}
@@ -1635,19 +1638,20 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 0;	/* Reset candy flag */
-		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
-			char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
-			unsigned int pos = 0;
-			GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
-			group_sep[0] = GMT_ASCII_GS;
-			GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
-			for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
-				if (!GMT->common.B.active[i]) continue;
-				tmp = strdup (GMT->common.B.string[i]);
-				while (gmt_strtok (tmp, group_sep, &pos, p))
-					gmtlib_parse_B_option (GMT, p);
-				gmt_M_str_free (tmp);
-			}
+	}
+
+	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
+		char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
+		unsigned int pos = 0;
+		GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
+		group_sep[0] = GMT_ASCII_GS;
+		GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
+		for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
+			if (!GMT->common.B.active[i]) continue;
+			tmp = strdup (GMT->common.B.string[i]);
+			while (gmt_strtok (tmp, group_sep, &pos, p))
+				gmtlib_parse_B_option (GMT, p);
+			gmt_M_str_free (tmp);
 		}
 	}
 
