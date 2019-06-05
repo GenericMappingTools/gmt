@@ -1,0 +1,56 @@
+# Template for the basic Windows steps in Azure Pipelines
+
+steps:
+
+- bash: echo "##vso[task.prependpath]$CONDA\Scripts"
+  displayName: Add conda to PATH
+
+- bash: |
+    set -x -e
+    conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
+    conda install libnetcdf libcurl libgdal pcre ninja
+    conda list
+  displayName: Install dependencies via conda
+
+- bash: |
+    set -x -e
+    choco install ghostscript
+  displayName: Install dependencies via chocolatey
+
+- bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
+  displayName: Set install location
+
+- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
+  displayName: Set coastline location
+
+- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+  displayName: Set PATH
+
+# The executable file searches for DLL files in the directories listed in the PATH environment variable.
+- bash: echo "##vso[task.prependpath]$CONDA/Library/bin"
+  displayName: Add Conda bin to PATH
+
+- bash: |
+    set -x -e
+    mkdir -p "$INSTALLDIR"
+    mkdir -p "$COASTLINEDIR"
+  displayName: Create install directories
+
+- bash: ci/download-coastlines.sh
+  displayName: Download coastlines
+
+- bash: ci/build-gmt-windows.sh
+  displayName: Configure GMT
+
+# Azure Pipelines cannot find Visual Studio correctly if Ninja is used.
+# Here, we need
+# 1. call the vcvars64.bat script
+# 2. define CMAKE_C_COMPILER
+- script: |
+    mkdir build
+    cd build
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    cmake .. -G "Ninja" -DCMAKE_PREFIX_PATH=%CONDA%\Library -DCMAKE_C_COMPILER=cl.exe
+    cmake --build . --parallel
+    cmake --build . --target install --parallel
+  displayName: Compile GMT
