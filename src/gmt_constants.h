@@ -267,6 +267,17 @@ enum GMT_enum_download {
 	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1};
 
 /*! Various mode for axes */
+enum GMT_enum_oblique {
+	GMT_OBL_ANNOT_LON_X_LAT_Y    =  0,
+	GMT_OBL_ANNOT_ANYWHERE       =  1,
+	GMT_OBL_ANNOT_LON_HORIZONTAL =  2,
+	GMT_OBL_ANNOT_LAT_HORIZONTAL =  4,
+	GMT_OBL_ANNOT_EXTEND_TICKS   =  8,
+	GMT_OBL_ANNOT_NORMAL_TICKS   = 16,
+	GMT_OBL_ANNOT_LAT_PARALLEL   = 32,
+	GMT_OBL_ANNOT_FLAG_LIMIT     = 64};
+
+/*! Various mode for axes */
 enum GMT_enum_axes {
 	GMT_AXIS_NONE  = 0,
 	GMT_AXIS_DRAW  = 1,

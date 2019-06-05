@@ -551,9 +551,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
-			if (!noB || ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) ) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -B: Must either set -Bx and -By or -B that applies to both axes.\n");
-				n_errors++;
+			if (!noB) {
+				if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -B: Must either set -Bx and -By or -B that applies to both axes.\n");
+					n_errors++;
+				}
 			}
 			if (Bxy || Bx)	/* Did get axis annotation settings */
 				Ctrl->S[GMT_X].b = (Bx) ? strdup (Bx->arg) : strdup (Bxy->arg);

@@ -4503,8 +4503,8 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 	else if ( (*text_angle - 90.0) > GMT_CONV8_LIMIT) *text_angle -= 180.0;
 #endif
 
-	if (type == 0 && GMT->current.setting.map_annot_oblique & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */
-	if (type == 1 && GMT->current.setting.map_annot_oblique & 4) *text_angle = 0.0;	/* Force horizontal lat annotation */
+	if (type == 0 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lon annotation */
+	if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lat annotation */
 
 	switch (side) {
 		case 0:		/* S */
@@ -4514,7 +4514,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
 		case 1:		/* E */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 10;
 			}
@@ -4528,7 +4528,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
 		default:	/* W */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 2;
 			}
@@ -13656,7 +13656,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
 
-	if (GMT->current.setting.map_annot_oblique & 16 && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
 
 	if (angle < 0.0) angle += 360.0;
 
@@ -13671,7 +13671,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (!support_get_label_parameters (GMT, side, angle, type, text_angle, justify)) return -1;
 	*line_angle = angle;
-	if (GMT->current.setting.map_annot_oblique & 16) *line_angle = (side - 1) * 90.0;
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS) *line_angle = (side - 1) * 90.0;
 
 	if (!set_angle) *justify = support_polar_adjust (GMT, side, angle, x, y);
 	if (set_angle && !GMT->common.R.oblique && GMT->current.proj.projection_GMT == GMT_GNOMONIC) {

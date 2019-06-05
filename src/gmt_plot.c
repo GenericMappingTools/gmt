@@ -1394,8 +1394,8 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
 		if ((GMT->current.map.frame.side[sides[i]] & GMT_AXIS_TICK) == 0) continue;
-		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
-		angle = ((GMT->current.setting.map_annot_oblique & 16) ? (sides[i] - 1) * 90.0 : angles[i]);
+		if (!(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
+		angle = ((GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS) ? (sides[i] - 1) * 90.0 : angles[i]);
 		if (set_angle) {	/* Adjust angle to fit the range of angles relative to each side */
 			if (sides[i] == 0 && angle < 180.0) angle -= 180.0;
 			if (sides[i] == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -1404,7 +1404,7 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 		}
 		sincosd (angle, &s, &c);
 		tick_length = len;
-		if (GMT->current.setting.map_annot_oblique & 8) {
+		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			if (sides[i] % 2) {
 				/* if (fabs (c) > cosd (GMT->current.setting.map_annot_min_angle)) continue; */
 				if (fabs (c) < sind (GMT->current.setting.map_annot_min_angle)) continue;
@@ -1472,7 +1472,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 
 	for (i = 0; i < nx; i++) {
-		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
+		if (!(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 
 		if (gmtlib_prepare_label (GMT, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
@@ -1480,7 +1480,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		tick_length = GMT->current.setting.map_tick_length[GMT_PRIMARY];
 		o_len = len;
 		if (GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
-		if (GMT->current.setting.map_annot_oblique & 8) {
+		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
 			o_len /= div;
 		}
@@ -4647,8 +4647,8 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
-	if (GMT->current.setting.map_annot_oblique & 2) GMT->current.map.frame.horizontal = 2;
-	if (GMT->current.map.frame.horizontal == 2) GMT->current.setting.map_annot_oblique |= 2;
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) GMT->current.map.frame.horizontal = 2;
+	if (GMT->current.map.frame.horizontal == 2) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LON_HORIZONTAL;
 	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH && gmt_M_is_geographic (GMT, GMT_IN)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && !plot_is_fancy_boundary(GMT)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 

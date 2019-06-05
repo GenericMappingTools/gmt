@@ -2204,7 +2204,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		//GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
 		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
 			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
-			GMT->current.setting.map_annot_oblique |= 32;		/* Plot latitude parallel to frame for geo maps */
+			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
 		}
 	}
 }
@@ -3079,7 +3079,7 @@ GMT_LOCAL bool map_init_stereo (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip;
 		GMT->current.map.left_edge = &map_left_rect;
 		GMT->current.map.right_edge = &map_right_rect;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 	}
 	else {
@@ -3364,7 +3364,7 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 	}
 #endif
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+	GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 	return (true);
 }
 
@@ -3759,7 +3759,7 @@ GMT_LOCAL bool map_init_lambeq (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip;
 		GMT->current.map.left_edge = &map_left_rect;
 		GMT->current.map.right_edge = &map_right_rect;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 	}
 	else {
@@ -3853,7 +3853,7 @@ GMT_LOCAL bool map_init_ortho (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip;
 		GMT->current.map.left_edge = &map_left_rect;
 		GMT->current.map.right_edge = &map_right_rect;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 	}
 	else {
@@ -3991,7 +3991,7 @@ GMT_LOCAL bool map_init_genper (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip_old;
 		GMT->current.map.left_edge = &gmt_left_genper;
 		GMT->current.map.right_edge = &gmt_right_genper;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 		GMT->current.map.jump = &map_jump_not;
 		search = true;
@@ -4079,7 +4079,7 @@ GMT_LOCAL bool map_init_gnomonic (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip;
 		GMT->current.map.left_edge = &map_left_rect;
 		GMT->current.map.right_edge = &map_right_rect;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 	}
 	else {
@@ -4163,7 +4163,7 @@ GMT_LOCAL bool map_init_azeqdist (struct GMT_CTRL *GMT) {
 		GMT->current.map.clip = &map_rect_clip;
 		GMT->current.map.left_edge = &map_left_rect;
 		GMT->current.map.right_edge = &map_right_rect;
-		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
+		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 60.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 	}
 	else {
