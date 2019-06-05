@@ -5797,7 +5797,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		sprintf(scale_c, "1:1");	/* Good for map|grdproject but will blow in user hands for the others */
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
-		int EPSGID;
+		int   EPSGID;
 		char *pszResult = NULL;
 		OGRSpatialReferenceH  hSRS;
 		OGRErr eErr = OGRERR_NONE;
@@ -5806,6 +5806,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		char buffer [GMT_LEN256] = {""};
 		FILE *fp = NULL;
 #endif
+
+		if ((pch = strstr(szProj4, "+width=")) != NULL || (pch = strstr(szProj4, "+scale=")) != NULL) {
+			snprintf (scale_c, GMT_LEN32-1, pch);
+			pch[0] = '\0';			/* Strip it */
+		}
 
 		if (szProj4[0] == '+')		/* Let it both work: -J+epsg or -Jepsg */
 			EPSGID = atoi(&szProj4[1]);
@@ -5823,6 +5828,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			return (pStrOut);
 		}
 		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
+		if (scale_c) strcat (szProj4, scale_c);		/* Add the width/scale found above */
 		CPLFree(pszResult);
 		OSRDestroySpatialReference(hSRS);
 
@@ -6218,7 +6224,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%sW", &token[6]);
 		//wipe_substr(szProj4, token);
 		GMT->current.proj.gave_map_width = 1;
-		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, scale_c);
+		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, &token[6]);
 	}
 
 	*scale_pos = (int)strlen(opt_J);		/* The position at which the scale string will be appended */

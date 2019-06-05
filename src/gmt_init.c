@@ -9278,7 +9278,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_chunked_auto;
 			else if (*lower_value == 'c') /* classic */
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
-			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* Chunk size: vert,hor */
+			else if ((i = sscanf (value, "%" PRIuS " , %" PRIuS, /* Chunk size: vert,hor */
 			         &GMT->current.setting.io_nc4_chunksize[0], &GMT->current.setting.io_nc4_chunksize[1])) > 0) {
 				if (i == 1) /* Use chunk size for both horizontal and vertical dimension */
 					GMT->current.setting.io_nc4_chunksize[1] = GMT->current.setting.io_nc4_chunksize[0];
@@ -14117,7 +14117,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
 
-	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
+	if ((pch = strchr(dest, '/')) != NULL || (pch = strstr(dest, "+width=")) != NULL || (pch = strstr(dest, "+scale=")) != NULL)
+		/* If we have a scale, drop it before passing the string to GDAL */
 		pch[0] = '\0';
 
 	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
