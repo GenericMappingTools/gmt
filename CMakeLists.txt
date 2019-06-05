@@ -72,7 +72,6 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 # Find UNIX commands
 include (FindUnixCommands)
 find_package (Git)
-find_program (XZ NAMES xz)
 
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
