@@ -11671,7 +11671,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
 	}
 	else if (!strncmp (name, "pshistogram", 11U)) {	/* Check for -I option */
-		if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* -I writes dataset */
+		if ((opt = GMT_Find_Option (API, 'I', options))) return false;	/* -I writes dataset */
 	}
 	else if (!strncmp (name, "pssolar", 7U)) {	/* Check for -M -I options */
 		if ((opt = GMT_Find_Option (API, 'M', options))) return false;	/* -M writes dataset */
