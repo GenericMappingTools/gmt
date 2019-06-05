@@ -953,7 +953,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			Bx[col] = strdup (axes);
 		}
 		
-		if (!strncmp (Ctrl->S[GMT_X].extra, "+n", 2U)) /* No need to plot frame */
+		if (Ctrl->S[GMT_X].extra && !strncmp (Ctrl->S[GMT_X].extra, "+n", 2U)) /* No need to plot frame */
 			no_frame = true;
 			
 		/* Write out the subplot information file */
