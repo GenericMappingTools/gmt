@@ -8,7 +8,7 @@ steps:
 - bash: |
     set -x -e
     conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
-    conda install libnetcdf libcurl libgdal pcre ninja
+    conda install libnetcdf libcurl libgdal pcre fftw ninja
     conda list
   displayName: Install dependencies via conda
 
