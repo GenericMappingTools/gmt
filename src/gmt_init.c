@@ -5228,7 +5228,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_ANNOT_OBLIQUE */
-	GMT->current.setting.map_annot_oblique = 1;
+	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
@@ -8601,7 +8601,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
 			ival = atoi (value);
-			if (ival >= 0 && ival < 64)
+			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)
 				GMT->current.setting.map_annot_oblique = ival;
 			else
 				error = true;
