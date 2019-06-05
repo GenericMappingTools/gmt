@@ -82,7 +82,7 @@ jobs:
 # Windows - Compile only
 ########################################################################################
 - job:
-  displayName: 'Windows | Compile only'
+  displayName: 'Windows | Compile only (via conda)'
   condition: not(eq(variables['Build.Reason'], 'Schedule'))
 
   pool:
