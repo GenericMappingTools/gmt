@@ -138,7 +138,8 @@ Optional Arguments
 
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
-    the CPT as the session current CPT].
+    the CPT as the session current CPT].  Required for scripts used to make
+    animations via :doc:`movie` where we must pass named CPT files.
 
 .. _-I:
 
