@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, k, j, n;
-	bool B_args = false;
+	bool B_args = false, noB = false;
 	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
@@ -329,6 +329,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 
 			case 'B':	/* Get a handle on -B args if any */
 				B_args = true;
+				if (strstr (opt->arg, "+n")) noB = true;
 				if (opt->arg[0] == 'x') Bx = opt;
 				else if (opt->arg[0] == 'y') By = opt;
 				else if (strchr ("WESNwesnlrbt", opt->arg[0])) Bframe = opt;
@@ -550,7 +551,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
-			if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx))) ) {
+			if (!noB || ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) ) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -B: Must either set -Bx and -By or -B that applies to both axes.\n");
 				n_errors++;
 			}
@@ -558,7 +559,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				Ctrl->S[GMT_X].b = (Bx) ? strdup (Bx->arg) : strdup (Bxy->arg);
 			if (Bxy || By)	/* Did get axis annotation settings */
 				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
-			if (Bframe) {
+			if (noB)
+				Ctrl->S[GMT_X].extra = strdup ("+n");
+			else if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
 				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot"))) {	/* Gave frame modifiers */
 					Ctrl->S[GMT_X].extra = strdup (c);
@@ -645,7 +648,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		double *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_STR16] = {""}, xymode = 'r', report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
-		bool add_annot;
+		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
 		
 		/* Determine if the subplot itself is an overlay */
@@ -950,6 +953,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			Bx[col] = strdup (axes);
 		}
 		
+		if (!strncmp (Ctrl->S[GMT_X].extra, "+n", 2U)) /* No need to plot frame */
+			no_frame = true;
+			
 		/* Write out the subplot information file */
 		
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
@@ -989,15 +995,19 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				else
 					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters */
-				fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
-				if (Ctrl->S[GMT_X].extra) fprintf (fp, "%s", Ctrl->S[GMT_X].extra);	/* Add frame modifiers */
-				fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */
-				if (Ly[row] && Ctrl->S[GMT_X].label[GMT_PRIMARY]) fprintf (fp,"%s", Ctrl->S[GMT_X].label[GMT_PRIMARY]); 
-				fprintf (fp, "%c", GMT_ASCII_GS); 	/* Next is y labels,  Either given of just YLABEL */
-				if (Lx[col] && Ctrl->S[GMT_Y].label[GMT_PRIMARY]) fprintf (fp, "%s", Ctrl->S[GMT_Y].label[GMT_PRIMARY]);
-				fprintf (fp, "%c%s", GMT_ASCII_GS, Ctrl->S[GMT_X].b); 	/* Next is x annotations [afg] */
-				fprintf (fp, "%c%s", GMT_ASCII_GS, Ctrl->S[GMT_Y].b); 	/* Next is y annotations [afg] */
-				fprintf (fp, "%c\n", GMT_ASCII_GS);
+				if (no_frame)
+					fprintf (fp, "\t%c+n%c%c%c%c%c\n", GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS);	/* Pass -B+n only */
+				else {
+					fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
+					if (Ctrl->S[GMT_X].extra) fprintf (fp, "%s", Ctrl->S[GMT_X].extra);	/* Add frame modifiers */
+					fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */
+					if (Ly[row] && Ctrl->S[GMT_X].label[GMT_PRIMARY]) fprintf (fp,"%s", Ctrl->S[GMT_X].label[GMT_PRIMARY]); 
+					fprintf (fp, "%c", GMT_ASCII_GS); 	/* Next is y labels,  Either given of just YLABEL */
+					if (Lx[col] && Ctrl->S[GMT_Y].label[GMT_PRIMARY]) fprintf (fp, "%s", Ctrl->S[GMT_Y].label[GMT_PRIMARY]);
+					fprintf (fp, "%c%s", GMT_ASCII_GS, Ctrl->S[GMT_X].b); 	/* Next is x annotations [afg] */
+					fprintf (fp, "%c%s", GMT_ASCII_GS, Ctrl->S[GMT_Y].b); 	/* Next is y annotations [afg] */
+					fprintf (fp, "%c\n", GMT_ASCII_GS);
+				}
 			}
 			gmt_M_str_free (By[row]);
 		}
