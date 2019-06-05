@@ -24,7 +24,7 @@ if (DO_TESTS)
 	endif (MODERNIZE_TESTS)
 
 	# list of test dirs {Note: You must add new test sub-directories here}
-	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
+	set (GMT_TEST_DIRS byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
 		genper gmt_core gmtconvert gmtlogo gmtinfo gmtmath gmtregress gmtselect gmtsimplify
 		gmtspatial gmtconnect gmtvector grd2xyz grdblend grdclip grdcontour grdcut
 		grdedit grdfft grdfill grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
@@ -34,6 +34,10 @@ if (DO_TESTS)
 		psimage pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy
 		psxyz sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
 		triangulate img meca mgd77 potential spotter x2sys)
+
+	if (DO_API_TESTS)
+		list (APPEND GMT_TEST_DIRS api)
+	endif (DO_API_TESTS)
 
 	set (GMT_TEST_DIRS_MODERN modern exmod)
 
