@@ -322,7 +322,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	if (pos > 0 && line[pos]) {	/* Gave colors */
 		while (line[pos]) {
 			f = line[pos++];
-			if (line[pos] == '-')	/* Signal for transpacency masking */
+			if (line[pos] == '-')	/* Signal for transparency masking */
 				fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1,	fb_rgb[3] = 0;
 			else {
 				end = pos;
@@ -1334,9 +1334,9 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
 		char string[GMT_LEN256] = {""};
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
-		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifers to the current CPT name */
+		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
 		gmt_M_str_free (*arg);
-		*arg = strdup (string);		/* Pass back the name of the current CPT with modifers */
+		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
 	}
 	else if (*arg == NULL) {	/* Noting given */
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
