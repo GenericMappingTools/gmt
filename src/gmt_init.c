@@ -12223,6 +12223,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			return NULL;
 	}
 
+	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
 		int id, fig;
@@ -12236,7 +12238,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		gmtinit_get_last_dimensions (API, fig);	/* Get dimensions of previous plot, if any */
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
-		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
