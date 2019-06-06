@@ -34,8 +34,7 @@ set (GMT_PACKAGE_NAME "GMT")
 # a short description of the gmt project (only a few words).
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
-# GMT_VERSION_YEAR is set to current date in
-# cmake/modules/ConfigCMake.cmake if not specified here:
+# Year of the current GMT release.
 set (GMT_VERSION_YEAR "2019")
 
 # The GMT package version.
