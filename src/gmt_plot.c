@@ -5793,8 +5793,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		strncpy(scale_c, &pch[1], GMT_LEN32-1);
 		pch[0] = '\0';
 	}
-	else
-		sprintf(scale_c, "1:1");	/* Good for map|grdproject but will blow in user hands for the others */
+	else {
+		GMT->current.ps.active ? sprintf(scale_c, "14c") : sprintf(scale_c, "1:1");
+	}
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
 		int   EPSGID;
