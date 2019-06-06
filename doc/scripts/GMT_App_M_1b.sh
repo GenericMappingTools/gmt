@@ -7,16 +7,23 @@
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
 cat << EOF > skip.lis
+acton
+bamako
 batlow
 berlin
 bilbao
 broc
+buda
 cork
 davos
+devon
 grayC
+hawaii
+imola
 lajolla
 lapaz
 lisbon
+nuuk
 oleron
 oslo
 roma
