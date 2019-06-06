@@ -5809,7 +5809,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 #endif
 
 		if ((pch = strstr(szProj4, "+width=")) != NULL || (pch = strstr(szProj4, "+scale=")) != NULL) {
-			snprintf (scale_c, GMT_LEN32-1, pch);
+			snprintf (scale_c, GMT_LEN32-1, "%s", pch);
 			pch[0] = '\0';			/* Strip it */
 		}
 
@@ -5829,7 +5829,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			return (pStrOut);
 		}
 		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
-		if (scale_c) strcat (szProj4, scale_c);		/* Add the width/scale found above */
+		if (scale_c[0] != '\0') strcat (szProj4, scale_c);		/* Add the width/scale found above */
 		CPLFree(pszResult);
 		OSRDestroySpatialReference(hSRS);
 
