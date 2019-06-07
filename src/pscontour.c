@@ -390,7 +390,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|<contours>][<labelinfo>] [%s] [-C<contours>] [-D<template>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<indextable>] [%s] [-I] [%s] %s[-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<indextable>] [%s] [-I] %s[-L<pen>] [-N]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", API->O_OPT, API->P_OPT, GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",

@@ -17,7 +17,6 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
-|-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ] [ |-N| ] [ |-O| ]
 [ |-P| ] [ |-T| ]
 [ |SYN_OPT-U| ]

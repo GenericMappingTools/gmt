@@ -74,8 +74,6 @@ Optional Arguments
     ASCII table of the resulting x,y data instead. Upper case **O** will
     output all x,y bin data even when y == 0. 
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 **-Ll**\ \|\ **h**\ \|\ **b**

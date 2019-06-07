@@ -86,12 +86,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A, GMT_INSET_B);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, API->K_OPT);
 	}
 	else {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-F[l|t]%s]\n", GMT_PANEL);
-		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_Jz_OPT, API->K_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t%s\n", API->K_OPT);
 	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", API->O_OPT, API->P_OPT, GMT_TROSE_DIR);

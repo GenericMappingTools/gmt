@@ -21,7 +21,7 @@ Synopsis
 [ |-C| ]
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
-[ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-G|\ *fill* ]
 [ |-K| ]
 [ |-L|\ *nodegrid*\ [**+i**\ \|\ **o**\ ] ]
 [ |-N| ] [ |-O| ]

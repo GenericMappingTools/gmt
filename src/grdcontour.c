@@ -179,7 +179,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] [%s] %s [-L<low>/<high>|n|N|P|p]\n", GMT_Jz_OPT, GMT_CONTG, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s [-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>[<unit>]][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",

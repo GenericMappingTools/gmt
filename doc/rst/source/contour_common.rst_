@@ -113,8 +113,6 @@ Optional Arguments
 **-I**
     Color the triangles using the CPT.
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 **-L**\ *pen* :ref:`(more ...) <set-pens>`

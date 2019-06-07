@@ -120,8 +120,6 @@ Optional Arguments
     specific intensity scenario then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
-.. include:: explain_-Jz.rst_
-
 .. _-M:
 
 **-M**

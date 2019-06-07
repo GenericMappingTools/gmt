@@ -150,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s\n", name, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-F%s]\n", GMT_B_OPT, GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
