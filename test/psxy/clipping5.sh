@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-#
+# GMT_KNOWN_FAILURE
 # Check ellipse clipping and filling/outline
-# Note: This will pass the test since the original is the same as the output
-# The issues have been posted to gmt-dev forum
+# Middle plot polygons have odd stray line along boundaries
+# Annotation mismatch will go away once bug is fixed and we rebuild orig
 ps=clipping5.ps
 
 cat << EOF > t.txt

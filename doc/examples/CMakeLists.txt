@@ -153,12 +153,6 @@ if (UNIX AND DO_ANIMATIONS)
 endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
-if (MODERNIZE_TESTS)
-	set (SCRIPT_MODE "M")
-else (MODERNIZE_TESTS)
-#set (SCRIPT_MODE "C")
-	set (SCRIPT_MODE "")
-endif (MODERNIZE_TESTS)
 
 if (DO_EXAMPLES) # AND UNIX)
 	# this file takes care of setting up the test environment
@@ -177,7 +171,7 @@ if (DO_EXAMPLES) # AND UNIX)
 		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND ${BASH} gmtest ${_job} ${SCRIPT_MODE})
+			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job ${_examples})
 elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 	# only supporting examples with installed GMT in %path%
@@ -187,7 +181,7 @@ elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 			${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${_job_path}
-			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job} ${SCRIPT_MODE})
+			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 	endforeach (_job ${_examples_win})
 endif (DO_EXAMPLES) # AND UNIX)
 

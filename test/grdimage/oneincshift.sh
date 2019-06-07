@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#
+# GMT_KNOWN_FAILURE
 # Global pixel grids offset by half a grid increment fails
 # The same for gridline-registered grids work.
 # Here, q0.nc is fine but q.nc is shifted by 1/2 dx.

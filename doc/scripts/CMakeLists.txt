@@ -161,12 +161,6 @@ add_depend_to_target (docs_pdf_depends _docs_pdf_scripts_fig _docs_scripts_verba
 # run tests
 if (DO_TESTS)
 	# this file takes care of setting up the test environment
-	if (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "M")
-	else (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "C")
-	endif (MODERNIZE_TESTS)
-
 	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
@@ -180,7 +174,7 @@ if (DO_TESTS)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND ${BASH} gmtest ${_job} ${SCRIPT_MODE})
+			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job)
 endif (DO_TESTS)
 
