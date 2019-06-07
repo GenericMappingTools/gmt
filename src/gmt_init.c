@@ -7670,7 +7670,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (i < 4 || i > 6 || ((!GMT->common.R.oblique && gmt_check_region (GMT, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	gmt_M_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by gmt_map_setup */
-	//error += gmt_M_check_condition (GMT, i == 6 && !GMT->current.proj.JZ_set, "-R with six parameters requires -Jz|Z\n");
 	if (i == 6 && !GMT->current.proj.JZ_set) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-R with six parameters but no -Jz|Z given - ignore zmin/zmax\n");
 		GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
