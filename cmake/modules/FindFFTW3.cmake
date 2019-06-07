@@ -89,5 +89,3 @@ if (FFTW3F_THREADS_LIBRARY)
 	list (APPEND FFTW3F_LIBRARIES ${FFTW3F_THREADS_LIBRARY})
 endif (FFTW3F_THREADS_LIBRARY)
 set (FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -217,5 +217,3 @@ if (GMT_DOCS_DEPEND_ON_GMT)
 else (GMT_DOCS_DEPEND_ON_GMT)
 	add_custom_target (gmt_for_img_convert)
 endif (GMT_DOCS_DEPEND_ON_GMT)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

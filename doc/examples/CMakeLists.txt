@@ -184,5 +184,3 @@ elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 	endforeach (_job ${_examples_win})
 endif (DO_EXAMPLES) # AND UNIX)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

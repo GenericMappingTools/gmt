@@ -143,7 +143,7 @@ for ps in *.ps ; do
       test -z "$rms" && rms=NA
       echo "${script_dir}/${ps}: RMS Error = $rms [PASS]"
     fi
-  fi	
+  fi
 done
 }
 
@@ -253,5 +253,3 @@ chmod 755 gmtest.sh
 if [ "X$script_mode" = "XM" ] && [ "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi
-
-# vim: ft=sh

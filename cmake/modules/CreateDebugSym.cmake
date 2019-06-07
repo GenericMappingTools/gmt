@@ -108,5 +108,3 @@ else (APPLE AND DEBUG_BUILD)
 		# do nothing
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 endif (APPLE AND DEBUG_BUILD)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

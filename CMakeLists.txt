@@ -231,5 +231,3 @@ message(
 #foreach (_variableName ${_variableNames})
 #	message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

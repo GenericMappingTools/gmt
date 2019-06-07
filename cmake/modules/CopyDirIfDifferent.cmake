@@ -40,5 +40,3 @@ endif(NOT DEFINED _COPY_DIR_IF_DIFFERENT_CMAKE_)
 if (DEFINED INVOKE_COPY_DIR_IF_DIFFERENT)
 	file (COPY ${SOURCE} DESTINATION ${DESTINATION})
 endif (DEFINED INVOKE_COPY_DIR_IF_DIFFERENT)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

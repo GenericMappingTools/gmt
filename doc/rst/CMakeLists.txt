@@ -193,5 +193,3 @@ install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MANDIR}/man5
 	COMPONENT Runtime
 	FILES_MATCHING PATTERN "*.5.gz")
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

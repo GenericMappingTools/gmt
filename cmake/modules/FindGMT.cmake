@@ -123,5 +123,3 @@ find_package_handle_standard_args (GMT
 set (GMT_LIBRARIES ${GMT_LIBRARY})
 set (GMT_INCLUDE_DIRS ${GMT_INCLUDE_DIR})
 string (REPLACE "-DNDEBUG" "" GMT_DEFINITIONS "${_gmt_cflags_other}")
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -170,7 +170,7 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-	if (WIN32 AND GMTMEX_PATH) 
+	if (WIN32 AND GMTMEX_PATH)
 		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
 			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
@@ -263,5 +263,3 @@ set (CPACK_SOURCE_GENERATOR TGZ TBZ2 ZIP)
 
 # This must always be last:
 include (CPack)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

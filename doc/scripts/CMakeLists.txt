@@ -199,5 +199,3 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -39,5 +39,3 @@ install (FILES ${SUPPL_EXAMPLE_FILES}
 install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
 	DESTINATION ${GMT_DOCDIR}/supplements/meca
 	COMPONENT Documentation)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

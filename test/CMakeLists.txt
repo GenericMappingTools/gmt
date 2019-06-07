@@ -65,5 +65,3 @@ if (DO_TESTS)
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

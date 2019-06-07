@@ -532,7 +532,7 @@ cmake_pop_check_state()
 #check_type_size (double         SIZEOF_DOUBLE)
 #check_type_size (float         SIZEOF_FLOAT)
 #check_type_size (int            SIZEOF_INT)
-#check_type_size (long           SIZEOF_LONG) 
+#check_type_size (long           SIZEOF_LONG)
 #check_type_size (short          SIZEOF_SHORT)
 
 if (NOT DEFINED STDC_HEADERS)
@@ -611,5 +611,3 @@ endif (NOT DEFINED STDC_HEADERS)
 #     int main (){return 0;}
 #     "
 #   SIZEOF_WCHAR_T_IS_4)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
