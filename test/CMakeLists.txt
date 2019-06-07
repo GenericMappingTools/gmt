@@ -17,21 +17,13 @@
 
 # run tests
 if (DO_TESTS)
-	# list of test dirs {Note: You must add new test sub-directories here}
-	set (GMT_TEST_DIRS byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
-		genper gmt_core gmtconvert gmtlogo gmtinfo gmtmath gmtregress gmtselect gmtsimplify
-		gmtspatial gmtconnect gmtvector grd2cpt grd2xyz grdblend grdclip grdcontour grdcut
-		grdedit grdfft grdfill grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
-		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
-		grdvector grdview grdvolume greenspline gshhg kml makecpt mapproject nearneighbor
-		ogr postscriptlight project psbasemap psclip pscoast pscontour psevents pshistogram
-		psimage pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy
-		psxyz sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
-		triangulate img meca mgd77 potential spotter x2sys modern exmod)
+	# Automatically detect all subdirectories for testing
+	include (GmtHelperMacros)
+	get_subdir_list (GMT_TEST_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
-	if (DO_API_TESTS)
-		list (APPEND GMT_TEST_DIRS api)
-	endif (DO_API_TESTS)
+	if (NOT DO_API_TESTS)
+		list (REMOVE_ITEM GMT_TEST_DIRS api)
+	endif (NOT DO_API_TESTS)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
