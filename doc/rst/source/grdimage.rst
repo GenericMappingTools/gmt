@@ -21,7 +21,6 @@ Synopsis
 [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ *color*\ [**+b**\ \|\ **+f**] ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
-[ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
 [ |SYN_OPT-Rz| ]

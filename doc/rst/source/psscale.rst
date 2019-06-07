@@ -20,7 +20,6 @@ Synopsis
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [*max\_intens*\ \|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ]
 [ |-L|\ [**i**][*gap*] ]
 [ |-M| ]

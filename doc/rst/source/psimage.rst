@@ -20,7 +20,6 @@ Synopsis
 [ |-G|\ [*color*\ ][**+b**\ \|\ **+f**\ \|\ **+t**] ]
 [ |-I| ]
 [ |-J|\ *parameters* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ]
 [ |-M| ]
 [ |-O| ]

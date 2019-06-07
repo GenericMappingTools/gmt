@@ -102,8 +102,6 @@ Optional Arguments
 
 .. include:: explain_contlabel.rst_
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 **-L**\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p**

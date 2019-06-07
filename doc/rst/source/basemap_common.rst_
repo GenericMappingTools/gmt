@@ -64,8 +64,6 @@ Optional Arguments
     to specify panel parameters for just that panel [Default uses the same panel
     parameters for all selected map features].
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 .. include:: explain_-L_scale.rst_

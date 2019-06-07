@@ -21,7 +21,7 @@ Synopsis
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-I| ]
 [ |-K| ]
 [ |-L|\ *pen* ] [ |-N| ]
 [ |-O| ]
