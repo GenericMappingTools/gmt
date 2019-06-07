@@ -75,38 +75,6 @@ set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_GIT_REVI
 
 set (GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUMMARY}, Version ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")
 
-# Get date
-if(DEFINED ENV{SOURCE_DATE_EPOCH})
-	EXECUTE_PROCESS(
-	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}" "+%Y;%m;%d;%B"
-	  OUTPUT_VARIABLE _today
-	  OUTPUT_STRIP_TRAILING_WHITESPACE)
-else(DEFINED ENV{SOURCE_DATE_EPOCH})
-	try_run (_exit_today _compiled_today
-		${CMAKE_BINARY_DIR}/CMakeTmp
-		${CMAKE_MODULE_PATH}/today.c
-		CMAKE_FLAGS
-		RUN_OUTPUT_VARIABLE _today)
-
-	if (NOT _compiled_today OR _exit_today EQUAL -1)
-		message (WARNING "Date not implemented, please file a bug report.")
-		set(_today "1313;13;13;Undecember")
-	endif (NOT _compiled_today OR _exit_today EQUAL -1)
-endif(DEFINED ENV{SOURCE_DATE_EPOCH})
-
-list(GET _today 0 YEAR)
-list(GET _today 1 MONTH)
-list(GET _today 2 DAY)
-list(GET _today 3 MONTHNAME)
-list(GET _today 0 1 2 DATE)
-string (REPLACE ";" "-" DATE "${DATE}")
-set (_today)
-
-# set package date
-if (NOT GMT_VERSION_YEAR)
-	set (GMT_VERSION_YEAR ${YEAR})
-endif (NOT GMT_VERSION_YEAR)
-
 # apply license restrictions
 if (LICENSE_RESTRICTED) # on
 	if (LICENSE_RESTRICTED STREQUAL GPL)
@@ -249,5 +217,3 @@ if (GMT_DOCS_DEPEND_ON_GMT)
 else (GMT_DOCS_DEPEND_ON_GMT)
 	add_custom_target (gmt_for_img_convert)
 endif (GMT_DOCS_DEPEND_ON_GMT)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

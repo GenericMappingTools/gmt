@@ -22,6 +22,7 @@
 # add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
 # get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
+# get_subdir_list (RESULT CURDIR)
 # install_module_symlink (MODULE [ MODULE ... ])
 
 if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
@@ -97,6 +98,20 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		endforeach(_dir)
 	endmacro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
 
+	# get_subdirlist (RESULT CURDIR)
+	# example: get_subdir_list (dirlist ${CMAKE_CURRENT_SOURCE_DIR})
+	# From https://stackoverflow.com/q/7787823
+	macro(GET_SUBDIR_LIST result curdir)
+	file(GLOB children RELATIVE ${curdir} ${curdir}/*)
+	set(dirlist "")
+	foreach (child ${children})
+		if (IS_DIRECTORY ${curdir}/${child})
+			list(APPEND dirlist ${child})
+		endif()
+	endforeach()
+	set(${result} ${dirlist})
+	endmacro()
+
 	# install_module_symlink (MODULE [ MODULE ... ])
 	# example: install_module_symlink (grdimage psxy)
 	if (NOT DEFINED GMT_INSTALL_MODULE_LINKS)
@@ -136,5 +151,3 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 	endmacro (INSTALL_MODULE_SYMLINK)
 
 endif(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

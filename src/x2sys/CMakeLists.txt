@@ -44,5 +44,3 @@ if (UNIX)
 		DESTINATION ${GMT_DOCDIR}/supplements/x2sys
 		COMPONENT Documentation)
 endif (UNIX)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

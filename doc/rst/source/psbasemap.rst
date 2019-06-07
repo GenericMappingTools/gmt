@@ -20,7 +20,6 @@ Synopsis
 [ |-D|\ *insetbox* ]
 [ |-F|\ *box* ]
 [ |-K| ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-O| ]
 [ |-P| ]

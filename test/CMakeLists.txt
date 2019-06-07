@@ -17,25 +17,13 @@
 
 # run tests
 if (DO_TESTS)
-	if (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "M")
-	else (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "C")
-	endif (MODERNIZE_TESTS)
+	# Automatically detect all subdirectories for testing
+	include (GmtHelperMacros)
+	get_subdir_list (GMT_TEST_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
-	# list of test dirs {Note: You must add new test sub-directories here}
-	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
-		genper gmt_core gmtconvert gmtlogo gmtinfo gmtmath gmtregress gmtselect gmtsimplify
-		gmtspatial gmtconnect gmtvector grd2xyz grdblend grdclip grdcontour grdcut
-		grdedit grdfft grdfill grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
-		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
-		grdvector grdview grdvolume greenspline gshhg kml makecpt mapproject nearneighbor
-		ogr postscriptlight project psbasemap psclip pscoast pscontour psevents pshistogram
-		psimage pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy
-		psxyz sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
-		triangulate img meca mgd77 potential spotter x2sys)
-
-	set (GMT_TEST_DIRS_MODERN modern exmod)
+	if (NOT DO_API_TESTS)
+		list (REMOVE_ITEM GMT_TEST_DIRS api)
+	endif (NOT DO_API_TESTS)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
@@ -65,20 +53,7 @@ if (DO_TESTS)
 		foreach (_test ${_test_scripts})
 			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND ${BASH} gmtest ${_test} ${SCRIPT_MODE})
-		endforeach (_test ${_test_scripts})
-	endforeach (_test_dir ${GMT_TEST_DIRS})
-	# add modern tests
-	foreach (_test_dir ${GMT_TEST_DIRS_MODERN})
-		# find files RELATIVE so that test NAMEs are not absolute paths
-		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
-		foreach (_test ${_test_scripts})
-			add_test (NAME ${_test}
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND ${BASH} gmtest ${_test} m)
+				COMMAND ${BASH} gmtest ${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

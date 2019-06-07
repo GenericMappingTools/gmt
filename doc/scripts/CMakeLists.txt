@@ -152,19 +152,15 @@ foreach (_script ${_scr_strip})
 endforeach (_script)
 
 # Add build target
-add_custom_target (_docs_scripts_fig DEPENDS ${_scripts_pdf} ${_scripts_png})
 add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
-add_depend_to_target (docs_depends _docs_scripts_fig _docs_scripts_verbatim)
+add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png})
+add_custom_target (_docs_pdf_scripts_fig DEPENDS ${_scripts_pdf})
+add_depend_to_target (docs_html_depends _docs_html_scripts_fig _docs_scripts_verbatim)
+add_depend_to_target (docs_pdf_depends _docs_pdf_scripts_fig _docs_scripts_verbatim)
 
 # run tests
 if (DO_TESTS)
 	# this file takes care of setting up the test environment
-	if (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "M")
-	else (MODERNIZE_TESTS)
-		set (SCRIPT_MODE "C")
-	endif (MODERNIZE_TESTS)
-
 	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
@@ -178,7 +174,7 @@ if (DO_TESTS)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND ${BASH} gmtest ${_job} ${SCRIPT_MODE})
+			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job)
 endif (DO_TESTS)
 
@@ -203,5 +199,3 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

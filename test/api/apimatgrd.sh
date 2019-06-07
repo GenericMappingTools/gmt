@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 #
 # Test the C API for reading grd plotting matrix
-ps=testapi_matrix_plot.ps
+ps=apimatgrd.ps
 testapi_matrix_plot > $ps

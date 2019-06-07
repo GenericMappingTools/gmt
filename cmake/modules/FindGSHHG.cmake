@@ -89,5 +89,3 @@ endif (_GSHHG_FILE AND NOT GSHHG_FOUND)
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (GSHHG DEFAULT_MSG
 	GSHHG_PATH GSHHG_VERSION)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

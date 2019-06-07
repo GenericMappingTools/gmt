@@ -455,7 +455,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				break;
 			case 'Z':	/* Vary symbol color with z */
 				Ctrl->Z.active = true;
-				Ctrl->Z.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->Z.file = strdup (opt->arg);
 				break;
 
 			default:	/* Report bad options */
@@ -463,6 +463,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				break;
 		}
 	}
+
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->Z.active, &(Ctrl->Z.file));
 
 	/* Check that the options selected are mutually consistent */
 

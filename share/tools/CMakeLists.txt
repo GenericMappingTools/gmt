@@ -44,5 +44,3 @@ install (FILES
 	gmt_completion.bash
 	DESTINATION ${BASH_COMPLETION_DIR}
 	COMPONENT Runtime)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

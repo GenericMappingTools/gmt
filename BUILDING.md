@@ -1,25 +1,32 @@
 # Building GMT
 
+This document describes how to build GMT from source codes on Linux and macOS.
+
 ## Contents
 
+For general users:
+
 - [Build and runtime dependencies](#build-and-runtime-dependencies)
-- [Install dependencies](#install-dependencies)
+- [Installing dependencies](#installing-dependencies)
   * [Ubuntu/Debian](#ubuntudebian)
   * [RHEL/CentOS](#rhelcentos)
   * [Fedora](#fedora)
   * [Archlinux](#archlinux)
   * [FreeBSD](#freebsd)
   * [macOS with homebrew](#macos-with-homebrew)
-- [Get GMT source codes](#get-gmt-source-codes)
+- [Getting GMT source codes](#getting-gmt-source-codes)
 - [Configuring](#configuring)
 - [Building GMT source codes](#building-gmt-source-codes)
+- [Installing](#installing)
+- [Setting path](#setting-path)
+
+For developers and advanced users:
+
 - [Building documentation](#building-documentation)
-- [Install](#install)
-- [Set path](#set-path)
 - [Running tests](#running-tests)
-- [Updating the development source codes](#updating-the-development-source-codes)
+- [Creating source packages](#creating-source-packages)
 - [Packaging](#packaging)
-- [Creating a source package](#creating-a-source-package)
+- [Updating the development source codes](#updating-the-development-source-codes)
 
 ## Build and runtime dependencies
 
@@ -54,7 +61,7 @@ You also need download support data:
 - [GSHHG](https://www.soest.hawaii.edu/pwessel/gshhg/): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
 - [DCW-GMT](https://www.soest.hawaii.edu/pwessel/dcw/): The Digital Chart of the World (optional, >=1.0.5)
 
-## Install dependencies
+## Installing dependencies
 
 ### Ubuntu/Debian
 
@@ -195,7 +202,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     # to build the documentation in PDF format
     brew cask install mactex-no-gui
 
-## Get GMT source codes
+## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
 are available from:
@@ -203,16 +210,16 @@ are available from:
 - [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
 - [GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
 
+If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
+
+    git clone https://github.com/GenericMappingTools/gmt
+
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz) from:
 
 - [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
 - [GMT FTP site](ftp://ftp.soest.hawaii.edu/gmt)
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
-
-If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
-
-    git clone https://github.com/GenericMappingTools/gmt
 
 ## Configuring
 
@@ -227,13 +234,14 @@ controlled by two configuration files in the `cmake` directory:
     There is a template file, *ConfigUserTemplate.cmake*, that you should copy
     to *ConfigUser.cmake* and make your changes therein.
 
-In the source tree, copy `cmake/ConfigUserTemplate.cmake` to `cmake/ConfigUser.cmake`,
+In the source tree, copy the template configuration file
+`cmake/ConfigUserTemplate.cmake` to `cmake/ConfigUser.cmake`,
 and edit the file according to your demands. This is an example:
 
 ```
 set (CMAKE_INSTALL_PREFIX /opt/gmt)
-set (GSHHG_ROOT <path to gshhg>)
-set (DCW_ROOT <path to dcw>)
+set (GSHHG_ROOT /path/to/gshhg)
+set (DCW_ROOT /path/to/dcw)
 ```
 
 See the additional comments in `cmake/ConfigUserTemplate.cmake` for more details.
@@ -265,6 +273,32 @@ to enable parallel build, in which *jobs* is the maximum number of concurrent
 processes to use when building. If *jobs* is omitted the native build tool's
 default number is used.
 
+
+## Installing
+
+```
+cmake --build . --target install
+```
+
+will install gmt executable, library, development headers and built-in data
+to the specified GMT install location.
+Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
+UNIX manpages, and HTML and PDF documentation.
+
+Depending on where GMT is being installed, you might need
+write permission for this step so you can copy files to system directories.
+Using ``sudo`` will often do the trick.
+
+## Setting path
+
+Make sure you set the PATH to include the directory containing the GMT executables (BINDIR)
+if this is not a standard directory like /usr/local/bin. Then, you should now be able to
+run GMT programs.
+
+---
+
+**Below are instructions for developers and advanced users.**
+
 ## Building documentation
 
 The GMT documentations are available in different formats and can be generated with:
@@ -283,26 +317,6 @@ Manpages, PDF, and HTML files from the sources. This is convenient if Sphinx
 and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 
-## Install
-
-```
-cmake --build . --target install
-```
-
-will install gmt executable, library, development headers and built-in data
-to the specified GMT install location.
-Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-UNIX manpages, and HTML and PDF documentation.
-
-Depending on where GMT is being installed, you might need
-write permission for this step so you can copy files to system directories.
-Using ``sudo`` will often do the trick.
-
-## Set path
-
-Make sure you set the PATH to include the directory containing the GMT executables (BINDIR)
-if this is not a standard directory like /usr/local/bin. Then, you should now be able to
-run GMT programs.
 
 ## Running tests
 
@@ -315,6 +329,7 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
+set (DO_API_TESTS ON)
 ```
 
 Then run:
@@ -329,6 +344,31 @@ You can also select individual tests using regexp with ctest, e.g.:
 
 ```
 ctest -R ex2[3-6]
+```
+
+## Creating source packages
+
+Edit `cmake/ConfigDefault.cmake` and set
+*GMT_PACKAGE_VERSION_MAJOR*, *GMT_PACKAGE_VERSION_MINOR*, and
+*GMT_PACKAGE_VERSION_PATCH*. Also uncomment and set
+*GMT_SOURCE_CODE_CONTROL_VERSION_STRING* to the current git commit hash.
+Then create source packages with:
+
+```
+cmake --build . --target gmt_release      # export the source tree and install doc
+cmake --build . --target gmt_release_tar
+```
+
+## Packaging
+
+Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2),
+Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install
+[NSIS](http://nsis.sourceforge.net/). After building GMT and the documentation run
+either one of these:
+
+```
+cmake --build . --target package
+cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
 ```
 
 ## Updating the development source codes
@@ -346,33 +386,3 @@ cmake --build . --target install
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
 run cmake again manually.
-
-## Packaging
-
-Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2),
-Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install
-[NSIS](http://nsis.sourceforge.net/). After building GMT and the documentation run
-either one of these:
-
-```
-cmake --build . --target package
-cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
-```
-
-## Creating a source package
-
-Set *GMT_RELEASE_PREFIX* in `cmake/ConfigUser.cmake` and run cmake. Then do
-
-```
-cmake --build . --target gmt_release      # export the source tree and install doc
-```
-
-You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
-set *GMT_PACKAGE_VERSION_MAJOR*, *GMT_PACKAGE_VERSION_MINOR*, and
-*GMT_PACKAGE_VERSION_PATCH*. Also uncomment and set
-*GMT_SOURCE_CODE_CONTROL_VERSION_STRING* to the current git version. Then
-create tarballs with:
-
-```
-cmake --build . --target gmt_release_tar
-```

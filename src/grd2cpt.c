@@ -37,9 +37,9 @@
 #define THIS_MODULE_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
-#define THIS_MODULE_KEYS	"<G{+,>C}"
+#define THIS_MODULE_KEYS	"<G{+,>C},H->"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RVh"
+#define THIS_MODULE_OPTIONS	"->RVh"
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
@@ -77,6 +77,9 @@ struct GRD2CPT_CTRL {
 		bool active;
 		double z_low, z_high;
 	} G;
+	struct H {	/* -H */
+		bool active;
+	} H;
 	struct I {	/* -I[z][c] */
 		bool active;
 		unsigned int mode;
@@ -135,9 +138,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-Sh|l|m|u] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -156,6 +160,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+		GMT_Message (API, GMT_TIME_NONE, "\t-H Also write CPT to stdout [Default just saves as current CPT].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of CPT in one or two ways:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ic Reverse sense of color table as well as back- and foreground color [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Iz Reverse sign of z-values in the color table (takes affect before -G, T are consulted).\n");
@@ -265,6 +271,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
 				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
 								"Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				break;
+			case 'H':	/* Modern mode only: write CPT to stdout */
+				Ctrl->H.active = true;
 				break;
 			case 'I':	/* Invert table */
 				Ctrl->I.active = true;
@@ -380,6 +389,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 		}
 	}
 	
+	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
+		n_errors++;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -H\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Syntax error: -W and -Z cannot be used simultaneously\n");
@@ -419,6 +432,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
+	bool write = false;
 
 	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
@@ -459,7 +473,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
+		Ctrl->C.file = strdup (GMT->init.cpt[0]);
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
@@ -711,8 +725,12 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
+	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
+
+	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
+
+	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);

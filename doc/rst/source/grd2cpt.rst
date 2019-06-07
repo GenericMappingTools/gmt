@@ -17,9 +17,12 @@ Synopsis
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
-[ |-G|\ *zlo*\ /\ *zhi* ] [ |-I|\ [**c**][**z**] ]
+[ |-G|\ *zlo*\ /\ *zhi* ]
+[ |-H| ]
+[ |-I|\ [**c**][**z**] ]
 [ |-L|\ *minlimit/maxlimit* ]
-[ |-M| ] [ |-N| ]
+[ |-M| ]
+[ |-N| ]
 [ |-Q|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u** ]
@@ -35,7 +38,9 @@ Description
 -----------
 
 **grd2cpt** reads one or more grid files and writes a static color palette
-(CPT) file to standard output. The CPT is based on an existing dynamic
+(CPT) file. In classic mode we write the CMT to standard output, while under
+modern mode we simply save the CPT as the current session CPT (but see **-H**).
+The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
 colors is through the data's cumulative distribution function (CDF), so
 that the colors are histogram equalized. Thus if the grid(s) and the
@@ -128,6 +133,13 @@ Optional Arguments
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
     before any resampling. See also :ref:`manipulating_CPTs`
+
+.. _-H:
+
+**-H**\
+    Modern mode only: Write the CPT to standard output as well [Default saves
+    the CPT as the session current CPT].  Required for scripts used to make
+    animations via :doc:`movie` where we must pass named CPT files.
 
 .. _-I:
 

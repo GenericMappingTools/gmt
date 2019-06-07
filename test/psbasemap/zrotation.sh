@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Test script for plain -p<rot> about map center.
 # This should place 4 plots that differ by a rotation about the S pole
 # Currently fails.  Faked the orig by using -JA<rot>... instead [in brackets]

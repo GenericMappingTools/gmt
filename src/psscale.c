@@ -150,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s\n", name, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-F%s]\n", GMT_B_OPT, GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'C':
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -545,6 +545,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
 
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+#if 0
 	if (GMT->current.setting.run_mode == GMT_MODERN && (!Ctrl->C.active || (Ctrl->C.file[0] =='+' && strchr ("uU", Ctrl->C.file[1])))) {
 		sprintf (string, "%s/gmt.cpt", API->gwf_dir);	/* Use this if it exists */
 		if (!access (string, R_OK)) {	/* It does, activate -C<string> */
@@ -555,6 +557,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reuse current CPT file %s/gmt.cpt\n", API->gwf_dir);
 		}
 	}
+#endif
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1589,7 +1592,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		stop_val  = pow (10.0, P->data[P->n_colors-1].z_high);
 	}
 	else {
-		sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+		if (P->mode & GMT_CPT_TIME)	/* Need time axis */
+			sprintf (text, "X%giT/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+		else
+			sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 		start_val = P->data[0].z_low;
 		stop_val  = P->data[P->n_colors-1].z_high;
 	}
@@ -1632,19 +1638,20 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 0;	/* Reset candy flag */
-		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
-			char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
-			unsigned int pos = 0;
-			GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
-			group_sep[0] = GMT_ASCII_GS;
-			GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
-			for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
-				if (!GMT->common.B.active[i]) continue;
-				tmp = strdup (GMT->common.B.string[i]);
-				while (gmt_strtok (tmp, group_sep, &pos, p))
-					gmtlib_parse_B_option (GMT, p);
-				gmt_M_str_free (tmp);
-			}
+	}
+
+	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
+		char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
+		unsigned int pos = 0;
+		GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
+		group_sep[0] = GMT_ASCII_GS;
+		GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
+		for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
+			if (!GMT->common.B.active[i]) continue;
+			tmp = strdup (GMT->common.B.string[i]);
+			while (gmt_strtok (tmp, group_sep, &pos, p))
+				gmtlib_parse_B_option (GMT, p);
+			gmt_M_str_free (tmp);
 		}
 	}
 

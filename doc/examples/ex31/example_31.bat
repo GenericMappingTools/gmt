@@ -47,7 +47,7 @@ echo L 8 LinBiolinumOB L Population in Millions >> legend.txt
 echo N 6 >> legend.txt
 
 REM append city names and population to legend
-gawk "BEGIN {FS=\",\"; f=\"L 8 LinBiolinumO L\"} ($4 > 1000000) {printf \"%%s %%s:\n%%s %%.2f\n\", f, $3, f, $4/1e6}" europe-capitals.csv >> legend.txt
+gawk "BEGIN {FS=\",\"; f=\"L 8p,LinBiolinumO L\"} ($4 > 1000000) {printf \"%%s %%s:\n%%s %%.2f\n\", f, $3, f, $4/1e6}" europe-capitals.csv >> legend.txt
 
 REM reduce annotation font size for legend
 gmt set FONT_ANNOT_PRIMARY 8p

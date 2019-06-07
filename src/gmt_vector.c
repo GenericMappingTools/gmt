@@ -1060,8 +1060,14 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		sing_max = MAX (sing_max, w_abs);
 	}
 
+	if (cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+		double was = cutoff;
+		cutoff = rint (n*cutoff);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
+	}
+
 	if (mode) {
-		 /* mode = 1: Find the m largest singular values, with m = cutoff.
+		 /* mode = 1: Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variace contributions. */

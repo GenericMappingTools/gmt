@@ -301,11 +301,11 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 
 		PSL_setlinecap (PSL, cap);	/* Reset back to default */
 	}
-	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header || GMT->current.setting.map_frame_type & GMT_IS_INSIDE) return;	/* No header today */
+	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No header today */
 
 	PSL_comment (PSL, "Placing plot title\n");
 
-	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW)
+	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW || GMT->current.setting.map_frame_type == GMT_IS_INSIDE)
 		PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
@@ -1393,8 +1393,8 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
 		if ((GMT->current.map.frame.side[sides[i]] & GMT_AXIS_TICK) == 0) continue;
-		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
-		angle = ((GMT->current.setting.map_annot_oblique & 16) ? (sides[i] - 1) * 90.0 : angles[i]);
+		if (!(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
+		angle = ((GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS) ? (sides[i] - 1) * 90.0 : angles[i]);
 		if (set_angle) {	/* Adjust angle to fit the range of angles relative to each side */
 			if (sides[i] == 0 && angle < 180.0) angle -= 180.0;
 			if (sides[i] == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -1403,7 +1403,7 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 		}
 		sincosd (angle, &s, &c);
 		tick_length = len;
-		if (GMT->current.setting.map_annot_oblique & 8) {
+		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			if (sides[i] % 2) {
 				/* if (fabs (c) > cosd (GMT->current.setting.map_annot_min_angle)) continue; */
 				if (fabs (c) < sind (GMT->current.setting.map_annot_min_angle)) continue;
@@ -1471,7 +1471,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 
 	for (i = 0; i < nx; i++) {
-		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
+		if (!(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 
 		if (gmtlib_prepare_label (GMT, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
@@ -1479,7 +1479,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		tick_length = GMT->current.setting.map_tick_length[GMT_PRIMARY];
 		o_len = len;
 		if (GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
-		if (GMT->current.setting.map_annot_oblique & 8) {
+		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
 			o_len /= div;
 		}
@@ -1814,7 +1814,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	is_world_save = GMT->current.map.is_world;
 	lon_wrap_save = GMT->current.map.lon_wrap;
 
-	if (GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* Make plot header for geographic maps*/
+	if (GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* Make plot header for geographic maps */
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_ANNOT) {
 			PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 			PSL_command (PSL, "/PSL_H_y %d ", PSL_IZ (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
@@ -4857,8 +4857,8 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
-	if (GMT->current.setting.map_annot_oblique & 2) GMT->current.map.frame.horizontal = 2;
-	if (GMT->current.map.frame.horizontal == 2) GMT->current.setting.map_annot_oblique |= 2;
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) GMT->current.map.frame.horizontal = 2;
+	if (GMT->current.map.frame.horizontal == 2) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LON_HORIZONTAL;
 	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH && gmt_M_is_geographic (GMT, GMT_IN)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && !plot_is_fancy_boundary(GMT)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
@@ -4870,7 +4870,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
 
-	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && !GMT->current.map.frame.header[0]) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);	/* Must clip to ensure things are inside */
 		clip_on = true;
 	}
@@ -6004,11 +6004,12 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		strncpy(scale_c, &pch[1], GMT_LEN32-1);
 		pch[0] = '\0';
 	}
-	else
-		sprintf(scale_c, "1:1");	/* Good for map|grdproject but will blow in user hands for the others */
+	else {
+		GMT->current.ps.active ? sprintf(scale_c, "14c") : sprintf(scale_c, "1:1");
+	}
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
-		int EPSGID;
+		int   EPSGID;
 		char *pszResult = NULL;
 		OGRSpatialReferenceH  hSRS;
 		OGRErr eErr = OGRERR_NONE;
@@ -6017,6 +6018,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		char buffer [GMT_LEN256] = {""};
 		FILE *fp = NULL;
 #endif
+
+		if ((pch = strstr(szProj4, "+width=")) != NULL || (pch = strstr(szProj4, "+scale=")) != NULL) {
+			snprintf (scale_c, GMT_LEN32-1, "%s", pch);
+			pch[0] = '\0';			/* Strip it */
+		}
 
 		if (szProj4[0] == '+')		/* Let it both work: -J+epsg or -Jepsg */
 			EPSGID = atoi(&szProj4[1]);
@@ -6034,6 +6040,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			return (pStrOut);
 		}
 		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
+		if (scale_c[0] != '\0') strcat (szProj4, scale_c);		/* Add the width/scale found above */
 		CPLFree(pszResult);
 		OSRDestroySpatialReference(hSRS);
 
@@ -6429,7 +6436,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%sW", &token[6]);
 		//wipe_substr(szProj4, token);
 		GMT->current.proj.gave_map_width = 1;
-		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, scale_c);
+		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, &token[6]);
 	}
 
 	*scale_pos = (int)strlen(opt_J);		/* The position at which the scale string will be appended */

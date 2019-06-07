@@ -44,7 +44,8 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT. The mid x-value for each bar is used to
-    look-up the bar color.
+    look-up the bar color.  If modern mode and no argument is given
+    then we select the current CPT.
 
 .. _-D:
 
@@ -72,8 +73,6 @@ Optional Arguments
     ymax* is output; no plotting is done. Append **o** to output an
     ASCII table of the resulting x,y data instead. Upper case **O** will
     output all x,y bin data even when y == 0. 
-
-.. include:: explain_-Jz.rst_
 
 .. _-L:
 

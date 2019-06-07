@@ -322,7 +322,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	if (pos > 0 && line[pos]) {	/* Gave colors */
 		while (line[pos]) {
 			f = line[pos++];
-			if (line[pos] == '-')	/* Signal for transpacency masking */
+			if (line[pos] == '-')	/* Signal for transparency masking */
 				fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1,	fb_rgb[3] = 0;
 			else {
 				end = pos;
@@ -1317,6 +1317,34 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	for (k = 0; k < 4; k++) S->hsv_diff[k] = S->hsv_high[k] - S->hsv_low[k];
 	/* Recompute inverse stepsize */
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
+}
+
+bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
+	/* Modern mode only: Detect if no CPT is given but -C was set.
+	 * If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean
+	 * we want to use the current CPT.  If no current CPT exist then we do nothing
+	 * and the module with fail or create a CPT as needed. */
+	char *cpt = NULL;
+	bool ret = true;
+	
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* No such thing in classic mode */
+	if (!(*active)) return false;		/* Did not give that option so nothing to do */
+	if (arg == NULL) return false;	/* No text pointer to work with */
+	
+	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
+		char string[GMT_LEN256] = {""};
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
+		gmt_M_str_free (*arg);
+		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
+	}
+	else if (*arg == NULL) {	/* Noting given */
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		*arg = strdup (cpt);		/* Pass back the name of the current CPT */
+	}
+	else /* Got something already */
+		ret = false;
+	return ret;
 }
 
 /*! . */
@@ -4475,8 +4503,8 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 	else if ( (*text_angle - 90.0) > GMT_CONV8_LIMIT) *text_angle -= 180.0;
 #endif
 
-	if (type == 0 && GMT->current.setting.map_annot_oblique & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */
-	if (type == 1 && GMT->current.setting.map_annot_oblique & 4) *text_angle = 0.0;	/* Force horizontal lat annotation */
+	if (type == 0 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lon annotation */
+	if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lat annotation */
 
 	switch (side) {
 		case 0:		/* S */
@@ -4486,7 +4514,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
 		case 1:		/* E */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 10;
 			}
@@ -4500,7 +4528,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
 		default:	/* W */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 2;
 			}
@@ -7612,6 +7640,22 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
+unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	/* Return which type of default CPT this data set should use */
+	unsigned int zmode = GMT_DEFAULT_CPT;
+	gmt_M_unused (GMT);
+	if (strstr (h->remark, "@earth_relief_"))	/* Detected a DEM grid blend */
+		zmode = 1;
+	else if (strstr (h->remark, "@srtm_relief_"))	/* Detected a SRTM land-only grid blend */
+		zmode = 2;
+	else if (strstr (h->command, "earth_relief_"))	/* Detected a DEM grid */
+		zmode = 1;
+	else if (strstr (h->command, "srtm_relief_"))	/* Detected a SRTM land-only grid */
+		zmode = 2;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Given grid header, select default CPT to be %s\n", GMT->init.cpt[zmode]);
+	return zmode;
+}
+
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL;
@@ -7623,12 +7667,12 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-GMT_LOCAL void support_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	char file[GMT_LEN256] = {""};
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
 	/* Save cpt for use by session */
 	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
-	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, file, P) != GMT_NOERROR)
+	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Save current CPT file to %s !\n", file);
@@ -7643,11 +7687,13 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 		file = strdup (path);
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recycle existing CPT file %s\n", file);
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No existing CPT file %s to recycle\n", path);
 	return (file);
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
+struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz, unsigned int zmode) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7662,7 +7708,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are four possibilities:
 	   1. A cpt in current directory is given - simply read it and return.
-	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT_DEFAULT_CPT.
+	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT->init.cpt[GMT_DEFAULT_CPT] (or a type-specific CPT).
 	   3. file is NULL and runmode is modern and a current cpt exists - use it.
 	   4. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
@@ -7691,23 +7737,23 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT_DEFAULT_CPT;	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT->init.cpt[zmode];	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
+		gmt_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
@@ -13610,7 +13656,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
 
-	if (GMT->current.setting.map_annot_oblique & 16 && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
 
 	if (angle < 0.0) angle += 360.0;
 
@@ -13625,7 +13671,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (!support_get_label_parameters (GMT, side, angle, type, text_angle, justify)) return -1;
 	*line_angle = angle;
-	if (GMT->current.setting.map_annot_oblique & 16) *line_angle = (side - 1) * 90.0;
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS) *line_angle = (side - 1) * 90.0;
 
 	if (!set_angle) *justify = support_polar_adjust (GMT, side, angle, x, y);
 	if (set_angle && !GMT->common.R.oblique && GMT->current.proj.projection_GMT == GMT_GNOMONIC) {
@@ -15543,8 +15589,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
-			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-			gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+			/* Set output column type as time unless -fo has been set */
+			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 			T->temporal = true;
 		}
 		return (GMT_NOERROR);
@@ -15633,9 +15680,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
-		/* Set input column type as time */
-		gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-		gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+		/* Set output column type as time unless -fo has been set */
+		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 		if (has_inc) {
 			if (strchr (GMT_TIME_UNITS, T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
 				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
@@ -15691,9 +15738,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (ns >= 1) {
 		if (!strcmp (txt[GMT_X], "-"))	/* Must get this value later */
 			T->delay[GMT_X] = true;
-		else if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
-			return GMT_PARSE_ERROR;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
@@ -15701,9 +15750,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		if (!strcmp (txt[GMT_Y], "-"))	/* Must get this value later */
 			T->delay[GMT_Y] = true;
-		else if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
-			return GMT_PARSE_ERROR;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s (ISO datetime format required)\n", option, txt[GMT_Y]);
@@ -15720,9 +15771,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->set += 2;
 	}
 	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
-		if (T->temporal && gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
-			return GMT_PARSE_ERROR;
+		if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
@@ -15747,6 +15800,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 }
 
 unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
+	/* If min and max are not NULL then will override what T->min,max says */
 	char unit = GMT->current.setting.time_system.unit;
 	double scale = GMT->current.setting.time_system.scale, inc = T->inc, t0, t1;
 
@@ -15789,9 +15843,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 
-	if (T->set < 3 && ! (min == NULL && max == NULL)) {		/* Update min,max now */
-		T->min = *min;	T->max = *max;
-	}
+	if (min != NULL)	/* Update min now */
+		T->min = *min;
+	if (max != NULL)	/* Update max now */
+		T->max = *max;
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 
@@ -15816,27 +15871,29 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log2_array (GMT, t0, t1, inc, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/max/inc values harmonize */
+		unsigned int nt;
+		double range = t1 - t0;
 		if (T->exact_inc) {	/* Must enforce that max-min is a multiple of inc and adjust max if it is not */
-			double new, range = t1 - t0;
-			new = rint (range / inc) * inc;
+			double new = rint (range / inc) * inc;
 			if (!doubleAlmostEqualZero (new, range)) {	/* Must adjust t1 to match proper range */
 				t1 = t0 + new;
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 			}
 		}
 		else if (T->round) {	/* Must enforce an increment that fits the given range */
-			double new, range = t1 - t0;
-			unsigned int nt = urint (range / inc);
+			double new;
+			nt = urint (range / inc);
 			new = nt * inc;
 			if (nt && !doubleAlmostEqualZero (new, range)) {	/* Must adjust inc to match proper range */
 				inc = range / (nt - 1);
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted inc to %g\n", option, inc);
 			}
 		}
-		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
-				return (GMT_PARSE_ERROR);
+		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV8_LIMIT)) {
+			case 1:	/* Must trim max to give a range in multiple of inc */
+				nt = floor ((t1 - t0) / inc);
+				t1 = t0 + inc * nt;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Information from -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 				break;
 			case 2:
 				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */

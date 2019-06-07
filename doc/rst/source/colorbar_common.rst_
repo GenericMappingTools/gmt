@@ -77,8 +77,9 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cpt*
-    *cpt* is the CPT to be used. By default all
+**-C**\ [*cpt*]
+    *cpt* is the CPT to be used. If no *cpt* is appended then we use the
+    current CPT.  If no **-C** is given the we read stdin.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). If not given, the module
@@ -129,8 +130,6 @@ Optional Arguments
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
-
-.. include:: explain_-Jz.rst_
 
 .. _-L:
 

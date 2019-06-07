@@ -34,8 +34,7 @@ set (GMT_PACKAGE_NAME "GMT")
 # a short description of the gmt project (only a few words).
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
-# GMT_VERSION_YEAR is set to current date in
-# cmake/modules/ConfigCMake.cmake if not specified here:
+# Year of the current GMT release.
 set (GMT_VERSION_YEAR "2019")
 
 # The GMT package version.
@@ -61,8 +60,8 @@ set (GMT_LIB_SOVERSION 6)
 # The build version (VERSION) of the GMT libraries.
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
-# The GMT wiki location
-set (GMT_TRAC_WIKI "http://gmt.soest.hawaii.edu/")
+# The GMT documentation URL
+set (GMT_DOC_URL "http://docs.generic-mapping-tools.org/latest")
 
 # Use SI units per default
 if (NOT UNITS)
@@ -187,5 +186,3 @@ set (CMAKE_FIND_FRAMEWORK LAST)
 if (NOT DEFINED BUILD_DEVELOPER)
 	set (BUILD_DEVELOPER true)
 endif (NOT DEFINED BUILD_DEVELOPER)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

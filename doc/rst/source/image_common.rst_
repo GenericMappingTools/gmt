@@ -95,8 +95,6 @@ Optional Arguments
 .. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
 
-.. include:: explain_-Jz.rst_
-
 .. _-M:
 
 **-M**

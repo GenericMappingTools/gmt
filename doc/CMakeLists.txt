@@ -62,5 +62,3 @@ install (DIRECTORY examples
 	PATTERN "${_exclude_bat}" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

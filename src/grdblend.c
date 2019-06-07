@@ -190,7 +190,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 	return false;
 }
 
-GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend) {
+GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
 	int type, status, not_supported;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
@@ -201,7 +201,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ] = {""};
 	static char *V_level = "qntcvld";
 	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
-	double wesn[4];
+	double wesn[4], sub = 0.0;
 	struct BLEND_LIST {
 		char *file;
 		char *region;
@@ -209,6 +209,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		bool download;
 	} *L = NULL;
 
+	*zmode = GMT_DEFAULT_CPT;	/* This is the default CPT for any data type */
+	
 	if (n_files > 1) {	/* Got a bunch of grid files */
 		L = gmt_M_memory (GMT, NULL, n_files, struct BLEND_LIST);
 		for (n = 0; n < n_files; n++) {
@@ -263,6 +265,22 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		} while (true);
 		gmt_reset_meminc (GMT);
 		n_files = n;
+	}
+	if (srtm_job) {	/* Signal default CPT for earth or srtm relief final grid */
+		*zmode = (!strcmp (L[n_files-1].file, "@earth_relief_15s")) ? 1 : 2;
+		*zmode += 10 * srtm_res;
+		if (h) {
+			if (h->wesn[XHI] > 180.0) {
+				sub = 360.0;
+				h->wesn[XLO] -= sub;
+				h->wesn[XHI] -= sub;
+			}
+			else if (h->wesn[XLO] < -180.0) {
+				sub = -360.0;
+				h->wesn[XLO] -= sub;
+				h->wesn[XHI] -= sub;
+			}
+		}
 	}
 	
 	B = gmt_M_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
@@ -490,6 +508,10 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		if (!B[n].memory && GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);	/* Free grid unless it is a memory grid */
 	}
 
+	if (h && fabs (sub) > 0.0) {	/* Must undo shift earlier */
+		h->wesn[XLO] += sub;
+		h->wesn[XHI] += sub;
+	}
 	*blend = B;	/* Pass back array of structures with grid information */
 
 	return (n_files);
@@ -728,7 +750,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdblend (void *V_API, int mode, void *args) {
-	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
+	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case, zmode;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true;
 	
@@ -782,7 +804,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		delayed = false;	/* Was able to create the grid from command line options */
 	}
 
-	status = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend);
+	status = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend, &zmode);
 
 	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
@@ -964,6 +986,14 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed row %7ld\n", row);
 	nx_final = Grid->header->n_columns;	ny_final = Grid->header->n_rows;
+	if (zmode) {	/* Pass the information up via the header */
+		char line[GMT_GRID_REMARK_LEN160] = {""};
+		unsigned int srtm_res = zmode / 10;	/* Extract resolutin as 1 or 3 */
+		zmode -= srtm_res * 10;			/* Extract zmode as 1 or 2 */
+		if (zmode == 1) sprintf (line, "@earth_relief_0%ds blend", srtm_res);
+		else if (zmode == 2) sprintf (line, "@srtm_relief_0%ds blend", srtm_res);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, line, Grid)) Return (API->error);
+	}
 
 	if (write_all_at_once) {	/* Must write entire grid */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {

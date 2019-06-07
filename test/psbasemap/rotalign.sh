@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # The failure pointed out in http://gmt.soest.hawaii.edu/boards/1/topics/7776
 # The axes labels and annotations are 180 out of phase.
 #
-
 ps=rotalign.ps
 
 gmt set MAP_ANNOT_ORTHO ""

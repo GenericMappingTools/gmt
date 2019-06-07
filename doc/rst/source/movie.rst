@@ -319,6 +319,16 @@ issues with your use of variables and options until this works.  You can then tr
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
+Color table usage
+-----------------
+
+Because **movie** launches individual frame plots as separate sessions running in parallel, we cannot
+utilize the current CPT (i.e., the last CPT created directly by :doc:`makecpt` or :doc:`grd2cpt`, or
+indirectly by :doc:`grdimage` or  :doc:`grdview`).  Instead, you must create CPTs using explicit
+files and pass those names to the modules that require CPT information.  In modern mode, this means
+you need to use the **-H** option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
+to named files.
+
 Examples
 --------
 

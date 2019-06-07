@@ -119,6 +119,12 @@
 # Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
 #set (COPY_DCW TRUE)
 
+# Copy GDAL's 'data' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (GDAL_DATA_PATH C:/programs/compa_libs/gdal_GIT/compileds/VC14_64/data)
+
+# Copy PROJ4's 'share' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
+
 # FOR WINDOWS ONLY
 # Set path to location where the gmtmex is located.
 #set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
@@ -210,8 +216,6 @@
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
 #set (DO_ANIMATIONS TRUE)
-# Auto-convert classic scripts to modern during testing:
-#set (MODERNIZE_TESTS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
@@ -224,6 +228,7 @@
 # that link against the full gmt libs (not just the API; for building codes
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
+# Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
 # Directory in which to install the release sources per default
@@ -301,5 +306,3 @@ endif (HAVE_OPENMP)
 #if(MSVC11)
 #  add_definitions(/D_ALLOW_KEYWORD_MACROS)
 #endif(MSVC11)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
