@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 ps=clipping6.ps
 cat << EOF > badpol.txt
 -70	-55

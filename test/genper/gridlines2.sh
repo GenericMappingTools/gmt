@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # More testing of issue #667, item #5
 ps=gridlines2.ps
 lon0=225.989251068

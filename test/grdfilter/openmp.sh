@@ -4,7 +4,7 @@
 ps=openmp.ps
 
 if ! [[ ${HAVE_OPENMP} =~ TRUE|ON ]]; then
-  echo "[N/A]"
+  #echo "[N/A]"
   exit 0
 fi
 FILT=g			# Gaussian filter

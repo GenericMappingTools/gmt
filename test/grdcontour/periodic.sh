@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Demonstrate issue #536 with labeling of periodic contours
 # Turns out non-issue due to different contour lengths and -Gd
 # Using -Gl shows annotation machinery works fine.

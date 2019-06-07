@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Test that gmtselect can apply a -Z test to data with OGR records,
 # where the z comes from the metadata header, and that output it
 # will pass the metadata as well by writing an OGR file

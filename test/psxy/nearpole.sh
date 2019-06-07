@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # This is a follow up on topic http://gmt.soest.hawaii.edu/boards/1/topics/7166?r=7203#message-7203
 # submitted by Sabin.  The problem polygon (Amundsen Terrane) is not polar but is very very close to the
 # S pole and elongated almost 180 degrees way from the map center.  Hence it ends up very
