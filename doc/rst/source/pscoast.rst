@@ -23,7 +23,7 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ *river*\ [/\ *pen*] ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-K| ]
 [ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]

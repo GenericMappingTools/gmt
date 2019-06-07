@@ -198,7 +198,7 @@ unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *pos,
 void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
 	/* A Matlab style strtok. Note that 'token' and 'remain' must be virgin pointers,
 	   otherwise the memory they point to will be leaked because they are allocated here
-	   with strdup. For that reason the caller is responsable to free them after being consumed.
+	   with strdup. For that reason the caller is responsible to free them after being consumed.
 	 */
 	unsigned int pos = 0;
 	char *p, *s;

@@ -17,7 +17,7 @@ echo 4.5 1.75 30 100 | gmt psxy -R -J -O -K -Sw2i+a0.25i+r15+p0.25p -W1p -Gpink 
 gmt psbasemap -Rg -JG0/25/6i -O -Bafg -K -Y3.5i >> $ps
 echo 0 0 30 100  | gmt psxy -R -J -O -K -SW4000k -Glightyellow -W2p >> $ps
 echo 0 0 -30 -100  | gmt psxy -R -J -O -K -SW3000n/1000n -Gblue -W2p >> $ps
-echo 50 -30 -50 -110  | gmt psxy -R -J -O -K -SW30d+a5d+0.25p -W1p -Gcyan >> $ps
+echo 50 -30 -50 -110  | gmt psxy -R -J -O -K -SW30d+a5d+p0.25p -W1p -Gcyan >> $ps
 echo -50 -30 50 110  | gmt psxy -R -J -O -K -SW30d+r30 -W1p -Gorange >> $ps
 echo -10 80 -60 240  | gmt psxy -R -J -O -K -SW20d/5d+a5d+r60 -W1p -Gyellow >> $ps
 gmt psxy -R -J -O -T >> $ps

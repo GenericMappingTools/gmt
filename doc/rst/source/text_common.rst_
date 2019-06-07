@@ -134,8 +134,6 @@ Optional Arguments
     This clipping can then be turned off later with :doc:`clip` **-C**.
     To **not** plot the text but activate clipping, use **-GC** instead.
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 **-L**

@@ -14,7 +14,9 @@ else	# Make animated GIF, infinitely looping
 fi	
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
-	gmt makecpt -Cpolar -T-25/25 > t.cpt
+gmt begin
+	gmt makecpt -Cpolar -T-25/25 -H > t.cpt
+gmt end
 EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh

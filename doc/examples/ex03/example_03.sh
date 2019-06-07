@@ -78,13 +78,13 @@ gmt math -T$bounds/1 -N1/0 T = samp.x
 #
 # Now we can resample the gmt projected satellite data:
 #
-gmt sample1d sat.pg -Nsamp.x > samp_sat.pg
+gmt sample1d sat.pg -Tsamp.x > samp_sat.pg
 #
 # For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample
 # it because of the gaps > 1 km we found.  So we use gmt filter1d | gmt sample1d.  We also
 # use the -E on gmt filter1d to use the data all the way out to bounds :
 #
-gmt filter1d ship.pg -Fm1 -T$bounds/1 -E | gmt sample1d -Nsamp.x > samp_ship.pg
+gmt filter1d ship.pg -Fm1 -T$bounds/1 -E | gmt sample1d -Tsamp.x > samp_ship.pg
 #
 # Now we plot them again to see if we have done the right thing:
 #
@@ -137,9 +137,9 @@ gmt psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i 
 # and this time we also use gmt trend1d to return the residual from the model fit (the 
 # de-trended data):
 gmt trend1d -Fxrw -Np1+r samp_ship.pg | gmt select -Z0/0.6 -o0,1 -Iz \
-	| gmt sample1d -Nsamp.x > samp2_ship.pg
+	| gmt sample1d -Tsamp.x > samp2_ship.pg
 gmt trend1d -Fxrw -Np1+r samp_sat.pg  | gmt select -Z0/0.6 -o0,1 -Iz \
-	| gmt sample1d -Nsamp.x > samp2_sat.pg
+	| gmt sample1d -Tsamp.x > samp2_sat.pg
 #
 # We plot these to see how they look:
 #

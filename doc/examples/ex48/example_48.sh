@@ -25,8 +25,8 @@ gmt psxy -R -J -O -K -SW2000k/250k+a250k+r15 -W0.5p -Gwhite@40 airports.txt >> $
 gmt pscoast -R -J -Gblack -A500 -O -K -Bafg >> $ps
 # Then place custom labels.
 while read lon lat az1 az2 label just off; do
-	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.5p,white -F+f16p+j${just} -N >> $ps
-	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.25p -F+f16p+j${just} -N -Gwhite -W0.25p -C+tO >> $ps
+	echo $lon $lat $label | gmt pstext -R -J -O -K -DJ${off}+v0.5p,white -F+f16p+j${just} -N >> $ps
+	echo $lon $lat $label | gmt pstext -R -J -O -K -DJ${off}+v0.25p -F+f16p+j${just} -N -Gwhite -W0.25p -C+tO >> $ps
 done < airports.txt
 # Plot trimmed lines and overlay airport locations
 gmt psxy airports.txt -R -J -O -K -Fn -W1.5p+o250k+v0.2i+gred+h0.5 >> $ps

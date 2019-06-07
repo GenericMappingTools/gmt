@@ -19,11 +19,11 @@ gmt begin ex12 ps
   # Then contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a
   # color palette (.cpt) file
   T=`gmt info -T25+c2 @Table_5_11.txt`
-  gmt makecpt -Cjet $T > topo.cpt
-  gmt contour @Table_5_11.txt -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -c2,1
+  gmt makecpt -Cjet $T
+  gmt contour @Table_5_11.txt -Wthin -C -Lthinnest,- -Gd1i -c2,1
   # Finally color the topography
-  gmt contour @Table_5_11.txt -Ctopo.cpt -I -c2,2
+  gmt contour @Table_5_11.txt -C -I -c2,2
   gmt subplot end
 gmt end
 #
-rm -f net.xy topo.cpt
+rm -f net.xy

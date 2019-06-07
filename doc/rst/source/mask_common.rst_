@@ -76,8 +76,6 @@ Optional Arguments
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill]. 
 
-.. include:: explain_-Jz.rst_
-
 .. _-L:
 
 **-L**\ *nodegrid*\ [**+i**\ \|\ **o**\ ]

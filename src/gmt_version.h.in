@@ -66,5 +66,3 @@
 #endif /* !GMT_MANPAGE */
 
 #endif /* !GMT_VERSION_H_ */
-
-/* vim: set ft=c: */

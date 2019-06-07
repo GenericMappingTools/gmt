@@ -31,7 +31,7 @@
 #define GMT_VERSION_STRING "@GMT_VERSION_STRING@"
 #define GMT_LONG_VERSION_STRING "@GMT_LONG_VERSION_STRING@"
 
-#define GMT_TRAC_WIKI "@GMT_TRAC_WIKI@"
+#define GMT_DOC_URL "@GMT_DOC_URL@"
 
 /* path to executables/libs */
 #define GMT_BINDIR_RELATIVE "@GMT_BINDIR@"

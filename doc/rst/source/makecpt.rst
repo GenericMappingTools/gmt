@@ -19,8 +19,11 @@ Synopsis
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
-[ |-I|\ [**c**][**z**] ] [ |-M| ]
-[ |-N| ] [ |-Q| ]
+[ |-H| ]
+[ |-I|\ [**c**][**z**] ]
+[ |-M| ]
+[ |-N| ]
+[ |-Q| ]
 [ |-S|\ *mode* ]
 [ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
 [ |-V|\ [*level*\ ] ]
@@ -37,7 +40,9 @@ Description
 -----------
 
 **makecpt** is a module that will help you make static color palette tables
-(CPTs). You define an equidistant set of contour intervals or pass
+(CPTs). In classic mode we write the CMT to standard output, while under
+modern mode we simply save the CPT as the current session CPT (but see **-H**).
+You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
@@ -125,6 +130,13 @@ Optional Arguments
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
     before any resampling. See also :ref:`manipulating_CPTs`
+
+.. _-H:
+
+**-H**\
+    Modern mode only: Write the CPT to standard output as well [Default saves
+    the CPT as the session current CPT]. Required for scripts used to make
+    animations via :doc:`movie` where we must pass named CPT files.
 
 .. _-I:
 

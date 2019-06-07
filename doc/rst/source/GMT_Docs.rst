@@ -3042,6 +3042,15 @@ applications only the last transformation is needed.
    Examples of two user CPTs for the range -0.5 to 3 created from the same master.  One (left) extracted a
    subset of the master before scaling while the other (right) used the entire range.
 
+Automatic CPTs
+~~~~~~~~~~~~~~
+
+A few modules (:doc:`grdimage`, :doc:`grdview`) that expects a CPT option will
+provide a default CPT if none is provided.  By default, the default CPT is the
+"rainbow" color table, but this is overridden if the user uses the @eart_relief
+(we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
+these CPTs are read and scaled to match the range of the grid values.
+
 The Drawing of Vectors
 ----------------------
 
@@ -7878,7 +7887,7 @@ Built-in color palette tables (CPT)
 -----------------------------------
 
 Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>` and
-:ref:`b <CPT_files_c>` show the ~60 built-in
+:ref:`b <CPT_files_c>` show the 68 built-in
 color palettes, stored in so-called CPTs [35]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
@@ -7911,7 +7920,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The 18 scientific color maps by Fabio Crameri supported by GMT.
+   The 24 scientific color maps by Fabio Crameri supported by GMT.
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
@@ -9545,4 +9554,3 @@ Finally we show an example of a polygon file:
 
 .. |degree| unicode:: U+00B0 .. degree sign
 
-.. vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

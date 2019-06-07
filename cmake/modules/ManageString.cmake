@@ -479,5 +479,3 @@ if(NOT DEFINED _MANAGE_STRING_CMAKE_)
 	endmacro (STRING_PAD _STR _LEN)
 
 endif(NOT DEFINED _MANAGE_STRING_CMAKE_)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

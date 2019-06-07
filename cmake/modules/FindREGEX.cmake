@@ -73,5 +73,3 @@ else (REGEX_INCLUDE_DIR)
 endif (REGEX_INCLUDE_DIR)
 
 mark_as_advanced (REGEX_LIBRARY_TEMP REGCOMP_IN_LIBC REGCOMP_IN_REGEX)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

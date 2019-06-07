@@ -43,6 +43,7 @@ Optional Arguments
 **-C**\ *cpt*
     Give a CPT. The r-value for each sector is used to
     look-up the sector color.  Cannot be used with a rose diagram.
+    If modern mode and no argument is given then we select the current CPT.
 
 .. _-D:
 

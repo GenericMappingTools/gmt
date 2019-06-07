@@ -8,12 +8,14 @@ test -z "$1" && exit 1
 
 # Where the current script resides (need absolute path)
 script_name="$1"
-script_mode="$2"
 script_dir=$(dirname "${script_name}")
 local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/doc/examples/${script_name}"
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
-classic=$(grep "GMT CLASSIC" "$script" -c)
+# Is it a modern mode script?
+modern=$(grep "gmt begin" "$script" -c)
+# Is it a script that is known to fail?
+known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -73,23 +75,27 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
   return
 fi
 for ps in *.ps ; do
-  # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
-  rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
-  if [ -z "$rms" ]; then
-    rms="NA"
+  if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
+      echo "${ps}: RMS Error = NA [FAIL] (known failure)"
   else
-    rms=$(printf "%.3f\n" $rms)
-  fi
-  if [ "$pscmpfailed" ]; then
-    now=$(date "+%F %T")
-    echo "${ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
-    make_pdf "$ps" # try to make pdf file
-    ((++ERROR))
-  else
-    test -z "$rms" && rms=NA
-    echo "${ps}: RMS Error = $rms [PASS]"
+    # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
+    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
+    rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
+    if [ -z "$rms" ]; then
+      rms="NA"
+    else
+      rms=$(printf "%.3f\n" $rms)
+    fi
+    if [ "$pscmpfailed" ]; then
+      now=$(date "+%F %T")
+      echo "${ps}: RMS Error = $rms [FAIL]"
+      echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+      make_pdf "$ps" # try to make pdf file
+      ((++ERROR))
+    else
+      test -z "$rms" && rms=NA
+      echo "${ps}: RMS Error = $rms [PASS]"
+    fi
   fi
 done
 }
@@ -158,19 +164,8 @@ for file in "$src"/* ; do
 done
 unset GLOBIGNORE
 
-if [ "X$script_mode" = "XM" ]; then
-	# Test a modernized version of the script instead
-	if [ $classic -eq 0 ]; then
-		echo "Modernizing $script to $local_script before testing"
-		gmtmodernize "$script" > ./${local_script}
-	else
-		echo "Cannot modernize classic GMT script ${script}. Run in classic mode" >&2
-		ln -sf "$script" .
-	fi
-else
-	# Run the original classic script via link from current directory
-	ln -sf "$script" .
-fi
+# Run the original script via link from current directory
+ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
 cat > gmtest.sh << EOF
@@ -191,9 +186,10 @@ export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 # Start with proper GMT defaults
 gmt set -Du FORMAT_TIME_STAMP "Version 6"
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
-if [ "X$script_mode" = "XM" ]; then
+if [ ${modern} -gt 0 ]; then
 	export GMT_SESSION_NAME=\$\$
 	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
+	script_mode=M
 fi
 # Now run the script
 . "${local_script}"
@@ -205,5 +201,3 @@ chmod 755 gmtest.sh
 if [ "X$script_mode" = "XM" ] && [ ! "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi
-
-# vim: ft=sh

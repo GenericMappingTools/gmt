@@ -11,9 +11,8 @@ gmt begin ex34 ps
   gmt coast -EFR,IT+gP300/8 -Glightgray -c2,1
   # Extract a subset of ETOPO2m for this part of Europe
   # gmt grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns
-  gmt makecpt -Cglobe -T-5000/5000 > z.cpt
-  gmt grdimage @FR+IT.nc -I+a15+ne0.75 -Cz.cpt -c1,1
+  gmt makecpt -Cglobe -T-5000/5000
+  gmt grdimage @FR+IT.nc -I+a15+ne0.75 -C -c1,1
   gmt coast -EFR,IT+gred@60
   gmt subplot end
 gmt end
-rm -f z.cpt

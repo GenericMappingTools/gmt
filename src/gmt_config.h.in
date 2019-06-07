@@ -340,5 +340,3 @@
 #endif
 
 #endif /* !GMT_CONFIG_H */
-
-/* vim: set ft=c: */

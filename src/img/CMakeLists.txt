@@ -32,5 +32,3 @@ install_module_symlink (${_gmt_modules})
 install (PROGRAMS img2google
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

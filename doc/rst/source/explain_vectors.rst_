@@ -41,7 +41,8 @@ end point of a segment:
     **+n**\ *norm* scales down vector attributes (pen thickness, head size)
     with decreasing length, where vector plot lengths shorter than *norm* will have
     their attributes scaled by length/\ *norm* [arrow attributes remains
-    invariant to length].
+    invariant to length]. For Cartesian vectors specify a length in plot units, while
+    for geovectors specify a length in km.
 
     **+o**\ [*plon*\ /\ *plat*\ ] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no

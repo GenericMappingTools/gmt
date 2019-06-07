@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_r20433 [64-bit] Document from psbasemap
+%%Title: GMT v6.0.0_e3b7b06-dirty_2019.06.05 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jul 19 08:37:40 2018
+%%CreationDate: Thu Jun  6 10:28:38 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -672,21 +667,21 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt psbasemap -R0/6.1/0/6.75 -Jx1i -P -K -B0
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%GMTBoundingBox: 72 72 439.2 486
+%@GMT: gmt psbasemap -R0/6.1/0/9.00 -Jx1i -B0
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%GMTBoundingBox: 72 72 439.2 648
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
 2 setlinecap
-N 0 8100 M 0 -8100 D S
+N 0 10800 M 0 -10800 D S
 /PSL_A0_y 0 def
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7320 0 T
-N 0 8100 M 0 -8100 D S
+N 0 10800 M 0 -10800 D S
 /PSL_A0_y 0 def
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
@@ -695,12 +690,12 @@ N 0 0 M 7320 0 D S
 /PSL_A0_y 0 def
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 8100 T
+0 10800 T
 N 0 0 M 7320 0 D S
 /PSL_A0_y 0 def
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 -8100 T
+0 -10800 T
 0 setlinecap
 %%EndObject
 0 A
@@ -709,13 +704,205 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/0.475i -Ctt.left.cpt -B0 -O -K
-%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%@GMT: gmt psscale -D1.55i/0.475i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 240 420 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[?BH"]SK)'ECsB'E^cT$ku,E$k/6%V)oDH5RG7,"DJS_$pZLC9Y^W1>7:r,/o9nBES=!^j1ID-n%7c>[H?qcCYAU7qX5g*
+hVq<O`*QtkffG.&:Js]kY*7LjXQM-;?eE0IST^.FF`AWF\n\X8X"114VU`]S/u64o1YK^!DCY&<6oNM3F"^%hL"P-GCnSb5
+55*u:@UI7.^34$+5Of;iU"GuTlT\M,DQ%dkBf&Mh^#VGa6\(tP^]8[?h,2`KYeN(X"nj0&NtD%#RuX;h`1q.f?%cKRgM!ot
+O>Y]sBJ(<A7J7;d*7IEI]uF65HODDl`"lh*:qBG9Dpg+/\ef'$:>:Hr'\eZFs*Z,<M#.MU8"+47_"d?Y5hSF:\rhWa'>'-W
+#jis]+mih]U;UZ>A$i%1Zmk5Z6bC9Y(;!<W`c`Q^ADQ9>8.SkL.31u5Tm+/SA-2.^d"1g`Pk7Ub:\lFVO[E]8-+>*$;X!'g
+D8h(*oSBK$j@Is$e(TnYAV6kh-A0cNO^hqBc=fe(Usl%%#3)kTFEg7_Ea2(TEC;,o3NF#XSj*8%DE<nEBhf<s8iD!u4rKR7
+=?K_D(2)sPnYbG)'#t@nju$+6KXnZJM4^<mJ5"([;tK:T:W;qk:#f"cVCeaI5(cSmcWmD9B(.VHU,oXUZXr;*kN:AscXO6V
+3Pp(>>e!n(a.G"i^gG/8io_tg(\<tAlbET$dK4_tJWBSIAR2ft^N(cIQ*MG^j;0DKY?>,:_.p.@RcV%&?AhlA>/urYe:XS>
+2dX63lf/G!<KiF/-=#1;Q@7P)EtN;M\)?6]>M3l4#0PK=mAjHsX`ge^Xmo0![`pGTo!O56l]f$5[FO&2dS>4/M35*nBO>J#
+c&0pZ($h.^f,N`P)fWiM)`:@JThVbTB'#o8Q"A+UAZ#5nR@/*%g!S&MC2W8CO5[4sn8Yt?4$:?Ngh*_EDLQ>I&%3iJ]`\#G
+B6O!gB6RM:F1Wugjd,)Qqlj,j_JX1L0CH9Z\4:gYO)<.TIGnbIYFfFW^A_+Iat"2/1p?<ha<(Pg*Irc"Y9+a9D]H&mmGZ;^
+keK6r>DJo9B(]Tql6FI+7pK.tGipJsA)6,"A(ZG,]QY?BiVU[/Ppa3dSFBs8iPUl3O7e!E$4g-dI!V/p!.8ek%qc!:T#Dr,
+Omq$a3(e>coCFqt%=W9tO($)GQPX(dqQ!8_r%RpB1(7g9_)G@J68e?$'g/(Y!'e(&-`Xqn2MiOKmQ-A?A)QN/i++_]IW6%A
+Bmt>K$9oS\FUKP#M=BhGSAZb(EuV$UIsWQ.5P=t\4H5p2rZ4gEB>F!(_fYS?+3`eY^`Sf/ln%ql6TA:mc;0Mj>kO^2B;oL\
+%o7-S47C'cS?)Y4ZTQe6nCQiJ!P@j1RZ#gGq"kH/=T+;I9DA[?^;<OrA]iVD\a#'ehVaZfJ%o:.080?RMr;?<CKJ"~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -420 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/0.475i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_3
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 420 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[?BHAQtF6'F)qA1?C?%GB_Cch-GW\-m@E?FE]Z7GF*DC_fYg03R%$;][+:c#M-;I5#Y>TpW:aLb$V*a;dZQ@dpK*'B23-U
+ZR7Tg\Z`F)oA=6!$fC6bMr3dIQbM((Q[dA;=+4[d<AK*V:-O<^Pmussb!sf<APX2eh@e^0D$'0r0njhtRaLlTRD\pb/`;6h
+QLr(Q<q+K_r:mQTrT&hFI!X<YWa)lo<rLNS9rrg"!G^D/Uc!'O6*4A:[.\>QW,ouolJ?ZIes!l3XtM]Cru=4L^bgH&!KA.G
+8fJk#+_r8[IJa_H4n4-d:VESVjAgRY`E'"Qcs"\T[S[jp*qbl-'AI:*5R5P!kc"/Hg.>WJ[BnM>FO^\\G*CMeFr*Bp$\9@.
+:O2oc(ZLbcDkP^g0PPGo+0i"X3:o"cOS5#"M?jau)Fr5Z,[\`a6j8F"9qpk`e,P2P)C,,K1<b[pDAEU)b_;0Lj(+q'd:A1>
+NjX\0N`1lQ-Wh_26uJ/I=k;kOME'-9&\]RKERW!NlQk^'`Ct7eR8)g_F01X7*gt>+YRqX#(.f9_95IL6.CY6e-S)]lA//6a
+Rjq^===^O!la[I8,M?W%Q>RJI.(2aVfe_O?^Otq/%YqFkFt.Zl],d;&Np3e"$26Gm8G=VEL^.3@iK.gj4m[nngp5n;HO`44
+*05I-_?nONHLaKgS9i;Ip*tSKhM#q"VhjSq5PPt'rt9W1TG.Xjq,_.OfB"uj!\OUs6Rm(h'n4%0X+lPk29Z=]Z5,s\0r)jX
+HEr)>9?&jKG]#h]>Y&Zpeta(O9W#0P;qm?*m<ebk9P\:<GMin@PF5!SFi!liDGE.9m5`b1?C]o.$b1oh\;4?OJ4g+*!kWO[
+Q]^CIb_d!;8QLg+X2f/g=Z]A3ekY-aZ@7ti0SLIV:"+'\R;A:"[a*kjo)/f>\U=s3OIc!eXp)>`]nh$F]h<=PD]/:j#?Kd:
+i$rf(*+$N-lh($%3OXLZ5LLJajQ%Zc346_qhSq?rF*<?7@2I8KXnb-B_EM::DD*$gj[6Pane6)0>l,E,Y5cAo^j@/Q`LFUs
+\+'Cjms+"+k3el2@#s+C96bFJnDNcQ_k[53/Yb$n~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -420 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/0.35i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_4
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 270 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+$V!W/;`ZgG/Q$R0F,10qPml'N6h/fW~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -270 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/0.35i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_5
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 270 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+4tp2N9mM\,Nj35^d<qh@RCh%XcJR15~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -270 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_6
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+7320 0 D
+0 10800 D
+-7320 0 D
+P
+PSL_clip N
+PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1860 630 M 150 F1
+(bamako) bc Z
+5400 630 M (acton) bc Z
+PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/1.225i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_7
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 1320 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -755,7 +942,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -420 T
+-240 -1320 T
 %%EndObject
 0 A
 FQ
@@ -763,13 +950,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/0.475i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/1.225i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_3
+%%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 420 T
+3780 1320 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -802,7 +989,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -420 T
+-3780 -1320 T
 %%EndObject
 0 A
 FQ
@@ -810,13 +997,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/0.35i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/1.1i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_4
+%%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 270 T
+240 1170 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -842,7 +1029,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -270 T
+-240 -1170 T
 %%EndObject
 0 A
 FQ
@@ -850,13 +1037,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/0.35i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/1.1i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_5
+%%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 270 T
+3780 1170 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -882,7 +1069,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -270 T
+-3780 -1170 T
 %%EndObject
 0 A
 FQ
@@ -890,23 +1077,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_6
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 630 M 150 F1
+1860 1530 M 150 F1
 (berlin) bc Z
-5400 630 M (batlow) bc Z
+5400 1530 M (batlow) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -915,13 +1102,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/1.225i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/1.975i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_7
+%%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 1320 T
+240 2220 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -962,7 +1149,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -1320 T
+-240 -2220 T
 %%EndObject
 0 A
 FQ
@@ -970,13 +1157,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/1.225i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/1.975i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_8
+%%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 1320 T
+3780 2220 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1006,7 +1193,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -1320 T
+-3780 -2220 T
 %%EndObject
 0 A
 FQ
@@ -1014,13 +1201,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/1.1i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/1.85i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_9
+%%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 1170 T
+240 2070 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1046,7 +1233,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -1170 T
+-240 -2070 T
 %%EndObject
 0 A
 FQ
@@ -1054,13 +1241,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/1.1i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/1.85i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_10
+%%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 1170 T
+3780 2070 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1086,7 +1273,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -1170 T
+-3780 -2070 T
 %%EndObject
 0 A
 FQ
@@ -1094,23 +1281,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_11
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 1530 M 150 F1
+1860 2430 M 150 F1
 (broc) bc Z
-5400 1530 M (bilbao) bc Z
+5400 2430 M (bilbao) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1119,59 +1306,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/1.975i -Ctt.left.cpt -B0 -O -K
-%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_12
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-240 2220 T
-8 W
-V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
->> image
-G[>7("^=u2&-1)Wn[]D@]=Y[::pIgS`9pZB$p^WSd`nUmm-a9W]CX;Hk0?,:k+))rO'ha.W.!KO`VnHHqAXq)"5Nq'%s7gb
-%q>PWD#>4_;?(VWlM`FX`r7pP=A*e;2+"G44OVIXO(.F")I;lHe]iAuRl_\7H?c];]j0l`;sQH)GHHoRYRMqb%H/S?OgDON
-)#CI2-F6FE3&[8+YL@lfggW>!Ee\'S?afW$A"-W@[^2N1g<HnTI]frn4C^lGA#K-=k66lO(:%3^nV^\ai?aN?e_8iGf'^BK
->fQJ@maujigLhheGEl[QeT?f)+0K/[XCDL<G9!u@*P>7]8KECA3tCq-_8E^c_maBiW?^nU\tdPA]T_b]8&52#B7R&GDKW>X
-*k*kK0AWOdKn7r#G:sq0pHt!]0SCKtFiVBrD-4IX3*]g?@Y?X;SV3bOF9?G$6XsOl*uIN.@ACrs7M?\9_20uT2GoZP$>_a<
-Vp_qadr7?cNi-Ns?o)$4^f`M+PqUFV\Zka#B\0_]Q,i(*[^0Cn^>5;G^8V!8>cdBJY=.a@="8Ca/(8^^o?4c8>o1T<(06fH
-?R5AJ>UfBRg1uQ#HR[\S/lVZ<rCm)A[l@cL4E+kc36:CC<Uu7%o$B8Uk/0lJY@U5>F_,M;5K_Js]f^U.WVMp@nlSho9dSr^
-2Tt.Z/PbdgG+ON!'Mm`%[p&FW<[:EuS[.)2e/a8&1t1\N$d<8M1A]u1Ff'=_5ed'\h=@(!o%^p(k4;:Fp0!n-BQmd5KBs!A
-79130kDDq+b=b2R/doc5QQKU:^ef/"^FCd=>TGH#Z+;h;93`:TY(olBE!*l&FAoQcbqU*1J#p<%lINIekA<1bh6,RBZaeJM
--LOKf!tm3R:.fZcK9Oj!g3m!(;c:Q,<&loi=hgS`n-@AnL1V]f@@;.\QGnZ]7-@+2X[[$"F"G>l-A\pM3R2Nka5]:ONDIW^
-'+<gEP>%/Jfb@O&#?1H*@QD-?@R`qjQs%RD_6OoFc0(>7\J;E`,2,/_d[6)re,jLG_'noLC:Ui8;CjiHQK#fEAUO<9#dNBf
-`QD\,Po:,Co$teB6RUs4-c=/hS2)/9*n)/pD=PO^q;g4*r@)td4jBTZ+"!R:4a4a%q2=ft9B"mLb7Wm'Y!hP._lN&;@hcSU
-7dI6`Mik3`RU<fAVi?HjDIOPZ\ETBZ^ND%uRga5m`[Nb;c5iEEdqOR9mbLQ#leXdp9lo7kq_2)eVg1-!_#mq-$fT!YYXi!r
-kRfG@V6l2I_oIgHKspQo'3ms:_P^1<2*I`u9TM;_L6'bmnG.-MS=Y6gN[O(jRMpRBSq/P$^pEm(0@01OkllAF^3Tr9BeR5M
-NN^^0Dr0DfoK'[Z^%q@R^-utXGOOH1H5F;F&+=6$dg,Lgr9s_NU6"9RO8'$0qWSZB7\A-Jq>u-FN*k"7?bYIMoF:`p'u$O5
-[.!77Dr:%Sq?_WN%R4aDr:kiXdVnb><IXq#b5XSh1=6~>
-U
-2 setlinecap
-N 0 150 M 3240 0 D S
-N 0 0 M 0 150 D S
-N 3240 0 M 0 150 D S
-N 0 0 M 3240 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 setlinecap
--240 -2220 T
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psscale -D4.50i/1.975i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/2.725i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_13
+%%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 2220 T
+240 3120 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1212,7 +1353,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -2220 T
+-240 -3120 T
 %%EndObject
 0 A
 FQ
@@ -1220,39 +1361,39 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/1.85i -Ctt.left2.cpt -Bf0.25 -O -K
-%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_14
+%@GMT: gmt psscale -D4.50i/2.725i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 2070 T
+3780 3120 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-.5,-Y>*;F%_eY@FO/T:j_5,i?V"=38~>
+G[?BHAPa*B(^89k]=Y\e]=Y\e'bi@;D?U24:sq[."i4<Q>O2P-!<Ycp]ALp1L:?'R5PE;u;CRK;C=>?22!/M[]9RL#l*\-f
+$l1XfmSmgSc`E+&ZC#:4R*@b*Bt-3ZGu!`:-'s)K0\njgU$B;Qq6\nAr;$S)_/6c;Zs/g4qF*a3UADj9_+J_G&j^&"==R.V
+ZtY'%N.+o3c<i3=Krb8)qT5#p.r.'o<V3?/C7E<0Yf9/C-FpV:#.ZWrB>%Odf(13RbPN4Qa:6flYd([I^BrZE95Xs'P6Y99
+at7$PnmH5D\II:/[Tb+#C<q'R*S61(40b>b(O,BTh%b*S'9@<LHbc4gjBgoPhQROFf2Xrice/5t`=i@35^(L(H*D[:#Wia4
+Lo6!4_r1l6nao@q'HGAX=XfrYA(biP`3\L_"EkuZj<U=lXe<(sG^_D0"kqnrpjt*)A#CrCVob(MNLd=R]P,VP^mT/m&q"E%
+JTDTjF61U:i-]^a+sX9BKT"dJL#`mBl;G-N?6CnfY;rm`E!9K,+('4Md"Pa_:L6cPE.r)#)s][h]SY7Gl_)9<fos)1"hfog
+R4\<Y\(@r*i5Sp\-Mbr!A,Y>ORBf&&2ZO'!+?%k<N5?b)<k-C\hG-Oq_D$-<%%e^"UEe\l\8+.9>J@iW.dUKODjpHOh@C.4
+K2]lZo#&B3&U5!2Zbqia_\:%]ZkX[TJu@9Xn>qUsNf5t/0>L-PiY:q)-"AUG/!Fu><HnsZB5^nq2s%PRltpu;Nk]?u7_rb_
+O*l8'P5KiY-pN%]+-Y#\-H]+l/GUJb:5F[$ad:=#aNrsL0?D'7q=RDU8j?1DAGTIg3Ji-I/AHTh?@;L5I/hLOHh@X2LQilF
+P+Oq7r2fjuraPE`(]CQ&Dl2E6^OMT"r#gLgeG](+s51RirqSq\rVQUZ,WLhk~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
 N 0 0 M 0 150 D S
 N 3240 0 M 0 150 D S
 N 0 0 M 3240 0 D S
-/PSL_A0_y 120 def
+/PSL_A0_y 0 def
 /PSL_A1_y 0 def
-N 0 0 M 0 -60 D S
-N 405 0 M 0 -60 D S
-N 810 0 M 0 -60 D S
-N 1215 0 M 0 -60 D S
-N 1620 0 M 0 -60 D S
-N 2025 0 M 0 -60 D S
-N 2430 0 M 0 -60 D S
-N 2835 0 M 0 -60 D S
-N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -2070 T
+-3780 -3120 T
 %%EndObject
 0 A
 FQ
@@ -1260,13 +1401,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/1.85i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/2.6i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_15
+%%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 2070 T
+240 2970 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1292,7 +1433,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -2070 T
+-240 -2970 T
 %%EndObject
 0 A
 FQ
@@ -1300,23 +1441,63 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_16
+%@GMT: gmt psscale -D4.50i/2.6i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_20
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 2970 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+ZQ,jO5F'#hMog3qd?8k/Y&rRED=-\&~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -2970 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 2430 M 150 F1
-(davos) bc Z
-5400 2430 M (cork) bc Z
+1860 3330 M 150 F1
+(cork) bc Z
+5400 3330 M (buda) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1325,13 +1506,208 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/2.725i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/3.475i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_17
+%%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 3120 T
+240 4020 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[>7(LHCi<(]`Loj.+C9+mltNQ]W[GKGKCmA<aboKeaRPUX2o,.AN,@BMh5c-nCFBSF_-[lhu+DkBlX_f)/*DPPnX>3'e@O
+1dMZPAL$_HIJgQKq!SF*57I'H2rfC)+oZ>3s'q#f9:`R-ePP"TX)Fo)i#8K28S5Kp%XbQBEJao`eIklS[Z`\!(Hu=f5'%6S
+em<a4'gB[,3-QH.%p,6=6f!eVYU(p/_\X?/(Y]Ui38dF?i`_,%-SBJYQTO.VSE18S=$d_V<Nc+32rYa"I-hMnh,30X&(qE=
+;lZtb-.RS'ZFW60ShG)YT?prFcN]?c'M(%d&fu[?L2?ASbot"WTu,hf,PHej](&AOehHo=okeMuWlFa2nu&<20N($T1eKs#
+NtH/rS\]N?Ps5L$S&=jW.2K2Z(T(<?ET3s`n\PDgD'tf4ITM^'o\IX+'KBUh`US:QjjW/3^$q20QITPg[T0nd#+T041W=G0
+?'2l/k=Mk6kM'63([Sm[T*6%b_OKOR[^Y=90=GAs`Cg^%TM+Zn`EMt\=q8tl%f,,G#7FL4N4f<pN\=X[LqV!7Af^?BO^IER
+,[TY5]ZsZkhRS<q^`G,YQIg,e0@j]?+6`56?-B$]Abp9T<B!5<8'lcFA<2snk-p:t%#oLAGdINijgVK9Q.pQtf(02)jisIM
+;n.H=B>'p?n<U0%F1@Fk"b!H0DLN,^pL:>Q$MqMjf).]Kn-[n=qq8d:[R*%moEHApmDi6hn-@WVeVAg<0Xq<Jn]kslgV^Z3
+)u:&Uno!rA/Tg0:YU=1Hb'TY['73@;Tbm1BL,Jbq^21=/O8"DAmpQ2<aI[,T&fu\'V87NbN;NZCjc;niM,1o8kt+'tNG]6h
+,M8BL;o7#QN&4ErlKh$kB_G[]N8`+PBB@I1Dc8gF`_'`p(G<(Qj4Lm8GWp\<rra!h8I<>r`6[EWQmB?n9MOqO:.p__,jg8O
+jjPmB)6%jm>*nfF9DI&\ppG5'oo*e\7OF]q]m0drFgVIfI>sVB*RD9Ik@P=tZG,6UM>=XMK%p'kCgpgJ0:n*ZV;BD5Mt6Dt
+!pZ>[BLs@RHC&mV*r\F8Lfd^5LH[744t=OpmjgRE5$"a5_^ci&.mJ<T=H5Uo9RKll5Hi#+._cRfi%L\]0:rh`4i^o2;-sa)
+DdMGRe='J6gXh=$M!q>KdFoMOmOb^CSRO2-5^cuuKJqEA*u]r0mhHdubo_\fQ6uN>1U0rbX[Vb)Z+]flqPar(geR52KQhlG
+ll^IoNhG36GRsI?2r<:VrITOdrIOZj-2.)lhtlkoDq"f8E,ZL3)BoYAINQR"^/IPk+$]`l7n8Ccrr^S@Hlr~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -4020 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/3.475i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_23
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 4020 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[>7("^=u2&-1)Wn[]D@]=Y[::pIgS`9pZB$p^WSd`nUmm-a9W]CX;Hk0?,:k+))rO'ha.W.!KO`VnHHqAXq)"5Nq'%s7gb
+%q>PWD#>4_;?(VWlM`FX`r7pP=A*e;2+"G44OVIXO(.F")I;lHe]iAuRl_\7H?c];]j0l`;sQH)GHHoRYRMqb%H/S?OgDON
+)#CI2-F6FE3&[8+YL@lfggW>!Ee\'S?afW$A"-W@[^2N1g<HnTI]frn4C^lGA#K-=k66lO(:%3^nV^\ai?aN?e_8iGf'^BK
+>fQJ@maujigLhheGEl[QeT?f)+0K/[XCDL<G9!u@*P>7]8KECA3tCq-_8E^c_maBiW?^nU\tdPA]T_b]8&52#B7R&GDKW>X
+*k*kK0AWOdKn7r#G:sq0pHt!]0SCKtFiVBrD-4IX3*]g?@Y?X;SV3bOF9?G$6XsOl*uIN.@ACrs7M?\9_20uT2GoZP$>_a<
+Vp_qadr7?cNi-Ns?o)$4^f`M+PqUFV\Zka#B\0_]Q,i(*[^0Cn^>5;G^8V!8>cdBJY=.a@="8Ca/(8^^o?4c8>o1T<(06fH
+?R5AJ>UfBRg1uQ#HR[\S/lVZ<rCm)A[l@cL4E+kc36:CC<Uu7%o$B8Uk/0lJY@U5>F_,M;5K_Js]f^U.WVMp@nlSho9dSr^
+2Tt.Z/PbdgG+ON!'Mm`%[p&FW<[:EuS[.)2e/a8&1t1\N$d<8M1A]u1Ff'=_5ed'\h=@(!o%^p(k4;:Fp0!n-BQmd5KBs!A
+79130kDDq+b=b2R/doc5QQKU:^ef/"^FCd=>TGH#Z+;h;93`:TY(olBE!*l&FAoQcbqU*1J#p<%lINIekA<1bh6,RBZaeJM
+-LOKf!tm3R:.fZcK9Oj!g3m!(;c:Q,<&loi=hgS`n-@AnL1V]f@@;.\QGnZ]7-@+2X[[$"F"G>l-A\pM3R2Nka5]:ONDIW^
+'+<gEP>%/Jfb@O&#?1H*@QD-?@R`qjQs%RD_6OoFc0(>7\J;E`,2,/_d[6)re,jLG_'noLC:Ui8;CjiHQK#fEAUO<9#dNBf
+`QD\,Po:,Co$teB6RUs4-c=/hS2)/9*n)/pD=PO^q;g4*r@)td4jBTZ+"!R:4a4a%q2=ft9B"mLb7Wm'Y!hP._lN&;@hcSU
+7dI6`Mik3`RU<fAVi?HjDIOPZ\ETBZ^ND%uRga5m`[Nb;c5iEEdqOR9mbLQ#leXdp9lo7kq_2)eVg1-!_#mq-$fT!YYXi!r
+kRfG@V6l2I_oIgHKspQo'3ms:_P^1<2*I`u9TM;_L6'bmnG.-MS=Y6gN[O(jRMpRBSq/P$^pEm(0@01OkllAF^3Tr9BeR5M
+NN^^0Dr0DfoK'[Z^%q@R^-utXGOOH1H5F;F&+=6$dg,Lgr9s_NU6"9RO8'$0qWSZB7\A-Jq>u-FN*k"7?bYIMoF:`p'u$O5
+[.!77Dr:%Sq?_WN%R4aDr:kiXdVnb><IXq#b5XSh1=6~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -4020 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/3.35i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_24
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 3870 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+.OeRL7sd"&V-\\uR[`KS\FS8$p[[hO~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -3870 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/3.35i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_25
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 3870 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+.5,-Y>*;F%_eY@FO/T:j_5,i?V"=38~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -3870 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_26
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+7320 0 D
+0 10800 D
+-7320 0 D
+P
+PSL_clip N
+PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1860 4230 M 150 F1
+(devon) bc Z
+5400 4230 M (davos) bc Z
+PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/4.225i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_27
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 4920 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1364,7 +1740,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -3120 T
+-240 -4920 T
 %%EndObject
 0 A
 FQ
@@ -1372,13 +1748,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/2.725i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/4.225i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_18
+%%BeginObject PSL_Layer_28
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 3120 T
+3780 4920 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1401,7 +1777,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -3120 T
+-3780 -4920 T
 %%EndObject
 0 A
 FQ
@@ -1409,13 +1785,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/2.6i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/4.1i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_19
+%%BeginObject PSL_Layer_29
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 2970 T
+240 4770 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1441,7 +1817,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -2970 T
+-240 -4770 T
 %%EndObject
 0 A
 FQ
@@ -1449,13 +1825,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/2.6i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/4.1i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_20
+%%BeginObject PSL_Layer_30
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 2970 T
+3780 4770 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1481,7 +1857,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -2970 T
+-3780 -4770 T
 %%EndObject
 0 A
 FQ
@@ -1489,23 +1865,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_21
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_31
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 3330 M 150 F1
+1860 5130 M 150 F1
 (hawaii) bc Z
-5400 3330 M (grayC) bc Z
+5400 5130 M (grayC) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1514,59 +1890,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/3.475i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/4.975i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_22
+%%BeginObject PSL_Layer_32
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 4020 T
-8 W
-V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
->> image
-G[>7("^@3o'EI&UY\psf@s<-@G:U*7[UL%rd+pFpbTJ)28siuk=P.(5.Q5G\iNBEJ53G!`pY>4aT=;s%:/t[JVlH#P`Gb!b
-oR$QB(UgVB[E>Z3O8Mdpm=3.I`*]=TcI]9!gB.90nNsL<[-Ak6)V#VX=3!tP)Ub'I%G#Q0*SbBj//)ellRXtsG6M1]Xq^3.
-[2Q,E2dEJ&["`FVf@F]R3](-?DRSD0F57TNfTsliCrOtC]i!TtPIg-n[N44&]05%[X0PL@D$E)dG2CMf_)pq(Aa=NoWU@LD
-?k3cj:Na?WSnr?3<Ncqjf3@(WBR_+8r;jXtJUZr.3gab<`*YYa^u-p&iIUh77g,e]ntTTs31=\@-:C!tG?h(qj7-RC$+^ef
-op\Y'SK,I,7Po7H'W:G!Ff.YWRnYh&,?icJVU8O$aqh=+kJZYpFOG:iYqDnSfTi)0DETXJ4l9Y:"nCl3lF)V0/l#6O>G?#M
-e>QTGZGSGM*LH)p0Io5e1t[)=]$"iHHB#bDCXq7lWOo@ClM&r(mcgnB[F+1bFmmT?5$O3BqefF.gW&s-gQMj2"*^[Km5-eI
-Q[4ICHDmaX@:&ZFV'Dc\]a^"m;31E^a$;k//3hEe4[+Ce5UZ,d!j2%80M$<HVZa&uo$_!&31ZZRC9a=d_o,^+g&)g0DK4[,
-,Kt0El:U7!8FnrmIUo1#!K7X-nr'4UjGW78l-^F"9cLi@\fA_I/,5C7EOMpP.;h#X`ak79V<dpLEO#'De=GJ6+(MoS\s[FJ
-UZ#7&>CufsD%tbKh9#-67XFQqM%Ob]lHT2OL<G"E+7F+XZONRYI#p?f*ioeWiBqb*be`jhC^H-[,:u4P-lU@N=9<>L[/nW"
-NT9',rX!tH<Gf2@aXu#b-WtlZ]4j%8a6FmFTmQUb,]Dd.5)lH2)+e/CqkXOnRCh-'X_0Pa_]P\0k[C"JH%\DNlleS_F8<I3
-lu@?'T#<'!Vte^iT(4[VYBZA)UZ^kFS1<[M!k?Pa?DNqOAc>;j\,7^LpOS%j)U@i_:2f(h^@3J_"V:CEg[l!$oY2n.ap]]@
-'(9B8iqkDk#X4mlEDH!Jl/RC>prT4+r"L4_HY+?0MiYXZgZS'>,^_mb*fIl]\^C1PDN'r1^<VY5VDlP8*.E59a1j]MRfM?<
-_MS'*BeqA)A"crunLRA.]A]Z/3*CTW:Dpm.6MJ>]nmSQckPTb#$cG7;d^0h>[?iZ4Ie_N+GX._npD'2eZf+,M@?.ec+T);E
-*KhKCEZH6q8)_3Ai%^ZNhSa^3pj]dB$17,Dg,l4rC&%?R5"!YF/]-]'Hfq4A@/55@:CG;ei/@5jp^gbt?7CAWYL:;Ya7pRd
-/j=hFj:tI/o!cPMn2@s)(;mc4U5J./*ka5@J.Lj2nKiWp?h0S4ogJ]R.=EPW_8Z%l`EW7l^(fJ@')G4JO'gXkGf.929Aqts
-qhgI0""gYMKKmm\@Mp_LrrWll9Fh~>
-U
-2 setlinecap
-N 0 150 M 3240 0 D S
-N 0 0 M 0 150 D S
-N 3240 0 M 0 150 D S
-N 0 0 M 3240 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 setlinecap
--240 -4020 T
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psscale -D4.50i/3.475i -Ctt.right.cpt -B0 -O -K
-%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_23
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-3780 4020 T
+240 5820 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1598,7 +1928,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -4020 T
+-240 -5820 T
 %%EndObject
 0 A
 FQ
@@ -1606,39 +1936,41 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/3.35i -Ctt.left2.cpt -Bf0.25 -O -K
-%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_24
+%@GMT: gmt psscale -D4.50i/4.975i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_33
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 3870 T
+3780 5820 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-+!YkS8rkcFThp]GI\<:7Vi9]KRK)9s~>
+G[?BH"a<p9(^Apu6(N<p'b0U!+bUC.+i&!Nh;-oCh$&"H$h!HN0"nU?8bTmiS[8&N:S7VlIJ<i6nh13i45cHXW.X4!n>d^3
+1]4X`)]hTlL;+V_Wp'femDp&;8)`o+2etGYpDr"akrAV>pdRt*i#a:(BK?J"34WAE.JTg?Fdc&Mr]ImFoGPSSB%E>5MtlW)
+C=D>WJ"'YR\iK;)o1D,@C-h3!;1[n//b'pKj`ggV$NFg?L)3ainR'kDGS/I1s(t\d(K6Y7_ggaU`.)W^n5?8,mVc0_QOsHR
+0/.fC^3lSYLBm)8ZlEnSX5snJ*:/L+*4(JsGc4OVd2<I9cGV?RiN=%FO)RbDEhn&NQD6Q?iFpOO/]W)^Rlo7`8]u*;M=U2N
+ncUqgNuSZXqF^qMjHHC'"(Q<^ECs%9S/NpfM3^r$:(N?$@Dj$lO`4nl2'N+IP0T(5cA;nKd<KO;d6&`acATXWEQ%\CTf<'W
+-5%+?L-Vdb]J,aeSUqZS"r#Ii9fcUN&L:_HM/B(^Z\WeXJT+a%?CjepOb\)T=C2V)/B%6NfV+\r=Q0j^8r:i)fVKS"<qsem
+.^==8p8B<af(_S8>3oNboVomF%6i.BOm(\U".F4;MmkgI'aM2[6eZNnLDLBb,_gO%Lm9r?Q)?`Z23)!qA(D9&f6P0Aof.C&
+0ju;%guJs/2A;:`i0:@^e89(de+i<Jl09-JLm^>1HgbFMpt`WipCME>inSr70Q001rr=Z2W*6,^jK'n100Y=fNo8?\lJ68Z
+[o:tbhW;o?Ck[2s$!_Tc=.aLi?GiCYXAuGcUKXi`b;Q:XSoa,K`1L\3HX:Z)i@k2FQ+uD,VVZdThKXhH$JR"QnQ5*ZWis"2
+\lsBM>pHN6DqM6L\mBY\YM:7<jDX9AM4==qqCUu:n#1-an*7B?48=0h:2uWk5.b%S,OQ<@nIO:NL'J+t51D"lM21ms\g-33
+r\<.Z*`G72O,GC(P=A=sT<bB61Wj@s=n*L3>^,&g"m$-cU3K8B/7('DqNAN=?<=jMDhp?k>N0N!21%j+X*hhA'CYO2FUuEG
+7N[JJQ1*?Qi`#iim[<k*n:fgonWiYIqc\BbJ(2.hqG-jCI4p$\5Dl*.caqGWrrH1N@:o~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
 N 0 0 M 0 150 D S
 N 3240 0 M 0 150 D S
 N 0 0 M 3240 0 D S
-/PSL_A0_y 120 def
+/PSL_A0_y 0 def
 /PSL_A1_y 0 def
-N 0 0 M 0 -60 D S
-N 405 0 M 0 -60 D S
-N 810 0 M 0 -60 D S
-N 1215 0 M 0 -60 D S
-N 1620 0 M 0 -60 D S
-N 2025 0 M 0 -60 D S
-N 2430 0 M 0 -60 D S
-N 2835 0 M 0 -60 D S
-N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -3870 T
+-3780 -5820 T
 %%EndObject
 0 A
 FQ
@@ -1646,13 +1978,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/3.35i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/4.85i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_25
+%%BeginObject PSL_Layer_34
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 3870 T
+240 5670 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1678,7 +2010,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -3870 T
+-240 -5670 T
 %%EndObject
 0 A
 FQ
@@ -1686,23 +2018,63 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_26
+%@GMT: gmt psscale -D4.50i/4.85i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_35
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 5670 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
++?lnX;kc3aQ:Q@W@?Z%gZZDnlCYeVp~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -5670 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_36
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 4230 M 150 F1
-(lapaz) bc Z
-5400 4230 M (lajolla) bc Z
+1860 6030 M 150 F1
+(lajolla) bc Z
+5400 6030 M (imola) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1711,68 +2083,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/4.225i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/5.725i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_27
+%%BeginObject PSL_Layer_37
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 4920 T
-8 W
-V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
->> image
-G[=Ce"*e-T)?A^@XM(s/h:f;SgMLc][Vad-D**`J2G%b0g6qobrU)]Ao02X@eO&ld)W:jEXU&6hf82+hf8IJaE.^-^"E'HS
-9A*%&E#IF^KpUgOdVoB%<G!Q6-Atsam;f8l2*9mP[6#,UFh8=kYMZI82saBW]Q(-4i(a)Jn`KdbZoZu_!,A`B%mj"#m1=\J
-CHF_SNHa<U3]dKee(o_=lf$[pK`3$=mn!Von!)etdmj6)).S$oT/AXMShl(Un9Hg;(g\nO8*H]a/b$#<QMep,n2S-kNDI?j
-2Xhu=bncn&fBr(l)trWdRh#3E]]BFFZ+$:^H$IAt]l;R,?PIP"Q_:Q%]Zc8C_^eR5K=rbsM6Db_iTjU_qZ\S8")gLT?hTem
-+20>eO7-K0J@hmf+;D]`6!.54(lKes?r=!>.`Nrn6#it=N[7XLYbYGJQ;Wd\dMgM8#&D4D=]R%R%Vs*nH(B2]TUW_Hl6\"G
-O\0pk=BQ^m6PT^W0EnICUJt:=3";pXUgjk_%'40/M7'R5QF:1ZC`R>[K6=;:Z(?(Zf!ib6%;ZEV+g`bQ7]_"M1klLZfYk%J
-20CCfB$Ou?gnbup\5m!1[n:Ijh5d2+lVVMO4_q:(="UlPY%-jIlEPt["*X<P`(p;+fGOoN]*NKfCr(!TXo.*8kRKu6Yt&I4
-p'g7t]u%CcG=4C`M8].9U\K:84_-D6+5MhW@et%OCd1.%!!^:75ocCK`.fNIj3T&2!lL2si@1N],'=;aVN-jSA5q7cN_Y@n
-0IDFt]FSL\ecRf_HO@gV9]Le23!0icpdt8lEH8l?2?aj[L8eu$R9&r*XdG_ene>`$5%?BWflNP"QBU"`0=!,'3L0@cbcTmf
-_<P)UT<07EC0h_+ndFdQ)d$'(]=?h%i0$QYC"&S`c0ke%_\TP0D'^]:hcI82Y(H%O2;@Z8VW.d33G33\S9;(5,HPPHOU\O-
-cGn^:Jt$-ig!'/R/T>+Cf"o[agY`Xrc46$YE+I8>d4^*`i#(.lNg'4q`1/uS57-b3pW5Vm!SJ!]jrBcf.X2NMO@/A%EYq!/
-F6)jM_5$eI[k[S*3=_\+3V!#[_3=Z5chH+Zj9,<pp=/D8"Ae&:^W^XY-`/Zb90H4%28*"m)P5S2^0prZGmh+i09M1V`VB#:
--1k+'Z7G!VmL&ASH51W]^,g0A]p?:u)S)Hr5]<GWEAq5P\'S@<%<<E$*T*BrKAK2gU3C\Qg`lL@qs`uuqrn1a&(66k*V(n4
-KK`!M_fs5_oEcp6Sto00Vs-"mZbkV9F7a`+6=-<<@aXWs$+rr\&$O>]Tbr'7^5g1I^EN(nPkZ!+7Gl+J^V3(mjU+TY"q&g'
-;!PMdPSV0b^D!LkUjl1_OHMAKJ5TWdffqe@>#t&e=AJkA=C1t[U]RNgn5lPZr_5tH<*&oY<`/dG<;Jm\koX#%l(=b,WNQ.P
-Vu]otXbg'XUW(barK1(V;+L#gXKL:WFO`rGp%_EkI=],P!X"F9Uuk!2bsfuMF"sZ%fN;nqCSJ5d7%6$`?A?^HQ=G!l("bis
--+)0SX/u)sXeG_4BVW<XgD[02G)#=f^#91DLib?)#T]W/-7>t&a_'mKZ@t-kl:PrHDPl/[1Xb)q#PKk/M*3G6@5!PpUucK4
-b<=LuC+jcQoX3NdrQ#*?2Y^Y[2pg[uBmV8Lp+RG%G6E]R+6=OOKau.3(jQ1;4.aA&:8c`8VpgdRA<c['*:7b^a1._YZ**7u
-SD+2amrf9j\6m+0*g^l0`td%o9![V[SDn[NHQAu0hnWs_2q*/qFIubs_tQ(5KRS-N\Cpk*fpi$cY&H!%'S1O\U,YA.$l9&)
-j2)?6=Mud$Q/kQ&^bBJ)9$4rTE*6Ee+bqRUUjOJt.S>8m=<.j9?qh&/L:&`cA?8C/X=@ErVhQ/MeR;t#7UlMQPb?]oW7d]>
-"^@.sEGMiigQnRlgJdcQ8#ec@9J_3)BniiRh2&b2@>oOg9lP$:.IPA;j-o`*5RTQ5CWR(K=i$doCH.i&"%Vp!nS!Io*\4V<
-j$aG_7lXB4KI9E_nbl?%r1M9!lS_`Qh>%d,e%!hilSVTE^#?kDkQ;pWpu9?%I^D=e;A[+X`)#]On?[jWIU`Y2hAH+%$&7u>
-_dD>f#]A_H<ZLe4%7YDKi9PP+bDgl)&bi.IT'T//G9uglPPFm8iEP*$_G,aQHIKCgr4WU7*qj7;#I7qPAoi%OLS7s6NuZI.
-NtfeZ/c:FFMR^XdGR7YJ:6b8rb6:po\rSAP<M(>jl;(?_L7GF.cdW9&s83Een/jOY+#hTljHC?s/,s><(]:A*s1F!aU6G!h
-?ZpMZnR(teKO=KEht6Hrp<s-)]0Yirs8=YO_[-;&./XE:NR?eIk6^Q%s3#ii:Cm5-Vr5%fe).mURK!AmSZ2#~>
-U
-2 setlinecap
-N 0 150 M 3240 0 D S
-N 0 0 M 0 150 D S
-N 3240 0 M 0 150 D S
-N 0 0 M 3240 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 setlinecap
--240 -4920 T
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psscale -D4.50i/4.225i -Ctt.right.cpt -B0 -O -K
-%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_28
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-3780 4920 T
+240 6720 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1815,7 +2132,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -4920 T
+-240 -6720 T
 %%EndObject
 0 A
 FQ
@@ -1823,39 +2140,45 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/4.1i -Ctt.left2.cpt -Bf0.25 -O -K
-%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_29
+%@GMT: gmt psscale -D4.50i/5.725i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_38
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 4770 T
+3780 6720 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-1-]elFJke6hpL<W5?@i>GUq"<F84b1~>
+G[>7("^@3o'EI&UY\psf@s<-@G:U*7[UL%rd+pFpbTJ)28siuk=P.(5.Q5G\iNBEJ53G!`pY>4aT=;s%:/t[JVlH#P`Gb!b
+oR$QB(UgVB[E>Z3O8Mdpm=3.I`*]=TcI]9!gB.90nNsL<[-Ak6)V#VX=3!tP)Ub'I%G#Q0*SbBj//)ellRXtsG6M1]Xq^3.
+[2Q,E2dEJ&["`FVf@F]R3](-?DRSD0F57TNfTsliCrOtC]i!TtPIg-n[N44&]05%[X0PL@D$E)dG2CMf_)pq(Aa=NoWU@LD
+?k3cj:Na?WSnr?3<Ncqjf3@(WBR_+8r;jXtJUZr.3gab<`*YYa^u-p&iIUh77g,e]ntTTs31=\@-:C!tG?h(qj7-RC$+^ef
+op\Y'SK,I,7Po7H'W:G!Ff.YWRnYh&,?icJVU8O$aqh=+kJZYpFOG:iYqDnSfTi)0DETXJ4l9Y:"nCl3lF)V0/l#6O>G?#M
+e>QTGZGSGM*LH)p0Io5e1t[)=]$"iHHB#bDCXq7lWOo@ClM&r(mcgnB[F+1bFmmT?5$O3BqefF.gW&s-gQMj2"*^[Km5-eI
+Q[4ICHDmaX@:&ZFV'Dc\]a^"m;31E^a$;k//3hEe4[+Ce5UZ,d!j2%80M$<HVZa&uo$_!&31ZZRC9a=d_o,^+g&)g0DK4[,
+,Kt0El:U7!8FnrmIUo1#!K7X-nr'4UjGW78l-^F"9cLi@\fA_I/,5C7EOMpP.;h#X`ak79V<dpLEO#'De=GJ6+(MoS\s[FJ
+UZ#7&>CufsD%tbKh9#-67XFQqM%Ob]lHT2OL<G"E+7F+XZONRYI#p?f*ioeWiBqb*be`jhC^H-[,:u4P-lU@N=9<>L[/nW"
+NT9',rX!tH<Gf2@aXu#b-WtlZ]4j%8a6FmFTmQUb,]Dd.5)lH2)+e/CqkXOnRCh-'X_0Pa_]P\0k[C"JH%\DNlleS_F8<I3
+lu@?'T#<'!Vte^iT(4[VYBZA)UZ^kFS1<[M!k?Pa?DNqOAc>;j\,7^LpOS%j)U@i_:2f(h^@3J_"V:CEg[l!$oY2n.ap]]@
+'(9B8iqkDk#X4mlEDH!Jl/RC>prT4+r"L4_HY+?0MiYXZgZS'>,^_mb*fIl]\^C1PDN'r1^<VY5VDlP8*.E59a1j]MRfM?<
+_MS'*BeqA)A"crunLRA.]A]Z/3*CTW:Dpm.6MJ>]nmSQckPTb#$cG7;d^0h>[?iZ4Ie_N+GX._npD'2eZf+,M@?.ec+T);E
+*KhKCEZH6q8)_3Ai%^ZNhSa^3pj]dB$17,Dg,l4rC&%?R5"!YF/]-]'Hfq4A@/55@:CG;ei/@5jp^gbt?7CAWYL:;Ya7pRd
+/j=hFj:tI/o!cPMn2@s)(;mc4U5J./*ka5@J.Lj2nKiWp?h0S4ogJ]R.=EPW_8Z%l`EW7l^(fJ@')G4JO'gXkGf.929Aqts
+qhgI0""gYMKKmm\@Mp_LrrWll9Fh~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
 N 0 0 M 0 150 D S
 N 3240 0 M 0 150 D S
 N 0 0 M 3240 0 D S
-/PSL_A0_y 120 def
+/PSL_A0_y 0 def
 /PSL_A1_y 0 def
-N 0 0 M 0 -60 D S
-N 405 0 M 0 -60 D S
-N 810 0 M 0 -60 D S
-N 1215 0 M 0 -60 D S
-N 1620 0 M 0 -60 D S
-N 2025 0 M 0 -60 D S
-N 2430 0 M 0 -60 D S
-N 2835 0 M 0 -60 D S
-N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -4770 T
+-3780 -6720 T
 %%EndObject
 0 A
 FQ
@@ -1863,13 +2186,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/4.1i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/5.6i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_30
+%%BeginObject PSL_Layer_39
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 4770 T
+240 6570 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -1895,7 +2218,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -4770 T
+-240 -6570 T
 %%EndObject
 0 A
 FQ
@@ -1903,23 +2226,63 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_31
+%@GMT: gmt psscale -D4.50i/5.6i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_40
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 6570 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
++!YkS8rkcFThp]GI\<:7Vi9]KRK)9s~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -6570 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_41
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 5130 M 150 F1
-(oleron) bc Z
-5400 5130 M (lisbon) bc Z
+1860 6930 M 150 F1
+(lisbon) bc Z
+5400 6930 M (lapaz) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1928,13 +2291,215 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/4.975i -Ctt.left.cpt -B0 -O -K
-%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_32
+%@GMT: gmt psscale -D1.55i/6.475i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_42
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 5820 T
+240 7620 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[=Ce"*e-T)?A^@XM(s/h:f;SgMLc][Vad-D**`J2G%b0g6qobrU)]Ao02X@eO&ld)W:jEXU&6hf82+hf8IJaE.^-^"E'HS
+9A*%&E#IF^KpUgOdVoB%<G!Q6-Atsam;f8l2*9mP[6#,UFh8=kYMZI82saBW]Q(-4i(a)Jn`KdbZoZu_!,A`B%mj"#m1=\J
+CHF_SNHa<U3]dKee(o_=lf$[pK`3$=mn!Von!)etdmj6)).S$oT/AXMShl(Un9Hg;(g\nO8*H]a/b$#<QMep,n2S-kNDI?j
+2Xhu=bncn&fBr(l)trWdRh#3E]]BFFZ+$:^H$IAt]l;R,?PIP"Q_:Q%]Zc8C_^eR5K=rbsM6Db_iTjU_qZ\S8")gLT?hTem
++20>eO7-K0J@hmf+;D]`6!.54(lKes?r=!>.`Nrn6#it=N[7XLYbYGJQ;Wd\dMgM8#&D4D=]R%R%Vs*nH(B2]TUW_Hl6\"G
+O\0pk=BQ^m6PT^W0EnICUJt:=3";pXUgjk_%'40/M7'R5QF:1ZC`R>[K6=;:Z(?(Zf!ib6%;ZEV+g`bQ7]_"M1klLZfYk%J
+20CCfB$Ou?gnbup\5m!1[n:Ijh5d2+lVVMO4_q:(="UlPY%-jIlEPt["*X<P`(p;+fGOoN]*NKfCr(!TXo.*8kRKu6Yt&I4
+p'g7t]u%CcG=4C`M8].9U\K:84_-D6+5MhW@et%OCd1.%!!^:75ocCK`.fNIj3T&2!lL2si@1N],'=;aVN-jSA5q7cN_Y@n
+0IDFt]FSL\ecRf_HO@gV9]Le23!0icpdt8lEH8l?2?aj[L8eu$R9&r*XdG_ene>`$5%?BWflNP"QBU"`0=!,'3L0@cbcTmf
+_<P)UT<07EC0h_+ndFdQ)d$'(]=?h%i0$QYC"&S`c0ke%_\TP0D'^]:hcI82Y(H%O2;@Z8VW.d33G33\S9;(5,HPPHOU\O-
+cGn^:Jt$-ig!'/R/T>+Cf"o[agY`Xrc46$YE+I8>d4^*`i#(.lNg'4q`1/uS57-b3pW5Vm!SJ!]jrBcf.X2NMO@/A%EYq!/
+F6)jM_5$eI[k[S*3=_\+3V!#[_3=Z5chH+Zj9,<pp=/D8"Ae&:^W^XY-`/Zb90H4%28*"m)P5S2^0prZGmh+i09M1V`VB#:
+-1k+'Z7G!VmL&ASH51W]^,g0A]p?:u)S)Hr5]<GWEAq5P\'S@<%<<E$*T*BrKAK2gU3C\Qg`lL@qs`uuqrn1a&(66k*V(n4
+KK`!M_fs5_oEcp6Sto00Vs-"mZbkV9F7a`+6=-<<@aXWs$+rr\&$O>]Tbr'7^5g1I^EN(nPkZ!+7Gl+J^V3(mjU+TY"q&g'
+;!PMdPSV0b^D!LkUjl1_OHMAKJ5TWdffqe@>#t&e=AJkA=C1t[U]RNgn5lPZr_5tH<*&oY<`/dG<;Jm\koX#%l(=b,WNQ.P
+Vu]otXbg'XUW(barK1(V;+L#gXKL:WFO`rGp%_EkI=],P!X"F9Uuk!2bsfuMF"sZ%fN;nqCSJ5d7%6$`?A?^HQ=G!l("bis
+-+)0SX/u)sXeG_4BVW<XgD[02G)#=f^#91DLib?)#T]W/-7>t&a_'mKZ@t-kl:PrHDPl/[1Xb)q#PKk/M*3G6@5!PpUucK4
+b<=LuC+jcQoX3NdrQ#*?2Y^Y[2pg[uBmV8Lp+RG%G6E]R+6=OOKau.3(jQ1;4.aA&:8c`8VpgdRA<c['*:7b^a1._YZ**7u
+SD+2amrf9j\6m+0*g^l0`td%o9![V[SDn[NHQAu0hnWs_2q*/qFIubs_tQ(5KRS-N\Cpk*fpi$cY&H!%'S1O\U,YA.$l9&)
+j2)?6=Mud$Q/kQ&^bBJ)9$4rTE*6Ee+bqRUUjOJt.S>8m=<.j9?qh&/L:&`cA?8C/X=@ErVhQ/MeR;t#7UlMQPb?]oW7d]>
+"^@.sEGMiigQnRlgJdcQ8#ec@9J_3)BniiRh2&b2@>oOg9lP$:.IPA;j-o`*5RTQ5CWR(K=i$doCH.i&"%Vp!nS!Io*\4V<
+j$aG_7lXB4KI9E_nbl?%r1M9!lS_`Qh>%d,e%!hilSVTE^#?kDkQ;pWpu9?%I^D=e;A[+X`)#]On?[jWIU`Y2hAH+%$&7u>
+_dD>f#]A_H<ZLe4%7YDKi9PP+bDgl)&bi.IT'T//G9uglPPFm8iEP*$_G,aQHIKCgr4WU7*qj7;#I7qPAoi%OLS7s6NuZI.
+NtfeZ/c:FFMR^XdGR7YJ:6b8rb6:po\rSAP<M(>jl;(?_L7GF.cdW9&s83Een/jOY+#hTljHC?s/,s><(]:A*s1F!aU6G!h
+?ZpMZnR(teKO=KEht6Hrp<s-)]0Yirs8=YO_[-;&./XE:NR?eIk6^Q%s3#ii:Cm5-Vr5%fe).mURK!AmSZ2#~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -7620 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/6.475i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_43
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 7620 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [1620 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+>> image
+G[?BHF\n<:*!"p3]^GC&]=Y]D]^A$R7E+]5<joVal0]$c5XcC!>;3=um[AL;q0(Hc(GkR)dilT^+i8PrfNEKJkRF4EL>EV\
+\QO6:fL:'9I%0d%@'b*5oM506F][&JE(BI?ptfE=IIR2tp]K:V,7Wj(h=-3Y7tUDp_N/hP5#+:-51r:n5=Ib14qkn_2G/lk
+7m>goq#^A$0+IajpLWo\hY=/,f:qfeULWD(W;FNI$,8pCh3[pIq//Fp4mr4GnIOOg`<",Bi/buU#3)6b@X^dq4rF2AoLnt[
++o'YVRGX+`%b&M6'8J)"_;CG@N50o_$2tX?r>GTG'`RE3n@-d%iBP?Gcp,R&J#Qq"J&D<)kg=n#1&i1'7OS^TB=Q+f]^%s>
+;Oh83]><=F*g=DgEJd?S$29mGpRYu_7u-ehqo7Xo1_t@d;6(Z:&(Fe15rrthW)jI[LDk!m0R1+]BHI891uY4R%f'eG`A%Q<
+9?())oJg(MGdZ?R:6863:3)"`<]f-s'^8R5EuGq^p;f+c8#_2b?<lsldKX'g;=4+H?us+R>=`NLDN"8<p4RC?e1#Md1>PO3
+-RjRlPF9-!geS,PR;lqc4?"EH%Sb0_PIS`&GY/aCb"^(!drY!eFtT@XB&s3[CbdB1/7@V'H%jIi\d0r;o$`<3D(dAI(74gc
+;S7ZgL6n3OdB`=d/Z1*]F9PslXK6O(e+)\h)(p##qp(_rD"F`2Ce't-caL=GS2ms9SkIC@>L@`fBFA*7=5h\0AnH2?CT:+Q
+)LR!n&YIBS5VFgukJDq[T!"o*nO9iHjs%HuY%')ee)H;U,tjWuF?R@F?Gg$*03a/aB.q;,XC/1V=03`L0itQuf<!AoCUrc^
+ip53YlZMiS%J[r&H?@U_k2snmFNYGIlW,7DD&]ujghmaK^^WBLi=3rL#"rGN\9"R5hR1O]mbVeNpZun@pT!sKpVBT$>[Wb2
+J!4*I+$=MXK-!/=71UF0_1(qD@56.*Lj11?4=Y23)@n_V>FH4/>3(O\NiA6'a,_UC-VgJQW@(KAe)[E%V+WV_e#1`aXj<NZ
+U<fFUQKF"dcDbkhT0JqQkDL-/L^!@-(CT2r9:+/Io#m@mcmr0iiNfLce`H@;f.,;M"&\.^jo~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -7620 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/6.35i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_44
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 7470 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+1-]elFJke6hpL<W5?@i>GUq"<F84b1~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-240 -7470 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D4.50i/6.35i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+%@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_45
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+3780 7470 T
+8 W
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+>> image
+*+"CbCk?>QMijKpXKIl%]8OqXKC8/t~>
+U
+2 setlinecap
+N 0 150 M 3240 0 D S
+N 0 0 M 0 150 D S
+N 3240 0 M 0 150 D S
+N 0 0 M 3240 0 D S
+/PSL_A0_y 120 def
+/PSL_A1_y 0 def
+N 0 0 M 0 -60 D S
+N 405 0 M 0 -60 D S
+N 810 0 M 0 -60 D S
+N 1215 0 M 0 -60 D S
+N 1620 0 M 0 -60 D S
+N 2025 0 M 0 -60 D S
+N 2430 0 M 0 -60 D S
+N 2835 0 M 0 -60 D S
+N 3240 0 M 0 -60 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+-3780 -7470 T
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_46
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+7320 0 D
+0 10800 D
+-7320 0 D
+P
+PSL_clip N
+PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1860 7830 M 150 F1
+(oleron) bc Z
+5400 7830 M (nuuk) bc Z
+PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psscale -D1.55i/7.225i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
+%%BeginObject PSL_Layer_47
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+240 8520 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -1974,7 +2539,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -5820 T
+-240 -8520 T
 %%EndObject
 0 A
 FQ
@@ -1982,13 +2547,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/4.975i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/7.225i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_33
+%%BeginObject PSL_Layer_48
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 5820 T
+3780 8520 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -2020,7 +2585,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -5820 T
+-3780 -8520 T
 %%EndObject
 0 A
 FQ
@@ -2028,13 +2593,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/4.85i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/7.1i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_34
+%%BeginObject PSL_Layer_49
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 5670 T
+240 8370 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2060,7 +2625,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -5670 T
+-240 -8370 T
 %%EndObject
 0 A
 FQ
@@ -2068,13 +2633,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/4.85i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/7.1i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_35
+%%BeginObject PSL_Layer_50
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 5670 T
+3780 8370 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2100,7 +2665,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -5670 T
+-3780 -8370 T
 %%EndObject
 0 A
 FQ
@@ -2108,23 +2673,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_36
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_51
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 6030 M 150 F1
+1860 8730 M 150 F1
 (roma) bc Z
-5400 6030 M (oslo) bc Z
+5400 8730 M (oslo) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -2133,13 +2698,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/5.725i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/7.975i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_37
+%%BeginObject PSL_Layer_52
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 6720 T
+240 9420 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -2170,7 +2735,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -6720 T
+-240 -9420 T
 %%EndObject
 0 A
 FQ
@@ -2178,13 +2743,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/5.725i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/7.975i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_38
+%%BeginObject PSL_Layer_53
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 6720 T
+3780 9420 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -2226,7 +2791,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -6720 T
+-3780 -9420 T
 %%EndObject
 0 A
 FQ
@@ -2234,13 +2799,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/5.6i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/7.85i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_39
+%%BeginObject PSL_Layer_54
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 6570 T
+240 9270 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2266,7 +2831,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -6570 T
+-240 -9270 T
 %%EndObject
 0 A
 FQ
@@ -2274,13 +2839,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/5.6i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/7.85i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_40
+%%BeginObject PSL_Layer_55
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 6570 T
+3780 9270 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2306,7 +2871,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -6570 T
+-3780 -9270 T
 %%EndObject
 0 A
 FQ
@@ -2314,23 +2879,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_41
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_56
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 6930 M 150 F1
+1860 9630 M 150 F1
 (tokyo) bc Z
-5400 6930 M (tofino) bc Z
+5400 9630 M (tofino) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -2339,13 +2904,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/6.475i -Ctt.left.cpt -B0 -O -K
+%@GMT: gmt psscale -D1.55i/8.725i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_42
+%%BeginObject PSL_Layer_57
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 7620 T
+240 10320 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -2388,7 +2953,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -7620 T
+-240 -10320 T
 %%EndObject
 0 A
 FQ
@@ -2396,13 +2961,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/6.475i -Ctt.right.cpt -B0 -O -K
+%@GMT: gmt psscale -D4.50i/8.725i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_43
+%%BeginObject PSL_Layer_58
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 7620 T
+3780 10320 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1620 /Height 1 /BitsPerComponent 8
@@ -2434,7 +2999,7 @@ N 0 0 M 3240 0 D S
 /PSL_A1_y 0 def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -7620 T
+-3780 -10320 T
 %%EndObject
 0 A
 FQ
@@ -2442,13 +3007,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D1.55i/6.35i -Ctt.left2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D1.55i/8.6i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_44
+%%BeginObject PSL_Layer_59
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-240 7470 T
+240 10170 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2474,7 +3039,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--240 -7470 T
+-240 -10170 T
 %%EndObject
 0 A
 FQ
@@ -2482,13 +3047,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -D4.50i/6.35i -Ctt.right2.cpt -Bf0.25 -O -K
+%@GMT: gmt psscale -D4.50i/8.6i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_45
+%%BeginObject PSL_Layer_60
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3780 7470 T
+3780 10170 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
@@ -2514,7 +3079,7 @@ N 2835 0 M 0 -60 D S
 N 3240 0 M 0 -60 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
--3780 -7470 T
+-3780 -10170 T
 %%EndObject
 0 A
 FQ
@@ -2522,37 +3087,24 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/6.1/0/6.75 -Jx1i -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_46
+%@GMT: gmt pstext -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/9.00 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 9.00000000 0.000 6.100 0.000 9.000 +xy
+%%BeginObject PSL_Layer_61
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
 7320 0 D
-0 8100 D
+0 10800 D
 -7320 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1860 7830 M 150 F1
+1860 10530 M 150 F1
 (vik) bc Z
-5400 7830 M (turku) bc Z
+5400 10530 M (turku) bc Z
 PSL_cliprestore
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy -R0/6.1/0/6.75 -Jx1i -O -T
-%@PROJ: xy 0.00000000 6.10000000 0.00000000 6.75000000 0.000 6.100 0.000 6.750 +xy
-%%BeginObject PSL_Layer_47
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
 %%EndObject
 
 grestore

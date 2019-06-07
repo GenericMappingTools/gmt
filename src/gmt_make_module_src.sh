@@ -378,5 +378,3 @@ EOF
 fi
 #rm -f /tmp/$LIB.txt
 exit 0
-
-# vim: set ft=c:

@@ -14,12 +14,14 @@ else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th fr
 fi
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh
-# Set view and sun longitudes
-gmt math -T0/360/5 -I T 5 SUB = longitudes.txt
-# Extract a topography CPT
-gmt makecpt -Cdem2 -T0/6000 > movie_dem.cpt
-# Get gradients of the relief from N45E
-gmt grdgradient @earth_relief_20m -Nt1.25 -A45 -Gintens.nc
+gmt begin
+	# Set view and sun longitudes
+	gmt math -T0/360/5 -I T 5 SUB = longitudes.txt
+	# Extract a topography CPT
+	gmt makecpt -Cdem2 -T0/6000 -H > t.cpt
+	# Get gradients of the relief from N45E
+	gmt grdgradient @earth_relief_20m -Nt1.25 -A45 -Gintens.nc
+gmt end
 EOF
 # 2. Set up main script
 cat << EOF > main.sh
@@ -33,7 +35,7 @@ gmt begin
 	# Clip to expose land areas only
 	gmt coast -Gc
 	# Overlay relief over land only using dem cpt
-	gmt grdimage @earth_relief_20m -Is.nc -Cmovie_dem.cpt
+	gmt grdimage @earth_relief_20m -Is.nc -Ct.cpt
 	# Undo clipping and overlay gridlines
 	gmt coast -Q -B30g30
 gmt end

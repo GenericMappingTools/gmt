@@ -114,8 +114,6 @@ Optional Arguments
     azimuth, but see **-A**]. With this option, the calculated
     track-normal azimuths are overridden by *fixed_az*.
 
-.. include:: explain_-Jz.rst_
-
 .. _-T:
 
 **-T**\ *pen*

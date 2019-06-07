@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Test issue #1204
+# Text should be red with blue outline but the quoted text is blue.
 ps=outline.ps
 cat << EOF > t.txt
 0 0.25

@@ -108,7 +108,7 @@
 
 #define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Option -%c given more than once\n", option))
 
-#define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "doc/" GMT_PACKAGE_VERSION "/GMT_Docs.html#new-features-in-gmt-5 for more information.\n"
+#define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
 #define GMT_COMPAT_TRANSLATE(new_P) error = (gmt_M_compat_check (GMT, 4) ? GMT_COMPAT_CHANGE (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
@@ -5355,7 +5355,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_ANNOT_OBLIQUE */
-	GMT->current.setting.map_annot_oblique = 1;
+	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
@@ -5963,6 +5963,11 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->common.x.n_threads = gmtlib_get_num_processors();
 #endif
 
+	/* Set the names of the default CPTs */
+	strcpy (GMT->init.cpt[0], "rainbow");	/* GMT default CPT unless overridden by data type specific CPT */
+	strcpy (GMT->init.cpt[1], "geo");	/* GMT default CPT for earth_relief grids */
+	strcpy (GMT->init.cpt[2], "srtm");	/* GMT default CPT for srtm_relief grids */
+	
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
 	return (GMT);
 }
@@ -7792,8 +7797,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (i < 4 || i > 6 || ((!GMT->common.R.oblique && gmt_check_region (GMT, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	gmt_M_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by gmt_map_setup */
-	error += gmt_M_check_condition (GMT, i == 6 && !GMT->current.proj.JZ_set, "-R with six parameters requires -Jz|Z\n");
-
+	if (i == 6 && !GMT->current.proj.JZ_set) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-R with six parameters but no -Jz|Z given - ignore zmin/zmax\n");
+		GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
+	}
 	return (error);
 }
 
@@ -8723,7 +8730,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
 			ival = atoi (value);
-			if (ival >= 0 && ival < 64)
+			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)
 				GMT->current.setting.map_annot_oblique = ival;
 			else
 				error = true;
@@ -9400,7 +9407,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_chunked_auto;
 			else if (*lower_value == 'c') /* classic */
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
-			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* Chunk size: vert,hor */
+			else if ((i = sscanf (value, "%" PRIuS " , %" PRIuS, /* Chunk size: vert,hor */
 			         &GMT->current.setting.io_nc4_chunksize[0], &GMT->current.setting.io_nc4_chunksize[1])) > 0) {
 				if (i == 1) /* Use chunk size for both horizontal and vertical dimension */
 					GMT->current.setting.io_nc4_chunksize[1] = GMT->current.setting.io_nc4_chunksize[0];
@@ -11793,7 +11800,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
 	}
 	else if (!strncmp (name, "pshistogram", 11U)) {	/* Check for -I option */
-		if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* -I writes dataset */
+		if ((opt = GMT_Find_Option (API, 'I', options))) return false;	/* -I writes dataset */
 	}
 	else if (!strncmp (name, "pssolar", 7U)) {	/* Check for -M -I options */
 		if ((opt = GMT_Find_Option (API, 'M', options))) return false;	/* -M writes dataset */
@@ -12344,6 +12351,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			return NULL;
 	}
 
+	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
 		int id, fig;
@@ -12357,7 +12366,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		gmtinit_get_last_dimensions (API, fig);	/* Get dimensions of previous plot, if any */
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
-		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
@@ -12621,7 +12629,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT->common.R.wesn[YHI] = sgn * ceil  (fabs (GMT->common.R.wesn[YHI]) / res[srtm_res]) * res[srtm_res];
 			/* Get a file with a list of all needed srtm tiles */
 			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean);
-			/* Replace the @earth_relief_0xs file name with this local list */
+			/* Replace the @[earth|srtm]_relief_0[1|3s file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
 			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
@@ -13002,13 +13010,19 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-				if (symbol == '=')	/* Since norm distance is in km we convert to spherical degrees */
+				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
+					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Vector shrink length limit for geovectors must be given in km!\n");
+						error++;
+					}
 					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;
+				}
 				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
 					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
 				else	/* Convert length from default unit to inches */
 					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g\n", S->v.v_norm);
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;
@@ -14232,7 +14246,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
 
-	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
+	if ((pch = strchr(dest, '/')) != NULL || (pch = strstr(dest, "+width=")) != NULL || (pch = strstr(dest, "+scale=")) != NULL)
+		/* If we have a scale, drop it before passing the string to GDAL */
 		pch[0] = '\0';
 
 	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
@@ -14778,6 +14793,10 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	struct GMT_CTRL *GMT = NULL;
 	char version[GMT_LEN8] = {""};
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+	char *path1 = NULL, *path2 = NULL, *paths[2] = {NULL, NULL};
+	int  local_count = 0;
+#endif
 
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -14808,6 +14827,32 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	GMT = gmtinit_new_GMT_ctrl (API, session, pad);	/* Allocate and initialize a new common control structure */
 	API->GMT = GMT;
+
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+	/* Here we allow users to declare a different location for the GDAL's GDAL_DATA and
+	   PROJ4 PROJ_LIB directories. The later may be particularly useful in these days of
+	   transition to GDAL3.0, which imply PROJ4 V6 but many (different) PROJ_LIB from PROJ4 < 6
+	   are still trailing around.
+	   If neither of those ENV var is provided, we default to GMT share/GDAL_DATA, if that
+	   dir exists. In case it does, then it's expected to contain both the files from GDAL's
+	   GDAL_DATA (data) and PROJ4 PRPJ_LIB (share). This will be the case on Windows where
+	   the installer will create and fill that directory.
+	*/
+	if ((path1 = getenv ("LOCAL_GDAL_DATA")) != NULL) paths[local_count++] = path1;
+	if ((path2 = getenv ("LOCAL_PROJ_LIB")) != NULL)  paths[local_count++] = path2;
+	if (!local_count) {			/* If none of the above was provided, default to share/GDAL_DATA */
+		char dir[GMT_LEN256];
+		sprintf (dir, "%s/GDAL_DATA", API->GMT->session.SHAREDIR);
+		if (access (dir, F_OK) == 0) {		/* ... if it exists */
+			paths[0] = strdup(dir);
+			local_count = -1;
+		}
+	}
+	if (local_count) {		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
+		OSRSetPROJSearchPaths(paths);
+		if (local_count < 0)  free (paths[0]);		/* This case was strdup allocated, so it can be freed */
+	}
+#endif
 
 	sprintf (version, "GMT%d", GMT_MAJOR_VERSION);
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: New_PSL_Ctrl\n");

@@ -15,7 +15,8 @@ Synopsis
 
 **gmtlogo** [ |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ |-J|\ *parameters* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-J|\ *parameters* ]
+[ |-K| ]
 [ |-O| ] [ |-P| ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ [\ **l**\ \|\ **n**\ \|\ **u**\ ] ]

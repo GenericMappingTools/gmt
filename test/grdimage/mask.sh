@@ -2,7 +2,6 @@
 #
 # Test colorizing 1-bit images in grdimage
 ps=mask.ps
-# GMT CLASSIC
 
 # Created mask.nc this way, now in git
 # gmt grdmath -R0/20/0/20 -I1 -r 0 1 RAND RINT = mask.nc=nb

@@ -75,7 +75,7 @@ if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 endif (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 
 # Install components:
-set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG)
+set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG GDALDATA)
 # set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
 set (CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime files")
 set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
@@ -86,6 +86,8 @@ set (CPACK_COMPONENT_DCW_DESCRIPTION
 	"Digital Chart of the World files.")
 set (CPACK_COMPONENT_GSHHG_DESCRIPTION
 	"Shoreline database files.")
+set (CPACK_COMPONENT_GDALDATA_DESCRIPTION
+	"GDAL & PROJ4 auxiliary files.")
 
 # Create two installation types with pre-selected components:
 set (CPACK_ALL_INSTALL_TYPES Full Minimal)
@@ -94,6 +96,7 @@ set (CPACK_COMPONENT_RUNTIME_INSTALL_TYPES Minimal Full)
 set (CPACK_COMPONENT_DOCUMENTATION_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GSHHG_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_DCW_INSTALL_TYPES Full)
+set (CPACK_COMPONENT_GDALDATA_INSTALL_TYPES Full)
 
 # One package per COMPONENT:
 set(CPACK_COMPONENTS_GROUPING "IGNORE")
@@ -167,7 +170,7 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-	if (WIN32 AND GMTMEX_PATH) 
+	if (WIN32 AND GMTMEX_PATH)
 		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
 			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
@@ -260,5 +263,3 @@ set (CPACK_SOURCE_GENERATOR TGZ TBZ2 ZIP)
 
 # This must always be last:
 include (CPack)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

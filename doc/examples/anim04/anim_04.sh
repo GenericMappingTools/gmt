@@ -15,9 +15,11 @@ fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 # Set up flight path
-gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q > flight_path.txt
-gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_US.nc
-gmt makecpt -Cglobe > globe_US.cpt
+gmt begin
+	gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q > flight_path.txt
+	gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_US.nc
+	gmt makecpt -Cglobe -H > globe_US.cpt
+gmt end
 EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #	Testing gpsgridder for small region without weights
 #	Work is being done by run_GPS_case.sh
-# GMT CLASSIC mode
 ps=case_smallR_noW.ps
 # Use real GPS data with uncertainties
 data=`gmt which -G @wus_gps_final_crowell.txt`
