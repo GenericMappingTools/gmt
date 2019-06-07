@@ -306,5 +306,3 @@ endif (HAVE_OPENMP)
 #if(MSVC11)
 #  add_definitions(/D_ALLOW_KEYWORD_MACROS)
 #endif(MSVC11)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

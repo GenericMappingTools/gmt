@@ -192,5 +192,3 @@ chmod 755 gmtest.sh
 if [ "X$script_mode" = "XM" ] && [ ! "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi
-
-# vim: ft=sh

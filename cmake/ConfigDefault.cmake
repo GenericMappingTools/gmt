@@ -186,5 +186,3 @@ set (CMAKE_FIND_FRAMEWORK LAST)
 if (NOT DEFINED BUILD_DEVELOPER)
 	set (BUILD_DEVELOPER true)
 endif (NOT DEFINED BUILD_DEVELOPER)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

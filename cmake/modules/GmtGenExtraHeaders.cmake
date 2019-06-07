@@ -87,5 +87,3 @@ elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)
 elseif (DEFINED GENERATE_COMMAND)
 	message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
 endif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

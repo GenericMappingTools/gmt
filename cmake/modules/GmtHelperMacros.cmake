@@ -136,5 +136,3 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 	endmacro (INSTALL_MODULE_SYMLINK)
 
 endif(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
