@@ -124,6 +124,8 @@ fi
 for ps in *.ps ; do
   if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
       echo "${script_dir}/${ps}: RMS Error = NA [FAIL] (known failure)"
+      now=$(date "+%F %T")
+      echo "$now ${script_dir}/${ps}: RMS Error = NA [FAIL] (known failure)" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
     rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
@@ -136,7 +138,7 @@ for ps in *.ps ; do
     if [ "$pscmpfailed" ]; then
       now=$(date "+%F %T")
       echo "${script_dir}/${ps}: RMS Error = $rms [FAIL]"
-      echo "$now ${script_dir}/${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+      echo "$now ${script_dir}/${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
       make_pdf "$ps" # try to make pdf file
       ((++ERROR))
     else
@@ -152,7 +154,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
     ((++ERROR))
   else
     echo "[PASS]"

@@ -76,6 +76,8 @@ pscmp () {
   fi
   if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
       echo "${ps}: RMS Error = NA [FAIL] (known failure)"
+      now=$(date "+%F %T")
+      echo "$now ${ps}: RMS Error = NA [FAIL] (known failure)" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
     rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
@@ -88,7 +90,7 @@ pscmp () {
     if [ "$pscmpfailed" ]; then
       now=$(date "+%F %T")
       echo "${ps}: RMS Error = $rms [FAIL]"
-      echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+      echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
       make_pdf "$ps" # try to make pdf file
       ((++ERROR))
     else
