@@ -226,7 +226,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	if (!gmt_M_file_is_memory (&line[1]) && line[1] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, &line[1], 0) + 1;	/* Add one since we started at 1 */
 	}
-	strncpy (fill->pattern, &line[first], GMT_BUFSIZ-1);
+	strncpy (fill->pattern, &line[first], PATH_MAX-1);
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
@@ -7344,7 +7344,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				}
 				X->has_pattern = true;
 				if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-					strncpy (X->bfn[id].fill->pattern, name, GMT_BUFSIZ-1);
+					strncpy (X->bfn[id].fill->pattern, name, PATH_MAX-1);
 					gmt_M_str_free (name);
 				}
 			}
@@ -7459,7 +7459,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			X->has_pattern = true;
 			if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-				strncpy (X->data[n].fill->pattern, name, GMT_BUFSIZ-1);
+				strncpy (X->data[n].fill->pattern, name, PATH_MAX-1);
 				gmt_M_str_free (name);
 			}
 		}

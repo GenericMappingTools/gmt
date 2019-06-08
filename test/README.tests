@@ -13,6 +13,20 @@
 # Scripts that are known to fail can be excluded from the test
 # by adding the comment
 #	# GMT_KNOWN_FAILURE
-# to the script anywhere.
+# to the script anywhere.  Their failures will be listed in the
+# test/fail_count.txt file but not counted by ctest.
+#
+# Under Linux you can have all module calls be run via valgrind
+# in order to track down pesky memory leaks.  To do this, cd
+# into the build directory and do this:
+# 1. Remove old logs with: find . -name '.log' -exec rm -f {} \;
+# 2. export VALGRIND_ARGS="--track-origins=yes --leak-check=full"
+# Afterwards you can find all the *.log files and examine them.
+# On any OS you can activate the full GMT memory tracking by
+# setting
+# 	export GMT_TRACK_MEMORY=2
+# This assumes you configured GMT via with cmake/ConfigUser.cmake
+#	add_definitions(-DDEBUG)
+#	add_definitions(-DMEMDEBUG)
 #
 # P. Wessel, June 2019
