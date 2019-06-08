@@ -30,6 +30,10 @@
 #ifndef GMT_TEXTURE_H
 #define GMT_TEXTURE_H
 
+#ifndef PATH_MAX
+#	define PATH_MAX 1024
+#endif
+
 /*--------------------------------------------------------------------
  *			GMT TEXTURE STRUCTURE DEFINITIONS
  *--------------------------------------------------------------------*/
