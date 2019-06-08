@@ -92,7 +92,7 @@ for ps in *.ps ; do
     if [ -z "$rms" ]; then
       rms="NA"
     else
-      rms=$(printf "%.3f\n" $rms)
+      rms=$(printf "%.4f\n" $rms)
     fi
     if [ "$pscmpfailed" ]; then
       now=$(date "+%F %T")
