@@ -11,6 +11,9 @@ script_name="$1"
 script_dir=$(dirname "${script_name}")
 local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/doc/examples/${script_name}"
+# Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
+# GRAPHICSMAGICK_RMS = <custom-limit>
+GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -31,9 +34,13 @@ LANG=C
 # Define variables that are needed *within* test scripts
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+# If no script-specific rms we use the system default
+if [ -z "$GRAPHICSMAGICK_RMS" ]; then
+	GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+fi
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
 
-# Font lookup path for Ghostscript (invoked from gm compare and ps2raster)
+# Font lookup path for Ghostscript (invoked from gm compare and psconvert)
 export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
