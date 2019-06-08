@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Same as oblsuite_N.sh but with no hemisphere restriction on where the pole is
+# Due to hairline differences in many gridlines between Linux and macOS we need a
+# higher rms threshold for this test to pass
+# GRAPHICSMAGICK_RMS = 0.02
 ps=oblsuite.ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -JoA-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -JoA-30/60/-150/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps

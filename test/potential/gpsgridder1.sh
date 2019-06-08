@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Test # 1 in Sandwell & Wessel tarball test data sets
+# Due to hairline differences in many gridlines between Linux and macOS we need a
+# higher rms threshold for this test to pass
+# GRAPHICSMAGICK_RMS = 0.0565
 ps=gpsgridder1.ps
 #V=-Vl
 INC=5m

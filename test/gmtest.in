@@ -18,6 +18,9 @@ src="@GMT_SOURCE_DIR@/test/${script_dir}"
 modern=$(grep "gmt begin" "$script" -c)
 # Is it a script that is known to fail?
 known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+# Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
+# GRAPHICSMAGICK_RMS = <custom-limit>
+GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -30,8 +33,10 @@ LANG=C
 
 # Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
-
+# If no script-specific rms we use the system default
+if [ -z "$GRAPHICSMAGICK_RMS" ]; then
+	GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+fi
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
@@ -123,7 +128,9 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
 fi
 for ps in *.ps ; do
   if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
-      echo "${script_dir}/${ps}: RMS Error = NA [FAIL] (known failure)"
+      echo "${script_dir}/${ps}: RMS Error = N/A [FAIL] (known failure)"
+      now=$(date "+%F %T")
+      echo "$now ${script_dir}/${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
     rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
@@ -131,16 +138,16 @@ for ps in *.ps ; do
     if [ -z "$rms" ]; then
       rms="NA"
     else
-      rms=$(printf "%.3f\n" $rms)
+      rms=$(printf "%.4f\n" $rms)
     fi
     if [ "$pscmpfailed" ]; then
       now=$(date "+%F %T")
       echo "${script_dir}/${ps}: RMS Error = $rms [FAIL]"
-      echo "$now ${script_dir}/${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+      echo "$now ${script_dir}/${ps}: RMS Error = $rms Limit = $GRAPHICSMAGICK_RMS Failure = new" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
       make_pdf "$ps" # try to make pdf file
       ((++ERROR))
     else
-      test -z "$rms" && rms=NA
+      test -z "$rms" && rms=N/A
       echo "${script_dir}/${ps}: RMS Error = $rms [PASS]"
     fi
   fi
@@ -152,7 +159,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
     ((++ERROR))
   else
     echo "[PASS]"

@@ -15,6 +15,9 @@ tut="@GMT_SOURCE_DIR@/doc/tutorial"
 modern=$(grep "gmt begin" "$script" -c)
 # Is it a script that is known to fail?
 known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+# Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
+# GRAPHICSMAGICK_RMS = <custom-limit>
+GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -36,7 +39,10 @@ LANG=C
 
 # Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+# If no script-specific rms we use the system default
+if [ -z "$GRAPHICSMAGICK_RMS" ]; then
+	GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+fi
 
 # Reset error count
 ERROR=0
@@ -75,7 +81,9 @@ pscmp () {
     return
   fi
   if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
-      echo "${ps}: RMS Error = NA [FAIL] (known failure)"
+      echo "${ps}: RMS Error = N/A [FAIL] (known failure)"
+      now=$(date "+%F %T")
+      echo "$now ${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
     rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
@@ -83,16 +91,16 @@ pscmp () {
     if [ -z "$rms" ]; then
       rms="NA"
     else
-      rms=$(printf "%.3f\n" $rms)
+      rms=$(printf "%.4f\n" $rms)
     fi
     if [ "$pscmpfailed" ]; then
       now=$(date "+%F %T")
       echo "${ps}: RMS Error = $rms [FAIL]"
-      echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+      echo "$now ${ps}: RMS Error = $rms Limit = $GRAPHICSMAGICK_RMS Failure = new" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
       make_pdf "$ps" # try to make pdf file
       ((++ERROR))
     else
-      test -z "$rms" && rms=NA
+      test -z "$rms" && rms=N/A
       echo "${ps}: RMS Error = $rms [PASS]"
     fi
   fi
