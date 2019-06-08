@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Highlight the problem of line obliquely exiting and being cut in an ugly way
-
 ps=trimline.ps
 
 gmt psxy -R0/6/0/6 -Jx1i --MAP_FRAME_TYPE=plain -W40p -Baf -BWSne -P -X1.25i << EOF > $ps 
