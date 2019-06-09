@@ -504,9 +504,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
 		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
-		else if (GMT->common.B.active[GMT_PRIMARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->S.active || Ctrl->W.active)
+		else if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->S.active || Ctrl->W.active)
 			n_errors++;	/* Tried to make a plot but forgot -J */
-		else
+		else if (!Ctrl->Q.active)
 			Ctrl->E.info.region = true;
 	}
 
@@ -876,10 +876,12 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);
 
-			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-			gmt_map_basemap (GMT); /* Basemap needed */
-			gmt_plane_perspective (GMT, -1, 0.0);
+			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {
+				gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+				gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+				gmt_map_basemap (GMT); /* Basemap needed */
+				gmt_plane_perspective (GMT, -1, 0.0);
+			}
 	
 			gmt_plotend (GMT);
 
