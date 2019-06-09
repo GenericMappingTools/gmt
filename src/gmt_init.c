@@ -10973,23 +10973,23 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
  */
 char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 
-	static char text[GMT_BUFSIZ+GMT_LEN256] = {""};
+	static char text[PATH_MAX+GMT_LEN256] = {""};
 	int i;
 
 	if (F->use_pattern) {
 		if (F->pattern_no)
-			snprintf (text, GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
+			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
 		else
-			snprintf (text, GMT_LEN256, "p%d/%s", F->dpi, F->pattern);
+			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%s", F->dpi, F->pattern);
 	}
 	else if (F->rgb[0] < -0.5)
 		sprintf (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
-		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%s", gmt_M_color_name[i]);
+		snprintf (text, PATH_MAX+GMT_LEN256, "%s", gmt_M_color_name[i]);
 	else if (gmt_M_is_gray (F->rgb))
-		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
+		snprintf (text, PATH_MAX+GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
 	else
-		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
+		snprintf (text, PATH_MAX+GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
 	gmtinit_append_trans (text, F->rgb[3]);
 	return (text);
 }
