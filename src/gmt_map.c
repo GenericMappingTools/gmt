@@ -7613,6 +7613,8 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		gmt_M_memcpy (GMT->current.plot.y, tmp, np, double);
 		/* Change PSL_MOVE to PSL_DRAW at start of 2nd section */
 		GMT->current.plot.pen[k] = PSL_DRAW;
+		if (k && GMT->current.plot.pen[k-1] & PSL_CLIP) GMT->current.plot.pen[k-1] = PSL_DRAW;
+		if (k < (np-1) && GMT->current.plot.pen[k+1] & PSL_CLIP) GMT->current.plot.pen[k+1] = PSL_DRAW;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
 		gmt_M_free (GMT, tmp);
 	}
