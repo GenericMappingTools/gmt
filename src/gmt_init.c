@@ -14083,7 +14083,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		//GMT->current.proj.projection_GMT = GMT_NO_PROJ;
 		//GMT->current.proj.is_proj4 = true;
 		//GMT->current.proj.pars[14] = 1;
-		/* Not anymore. Now we error out but leave the above for a while in case I remeber
+		/* Not anymore. Now we error out but leave the above for a while in case I remember
 		   why it could have been useful
 		*/
 		return 1;

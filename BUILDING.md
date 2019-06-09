@@ -206,7 +206,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
 
 ### Windows
 
-For some softwares, e.g. CMake, Ghostscript, GraphicsMagick and FFmpeg,
+For some software, e.g. CMake, Ghostscript, GraphicsMagick and FFmpeg,
 you can download binary installers to install them.
 If there is an option to add it to the system PATH, remember to tick it.
 
