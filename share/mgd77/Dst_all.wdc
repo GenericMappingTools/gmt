@@ -1,3 +1,14 @@
+# World Data Center for Geomagnetism, Kyoto, M. Nose, T. Iyemori, M. Sugiura, T. Kamei (2015), Geomagnetic Dst index,
+# doi:10.17593/14515-74000. Combination of files from
+# Final DST indices: http://wdc.kugi.kyoto-u.ac.jp/dst_final/index.html
+# Provisional DST indices: http://wdc.kugi.kyoto-u.ac.jp/dst_provisional/index.html
+# Last update by Mike Hamilton, May 2019.  Notes on getting the data (other than selecting time window):
+# Set Output Type beneath that to Dst Output and WDC-like format. Give email address got get data. The output data is
+# almost right for use with mgd77magref. I ran this awk/sed command to get it just right:
+#
+#awk '{printf "%.10s %+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d%+04d\n",$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27}' ~/Downloads/WWW_dstae00025601.dat | sed -e 's/+/ /g' -e 's/*/P/'
+#
+#-----------------------------------------------------------------------------------------------------------------------
 DST5701*01  X219 000 011 013 012 012 009 007 007 006 002-001-007-007-008-001 009 008 004 000 001 003 002 004 009 009 004
 DST5701*02  X219 000 011 003 006 009 010 012 007 005 008 032 007-007-007-002-001 001 002 005 005-014-041-065-065-059-006
 DST5701*03  X219 000-050-044-042-046-043-042-041-039-040-040-036-031-033-028-027-030-032-031-029-026-028-025-024-021-035
