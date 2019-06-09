@@ -1461,6 +1461,33 @@ GMT_LOCAL bool plot_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y,
 	return (false);
 }
 
+/*! . */
+GMT_LOCAL double get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level) {
+	/* Return offset in inches for text annotation.  If annotation
+	 * is to be placed 'inside' the map, set flip to true */
+
+	double a = GMT->current.setting.map_annot_offset[level];
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
+		a = -fabs (a);
+		a -= fabs (GMT->current.setting.map_tick_length[0]);
+		*flip = true;
+	}
+	else if (a >= 0.0) {	/* Outside annotation */
+		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
+		/* For fancy frame we must consider that the frame width might exceed the ticklength */
+		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
+		if (dist > 0.0) a += dist;
+		*flip = false;
+	}
+	else {		/* Inside annotation via negative tick length */
+		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
+		*flip = true;
+	}
+
+	return (a);
+}
+
+
 GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, unsigned int *sides, double *line_angles, char *label, unsigned int nx, unsigned int type, bool annot, unsigned int level, unsigned int form) {
 	/* type = 0 for lon and 1 for lat */
 
@@ -1468,7 +1495,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	unsigned int i, annot_type, justify;
 	bool flip;
 
-	len = gmtlib_get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
+	len = get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 
 	for (i = 0; i < nx; i++) {
@@ -1479,17 +1506,17 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		sincosd (line_angle, &sa, &ca);
 		tick_length = GMT->current.setting.map_tick_length[GMT_PRIMARY];
 		o_len = len;
-		if (GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
+		if (!flip && GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
 		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
 			o_len /= div;
 		}
 		xx[i] += o_len * ca;
 		yy[i] += o_len * sa;
-		if ((GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
+		if (!flip && (GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
 			if (sides[i] % 2)
 				xx[i] += (sides[i] == 1) ? GMT->current.setting.map_annot_offset[level] : -GMT->current.setting.map_annot_offset[level];
-			else
+			else             
 				yy[i] += (sides[i] == 2) ? GMT->current.setting.map_annot_offset[level] : -GMT->current.setting.map_annot_offset[level];
 		}
 

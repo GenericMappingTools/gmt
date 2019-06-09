@@ -41,7 +41,6 @@
  *  support_csplint             Natural cubic 1-D spline evaluator
  *  gmt_delaunay            Performs a Delaunay triangulation
  *  gmtlib_get_annot_label     Construct degree/minute label
- *  gmtlib_get_annot_offset    Return offset in inches for text annotation
  *  gmt_get_index           Return color table entry for given z
  *  gmt_get_fill_from_z     Return fill type for given z
  *  gmt_get_format          Find # of decimals and create format string
@@ -13833,32 +13832,6 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 	if (direction < 0.0) direction += 360.0;
 	if (direction >= 360.0) direction -= 360.0;
 	return (direction);
-}
-
-/*! . */
-double gmtlib_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level) {
-	/* Return offset in inches for text annotation.  If annotation
-	 * is to be placed 'inside' the map, set flip to true */
-
-	double a = GMT->current.setting.map_annot_offset[level];
-	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
-		a = -fabs (a);
-		a -= fabs (GMT->current.setting.map_tick_length[0]);
-		*flip = true;
-	}
-	else if (a >= 0.0) {	/* Outside annotation */
-		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
-		/* For fancy frame we must consider that the frame width might exceed the ticklength */
-		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
-		if (dist > 0.0) a += dist;
-		*flip = false;
-	}
-	else {		/* Inside annotation via negative tick length */
-		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
-		*flip = true;
-	}
-
-	return (a);
 }
 
 /*! . */
