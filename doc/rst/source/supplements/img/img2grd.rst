@@ -207,7 +207,7 @@ Note that the **-V** option tells us that the range was adjusted to
 can extract this original region string using :doc:`grdinfo </grdinfo>` **-Ii**.
 Furthermore, we can also use :doc:`grdinfo </grdinfo>`
 to find that the grid file header shows its region to be
-**-R**\ 0/80/0/67.9666667. This is the range of x,y we will get from a
+**-R**\ -40/40/-99.4333333333/-31.4666666667. This is the range of x,y we will get from a
 Spherical Mercator projection using
 **-R**-40/40/-70.0004681551/-29.9945810754 and **-Jm**\ 1. Thus, to take
 ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
@@ -216,9 +216,9 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
     gmt set PROJ_ELLIPSOID Sphere
 
-    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav |
+    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -C ship.lonlatgrav |
               gmt grdtrack -Gmerc_grav.nc | gmt mapproject
-              -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
+              -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -C > ship.lonlatgravsat
 
 It is recommended to use the above method of projecting and unprojecting
 the data in such an application, because then there is only one
@@ -281,8 +281,8 @@ shaded relief map like this:
    ::
 
     gmt begin
-    gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i
-    gmt basemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10
+      gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i
+      gmt basemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10
     gmtend
 
 Suppose you want to obtain only the constrained data values from an img

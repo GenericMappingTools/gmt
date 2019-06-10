@@ -348,7 +348,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
 		}
-		PSL_plotline (PSL, x, y, i, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, x, y, i, PSL_MOVE|PSL_STROKE);
 	}
 	if (num_of_plane != 1) {
 		for (i = 0; i <= 180; i++) {
@@ -358,7 +358,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
 		}
-		PSL_plotline (PSL, x, y, i, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, x, y, i, PSL_MOVE|PSL_STROKE);
 	}
 	return (size);
 }
@@ -1138,7 +1138,7 @@ void meca_paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angl
 		PSL_plotpolygon (GMT->PSL, axe, aye, npoints - 2);
 	}
 	else
-		PSL_plotline (GMT->PSL, axe, aye, npoints - 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (GMT->PSL, axe, aye, npoints - 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 }
 
 /************************************************************************/
@@ -1410,7 +1410,7 @@ void meca_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, 
 		PSL_plotpolygon (PSL, axe, aye, npoints);
 	}
 	else
-		PSL_plotline (PSL, axe, aye, npoints, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (PSL, axe, aye, npoints, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 
 	/* draw uncertainty wedge */
 
@@ -1423,7 +1423,7 @@ void meca_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, 
 		PSL_plotpolygon (PSL, axe, aye, npoints - 1);
 	}
 	else
-		PSL_plotline (PSL, axe, aye, npoints - 1, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (PSL, axe, aye, npoints - 1, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 }
 
 #if 0	/* Currently not used but saved in case of debug operations */
