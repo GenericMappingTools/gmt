@@ -16,8 +16,9 @@ if [[ "$TEST" == "true" ]]; then
 enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
-set (N_TEST_JOBS 2)
 set (DO_API_TESTS ON)
+set (N_TEST_JOBS 2)
+set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 set (CMAKE_C_FLAGS "-Wextra -coverage -O0 ${CMAKE_C_FLAGS}")
 EOF
 fi

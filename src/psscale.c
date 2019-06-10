@@ -1049,7 +1049,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1081,7 +1081,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1297,7 +1297,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1329,7 +1329,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */

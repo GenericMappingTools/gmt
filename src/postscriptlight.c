@@ -2248,7 +2248,7 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 
 	xx[0] = xx[1] = size;	xx[2] = 0.0;
 	yy[0] = 0.0;	yy[1] = yy[2] = size;
-	PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
+	PSL_plotline (PSL, xx, yy, 3, PSL_MOVE|PSL_STROKE);
 	PSL_command (PSL, "U \n");
 	PSL_comment (PSL, "End of Math right angle\n");
 	return (PSL_NO_ERROR);
@@ -2398,7 +2398,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 				 	xx[0] = (r-head_half_width) * ca;	yy[0] = (r-head_half_width) * sa;
 				 	xx[1] = (r+head_half_width) * ca;	yy[1] = (r+head_half_width) * sa;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
 	}
@@ -2637,7 +2637,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Plot arrow head */
 				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
@@ -2670,7 +2670,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
 					xx[n] = xp - headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_BEGIN] == -1)	/* Need left side */
@@ -2708,7 +2708,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					yy[0] = -headwidth;
 					yy[1] = +headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
 	}
@@ -2750,7 +2750,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Plot arrow head */
 				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
@@ -2783,7 +2783,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
 					xx[n] = xp + headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_END] == -1)	/* Need left side */
@@ -2821,7 +2821,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					yy[0] = -headwidth;
 					yy[1] = +headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
 		PSL_command (PSL, "U\n");
@@ -5404,7 +5404,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 			int k, offset = 0;
 			for (k = 0; k < n_segments; k++) {	/* Draw each segment line */
 				PSL_command (PSL, "PSL_path_pen %d get cvx exec\n", k);	/* Set this segment's pen */
-				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE|PSL_STROKE);
 				offset += np[k];
 			}
 		}

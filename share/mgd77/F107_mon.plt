@@ -1,3 +1,6 @@
+# http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS
+# Last updated by Mike Hamilton, May 2019
+#-----------
 1947 01  ---
 1947 02 1784
 1947 03 2101

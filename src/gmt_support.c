@@ -41,7 +41,6 @@
  *  support_csplint             Natural cubic 1-D spline evaluator
  *  gmt_delaunay            Performs a Delaunay triangulation
  *  gmtlib_get_annot_label     Construct degree/minute label
- *  gmtlib_get_annot_offset    Return offset in inches for text annotation
  *  gmt_get_index           Return color table entry for given z
  *  gmt_get_fill_from_z     Return fill type for given z
  *  gmt_get_format          Find # of decimals and create format string
@@ -226,7 +225,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	if (!gmt_M_file_is_memory (&line[1]) && line[1] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, &line[1], 0) + 1;	/* Add one since we started at 1 */
 	}
-	strncpy (fill->pattern, &line[first], GMT_BUFSIZ-1);
+	strncpy (fill->pattern, &line[first], PATH_MAX-1);
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
@@ -7344,7 +7343,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				}
 				X->has_pattern = true;
 				if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-					strncpy (X->bfn[id].fill->pattern, name, GMT_BUFSIZ-1);
+					strncpy (X->bfn[id].fill->pattern, name, PATH_MAX-1);
 					gmt_M_str_free (name);
 				}
 			}
@@ -7459,7 +7458,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			X->has_pattern = true;
 			if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-				strncpy (X->data[n].fill->pattern, name, GMT_BUFSIZ-1);
+				strncpy (X->data[n].fill->pattern, name, PATH_MAX-1);
 				gmt_M_str_free (name);
 			}
 		}
@@ -9135,7 +9134,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
 			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
@@ -9146,7 +9145,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
@@ -13833,32 +13832,6 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 	if (direction < 0.0) direction += 360.0;
 	if (direction >= 360.0) direction -= 360.0;
 	return (direction);
-}
-
-/*! . */
-double gmtlib_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level) {
-	/* Return offset in inches for text annotation.  If annotation
-	 * is to be placed 'inside' the map, set flip to true */
-
-	double a = GMT->current.setting.map_annot_offset[level];
-	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
-		a = -fabs (a);
-		a -= fabs (GMT->current.setting.map_tick_length[0]);
-		*flip = true;
-	}
-	else if (a >= 0.0) {	/* Outside annotation */
-		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
-		/* For fancy frame we must consider that the frame width might exceed the ticklength */
-		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
-		if (dist > 0.0) a += dist;
-		*flip = false;
-	}
-	else {		/* Inside annotation via negative tick length */
-		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
-		*flip = true;
-	}
-
-	return (a);
 }
 
 /*! . */
