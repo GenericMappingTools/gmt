@@ -1305,7 +1305,7 @@ GMT_LOCAL int gmtinit_trend_modifiers (struct GMT_CTRL *GMT, char option, char *
 					return -1;
 				}
 				else if (k != sdim) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Did not provide %ul arguments to +l\n", option, dim);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Did not provide %u arguments to +l\n", option, dim);
 					return -1;
 				}
 				for (k = 0; k < sdim; k++) M->got_period[k] = true;
@@ -3573,7 +3573,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					break;
 				case 'g':	/* Paint the basemap interior */
 					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> argument %s\n", &p[1]);
 						error++;
 					}
 					GMT->current.map.frame.paint = true;
@@ -3588,7 +3588,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						error++;
 					}
 					else if (!p[1] || (k = GMT_Get_Values (GMT->parent, &p[1], pole, 2)) != 2) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] argument %s\n", &p[1]);
 						error++;
 					}
 					else {	/* Successful parsing of pole */
@@ -3996,6 +3996,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 	   Return 1 upon error. Here we want to make an exception for users giving a scale
 	   of 1 in grdproject and mapproject as it is most likely meant to be 1:1. */
 	int n, answer;
+	if (isalpha (scale_or_width[0])) return (1);	/* Neither scale nor width can start with a letter - probably junk input */
 	answer = strncmp (scale_or_width, "1:", 2U);	/* 0 if scale given as 1:xxxx */
 	GMT->current.proj.units_pr_degree = (answer != 0);
 	if (GMT->current.proj.units_pr_degree) {	/* Check if we got "1" and this is grd|map-project */
@@ -4017,6 +4018,14 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -J option: Cannot specify map width with 1:xxxx format\n");
 			return (1);
 		}
+	}
+	if (gmt_M_is_zero (*value)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your scale or width (%s) resulted in a zero value.\n", scale_or_width);
+		return (1);
+	}
+	else if (gmt_M_is_geographic (GMT, GMT_IN) && (*value) < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Geographic scale (%s) cannot be negative.\n", scale_or_width);
+		return (1);
 	}
 	GMT->current.proj.pars[15] = *value;	/* Store the scale here so we always know where to find it */
 	return (GMT_NOERROR);
@@ -4793,7 +4802,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 			case 'o':	S->f.f_off = gmt_M_to_inch (GMT, &p[1]);	break;	/* Symbol offset along line */
 			case 'p':	if (p[1]) {	/* Get alternate pen for front-symbol outline [-W] */
 						if (gmt_getpen (GMT, &p[1], &S->f.pen)) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> argument %s\n", &p[1]);
 							error++;
 						}
 						else
@@ -7121,11 +7130,11 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			break;
 
 		case 'K':
-			gmt_message (GMT, "\t-%c More PS matter will follow\n", option);
+			gmt_message (GMT, "\t-%c More PostScript content will follow\n", option);
 			break;
 
 		case 'O':
-			gmt_message (GMT, "\t-%c This is a PS overlay\n", option);
+			gmt_message (GMT, "\t-%c This is a PostScript overlay\n", option);
 			break;
 
 		case 'P':
@@ -12818,7 +12827,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				S->v.status |= PSL_VEC_FILL;
 				if (p[1]) {
 					if (gmt_getfill (GMT, &p[1], &S->v.fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> argument %s\n", &p[1]);
 						error++;
 					}
 					S->v.status |= PSL_VEC_FILL2;
@@ -12904,7 +12913,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					S->v.pole[GMT_X] = 0.0f;	S->v.pole[GMT_Y] = 90.0f;
 				}
 				else if ((j = GMT_Get_Values (GMT->parent, &p[1], value, 2)) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] argument %s\n", &p[1]);
 					error++;
 				}
 				else {	/* Successful parsing of pole */
@@ -12920,7 +12929,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				if (p[j]) {	/* Change default vector pen */
 					if (gmt_getpen (GMT, &p[j], &S->v.pen)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> argument %s\n", &p[1]);
 						error++;
 					}
 					S->v.status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
@@ -12937,7 +12946,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					default:  	f = 1;	S->v.status |= (PSL_VEC_OFF_BEGIN+PSL_VEC_OFF_END);	break;	/* Do both */
 				}
 				if ((j = gmt_get_pair (GMT, &p[f], GMT_PAIR_DIM_DUP, value)) < 1)  {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +t <trim> values %c\n", &p[f]);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +t <trim> values %s\n", &p[f]);
 					error++;
 				}
 				else {	/* Successful parsing of trim(s) */
@@ -13262,7 +13271,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 							break;
 						case 'p':	/* Spider pen, stored in the vector structure */
 							if (gmt_getpen (GMT, &q[1], &p->v.pen)) {
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &q[1]);
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> argument %s\n", &q[1]);
 								error++;
 							}
 							p->v.status = PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
@@ -13936,7 +13945,7 @@ int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item) {
 	int j;
 
-	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", (int)option);
+	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", option);
 
 	for (j = 0; j < 3 && item[j]; j++) {
 		switch (item[j]) {
