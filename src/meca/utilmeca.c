@@ -609,7 +609,6 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 
 	/* pure implosion or explosion */
 	if (fabs (squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
- 		ssize[0] = radius_size*2.0;
 		if (vi > 0.) {
 			gmt_setfill (GMT, C, true);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
@@ -732,9 +731,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	gmt_setfill (GMT, F2, true);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
-	if (outline) gmt_setfill (GMT, F1, true);
-	else gmt_setfill (GMT, F1, false);
-
+	gmt_setfill (GMT, F1, outline);
 	switch (n) {
 		case 0 :
 			for (i = 0; i < 360; i++) {
