@@ -146,7 +146,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 
 	/*  argument is DIAMETER!!*/
 	ssize[0] = size;
-	gmt_setfill (GMT, E, outline);
+	gmt_setfill (GMT, E, true);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
@@ -621,8 +621,8 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		return (radius_size*2.);
 	}
 
-	/* Test to choose the dominant eigenvalue after Frohlich for plotting purposes 
-	   by DS Dreger	
+	/* Test to choose the dominant eigenvalue after Frohlich for plotting purposes
+	   by DS Dreger
 	*/
 	bigisotestv0 = 0;
 	bigisotestv2 = 0;
@@ -731,7 +731,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 
 	gmt_setfill (GMT, F2, true);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-	
+
 	if (outline) gmt_setfill (GMT, F1, true);
 	else gmt_setfill (GMT, F1, false);
 
