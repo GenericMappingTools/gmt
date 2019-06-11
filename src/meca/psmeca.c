@@ -147,7 +147,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->C.pen.width = C->L.pen.width = C->T.pen.width = C->T2.pen.width = C->P2.pen.width = C->Z2.pen.width = -1.0;
 	C->D.depmax = 900.0;
-	C->L.active = true;
+	C->L.active = false;
 	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
