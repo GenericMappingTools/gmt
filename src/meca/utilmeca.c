@@ -733,7 +733,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	
 	if (outline) gmt_setfill (GMT, F1, true);
-	else gmt_setfill (GMT, F1, true);
+	else gmt_setfill (GMT, F1, false);
 
 	switch (n) {
 		case 0 :
