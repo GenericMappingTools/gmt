@@ -217,6 +217,10 @@ enum GMT_swap_direction {
 #define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
+/* Settings for the MAP_FRAME_TYPE = graph */
+#define GMT_GRAPH_EXTENSION		7.5	/* In percent */
+#define GMT_GRAPH_EXTENSION_UNIT	'%'	/* In percent */
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,

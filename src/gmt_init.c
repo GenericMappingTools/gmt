@@ -5258,6 +5258,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getpen (GMT, "thicker,black", &GMT->current.setting.map_frame_pen);
 	/* MAP_FRAME_TYPE (fancy) */
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
+	GMT->current.setting.map_graph_extension_unit = GMT_GRAPH_EXTENSION_UNIT;	/* Defaults for graph */
+	GMT->current.setting.map_graph_extension = GMT_GRAPH_EXTENSION;
 	/* MAP_FRAME_WIDTH */
 	GMT->current.setting.map_frame_width = 5 * pt; /* 5p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
@@ -8708,8 +8710,26 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_FRAME_TYPE:
 			if (!strcmp (lower_value, "plain"))
 				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-			else if (!strcmp (lower_value, "graph"))
+			else if (!strncmp (lower_value, "graph", 5U)) {
+				char *c = NULL;
 				GMT->current.setting.map_frame_type = GMT_IS_GRAPH;
+				if ((c = strchr (lower_value, ','))) {	/* Also specified vector extension setting */
+					size_t last = strlen (lower_value) - 1;
+					char unit = lower_value[last];
+					if (unit == GMT_GRAPH_EXTENSION_UNIT) {	/* Want extension as percentage of axis length */
+						GMT->current.setting.map_graph_extension_unit = unit;
+						GMT->current.setting.map_graph_extension = atof (&c[1]);
+					}
+					else {	/* Read and convert value with unit to inches */
+						GMT->current.setting.map_graph_extension_unit = gmtlib_unit_lookup (GMT, unit, GMT->current.setting.proj_length_unit);	/* Will warn if c is not 0, 'c', 'i', 'p' */
+						GMT->current.setting.map_graph_extension = gmt_M_to_inch (GMT, &c[1]);
+					}
+				}
+				else {	/* Reset to default settings */
+					GMT->current.setting.map_graph_extension_unit = GMT_GRAPH_EXTENSION_UNIT;
+					GMT->current.setting.map_graph_extension = GMT_GRAPH_EXTENSION;
+				}
+			}
 			else if (!strcmp (lower_value, "fancy"))
 				GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 			else if (!strcmp (lower_value, "fancy+"))
@@ -10101,8 +10121,20 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_MAP_FRAME_TYPE:
 			if (GMT->current.setting.map_frame_type == GMT_IS_PLAIN)
 				strcpy (value, "plain");
-			else if (GMT->current.setting.map_frame_type == GMT_IS_GRAPH)
+			else if (GMT->current.setting.map_frame_type == GMT_IS_GRAPH) {
 				strcpy (value, "graph");
+				if (GMT->current.setting.map_graph_extension_unit != GMT_GRAPH_EXTENSION_UNIT || !doubleAlmostEqual (GMT->current.setting.map_graph_extension, GMT_GRAPH_EXTENSION)) {
+					char tmp[GMT_LEN32] = {""};
+					/* Not the default, specify what we are using */
+					if (GMT->current.setting.map_graph_extension_unit == GMT_GRAPH_EXTENSION_UNIT)	/* Extension in percent */
+						snprintf (tmp, GMT_LEN32, ",%g%%", GMT->current.setting.map_graph_extension);
+					else {
+						double s = GMT->session.u2u[GMT_INCH][GMT->current.setting.map_graph_extension_unit];
+						snprintf (tmp, GMT_LEN32, ",%g%c", s*GMT->current.setting.map_graph_extension, GMT->session.unit_name[GMT->current.setting.map_graph_extension_unit][0]);
+					}
+					strcat (value, tmp);
+				}
+			}
 			else if (GMT->current.setting.map_frame_type == GMT_IS_FANCY)
 				strcpy (value, "fancy");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED)
