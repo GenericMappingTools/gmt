@@ -596,7 +596,6 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	double radius_size, si, co, ssize[1];
 
 	struct GMT_FILL *F1 = NULL, *F2 = NULL;
-	gmt_M_unused(outline);
 
 	a[0] = T.str; a[1] = N.str; a[2] = P.str;
 	p[0] = T.dip; p[1] = N.dip; p[2] = P.dip;
@@ -730,10 +729,11 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	}
 	azi[n][1] = az;
 
-		gmt_setfill (GMT, F2, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
+	gmt_setfill (GMT, F2, true);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	
-	gmt_setfill (GMT, F1, false);
+	if (outline) gmt_setfill (GMT, F1, true);
+	else gmt_setfill (GMT, F1, true);
 
 	switch (n) {
 		case 0 :
