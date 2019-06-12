@@ -14080,9 +14080,13 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	}
 	else {
 		/* Even though it failed to do the mapping we can still use it in mapproject */
-		GMT->current.proj.projection_GMT = GMT_NO_PROJ;
-		GMT->current.proj.is_proj4 = true;
-		GMT->current.proj.pars[14] = 1;
+		//GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		//GMT->current.proj.is_proj4 = true;
+		//GMT->current.proj.pars[14] = 1;
+		/* Not anymore. Now we error out but leave the above for a while in case I remeber
+		   why it could have been useful
+		*/
+		return 1;
 	}
 
 	if (isdigit(item[0]))
