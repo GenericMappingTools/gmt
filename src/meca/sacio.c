@@ -24,7 +24,7 @@
  *                                                                             *
  ******************************************************************************/
 
-/* 
+/*
 The SAC I/O functions are initially written by Prof. Lupei Zhu,
 and modified by Dongdong Tian.
 
@@ -152,7 +152,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	}
 
 	sz = (size_t) hd->npts * SAC_DATA_SIZEOF;
-	if (hd->iftype == IXY) sz *= 2;
+	if (hd->iftype == IXY && !hd->leven) sz *= 2;
 
 	/* coverity[tainted_data] */	/* For a Coverity issue. Do not delete */
 	if ((ar = (float *)malloc(sz)) == NULL) {
@@ -516,7 +516,7 @@ int issac(const char *name) {
 		return false;
 	}
 	fclose(strm);
-	
+
 	if (check_sac_nvhdr(nvhdr) == -1)
 		return false;
 	else
