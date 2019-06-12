@@ -137,7 +137,7 @@ int main (int argc, char *argv[]) {
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
 				fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-				fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
+				fprintf (stderr, "(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
@@ -221,14 +221,12 @@ int main (int argc, char *argv[]) {
 		}
 		else {
 			fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-			fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
+			fprintf (stderr, "(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 			fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
-			fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
+			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n");
 			fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
-			fprintf (stderr, "GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html).\n");
-			fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "session management:\n");
