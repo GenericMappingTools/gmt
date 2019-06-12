@@ -231,17 +231,14 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
 
     # Build and insatll libraries
     # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+
     # If you want to build x86 libraries
-    vcpkg install netcdf-c gdal pcre --triplet x86-windows
+    # NOTE: clapack and openblas currently aren't available for x86-windows.
+    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
-
-Notes:
-
-1. clapack and openblas currently aren't available for x86-windows.
-2. fftw3 library has some unknown issue.
 
 After installing these dependency libraries, you need to add the bin path
 (i.e. `C:\vcpkg\installed\x64-windows\bin`) to the system PATH,
