@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psmeca
+%%Title: GMT v6.0.0_d45059e_2019.06.11 [64-bit] Document from psmeca
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:52 2018
+%%CreationDate: Tue Jun 11 22:25:12 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -688,7 +683,6 @@ P
 PSL_clip N
 4 W
 {1 A} FS
-O1
 510 1754 988 Sc
 {0 A} FS
 1674 1492 M
@@ -753,6 +747,9 @@ FO
 54 1 D
 P
 FO
+FQ
+O1
+510 1754 988 Sc
 {1 A} FS
 O0
 1754 1548 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -762,7 +759,6 @@ O0
 47 1367 1273 Sc
 {1 A} FS
 47 1474 597 Sc
-O1
 510 3063 988 Sc
 {0 A} FS
 2983 1492 M
@@ -825,6 +821,9 @@ FO
 54 1 D
 P
 FO
+FQ
+O1
+510 3063 988 Sc
 {1 A} FS
 O0
 3063 1548 M (Brake=0) bc Z
@@ -832,7 +831,6 @@ O0
 47 2676 1273 Sc
 {1 A} FS
 47 2783 597 Sc
-O1
 510 4372 988 Sc
 {0 A} FS
 4293 1492 M
@@ -896,6 +894,9 @@ FO
 62 1 D
 35 4 D
 FO
+FQ
+O1
+510 4372 988 Sc
 {1 A} FS
 O0
 4372 1548 M (Crake=0.001) bc Z
@@ -903,7 +904,6 @@ O0
 47 3985 1273 Sc
 {1 A} FS
 47 4092 597 Sc
-O1
 510 5681 988 Sc
 {0 A} FS
 6185 1068 M
@@ -967,6 +967,9 @@ FO
 -14 52 D
 -4 26 D
 FO
+FQ
+O1
+510 5681 988 Sc
 {1 A} FS
 O0
 5681 1548 M (Drake=-171) bc Z
@@ -1084,7 +1087,6 @@ P
 PSL_clip N
 4 W
 {1 A} FS
-O1
 510 1754 988 Sc
 {0 A} FS
 1674 1492 M
@@ -1154,6 +1156,9 @@ FO
 -8 -2 D
 -9 -1 D
 FO
+FQ
+O1
+510 1754 988 Sc
 {1 A} FS
 O0
 1754 1548 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -1163,7 +1168,6 @@ O0
 47 1474 597 Sc
 {1 A} FS
 47 1367 1273 Sc
-O1
 510 3063 988 Sc
 {0 A} FS
 2983 1492 M
@@ -1232,6 +1236,9 @@ FO
 -9 -1 D
 P
 FO
+FQ
+O1
+510 3063 988 Sc
 {1 A} FS
 O0
 3063 1548 M (Brake=180) bc Z
@@ -1239,7 +1246,6 @@ O0
 47 2783 597 Sc
 {1 A} FS
 47 2676 1273 Sc
-O1
 510 4372 988 Sc
 {0 A} FS
 4293 1492 M
@@ -1310,6 +1316,9 @@ FO
 -9 -1 D
 P
 FO
+FQ
+O1
+510 4372 988 Sc
 {1 A} FS
 O0
 4372 1548 M (Crake=180.001) bc Z
@@ -1317,7 +1326,6 @@ O0
 47 4092 597 Sc
 {1 A} FS
 47 3985 1273 Sc
-O1
 510 5681 988 Sc
 {0 A} FS
 6185 1068 M
@@ -1381,6 +1389,9 @@ FO
 -14 52 D
 -4 26 D
 FO
+FQ
+O1
+510 5681 988 Sc
 {1 A} FS
 O0
 5681 1548 M (Drake=-171) bc Z

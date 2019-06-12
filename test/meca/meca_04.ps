@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psmeca
+%%Title: GMT v6.0.0_d45059e_2019.06.11 [64-bit] Document from psmeca
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:32 2018
+%%CreationDate: Tue Jun 11 22:25:03 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -688,7 +683,6 @@ P
 PSL_clip N
 4 W
 {1 A} FS
-O1
 253 1800 1091 Sc
 {0 A} FS
 1547 1091 M
@@ -719,6 +713,9 @@ FO
 -31 2 D
 0 -253 D
 FO
+FQ
+O1
+253 1800 1091 Sc
 {1 A} FS
 O0
 1800 1394 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -728,7 +725,6 @@ O0
 60 1627 1264 Sc
 {1 A} FS
 60 1973 1264 Sc
-O1
 253 600 1091 Sc
 {0 A} FS
 600 1344 M
@@ -773,6 +769,9 @@ O1
 34 25 D
 P
 FO
+FQ
+O1
+253 600 1091 Sc
 {1 A} FS
 O0
 600 1394 M (40km) bc Z
@@ -841,11 +840,19 @@ O0
 3.32551 setmiterlimit
 4 W
 1 0 0 C
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
 0 2182 M
 919 3 D
 1149 -1 D
 332 -2 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -885,9 +892,9 @@ clipsave
 P
 PSL_clip N
 {1 A} FS
-O1
 253 397 1620 Sc
 {0.745 A} FS
+O1
 397 1873 M
 40 -3 D
 47 -12 D
@@ -940,6 +947,9 @@ O1
 -5 0 D
 0 335 D
 FO
+FQ
+253 397 1620 Sc
+{0.745 A} FS
 O0
 60 260 1620 Sc
 {1 A} FS
@@ -949,9 +959,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 397 1080 Sc
 {0.745 A} FS
+O1
 144 1080 M
 10 17 D
 22 30 D
@@ -1127,6 +1137,9 @@ FO
 9 44 D
 P
 FO
+FQ
+253 397 1080 Sc
+{0.745 A} FS
 O0
 60 397 1080 Sc
 {1 A} FS
@@ -1313,9 +1326,9 @@ clipsave
 P
 PSL_clip N
 {1 A} FS
-O1
 253 1065 1620 Sc
 {0.745 A} FS
+O1
 1065 1873 M
 29 -15 D
 29 -21 D
@@ -1445,6 +1458,9 @@ FO
 43 -11 D
 P
 FO
+FQ
+253 1065 1620 Sc
+{0.745 A} FS
 O0
 60 1080 1620 Sc
 {1 A} FS
@@ -1454,9 +1470,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 558 1080 Sc
 {0.745 A} FS
+O1
 346 1217 M
 26 7 D
 27 4 D
@@ -1623,6 +1639,9 @@ FO
 27 29 D
 13 18 D
 FO
+FQ
+253 558 1080 Sc
+{0.745 A} FS
 O0
 60 436 1080 Sc
 {1 A} FS
@@ -1809,9 +1828,9 @@ clipsave
 P
 PSL_clip N
 {1 A} FS
-O1
 253 1234 1620 Sc
 {0.745 A} FS
+O1
 1234 1873 M
 11 -39 D
 8 -38 D
@@ -1922,6 +1941,9 @@ FO
 47 -12 D
 P
 FO
+FQ
+253 1234 1620 Sc
+{0.745 A} FS
 O0
 60 1127 1620 Sc
 {1 A} FS
@@ -1931,9 +1953,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 458 1080 Sc
 {0.745 A} FS
+O1
 278 1257 M
 32 -20 D
 71 -56 D
@@ -2125,6 +2147,9 @@ FO
 29 21 D
 13 12 D
 FO
+FQ
+253 458 1080 Sc
+{0.745 A} FS
 O0
 60 228 1080 Sc
 {1 A} FS
@@ -2304,9 +2329,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 1222 1620 Sc
 {0.745 A} FS
+O1
 1222 1367 M
 -17 16 D
 -7 9 D
@@ -2354,6 +2379,9 @@ O1
 -5 -1 D
 P
 FO
+FQ
+253 1222 1620 Sc
+{0.745 A} FS
 O0
 60 1004 1620 Sc
 {1 A} FS
@@ -2363,9 +2391,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 540 1080 Sc
 {0.745 A} FS
+O1
 731 915 M
 -22 2 D
 -48 13 D
@@ -2481,6 +2509,9 @@ FO
 -19 -18 D
 -3 -4 D
 FO
+FQ
+253 540 1080 Sc
+{0.745 A} FS
 O0
 60 718 1080 Sc
 {1 A} FS
@@ -2659,9 +2690,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 779 1620 Sc
 {0.745 A} FS
+O1
 779 1367 M
 -35 9 D
 -39 17 D
@@ -2700,6 +2731,9 @@ O1
 -16 -33 D
 P
 FO
+FQ
+253 779 1620 Sc
+{0.745 A} FS
 O0
 60 971 1620 Sc
 {1 A} FS
@@ -2709,9 +2743,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 509 1080 Sc
 {0.745 A} FS
+O1
 748 998 M
 -19 -15 D
 -12 -8 D
@@ -2871,6 +2905,9 @@ FO
 -13 -24 D
 -10 -24 D
 FO
+FQ
+253 509 1080 Sc
+{0.745 A} FS
 O0
 60 571 1080 Sc
 {1 A} FS
@@ -3049,9 +3086,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 -29 1620 Sc
 {0.745 A} FS
+O1
 -29 1873 M
 35 -9 D
 39 -17 D
@@ -3181,6 +3218,9 @@ FO
 34 -7 D
 P
 FO
+FQ
+253 -29 1620 Sc
+{0.745 A} FS
 O0
 60 49 1620 Sc
 {1 A} FS
@@ -3190,9 +3230,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 241 1080 Sc
 {0.745 A} FS
+O1
 480 1162 M
 -6 -24 D
 -9 -23 D
@@ -3349,6 +3389,9 @@ FO
 -15 32 D
 -1 4 D
 FO
+FQ
+253 241 1080 Sc
+{0.745 A} FS
 O0
 60 179 1080 Sc
 {1 A} FS
@@ -3527,9 +3570,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 342 1620 Sc
 {0.745 A} FS
+O1
 342 1873 M
 24 -25 D
 16 -22 D
@@ -3645,6 +3688,9 @@ FO
 47 -12 D
 P
 FO
+FQ
+253 342 1620 Sc
+{0.745 A} FS
 O0
 60 295 1620 Sc
 {1 A} FS
@@ -3654,9 +3700,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 1024 1080 Sc
 {0.745 A} FS
+O1
 1215 1245 M
 -8 -28 D
 -17 -38 D
@@ -3767,6 +3813,9 @@ FO
 -22 21 D
 -3 4 D
 FO
+FQ
+253 1024 1080 Sc
+{0.745 A} FS
 O0
 60 845 1080 Sc
 {1 A} FS
@@ -3945,9 +3994,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 388 1620 Sc
 {0.745 A} FS
+O1
 388 1367 M
 -11 39 D
 -8 38 D
@@ -4004,6 +4053,9 @@ O1
 -5 0 D
 P
 FO
+FQ
+253 388 1620 Sc
+{0.745 A} FS
 O0
 60 223 1620 Sc
 {1 A} FS
@@ -4013,9 +4065,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 1164 1080 Sc
 {0.745 A} FS
+O1
 984 903 M
 32 46 D
 38 47 D
@@ -4229,6 +4281,9 @@ FO
 22 -16 D
 16 -15 D
 FO
+FQ
+253 1164 1080 Sc
+{0.745 A} FS
 O0
 60 1394 1080 Sc
 {1 A} FS
@@ -4407,9 +4462,9 @@ O0
 3.32551 setmiterlimit
 4 W
 {1 A} FS
-O1
 253 253 1620 Sc
 {0.745 A} FS
+O1
 253 1367 M
 -18 8 D
 -27 17 D
@@ -4451,6 +4506,9 @@ O1
 -12 -8 D
 P
 FO
+FQ
+253 253 1620 Sc
+{0.745 A} FS
 O0
 60 494 1620 Sc
 {1 A} FS
@@ -4460,9 +4518,9 @@ O0
 150 F0
 (10km) bc Z
 {1 A} FS
-O1
 253 759 1080 Sc
 {0.745 A} FS
+O1
 546 943 M
 9 43 D
 13 33 D
@@ -4630,6 +4688,9 @@ FO
 26 -30 D
 7 -11 D
 FO
+FQ
+253 759 1080 Sc
+{0.745 A} FS
 O0
 60 881 1080 Sc
 {1 A} FS

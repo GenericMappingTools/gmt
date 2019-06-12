@@ -126,7 +126,9 @@ static double proj_radius(double str1, double dip1, double str) {
 
 /***********************************************************************************************************/
 double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline) {
-	/* By Genevieve Patau */
+	/* Draw beachball for double couples
+	   By Genevieve Patau 
+	*/
 
 	double x[1000], y[1000];
 	double pos_NP1_NP2 = sind (meca.NP1.str - meca.NP2.str);
@@ -144,9 +146,10 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	/* compute radius size of the bubble */
 	radius_size = size * 0.5;
 
-	/*  argument is DIAMETER!!*/
+	/* fill at then beginning (here), outline at the end */
+	/*  argument is DIAMETER!! */
 	ssize[0] = size;
-	gmt_setfill (GMT, E, outline);
+	gmt_setfill (GMT, E, false);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
@@ -320,6 +323,10 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 
 		PSL_plotpolygon (PSL, x, y, i);
 	}
+
+	/* fill at then beginning, outline at the end (here) */
+	gmt_setfill (GMT, NULL, true);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	return (size);
 }
 
@@ -582,8 +589,9 @@ void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, 
 
 /***************************************************************************************/
 double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
+	/* Plot beachball for full moment tensors */
 	int d, b = 1, m, i, ii, n = 0, j1 = 1, j2 = 0, j3 = 0;
-	int big_iso = 0;
+	int bigisotestv0, bigisotestv2;
 
 	double a[3], p[3], v[3], azi[3][2];
 	double vi, iso, f, fir, s2alphan, alphan;
@@ -596,7 +604,6 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	double radius_size, si, co, ssize[1];
 
 	struct GMT_FILL *F1 = NULL, *F2 = NULL;
-	gmt_M_unused(outline);
 
 	a[0] = T.str; a[1] = N.str; a[2] = P.str;
 	p[0] = T.dip; p[1] = N.dip; p[2] = P.dip;
@@ -608,48 +615,57 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	ssize[0] = size;
 	radius_size = size * 0.5;
 
+	/* pure implosion or explosion */
 	if (fabs (squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
- 		/* pure implosion-explosion */
-		ssize[0] = radius_size*2.0;
 		if (vi > 0.) {
-			ssize[0] = radius_size*2.0;
 			gmt_setfill (GMT, C, true);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		if (vi < 0.) {
-			ssize[0] = radius_size*2.0;
 			gmt_setfill (GMT, E, true);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		return (radius_size*2.);
 	}
 
-	if (fabs (v[0]) >= fabs (v[2]))
+	/* Test to choose the dominant eigenvalue after Frohlich for plotting purposes
+	   by DS Dreger
+	*/
+	bigisotestv0 = 0;
+	bigisotestv2 = 0;
+	for (i = 0; i < 360; i++) {
+		fir = (double)i * D2R;
+
+		f = -v[1] / v[0];
+		iso = vi / v[0];
+		s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
+		if (s2alphan > 1.0) bigisotestv0 += 1;
+
+		f = -v[1] / v[2];
+		iso = vi / v[2];
+		s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
+		if (s2alphan > 1.0) bigisotestv2 += 1;
+	}
+
+	if (bigisotestv0 == 0 && bigisotestv2 != 0) {
 		d = 0;
-	else
+		m = 2;
+		F1 = C;
+		F2 = E;
+	} else if (bigisotestv2 == 0 && bigisotestv0 != 0) {
 		d = 2;
-	m = 2 - d;
+		m = 0;
+		F1 = E;
+		F2 = C;
+	} else {
+		fprintf (stderr, "Warning: bigisotest failed for record %d, please report the issue to us! \n", recno);
+		return -1;
+	}
 
 	if (plot_zerotrace) vi = 0.;
 
 	f = - v[1] / v[d];
 	iso = vi / v[d];
-
-	/* Cliff Frohlich, Seismological Research letters,
- 	 * Vol 7, Number 1, January-February, 1996
- 	 * Unless the isotropic parameter lies in the range
- 	 * between -1 and 1 - f there will be no nodes whatsoever */
-
-	if (iso < -1) {
-		gmt_setfill (GMT, E, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-		return (size);
-	}
-	else if (iso > 1 - f) {
-		gmt_setfill (GMT, C, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-		return (size);
-	}
 
 	sincosd (p[d], &spd, &cpd);
 	sincosd (p[b], &spb, &cpb);
@@ -661,29 +677,6 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	for (i = 0; i < 360; i++) {
 		fir = (double) i * D2R;
 		s2alphan = (2 + 2 * iso) / (3 + (1 - 2 * f) * cos(2 * fir));
-		if (s2alphan > 1) {
-			big_iso++;
-/* below pieces added as patch to fix big_iso case plotting problems. Not well done, but works
-   Jeremy Pesicek Nov. 2010.
-
-   second case added Dec. 2010 */
-
-   			d = m;
-   			m = 2 - d;
-
-			f = - v[1] / v[d];
-			iso = vi / v[d];
-			s2alphan = (2 + 2 * iso) / (3 + (1 - 2 * f) * cos(2 * fir));
-			sincosd (p[d], &spd, &cpd);
-			sincosd (p[b], &spb, &cpb);
-			sincosd (p[m], &spm, &cpm);
-			sincosd (a[d], &sad, &cad);
-			sincosd (a[b], &sab, &cab);
-			sincosd (a[m], &sam, &cam);
-		}
-
-/* end patch to fix big_iso case plotting problems. Jeremy Pesicek, Nov., Dec. 2010 */
-
 		alphan = asin(sqrt(s2alphan));
 		sincos (fir, &sfi, &cfi);
 		sincos (alphan, &san, &can);
@@ -743,30 +736,11 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	}
 	azi[n][1] = az;
 
-	if (v[1] < 0.)
-		F1 = C,	F2 = E;
-	else
-		F1 = E,	F2 = C;
+	/* fill at then beginning (here), outline at the end */
+	gmt_setfill (GMT, F2, false);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
-	if (!big_iso) {
-		gmt_setfill (GMT, F2, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-	}
-	else if (d == 2) {
-		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
-		gmt_setfill (GMT, F1, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-		F1 = E, F2 = C;
-	}
-	else if (d == 0) {
-		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
-		gmt_setfill (GMT, F1, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
-		F2 = E, F1 = C;
-	}
-
-	gmt_setfill (GMT, F1, false);
-
+	gmt_setfill (GMT, F1, outline);
 	switch (n) {
 		case 0 :
 			for (i = 0; i < 360; i++) {
@@ -871,6 +845,11 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			PSL_plotpolygon (PSL, xp2, yp2, i);
 			break;
 	}
+
+	/* fill at then beginning, outline at the end (here) */
+	gmt_setfill (GMT, NULL, true);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
+
 	return (size);
 }
 

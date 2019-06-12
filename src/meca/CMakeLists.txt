@@ -36,6 +36,3 @@ install_module_symlink (${_gmt_modules})
 install (FILES ${SUPPL_EXAMPLE_FILES}
 	DESTINATION ${GMT_DOCDIR}/supplements/meca
 	COMPONENT Documentation)
-install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-	DESTINATION ${GMT_DOCDIR}/supplements/meca
-	COMPONENT Documentation)

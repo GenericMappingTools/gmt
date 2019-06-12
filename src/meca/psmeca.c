@@ -8,11 +8,9 @@
  *--------------------------------------------------------------------*/
 /*
 
-psmeca will read <x,y> pairs (or <lon,lat>) from inputfile and
-plot symbols on a map. Focal mechanisms are specified (double couple or
-moment tensor).
+psmeca will read focal mechanisms from inputfile and plot symbols on a map.
+Focal mechanisms are specified in double couple, moment tensor, or principal axis.
 PostScript code is written to stdout.
-
 
  Author:	Genevieve Patau
  Date:		7 July 1998
@@ -78,7 +76,7 @@ struct PSMECA_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
+	struct S {	/* -S<format><scale>[/fontsize[/offset[+u]]] */
 		bool active;
 		bool no_label;
 		unsigned int readmode;
@@ -94,7 +92,7 @@ struct PSMECA_CTRL {
 		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
-	struct Z2 {	/* -z<pen>] */
+	struct Z2 {	/* -Fz[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} Z2;
@@ -106,29 +104,29 @@ struct PSMECA_CTRL {
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
+	struct A2 {	/* -Fa[size][/Psymbol[/Tsymbol]] */
 		bool active;
 		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
- 	struct E2 {	/* -e<fill> */
+ 	struct E2 {	/* -Fe<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E2;
- 	struct G2 {	/* -g<fill> */
+ 	struct G2 {	/* -Fg<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G2;
- 	struct P2 {	/* -p[<pen>] */
+ 	struct P2 {	/* -Fp[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} P2;
-	struct R2 {	/* -r[<fill>] */
+	struct R2 {	/* -Fr[<fill>] */
 		bool active;
 		struct GMT_FILL fill;
 	} R2;
- 	struct T2 {	/* -t[<pen>] */
+ 	struct T2 {	/* -Ft[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} T2;
@@ -149,7 +147,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->C.pen.width = C->L.pen.width = C->T.pen.width = C->T2.pen.width = C->P2.pen.width = C->Z2.pen.width = -1.0;
 	C->D.depmax = 900.0;
-	C->L.active = true;
+	C->L.active = false;
 	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
@@ -173,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<offset>]][+u] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -484,7 +482,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 	if (Ctrl->P2.pen.width < 0.0) Ctrl->P2.pen = Ctrl->W.pen;
 	if (Ctrl->Z2.pen.width < 0.0) Ctrl->Z2.pen = Ctrl->W.pen;
 
-	/* Default -e<fill> and -g<fill> to -E<fill> and -G<fill> */
+	/* Default -Fe<fill> and -Fg<fill> to -E<fill> and -G<fill> */
 
 	if (!Ctrl->E2.active) Ctrl->E2.fill = Ctrl->E.fill;
 	if (!Ctrl->G2.active) Ctrl->G2.fill = Ctrl->G.fill;
@@ -700,7 +698,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			P.dip = in[10+new_fmt];
 			P.e = irint (in[11+new_fmt]);
 			/*
-			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
+			F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167.
 			Definition of scalar moment.
 			*/
 			meca.moment.exponent = T.e;
@@ -718,7 +716,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			for (i = 2+new_fmt, n = 0; i < 8+new_fmt; i++, n++) mt.f[n] = in[i];
 			mt.expo = irint (in[i]);
 			/*
-			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
+			F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167.
 			Definition of scalar moment.
 			*/
 			meca.moment.mant = sqrt(squared(mt.f[0]) + squared(mt.f[1]) + squared(mt.f[2]) +
