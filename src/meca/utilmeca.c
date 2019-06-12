@@ -126,7 +126,9 @@ static double proj_radius(double str1, double dip1, double str) {
 
 /***********************************************************************************************************/
 double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline) {
-	/* By Genevieve Patau */
+	/* Draw beachball for double couples
+	   By Genevieve Patau 
+	*/
 
 	double x[1000], y[1000];
 	double pos_NP1_NP2 = sind (meca.NP1.str - meca.NP2.str);
@@ -144,9 +146,10 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	/* compute radius size of the bubble */
 	radius_size = size * 0.5;
 
-	/*  argument is DIAMETER!!*/
+	/* fill at then beginning (here), outline at the end */
+	/*  argument is DIAMETER!! */
 	ssize[0] = size;
-	gmt_setfill (GMT, E, true);
+	gmt_setfill (GMT, E, false);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
@@ -320,6 +323,10 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 
 		PSL_plotpolygon (PSL, x, y, i);
 	}
+
+	/* fill at then beginning, outline at the end (here) */
+	gmt_setfill (GMT, NULL, true);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	return (size);
 }
 
@@ -582,6 +589,7 @@ void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, 
 
 /***************************************************************************************/
 double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
+	/* Plot beachball for full moment tensors */
 	int d, b = 1, m, i, ii, n = 0, j1 = 1, j2 = 0, j3 = 0;
 	int bigisotestv0, bigisotestv2;
 
@@ -728,7 +736,8 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	}
 	azi[n][1] = az;
 
-	gmt_setfill (GMT, F2, true);
+	/* fill at then beginning (here), outline at the end */
+	gmt_setfill (GMT, F2, false);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F1, outline);
@@ -836,6 +845,11 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			PSL_plotpolygon (PSL, xp2, yp2, i);
 			break;
 	}
+
+	/* fill at then beginning, outline at the end (here) */
+	gmt_setfill (GMT, NULL, true);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
+
 	return (size);
 }
 
