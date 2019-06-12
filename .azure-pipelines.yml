@@ -83,7 +83,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Windows | Compile + Package'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  condition: ne(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 120
 
   pool:
