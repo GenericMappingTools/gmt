@@ -226,7 +226,6 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
 			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n");
-			fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "session management:\n");
