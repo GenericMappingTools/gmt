@@ -15,7 +15,6 @@
 # Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
 # script when there are changes in the code, e.g. a new module.
 #
-SUPP_DIRS="gshhg|img|meca|mgd77|potential|segy|spotter|x2sys"	# Edit this is new supplements are added
 if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
@@ -32,7 +31,7 @@ U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
 L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" */*.c | egrep "$SUPP" | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
 	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis

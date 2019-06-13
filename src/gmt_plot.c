@@ -921,7 +921,7 @@ GMT_LOCAL void plot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL
 	radius = hypot (x1 - GMT->current.proj.c_x0, y1 - GMT->current.proj.c_y0);
 	s = ((GMT->current.proj.north_pole && side == 2) || (!GMT->current.proj.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree cirle */
+	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree circle */
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		if (secondary_too) PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
@@ -4353,9 +4353,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_plotsegment (PSL, 0.0, 0.0, length, 0.0);
 	else
 		PSL_plotsegment (PSL, 0.0, length, 0.0, 0.0);
-	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
+	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis with an arrow */
 		struct GMT_FILL arrow;
-		double vector_width, dim[PSL_MAX_DIMS];
+		double vector_width, dim[PSL_MAX_DIMS], g_scale_begin = 0.0, g_scale_end = 0.0, g_ext = 0.0;
 		gmt_init_fill (GMT, &arrow, GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 		gmt_setfill (GMT, &arrow, false);
 		gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -4364,24 +4364,39 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		dim[5] = GMT->current.setting.map_vector_shape; dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 		dim[11] = 0.5 * GMT->current.setting.map_frame_pen.width;
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, GMT->current.setting.map_frame_pen.style, GMT->current.setting.map_frame_pen.offset, GMT->current.setting.map_frame_pen.rgb);
+
+		/* The start of the vector at the end of a positive axis is computed as x = g_scale_end * length + g_ext;
+		 * The start of the vector at the start of a negative axis is computed as x = g_scale_begin * length - g_ext;
+		 * The required constants are set below */
+		if (GMT->current.setting.map_graph_extension_unit == GMT_GRAPH_EXTENSION_UNIT) {	/* Gave scaling in percent */
+			/* Here, the computed length is to the tip of the vector */
+			g_scale_end = 1.0 + 0.01 * GMT->current.setting.map_graph_extension;
+			g_scale_begin = -0.01 * GMT->current.setting.map_graph_extension;
+		}
+		else {	/* Gave actual length extension (now in inches) */
+			/* Here, the computed length is to the base of the vector */
+			g_scale_end = 1.0;
+			g_ext = GMT->current.setting.map_graph_extension + dim[3];
+		}
+		
 		if (horizontal) {
 			double x = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
 				x = length;
-				dim[0] = 1.075 * length;
+				dim[0] = g_scale_end * length + g_ext;
 			}
 			else
-				dim[0] = -0.075 * length;
+				dim[0] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x, 0.0, dim, PSL_VECTOR);
 		}
 		else {
 			double y = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
 				y = length;
-				dim[1] = 1.075 * length;
+				dim[1] = g_scale_end * length + g_ext;
 			}
 			else
-				dim[1] = -0.075 * length;
+				dim[1] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, 0.0, y, dim, PSL_VECTOR);
 		}
 	}

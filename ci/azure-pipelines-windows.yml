@@ -9,7 +9,7 @@ steps:
     echo 'set(VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
     cat ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
     # install libraries
-    vcpkg install netcdf-c gdal pcre clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
     # hook up user-wide integration
     vcpkg integrate install
     # list installed libraries

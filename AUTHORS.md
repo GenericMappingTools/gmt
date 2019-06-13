@@ -20,9 +20,9 @@ GMT 6 has benefitted from the contributions of two new team members
 # Supplement Contributions
 
 [Tim Henstock](https://www.southampton.ac.uk/oes/research/staff/then.page)
-contributed the segyprogs supplement, while
+contributed the segy supplement, while
 [Kurt Feigl](http://geoscience.wisc.edu/geoscience/people/faculty/feigl/) and
-Genevieve Patau wrote the meca supplement.
+Genevieve Patau wrote the seis supplement.
 
 # Further Acknowledgments
 

@@ -6072,8 +6072,8 @@ which uses the methods of Talwani to compute various geopotential components
 from 2-D [26]_ or 3-D [27]_ bodies.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
-segyprogs: plotting SEGY seismic data
--------------------------------------
+segy: plotting SEGY seismic data
+--------------------------------
 
 This package contains programs to plot SEGY seismic data files using the
 GMT mapping transformations and postscript library.

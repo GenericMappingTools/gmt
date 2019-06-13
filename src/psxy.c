@@ -1068,11 +1068,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	if (S.symbol == PSL_WEDGE) {
-		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 			last_spiderpen = S.v.pen;
 		}
-		else if (Ctrl->W.active) {	/* use -W as wedge pen as well as outline */
+		else if (Ctrl->W.active || S.w_type || !(Ctrl->G.active || Ctrl->C.active)) {	/* Use -W as wedge pen as well as outline, and default to this pen if neither -C, -W or -G given */
 			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
 				PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
@@ -1211,7 +1211,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (S.symbol == PSL_WEDGE) {
-					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 						last_spiderpen = S.v.pen;
 					}
