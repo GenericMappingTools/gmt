@@ -24,7 +24,7 @@ Things to do before release:
 - [ ] update fink package
 - [ ] announcements
 
-Things to do after each release:
+Things to do after release:
 
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
 - [ ] uncomment `GMT_SOURCE_CODE_CONTROL_VERSION_STRING` in `cmake/ConfigDefault.cmake`
