@@ -29,7 +29,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"gpsgridder"
-#define THIS_MODULE_LIB		"potential"
+#define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet"
 #define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 #define THIS_MODULE_NEEDS	"R"
@@ -438,8 +438,8 @@ GMT_LOCAL void undo_gps_normalization (double *X, unsigned int mode, double *coe
 		X[GMT_V] *= coeff[GSP_RANGE_V];
 	}
 	/* Add in mean data values */
-	X[GMT_U] += coeff[GSP_MEAN_U];	
-	X[GMT_V] += coeff[GSP_MEAN_V];	
+	X[GMT_U] += coeff[GSP_MEAN_U];
+	X[GMT_V] += coeff[GSP_MEAN_V];
 	if (mode & GPS_TREND) {					/* Restore residual trends */
 		X[GMT_U] += coeff[GSP_SLP_UX] * (X[GMT_X] - coeff[GSP_MEAN_X]) + coeff[GSP_SLP_UY] * (X[GMT_Y] - coeff[GSP_MEAN_Y]);
 		X[GMT_V] += coeff[GSP_SLP_VX] * (X[GMT_X] - coeff[GSP_MEAN_X]) + coeff[GSP_SLP_VY] * (X[GMT_Y] - coeff[GSP_MEAN_Y]);
@@ -474,7 +474,7 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 	 * G[GPS_FUNC_Q], G[GPS_FUNC_P], and G[GPS_FUNC_W].
 	 * Here, par[0] holds Poisson's ratio, par[1] holds delta_r^2 (to prevent singularity) */
 	double dx, dy, dx2, dy2, dr2, c1, c2, c2_dr2, dr2_fudge, dx2_fudge, dy2_fudge, dxdy_fudge;
-	
+
 	get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
 
 	dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
@@ -487,10 +487,10 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 		dx2_fudge = dx2 * stretch2;	dy2_fudge = dy2 * stretch2;	/* Modified offsets */
 		dxdy_fudge = dx * dy * stretch2;
 	}
-	
+
 	c1 = (3.0 - par[0]) / 2.0;	/* The half is here since we will take log of r^2, not r */
 	c2 = (1.0 + par[0]);
-	
+
 	G[GPS_FUNC_Q] = G[GPS_FUNC_P] = c1 * log (dr2_fudge);
 	dr2_fudge = 1.0 / dr2_fudge;	/* Get inverse squared radius */
 	c2_dr2 = c2 * dr2_fudge;		/* Do this multiplication once */
@@ -778,14 +778,14 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 
 	/* Initialize the Green's function machinery */
-	
+
 	par[0] = Ctrl->S.nu;	/* Poisson's ratio */
 	if (Ctrl->F.mode == GPS_FUDGE_R)
 		par[1] = Ctrl->F.fudge;		/* Small fudge radius to avoid singularity for r = 0 */
 	else
 		par[1] = Ctrl->F.fudge * r_min;		/* Small fudge factor*r_min to avoid singularity for r = 0 */
 	par[1] *= par[1];		/* Compute the square here instead of inside the loop */
-	
+
 	/* Remove mean (or LS plane) from data (we will add these back later) */
 
 	do_gps_normalization (API, X, u, v, n_uv, normalize, norm);
@@ -818,7 +818,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (&u[n_uv], v, n_uv, double);	/* Place v array at end of u array */
 	obs = u;					/* Hereafter, use obs to refer to the combined (u,v) array */
 	if (Ctrl->Z.active) dump_system (A, obs, n_params, "A Matrix row || u|v");	/* Dump the A | b system under debug */
-	
+
 	if (Ctrl->E.active) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 		gmt_M_memcpy (A_orig, A, n_params * n_params, double);
@@ -833,7 +833,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		 * original A and obs vectors so that the continuation of the code can work as is.
 		 * Weighted solution idea credit: Leo Uieda.  Jan 14, 2018.
 		 */
-		
+
 		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
 		uint64_t ji;
 
@@ -1013,7 +1013,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			dev_u = orig_u[j] - here[GMT_U];
 			dev_v = orig_v[j] - here[GMT_V];
 			pvar_sum += here[GMT_U] * here[GMT_U] + here[GMT_V] * here[GMT_V];
-			
+
 			rms += pow (dev_u, 2.0) + pow (dev_v, 2.0);
 			if (Ctrl->W.active && Ctrl->W.mode == GPS_GOT_SIG) {	/* If data had uncertainties we also compute the chi2 sum */
 				chi2u = pow (dev_u * X[j][GMT_WU], 2.0);
@@ -1145,7 +1145,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (Ctrl->C.movie == 1) {	/* Need temp arrays to capture increments */
 				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
 			}
-			
+
 			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", e);
 				/* Update solution for e eigenvalues only */

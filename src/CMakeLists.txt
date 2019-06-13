@@ -477,7 +477,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
 	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in
 	# subversion. See cmake/ConfigUserTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS gshhg img meca mgd77 potential segy
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis
 		spotter x2sys ${EXTRA_BUILD_DIRS})
 endif (BUILD_SUPPLEMENTS)
 
@@ -707,9 +707,13 @@ if (BUILD_DEVELOPER)
 	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
 		DESTINATION ${GMT_INCLUDEDIR}/gshhg
 		COMPONENT Runtime)
-	# Install meca supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES meca/meca.h meca/utilmeca.h
-		DESTINATION ${GMT_INCLUDEDIR}/meca
+	# Install geodesy supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES  geodesy/utilvelo.h
+		DESTINATION ${GMT_INCLUDEDIR}/geodesy
+		COMPONENT Runtime)
+	# Install seis supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES seis/meca.h seis/utilmeca.h
+		DESTINATION ${GMT_INCLUDEDIR}/seis
 		COMPONENT Runtime)
 	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
 	install (FILES mgd77/cm4_functions.h mgd77/mgd77_e77.h mgd77/mgd77_rls_coeffs.h mgd77/mgd77snifferdefaults.h

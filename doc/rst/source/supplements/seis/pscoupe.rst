@@ -51,7 +51,6 @@ See Also
 --------
 
 :doc:`psmeca`,
-:doc:`psvelo`,
 :doc:`pspolar`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`,
 :doc:`psxy </psxy>`

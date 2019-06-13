@@ -84,7 +84,4 @@ Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA
 See Also
 --------
 
-:doc:`meca`,
-:doc:`polar`,
-:doc:`coupe`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`plot </plot>`

@@ -7,7 +7,7 @@ if ! [[ ${HAVE_OPENMP} =~ TRUE|ON ]]; then
   # Since a PS-producing test is judge by comparison to original PS
   # and since no PS is produced without OpenMP, we simply duplicate
   # the original so they both exist and are identical.
-  echo "OpenMP not availble - just duplicating PS to pass test"
+  echo "OpenMP not available - just duplicating PS to pass test"
   cp "${GMT_SRCDIR:-.}"/$ps .
   exit 0
 fi

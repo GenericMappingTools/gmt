@@ -921,7 +921,7 @@ GMT_LOCAL void plot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL
 	radius = hypot (x1 - GMT->current.proj.c_x0, y1 - GMT->current.proj.c_y0);
 	s = ((GMT->current.proj.north_pole && side == 2) || (!GMT->current.proj.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree cirle */
+	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree circle */
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		if (secondary_too) PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);

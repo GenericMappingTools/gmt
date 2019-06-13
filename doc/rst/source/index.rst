@@ -71,19 +71,19 @@ Supplements (Modern Mode)
 |                 |                 |                 |
 |    SUP_GSHHS    |    SUP_POTENTIAL|    SUP_SEGY     |
 |    SUP_IMGSRC   |    SUP_SPOTTER  |    SUP_X2SYS    |
-|    SUP_MECA     |                 |                 |
+|    SUP_SEIS     |                 |    SUP_GEODESY  |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 
 Supplements (Classic Mode)
 ==========================
 
-+---------------------+----------------------+----------------------+
-| .. toctree::        | .. toctree::         | .. toctree::         |
-|    :maxdepth: 2     |    :maxdepth: 2      |    :maxdepth: 2      |
-|                     |                      |                      |
-|    SUP_MECA_classic |    SUP_MGD77_classic |    SUP_SEGY_classic  |
-+---------------------+----------------------+----------------------+
++---------------------+----------------------+----------------------+------------------------+
+| .. toctree::        | .. toctree::         | .. toctree::         | .. toctree::           |
+|    :maxdepth: 2     |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
+|                     |                      |                      |                        |
+|    SUP_SEIS_classic |    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_GEODESY_classic |
++---------------------+----------------------+----------------------+------------------------+
 
 Gallery
 =======
