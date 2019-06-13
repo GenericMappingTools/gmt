@@ -707,6 +707,10 @@ if (BUILD_DEVELOPER)
 	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
 		DESTINATION ${GMT_INCLUDEDIR}/gshhg
 		COMPONENT Runtime)
+	# Install geodesy supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES  geodesy/utilvelo.h
+		DESTINATION ${GMT_INCLUDEDIR}/geodesy
+		COMPONENT Runtime)
 	# Install meca supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
 	install (FILES meca/meca.h meca/utilmeca.h
 		DESTINATION ${GMT_INCLUDEDIR}/meca

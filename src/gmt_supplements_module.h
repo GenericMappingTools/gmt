@@ -25,13 +25,13 @@ extern "C" {
 /* Prototypes of all modules in the GMT supplements library */
 EXTERN_MSC int GMT_earthtide (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psvelo (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gshhg (void *API, int mode, void *args);
 EXTERN_MSC int GMT_img2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoupe (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psmeca (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pspolar (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssac (void *API, int mode, void *args);
-EXTERN_MSC int GMT_psvelo (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77convert (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77header (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77info (void *API, int mode, void *args);

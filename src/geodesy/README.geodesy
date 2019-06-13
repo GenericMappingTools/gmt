@@ -12,3 +12,8 @@ The following were provided by J. Luis:
 
 - earthtide: Compute grids or time-series of Earth tides
 
+The following were provided by Genevieve Patau. She has since retired and
+no longer maintains the package.
+Donated to the GMT project by G. Patau upon her retirement from IGPG
+
+- psvelo: plots velocity ellipses, strain crosses and strain wedges.

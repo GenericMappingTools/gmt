@@ -19,8 +19,8 @@
 #
 
 # source files
-set (SUPPL_LIB_SRCS)
-set (SUPPL_PROGS_SRCS gpsgridder.c earthtide.c)
+set (SUPPL_LIB_SRCS utilvelo.c)
+set (SUPPL_PROGS_SRCS gpsgridder.c earthtide.c psvelo.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.geodesy)

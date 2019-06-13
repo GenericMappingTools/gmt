@@ -25,11 +25,10 @@ PostScript code is written to stdout.
 */
 
 #include "gmt_dev.h"
-#include "meca.h"
-#include "utilmeca.h"
+#include "utilvelo.h"
 
 #define THIS_MODULE_NAME	"psvelo"
-#define THIS_MODULE_LIB		"meca"
+#define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
@@ -405,7 +404,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 		in = In->data;
 		station_name = In->text;
-		
+
 		/* Data record to process */
 
 		n_rec++;
@@ -425,7 +424,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 				des_ellipse = false;
 			else {
 				des_ellipse = true;
-				meca_ellipse_convert (sigma_x, sigma_y, corr_xy, Ctrl->S.conrad, &small_axis, &great_axis, &direction);
+				velo_ellipse_convert (sigma_x, sigma_y, corr_xy, Ctrl->S.conrad, &small_axis, &great_axis, &direction);
 
 				/* convert to degrees */
 				direction = direction * R2D;
@@ -467,14 +466,14 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		switch (Ctrl->S.symbol) {
 			case CINE:
 				des_arrow = hypot (vxy[0], vxy[1]) < 1.e-8 ? false : true;
-				meca_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
-				meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
+				velo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				velo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
 					if (Ctrl->E.active)
-						meca_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+						velo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
 					else
-						meca_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+						velo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
@@ -530,19 +529,19 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 				}
 				break;
 			case ANISO:
-				meca_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				velo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
 				/* triangular arrowheads */
-				meca_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
+				velo_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
 					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(Ctrl->W.pen));
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
-				meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
-				meca_paint_wedge (PSL, plot_x, plot_y, spin, spinsig, Ctrl->S.scale, Ctrl->S.wedge_amp, t11,t12,t21,t22,
+				velo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
+				velo_paint_wedge (PSL, plot_x, plot_y, spin, spinsig, Ctrl->S.scale, Ctrl->S.wedge_amp, t11,t12,t21,t22,
 					Ctrl->G.active, Ctrl->G.fill.rgb, Ctrl->E.active, Ctrl->E.fill.rgb, Ctrl->L.active);
 				break;
 		}
