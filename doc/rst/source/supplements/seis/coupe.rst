@@ -47,7 +47,6 @@ See Also
 --------
 
 :doc:`meca`,
-:doc:`velo`,
 :doc:`polar`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`,
 :doc:`plot </plot>`

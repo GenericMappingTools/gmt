@@ -1,19 +1,19 @@
-.. index:: ! pspolar
+.. index:: ! polar
 
-*******
-pspolar
-*******
+*****
+polar
+*****
 
 .. only:: not man
 
-    pspolar - Plot polarities on the inferior focal half-sphere on maps
+    Plot polarities on the inferior focal half-sphere on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt polar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
@@ -22,8 +22,7 @@ pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
-[ |-K| ] [ |-L| ] [ |-N| ]
-[ |-O| ]
+[ |-L| ] [ |-N| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
 [ |SYN_OPT-U| ]
@@ -41,14 +40,12 @@ pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 
 .. include:: polar_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
-
 Examples
 --------
 
    ::
 
-    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
+    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 -pdf test << END
     #stat azim ih pol
     0481 11 147 c
     6185 247 120 d
@@ -61,7 +58,7 @@ or
 
    ::
 
-    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
+    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 -pdf test <<END
     #Date Or. time stat azim ih
     910223 1 22 0481 11 147 ipu0
     910223 1 22 6185 247 120 ipd0
@@ -75,7 +72,6 @@ or
 See Also
 --------
 
-:doc:`psmeca`,
-:doc:`psvelo`,
-:doc:`pscoupe`,
-:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
+:doc:`meca`,
+:doc:`coupe`,
+:doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`plot </plot>`
