@@ -15,7 +15,7 @@
 # Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
 # script when there are changes in the code, e.g. a new module.
 #
-SUPP_DIRS="geodesy|gshhg|img|mgd77|potential|segy|seis|spotter|x2sys"	# Edit this is new supplements are added
+SUPP_DIRS="geodesy|gshhg|img|mgd77|potential|segy|seis|spotter|x2sys"	# Edit this list if new supplements are added
 if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
