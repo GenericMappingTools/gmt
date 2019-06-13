@@ -87,7 +87,4 @@ Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA
 See Also
 --------
 
-:doc:`psmeca`,
-:doc:`pspolar`,
-:doc:`pscoupe`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
