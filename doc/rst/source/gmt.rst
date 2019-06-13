@@ -259,4 +259,4 @@ Look up the individual man pages for more details and full syntax. Run
 directories. For an explanation of the various GMT settings in this
 man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
-GMT home page http://docs.generic-mapping-tools.org/
+GMT documentation site https://docs.generic-mapping-tools.org/
