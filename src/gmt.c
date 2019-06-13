@@ -139,7 +139,7 @@ int main (int argc, char *argv[]) {
 				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 				fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
+				fprintf (stderr, "and volunteers from around the world.\n\n");
 
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
 				status = GMT_NOERROR;
@@ -223,7 +223,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 			fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-			fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
+			fprintf (stderr, "and volunteers from around the world.\n\n");
 
 			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
