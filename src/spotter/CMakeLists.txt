@@ -18,8 +18,11 @@
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME spotter)
+
 # source files
-set (SUPPL_LIB_SRCS spotter.h libspotter.c)
+set (SUPPL_HEADERS spotter.h)
+set (SUPPL_LIB_SRCS libspotter.c)
 set (SUPPL_PROGS_SRCS backtracker.c gmtpmodeler.c grdpmodeler.c grdrotater.c polespotter.c
 	grdspotter.c hotspotter.c originater.c rotconverter.c rotsmoother.c)
 
@@ -35,11 +38,23 @@ string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
 # install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
+	COMPONENT Documentation)
+
 if (UNIX)
-	install (FILES ${SUPPL_EXAMPLE_FILES}
-		DESTINATION ${GMT_DOCDIR}/supplements/spotter
+	install (PROGRAMS spotter.sh
+		DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
 		COMPONENT Documentation)
-	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-		DESTINATION ${GMT_DOCDIR}/supplements/spotter
+else (UNIX)
+	install (PROGRAMS spotter.bat
+		DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
 		COMPONENT Documentation)
 endif (UNIX)
+
+# install headers
+if (BUILD_DEVELOPER)
+	install (FILES ${SUPPL_HEADERS}
+		DESTINATION ${GMT_INCLUDEDIR}/${SUPPL_NAME}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)

@@ -18,7 +18,10 @@
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME seis)
+
 # source files
+set (SUPPL_HEADERS meca.h utilmeca.h sacio.h)
 set (SUPPL_LIB_SRCS utilmeca.c sacio.c)
 set (SUPPL_PROGS_SRCS psmeca.c pspolar.c pscoupe.c pssac.c)
 
@@ -34,5 +37,12 @@ install_module_symlink (${_gmt_modules})
 
 # install example data
 install (FILES ${SUPPL_EXAMPLE_FILES}
-	DESTINATION ${GMT_DOCDIR}/supplements/seis
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
 	COMPONENT Documentation)
+
+# install headers
+if (BUILD_DEVELOPER)
+	install (FILES ${SUPPL_HEADERS}
+		DESTINATION ${GMT_INCLUDEDIR}/${SUPPL_NAME}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)

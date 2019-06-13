@@ -18,8 +18,13 @@
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME img)
+
 # source files
 set (SUPPL_PROGS_SRCS img2grd.c)
+
+# example files
+set (SUPPL_EXAMPLE_FILES README.img)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})
@@ -27,6 +32,11 @@ set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 # create build targets
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
+
+# install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
+	COMPONENT Documentation)
 
 # install shell script
 install (PROGRAMS img2google

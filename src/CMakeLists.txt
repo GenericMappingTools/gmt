@@ -703,36 +703,6 @@ if (BUILD_DEVELOPER)
 	install (FILES compat/qsort.h
 		DESTINATION ${GMT_INCLUDEDIR}/compat
 		COMPONENT Runtime)
-	# Install gshhg supplement headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
-		DESTINATION ${GMT_INCLUDEDIR}/gshhg
-		COMPONENT Runtime)
-	# Install geodesy supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES  geodesy/utilvelo.h
-		DESTINATION ${GMT_INCLUDEDIR}/geodesy
-		COMPONENT Runtime)
-	# Install seis supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES seis/meca.h seis/utilmeca.h
-		DESTINATION ${GMT_INCLUDEDIR}/seis
-		COMPONENT Runtime)
-	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES mgd77/cm4_functions.h mgd77/mgd77_e77.h mgd77/mgd77_rls_coeffs.h mgd77/mgd77snifferdefaults.h
-		mgd77/mgd77.h mgd77/mgd77_functions.h mgd77/mgd77defaults.h mgd77/mgd77_IGF_coeffs.h mgd77/mgd77_init.h
-		mgd77/mgd77magref.h mgd77/mgd77_codes.h mgd77/mgd77_recalc.h mgd77/mgd77sniffer.h
-		DESTINATION ${GMT_INCLUDEDIR}/mgd77
-		COMPONENT Runtime)
-	# Install potential supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES potential/okbfuns.h
-		DESTINATION ${GMT_INCLUDEDIR}/potential
-		COMPONENT Runtime)
-	# Install spotter supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES spotter/spotter.h
-		DESTINATION ${GMT_INCLUDEDIR}/spotter
-		COMPONENT Runtime)
-	# Install x2sys supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES x2sys/x2sys.h
-		DESTINATION ${GMT_INCLUDEDIR}/x2sys
-		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
 		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
