@@ -21,7 +21,8 @@ Things to do before release:
 - [ ] upload source packages, Windows binary packages and macOS bundle to FTP (@PaulWessel)
 - [ ] update conda packages via [conda-forge/gmt-feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@seisman)
-- [ ] update fink package
+- [ ] update fink package (@remkos)
+- [ ] update macports ports
 - [ ] announcements
 
 Things to do after release:
