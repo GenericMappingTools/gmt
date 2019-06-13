@@ -1,7 +1,7 @@
 @ECHO OFF
 REM  
 REM
-REM	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+REM	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@ REM	but WITHOUT ANY WARRANTY; without even the implied warranty of
 REM	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 REM	GNU Lesser General Public License for more details.
 REM
-REM	Contact info: gmt.soest.hawaii.edu
+REM	Contact info: www.generic-mapping-tools.org
 REM -------------------------------------------------------------------------------
 REM	gmtswitch - switch between several installed GMT versions
 REM

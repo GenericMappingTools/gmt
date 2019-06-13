@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
  * 
- *    Copyright (c) 2005-2019 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  */
 

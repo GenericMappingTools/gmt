@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2019 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/pwessel
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys.c contains the source code for the X2SYS crossover library
  * libx2sys.a.  The code is copylefted under the GNU Public Library

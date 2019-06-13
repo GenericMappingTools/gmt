@@ -156,8 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991–2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
-Luis and F. Wobbe
+Copyright ©1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 The Generic Mapping Tools (GMT) is free software; you can
 redistribute it and/or modify it under the terms of the GNU Lesser
