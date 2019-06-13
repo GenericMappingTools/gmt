@@ -19,9 +19,11 @@
 #
 
 # source files
-set (SUPPL_LIB_SRCS okbfuns.h okbfuns.c talwani.h)
-set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c
-	grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
+set (SUPPL_LIB_SRCS)
+set (SUPPL_PROGS_SRCS gpsgridder.c earthtide.c)
+
+# example files
+set (SUPPL_EXAMPLE_FILES README.geodesy)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
@@ -29,3 +31,8 @@ set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 # create build targets
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
+
+# install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/geodesy
+	COMPONENT Documentation)

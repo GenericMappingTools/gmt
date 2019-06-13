@@ -23,6 +23,8 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT supplements library */
+EXTERN_MSC int GMT_earthtide (void *API, int mode, void *args);
+EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gshhg (void *API, int mode, void *args);
 EXTERN_MSC int GMT_img2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoupe (void *API, int mode, void *args);
@@ -39,10 +41,8 @@ EXTERN_MSC int GMT_mgd77manage (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77path (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77sniffer (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77track (void *API, int mode, void *args);
-EXTERN_MSC int GMT_earthtide (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtgravmag3d (void *API, int mode, void *args);
-EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gravfft (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdgravmag3d (void *API, int mode, void *args);

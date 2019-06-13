@@ -41,6 +41,8 @@ struct Gmt_moduleinfo {
 };
 
 static struct Gmt_moduleinfo g_supplements_module[] = {
+	{"earthtide", "geodesy", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
+	{"gpsgridder", "geodesy", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
 	{"gshhg", "gshhg", "Extract data tables from binary GSHHS or WDBII data files", ">D}"},
 	{"img2grd", "img", "Extract a subset from an img file in Mercator or Geographic format", "<G{,GG}"},
 	{"pscoupe", "meca", "Plot cross-sections of focal mechanisms", "<D{,>X}"},
@@ -57,10 +59,8 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77path", "mgd77", "Return paths to MGD77 cruises and directories", ">D}"},
 	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", ""},
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", ">X}"},
-	{"earthtide", "potential", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "ED(,QD(,TD(,>D}"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
-	{"gpsgridder", "potential", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
 	{"gravfft", "potential", "Spectral calculations of gravity, isostasy, admittance, and coherence for grids", "<G{+,GG},DG(,GDC,GDI"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG},LD),TD("},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{+,FD(,GG}"},

@@ -23,11 +23,11 @@
  * Date:	12-JUN-2018
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"earthtide"
-#define THIS_MODULE_LIB		"potential"
+#define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
 #define THIS_MODULE_KEYS	">D},GG),>DL,>DS"
 #define THIS_MODULE_NEEDS	"R"
@@ -73,9 +73,9 @@ struct EARTHTIDE_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct EARTHTIDE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct EARTHTIDE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
@@ -904,7 +904,7 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	/* get low-precision, geocentric coordinates for sun (ECEF)
 	 * input, mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
 	 * output, rs, is geocentric solar position vector [m] in ECEF
-	 *      	  lflag  -- leap second table limit flag,  false:flag not raised 
+	 *      	  lflag  -- leap second table limit flag,  false:flag not raised
 	 * 1."satellite orbits: models, methods, applications" montenbruck & gill(2000)
 	 * section 3.3.2, pg. 70-71
 	 * 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005)
@@ -1062,11 +1062,11 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 	else {
 		if (T.unit == 'm')
 			tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
-		else if (T.unit == 's') 
+		else if (T.unit == 's')
 			tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
-		else if (T.unit == 'h') 
+		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;		/* 1 hour steps */
-		else if (T.unit == 'd') 
+		else if (T.unit == 'd')
 			tdel2 = 1.0;		/* 1 day steps */
 
 		tdel2 *= T.inc;
@@ -1074,7 +1074,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n"); 
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
@@ -1201,7 +1201,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	/* position of observing point (positive East) */
 	if (lon < 0)    lon += 360;
 	if (lon >= 360) lon += -360;
- 
+
 	lat *= D2R;
 	lon *= D2R;
 	geoxyz(lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
@@ -1214,11 +1214,11 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	else {
 		if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
-		else if (T.unit == 's') 
+		else if (T.unit == 's')
 			tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
-		else if (T.unit == 'h') 
+		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;			/* 1 hour steps */
-		else if (T.unit == 'd') 
+		else if (T.unit == 'd')
 			tdel2 = 1.0;		/* 1 day steps */
 
 		tdel2 *= T.inc;
@@ -1226,7 +1226,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n"); 
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
@@ -1294,7 +1294,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   When -G and -T only first time T series is considered.\n");
 	GMT_Option (API, "V");
 	GMT_Option (API, "b,o,r,x,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -1393,7 +1393,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
-			n_errors++; 
+			n_errors++;
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
 			Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;
@@ -1457,7 +1457,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->T.active) {	/* Select the current day as the time to evaluate */
 		time_t rawtime;
-		struct tm *timeinfo;	
+		struct tm *timeinfo;
 		gmt_gcal_from_rd (GMT, GMT->current.time.today_rata_die, &cal_start);
 		time (&rawtime);
 		timeinfo = gmtime (&rawtime);			/* Get the time in UTC */
@@ -1514,9 +1514,9 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		}
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) /* Get the array built or read */
 			Return (GMT_RUNTIME_ERROR);
-		
+
 		if (!Ctrl->T.T.count && (strchr("dhms", Ctrl->T.T.unit) == NULL)){
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify valid interval unit (d|h|m|s)\n"); 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify valid interval unit (d|h|m|s)\n");
 			return GMT_PARSE_ERROR;
 		}
 
@@ -1533,10 +1533,10 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) 	/* Enables data output and sets access mode */
 			Return (API->error);
-	
+
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
-	
+
 		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
