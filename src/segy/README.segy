@@ -43,7 +43,7 @@ GMT 5 Released made these into modules.  Note: Some options conflicted with the 
 common options.  For instance, pssegy used -X -Y -B -U for various settings but that
 cannot be allowed in GMT 5.  I simply moved these to modifiers under a new option
 -Q, i.e., now use -Qx, -Qy, -Qu, and -Qb to set these parameters.
-This obviously makes GMT 4 scripts using segyprogs NOT backwards compatible but it
+This obviously makes GMT 4 scripts using segy NOT backwards compatible but it
 cannot be helped.
 
 pssegy: program to plot segy files in postscript.
@@ -61,9 +61,9 @@ throughout.  No current bugs are known.
 pssegyz: program to ploy segy files in 3-D in postscript.
 This is just an extension of pssegy which rather than plotting the seismic
 data in (x,y) space uses the GMT transformation routines to plot the
-data in (x,y,z) space, with z being the depth/time axis. 
-The code was generalized to allow plotting location to be based on any 
-(int*4) location in the SEGY trace header in both the x and y dimensions. 
+data in (x,y,z) space, with z being the depth/time axis.
+The code was generalized to allow plotting location to be based on any
+(int*4) location in the SEGY trace header in both the x and y dimensions.
 Note that as you increase the projection elevation there are an increasing
 number of pathological cases for variable area plotting and the code
 may well leave regions unshaded, or shade regions which should be transparent
