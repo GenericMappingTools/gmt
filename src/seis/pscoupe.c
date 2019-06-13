@@ -26,7 +26,7 @@ PostScript code is written to stdout.
 #include "utilmeca.h"
 
 #define THIS_MODULE_NAME	"pscoupe"
-#define THIS_MODULE_LIB		"meca"
+#define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
@@ -1120,12 +1120,12 @@ Definition of scalar moment.
 				Ctrl->S.justify, form);
 		}
 	} while (true);
-	
+
 	if (!Ctrl->Q.active) {
 		fclose (pnew);
 		fclose (pext);
 	}
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
