@@ -29,7 +29,7 @@
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-    <string>Copyright © 1991-@GMT_VERSION_YEAR@ by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+    <string>Copyright © 1991-@GMT_VERSION_YEAR@ by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; version 3 or any later version.</string>
 </dict>
 </plist>

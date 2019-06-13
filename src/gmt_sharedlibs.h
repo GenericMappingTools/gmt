@@ -1,6 +1,6 @@
 /*
- *	Copyright (c) 2012-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ *	Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 

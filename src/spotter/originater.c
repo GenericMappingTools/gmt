@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2000-2019 by P. Wessel
+ *   Copyright (c) 2000-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * originater reads file of seamount locations and tries to match each

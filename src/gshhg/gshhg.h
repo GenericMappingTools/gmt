@@ -1,7 +1,7 @@
 /*
  * Include file defining structures used in the binary GSHHG files
  *
- *	Copyright (c) 1996-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1996-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: www.soest.hawaii.edu/pwessel
+ *	Contact info: www.generic-mapping-tools.org
  *
  *	14-SEP-2004.  PW: Version 1.3.  Header is now n * 8 bytes (n = 5)
  *			  For use with version 1.3 of GSHHG
