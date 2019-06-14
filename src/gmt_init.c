@@ -12730,8 +12730,8 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
-			API->GMT->current.setting.run_mode = GMT_MODERN;
-			usage = true;
+			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
 			return;
 		}
 		if (n_args == 1) {	/* Gave a single argument */
