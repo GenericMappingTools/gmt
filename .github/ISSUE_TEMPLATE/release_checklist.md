@@ -11,6 +11,7 @@ assignees: ''
 
 **Before release**:
 
+- [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
 - [ ] check/change `cmake/ConfigDefault.cmake`
 
     - [ ] `GMT_VERSION_YEAR` is current year
