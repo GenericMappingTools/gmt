@@ -416,13 +416,13 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
 		if (Ctrl->F.mode) {	/* See if there is a drift file for this hotspot */
-			char path[GMT_BUFSIZ] = {""}, file[GMT_LEN64] = {""};
+			char path[PATH_MAX] = {""}, file[GMT_LEN64] = {""};
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
-			strncpy (path, file, GMT_BUFSIZ);
+			strncpy (path, file, PATH_MAX);
 			if (gmt_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
 				if (strchr (Ctrl->F.file, '/')) {	/* Filename has leading path so we will use that path */
-					strncpy (path, Ctrl->F.file, GMT_BUFSIZ);
+					strncpy (path, Ctrl->F.file, PATH_MAX);
 					k = strlen (path);
 					while (k && path[k] != '/') k--;	/* Look for last slash  */
 					k++; path[k] = 0;	/* Truncate anything after last slash */

@@ -792,7 +792,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	int error;
 	bool retain_original;
 	gmt_grdfloat *orig_load = NULL;
-	char file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
+	char file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct RHEOLOGY *R = NULL;

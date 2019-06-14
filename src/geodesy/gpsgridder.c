@@ -1134,7 +1134,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 	else {	/* Output on equidistant lattice */
 		int64_t col, row, p, e; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
-		char file[GMT_LEN256] = {""};
+		char file[PATH_MAX] = {""};
 		double *xp = NULL, *yp = NULL, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate all coordinates */

@@ -449,7 +449,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
 
-	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
+	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[PATH_MAX] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
@@ -569,7 +569,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, GMT_LEN256-1);
+		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;

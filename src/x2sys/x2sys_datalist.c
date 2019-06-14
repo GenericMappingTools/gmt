@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char file[GMT_BUFSIZ] = {""}, *line = file; /* Just reusing the file space */
+	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
 	

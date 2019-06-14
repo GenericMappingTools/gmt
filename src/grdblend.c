@@ -98,7 +98,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	bool open;					/* true if file is currently open */
 	bool delete;					/* true if file was produced by grdsample to deal with different registration/increments */
 	bool memory;					/* true if grid is a in memory array */
-	char file[GMT_LEN256];			/* Name of grid file */
+	char file[PATH_MAX];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
 	gmt_grdfloat *z;					/* Row vector holding the current row from this file */
@@ -223,7 +223,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		size_t n_alloc = 0;
 		unsigned int res;
 		struct GMT_RECORD *In = NULL;
-		char r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
+		char r_in[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
 		double weight;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 		
@@ -294,7 +294,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, tile);
 		}
 			
-		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
+		strncpy (B[n].file, L[n].file, PATH_MAX-1);
 		B[n].memory = gmt_M_file_is_memory (B[n].file);	/* If grid in memory then we only read once and have everything at once */
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			/* Failure somehow, free all grids read so far and bail */
@@ -449,7 +449,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
 			}
-			strncpy (B[n].file, buffer, GMT_LEN256-1);	/* Use the temporary file instead */
+			strncpy (B[n].file, buffer, PATH_MAX-1);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
 			if (GMT_Destroy_Data (GMT->parent, &B[n].G))
 				return (-1);

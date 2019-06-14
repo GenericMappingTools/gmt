@@ -351,14 +351,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				}
 				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
 					FILE *fp = NULL;
-					char file[GMT_BUFSIZ] = {""};
+					char file[PATH_MAX] = {""};
 					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Error opening list file %s\n", &c[2]);
 						n_errors++;
 						break;
 					}
 					/* Process all the grids listed in this text table */
-					while (fgets (file, GMT_BUFSIZ, fp)) {
+					while (fgets (file, PATH_MAX, fp)) {
 						if (file[0] == '#') continue;	/* Skip all headers */
 						if (process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;

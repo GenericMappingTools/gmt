@@ -415,7 +415,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
 		unsigned int n_out, n1;
-		char file[GMT_BUFSIZ] = {""};
+		char file[PATH_MAX] = {""};
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
 		struct COE_ADJLIST *adj = NULL;

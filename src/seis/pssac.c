@@ -532,7 +532,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 	}
 	else {    /* Must read a list file */
 		size_t n_alloc = 0;
-		char pen[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
+		char pen[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
 		struct GMT_RECORD *In = NULL;
 		double x, y;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);

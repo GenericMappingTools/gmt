@@ -4632,7 +4632,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
+	char name[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
@@ -7175,7 +7175,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
 	char T5[GMT_LEN64] = {""}, T6[GMT_LEN64] = {""}, T7[GMT_LEN64] = {""}, T8[GMT_LEN64] = {""}, T9[GMT_LEN64] = {""};
-	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[PATH_MAX] = {""};
 	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
@@ -7184,7 +7184,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (cpt_file, source, GMT_BUFSIZ-1);
+		strncpy (cpt_file, source, PATH_MAX-1);
 		Z = support_cpt_parse (GMT, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open color palette table %s\n", cpt_file);
@@ -7667,7 +7667,7 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 }
 
 void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	char file[GMT_LEN256] = {""};
+	char file[PATH_MAX] = {""};
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
 	/* Save cpt for use by session */
 	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
@@ -8163,7 +8163,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	unsigned int i, append = 0;
 	bool close_file = false;
 	double cmyk[5];
-	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
+	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
 	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
@@ -8176,7 +8176,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (cpt_file, dest, GMT_BUFSIZ-1);
+		strncpy (cpt_file, dest, PATH_MAX-1);
 		append = (cpt_file[0] == '>');	/* Want to append to existing file */
 		if ((Z = support_cpt_parse (GMT, &cpt_file[append], GMT_OUT))) {
 			support_cpt_z_scale (GMT, P, Z, GMT_OUT);
@@ -10038,7 +10038,7 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 
 	unsigned int i, n_fmt;
 	static char kind[2] = {'O', 'C'};
-	char file[GMT_BUFSIZ];
+	char file[PATH_MAX];
 	gmt_M_unused(GMT);
 
 	for (i = n_fmt = 0; i < 3; i++) if (fmt[i]) n_fmt++;

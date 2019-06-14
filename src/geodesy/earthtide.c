@@ -1473,7 +1473,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[GMT_LEN512] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1498,7 +1498,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
 			else
-				strncpy (file, Ctrl->G.file[kk], GMT_LEN512-1);
+				strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
 
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid[k]) != GMT_NOERROR) {
 				Return (API->error);

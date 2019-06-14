@@ -347,7 +347,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
 	uint64_t col, ncol = 0, n = 0, n_alloc = GMT_BIG_CHUNK;
 
-	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 	char buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""}, *t_ptr = NULL;
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
@@ -855,7 +855,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
-		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], GMT_BUFSIZ-1);	/* Grab name of current file while we can */
+		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], PATH_MAX-1);	/* Grab name of current file while we can */
 		
 	}
 	if (GMT->common.a.active) {
