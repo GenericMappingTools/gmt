@@ -9,17 +9,19 @@ assignees: ''
 
 **Version**:  x.x.x
 
-Before release:
+**Before release**:
 
 - [ ] check/change `cmake/ConfigDefault.cmake`
+
       - [ ] `GMT_VERSION_YEAR` is current year
       - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
       - [ ] `GMT_LIB_SOVERSION` is correctly set
       - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+
 - [ ] update changelog
 - [ ] freeze codes and commit all changes to GitHub
 
-Release:
+**Release**:
 
 - [ ] create source packages (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS Bundle (@PaulWessel)
@@ -41,7 +43,7 @@ Release:
 - [ ] update macports ports
 - [ ] announcements
 
-After release:
+**After release**:
 
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
 - [ ] set `GMT_PUBLIC_RELEASE` to `FALSE`
