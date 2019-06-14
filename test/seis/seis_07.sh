@@ -3,7 +3,7 @@
 # Check gmt psmeca for plotting beach balls
 # Verified by K. Feigl on 2015/8/6.  Comments left below.
 
-ps=meca_08.ps
+ps=seis_07.ps
 
 size=1.0c
 
