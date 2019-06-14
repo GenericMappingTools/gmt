@@ -16,6 +16,7 @@ Before release:
       - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
       - [ ] `GMT_LIB_SOVERSION` is correctly set
       - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+- [ ] update changelog
 - [ ] freeze codes and commit all changes to GitHub
 
 Release:
@@ -23,7 +24,17 @@ Release:
 - [ ] create source packages (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS Bundle (@PaulWessel)
 - [ ] create Windows binary packages (win32 and win64) (@joa-quim)
-- [ ] upload source packages, Windows binary packages and macOS bundle to FTP (@PaulWessel)
+- [ ] make a tag and push it to github
+
+    ```
+    git tag 6.0.0
+    git push --tag
+    ```
+
+- [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release.
+      Remember to attach the soruce packages, Windows binary packages and macOS Bundle.
+- [ ] upload source packages, Windows binary packages and macOS Bundle to FTP (@PaulWessel)
+
 - [ ] update conda packages via [conda-forge/gmt-feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@seisman)
 - [ ] update fink package (@remkos)
