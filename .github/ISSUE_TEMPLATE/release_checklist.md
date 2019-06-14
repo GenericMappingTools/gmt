@@ -13,6 +13,7 @@ assignees: ''
 
 - [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
 - [ ] update changelog
+- [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] check/change `cmake/ConfigDefault.cmake`
 
     - [ ] `GMT_VERSION_YEAR` is current year
