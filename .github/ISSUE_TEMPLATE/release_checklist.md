@@ -36,7 +36,8 @@ assignees: ''
 
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release.
       Remember to attach the soruce packages, Windows binary packages and macOS Bundle.
-- [ ] upload source packages, Windows binary packages and macOS Bundle to FTP (@PaulWessel)
+- [ ] upload source packages, Windows binary packages and macOS Bundle to the GMT FTP (@PaulWessel)
+- [ ] update README and VERSION files on the GMT FTP
 
 - [ ] update conda packages via [conda-forge/gmt-feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@seisman)
