@@ -8,11 +8,11 @@
     perspective). [Default is at the bottom of the z-axis]. Use **-px**
     or **-py** to plot against the "wall" x = level or y = level
     (default is on the horizontal plane, which is the same as using
-    **-pz**). For frames used for animation, you may want to append
-    **+** to fix the center of your data domain (or specify a particular
-    world coordinate point with **+w**\ *lon0*/*lat*\ [/*z*]) which will
-    project to the center of your page size (or specify the coordinates
-    of the projected view point with **+v**\ *x0*/*y0*. When **-p** is
+    **-pz**). For frames used for animation, note we fix the center of your
+    data domain.  Specify another center using a particular
+    world coordinate point with **+w**\ *lon0*/*lat0*\ [/*z0*]) which will
+    project to the center of your page size, or specify the coordinates
+    of the projected 2-D view point with **+v**\ *x0*/*y0*. When **-p** is
     used without any further arguments, the values from the last use of
     **-p** in a previous GMT command will be used.  Alternatively, you
     can perform a simple rotation about the z-axis by just giving the
