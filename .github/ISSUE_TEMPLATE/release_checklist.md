@@ -13,10 +13,10 @@ assignees: ''
 
 - [ ] check/change `cmake/ConfigDefault.cmake`
 
-      - [ ] `GMT_VERSION_YEAR` is current year
-      - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
-      - [ ] `GMT_LIB_SOVERSION` is correctly set
-      - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+    - [ ] `GMT_VERSION_YEAR` is current year
+    - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
+    - [ ] `GMT_LIB_SOVERSION` is correctly set
+    - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
 
 - [ ] update changelog
 - [ ] freeze codes and commit all changes to GitHub
