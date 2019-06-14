@@ -1120,6 +1120,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
+				gmt_M_free (GMT, MaxDiff);
 				Return (API->error);
 			}
 	 	}
