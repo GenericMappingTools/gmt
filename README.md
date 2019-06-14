@@ -18,8 +18,8 @@ support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
 [DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
-GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo,
-Joaquim Luis and Florian Wobbe, with help from a global set of [contributors](AUTHORS.md)
+GMT is developed and maintained by [the GMT Team](AUTHORS.md),
+with help from a global set of [contributors](AUTHORS.md)
 and support by the [National Science Foundation](http://www.nsf.gov/).
 It is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
