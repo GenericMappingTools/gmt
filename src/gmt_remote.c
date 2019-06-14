@@ -187,11 +187,11 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
-	fgets (line, GMT_LEN128, fp);	/* First record */
+	if (fgets (line, GMT_LEN128, fp) == NULL) return NULL;	/* Try to get first record */
 	*n = atoi (line);		/* Number of records to follow */
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_MD5);
 	for (k = 0; k < *n; k++) {
-		fgets (line, GMT_LEN128, fp);	/* Next record */
+		if (fgets (line, GMT_LEN128, fp) == NULL) break;	/* Next record */
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].md5, &L[k].size);
 	}
 	fclose (fp);
@@ -250,7 +250,11 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 
 	/* Here we have the existing MD5 file and its path is in md5path */
 
-	stat (md5path, &buf);	/*  Get its modification (creation) time */
+	if (stat (md5path, &buf)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get information about %s - abort\n", md5path);
+		return;
+	}
+	/*  Get its modification (creation) time */
 #ifdef __APPLE__
 	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nan-seconds... */
 #else

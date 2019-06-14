@@ -11555,6 +11555,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 	if (fscanf (fp, "%d %d %d", &n_rows, &n_cols, &order) != 3) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to read file %s!\n", file);
 		API->error = GMT_DATA_READ_ERROR;
+		fclose (fp);
 		return GMT_DATA_READ_ERROR;
 	}
 	fclose (fp);
