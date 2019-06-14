@@ -12,6 +12,7 @@ assignees: ''
 **Before release**:
 
 - [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
+- [ ] update changelog
 - [ ] check/change `cmake/ConfigDefault.cmake`
 
     - [ ] `GMT_VERSION_YEAR` is current year
@@ -19,7 +20,6 @@ assignees: ''
     - [ ] `GMT_LIB_SOVERSION` is correctly set
     - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
 
-- [ ] update changelog
 - [ ] freeze codes and commit all changes to GitHub
 
 **Release**:
