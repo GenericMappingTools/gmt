@@ -1,5 +1,6 @@
 build
 ConfigUser.cmake
 dbuild
+dbuild-mp
 rbuild
 xbuild
