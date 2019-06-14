@@ -23,6 +23,9 @@ GMT 6 has benefitted from the contributions of two new team members
 contributed the segy supplement, while
 [Kurt Feigl](http://geoscience.wisc.edu/geoscience/people/faculty/feigl/) and
 Genevieve Patau wrote the seis supplement.
+[Dennis Milbert](https://geodesyworld.github.io) donated the Fortran code that
+was translated to become earthtide.c 
+[David Sandwell](https://topex.ucsd.edu/sandwell/) contributed the img supplement.
 
 # Further Acknowledgments
 
