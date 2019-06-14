@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psimage reads an EPS file or a a 1, 8, 24, or 32 bit image and plots it on the page
@@ -390,7 +390,7 @@ EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes,
 int GMT_image (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: image\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -407,7 +407,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *file = NULL, *c = NULL;
+	char path[PATH_MAX] = {""}, *file = NULL, *c = NULL;
 
 	struct imageinfo header;
 

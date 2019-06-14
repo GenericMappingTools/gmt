@@ -1,6 +1,5 @@
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo,
-# J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script creates a function for each GMT module which invalidates
@@ -22,7 +21,7 @@ gmt_modules="blockmean blockmedian blockmode filter1d fitcircle
 	grdview grdvolume greenspline inset kml2gmt 
 	makecpt mapproject movie nearneighbor project 
 	psbasemap psclip pscoast pscontour psconvert 
-	pshistogram psimage pslegend psmask psrose 
+	psevents pshistogram psimage pslegend psmask psrose 
 	psscale pssolar psternary pstext pswiggle 
 	psxyz psxy revert sample1d spectrum1d 
 	sph2grd sphdistance sphinterpolate sphtriangulate splitxyz 

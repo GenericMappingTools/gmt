@@ -3,7 +3,7 @@
 # Draw fault planes and points that should lie on them
 # K. Feigl, 2015-11-08
 
-ps=meca_10.ps
+ps=seis_09.ps
 
 gmt psbasemap -R-8/8/-10/10 -JX7i -P -Xc -K -B+t"circles should plot on curves" > $ps
 

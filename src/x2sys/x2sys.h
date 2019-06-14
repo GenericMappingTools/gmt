@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2019 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/pwessel
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys.h contains the declaration for the X2SYS and XOVER structures
  * used in the XSYSTEM programs
@@ -129,7 +129,7 @@ struct X2SYS_INFO {
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
 	char fflags[GMT_BUFSIZ];	/* Text copy of selected columns */
-	char path[GMT_BUFSIZ];		/* Full path to current data file */
+	char path[PATH_MAX];		/* Full path to current data file */
 	char separators[8];		/* List of characters used for column separators */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };

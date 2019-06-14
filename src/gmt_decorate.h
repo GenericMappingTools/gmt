@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* gmt_decorate.h - structures and variables needed for decorating lines.
 
@@ -64,7 +64,7 @@ struct GMT_DECORATE {
 	bool fixed;			/* true if we chose fixed positions */
 	bool debug;			/* true of we want to draw helper lines/points */
 	char line_name[16];		/* Name of line: "contour" or "line" */
-	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
+	char file[PATH_MAX];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char size[GMT_LEN64];		/* The symbol size */
 	char fill[GMT_LEN64];		/* The symbol fill */

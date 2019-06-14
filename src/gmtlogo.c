@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: gmtlogo plots a GMT logo on a map.
@@ -313,7 +313,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
 
-	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_STR16] = {""};
 
 	struct GMT_FONT F;
 	struct GMT_MATRIX *M = NULL;

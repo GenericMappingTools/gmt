@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *
  *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2019 by the GMT project
+ *    Copyright (c) 2013-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 int GMT_polar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: polar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}

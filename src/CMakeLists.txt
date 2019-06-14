@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
@@ -380,7 +380,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
-	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h subplot.c revert.c
+	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h subplot.c
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
@@ -702,36 +702,6 @@ if (BUILD_DEVELOPER)
 		COMPONENT Runtime)
 	install (FILES compat/qsort.h
 		DESTINATION ${GMT_INCLUDEDIR}/compat
-		COMPONENT Runtime)
-	# Install gshhg supplement headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
-		DESTINATION ${GMT_INCLUDEDIR}/gshhg
-		COMPONENT Runtime)
-	# Install geodesy supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES  geodesy/utilvelo.h
-		DESTINATION ${GMT_INCLUDEDIR}/geodesy
-		COMPONENT Runtime)
-	# Install seis supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES seis/meca.h seis/utilmeca.h
-		DESTINATION ${GMT_INCLUDEDIR}/seis
-		COMPONENT Runtime)
-	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES mgd77/cm4_functions.h mgd77/mgd77_e77.h mgd77/mgd77_rls_coeffs.h mgd77/mgd77snifferdefaults.h
-		mgd77/mgd77.h mgd77/mgd77_functions.h mgd77/mgd77defaults.h mgd77/mgd77_IGF_coeffs.h mgd77/mgd77_init.h
-		mgd77/mgd77magref.h mgd77/mgd77_codes.h mgd77/mgd77_recalc.h mgd77/mgd77sniffer.h
-		DESTINATION ${GMT_INCLUDEDIR}/mgd77
-		COMPONENT Runtime)
-	# Install potential supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES potential/okbfuns.h
-		DESTINATION ${GMT_INCLUDEDIR}/potential
-		COMPONENT Runtime)
-	# Install spotter supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES spotter/spotter.h
-		DESTINATION ${GMT_INCLUDEDIR}/spotter
-		COMPONENT Runtime)
-	# Install x2sys supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES x2sys/x2sys.h
-		DESTINATION ${GMT_INCLUDEDIR}/x2sys
 		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h

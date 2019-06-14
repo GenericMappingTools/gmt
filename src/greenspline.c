@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -2386,7 +2386,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_memset (V, 4, double);
 		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
-			char file[GMT_LEN256] = {""};
+			char file[PATH_MAX] = {""};
 			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);

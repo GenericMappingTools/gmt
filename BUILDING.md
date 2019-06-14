@@ -427,8 +427,7 @@ ctest -R ex2[3-6]
 
 Edit `cmake/ConfigDefault.cmake` and set
 *GMT_PACKAGE_VERSION_MAJOR*, *GMT_PACKAGE_VERSION_MINOR*, and
-*GMT_PACKAGE_VERSION_PATCH*. Also uncomment and set
-*GMT_SOURCE_CODE_CONTROL_VERSION_STRING* to the current git commit hash.
+*GMT_PACKAGE_VERSION_PATCH*. Also set *GMT_PUBLIC_RELEASE* to TRUE.
 Then create source packages with:
 
 ```

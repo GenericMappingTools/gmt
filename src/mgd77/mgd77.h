@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
  * 
- *    Copyright (c) 2005-2019 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.h
@@ -427,7 +427,7 @@ struct MGD77_CONTROL {
 	unsigned int n_MGD77_paths;			/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
-	char path[GMT_BUFSIZ];				/* Full path to current file */
+	char path[PATH_MAX];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
 	unsigned int verbose_level;			/* 0 = none, 1 = warnings, 2 = errors (combined 3 for both) */
 	unsigned int verbose_dest;			/* 1 = to stdout, 2 = to stderr */

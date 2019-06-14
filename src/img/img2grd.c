@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ * Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * img2grd.c
@@ -407,7 +407,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[GMT_BUFSIZ] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[GMT_LEN256] = {""};
+	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[PATH_MAX] = {""};
 	char z_units[GMT_GRID_UNIT_LEN80] = {""}, exact_R[GMT_LEN256] = {""};
 
 	FILE *fp = NULL;
@@ -781,7 +781,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	else	/* The output here is the final result */
-		strncpy (output, Ctrl->G.file, GMT_LEN256-1);
+		strncpy (output, Ctrl->G.file, PATH_MAX-1);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", west, east, south2, north2, input, output);
 	GMT_Report (API, GMT_MSG_DEBUG, "Calling grdproject %s.\n", cmd);
 	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_NOERROR) {	/* Inverse project the grid or fail */

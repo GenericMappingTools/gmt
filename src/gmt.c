@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Command-line launcher for any GMT module via the corresponding function.
@@ -136,10 +136,10 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-				fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
+				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
+				fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
+				fprintf (stderr, "and volunteers from around the world.\n\n");
 
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
 				status = GMT_NOERROR;
@@ -220,15 +220,12 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
-			fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-			fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
+			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
+			fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-			fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
+			fprintf (stderr, "and volunteers from around the world.\n\n");
 
-			fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
-			fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
-			fprintf (stderr, "GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html).\n");
-			fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
+			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "session management:\n");
@@ -238,14 +235,13 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
 			fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
 			//fprintf (stderr, "  gmt revert        Undo last <n> layers from current figure.\n");
-			fprintf (stderr, "  gmt clear all | cache | cpt | conf | data | history | sessions\n");
-			fprintf (stderr, "                    Delete gmt.history, gmt.conf, session CPT, the user cache or data dir, or all of them.\n\n");
+			fprintf (stderr, "  gmt clear         Delete gmt.history, gmt.conf, current CPT, user cache or data, or all.\n\n");
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
-			fprintf (stderr, "  --show-cores      Print number of available cores.\n");
+			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
-			fprintf (stderr, "  --show-modules    List all module names.\n");
+			fprintf (stderr, "  --show-modules    Show all module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 			fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");

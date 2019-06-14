@@ -24,7 +24,7 @@
 #out.ps
 #
 
-ps=meca_09.ps
+ps=seis_08.ps
 
 echo "1 3 0 0.961 0.204 -0.895 1.045 -0.307 0.716 2 0 0 95% double-couple [-Sm]"  | \
 	gmt psmeca -JX6i -R-1/6/0/6 -Sm6c -N -M -T0 -G200 -K -P -Baf > $ps

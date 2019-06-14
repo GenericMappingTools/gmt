@@ -41,8 +41,7 @@ and all of its content), or **all** (does all of the above).
 **gmt begin** [*session-prefix*] [*format*]
 
 Initializes a new GMT session under *modern* mode [Default is *classic* mode].
-This is experimental; see http://gmt.soest.hawaii.edu/projects/gmt/wiki/Modernization
-for the current description.  All work is performed in a temporary work directory.
+All work is performed in a temporary work directory.
 The optional *session-prefix* assigns a name to the session, and this may be used
 as figure name for single-figure sessions [gmtsession].  Likewise, the optional
 *format* can be used to override the default graphics format [PDF].
@@ -260,4 +259,4 @@ Look up the individual man pages for more details and full syntax. Run
 directories. For an explanation of the various GMT settings in this
 man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
-GMT home page http://gmt.soest.hawaii.edu/
+GMT documentation site https://docs.generic-mapping-tools.org/

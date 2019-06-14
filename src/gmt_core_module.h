@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2012-2019
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -104,7 +104,6 @@ EXTERN_MSC int GMT_pstext (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
-EXTERN_MSC int GMT_revert (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sample1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_spectrum1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sph2grd (void *API, int mode, void *args);

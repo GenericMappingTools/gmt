@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------
  *
  * Author:	Paul Wessel
@@ -2407,7 +2407,7 @@ GMT_LOCAL int gmtinit_hash (struct GMT_CTRL *GMT, const char *v, unsigned int n_
 GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 	unsigned int id, n = 0;
 	size_t n_alloc = 0;
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""};
+	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""};
 	char c[GMT_LEN64] = {""}, d[GMT_LEN64] = {""}, e[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
@@ -2479,7 +2479,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	int id;
 	size_t len = strlen ("BEGIN GMT " GMT_PACKAGE_VERSION);
 	bool done = false, process = false;
-	char line[GMT_BUFSIZ] = {""}, hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char option[GMT_LEN64] = {""}, value[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
@@ -2495,7 +2495,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
+	if (getcwd (cwd, PATH_MAX) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and one history per figure */
@@ -2567,7 +2567,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	int id;
 	bool empty;
-	char hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
+	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 
 	if (GMT->parent->clear) {	/* gmt clear history was called, override put history once */
@@ -2593,7 +2593,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
+	if (getcwd (cwd, PATH_MAX) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
@@ -5079,7 +5079,7 @@ GMT_LOCAL unsigned int gmtinit_key_lookup (char *name, char **list, unsigned int
 /*! . */
 GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL;
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, full[16] = {""}, abbrev[16] = {""}, c[16] = {""}, dwu;
+	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, full[16] = {""}, abbrev[16] = {""}, c[16] = {""}, dwu;
 	char *months[12];
 
 	int i, nm = 0, nw = 0, nu = 0, nc = 0;
@@ -5628,7 +5628,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 	size_t n_alloc = 0;
 	unsigned int n = 0;
 	double w, h;
-	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_LEN64] = {""};
+	char line[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, media[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
 	gmt_getsharepath (GMT, "postscriptlight", "gmt_custom_media", ".conf", file, R_OK);
@@ -6232,20 +6232,20 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'K':	/* Append-more-PostScript-later */
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -K don't exist in modern mode */
-				gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -K don't exist in modern mode */
+				gmt_message (GMT, "\t-K Allow for more plot code to be appended later.\n");
 			break;
 
 		case 'O':	/* Overlay plot */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -O don't exist in modern mode */
-				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -O don't exist in modern mode */
+				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot.\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -P don't exist in modern mode */
-				gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -P don't exist in modern mode */
+				gmt_message (GMT, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
 		case 'S':	/* CarteSian Region option */
@@ -6370,7 +6370,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
-			if (GMT->current.setting.run_mode == GMT_MODERN)	/* -c has no use in classic */
+			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
 				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col of desired panel.\n");
 			break;
 
@@ -6480,11 +6480,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'E':	/* GMT4: For backward compatibility */
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
 				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
-				gmt_message (GMT, "\t   azimuth and elevation of the viewpoint [180/90].\n");
-				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add zlevel for frame, etc. [bottom of z-axis]\n");
-				gmt_message (GMT, "\t   Optionally, append +w<lon/lat[/z] to specify a fixed point\n");
-				gmt_message (GMT, "\t   and +vx/y for its justification.  Just append + by itself\n");
-				gmt_message (GMT, "\t   to select default values [region center and page center].\n");
+				gmt_message (GMT, "\t   <azimuth>/<elevation> of the viewpoint [180/90].\n");
+				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis].\n");
+				gmt_message (GMT, "\t   Prepend x or y to plot against the “wall” x = level or y = level [z].\n");
+				gmt_message (GMT, "\t   Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point\n");
+				gmt_message (GMT, "\t   or +v<x0>/<y0> for a fixed projected point [region center and page center].\n");
 				gmt_message (GMT, "\t   For a plain rotation about the z-axis, give rotation angle only\n");
 				gmt_message (GMT, "\t   and optionally use +w or +v to select location of axis [plot origin].\n");
 			}
@@ -10994,7 +10994,7 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 
 /*! Read user's gmt.conf file and initialize parameters */
 void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
-	char file[GMT_BUFSIZ];
+	char file[PATH_MAX];
 
 	if (this_file)	/* Defaults file is specified */
 		gmt_loaddefaults (GMT, this_file);
@@ -11774,7 +11774,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
-	char virt_file[GMT_STR16] = {""}, tmpfile[GMT_LEN64] = {""}, *list = "bfi:";
+	char virt_file[GMT_STR16] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:";
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	switch (family) {
@@ -12730,8 +12730,8 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
-			API->GMT->current.setting.run_mode = GMT_MODERN;
-			usage = true;
+			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
 			return;
 		}
 		if (n_args == 1) {	/* Gave a single argument */

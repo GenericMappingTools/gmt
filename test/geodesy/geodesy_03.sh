@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ps=meca_12.ps
+ps=geodesy_03.ps
 
 #     The  following  should  make  big  green arrows  with blue
 #     ellipses,  outlined  in  red. Note that the 39% confidence
