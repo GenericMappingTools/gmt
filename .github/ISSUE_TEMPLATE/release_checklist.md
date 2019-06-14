@@ -9,12 +9,17 @@ assignees: ''
 
 **Version**:  x.x.x
 
-Things to do before release:
+Before release:
 
-- [ ] check `GMT_VERSION_YEAR` in `cmake/ConfigDefault.cmake`
-- [ ] check `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] check `GMT_LIB_SOVERSION` in `cmake/ConfigDefault.cmake`
-- [ ] set `GMT_SOURCE_CODE_CONTROL_VERSION_STRING` in `cmake/ConfigDefault.cmake`
+- [ ] check/change `cmake/ConfigDefault.cmake`
+      - [ ] `GMT_VERSION_YEAR` is current year
+      - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
+      - [ ] `GMT_LIB_SOVERSION` is correctly set
+      - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+- [ ] freeze codes and commit all changes to GitHub
+
+Release:
+
 - [ ] create source packages (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS Bundle (@PaulWessel)
 - [ ] create Windows binary packages (win32 and win64) (@joa-quim)
@@ -25,10 +30,10 @@ Things to do before release:
 - [ ] update macports ports
 - [ ] announcements
 
-Things to do after release:
+After release:
 
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] uncomment `GMT_SOURCE_CODE_CONTROL_VERSION_STRING` in `cmake/ConfigDefault.cmake`
+- [ ] set `GMT_PUBLIC_RELEASE` to `FALSE`
 
 ---
 
