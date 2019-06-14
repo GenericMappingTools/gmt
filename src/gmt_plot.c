@@ -4715,7 +4715,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	if ((n-i) < 2) return;	/* Less than 2 points is not a line */
 	if (n <= j) pen[n-1] = pen[j];	/* Skipped trailing duplicates but must maintain initial pen code of last valid point */
 
-	for (j = i + 1; j < n && pen[j] & PSL_DRAW; j++);	/* j == n means no PSL_MOVEs present */
+	for (j = i + 1; j < n && !(pen[j] & PSL_MOVE); j++);	/* j == n means no PSL_MOVEs present */
 	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_CONV4_LIMIT) : false;
 
 	/* First see if we can use the PSL_plotline call directly to save points */

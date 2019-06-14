@@ -1334,12 +1334,13 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 		char string[PATH_MAX] = {""};
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
+		gmt_M_str_free (cpt);
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
 	}
 	else if (*arg == NULL) {	/* Noting given */
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
-		*arg = strdup (cpt);		/* Pass back the name of the current CPT */
+		*arg = cpt;		/* Pass back the name of the current CPT */
 	}
 	else /* Got something already */
 		ret = false;

@@ -104,9 +104,9 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
 	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
-	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
 	unsigned int col;	/* The column that this array goes with */
+	int distmode;	/* Type of geospatial calculation mode for distances */
 	uint64_t n;	/* Number of elements in the array when complete */
 	double min, max, inc;	/* Equidistant items */
 	double *array;	/* This will eventually hold the array */
