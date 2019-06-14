@@ -3540,7 +3540,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	unsigned int k;
 	uint64_t row = 0, seg, col;
 	int *fd = NULL;
-	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile, *txt = NULL;
+	char open_mode[4] = {""}, file[PATH_MAX] = {""}, tmpfile[PATH_MAX] = {""}, *out_file = tmpfile, *txt = NULL;
 	double *out = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -3570,7 +3570,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "pointer 'dest' cannot be NULL here\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
-			strncpy (file, dest, GMT_BUFSIZ-1);
+			strncpy (file, dest, PATH_MAX-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = gmt_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -3774,7 +3774,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
  * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 
-	char file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, path[GMT_BUFSIZ] = {""};
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
@@ -4390,7 +4390,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	bool close_file = false;
 	int error, append = 0;
 	int *fd = NULL;
-	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, open_mode[4] = {""}, *out_file = tmpfile;
+	char file[PATH_MAX] = {""}, tmpfile[PATH_MAX] = {""}, open_mode[4] = {""}, *out_file = tmpfile;
 	FILE *fp = NULL;
 	struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (D);
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
@@ -4410,7 +4410,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "'dest' pointer cannot be NULL here\n");
 				return (GMT_ARG_IS_NULL);
 			}
-			strncpy (file, dest, GMT_BUFSIZ-1);
+			strncpy (file, dest, PATH_MAX-1);
 			if (DH->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = gmt_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -4919,7 +4919,7 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 
 /*! Like access but also checks the GMT_*DIR places */
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
-	char file[GMT_BUFSIZ] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, *c = NULL;
 	unsigned int first = 0;
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
@@ -4936,7 +4936,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
-		char path[GMT_BUFSIZ];
+		char path[PATH_MAX];
 		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 			strcat (file, ".grd");	/* Must supply the .grd */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
@@ -7294,7 +7294,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0, k;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
-	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
+	char open_mode[4] = {""}, file[PATH_MAX] = {""}, line[GMT_LEN64] = {""};
 	double d;
 	struct GMT_RECORD *In = NULL;
 	FILE *fp = NULL;
@@ -7335,7 +7335,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (file, source, GMT_BUFSIZ-1);
+		strncpy (file, source, PATH_MAX-1);
 		if ((fp = gmt_fopen (GMT, file, open_mode)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */

@@ -513,7 +513,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		/* Now write model prediction grid(s) */
-		char file[GMT_BUFSIZ] = {""};
+		char file[PATH_MAX] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			sprintf (file, Ctrl->G.file, tag[Ctrl->S.mode[k]]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);

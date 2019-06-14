@@ -313,7 +313,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
 
-	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_STR16] = {""};
 
 	struct GMT_FONT F;
 	struct GMT_MATRIX *M = NULL;

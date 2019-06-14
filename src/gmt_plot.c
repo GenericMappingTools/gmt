@@ -8119,7 +8119,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	 * mode is not yet used.
 	 */
 
-	char ps_file[GMT_LEN256] = {""}, buffer[GMT_LEN256] = {""};
+	char ps_file[PATH_MAX] = {""}, buffer[GMT_LEN256] = {""};
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
@@ -8132,8 +8132,8 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		struct stat buf;
-		char path[GMT_BUFSIZ] = {""};
-		strncpy (ps_file, source, GMT_LEN256-1);
+		char path[PATH_MAX] = {""};
+		strncpy (ps_file, source, PATH_MAX-1);
 		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find PostScript file %s\n", ps_file);
 			return (NULL);
@@ -8220,7 +8220,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	 */
 
 	bool close_file = false, append = false;
-	char ps_file[GMT_BUFSIZ] = {""};
+	char ps_file[PATH_MAX] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	gmt_M_unused(mode);
@@ -8229,7 +8229,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (ps_file, dest, GMT_BUFSIZ-1);
+		strncpy (ps_file, dest, PATH_MAX-1);
 		append = (ps_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&ps_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s PostScript file %s\n", msg2[append], &ps_file[append]);

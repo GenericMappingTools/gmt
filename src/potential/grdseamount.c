@@ -468,7 +468,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	
 	bool map = false, periodic = false, replicate, first, empty;
 	
-	char unit, unit_name[8], file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
+	char unit, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 	
 	gmt_grdfloat *data = NULL;
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;

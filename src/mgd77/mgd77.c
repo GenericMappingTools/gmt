@@ -260,7 +260,7 @@ static inline void mgd77_init_columns (struct MGD77_CONTROL *F) {
 
 static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	MGD77_Set_Home (GMT, F);
@@ -6070,7 +6070,7 @@ bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD
 }
 
 void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4) {
-	char file[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""};
 	MGD77_Set_Home (GMT, F);
 
 	gmt_M_memset (CM4, 1, struct MGD77_CM4);	/* All is set to 0/false */

@@ -1183,7 +1183,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #ifdef DEBUG_SURF
 	struct GMT_GRID *G = NULL;
 	double y_up;
-	char file[GMT_LEN256] = {""};
+	char file[PATH_MAX] = {""};
 
 	if (debug) {
 		G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->Grid->header->wesn, C->inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL);

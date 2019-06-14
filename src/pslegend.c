@@ -419,7 +419,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_modifiers[GMT_LEN256] = {""};
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""};
-	char txtcolor[GMT_LEN256] = {""}, def_txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[GMT_LEN256] = {""};
+	char txtcolor[GMT_LEN256] = {""}, def_txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[PATH_MAX] = {""};
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
@@ -1637,7 +1637,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (D[id]) {
 #ifdef DEBUG
 			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
-				char file[GMT_LEN64] = {""};
+				char file[PATH_MAX] = {""};
 				if (API->tmp_dir)	/* Use the established temp directory */
 					sprintf (file, "%s/%s", API->tmp_dir, dname[id]);
 				else	/* Must dump it in current directory */

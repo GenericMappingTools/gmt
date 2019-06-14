@@ -1324,7 +1324,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char **ps_names, char *gs_BB, char *gs_params, char *device[], char *device_options[], char *ext[]) {
-	char out_file[GMT_LEN256] = {""};
+	char out_file[PATH_MAX] = {""};
 	int    error = 0;
 	double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 
@@ -1343,7 +1343,7 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 
 	if (Ctrl->T.active) {		/* Then write the converted file into a file instead of storing it into a Image struct */
-		char t[GMT_LEN256] = {""};
+		char t[PATH_MAX] = {""};
 		sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 		strcat (out_file, t);
 		if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {

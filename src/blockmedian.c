@@ -648,7 +648,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
 		unsigned int kk;
-		char file[GMT_LEN128] = {""};
+		char file[PATH_MAX] = {""};
 		for (k = kk = 0; k < NF; k++) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);

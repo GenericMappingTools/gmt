@@ -225,7 +225,7 @@ void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path) {
 
 FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode) {
 	FILE *fp = NULL;
-	char file[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""};
 
 	if (mode[0] == 'w') {	/* Writing: Do this only in X2SYS_HOME */
 		x2sys_path (GMT, fname, file);
@@ -242,7 +242,7 @@ FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode) {
 
 int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode) {
 	int k;
-	char file[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""};
 	x2sys_path (GMT, fname, file);
 	if ((k = access (file, mode)) != 0) {	/* Not in X2SYS_HOME directory */
 		k = access (fname, mode);	/* Try in current directory */
@@ -1060,7 +1060,7 @@ void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 }
 
 int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G) {
-	char tag_file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[GMT_BUFSIZ] = {""}, suffix[16] = {""}, unit[2][2];
+	char tag_file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[PATH_MAX] = {""}, suffix[16] = {""}, unit[2][2];
 	unsigned int n, k, pos = 0, geodetic = GMT_IS_GIVEN_RANGE, n_errors = 0;
 	int dist_flag = 0;
 	bool geographic = false, parsed_command_R = false, n_given[2] = {false, false}, c_given = false;
@@ -1133,7 +1133,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					c_given = true;
 					break;
 				case 'D':
-					strncpy (sfile, &p[2], GMT_BUFSIZ-1);
+					strncpy (sfile, &p[2], PATH_MAX-1);
 					break;
 				case 'E':
 					strncpy (suffix, &p[2], 15);
@@ -1311,7 +1311,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	/* mode = 0 gives linked list [for use in x2sys_put], mode = 1 gives fixed array [for use in x2sys_get] */
 	uint32_t id, flag, last_id = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char track_file[GMT_BUFSIZ] = {""}, track_path[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
+	char track_file[PATH_MAX] = {""}, track_path[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
 
@@ -1373,7 +1373,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 
 int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2SYS_BIX *B, bool swap) {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
-	char index_file[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""};
+	char index_file[PATH_MAX] = {""}, index_path[PATH_MAX] = {""};
 	FILE *fbin = NULL;
 	uint32_t i, index = 0, flag, no_of_tracks, id; /* These must remain uint32_t */
 
@@ -1499,7 +1499,7 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
  */
 
 void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	x2sys_set_home (GMT);

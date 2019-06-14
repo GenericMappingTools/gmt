@@ -58,7 +58,7 @@ struct PSCOUPE_CTRL {
 		double xlonref, ylatref;
 		struct GMT_PEN pen;
 		struct nodal_plane PREF;
-		char newfile[GMT_LEN256], extfile[GMT_LEN256];
+		char newfile[PATH_MAX], extfile[PATH_MAX];
 	} A;
  	struct E {	/* -E<fill> */
 		bool active;

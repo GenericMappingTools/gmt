@@ -1974,7 +1974,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		size_t len;
 		struct GMTAPI_CTRL *API = GMT->parent;
 		int argc = 0; char **argv = NULL, *c = NULL;
-		char file[GMT_LEN32] = {""}, *txt = NULL;
+		char file[GMT_LEN64] = {""}, *txt = NULL;
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create argc, argv from linked structure options!\n");
@@ -2332,7 +2332,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	off_t n_skip;
 	int16_t *i2 = NULL;
 	uint16_t *u2 = NULL;
-	char file[GMT_BUFSIZ];
+	char file[PATH_MAX];
 	struct stat buf;
 	FILE *fp = NULL;
 	double wesn[4], wesn_all[4];
