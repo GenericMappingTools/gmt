@@ -703,7 +703,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
 	int nBufXSize, nBufYSize, buffy, startRow = 0, endRow;
 	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
-	int pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
+	int k, pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
@@ -723,9 +723,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
-#ifdef READ_BY_BLOCKS
-	int k;
-#endif
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	Ctrl->RasterCount = 0;	/* To avoid attempting to use Ctrl->band_field_names[i] */
@@ -1026,7 +1023,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	nRowsPerBlock = MIN(nYSize, (int)(1024 * 1024 * 16 / (nXSize * nPixelSize)));
 	nBlocks = (int)ceil((float)nYSize / nRowsPerBlock);
 
-#ifdef READ_BY_BLOCKS
 	if (!(just_copy || copy_flipud)) {
 		if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
@@ -1039,13 +1035,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		nRowsPerBlock = nYSize;
 		nBlocks = 1;
 	}
-#else
-	if ((tmp = calloc((size_t)nBufYSize * (size_t)nBufXSize, nPixelSize)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
-		GDALDestroyDriverManager();
-		return(-1);
-	}
-#endif
 
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
 	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
@@ -1054,11 +1043,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else
 		nX = nXSize,	nY = nYSize;
 
-#ifdef READ_BY_BLOCKS
 	rowVec = gmt_M_memory(GMT, NULL, nRowsPerBlock*nBlocks, size_t);
-#else
-	rowVec = gmt_M_memory(GMT, NULL, nY, size_t);
-#endif
 	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
 	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
@@ -1088,7 +1073,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 		i_x_nXYSize = i * ((size_t)nBufXSize + pad_w + pad_e) * ((size_t)nBufYSize + pad_s + pad_n);
 
-#ifdef READ_BY_BLOCKS
 		for (k = 0; k < nBlocks; k++) {
 			nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the beginning of next block to be read */
 			row_i = k * nRowsPerBlock;
@@ -1105,11 +1089,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 			if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
 				tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
-#else
-		buffy = nBufYSize;
-		row_i = 0;	row_e = nYSize;		endRow = nYSize + startRow;
-		nYOff = yOrigin;
-#endif
 
 		if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
 		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
@@ -1136,15 +1115,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					startColPos += prhs->mini_hdr.offset;
 			}
 			else if (prhs->mini_hdr.side[0] == 'b') {
-#ifdef READ_BY_BLOCKS
 				startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
 				endRow = startRow + nRowsPerBlock;
 				if (k == nBlocks-1)
 					endRow = prhs->mini_hdr.offset + nYSize;
-#else
-				startRow = prhs->mini_hdr.offset;
-				endRow = nYSize + startRow;
-#endif
 			}
 		}
 
@@ -1181,7 +1155,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					}
 				}
 				else {
-#ifndef READ_BY_BLOCKS
 					if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
 						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
 					}
@@ -1190,10 +1163,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
 						gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
 					}
-#else
-					if (copy_flipud)
-						gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
-#endif
 					else if (fliplr) {				/* No BIP option yet, and maybe never */
 						for (m = row_i; m < row_e; m++) {
 							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
@@ -1292,9 +1261,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			default:
 				CPLAssert(false);
 		}
-#ifdef READ_BY_BLOCKS
 }
-#endif
 	}
 
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
@@ -1309,12 +1276,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 #endif
 	gmt_M_free (GMT, rowVec);
-#ifdef READ_BY_BLOCKS
 	if (!(just_copy || copy_flipud))
 		gmt_M_str_free (tmp);
-#else
-	gmt_M_str_free (tmp);
-#endif
 	gmt_M_free (GMT, whichBands);
 	gmt_M_free (GMT, colVec);
 
