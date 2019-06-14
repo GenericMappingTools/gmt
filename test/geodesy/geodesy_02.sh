@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-ps=meca_11.ps
+ps=geodesy_02.ps
 
 #     The example should plot some residual rates of rotation  in
 #     the  Western Transverse Ranges, California.  The wedges will
