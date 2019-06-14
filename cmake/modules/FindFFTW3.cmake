@@ -70,6 +70,11 @@ if (FFTW3F_LIBRARY)
 	check_symbol_exists (fftwf_import_wisdom_from_filename fftw3.h FFTW3F_VERSION_RECENT)
 	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
 
+	# For some reason in my machine check_symbol_exists() call above is not able to its job
+	if (WIN32 AND NOT FFTW3F_VERSION_RECENT)
+		set (FFTW3F_VERSION_RECENT TRUE)
+	endif ()
+
 	# old version warning
 	if (NOT FFTW3F_VERSION_RECENT)
 		message (WARNING "FFTW library found, but it is either too old (<3.3) or statically-linked.")
