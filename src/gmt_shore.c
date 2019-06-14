@@ -243,7 +243,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path,
 	 * and returns path if file is readable, NULL otherwise */
 
 	FILE *fp = NULL;
-	char dir[GMT_BUFSIZ];
+	char dir[PATH_MAX];
 	static struct GSHHG_VERSION version = GSHHG_MIN_REQUIRED_VERSION;
 	static bool warn_once = true;
 	bool found = false;
@@ -291,7 +291,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path,
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failed to open %s\n", path);
 				return (NULL);
 			}
-			while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
+			while (fgets (dir, PATH_MAX, fp)) {	/* Loop over all input lines until found or done */
 				if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 				gmt_chop (dir);		/* Chop off LF or CR/LF */
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
@@ -366,7 +366,7 @@ GMT_LOCAL void shore_check (struct GMT_CTRL *GMT, bool ok[5]) {
  * resolution (f, h, i, l, c) */
 
 	int i, j, n_found;
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
 
 	for (i = 0; i < 5; i++) {
 		/* For each resolution... */
@@ -530,7 +530,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""};
 
 	snprintf (stem, GMT_LEN64, "binned_GSHHS_%c", res);
 
@@ -928,7 +928,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""};
 
 	/* zap structure (nc_get_att_text does not null-terminate strings!) */
 	gmt_M_memset (c, 1, struct GMT_BR);

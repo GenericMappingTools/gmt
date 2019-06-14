@@ -407,7 +407,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *file = NULL, *c = NULL;
+	char path[PATH_MAX] = {""}, *file = NULL, *c = NULL;
 
 	struct imageinfo header;
 

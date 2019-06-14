@@ -64,7 +64,7 @@ struct GMT_DECORATE {
 	bool fixed;			/* true if we chose fixed positions */
 	bool debug;			/* true of we want to draw helper lines/points */
 	char line_name[16];		/* Name of line: "contour" or "line" */
-	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
+	char file[PATH_MAX];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char size[GMT_LEN64];		/* The symbol size */
 	char fill[GMT_LEN64];		/* The symbol fill */

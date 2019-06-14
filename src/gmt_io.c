@@ -285,11 +285,11 @@ GMT_LOCAL bool gmtio_traverse_dir (const char *file, char *path) {
 	struct dirent *F = NULL;
 	int len, d_namlen;
 	bool ok = false;
-	char savedpath[GMT_BUFSIZ];
+	char savedpath[PATH_MAX];
 
  	if ((D = opendir (path)) == NULL) return (false);	/* Unable to open directory listing */
 	len = (int)strlen (file);
-	strncpy (savedpath, path, GMT_BUFSIZ-1);	/* Make copy of current directory path */
+	strncpy (savedpath, path, PATH_MAX-1);	/* Make copy of current directory path */
 
 	while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
 		d_namlen = (int)strlen (F->d_name);
@@ -3774,7 +3774,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
  * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 
-	char file[PATH_MAX] = {""}, path[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
@@ -4509,7 +4509,7 @@ bool gmt_input_is_bin (struct GMT_CTRL *GMT, const char *filename) {
 
 /*! . */
 FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
-	char path[GMT_BUFSIZ], *c = NULL;
+	char path[PATH_MAX], *c = NULL;
 	FILE *fd = NULL;
 	unsigned int first = 0;
 	if (gmt_M_file_is_cache (filename)) {	/* Must be a cache file */
@@ -4793,7 +4793,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	size_t L;
 	bool found;
-	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[GMT_BUFSIZ];
+	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[PATH_MAX];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'}, serverdir[PATH_MAX] = {""}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
@@ -4936,7 +4936,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
-		char path[PATH_MAX];
+		char path[PATH_MAX] = {""};
 		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 			strcat (file, ".grd");	/* Must supply the .grd */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
@@ -8409,14 +8409,14 @@ char **gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	}
 	(void)closedir (D);
 #elif defined(WIN32)
-	char text[GMT_LEN256] = {""};
+	char text[PATH_MAX] = {""};
 	int left;
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	sprintf (text, "%s/*", path);
-	left = GMT_LEN256 - (int)strlen (path) - 2;
+	left = PATH_MAX - (int)strlen (path) - 2;
 	left -= ((ext) ? (int)strlen (ext) : 2);
 	if (ext)
 		strncat (text, ext, left);	/* Look for files with given ending in this dir */
@@ -8541,7 +8541,7 @@ int gmt_mkdir (const char *path)
 {	/* Simulates mkdir -p behavior in a function for Unix and Windows */
 	/* Adapted from http://stackoverflow.com/a/2336245/119527 */
 	const size_t len = strlen (path);
-	char _path[PATH_MAX], sep;
+	char _path[PATH_MAX] = {""}, sep;
 	char *p = NULL; 
 
 	errno = 0;	/* Global var: No error so far */

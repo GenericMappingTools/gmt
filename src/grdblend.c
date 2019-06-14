@@ -759,7 +759,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	gmt_grdfloat *z = NULL, no_data_f;
 	
 	char type;
-	char *outfile = NULL, outtemp[GMT_BUFSIZ];
+	char *outfile = NULL, outtemp[PATH_MAX];
 	
 	struct GRDBLEND_INFO *blend = NULL;
 	struct GMT_GRID *Grid = NULL;

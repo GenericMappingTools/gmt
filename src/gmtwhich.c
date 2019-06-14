@@ -144,7 +144,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	int error = 0, fmode;
 	unsigned int first = 0;	/* Real start of filename */
 	
-	char path[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
+	char path[PATH_MAX] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[PATH_MAX] = {""}, *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -180,7 +180,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	if (Ctrl->D.active && (getcwd (cwd, GMT_BUFSIZ) == NULL)) {	/* Get full path, even for current dir */
+	if (Ctrl->D.active && (getcwd (cwd, PATH_MAX) == NULL)) {	/* Get full path, even for current dir */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");
 	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
