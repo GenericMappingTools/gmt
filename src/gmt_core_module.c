@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2012-2019
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -126,7 +125,6 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}"},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2"},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2"},
-	{"revert", "core", "Revert a figure to a previous state", ""},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}"},
@@ -223,7 +221,6 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}", &GMT_pswiggle},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxyz},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxy},
-	{"revert", "core", "Revert a figure to a previous state", "", &GMT_revert},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}", &GMT_sph2grd},

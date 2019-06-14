@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2012-2019
-# by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script just makes the include file PSL_patterns.h
@@ -16,7 +15,7 @@ COPY_YEAR=$(date +%Y)
 cat << EOF > PSL_patterns.h
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 2009-$COPY_YEAR by P. Wessel and R. Scharroo
+ *      Copyright (c) 2009-$COPY_YEAR by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU Lesser General Public License as published by

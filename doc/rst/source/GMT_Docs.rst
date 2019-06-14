@@ -156,8 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991–2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
-Luis and F. Wobbe
+Copyright ©1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 The Generic Mapping Tools (GMT) is free software; you can
 redistribute it and/or modify it under the terms of the GNU Lesser
@@ -405,7 +404,7 @@ these types of output:
    table output.
 
 GMT is available over the Internet at no charge. To obtain a copy,
-goto GMT home page http://gmt.soest.hawaii.edu/ and follow instructions.
+goto GMT home page https://www.generic-mapping-tools.org and follow instructions.
 We also maintain user forums and a bug and feature tracking system on
 the same page.
 
@@ -5980,19 +5979,16 @@ This package consists of the program
 global gravity and predicted topography solutions derived from satellite
 altimetry [23]_. The package is maintained by Walter Smith and Paul Wessel.
 
-meca: seismology and geodesy symbols
-------------------------------------
+geodesy: Geodesy
+----------------
 
 This package contains the programs
-:doc:`coupe <supplements/meca/coupe>`,
-:doc:`meca <supplements/meca/meca>`,
-:doc:`polar <supplements/meca/polar>`,
-:doc:`velo <supplements/meca/velo>`, and
-:doc:`sac <supplements/meca/sac>` which are used by seismologists
-and geodesists for plotting focal mechanisms (including cross-sections
-and polarities), error ellipses, velocity arrows, rotational wedges, and
-more. The package was developed by Kurt Feigl and Genevieve
-Patau with contributions from Dongdong Tian but is now maintained by the GMT team.
+:doc:`earthtide <supplements/geodesy/earthtide>` for computing solid Earth tides,
+:doc:`gpsgridder <supplements/geodesy/gpsgridder>` for gridding GPS velocity components, and
+:doc:`velo <supplements/geodesy/velo>` for plotting error ellipses, velocity arrows, and rotational wedges.
+The velo program was developed by Kurt Feigl and Genevieve
+Patau and is now maintained by the GMT team. The earthtide program is a translation to C of a
+program written by Dennis Milbert and distributed with his permission.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
@@ -6034,8 +6030,21 @@ which uses the methods of Talwani to compute various geopotential components
 from 2-D [26]_ or 3-D [27]_ bodies.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
-segyprogs: plotting SEGY seismic data
--------------------------------------
+seis: Seismology
+----------------
+
+This package contains the programs
+:doc:`coupe <supplements/seis/coupe>`,
+:doc:`meca <supplements/seis/meca>`,
+:doc:`polar <supplements/seis/polar>`, and
+:doc:`sac <supplements/seis/sac>` which are used by seismologists
+for plotting focal mechanisms (including cross-sections
+and polarities) and SAC files.
+The coupe, meca, and polar were developed by Kurt Feigl and Genevieve
+Patau, while Dongdong Tian added sac; the package is now maintained by the GMT team.
+
+segy: plotting SEGY seismic data
+--------------------------------
 
 This package contains programs to plot SEGY seismic data files using the
 GMT mapping transformations and postscript library.

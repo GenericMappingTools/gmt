@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------
  *
  * Author:	Paul Wessel
@@ -6480,11 +6480,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'E':	/* GMT4: For backward compatibility */
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
 				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
-				gmt_message (GMT, "\t   azimuth and elevation of the viewpoint [180/90].\n");
-				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add zlevel for frame, etc. [bottom of z-axis]\n");
-				gmt_message (GMT, "\t   Optionally, append +w<lon/lat[/z] to specify a fixed point\n");
-				gmt_message (GMT, "\t   and +vx/y for its justification.  Just append + by itself\n");
-				gmt_message (GMT, "\t   to select default values [region center and page center].\n");
+				gmt_message (GMT, "\t   <azimuth>/<elevation> of the viewpoint [180/90].\n");
+				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis].\n");
+				gmt_message (GMT, "\t   Prepend x or y to plot against the “wall” x = level or y = level [z].\n");
+				gmt_message (GMT, "\t   Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point\n");
+				gmt_message (GMT, "\t   or +v<x0>/<y0> for a fixed projected point [region center and page center].\n");
 				gmt_message (GMT, "\t   For a plain rotation about the z-axis, give rotation angle only\n");
 				gmt_message (GMT, "\t   and optionally use +w or +v to select location of axis [plot origin].\n");
 			}
