@@ -6232,20 +6232,20 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'K':	/* Append-more-PostScript-later */
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -K don't exist in modern mode */
-				gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -K don't exist in modern mode */
+				gmt_message (GMT, "\t-K Allow for more plot code to be appended later.\n");
 			break;
 
 		case 'O':	/* Overlay plot */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -O don't exist in modern mode */
-				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -O don't exist in modern mode */
+				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot.\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -P don't exist in modern mode */
-				gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
+			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -P don't exist in modern mode */
+				gmt_message (GMT, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
 		case 'S':	/* CarteSian Region option */
@@ -6370,7 +6370,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
-			if (GMT->current.setting.run_mode == GMT_MODERN)	/* -c has no use in classic */
+			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
 				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col of desired panel.\n");
 			break;
 
