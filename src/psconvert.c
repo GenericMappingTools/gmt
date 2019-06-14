@@ -1347,7 +1347,7 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 		sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 		strcat (out_file, t);
 		if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
-			strncpy (t, Ctrl->F.file, GMT_LEN256-1);
+			strncpy (t, Ctrl->F.file, PATH_MAX-1);
 		}
 		else {
 			if (API->tmp_dir)	/* Use the established temp directory */

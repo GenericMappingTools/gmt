@@ -134,10 +134,10 @@ struct GMT_CONTOUR {
 	bool delay;			/* true of we want to delay the actual annotation plotting until later */
 	bool crossect;			/* For SqN2 only: if true we want to add special suffixes to the 2 labels */
 	size_t n_alloc;			/* How many allocated so far */
-	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
+	char file[PATH_MAX];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
-	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
+	char label_file[PATH_MAX];	/* Output files for text dump of label locations */
 	char unit[GMT_LEN64];		/* Unit for labels */
 	char prefix[GMT_LEN64];		/* prefix for labels */
 	char crossect_tag[2][GMT_LEN64];	/* suffix for crossection beginning and end labels */

@@ -378,7 +378,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	 */
 
 	int j, err;
-	char *name = NULL, path[GMT_BUFSIZ+GMT_LEN256] = {""};
+	char *name = NULL, path[PATH_MAX+GMT_LEN256] = {""};
 	struct GMT_FILL fill;
 	if (!gmt_M_is_pattern (line)) return NULL;	/* Not an image specification */
 	err = gmtsupport_parse_pattern (GMT, line, &fill);	/* See if this returns an error or not */
@@ -1331,7 +1331,7 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	if (arg == NULL) return false;	/* No text pointer to work with */
 	
 	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
-		char string[GMT_LEN256] = {""};
+		char string[PATH_MAX] = {""};
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
 		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
 		gmt_M_str_free (*arg);
@@ -9021,7 +9021,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 't':	/* Save contour label locations to given file [x y angle label] */
 				G->save_labels = 1;
-				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ-1);
+				if (p[1]) strncpy (G->label_file, &p[1], PATH_MAX-1);
 				break;
 
 			case 'u':	/* Label Unit specification */
@@ -9143,7 +9143,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			/* Fall through on purpose to 'x' */
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
+			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->flag, L->file);
 				error++;
@@ -9355,7 +9355,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			/* Fall through on purpose to 'x' */
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
+			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;

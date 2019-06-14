@@ -217,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 	int j, k;
 	size_t n_alloc = 0, len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
-	char path[GMT_BUFSIZ] = {""};	/* Full path to sac file */
+	char path[PATH_MAX] = {""};	/* Full path to sac file */
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -518,7 +518,7 @@ GMT_LOCAL void sqr (double *y, int n) {
 GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct SAC_LIST **list) {
 	unsigned int n = 0;
 	int nr;
-	char path[GMT_BUFSIZ] = {""};	/* Full path to sac file */
+	char path[PATH_MAX] = {""};	/* Full path to sac file */
 	struct SAC_LIST *L = NULL;
 
 	/* Got a bunch of SAC files or one file in SAC format */

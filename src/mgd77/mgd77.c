@@ -2696,7 +2696,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	int has_suffix = MGD77_NOT_SET;
 	unsigned int id, fmt, f_start = 0, f_stop = 0;
 	bool append = false, hard_path;
-	char geo_path[GMT_BUFSIZ] = {""};
+	char geo_path[PATH_MAX] = {""};
 
 	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 4 possible extensions */
 		if (strchr (track, '.') && (strlen(track)-strlen(MGD77_suffix[fmt])) > 0 && !strncmp (&track[strlen(track)-strlen(MGD77_suffix[fmt])], MGD77_suffix[fmt], strlen(MGD77_suffix[fmt])))
@@ -2754,7 +2754,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 		if (append)	/* No extension, must append extension */
 			sprintf (geo_path, "%s.%s", track, MGD77_suffix[fmt]);
 		else
-			strncpy (geo_path, track, GMT_BUFSIZ-1);	/* Extension already there */
+			strncpy (geo_path, track, PATH_MAX-1);	/* Extension already there */
 
 		/* Here we have a relative (or absolute, if hard path was given) path.  First look in current directory */
 
@@ -2824,7 +2824,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 		if (has_suffix == MGD77_NOT_SET)	/* file name given without extension */
 			sprintf (F->path, "%s.%s", leg, MGD77_suffix[F->format]);
 		else
-			strncpy (F->path, leg, GMT_BUFSIZ-1);
+			strncpy (F->path, leg, PATH_MAX-1);
 	}
 	else
 		return (MGD77_UNKNOWN_MODE);
@@ -4041,7 +4041,7 @@ void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	F->rec_no = F->n_out_columns = F->bit_pattern[0] = F->bit_pattern[1] = F->n_constraints = F->n_exact = F->n_bit_tests = 0;
 	F->no_checking = false;
 	gmt_M_memset (F->NGDC_id, MGD77_COL_ABBREV_LEN, char);
-	gmt_M_memset (F->path, GMT_BUFSIZ, char);
+	gmt_M_memset (F->path, PATH_MAX, char);
 	F->fp = NULL;
 	F->nc_id = F->nc_recid = MGD77_NOT_SET;
 	F->format = MGD77_FORMAT_ANY;

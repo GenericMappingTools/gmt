@@ -546,18 +546,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
-#if 0
-	if (GMT->current.setting.run_mode == GMT_MODERN && (!Ctrl->C.active || (Ctrl->C.file[0] =='+' && strchr ("uU", Ctrl->C.file[1])))) {
-		sprintf (string, "%s/gmt.cpt", API->gwf_dir);	/* Use this if it exists */
-		if (!access (string, R_OK)) {	/* It does, activate -C<string> */
-			if (Ctrl->C.file) strncat (string, Ctrl->C.file, GMT_LEN256-1);	/* Append the +u|u<unit> instruction */
-			gmt_M_str_free (Ctrl->C.file);
-			Ctrl->C.file = strdup (string);
-			Ctrl->C.active = true;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reuse current CPT file %s/gmt.cpt\n", API->gwf_dir);
-		}
-	}
-#endif
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 

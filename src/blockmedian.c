@@ -653,7 +653,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
 			else
-				strncpy (file, Ctrl->G.file[kk], GMT_LEN128-1);
+				strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}

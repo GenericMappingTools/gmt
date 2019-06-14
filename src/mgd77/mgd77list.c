@@ -872,7 +872,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
 	if (M.adjust_time) Ctrl->D.stop  = MGD77_time2utime (GMT, &M, Ctrl->D.stop);
 	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxiliary columns */
-		char path[GMT_BUFSIZ] = {""};
+		char path[PATH_MAX] = {""};
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
@@ -1030,7 +1030,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		char path[GMT_BUFSIZ] = {""};
+		char path[PATH_MAX] = {""};
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {

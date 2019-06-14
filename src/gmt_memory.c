@@ -143,8 +143,8 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	else
 	{
 		int pid = getpid();
-		char logfile[32];
-		snprintf (logfile, 32, "gmt_memtrack_%d.log", pid);
+		char logfile[GMT_LEN32];
+		snprintf (logfile, GMT_LEN32, "gmt_memtrack_%d.log", pid);
 		if ((M->fp = fopen (logfile, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create log file gmt_memtrack_%d.log\n", pid);
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
