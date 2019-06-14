@@ -1329,6 +1329,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->C.file && strchr (Ctrl->C.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error parsing regular contours from list %s\n", Ctrl->C.file);
+			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		n_tmp = 0;

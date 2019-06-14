@@ -508,7 +508,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		if (!B[n].memory && GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);	/* Free grid unless it is a memory grid */
 	}
 
-	if (h && fabs (sub) > 0.0) {	/* Must undo shift earlier */
+	if (fabs (sub) > 0.0) {	/* Must undo shift earlier */
 		h->wesn[XLO] += sub;
 		h->wesn[XHI] += sub;
 	}
