@@ -184,6 +184,9 @@ configure_file (src/config.h.in src/config.h)
 
 # Configuration done
 message(
+	"*\n"
+	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
+	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
