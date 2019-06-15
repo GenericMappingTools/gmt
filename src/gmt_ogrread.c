@@ -73,7 +73,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	15-may-2018
- * Revision: 1		Based on ogrread.c MEX from Mirone 
+ * Revision: 1		Based on ogrread.c MEX from Mirone
  */
 
 #include "gmt_gdalread.h"
@@ -262,7 +262,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGRLayerH hLayer;
 	OGRFeatureH hFeature;
 	OGRFeatureDefnH hFeatureDefn;
-	OGRGeometryH hGeom, hPolygon;
+	OGRGeometryH hGeom;
+	// OGRGeometryH hPolygon;
 	//OGRGeometryH poSpatialFilter = NULL;
 	OGRSpatialReferenceH hSRS;
 	OGREnvelope sEnvelop;
