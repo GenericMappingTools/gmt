@@ -78,12 +78,12 @@ Supplements (Modern Mode)
 Supplements (Classic Mode)
 ==========================
 
-+---------------------+----------------------+----------------------+------------------------+
-| .. toctree::        | .. toctree::         | .. toctree::         | .. toctree::           |
-|    :maxdepth: 2     |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
-|                     |                      |                      |                        |
-|    SUP_SEIS_classic |    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_GEODESY_classic |
-+---------------------+----------------------+----------------------+------------------------+
++-----------------------+----------------------+----------------------+------------------------+
+| .. toctree::          | .. toctree::         | .. toctree::         | .. toctree::           |
+|    :maxdepth: 2       |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
+|                       |                      |                      |                        |
+|    SUP_GEODESY_classic|    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_SEIS_classic    |
++-----------------------+----------------------+----------------------+------------------------+
 
 Gallery
 =======
