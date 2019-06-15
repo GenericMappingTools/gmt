@@ -69,9 +69,9 @@ Supplements (Modern Mode)
 | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |
-|    SUP_GSHHS    |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_IMGSRC   |    SUP_SPOTTER  |    SUP_X2SYS    |
-|    SUP_SEIS     |                 |    SUP_GEODESY  |
+|    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
+|    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
+|    SUP_IMGSRC   |                 |    SUP_X2SYS    |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 
