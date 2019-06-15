@@ -187,7 +187,10 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
-	if (fgets (line, GMT_LEN128, fp) == NULL) return NULL;	/* Try to get first record */
+	if (fgets (line, GMT_LEN128, fp) == NULL) {	/* Try to get first record */
+		fclose (fp);
+		return NULL;
+	}
 	*n = atoi (line);		/* Number of records to follow */
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_MD5);
 	for (k = 0; k < *n; k++) {
