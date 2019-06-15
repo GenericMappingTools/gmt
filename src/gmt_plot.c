@@ -7109,6 +7109,20 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	PSL_endlayer (GMT->PSL);
 	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
 
+	if (GMT->common.p.do_z_rotation) {	/* Need a undo the rotation about z of the whole page */
+		double x0 = 0.0, y0 = 0.0;	/* Default is to rotate around plot origin */
+		if (GMT->current.proj.z_project.view_given) {	/* Rotation is about another z-axis than through the origin */
+			x0 = GMT->current.proj.z_project.view_x;
+			y0 = GMT->current.proj.z_project.view_y;
+		}
+		else if (GMT->current.proj.z_project.world_given)	/* Rotation is about another lon/lat pole than the origin */
+			gmt_geo_to_xy (GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, &x0, &y0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Transrot: Unrotating plot by %g degrees about (%g, %g)\n", -GMT->common.p.z_rotation, x0, y0);
+		PSL_comment (GMT->PSL, "Possibly translate then unrotate rotate whole page\n");
+		PSL_setorigin (PSL, x0, y0, -GMT->common.p.z_rotation, PSL_FWD);
+		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
+	}
+
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
 	if (abs (GMT->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */

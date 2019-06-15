@@ -69,21 +69,21 @@ Supplements (Modern Mode)
 | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |
-|    SUP_GSHHS    |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_IMGSRC   |    SUP_SPOTTER  |    SUP_X2SYS    |
-|    SUP_SEIS     |                 |    SUP_GEODESY  |
+|    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
+|    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
+|    SUP_IMG      |                 |    SUP_X2SYS    |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 
 Supplements (Classic Mode)
 ==========================
 
-+---------------------+----------------------+----------------------+------------------------+
-| .. toctree::        | .. toctree::         | .. toctree::         | .. toctree::           |
-|    :maxdepth: 2     |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
-|                     |                      |                      |                        |
-|    SUP_SEIS_classic |    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_GEODESY_classic |
-+---------------------+----------------------+----------------------+------------------------+
++-----------------------+----------------------+----------------------+------------------------+
+| .. toctree::          | .. toctree::         | .. toctree::         | .. toctree::           |
+|    :maxdepth: 2       |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
+|                       |                      |                      |                        |
+|    SUP_GEODESY_classic|    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_SEIS_classic    |
++-----------------------+----------------------+----------------------+------------------------+
 
 Gallery
 =======
