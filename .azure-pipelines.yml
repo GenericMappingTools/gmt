@@ -152,7 +152,7 @@ jobs:
 # Windows - Compile + Package
 ########################################################################################
 - job:
-  displayName: 'Windows | Compile + Package'
+  displayName: 'Windows | Compile + Tests + Package'
   condition: ne(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 120
 
@@ -177,6 +177,17 @@ jobs:
       gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
       gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     displayName: Check a few simple commands
+
+  # Run the full tests only if this is a scheduled build
+  - bash: |
+      set -x -e
+      cd build
+      # Download remote files before testing, see #939.
+      gmt which -Gu @tut_ship.xyz @App_O_geoid.nc @sat_03.txt @ship_03.txt @wus_gps_final.txt
+      gmt which -Gu @CA_fault_data.txt @nn_polar.txt @white_noise.nc @topo.8.2.img @App_O_transect.txt
+      gmt which -Gu @earth_relief_02m @earth_relief_05m
+      ctest --output-on-failure --force-new-ctest-process -j4
+    displayName: Full tests
 
   - bash: |
       set -x -e
