@@ -97,8 +97,8 @@ Gallery
 |    Users_contrib_symbols   |
 +----------------------------+
 
-The CookBook
-============
+The CookBook (Modern Mode)
+==========================
 
 +-----------------+
 | .. toctree::    |
@@ -106,6 +106,16 @@ The CookBook
 |                 |
 |    cookbook     |
 +-----------------+
+
+The CookBook (Classic Mode)
+===========================
+
++-------------------------+
+| .. toctree::            |
+|    :maxdepth: 2         |
+|                         |
+|    cookbook_classic     |
++-------------------------+
 
 The Tutorial
 ============
