@@ -9,6 +9,7 @@ env:
         - BUILD_DOCS=false
         - DEPLOY_DOCS=false
         - TEST=false
+        - PACKAGING=false
         - CCACHE_MAXSIZE=200M
         - CCACHE_COMPRESS=true
         # Encrypted Github token (GH_TOKEN)
@@ -50,19 +51,21 @@ matrix:
         - name: "Linux (compile only)"
           os: linux
           if: type != cron
-        - name: "Linux (cron)"
+        # cron jobs to run full tests
+        - name: "Linux (cron - run tests)"
           os: linux
           if: type = cron
           env:
             - TEST="true"
-        # Only build the docs on Linux cron jobs
-        - name: "Linux (cron - build docs)"
+        # cron jobs to build and deploy docs, make tarballs
+        - name: "Linux (cron - build and deploy docs + make tarballs)"
           os: linux
           if: type = cron
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
             - HTML_BUILDDIR="build/doc/rst/html"
+            - PACKAGING=true
 
 # Setup the build environment
 before_install:
@@ -133,6 +136,12 @@ script:
         cmake --build . --target docs_pdf_shrink;
       fi
     - set +e
+    # Create source pacakges for Linux
+    - if [[ "$PACKAGING" == "true" ]]; then
+        cmake --build . --target gmt_release;
+        cmake --build . --target gmt_release_tar;
+        md5sum gmt-*.tar.gz gmt-*.tar.xz;
+      fi
     - cd ..
 
 # Things to do if the build is successful
