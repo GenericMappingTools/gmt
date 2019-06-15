@@ -1,6 +1,6 @@
-######
-IMGSRC
-######
+###
+IMG
+###
 
 .. toctree::
    :maxdepth: 1
