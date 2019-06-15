@@ -150,7 +150,7 @@ struct GMT_SUBPLOT {
 	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
 	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
 	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
-	char Baxes[GMT_LEN8];		/* The -B setting for selected axes */
+	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
 	char Bylabel[GMT_LEN128];	/* The -By setting for x labels */
