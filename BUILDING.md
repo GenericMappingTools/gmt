@@ -420,7 +420,7 @@ Optionally set *N_TEST_JOBS* to the number of ctest jobs to run simultaneously.
 You can also select individual tests using regexp with ctest, e.g.:
 
 ```
-ctest -R ex2[3-6]
+ctest --output-on-failure -R ex2[3-6]
 ```
 
 ## Creating source packages

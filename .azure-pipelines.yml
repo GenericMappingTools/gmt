@@ -66,7 +66,7 @@ jobs:
   - bash: |
       set -x -e
       cd build
-      ctest --force-new-ctest-process -j4
+      ctest --output-on-failure --force-new-ctest-process -j4
     displayName: Full tests
 
   # Upload test coverage even if build fails. Keep separate to make sure this task fails
