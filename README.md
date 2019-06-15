@@ -8,11 +8,11 @@
 
 ## What is GMT?
 
-GMT is an open source collection of about 80 command-line tools for manipulating
+GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing PostScript illustrations ranging from simple x–y
 plots via contour maps to artificially illuminated surfaces and 3D perspective
-views. The GMT supplements add another 40 more specialized and discipline-specific
+views. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
 support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
@@ -81,14 +81,15 @@ and [build instructions](BUILDING.md) to build GMT from the sources.
 
 GMT users elsewhere have developed programs that utilize the GMT libraries and
 produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation. Currently, the supplemental archive include the directories:
+manipulation. Currently, the supplemental archive include these directories:
 
+-  geodesy: Velocity arrows and error ellipses, solid Earth tides, GPS gridding.
 -  gshhg: Data extractor for GSHHG shoreline polygons and rivers, borders.
 -  img: Data extractor for Smith/Sandwell altimetry grids.
--  meca: Plotting of focal mechanisms, velocity arrows, and error ellipses on maps.
 -  mgd77: Programs for handling of native MGD77 files.
--  potential: geopotential manipulations
+-  potential: Geopotential manipulations.
 -  segy: Plotting SEGY seismic data sets.
+-  seis: Plotting of focal mechanisms and SAC (seismic Analysis Code) data.
 -  spotter: Plate tectonic & kinematics applications.
 -  x2sys: Track intersection (crossover) tools.
 
@@ -107,12 +108,12 @@ Before running programs, there are a few things you should do/know:
 
 You haven't bought anything so you cannot expect full service.  However, if
 you find a bug in any of the programs, please report it to us
-(http://gmt.soest.hawaii.edu/) rather than trying to fix it yourself so that
+(https://github.com/GenericMappingTools/gmt) rather than trying to fix it yourself so that
 we, and through us, other users may benefit from your find.  Make sure you
 provide us with enough information so that we can recreate the problem.
 
 In addition to the bug tracking feature (New Issues) on the website, you
-can also post general questions on the GMT user forum.  Note that registration
+can also post general questions.  Note that GitHub registration
 is required to post on the site.
 
 ## Ordering the GMT package on CD/DVD-Rs
