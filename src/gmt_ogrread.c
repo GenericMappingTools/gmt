@@ -262,7 +262,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGRLayerH hLayer;
 	OGRFeatureH hFeature;
 	OGRFeatureDefnH hFeatureDefn;
-	OGRGeometryH hGeom, hPolygon, poSpatialFilter = NULL;
+	OGRGeometryH hGeom, hPolygon;
+	//OGRGeometryH poSpatialFilter = NULL;
 	OGRSpatialReferenceH hSRS;
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
