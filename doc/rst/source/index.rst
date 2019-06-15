@@ -97,25 +97,24 @@ Gallery
 |    Users_contrib_symbols   |
 +----------------------------+
 
-The CookBook
-============
+Documentations
+==============
 
-+-----------------+
-| .. toctree::    |
-|    :maxdepth: 2 |
-|                 |
-|    cookbook     |
-+-----------------+
+**Modern mode**
 
-The Tutorial
-============
+.. toctree::
+   :maxdepth: 1
 
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    tutorial        |
-+--------------------+
+   tutorial
+   cookbook
+
+**Classic mode**
+
+.. toctree::
+   :maxdepth: 1
+
+   tutorial_classic
+   cookbook_classic
 
 GMT Data Sets
 =============
@@ -140,32 +139,12 @@ The Software
 API Reference
 =============
 
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    api             |
-+--------------------+
+.. toctree::
+   :maxdepth: 1
 
-MATLAB Wrapper
-==============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    ml_wrapper      |
-+--------------------+
-
-Julia Wrapper
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    jl_wrapper      |
-+--------------------+
+   api
+   ml_wrapper
+   jl_wrapper
 
 .. Include an hidden page with option's examples that can be referenced by individual programs
 
