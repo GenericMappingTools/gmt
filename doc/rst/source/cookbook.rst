@@ -1,6 +1,6 @@
-###########
-Modern Mode
-###########
+##############################
+The GMT Cookbook (Modern Mode)
+##############################
 
 .. toctree::
    :maxdepth: 1

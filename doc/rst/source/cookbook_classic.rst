@@ -1,6 +1,6 @@
-############
-Classic Mode
-############
+###############################
+The GMT Cookbook (Classic Mode)
+###############################
 
 .. toctree::
    :maxdepth: 1
