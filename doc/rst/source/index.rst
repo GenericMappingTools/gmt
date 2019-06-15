@@ -71,7 +71,7 @@ Supplements (Modern Mode)
 |                 |                 |                 |
 |    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
 |    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
-|    SUP_IMGSRC   |                 |    SUP_X2SYS    |
+|    SUP_IMG      |                 |    SUP_X2SYS    |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 
