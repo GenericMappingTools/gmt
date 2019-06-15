@@ -54,13 +54,13 @@ matrix:
         # cron jobs to run full tests
         - name: "Linux (cron - run tests)"
           os: linux
-          if: type = cron
+          if: type != cron
           env:
             - TEST="true"
         # cron jobs to build and deploy docs, make tarballs
         - name: "Linux (cron - build and deploy docs + make tarballs)"
           os: linux
-          if: type = cron
+          if: type != cron
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
