@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2019 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * mgd77manage is used to (1) remove data columns from mgd77+ files
  * or (2) add a new data column to mgd77+ files.  Data can be added
  * from data tables, created from reference field formulas, or by
@@ -321,7 +321,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 	unsigned int n_errors = 0, k, n_cruises = 0;
 	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
-	char file[GMT_BUFSIZ] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	
@@ -797,7 +797,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {	/* Must create a new file with everything except the fields to be deleted */
 			int id, c;
 			bool reset_column = false;
-			char oldfile[GMT_BUFSIZ+4] = {""};
+			char oldfile[PATH_MAX+4] = {""};
 			
 			if (column != MGD77_NOT_SET) {	/* Get info about this existing column to see if it is compatible with new data */
 				n_dims = (D->H.info[In.order[column].set].col[In.order[column].item].constant) ? 0 : 1;
@@ -1097,7 +1097,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			 */
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
-			char ID[16] = {""}, date[16] = {""}, field[GMT_LEN64] = {""}, efile[GMT_BUFSIZ] = {""};
+			char ID[16] = {""}, date[16] = {""}, field[GMT_LEN64] = {""}, efile[PATH_MAX] = {""};
 			char E77[256] = {""}, timestamp[GMT_LEN64] = {""}, answer[GMT_BUFSIZ] = {""}, code[GMT_BUFSIZ] = {""}, kind, YorN;
 			int number, type, it, id, key, n_E77_flags, day, month, year, item;
 			int n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;

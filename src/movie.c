@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -875,10 +875,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
 	char *mvfile[3] = {"mv -f", "mv -rf", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	char var_token[4] = "$$%", path_sep[4] = "::;";
-	char init_file[GMT_LEN64] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
-	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN128] = {""}, L_txt[GMT_LEN128] = {""};
-	char png_file[GMT_LEN128] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
+	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
+	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
+	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
+	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else

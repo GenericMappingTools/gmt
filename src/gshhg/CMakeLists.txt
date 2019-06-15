@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,14 +12,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME gshhg)
+
 # source files
+set (SUPPL_HEADERS gshhg.h gmt_gshhg.h)
 set (SUPPL_PROGS_SRCS gshhg.c)
+
+# example files
+set (SUPPL_EXAMPLE_FILES README.gshhg)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})
@@ -27,3 +33,15 @@ set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 # create build targets
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
+
+# install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
+	COMPONENT Documentation)
+
+# install headers
+if (BUILD_DEVELOPER)
+	install (FILES ${SUPPL_HEADERS}
+		DESTINATION ${GMT_INCLUDEDIR}/${SUPPL_NAME}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)

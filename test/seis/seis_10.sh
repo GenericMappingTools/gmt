@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-ps=meca_13.ps
+ps=seis_10.ps
 
 # Added in response to issue #894.  Kurt Feigl wrote back:
 #I checked Aki and Richards, p. 106:

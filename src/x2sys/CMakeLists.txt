@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,14 +12,17 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME x2sys)
+
 # source files
-set (SUPPL_LIB_SRCS ../mgd77/mgd77.h x2sys.h x2sys.c)
+set (SUPPL_HEADERS x2sys.h)
+set (SUPPL_LIB_SRCS x2sys.c)
 set (SUPPL_PROGS_SRCS x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c
 	x2sys_datalist.c x2sys_cross.c x2sys_list.c x2sys_report.c x2sys_solve.c
 	x2sys_merge.c)
@@ -36,11 +39,19 @@ string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
 # install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
+	COMPONENT Documentation)
+
 if (UNIX)
-	install (FILES ${SUPPL_EXAMPLE_FILES}
-		DESTINATION ${GMT_DOCDIR}/supplements/x2sys
-		COMPONENT Documentation)
 	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-		DESTINATION ${GMT_DOCDIR}/supplements/x2sys
+		DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
 		COMPONENT Documentation)
 endif (UNIX)
+
+# install headers
+if (BUILD_DEVELOPER)
+	install (FILES ${SUPPL_HEADERS}
+		DESTINATION ${GMT_INCLUDEDIR}/${SUPPL_NAME}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)

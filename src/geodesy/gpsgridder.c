@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Authors:	Paul Wessel & David Sandwell
@@ -1134,7 +1134,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 	else {	/* Output on equidistant lattice */
 		int64_t col, row, p, e; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
-		char file[GMT_LEN256] = {""};
+		char file[PATH_MAX] = {""};
 		double *xp = NULL, *yp = NULL, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate all coordinates */

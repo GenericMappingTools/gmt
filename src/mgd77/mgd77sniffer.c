@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2019 by P. Wessel and M. T. Chandler
+ *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -1120,6 +1120,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
+				if (n_grids > 0) {
+					gmt_M_free (GMT, MaxDiff);
+					gmt_M_free (GMT, iMaxDiff);
+				}
 				Return (API->error);
 			}
 	 	}

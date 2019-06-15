@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* Brief synopsis: pscontour will read a file of points in the plane, performs the
  * Delaunay triangulation, and contours these triangles.  As an option
@@ -792,7 +792,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 int GMT_contour (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: contour\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -1085,6 +1085,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->C.file && strchr (Ctrl->C.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error parsing regular contours from list %s\n", Ctrl->C.file);
+			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		n_contours = na + nc;

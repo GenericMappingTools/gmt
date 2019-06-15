@@ -1,6 +1,6 @@
 /*
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the psevents application.
@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, n_col = 3, k, id;
+	unsigned int n_errors = 0, pos, n_col = 3, k, id = 0;
 	char *c = NULL, txt[GMT_LEN128] = {""}, *t_string = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -379,7 +379,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 int GMT_events (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: events\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -578,8 +578,8 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 				out[GMT_Z] = 0.0;	/* No transparency during plateau phase */
 			}
 			else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
-				x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
-				out[GMT_Z] = 0.0;	/* No transparency during plateau phase */
+				//x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
+				out[GMT_Z] = 0.0;	/* No transparency during decay phase */
 			}
 			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
 				out[GMT_Z] = 0.0;	/* No transparency during plateau phase */
@@ -597,11 +597,16 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+		if (fp_symbols) fclose (fp_symbols);
+		if (fp_labels) fclose (fp_labels);
 		Return (API->error);
 	}
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))	/* Set up map projection */
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {	/* Set up map projection */
+		if (fp_symbols) fclose (fp_symbols);
+		if (fp_labels) fclose (fp_labels);
 		Return (GMT_PROJECTION_ERROR);
-
+	}
+	
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
@@ -619,10 +624,12 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt psxy %s\n", cmd);
 
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the symbols */
+			if (fp_labels) fclose (fp_labels);
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_symbols)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file_symbols);
+			if (fp_labels) fclose (fp_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

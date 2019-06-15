@@ -1,6 +1,6 @@
 /*
  *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2019 by the GMT project
+ *    Copyright (c) 2013-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -8,7 +8,7 @@
 
 /*!
  * \file meca.h
- * \brief  
+ * \brief
  */
 
 #include <stdio.h>
@@ -49,7 +49,7 @@ struct nodal_plane {
 	double str;
 	double dip;
 	double rake;
-}; 
+};
 
 struct MECHANISM {
 	struct nodal_plane NP1;

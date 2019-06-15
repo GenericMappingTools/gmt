@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 #include "gmt_dev.h"
@@ -101,7 +101,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
 	unsigned int k, n;
-	char path[GMT_BUFSIZ] = {""}, line[BUFSIZ] = {""};
+	char path[PATH_MAX] = {""}, line[BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct GMT_DCW_COUNTRY *Country = NULL;
 	struct GMT_DCW_STATE *State = NULL;
@@ -234,7 +234,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	bool done, new_set, want_state, outline, fill = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
-	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""}, list[GMT_BUFSIZ] = {""};
+	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;

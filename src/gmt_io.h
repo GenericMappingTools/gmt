@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Table input/output in GMT can be either ASCII or binary (where supported)
@@ -270,9 +270,9 @@ struct GMT_IO {				/* Used to process input data records */
 	char curr_text[GMT_BUFSIZ];	/* Current ASCII record as it was read */
 	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
-	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char filename[2][PATH_MAX];	/* Current filenames (or <stdin>/<stdout>) */
 #ifdef HAVE_GDAL
-	char tempfile[GMT_BUFSIZ];	/* Temporary file used to read - should be removed when closed */
+	char tempfile[PATH_MAX];	/* Temporary file used to read - should be removed when closed */
 #endif
 	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
