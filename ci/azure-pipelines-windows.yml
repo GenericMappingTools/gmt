@@ -58,9 +58,3 @@ steps:
     cmake --build .
     cmake --build . --target install
   displayName: Compile GMT
-
-- bash: |
-    set -x -e
-    cd build
-    cmake --build . --target package
-  displayName: Package GMT

@@ -115,6 +115,40 @@ jobs:
     condition: succeededOrFailed()
     displayName: Upload test coverage
 
+# Mac - Pacakge
+########################################################################################
+- job:
+  displayName: 'Mac | Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGING: true
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
+
+  - bash: |
+      set -x -e
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
+
+  # Run the full tests only if this is a scheduled build
+  - bash: |
+      set -x -e
+      cd build
+      cmake --build . --target gmt_release
+      cmake --build . --target gmt_release_tar
+      cmake --build . --target package
+    displayName: Packaing
+
 # Windows - Compile + Package
 ########################################################################################
 - job:
@@ -143,3 +177,11 @@ jobs:
       gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
       gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     displayName: Check a few simple commands
+
+  - bash: |
+      set -x -e
+      cd build
+      cmake --build . --target gmt_release
+      cmake --build . --target gmt_release_tar
+      cmake --build . --target package
+    displayName: Package GMT
