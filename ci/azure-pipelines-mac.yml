@@ -16,7 +16,7 @@ steps:
 - bash: |
     set -x -e
     pip3 install --user sphinx
-    echo "##vso[task.prependpath]/Users/vsts/Library/Python/3.7/bin"
+    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
   displayName: Install dependencies required by building docs
   condition: eq(variables['BUILD_DOCS'], true)
 
