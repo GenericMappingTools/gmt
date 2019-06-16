@@ -161,7 +161,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
-    TEST: false
+    TEST: true
 
   steps:
 
@@ -192,7 +192,7 @@ jobs:
   - bash: |
       set -x -e
       cd build
-      cmake --build . --target gmt_release
-      cmake --build . --target gmt_release_tar
+      #cmake --build . --target gmt_release
+      #cmake --build . --target gmt_release_tar
       cmake --build . --target package
     displayName: Package GMT
