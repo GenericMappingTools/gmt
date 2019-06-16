@@ -2675,7 +2675,9 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Note: gmtinit_set_env cannot use GMT_Report because the verbose level is not yet set */
 
-	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL)	/* GMT5_SHAREDIR was set */
+	if ((this_c = getenv ("GMT6_SHAREDIR")) != NULL)	/* GMT6_SHAREDIR was set */
+		GMT->session.SHAREDIR = strdup (this_c);
+	else if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL)	/* GMT5_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
 	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL) /* GMT_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);

@@ -1,6 +1,6 @@
-###########
-Modern Mode
-###########
+######################
+Tutorial (Modern Mode)
+######################
 
 .. toctree::
    :maxdepth: 1

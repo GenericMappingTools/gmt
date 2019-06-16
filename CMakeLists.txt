@@ -80,7 +80,7 @@ include (ConfigCMake)
 # Global test target
 add_custom_target (check
 	COMMAND ${CMAKE_CTEST_COMMAND}
-	--force-new-ctest-process -j${N_TEST_JOBS})
+	--output-on-failure --force-new-ctest-process -j${N_TEST_JOBS})
 
 # Find test dependencies
 find_program (GRAPHICSMAGICK gm)
