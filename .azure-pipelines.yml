@@ -75,7 +75,7 @@ jobs:
       cmake --build . --target gmt_release
       cmake --build . --target gmt_release_tar
       cpack -G Bundle
-      md5sum GMT-*.dmg
+      md5sum gmt-*.tar gmt-*.tar.gz gmt-*.tar.xz GMT-*.dmg
     displayName: Package GMT
 
 # Mac - Test
