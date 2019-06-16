@@ -59,7 +59,7 @@ matrix:
         # Only build the docs on Linux cron jobs
         - name: "Linux (cron - build docs + package)"
           os: linux
-          if: type != cron
+          if: type = cron
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
