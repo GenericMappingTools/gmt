@@ -16,7 +16,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Mac | Compile only'
-  condition: not(eq(variables['Build.Reason'], 'Schedule'))
+  condition: ne(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'macOS-10.13'
@@ -66,6 +66,9 @@ jobs:
   - bash: |
       set -x -e
       cd build
+      # Download remote files before testing, see #939.
+      curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+      gmt which -Gu @earth_relief_02m @earth_relief_05m
       ctest --output-on-failure --force-new-ctest-process -j4
     displayName: Full tests
 
