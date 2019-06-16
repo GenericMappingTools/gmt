@@ -37,7 +37,7 @@ jobs:
       gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     displayName: Check a few simple commands
 
-# Mac - Build docs
+# Mac - Build docs + Package
 ########################################################################################
 - job:
   displayName: 'Mac | Build docs + Package'
@@ -71,6 +71,7 @@ jobs:
     displayName: Build documentations
 
   - bash: |
+      cd build
       cmake --build . --target gmt_release
       cmake --build . --target gmt_release_tar
       cpack -G Bundle
