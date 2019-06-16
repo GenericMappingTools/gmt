@@ -5,7 +5,7 @@ steps:
 - bash: |
     set -x -e
     brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
-  displayName: Install dependencies
+  displayName: Install build dependencies
 
 - bash: |
     set -x -e

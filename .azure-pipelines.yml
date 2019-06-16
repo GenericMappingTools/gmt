@@ -125,6 +125,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
+    TEST: false
     BUILD_DOCS: true
     PACKAGING: true
 
@@ -183,8 +184,7 @@ jobs:
       set -x -e
       cd build
       # Download remote files before testing, see #939.
-      gmt which -Gu @tut_ship.xyz @App_O_geoid.nc @sat_03.txt @ship_03.txt @wus_gps_final.txt
-      gmt which -Gu @CA_fault_data.txt @nn_polar.txt @white_noise.nc @topo.8.2.img @App_O_transect.txt
+      curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
       gmt which -Gu @earth_relief_02m @earth_relief_05m
       ctest --output-on-failure --force-new-ctest-process -j4
     displayName: Full tests
