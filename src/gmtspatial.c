@@ -598,7 +598,9 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 	/* Return array of NN results sorted on smallest distances */
 	int64_t k, k2, np;
 	double *distance = gmt_M_memory (GMT, NULL, *n_points, double);
-	
+#ifdef DEBUG
+	static int iteration = 0;
+#endif
 	np = *n_points;
 	for (k = 0; k < (np-1); k++) {
 		if (gmt_M_is_dnan (P[k].distance)) continue;	/* Skip deleted point */
@@ -629,6 +631,14 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
 	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
+#ifdef DEBUG
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "===> Iteration = %d\n", iteration);
+		for (k = 0; k < (int64_t)(*n_points); k++)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%6d\tID=%6d\tNeighbor=%6d\tDistance = %g\n", (int)k, (int)P[k].ID, P[k].neighbor, P[k].distance);
+	}
+	iteration++;
+#endif
 	return (P);
 }
 
