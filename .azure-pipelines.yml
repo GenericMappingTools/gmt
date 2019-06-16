@@ -37,6 +37,39 @@ jobs:
       gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     displayName: Check a few simple commands
 
+# Mac - Build docs
+########################################################################################
+- job:
+  displayName: 'Mac | Build docs'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_DOCS: false
+    TEST: false
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
+
+  - bash: |
+      set -x -e
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
+
+  - bash: |
+      cd build
+      cmake --build . --target docs_html_depends;
+      cmake --build . --target docs_man_depends;
+      cmake --build . --target docs_html;
+      cmake --build . --target docs_man;
+    displayName: Build documentations
+
 # Mac - Test
 ########################################################################################
 - job:
