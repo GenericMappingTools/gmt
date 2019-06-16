@@ -47,7 +47,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
-    BUILD_DOCS: false
+    BUILD_DOCS: true
     TEST: false
 
   steps:
