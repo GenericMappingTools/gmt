@@ -15,8 +15,7 @@ steps:
 
 - bash: |
     set -x -e
-    brew install python
-    pip install --user sphinx
+    pip3 install --user sphinx
   displayName: Install dependencies required by building docs
   condition: eq(variables['BUILD_DOCS'], true)
 
