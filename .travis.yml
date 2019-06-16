@@ -138,7 +138,7 @@ script:
     - if [[ "$PACKAGE" == "true" ]]; then
         cmake --build . --target gmt_release;
         cmake --build . --target gmt_release_tar;
-        md5sum gmt-*.tar gmt-*.tar.gz gmt-*.tar.xz
+        md5sum gmt-*.tar gmt-*.tar.gz gmt-*.tar.xz;
       fi
     - set +e
     - cd ..
