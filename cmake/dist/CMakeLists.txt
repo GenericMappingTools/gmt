@@ -152,7 +152,7 @@ if (WIN32 AND NOT CYGWIN)
 	endif (NOT DEFINED CPACK_NSIS_INSTALL_ROOT)
 	set (CPACK_NSIS_MODIFY_PATH ON)
 	string(REPLACE "/" "\\\\" _native_share_path "${GMT_DATADIR}")
-	set (CPACK_NSIS_ADD_ENVVAR1 "GMT5_SHAREDIR")
+	set (CPACK_NSIS_ADD_ENVVAR1 "GMT6_SHAREDIR")
 	set (CPACK_NSIS_ADD_ENVVAL1 "\\\$INSTDIR\\\\${_native_share_path}")
 
 	# StartMenu items:
