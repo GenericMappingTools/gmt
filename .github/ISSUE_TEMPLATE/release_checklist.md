@@ -11,10 +11,11 @@ assignees: ''
 
 **Before release**:
 
-- [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
+- [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] update changelog
+- [ ] build documentations and fix warnings
 - [ ] check/change `cmake/ConfigDefault.cmake`
 
     - [ ] `GMT_VERSION_YEAR` is current year
