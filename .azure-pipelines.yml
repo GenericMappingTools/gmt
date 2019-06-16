@@ -23,6 +23,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    PACKAGE: false
     TEST: false
 
   steps:
@@ -48,6 +49,7 @@ jobs:
 
   variables:
     BUILD_DOCS: true
+    PACKAGE: true
     TEST: false
 
   steps:
@@ -89,6 +91,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    PACKAGE: false
     TEST: true
 
   steps:
