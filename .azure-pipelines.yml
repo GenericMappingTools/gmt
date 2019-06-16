@@ -40,7 +40,7 @@ jobs:
 # Mac - Build docs
 ########################################################################################
 - job:
-  displayName: 'Mac | Build docs'
+  displayName: 'Mac | Build docs + Package'
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
@@ -69,6 +69,13 @@ jobs:
       cmake --build . --target docs_html
       cmake --build . --target docs_man
     displayName: Build documentations
+
+  - bash: |
+      cmake --build . --target gmt_release
+      cmake --build . --target gmt_release_tar
+      cpack -G Bundle
+      md5sum GMT-*.dmg
+    displayName: Package GMT
 
 # Mac - Test
 ########################################################################################
