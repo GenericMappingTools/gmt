@@ -64,10 +64,10 @@ jobs:
 
   - bash: |
       cd build
-      cmake --build . --target docs_html_depends;
-      cmake --build . --target docs_man_depends;
-      cmake --build . --target docs_html;
-      cmake --build . --target docs_man;
+      cmake --build . --target docs_html_depends
+      cmake --build . --target docs_man_depends
+      cmake --build . --target docs_html
+      cmake --build . --target docs_man
     displayName: Build documentations
 
 # Mac - Test
