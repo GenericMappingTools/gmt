@@ -31,13 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-//#include "util.h"
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)merge.c     8.2 (Berkeley) 2/14/94";
-#endif /* LIBC_SCCS and not lint */
-
-#ifndef HAVE_MERGESORT
 /*
  * Hybrid exponential search/linear search merge sort with hybrid
  * natural/pairwise first pass.  Requires about .3% more comparisons
@@ -89,7 +83,6 @@ static void insertionsort(unsigned char *, size_t, size_t,
 #define EVAL(p) (unsigned char **)                                              \
         ((unsigned char *)0 +                                                   \
             (((unsigned char *)p + PSIZE - 1 - (unsigned char *) 0) & ~(PSIZE - 1)))
-#endif  /*HAVE_MERGESORT*/
 
 /*
  * Arguments are as for qsort.
@@ -230,10 +223,7 @@ COPY:                           b = t;
         }
         free(list2);
         return (0);
-#endif  /*HAVE_MERGESORT*/
 }
-
-#ifndef HAVE_MERGESORT
 
 #define swap(a, b) {                                    \
                 s = b;                                  \
@@ -350,4 +340,3 @@ insertionsort(unsigned char *a, size_t n, size_t size,
                         swap(u, t);
                 }
 }
-#endif  /*HAVE_MERGESORT*/
