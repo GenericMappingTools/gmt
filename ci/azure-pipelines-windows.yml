@@ -1,4 +1,4 @@
-# Template for the basic Windows steps in Azure Pipelines
+# Template for Windows steps in Azure Pipelines
 
 steps:
 
@@ -15,11 +15,11 @@ steps:
     vcpkg integrate install
     # list installed libraries
     vcpkg list
+    # Executable files search for DLL files in the directories listed in the PATH environment variable.
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
+    # Tools like gdal_translate, ogr2ogr are located in tools/gdal
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/tools/gdal"
   displayName: Install dependencies via vcpkg
-
-# Executable files search for DLL files in the directories listed in the PATH environment variable.
-- bash: echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
-  displayName: Add vcpkg bin directory to PATH
 
 - bash: |
     set -x -e
@@ -30,8 +30,15 @@ steps:
     set -x -e
     pip install --user sphinx
     echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
-  displayName: Install dependencies for building documentations
+  displayName: Install dependencies for documentation
   condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    set -x -e
+    choco install graphicsmagick
+    echo "##vso[task.prependpath]C:\\Program Files\\GraphicsMagick-1.3.32-Q8"
+  displayName: Install dependecies for testing
+  condition: eq(variables['TEST'], true)
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
   displayName: Set install location
@@ -45,7 +52,7 @@ steps:
 - bash: ci/download-coastlines.sh
   displayName: Download coastlines
 
-- bash: ci/build-gmt-windows.sh
+- bash: ci/config-gmt-windows.sh
   displayName: Configure GMT
 
 # Azure Pipelines cannot find Visual Studio correctly if Ninja is used.
@@ -61,6 +68,27 @@ steps:
     cmake --build . --target install
   displayName: Compile GMT
 
+# Set HOME to avoid permission issue of azure-pipelines
+- bash: echo "##vso[task.setvariable variable=HOME]D:/a/1/s/"
+  displayName: Set HOME
+
+- script: |
+    gmt --version
+    gmt defaults -Vd
+    gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+  displayName: Check a few simple commands
+
+- bash: |
+    set -x -e
+    cd build
+    # Download remote files before testing, see #939.
+    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+    ctest --output-on-failure --force-new-ctest-process -j4
+  displayName: Full tests
+  condition: eq(variables['TEST'], true)
+
 - bash: |
     set -x -e
     cd build
@@ -74,6 +102,11 @@ steps:
 - bash: |
     set -x -e
     cd build
+    cmake --build . --target gmt_release
+    cmake --build . --target gmt_release_tar
+    # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
+    ls -l gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
+    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
