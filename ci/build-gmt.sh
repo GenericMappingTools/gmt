@@ -9,6 +9,8 @@ set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
+set (GMT_USE_THREADS TRUE)
+set (GMT_ENABLE_OPENMP TRUE)
 EOF
 
 if [[ "$TEST" == "true" ]]; then
