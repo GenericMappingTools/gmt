@@ -37,10 +37,6 @@
 static char sccsid[] = "@(#)merge.c     8.2 (Berkeley) 2/14/94";
 #endif /* LIBC_SCCS and not lint */
 
-#ifdef HAVE_MERGESORT
-#undef yasm__mergesort
-#endif
-
 #ifndef HAVE_MERGESORT
 /*
  * Hybrid exponential search/linear search merge sort with hybrid
@@ -98,13 +94,9 @@ static void insertionsort(unsigned char *, size_t, size_t,
 /*
  * Arguments are as for qsort.
  */
-int
-yasm__mergesort(void *base, size_t nmemb, size_t size,
+int mergesort(void *base, size_t nmemb, size_t size,
                 int (*cmp)(const void *, const void *))
 {
-#ifdef HAVE_MERGESORT
-    return mergesort(base, nmemb, size, cmp);
-#else
         size_t i;
         int sense;
         int big, iflag;
