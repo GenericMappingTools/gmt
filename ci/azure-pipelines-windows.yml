@@ -25,6 +25,12 @@ steps:
     choco install ghostscript ninja
   displayName: Install dependencies via chocolatey
 
+- bash: |
+    set -x -e
+    pip install --user sphinx
+  displayName: Install dependencies for building documentations
+  condition: eq(variables["BUILD_DOCS"], true)
+
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
   displayName: Set install location
 
@@ -62,5 +68,16 @@ steps:
 - bash: |
     set -x -e
     cd build
+    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_man_depends
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables["BUILD_DOCS", true])
+
+- bash: |
+    set -x -e
+    cd build
     cmake --build . --target package
   displayName: Package GMT
+  condition: eq(variable["PACKAGE", true])
