@@ -26,7 +26,7 @@ for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 do
 	for ix in 1 2 3 4 5 6
 	do
-		p=`echo "$iy * 6 + $ix" | bc`
+		let p=iy*6+ix
 		gmt plot -R0/$xwidth/0/$ywidth -Jx1i -Gp$p+r300 tt.App_E.d -X${x}i -Y${y}i
 		gmt plot -Wthinner -L tt.App_E.d 
 		gmt plot -GP$p+r300 tt.App_E.d -X${xwidth}i 

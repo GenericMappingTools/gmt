@@ -32,13 +32,13 @@ gmt plot <<EOF
 5.4	0
 EOF
 
-i=1
+let i=1
 while [ $i -le 17 ]
 do
-	i1=`echo "$i - 1" | bc`
-	i2=`echo "$i1 + 17" | bc`
+	i1=$(( i-1 ))
+	i2=$(( i1+17 ))
 	k1=$i
-	k2=`echo "$i + 17" | bc`
+	k2=$(( i+17 ))
 
 	f1=`sed -n ${k1}p tt.d`
 	f2=`sed -n ${k2}p tt.d`
@@ -53,7 +53,7 @@ do
 2.85	0.03	10p,$fn2	BC	$i2
 3.1	0.03	10p,$i2		BL	$f2
 EOF
-	i=`echo "$i + 1" | bc`
+	let i=i+1
 done
 
 gmt text -Y${dy}i -F+f+j <<EOF
