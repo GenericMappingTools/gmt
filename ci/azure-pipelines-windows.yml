@@ -28,6 +28,7 @@ steps:
 - bash: |
     set -x -e
     pip install --user sphinx
+    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
   displayName: Install dependencies for building documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
