@@ -151,11 +151,9 @@ struct PAIR {
 #define HAVE_MERGESORT
 #endif
 
-#ifndef _WIN32	/* Not ready to test this on Windows */
 #ifndef HAVE_MERGESORT
 #warning "Include mergesort since not supported by standard library"
 #include "mergesort.c"
-#endif
 #endif
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -640,12 +638,10 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 		}
 	}
 	gmt_M_free (GMT, distance);
-#ifndef _WIN32
+
 	/* Prefer mergesort since qsort is not stable for equalities */
 	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
-#else
-	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
-#endif
+
 	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
 #ifdef DEBUG
@@ -702,13 +698,10 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 		}
 	}
 	gmt_M_free (GMT, distance);
-#ifndef _WIN32
+
 	/* Prefer mergesort since qsort is not stable for equalities */
 	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);
-#else
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Under Windows, sorting is done by qsort (unstable) since mergesort (stable) is not available.\n");
-	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
-#endif
+	
 	*n_points = (uint64_t)np;
 #ifdef DEBUG
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
@@ -738,12 +731,10 @@ GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO 
 		info[k].sort_rec = k;
 		info[k].orig_rec = int64_abs (NN_dist[k].ID);
 	}
-#ifndef _WIN32
+
 	/* Prefer mergesort since qsort is not stable for equalities */
 	mergesort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
-#else
-	qsort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
-#endif
+
 	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
 	return (info);
 }
