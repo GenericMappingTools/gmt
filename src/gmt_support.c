@@ -14969,13 +14969,13 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 		case 'x':	mode = GMT_REFPOINT_PLOT;		break;	/* Plot coordinates */
 		default: 	k = 0;	break;	/* None given, reset first arg to be at position 0 */
 	}
-	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {
+	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {	/* Here we know k == 1 */
 		n = support_find_mod_syntax_start (arg, k);	/* Returns position of first modifier +? */
-		if (arg[n] || k == 1) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
+		if (arg[n]) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
 			strncpy (txt_x, &arg[k], 2);	txt_x[2] = 0;
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
-		else {	/* Old syntax with things separated by slashes */
+		else {	/* Old syntax with no +modifier and with things separated by slashes */
 			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) {
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
