@@ -152,7 +152,6 @@ struct PAIR {
 #endif
 
 #ifndef HAVE_MERGESORT
-#warning "Include mergesort since not supported by standard library"
 #include "mergesort.c"
 #endif
 
