@@ -40,8 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-gmt_team = u'P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe'
-gmt_team_tex = u'P. Wessel, W. H. F. Smith,\\\\R. Scharroo, J. Luis, and F. Wobbe'
+gmt_team = u'The GMT Team'
 project = u'GMT'
 copyright = u' '.join(['@GMT_VERSION_YEAR@,', gmt_team])
 
@@ -188,9 +187,9 @@ StandaloneHTMLBuilder.supported_image_types = [
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('GMT_Docs',  'GMT_Docs.tex',     u'GMT Documentation',     gmt_team_tex, 'manual'),
-  ('GMT_Tutorial',   'GMT_Tutorial.tex',      u'GMT Tutorial', gmt_team_tex, 'manual'),
-  ('GMT_API',   'GMT_API.tex',      u'GMT API Documentation', gmt_team_tex, 'manual'),
+  ('GMT_Docs',  'GMT_Docs.tex',     u'GMT Documentation',     gmt_team, 'manual'),
+  ('GMT_Tutorial',   'GMT_Tutorial.tex',      u'GMT Tutorial', gmt_team, 'manual'),
+  ('GMT_API',   'GMT_API.tex',      u'GMT API Documentation', gmt_team, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
