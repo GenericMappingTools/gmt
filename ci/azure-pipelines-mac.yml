@@ -20,6 +20,12 @@ steps:
   displayName: Install dependencies required by building docs
   condition: eq(variables['BUILD_DOCS'], true)
 
+- bash: |
+    set -x -e
+    brew install gnu-tar md5sha1sum
+  displayName: Install dependencies required by packaging
+  condition: eq(variables['PACKAGE'], true)
+
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
   displayName: Set install location
 
