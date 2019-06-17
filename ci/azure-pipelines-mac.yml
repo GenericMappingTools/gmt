@@ -4,8 +4,21 @@ steps:
 
 - bash: |
     set -x -e
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript graphicsmagick ffmpeg || true
+    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
   displayName: Install dependencies
+
+- bash: |
+    set -x -e
+    brew install graphicsmagick || true
+  displayName: Install dependencies required by testing
+  condition: eq(variables['TEST'], true)
+
+- bash: |
+    set -x -e
+    pip3 install --user sphinx
+    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
+  displayName: Install dependencies required by building docs
+  condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
   displayName: Set install location
