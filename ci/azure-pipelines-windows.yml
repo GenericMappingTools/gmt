@@ -73,11 +73,11 @@ steps:
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations
-  condition: eq(variables["BUILD_DOCS", true])
+  condition: eq(variables['BUILD_DOCS', true])
 
 - bash: |
     set -x -e
     cd build
     cmake --build . --target package
   displayName: Package GMT
-  condition: eq(variable["PACKAGE", true])
+  condition: eq(variables['PACKAGE', true])
