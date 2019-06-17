@@ -286,13 +286,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
 						Ctrl->L.stage_id = true;
-						/* Fall through on purpose tp 'f' */
+						/* Fall through on purpose to 'f' */
 					case 'f':
 						Ctrl->L.mode = SPOTTER_FLOWLINE;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
 						Ctrl->L.stage_id = true;
-						/* Fall through on purpose tp 'b' */
+						/* Fall through on purpose to 'b' */
 					case 'b':
 						Ctrl->L.mode = SPOTTER_TRAILLINE;
 						break;

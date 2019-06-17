@@ -384,12 +384,12 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
-			sprintf (TAG, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
-			sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
+			snprintf (msg, GMT_BUFSIZ, "Extract data for %s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
 		}
 		else {
-			sprintf (TAG, "%s", GMT_DCW_country[k].code);
-			sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
+			snprintf (TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
+			snprintf (msg, GMT_BUFSIZ, "Extract data for %s\n", GMT_DCW_country[k].name);
 		}
 
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, msg);
@@ -398,7 +398,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 		/* Open and read the netCDF file */
 
-		sprintf (dim, "%s_length", TAG);
+		snprintf (dim, GMT_LEN16, "%s_length", TAG);
 		if ((retval = nc_inq_dimid (ncid, dim, &id))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error getting ID for variable %s in %s!\n", dim, path);
 			continue;
@@ -419,7 +419,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	        /* Get the varid of the lon and lat variables, based on their names, and get the data */
 
-		sprintf (xname, "%s_lon", TAG);	sprintf (yname, "%s_lat", TAG);
+		snprintf (xname, GMT_LEN16, "%s_lon", TAG);	snprintf (yname, GMT_LEN16, "%s_lat", TAG);
 
 		if ((retval = nc_inq_varid (ncid, xname, &xvarid))) continue;
 		if ((retval = nc_get_att_double (ncid, xvarid, "min", &west))) continue;
@@ -477,7 +477,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-				sprintf (segment, " Segment %" PRIu64, seg);
+				snprintf (segment, GMT_LEN32, " Segment %" PRIu64, seg);
 				strcpy (GMT->current.io.segment_header, msg);
 				strcat (GMT->current.io.segment_header, segment);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);

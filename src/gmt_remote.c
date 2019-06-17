@@ -76,7 +76,7 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
 			char name[GMT_LEN32] = {""};
-			(len == 3) ? sprintf (name, "earth_relief_%s", file) : sprintf (name, "%s", &file[1]);
+			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
 			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
 			match = k;
@@ -227,16 +227,16 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	
 	if (GMT->current.io.md5_refreshed) return;	/* Already been here */
 	
-	sprintf (md5path, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
+	snprintf (md5path, PATH_MAX, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
 
 	if (access (md5path, R_OK)) {    /* Not found locally so need to download the first time */
 		char serverdir[PATH_MAX] = {""};
-		sprintf (serverdir, "%s/server", GMT->session.USERDIR);
+		snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);
 		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT server directory : %s\n", serverdir);
 			return;
 		}
-		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
+		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
@@ -277,7 +277,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", md5path, old_md5path);
 			return;
 		}
-		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
+		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
 		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", md5path);
 			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
@@ -390,14 +390,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
-	sprintf (serverdir, "%s/server", user_dir[GMT_DATA_DIR]);
+	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 	if ((is_data || is_srtm) && access (serverdir, R_OK) && gmt_mkdir (serverdir))
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", serverdir);
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
 		is_srtm = true;
-		sprintf (srtmdir, "%s/srtm%d", serverdir, res);
+		snprintf (srtmdir, PATH_MAX, "%s/srtm%d", serverdir, res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK) && gmt_mkdir (srtmdir))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", srtmdir);
@@ -406,14 +406,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (mode != GMT_LOCAL_DIR)
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
-		sprintf (local_path, "%s", &file[pos]);
+		snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 	}
 	
 	/* Create the remote URL */
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
-		sprintf (url, "%s", file);
+		snprintf (url, PATH_MAX, "%s", file);
 	else {	/* Use GMT data dir, possible from subfolder cache */
-		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
+		snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
@@ -453,22 +453,22 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
 		if (is_srtm) {	/* Doing SRTM tiles */
-			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
+			snprintf (local_path, PATH_MAX, "%s/%s", srtmdir, &file[pos]);
 			srtm_local = strdup (local_path);	/* What we want the local file to be called */
 			len = strlen (local_path);
 			if (!strncmp (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
 				strncpy (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 		}
 		else if (is_data) {
-			sprintf (local_path, "%s/server", user_dir[GMT_DATA_DIR]);
+			snprintf (local_path, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
-			sprintf (local_path, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
 		}
 		else {	/* Goes to cache */
 			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", user_dir[to]);
-			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
+			snprintf (local_path, PATH_MAX, "%s/%s", user_dir[to], &file[pos]);
 		}
 	}
 	if (kind == GMT_DATA_FILE && !strstr (local_path, ".grd")) strcat (local_path, ".grd");	/* Must supply the .grd */
@@ -603,7 +603,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
 	is = (int)floor (wesn[YLO]);	in = (int)ceil (wesn[YHI]);
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in */
-		sprintf (srtmlist, "%s/=srtm%d.000000", API->GMT->parent->gwf_dir, res);
+		snprintf (srtmlist, PATH_MAX, "%s/=srtm%d.000000", API->GMT->parent->gwf_dir, res);
 		file = srtmlist;
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
@@ -616,8 +616,8 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		int fd = 0;
 #endif
 		if (API->tmp_dir)			/* Have a recognized temp directory */
-			sprintf (srtmlist, "%s/", API->tmp_dir);
-		sprintf (name, "=srtm%d.XXXXXX", res);
+			snprintf (srtmlist, PATH_MAX, "%s/", API->tmp_dir);
+		snprintf (name, GMT_LEN16, "=srtm%d.XXXXXX", res);
 		strcat (srtmlist, name);
 #ifdef _WIN32
 		if ((file = mktemp (srtmlist)) == NULL) {
@@ -713,7 +713,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, Din, input);
 			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, output);
 			/* Call gmt select and return coordinates on land */
-			sprintf (cmd, "-Ns/k -Df %s ->%s", input, output);
+			snprintf (cmd, GMT_LEN128, "-Ns/k -Df %s ->%s", input, output);
 			if (GMT_Call_Module (API, "select", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Failure */
 				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: gmtselect command for perimeter failed.\n");
 				return NULL;
@@ -766,7 +766,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
-	sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0 -Co-", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0 -Co-", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

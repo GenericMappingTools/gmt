@@ -256,8 +256,8 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 			if ((pos = (int)(strlen (opt->arg) - 4)) < 0) continue;	/* Odd item, skip */
 			strncpy (prefix, opt->arg, PATH_MAX);	/* Make copy of name/file */
 			if (!strncmp (&prefix[pos], ".a77", 4U) || !strncmp (&prefix[pos], ".h77", 4U)) prefix[pos] = 0;	/* Truncate any extension */
-			sprintf (a77_file, "%s.a77", prefix);
-			sprintf (h77_file, "%s.h77", prefix);
+			snprintf (a77_file, PATH_MAX-4, "%s.a77", prefix);
+			snprintf (h77_file, PATH_MAX-4, "%s.h77", prefix);
 			if (access (a77_file, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "A77 file %s not found - skipping conversion\n", a77_file);
 				continue;
@@ -266,7 +266,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "H77 file %s not found - skipping conversion\n", h77_file);
 				continue;
 			}
-			sprintf (mgd77_file, "%s.mgd77", prefix);
+			snprintf (mgd77_file, PATH_MAX-6, "%s.mgd77", prefix);
 			if ((fpout = fopen (mgd77_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
 				continue;
