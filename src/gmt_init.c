@@ -14056,7 +14056,13 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	   mapproject usage but maybe we still need for mapping purposes. To-be-rediscovered.
 	*/
 	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
-	if (item_t2) {
+	if (item_t2 && !GMT->current.ps.active && !strcmp(item_t2, "/1:1")) {
+		/* Even though it failed to do the mapping we can still use it in mapproject */
+		GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		GMT->current.proj.is_proj4 = true;
+		GMT->current.proj.pars[14] = 1;
+	}
+	else if (item_t2) {
 		char *pch2;
 		len = strlen(item_t2);
 		if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
@@ -14081,16 +14087,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 		free (item_t2);			/* Cannot be freed before */
 	}
-	else {
-		/* Even though it failed to do the mapping we can still use it in mapproject */
-		//GMT->current.proj.projection_GMT = GMT_NO_PROJ;
-		//GMT->current.proj.is_proj4 = true;
-		//GMT->current.proj.pars[14] = 1;
-		/* Not anymore. Now we error out but leave the above for a while in case I remember
-		   why it could have been useful
-		*/
+	else
 		return 1;
-	}
 
 	if (isdigit(item[0]))
 		sprintf (dest, "EPSG:%s", item);
