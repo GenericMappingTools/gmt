@@ -3,7 +3,7 @@
 +=======================+=====================================================================+
 | :doc:`begin`          | Initiate a new GMT session using modern mode                        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`clear`          | Delete current history, conf, cpt, or the cache directory           |
+| :doc:`clear`          | Delete current history, conf, cpt, sessions, data or cache          |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`end`            | Terminate GMT modern mode session and produce optional graphics     |
 +-----------------------+---------------------------------------------------------------------+

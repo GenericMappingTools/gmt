@@ -247,19 +247,15 @@ to allow executables find the DLL shared libraries.
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from:
-
-- [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-- [GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
+are available from the [GMT website](https://www.generic-mapping-tools.org) and
+[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
     git clone https://github.com/GenericMappingTools/gmt
 
-You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz) from:
-
-- [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-- [GMT FTP site](ftp://ftp.soest.hawaii.edu/gmt)
+You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
+from any of the [GMT FTP sites](MIRRORS.md).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
 
@@ -270,7 +266,7 @@ open-source system for managing the build process. The building process is
 controlled by two configuration files in the `cmake` directory:
 
 -   *ConfigDefault.cmake*: is version controlled and used to add new default
-    variables and set defaults for everyone. **You should not edit this file.**
+    variables and set defaults for everyone. **You should NOT edit this file.**
 -   *ConfigUser.cmake*: is not version controlled and used to override defaults
     on a per-user basis.
     There is a template file, *ConfigUserTemplate.cmake*, that you should copy
@@ -360,7 +356,7 @@ cmake --build . --target install --config Release
 will install gmt executable, library, development headers and built-in data
 to the specified GMT install location.
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-UNIX manpages, and HTML and PDF documentation.
+UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
@@ -368,8 +364,8 @@ Using ``sudo`` will often do the trick.
 
 ## Setting path
 
-Make sure you set the PATH to include the directory containing the GMT executables (BINDIR)
-if this is not a standard directory like /usr/local/bin. Then, you should now be able to
+Make sure you set the PATH to include the directory containing the GMT executables
+if this is not a standard directory like `/usr/local/bin`. Then, you should now be able to
 run GMT programs.
 
 ---
@@ -382,13 +378,13 @@ The GMT documentations are available in different formats and can be generated w
 
 ```
 cmake --build . --target docs_man           # UNIX manual pages
-cmake --build . --target docs_html          # HTML manual, cookbook, and API reference
-cmake --build . --target docs_pdf           # PDF manual, cookbook, and API reference
+cmake --build . --target docs_html          # HTML manual, tutorial, cookbook, and API reference
+cmake --build . --target docs_pdf           # PDF tutorial, cookbook, and API reference
 cmake --build . --target docs_pdf_shrink    # Like docs_pdf but with reduced size
 ```
 
-To generate the documentation you need to install the Sphinx documentation
-builder, and for PDFs you also need LaTeX. You can choose to install the
+To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/en/master/)
+documentation builder, and for PDFs you also need LaTeX. You can choose to install the
 documentation files from an external location instead of generating the
 Manpages, PDF, and HTML files from the sources. This is convenient if Sphinx
 and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
@@ -407,6 +403,7 @@ set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
 set (DO_API_TESTS ON)
+set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 ```
 
 Then run:
@@ -431,8 +428,8 @@ Edit `cmake/ConfigDefault.cmake` and set
 Then create source packages with:
 
 ```
-cmake --build . --target gmt_release      # export the source tree and install doc
-cmake --build . --target gmt_release_tar
+cmake --build . --target gmt_release      # export the source tree and documentation
+cmake --build . --target gmt_release_tar  # create tarballs (in tar.gz and tar.xz formats)
 ```
 
 ## Packaging

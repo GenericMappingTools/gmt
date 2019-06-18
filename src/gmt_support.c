@@ -6479,7 +6479,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	 */
 
 	if ((c = strchr (line, '+')) && strchr ("cosv", c[1])) {	/* Found valid modifiers */
-		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64], *t = NULL, *t2 = NULL;
+		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64] = {"",""}, *t = NULL, *t2 = NULL;
 		unsigned int pos = 0;
 		int n;
 		bool processed_vector = false, use[2] = {false, false}, may_differ = false;
