@@ -59,20 +59,9 @@ Note there are three GMT tar archives available (#3 is optional):
 3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
 For macOS and Windows users there are separate installers available.
-You can obtain GMT and support data from http://gmt.soest.hawaii.edu/.
-Alternatively you may get GMT from any of the following FTP sites.
+You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
+Alternatively you may get GMT from any of the [FTP sites](MIRRORS.md).
 Try the site that is closest to you to minimize transmission times:
-
-| Site                                                        | FTP address                                         |
-|:------------------------------------------------------------|:----------------------------------------------------|
-| SOEST, U. of Hawaii                                         | ftp://ftp.soest.hawaii.edu/gmt                      |
-| Lab for Satellite Altimetry, NOAA                           | ftp://ftp.star.nesdis.noaa.gov/pub/sod/lsa/gmt      |
-| IRIS, Washington, US                                        | ftp://ftp.iris.washington.edu/pub/gmt               |
-| IAG-USP, U. of Sao Paulo, BRAZIL                            | ftp://ftp.iag.usp.br/pub/gmt                        |
-| TENET, Tertiary Education & Research Networks, SOUTH AFRICA | ftp://gmt.mirror.ac.za/gmt/                         |
-| Tokai U, Shimizu, JAPAN                                     | ftp://ftp.scc.u-tokai.ac.jp/pub/gmt                 |
-| University of Science and Technology of China, Hefei, CHINA | http://mirrors.ustc.edu.cn/gmt                      |
-
 
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
