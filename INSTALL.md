@@ -6,8 +6,8 @@ To build the latest GMT 6 developing source codes, please refer to the
 
 GMT is available on Windows, macOS and Linux.
 Source and binary packages are provided for the latest release version,
-and can be downloaded from the [Downloads page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-or [the GitHub repository](https://github.com/GenericMappingTools/gmt/).
+and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
+and [the GitHub repository](https://github.com/GenericMappingTools/gmt/).
 
 This file provides instructions about how to install GMT binary packages in
 different operating systems. Please refer to [Building Instructions](BUILDING.md)
@@ -69,16 +69,17 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
 ### Standalone Installer
 
-[Download the application bundle](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download) (gmt-5.x.x-darwin-x86_64.dmg)
-and drag GMT-5.x.x.app to any folder. This bundle includes a self contained GMT installation.
-GMT-5.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
+Application bundle is available from from the [GMT main site](https://www.generic-mapping-tools.org).
+Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg)
+and drag GMT-6.x.x.app to any folder. This bundle includes a self contained GMT installation.
+GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT.app once and type:
 
     echo ${PATH%%:*}
 
 in the terminal. Then prepend this directory to your PATH environment variable,
-e.g., in ~/.bashrc. Note: The installer is always built for the latest macOS version only.
+e.g., in `~/.bashrc`. Note: The installer is always built for the latest macOS version only.
 
 ### Install via macports
 
@@ -138,8 +139,8 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
 ### Standalone Installer
 
-We provide 32 and 64 bit standalone installers (e.g., gmt-5.x.x-win32.exe)
-in the [downloads section](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download).
+We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
+on the [GMT main site](https://www.generic-mapping-tools.org).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
 
