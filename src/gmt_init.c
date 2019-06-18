@@ -12731,6 +12731,11 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	}
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, argv[k]);
 	
+	if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (argv[k], "ps", 2U)) {	/* Gave classic ps* name in modern mode */
+		char not_used[GMT_LEN32] = {""};
+		const char *mod_name = gmt_current_name (argv[k], not_used);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", argv[k], mod_name);
+	}
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
