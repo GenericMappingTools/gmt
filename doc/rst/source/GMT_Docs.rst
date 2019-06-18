@@ -6192,7 +6192,7 @@ Shapefiles
 
 GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
 with GDAL support.  By default, only the geographic coordinates are read.  To select
-some or all aspatial fields, see the :ref:`\ **-a** option <-aspatial_full>`
+some or all aspatial fields, see the :ref:`-a option <-aspatial_full>`.
 
 Grid files
 ----------
