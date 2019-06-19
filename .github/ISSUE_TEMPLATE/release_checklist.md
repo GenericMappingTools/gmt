@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-**Version**: x.x.x
+**Version**:  x.x.x
 
 **Before release**:
 
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
-- [ ] run [coverity scan](https://scan.coverity.com/projects/gmt) and fix defects (@PaulWessel)
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] update changelog
+- [ ] update INSTALL.md
 - [ ] build documentations and fix warnings
 - [ ] check/change `cmake/ConfigDefault.cmake`
     - [ ] `GMT_VERSION_YEAR` is current year
@@ -30,10 +30,10 @@ assignees: ''
 - [ ] create Windows binary packages (win32 and win64) (@joa-quim)
 - [ ] make a tag and push it to github
     ```
-    git tag 6.0.0
-    git push --tag
+    git tag x.x.x
+    git push --tags
     ```
-- [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the soruce packages, Windows binary packages and macOS Bundle.
+- [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source packages, Windows binary packages and macOS Bundle.
 - [ ] upload source packages, Windows binary packages and macOS Bundle to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP
 - [ ] update conda packages via [conda-forge/gmt-feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
