@@ -1,6 +1,6 @@
 ---
 name: GMT Release Checklist
-about: Checklist for new GMT release.
+about: Checklist for a new GMT release.
 title: 'Release GMT x.x.x'
 labels: ''
 assignees: ''
@@ -36,7 +36,7 @@ assignees: ''
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP
-- [ ] announcements
+- [ ] make announcements
 
 **After release**:
 
@@ -45,7 +45,7 @@ assignees: ''
 
 **3rd-party update**
 
-- [ ] update conda packages via [conda-forge/gmt-feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
+- [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@seisman)
 - [ ] update fink package (@remkos)
 - [ ] update macports ports
