@@ -2686,8 +2686,18 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
 #endif
-	else
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);		/* Hardcoded GMT_SHARE_DIR */
+	else if (!access (GMT_SHARE_DIR, F_OK|R_OK))		/* Found in hardcoded GMT_SHARE_DIR pointing to an existant directory */
+		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
+	else {
+		/* SHAREDIR still not found, make a smart guess based on runpath: */
+		if (gmt_guess_sharedir (path, GMT->init.runtime_bindir))
+			GMT->session.SHAREDIR = strdup (path);
+		else {
+			/* Still not found */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not locate share directory for GMT.\n");
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		}
+	}
 
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
 	trim_off_any_slash_at_end (GMT->session.SHAREDIR);
@@ -12731,6 +12741,11 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	}
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, argv[k]);
 	
+	if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (argv[k], "ps", 2U)) {	/* Gave classic ps* name in modern mode */
+		char not_used[GMT_LEN32] = {""};
+		const char *mod_name = gmt_current_name (argv[k], not_used);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", argv[k], mod_name);
+	}
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
