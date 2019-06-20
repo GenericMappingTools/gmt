@@ -6,8 +6,8 @@ set -e
 
 cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
-set (DCW_ROOT "$ENV{COASTLINEDIR}")
-set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
+set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
+set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (COPY_GSHHG TRUE)
 set (COPY_DCW TRUE)
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")

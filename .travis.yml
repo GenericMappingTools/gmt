@@ -4,7 +4,7 @@
 env:
     global:
         - INSTALLDIR="$HOME/gmt-install-dir"
-        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
+        - COASTLINEDIR="$HOME/coastline"
         - PATH="$INSTALLDIR/bin:$PATH"
         - BUILD_DOCS=false
         - DEPLOY_DOCS=false
@@ -86,8 +86,6 @@ before_install:
         rsync -av /var/cache/apt/archives/*.deb ${DEB_CACHE}/
       fi
     - |-
-    - mkdir "$INSTALLDIR"
-    - mkdir "$COASTLINEDIR"
     - ci/download-coastlines.sh
     # Install GMT documentation dependencies
     - if [[ "$BUILD_DOCS" == "true" ]]; then
