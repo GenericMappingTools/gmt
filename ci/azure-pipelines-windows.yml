@@ -35,17 +35,11 @@ steps:
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
   displayName: Set install location
 
-- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
+- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]D:/a/1/s/coastline"
   displayName: Set coastline location
 
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
-
-- bash: |
-    set -x -e
-    mkdir -p "$INSTALLDIR"
-    mkdir -p "$COASTLINEDIR"
-  displayName: Create install directories
 
 - bash: ci/download-coastlines.sh
   displayName: Download coastlines

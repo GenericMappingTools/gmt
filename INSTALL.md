@@ -69,14 +69,18 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
 ### Standalone Installer
 
-Application bundle is available from from the [GMT main site](https://www.generic-mapping-tools.org).
+Application bundle is available from the [GMT main site](https://www.generic-mapping-tools.org).
 Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg)
 and drag GMT-6.x.x.app to any folder. This bundle includes a self contained GMT installation.
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
-your search path for executables. For that, just run GMT.app once and type:
+your search path for executables. For that, just run GMT-6.x.x.app once and type:
 
-    echo ${PATH%%:*}
+    dirname `which gmt`
+
+or:
+
+    echo ${BUNDLE_RESOURCES}/bin
 
 in the terminal. Then prepend this directory to your PATH environment variable,
 e.g., in `~/.bashrc`. Note: The installer is always built for the latest macOS version only.

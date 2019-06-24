@@ -19,7 +19,7 @@ jobs:
   condition: ne(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
 
   variables:
     BUILD_DOCS: false
@@ -27,16 +27,7 @@ jobs:
     TEST: false
 
   steps:
-
-  # Setup and compile GMT
   - template: ci/azure-pipelines-mac.yml
-
-  - bash: |
-      set -x -e
-      gmt defaults -Vd
-      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
-    displayName: Check a few simple commands
 
 # Mac - Build docs + Package
 ########################################################################################
@@ -45,7 +36,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
 
   variables:
     BUILD_DOCS: true
@@ -53,32 +44,7 @@ jobs:
     TEST: false
 
   steps:
-
-  # Setup and compile GMT
   - template: ci/azure-pipelines-mac.yml
-
-  - bash: |
-      set -x -e
-      gmt defaults -Vd
-      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
-    displayName: Check a few simple commands
-
-  - bash: |
-      cd build
-      cmake --build . --target docs_html_depends
-      cmake --build . --target docs_man_depends
-      cmake --build . --target docs_html
-      cmake --build . --target docs_man
-    displayName: Build documentations
-
-  - bash: |
-      cd build
-      cmake --build . --target gmt_release
-      cmake --build . --target gmt_release_tar
-      cpack -G Bundle
-      md5sum gmt-*.tar gmt-*.tar.gz gmt-*.tar.xz GMT-*.dmg
-    displayName: Package GMT
 
 # Mac - Test
 ########################################################################################
@@ -87,7 +53,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
 
   variables:
     BUILD_DOCS: false
@@ -95,36 +61,7 @@ jobs:
     TEST: true
 
   steps:
-
-  # Setup and compile GMT
   - template: ci/azure-pipelines-mac.yml
-
-  - bash: |
-      set -x -e
-      gmt defaults -Vd
-      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
-    displayName: Check a few simple commands
-
-  # Run the full tests only if this is a scheduled build
-  - bash: |
-      set -x -e
-      cd build
-      # Download remote files before testing, see #939.
-      curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
-      gmt which -Gu @earth_relief_02m @earth_relief_05m
-      ctest --output-on-failure --force-new-ctest-process -j4
-    displayName: Full tests
-
-  # Upload test coverage even if build fails. Keep separate to make sure this task fails
-  # if the tests fail.
-  - bash: |
-      set -x -e
-      bash <(curl -s https://codecov.io/bash)
-    env:
-      CODECOV_TOKEN: $(codecov.token)
-    condition: succeededOrFailed()
-    displayName: Upload test coverage
 
 # Windows - Compile + Build Docs + Package
 ########################################################################################
