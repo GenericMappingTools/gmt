@@ -15202,7 +15202,7 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
-	/* Write the session name to file GMT_SESSION_FILE unless default */
+	/* Write the session name to file GMT_SESSION_FILE unless default. */
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""};
 	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
@@ -15571,7 +15571,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			error = put_session_name (API, text);		/* Store session name */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */
@@ -15585,7 +15585,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
 				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
@@ -15598,7 +15598,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			break;
 	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [Session Name = %s]\n", type[API->GMT->current.setting.run_mode], API->session_name);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [Session ID = %s]\n", type[API->GMT->current.setting.run_mode], API->session_name);
 		API->GMT->current.setting.use_modern_name = true;
 	}
 	return error;
