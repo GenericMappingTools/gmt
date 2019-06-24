@@ -69,6 +69,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
 	if ((opt = options))	/* Gave a replacement session name */
 		opt = opt->next;
+	if (opt && opt->option == 'V')	/* Skip any -V already processed by GMT_Parse_Common */
+		opt = opt->next;
 	if (opt) {	/* Also gave replacement primary format(s) */
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
@@ -82,6 +84,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+char *get_the_options (struct GMT_OPTION *opt) {
+	/* Extract file arguments (including graphics format) from options */
+	char buffer[GMT_LEN256] = {""};
+	bool space = false;
+	if (opt == NULL) return NULL;
+	while (opt) {
+		if (opt->option == GMT_OPT_INFILE) {	/* Valid file argument */
+			if (space) strcat (buffer, " ");
+			strcat (buffer, opt->arg);
+			space = true;
+		}
+		opt = opt->next;
+	}
+	return strdup (buffer);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -113,10 +131,10 @@ int GMT_begin (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the begin main code ----------------------------*/
 
-	if (options) arg = GMT_Create_Cmd (API, options);
+	arg = get_the_options (options);
 	if (gmt_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
 		error = GMT_RUNTIME_ERROR;
 
-	if (options) GMT_Destroy_Cmd (API, &arg);
+	if (arg) gmt_M_str_free (arg);
 	Return (error);
 }

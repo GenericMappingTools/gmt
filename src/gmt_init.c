@@ -15202,7 +15202,7 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
-	/* Write the session name to file GMT_SESSION_FILE unless default */
+	/* Write the session name to file GMT_SESSION_FILE unless default. */
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""};
 	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
