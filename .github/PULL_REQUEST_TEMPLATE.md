@@ -10,6 +10,7 @@ Fixes #
 
 **Reminders**
 
+- [ ] Correct base branch selected? `master` for new features, `6.0` for bug fixes
 - [ ] Make sure that your code follows our style. Use the other functions/files as a basis.
 - [ ] Add tests for new features or tests that would have caught the bug that you're fixing.
 - [ ] Describe changes to function behavior and arguments in a comment below the function declaration.
