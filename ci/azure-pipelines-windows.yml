@@ -23,7 +23,8 @@ steps:
 
 - bash: |
     set -x -e
-    choco install ghostscript ninja
+    choco install ninja
+    choco install ghostscript --version 9.26 # gs 9.27 is buggy
   displayName: Install dependencies via chocolatey
 
 - bash: |
