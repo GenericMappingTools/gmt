@@ -38,6 +38,7 @@ before_cache:
 branches:
     only:
         - master
+        - 6.0
         - 5.4
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
