@@ -19,7 +19,7 @@
  * Date:	23-Jun-2017
  * Version:	6 API
  *
- * Brief synopsis: gmt end terminates a modern mode session and mades registered figures.
+ * Brief synopsis: gmt end terminates a modern mode session and makes registered figures.
  *	gmt end
  */
 
@@ -40,7 +40,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
