@@ -53,7 +53,7 @@ matrix:
           if: type != cron
         - name: "Linux (cron - test)"
           os: linux
-          if: type != cron
+          if: type = cron
           env:
             - TEST="true"
         # Only build the docs on Linux cron jobs
