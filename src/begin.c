@@ -19,7 +19,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt begin starts a modern mode session.
- *	gmt begin [<prefix>] [<format>]
+ *	gmt begin [<prefix>] [<format>] [-V<level>]
  */
 
 #include "gmt_dev.h"
@@ -66,8 +66,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
-	if ((opt = options))	/* Gave a replacement session name */
+	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot, unless PS */
+	if ((opt = options))	/* Gave a replacement session name and possibly more */
+		opt = opt->next;	/* Skip session name */
+	if (opt && opt->option == 'V')	/* Skip any -V already processed by GMT_Parse_Common */
 		opt = opt->next;
 	if (opt) {	/* Also gave replacement primary format(s) */
 		int k;
@@ -82,6 +84,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+char *get_session_name_and_format (struct GMT_OPTION *opt) {
+	/* Extract session arguments (including optional graphics format) from options */
+	char buffer[GMT_LEN256] = {""};
+	bool space = false;
+	unsigned int n = 0;
+	if (opt == NULL) return NULL;	/* Go with the default settings */
+	while (opt && n < 2) {
+		if (opt->option == GMT_OPT_INFILE) {	/* Valid file argument */
+			if (space) strcat (buffer, " ");
+			strcat (buffer, opt->arg);
+			space = true;
+			n++;
+		}
+		opt = opt->next;
+	}
+	return strdup (buffer);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -113,10 +133,10 @@ int GMT_begin (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the begin main code ----------------------------*/
 
-	if (options) arg = GMT_Create_Cmd (API, options);
+	arg = get_session_name_and_format (options);
 	if (gmt_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
 		error = GMT_RUNTIME_ERROR;
 
-	if (options) GMT_Destroy_Cmd (API, &arg);
+	if (arg) gmt_M_str_free (arg);
 	Return (error);
 }
