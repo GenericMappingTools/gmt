@@ -328,8 +328,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					pp = 0;	txt_a[0] = 0;
 					while (gmt_getmodopt (GMT, 'G', c, "np", &pp, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {
-							case 'n': pos = true;	break;	/* Negative fill */
-							case 'p': neg = true;	break;	/* Positive fill */
+							case 'n': neg = true;	break;	/* Negative fill */
+							case 'p': pos = true;	break;	/* Positive fill */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
