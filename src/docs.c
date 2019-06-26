@@ -85,6 +85,14 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+#ifdef WIN32
+	os = 0;
+#elif defined(__APPLE__)
+	os = 1;
+#else
+	os = 2;
+#endif
+
 	docname = gmt_current_name (opt->arg, name);
 	
 	if (strcmp (opt->arg, docname))
@@ -128,8 +136,12 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (other_file) {		/* A local or Web file */
 		if (!strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))
 			sprintf (URL, "%s", docname);	/* Must assume that the address is correct */
-		else	/* Must assume this is a local file */
-			sprintf (URL, "file:///%s", docname);
+		else {	/* Must assume this is a local file */
+			if (os == 1)	/* Just give the full file name only to open in macOS */
+				sprintf (URL, "%s", docname);
+			else
+				sprintf (URL, "file:///%s", docname);
+		}
 	}
 	else {	/* One of the fixed doc files */
 		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
@@ -143,13 +155,6 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		strncat (URL, t, PATH_MAX-1);
 	}
 
-#ifdef WIN32
-	os = 0;
-#elif defined(__APPLE__)
-	os = 1;
-#else
-	os = 2;
-#endif
 	if (print_url) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
 		printf ("%s\n", URL);
