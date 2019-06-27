@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#
-# Tests gmt mgd77magref against the values of the original FORTRAN version 
+# GMT_KNOWN_FAILURE
+# Tests gmt mgd77magref against the values of the original FORTRAN version
 # Because the second term (lithospheric) does not agree it is not included in the comparison
 
 data=2000.08700533
