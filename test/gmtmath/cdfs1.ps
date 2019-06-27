@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:58 2018
+%%CreationDate: Thu Jun 27 12:16:19 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,36 +674,16 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-7200 0 D
-0 1440 D
--7200 0 D
-P
-PSL_clip N
-8 W
-V
-{0.565 0.933 0.565 C} FS
-O1
-120 626 157 0 Sb
-440 626 939 0 Sb
-814 626 1722 0 Sb
-1063 626 2504 0 Sb
-1167 626 3287 0 Sb
-1195 626 4070 0 Sb
-1200 626 4852 0 Sb
-1200 626 5635 0 Sb
-1200 626 6417 0 Sb
-U
-PSL_cliprestore
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
-O0
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 0 1440 T 90 R
 U
 V 0 1548 T 90 R
+PSL_vecheadpen
+25 W
 0 0 M
 -250 62 D
 0 -124 D
@@ -749,9 +724,12 @@ N 0 1440 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 25 W
 N 0 0 M 7200 0 D S
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 7200 0 T N 0 0 M 290 0 D S
 U
-V 7740 0 T 0 0 M
+V 7740 0 T PSL_vecheadpen
+25 W
+0 0 M
 -250 62 D
 0 -124 D
 P clip fs N 
@@ -801,6 +779,27 @@ def
 (8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
+V
+{0.565 0.933 0.565 C} FS
+O1
+120 626 157 0 Sb
+440 626 939 0 Sb
+814 626 1722 0 Sb
+1063 626 2504 0 Sb
+1167 626 3287 0 Sb
+1195 626 4070 0 Sb
+1200 626 4852 0 Sb
+1200 626 5635 0 Sb
+1200 626 6417 0 Sb
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -866,36 +865,16 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-7200 0 D
-0 1440 D
--7200 0 D
-P
-PSL_clip N
-8 W
-V
-{0.565 0.933 0.565 C} FS
-O1
-162 626 157 0 Sb
-487 626 939 0 Sb
-812 626 1722 0 Sb
-1029 626 2504 0 Sb
-1137 626 3287 0 Sb
-1180 626 4070 0 Sb
-1195 626 4852 0 Sb
-1199 626 5635 0 Sb
-1200 626 6417 0 Sb
-U
-PSL_cliprestore
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
-O0
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 0 1440 T 90 R
 U
 V 0 1548 T 90 R
+PSL_vecheadpen
+25 W
 0 0 M
 -250 62 D
 0 -124 D
@@ -936,9 +915,12 @@ N 0 1440 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 25 W
 N 0 0 M 7200 0 D S
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 7200 0 T N 0 0 M 290 0 D S
 U
-V 7740 0 T 0 0 M
+V 7740 0 T PSL_vecheadpen
+25 W
+0 0 M
 -250 62 D
 0 -124 D
 P clip fs N 
@@ -988,6 +970,27 @@ def
 (8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
+V
+{0.565 0.933 0.565 C} FS
+O1
+162 626 157 0 Sb
+487 626 939 0 Sb
+812 626 1722 0 Sb
+1029 626 2504 0 Sb
+1137 626 3287 0 Sb
+1180 626 4070 0 Sb
+1195 626 4852 0 Sb
+1199 626 5635 0 Sb
+1200 626 6417 0 Sb
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1054,57 +1057,16 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 0 M
-810 1 D
-360 3 D
-180 3 D
-270 10 D
-90 4 D
-180 13 D
-180 19 D
-180 27 D
-90 17 D
-90 19 D
-90 22 D
-90 25 D
-90 27 D
-90 31 D
-90 33 D
-90 36 D
-90 39 D
-90 41 D
-90 43 D
-270 139 D
-270 143 D
-180 92 D
-90 43 D
-90 41 D
-90 39 D
-90 36 D
-90 33 D
-90 31 D
-90 27 D
-90 25 D
-90 22 D
-90 19 D
-90 17 D
-180 27 D
-180 19 D
-180 13 D
-270 11 D
-90 3 D
-360 5 D
-810 2 D
-180 0 D
-S
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 0 1440 T 90 R
 U
 V 0 1548 T 90 R
+PSL_vecheadpen
+25 W
 0 0 M
 -250 62 D
 0 -124 D
@@ -1145,9 +1107,12 @@ N 0 1440 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 25 W
 N 0 0 M 7200 0 D S
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 7200 0 T N 0 0 M 290 0 D S
 U
-V 7740 0 T 0 0 M
+V 7740 0 T PSL_vecheadpen
+25 W
+0 0 M
 -250 62 D
 0 -124 D
 P clip fs N 
@@ -1197,6 +1162,58 @@ def
 (4) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
+17 W
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
+0 0 M
+810 1 D
+360 3 D
+180 3 D
+270 10 D
+90 4 D
+180 13 D
+180 19 D
+180 27 D
+90 17 D
+90 19 D
+90 22 D
+90 25 D
+90 27 D
+90 31 D
+90 33 D
+90 36 D
+90 39 D
+90 41 D
+90 43 D
+270 139 D
+270 143 D
+180 92 D
+90 43 D
+90 41 D
+90 39 D
+90 36 D
+90 33 D
+90 31 D
+90 27 D
+90 25 D
+90 22 D
+90 19 D
+90 17 D
+180 27 D
+180 19 D
+180 13 D
+270 11 D
+90 3 D
+360 5 D
+810 2 D
+180 0 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1260,59 +1277,16 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0.827 A
-0 0 M
-810 1 D
-360 3 D
-180 3 D
-270 10 D
-90 4 D
-180 13 D
-180 19 D
-180 27 D
-90 17 D
-90 19 D
-90 22 D
-90 25 D
-90 27 D
-90 31 D
-90 33 D
-90 36 D
-90 39 D
-90 41 D
-90 43 D
-270 139 D
-270 143 D
-180 92 D
-90 43 D
-90 41 D
-90 39 D
-90 36 D
-90 33 D
-90 31 D
-90 27 D
-90 25 D
-90 22 D
-90 19 D
-90 17 D
-180 27 D
-180 19 D
-180 13 D
-270 11 D
-90 3 D
-360 5 D
-810 2 D
-180 0 D
-S
 25 W
-0 A
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 0 1440 T 90 R
 U
 V 0 1548 T 90 R
+PSL_vecheadpen
+25 W
 0 0 M
 -250 62 D
 0 -124 D
@@ -1353,9 +1327,12 @@ N 0 1440 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 25 W
 N 0 0 M 7200 0 D S
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 7200 0 T N 0 0 M 290 0 D S
 U
-V 7740 0 T 0 0 M
+V 7740 0 T PSL_vecheadpen
+25 W
+0 0 M
 -250 62 D
 0 -124 D
 P clip fs N 
@@ -1405,6 +1382,59 @@ def
 (4) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
+17 W
+0.827 A
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
+0 0 M
+810 1 D
+360 3 D
+180 3 D
+270 10 D
+90 4 D
+180 13 D
+180 19 D
+180 27 D
+90 17 D
+90 19 D
+90 22 D
+90 25 D
+90 27 D
+90 31 D
+90 33 D
+90 36 D
+90 39 D
+90 41 D
+90 43 D
+270 139 D
+270 143 D
+180 92 D
+90 43 D
+90 41 D
+90 39 D
+90 36 D
+90 33 D
+90 31 D
+90 27 D
+90 25 D
+90 22 D
+90 19 D
+90 17 D
+180 27 D
+180 19 D
+180 13 D
+270 11 D
+90 3 D
+360 5 D
+810 2 D
+180 0 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1419,6 +1449,13 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
 0 10 M
 180 1 D
 450 7 D
@@ -1463,6 +1500,7 @@ O0
 270 4 D
 180 1 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1529,54 +1567,16 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 0 M
-180 1 D
-54 4 D
-36 5 D
-36 9 D
-36 13 D
-36 18 D
-36 22 D
-54 41 D
-54 50 D
-90 95 D
-180 206 D
-72 78 D
-72 73 D
-72 67 D
-54 46 D
-72 55 D
-54 38 D
-72 45 D
-90 49 D
-90 42 D
-54 22 D
-90 32 D
-108 32 D
-126 30 D
-90 17 D
-54 10 D
-126 18 D
-126 15 D
-198 17 D
-234 15 D
-306 12 D
-342 8 D
-270 4 D
-414 4 D
-342 2 D
-558 2 D
-1242 2 D
-1080 1 D
-S
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 0 1440 T 90 R
 U
 V 0 1548 T 90 R
+PSL_vecheadpen
+25 W
 0 0 M
 -250 62 D
 0 -124 D
@@ -1617,9 +1617,12 @@ N 0 1440 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 25 W
 N 0 0 M 7200 0 D S
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V 7200 0 T N 0 0 M 290 0 D S
 U
-V 7740 0 T 0 0 M
+V 7740 0 T PSL_vecheadpen
+25 W
+0 0 M
 -250 62 D
 0 -124 D
 P clip fs N 
@@ -1673,6 +1676,55 @@ def
 3600 1440 PSL_H_y add M
 400 F0
 (Cumulative Distribution Functions) bc Z
+17 W
+clipsave
+0 0 M
+7200 0 D
+0 1440 D
+-7200 0 D
+P
+PSL_clip N
+0 0 M
+180 1 D
+54 4 D
+36 5 D
+36 9 D
+36 13 D
+36 18 D
+36 22 D
+54 41 D
+54 50 D
+90 95 D
+180 206 D
+72 78 D
+72 73 D
+72 67 D
+54 46 D
+72 55 D
+54 38 D
+72 45 D
+90 49 D
+90 42 D
+54 22 D
+90 32 D
+108 32 D
+126 30 D
+90 17 D
+54 10 D
+126 18 D
+126 15 D
+198 17 D
+234 15 D
+306 12 D
+342 8 D
+270 4 D
+414 4 D
+342 2 D
+558 2 D
+1242 2 D
+1080 1 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ

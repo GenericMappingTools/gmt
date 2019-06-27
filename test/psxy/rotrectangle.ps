@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:55 2018
+%%CreationDate: Thu Jun 27 12:16:32 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,27 +674,10 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-4800 0 D
-0 2864 D
--4800 0 D
-P
-PSL_clip N
-4 W
-0 1 0 C
-V
-{1 0 0 C} FS
-O1
-299 750 21.7399 3961 646 Sj
-303 762 112.117 2908 1124 Sj
-459 769 41.7602 1141 1323 Sj
-U
-PSL_cliprestore
 25 W
-0 A
 4 W
-823 0 M
+823 -1 M
+0 1 D
 -71 192 D
 -30 79 D
 -181 479 D
@@ -707,8 +685,9 @@ PSL_cliprestore
 -103 263 D
 -112 284 D
 -133 332 D
-S
-1658 0 M
+-2 5 D S
+1658 -1 M
+0 1 D
 -218 566 D
 -231 588 D
 -108 270 D
@@ -721,8 +700,9 @@ S
 -15 38 D
 -169 396 D
 -37 87 D
-S
-2503 0 M
+-1 1 D S
+2503 -1 M
+0 1 D
 -85 217 D
 -100 255 D
 -172 433 D
@@ -734,8 +714,9 @@ S
 -31 74 D
 -135 317 D
 -146 335 D
-S
-3356 0 M
+-1 1 D S
+3356 -1 M
+0 1 D
 -96 245 D
 -136 342 D
 -60 151 D
@@ -753,8 +734,9 @@ S
 -57 132 D
 -21 47 D
 -57 129 D
-S
-4216 0 M
+-1 1 D S
+4217 -1 M
+-1 1 D
 -101 258 D
 -150 378 D
 -46 115 D
@@ -768,8 +750,9 @@ S
 -65 151 D
 -25 56 D
 -59 133 D
-S
-4800 719 M
+0 1 D S
+4802 714 M
+-2 5 D
 -86 216 D
 -155 386 D
 -85 207 D
@@ -784,15 +767,17 @@ S
 -32 76 D
 -21 47 D
 -62 142 D
-S
-4800 2864 M
-0 0 D
-P S
-4570 0 M
+0 1 D S
+4802 2860 M
+-2 4 D
+0 1 D S
+4565 -2 M
+5 2 D
 145 57 D
 85 33 D
-S
-2324 0 M
+1 0 D S
+2319 -2 M
+5 2 D
 268 104 D
 155 61 D
 372 146 D
@@ -809,8 +794,9 @@ S
 335 134 D
 130 52 D
 251 100 D
-S
-0 0 M
+1 0 D S
+-1 0 M
+1 0 D
 270 98 D
 331 122 D
 437 165 D
@@ -825,8 +811,9 @@ S
 458 189 D
 131 54 D
 131 54 D
-S
-0 881 M
+1 0 D S
+-1 881 M
+1 0 D
 295 111 D
 436 169 D
 163 64 D
@@ -849,8 +836,9 @@ S
 238 103 D
 138 59 D
 322 138 D
-S
-0 1792 M
+1 1 D S
+-1 1791 M
+1 1 D
 152 60 D
 115 46 D
 134 54 D
@@ -872,11 +860,12 @@ S
 78 35 D
 40 17 D
 70 31 D
-S
-0 2745 M
+5 2 D S
+-1 2745 M
+1 0 D
 224 95 D
 57 24 D
-S
+4 2 D S
 8 W
 N 1 0 M 28 -78 D S
 N 0 2 M -28 78 D S
@@ -907,6 +896,23 @@ V -70.2 R (î90è) ml Z U
 4415 -61 M V 21.3 R (10è) mr Z U
 -157 -56 M V 19.8 R (20è) mr Z U
 -155 1730 M V 21.6 R (30è) mr Z U
+clipsave
+0 0 M
+4800 0 D
+0 2864 D
+-4800 0 D
+P
+PSL_clip N
+4 W
+0 1 0 C
+V
+{1 0 0 C} FS
+O1
+299 750 21.7399 3961 646 Sj
+303 762 112.117 2908 1124 Sj
+459 769 41.7602 1141 1323 Sj
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -948,27 +954,10 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-4800 0 D
-0 2864 D
--4800 0 D
-P
-PSL_clip N
-4 W
-0 1 0 C
-V
-{0 0 1 C} FS
-O1
-600 1200 0 2479 60 Sj
-600 1200 30 2908 1124 Sj
-240 600 90 1141 1323 Sj
-U
-PSL_cliprestore
 25 W
-0 A
 4 W
-823 0 M
+823 -1 M
+0 1 D
 -71 192 D
 -30 79 D
 -181 479 D
@@ -976,8 +965,9 @@ PSL_cliprestore
 -103 263 D
 -112 284 D
 -133 332 D
-S
-1658 0 M
+-2 5 D S
+1658 -1 M
+0 1 D
 -218 566 D
 -231 588 D
 -108 270 D
@@ -990,8 +980,9 @@ S
 -15 38 D
 -169 396 D
 -37 87 D
-S
-2503 0 M
+-1 1 D S
+2503 -1 M
+0 1 D
 -85 217 D
 -100 255 D
 -172 433 D
@@ -1003,8 +994,9 @@ S
 -31 74 D
 -135 317 D
 -146 335 D
-S
-3356 0 M
+-1 1 D S
+3356 -1 M
+0 1 D
 -96 245 D
 -136 342 D
 -60 151 D
@@ -1022,8 +1014,9 @@ S
 -57 132 D
 -21 47 D
 -57 129 D
-S
-4216 0 M
+-1 1 D S
+4217 -1 M
+-1 1 D
 -101 258 D
 -150 378 D
 -46 115 D
@@ -1037,8 +1030,9 @@ S
 -65 151 D
 -25 56 D
 -59 133 D
-S
-4800 719 M
+0 1 D S
+4802 714 M
+-2 5 D
 -86 216 D
 -155 386 D
 -85 207 D
@@ -1053,15 +1047,17 @@ S
 -32 76 D
 -21 47 D
 -62 142 D
-S
-4800 2864 M
-0 0 D
-P S
-4570 0 M
+0 1 D S
+4802 2860 M
+-2 4 D
+0 1 D S
+4565 -2 M
+5 2 D
 145 57 D
 85 33 D
-S
-2324 0 M
+1 0 D S
+2319 -2 M
+5 2 D
 268 104 D
 155 61 D
 372 146 D
@@ -1078,8 +1074,9 @@ S
 335 134 D
 130 52 D
 251 100 D
-S
-0 0 M
+1 0 D S
+-1 0 M
+1 0 D
 270 98 D
 331 122 D
 437 165 D
@@ -1094,8 +1091,9 @@ S
 458 189 D
 131 54 D
 131 54 D
-S
-0 881 M
+1 0 D S
+-1 881 M
+1 0 D
 295 111 D
 436 169 D
 163 64 D
@@ -1118,8 +1116,9 @@ S
 238 103 D
 138 59 D
 322 138 D
-S
-0 1792 M
+1 1 D S
+-1 1791 M
+1 1 D
 152 60 D
 115 46 D
 134 54 D
@@ -1141,11 +1140,12 @@ S
 78 35 D
 40 17 D
 70 31 D
-S
-0 2745 M
+5 2 D S
+-1 2745 M
+1 0 D
 224 95 D
 57 24 D
-S
+4 2 D S
 8 W
 N 1 0 M 28 -78 D S
 N 0 2 M -28 78 D S
@@ -1176,6 +1176,23 @@ V -70.2 R (î90è) ml Z U
 4415 -61 M V 21.3 R (10è) mr Z U
 -157 -56 M V 19.8 R (20è) mr Z U
 -155 1730 M V 21.6 R (30è) mr Z U
+clipsave
+0 0 M
+4800 0 D
+0 2864 D
+-4800 0 D
+P
+PSL_clip N
+4 W
+0 1 0 C
+V
+{0 0 1 C} FS
+O1
+600 1200 0 2479 60 Sj
+600 1200 30 2908 1124 Sj
+240 600 90 1141 1323 Sj
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1217,25 +1234,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-6300 0 D
-0 3600 D
--6300 0 D
-P
-PSL_clip N
-4 W
-0 1 0 C
-V
-{0.647 0.165 0.165 C} FS
-O1
-360 900 60 1800 900 Sj
-180 1260 20 3600 2700 Sj
-540 1080 0 5400 900 Sj
-U
-PSL_cliprestore
 25 W
-0 A
 4 W
 0 0 M
 0 3600 D
@@ -1347,6 +1346,23 @@ N 5400 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3600 T
 0 setlinecap
+clipsave
+0 0 M
+6300 0 D
+0 3600 D
+-6300 0 D
+P
+PSL_clip N
+4 W
+0 1 0 C
+V
+{0.647 0.165 0.165 C} FS
+O1
+360 900 60 1800 900 Sj
+180 1260 20 3600 2700 Sj
+540 1080 0 5400 900 Sj
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
