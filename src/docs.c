@@ -167,9 +167,9 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 	else {
 		sprintf (cmd, "%s %s", can_opener[os], URL);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[os]);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s via %s\n", URL, can_opener[os]);
 		if ((error = system (cmd))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s via %s failed with error %d\n",
 				URL, can_opener[os], error);
 			perror ("docs");
 			Return (GMT_RUNTIME_ERROR);
