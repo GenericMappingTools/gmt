@@ -126,10 +126,21 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/* Get the local URL (which may not exist) */
 	if (other_file) {		/* A local or Web file */
-		if (!strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))
+		if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */
 			snprintf (URL, PATH_MAX, "%s", docname);	/* Must assume that the address is correct */
-		else	/* Must assume this is a local file */
-			snprintf (URL, PATH_MAX, "%s", docname);
+		else {	/* Must assume this is a local file */
+			if (docname[0] == '/' || docname[1] == ':')	/* Gave full path to file, use as is */
+				snprintf (URL, PATH_MAX, "file://%s", docname);
+			else {	/* Insert file:// if we can determine the current directory */
+				char cwd[PATH_MAX] = {""};
+				if (getcwd (cwd, PATH_MAX) == NULL) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory - pass file name as is.\n");
+					snprintf (URL, PATH_MAX, "%s", docname);
+				}
+				else	/* Prepend CWD */
+					snprintf (URL, PATH_MAX, "file://%s/%s", cwd, docname);
+			}
+		}
 	}
 	else {	/* One of the fixed doc files */
 		snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
