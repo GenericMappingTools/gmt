@@ -993,11 +993,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
+	
+	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we don't do it here in psxy */
-		if (S.G.delay) gmt_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
 		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
@@ -2052,7 +2053,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
-	if (!S.G.delay) gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
