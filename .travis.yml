@@ -110,7 +110,7 @@ script:
     # Download remote files before testing, see #939.
     - if [[ "$TEST" == "true" ]]; then
         curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc;
-        gmt which -Gu @earth_relief_02m @earth_relief_05m;
+        gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m;
         ctest --output-on-failure --force-new-ctest-process -j4;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
