@@ -126,20 +126,31 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/* Get the local URL (which may not exist) */
 	if (other_file) {		/* A local or Web file */
-		if (!strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))
-			sprintf (URL, "%s", docname);	/* Must assume that the address is correct */
-		else	/* Must assume this is a local file */
-			sprintf (URL, "file:///%s", docname);
+		if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */
+			snprintf (URL, PATH_MAX, "%s", docname);	/* Must assume that the address is correct */
+		else {	/* Must assume this is a local file */
+			if (docname[0] == '/' || docname[1] == ':')	/* Gave full path to file, use as is */
+				snprintf (URL, PATH_MAX, "file://%s", docname);
+			else {	/* Insert file:// if we can determine the current directory */
+				char cwd[PATH_MAX] = {""};
+				if (getcwd (cwd, PATH_MAX) == NULL) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory - pass file name as is.\n");
+					snprintf (URL, PATH_MAX, "%s", docname);
+				}
+				else	/* Prepend CWD */
+					snprintf (URL, PATH_MAX, "file://%s/%s", cwd, docname);
+			}
+		}
 	}
 	else {	/* One of the fixed doc files */
-		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+		snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
 		if (access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
-			sprintf (URL, "%s/%s", GMT_DOC_URL, module);
+			snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
 	}
 
 	if (opt->next) {	/* If an option request was made we position the doc there */
 		char t[4] = {""};
-		sprintf (t, "#%c", tolower (opt->next->option));
+		snprintf (t, 4U, "#%c", tolower (opt->next->option));
 		strncat (URL, t, PATH_MAX-1);
 	}
 
@@ -156,9 +167,9 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 	else {
 		sprintf (cmd, "%s %s", can_opener[os], URL);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[os]);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s via %s\n", URL, can_opener[os]);
 		if ((error = system (cmd))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s via %s failed with error %d\n",
 				URL, can_opener[os], error);
 			perror ("docs");
 			Return (GMT_RUNTIME_ERROR);
