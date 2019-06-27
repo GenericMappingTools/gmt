@@ -132,7 +132,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			snprintf (URL, PATH_MAX, "%s", docname);
 	}
 	else {	/* One of the fixed doc files */
-		sbprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+		snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
 		if (access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
 			snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
 	}
