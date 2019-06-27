@@ -127,19 +127,19 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/* Get the local URL (which may not exist) */
 	if (other_file) {		/* A local or Web file */
 		if (!strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))
-			sprintf (URL, "%s", docname);	/* Must assume that the address is correct */
+			snprintf (URL, PATH_MAX, "%s", docname);	/* Must assume that the address is correct */
 		else	/* Must assume this is a local file */
-			sprintf (URL, "file:///%s", docname);
+			snprintf (URL, PATH_MAX, "%s", docname);
 	}
 	else {	/* One of the fixed doc files */
-		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+		sbprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
 		if (access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
-			sprintf (URL, "%s/%s", GMT_DOC_URL, module);
+			snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
 	}
 
 	if (opt->next) {	/* If an option request was made we position the doc there */
 		char t[4] = {""};
-		sprintf (t, "#%c", tolower (opt->next->option));
+		snprintf (t, 4U, "#%c", tolower (opt->next->option));
 		strncat (URL, t, PATH_MAX-1);
 	}
 
