@@ -903,7 +903,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
-	current_pen = default_pen = Ctrl->W.pen;
+	current_pen = default_pen = last_headpen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active && Ctrl->I.mode == 0) {

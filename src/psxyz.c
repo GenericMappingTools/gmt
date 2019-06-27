@@ -605,7 +605,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
 	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 
-	default_pen = current_pen = Ctrl->W.pen;
+	default_pen = current_pen = last_headpen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active && Ctrl->I.mode == 0) {
