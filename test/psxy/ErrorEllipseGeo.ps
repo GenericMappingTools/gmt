@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:53:04 2018
+%%CreationDate: Thu Jun 27 12:16:26 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,124 +674,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-50 W
-0 0 1 C
-V
-{1 0 0 C} FS
-O1
-/FO {P}!
-284 2722 M
--13 21 D
--16 20 D
--28 27 D
--33 25 D
--39 21 D
--58 23 D
--68 15 D
--29 3 D
-0 4 D
-0 -1022 D
-67 97 D
-55 87 D
-58 102 D
-43 82 D
-42 95 D
-23 61 D
-17 59 D
-12 57 D
-6 81 D
--5 50 D
--13 48 D
--9 23 D
-P
-FO
-0 2722 M
-0 159 D
-P
-FO
-7200 2722 M
-0 155 D
--26 3 D
--39 1 D
--20 -1 D
--20 0 D
--21 -2 D
--21 -2 D
--21 -3 D
--22 -3 D
--21 -4 D
--22 -4 D
--22 -6 D
--23 -5 D
--22 -7 D
--22 -7 D
--23 -7 D
--22 -8 D
--23 -9 D
--22 -9 D
--22 -10 D
--23 -10 D
--44 -22 D
--44 -24 D
--43 -26 D
--42 -27 D
--62 -44 D
--60 -46 D
--76 -65 D
--72 -68 D
--84 -88 D
--63 -72 D
--73 -90 D
--41 -54 D
--76 -107 D
--69 -106 D
--51 -85 D
--37 -67 D
--33 -66 D
--22 -47 D
--36 -93 D
--18 -59 D
--15 -71 D
--5 -68 D
-3 -38 D
-6 -37 D
-11 -35 D
-16 -33 D
-13 -21 D
-15 -20 D
-27 -28 D
-21 -17 D
-23 -16 D
-26 -14 D
-42 -18 D
-48 -14 D
-52 -10 D
-55 -5 D
-40 -1 D
-83 6 D
-64 11 D
-67 16 D
-89 30 D
-90 39 D
-88 47 D
-85 54 D
-81 59 D
-78 64 D
-74 67 D
-17 18 D
-35 34 D
-66 71 D
-47 54 D
-74 90 D
-68 90 D
-19 27 D
-P
-FO
-/FO {fs os}!
-FO
-U
 25 W
-0 A
 8 W
 N 800 0 M 0 -83 D S
 N 800 3963 M 0 83 D S
@@ -963,6 +841,122 @@ N -83 4046 M 0 -4129 D S
 7367 1981 M (0è) ml Z
 -167 3484 M (60è) mr Z
 7367 3484 M (60è) ml Z
+50 W
+0 0 1 C
+V
+{1 0 0 C} FS
+O1
+/FO {P}!
+284 2722 M
+-13 21 D
+-16 20 D
+-28 27 D
+-33 25 D
+-39 21 D
+-58 23 D
+-68 15 D
+-29 3 D
+0 4 D
+0 -1022 D
+67 97 D
+55 87 D
+58 102 D
+43 82 D
+42 95 D
+23 61 D
+17 59 D
+12 57 D
+6 81 D
+-5 50 D
+-13 48 D
+-9 23 D
+P
+FO
+0 2722 M
+0 159 D
+P
+FO
+7200 2722 M
+0 155 D
+-26 3 D
+-39 1 D
+-20 -1 D
+-20 0 D
+-21 -2 D
+-21 -2 D
+-21 -3 D
+-22 -3 D
+-21 -4 D
+-22 -4 D
+-22 -6 D
+-23 -5 D
+-22 -7 D
+-22 -7 D
+-23 -7 D
+-22 -8 D
+-23 -9 D
+-22 -9 D
+-22 -10 D
+-23 -10 D
+-44 -22 D
+-44 -24 D
+-43 -26 D
+-42 -27 D
+-62 -44 D
+-60 -46 D
+-76 -65 D
+-72 -68 D
+-84 -88 D
+-63 -72 D
+-73 -90 D
+-41 -54 D
+-76 -107 D
+-69 -106 D
+-51 -85 D
+-37 -67 D
+-33 -66 D
+-22 -47 D
+-36 -93 D
+-18 -59 D
+-15 -71 D
+-5 -68 D
+3 -38 D
+6 -37 D
+11 -35 D
+16 -33 D
+13 -21 D
+15 -20 D
+27 -28 D
+21 -17 D
+23 -16 D
+26 -14 D
+42 -18 D
+48 -14 D
+52 -10 D
+55 -5 D
+40 -1 D
+83 6 D
+64 11 D
+67 16 D
+89 30 D
+90 39 D
+88 47 D
+85 54 D
+81 59 D
+78 64 D
+74 67 D
+17 18 D
+35 34 D
+66 71 D
+47 54 D
+74 90 D
+68 90 D
+19 27 D
+P
+FO
+/FO {fs os}!
+FO
+U
 %%EndObject
 0 A
 FQ

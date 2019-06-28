@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:48 2018
+%%CreationDate: Thu Jun 27 12:16:25 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -855,9 +850,17 @@ O0
 3.32551 setmiterlimit
 83 W
 1 A
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -872,9 +875,17 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -882,7 +893,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO
+%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO
 %@PROJ: xy -100.00000000 100.00000000 -100.00000000 100.00000000 -100.000 100.000 -100.000 100.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1162,9 +1173,17 @@ O0
 3.32551 setmiterlimit
 83 W
 1 A
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1180,9 +1199,17 @@ O0
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1190,7 +1217,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO
+%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO
 %@PROJ: xy -100.00000000 100.00000000 -100.00000000 100.00000000 -100.000 100.000 -100.000 100.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1445,9 +1472,17 @@ O0
 3.32551 setmiterlimit
 83 W
 1 A
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1463,9 +1498,17 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1473,7 +1516,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO
+%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO
 %@PROJ: xy -100.00000000 100.00000000 -100.00000000 100.00000000 -100.000 100.000 -100.000 100.000 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
@@ -1846,9 +1889,17 @@ O0
 3.32551 setmiterlimit
 83 W
 1 A
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1864,9 +1915,17 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0.647 0 C
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+P
+PSL_clip N
 0 1800 M
 3600 0 D
-S
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1874,7 +1933,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO
+%@GMT: gmt pstext -R-100/100/-100/100 -JX3i -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO
 %@PROJ: xy -100.00000000 100.00000000 -100.00000000 100.00000000 -100.000 100.000 -100.000 100.000 +xy
 %%BeginObject PSL_Layer_16
 0 setlinecap
@@ -1913,30 +1972,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 8 M
-1323 0 D
-9 -4 D
-9 4 D
-9 23 D
-9 38 D
-252 1722 D
-9 39 D
-9 23 D
-9 3 D
-9 -3 D
-306 0 D
-9 3 D
-9 -3 D
-9 -23 D
-9 -39 D
-252 -1722 D
-9 -38 D
-9 -23 D
-9 -4 D
-9 4 D
-1323 0 D
-S
 25 W
 2 setlinecap
 N 0 3000 M 0 -3000 D S
@@ -2044,6 +2079,38 @@ N 3420 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3000 T
 0 setlinecap
+17 W
+clipsave
+0 0 M
+3600 0 D
+0 3000 D
+-3600 0 D
+P
+PSL_clip N
+0 8 M
+1323 0 D
+9 -4 D
+9 4 D
+9 23 D
+9 38 D
+252 1722 D
+9 39 D
+9 23 D
+9 3 D
+9 -3 D
+306 0 D
+9 3 D
+9 -3 D
+9 -23 D
+9 -39 D
+252 -1722 D
+9 -38 D
+9 -23 D
+9 -4 D
+9 4 D
+1323 0 D
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2081,74 +2148,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-1 0 0 C
-0 492 M
-387 1 D
-333 5 D
-171 7 D
-90 7 D
-36 3 D
-63 10 D
-36 7 D
-54 17 D
-36 17 D
-27 17 D
-18 15 D
-27 29 D
-27 41 D
-27 58 D
-27 80 D
-27 104 D
-27 128 D
-36 202 D
-54 347 D
-81 546 D
-27 154 D
-18 85 D
-18 69 D
-18 53 D
-18 41 D
-18 30 D
-18 22 D
-18 17 D
-18 11 D
-18 7 D
-27 4 D
-27 -4 D
-18 -7 D
-18 -11 D
-18 -17 D
-18 -22 D
-18 -30 D
-18 -41 D
-18 -53 D
-27 -109 D
-27 -145 D
-45 -291 D
-81 -545 D
-45 -265 D
-27 -135 D
-27 -113 D
-27 -88 D
-18 -45 D
-18 -37 D
-27 -41 D
-27 -29 D
-18 -15 D
-27 -17 D
-36 -17 D
-54 -17 D
-72 -13 D
-45 -6 D
-126 -9 D
-171 -6 D
-261 -4 D
-405 -2 D
-36 0 D
-S
 25 W
-0 A
 4 W
 1800 0 M
 0 3000 D
@@ -2272,6 +2272,80 @@ N 3420 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3000 T
 0 setlinecap
+17 W
+1 0 0 C
+clipsave
+0 0 M
+3600 0 D
+0 3000 D
+-3600 0 D
+P
+PSL_clip N
+0 492 M
+387 1 D
+333 5 D
+171 7 D
+90 7 D
+36 3 D
+63 10 D
+36 7 D
+54 17 D
+36 17 D
+27 17 D
+18 15 D
+27 29 D
+27 41 D
+27 58 D
+27 80 D
+27 104 D
+27 128 D
+36 202 D
+54 347 D
+81 546 D
+27 154 D
+18 85 D
+18 69 D
+18 53 D
+18 41 D
+18 30 D
+18 22 D
+18 17 D
+18 11 D
+18 7 D
+27 4 D
+27 -4 D
+18 -7 D
+18 -11 D
+18 -17 D
+18 -22 D
+18 -30 D
+18 -41 D
+18 -53 D
+27 -109 D
+27 -145 D
+45 -291 D
+81 -545 D
+45 -265 D
+27 -135 D
+27 -113 D
+27 -88 D
+18 -45 D
+18 -37 D
+27 -41 D
+27 -29 D
+18 -15 D
+27 -17 D
+36 -17 D
+54 -17 D
+72 -13 D
+45 -6 D
+126 -9 D
+171 -6 D
+261 -4 D
+405 -2 D
+36 0 D
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2287,9 +2361,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+3600 0 D
+0 3000 D
+-3600 0 D
+P
+PSL_clip N
 0 2893 M
 3600 0 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -2329,100 +2411,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 0 1 C
-0 495 M
-252 -2 D
-243 -5 D
-171 -7 D
-126 -9 D
-63 -6 D
-81 -12 D
-45 -9 D
-63 -18 D
-45 -17 D
-45 -23 D
-36 -25 D
-18 -14 D
-27 -26 D
-36 -41 D
-36 -43 D
-18 -17 D
-9 -5 D
-9 -1 D
-9 2 D
-9 7 D
-9 13 D
-9 19 D
-18 58 D
-18 82 D
-27 158 D
-36 254 D
-45 367 D
-54 507 D
-36 339 D
-18 133 D
-9 49 D
-9 36 D
-9 22 D
-9 10 D
-9 0 D
-9 -9 D
-9 -14 D
-54 -114 D
-18 -29 D
-9 -12 D
-18 -17 D
-9 -5 D
-9 -3 D
-9 -1 D
-9 1 D
-9 3 D
-9 5 D
-18 17 D
-18 25 D
-27 52 D
-36 78 D
-9 14 D
-9 9 D
-9 0 D
-9 -10 D
-9 -22 D
-9 -36 D
-18 -110 D
-27 -235 D
-63 -603 D
-45 -377 D
-36 -265 D
-27 -169 D
-18 -92 D
-18 -70 D
-9 -26 D
-9 -19 D
-9 -13 D
-9 -7 D
-9 -2 D
-9 1 D
-9 5 D
-18 17 D
-63 74 D
-18 19 D
-18 17 D
-36 27 D
-27 17 D
-45 22 D
-54 19 D
-63 16 D
-81 13 D
-63 8 D
-135 10 D
-171 7 D
-126 3 D
-261 4 D
-126 1 D
-S
 25 W
-0 A
 4 W
 1800 0 M
 0 3000 D
@@ -2531,6 +2520,106 @@ N 3420 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3000 T
 0 setlinecap
+17 W
+0 0 1 C
+clipsave
+0 0 M
+3600 0 D
+0 3000 D
+-3600 0 D
+P
+PSL_clip N
+0 495 M
+252 -2 D
+243 -5 D
+171 -7 D
+126 -9 D
+63 -6 D
+81 -12 D
+45 -9 D
+63 -18 D
+45 -17 D
+45 -23 D
+36 -25 D
+18 -14 D
+27 -26 D
+36 -41 D
+36 -43 D
+18 -17 D
+9 -5 D
+9 -1 D
+9 2 D
+9 7 D
+9 13 D
+9 19 D
+18 58 D
+18 82 D
+27 158 D
+36 254 D
+45 367 D
+54 507 D
+36 339 D
+18 133 D
+9 49 D
+9 36 D
+9 22 D
+9 10 D
+9 0 D
+9 -9 D
+9 -14 D
+54 -114 D
+18 -29 D
+9 -12 D
+18 -17 D
+9 -5 D
+9 -3 D
+9 -1 D
+9 1 D
+9 3 D
+9 5 D
+18 17 D
+18 25 D
+27 52 D
+36 78 D
+9 14 D
+9 9 D
+9 0 D
+9 -10 D
+9 -22 D
+9 -36 D
+18 -110 D
+27 -235 D
+63 -603 D
+45 -377 D
+36 -265 D
+27 -169 D
+18 -92 D
+18 -70 D
+9 -26 D
+9 -19 D
+9 -13 D
+9 -7 D
+9 -2 D
+9 1 D
+9 5 D
+18 17 D
+63 74 D
+18 19 D
+18 17 D
+36 27 D
+27 17 D
+45 22 D
+54 19 D
+63 16 D
+81 13 D
+63 8 D
+135 10 D
+171 7 D
+126 3 D
+261 4 D
+126 1 D
+0 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2569,9 +2658,69 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
+2 setlinecap
+3600 0 T
+N 0 3000 M 0 -3000 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 0 M 83 0 D S
+N 0 750 M 83 0 D S
+N 0 1500 M 83 0 D S
+N 0 2250 M 83 0 D S
+N 0 3000 M 83 0 D S
+/PSL_AH0 0
+/MM {exch M} def
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(1) sw mx
+(2) sw mx
+(3) sw mx
+(4) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) mr Z
+750 PSL_A0_y MM
+(1) mr Z
+1500 PSL_A0_y MM
+(2) mr Z
+2250 PSL_A0_y MM
+(3) mr Z
+3000 PSL_A0_y MM
+(4) mr Z
+N 0 150 M 42 0 D S
+N 0 300 M 42 0 D S
+N 0 450 M 42 0 D S
+N 0 600 M 42 0 D S
+N 0 900 M 42 0 D S
+N 0 1050 M 42 0 D S
+N 0 1200 M 42 0 D S
+N 0 1350 M 42 0 D S
+N 0 1650 M 42 0 D S
+N 0 1800 M 42 0 D S
+N 0 1950 M 42 0 D S
+N 0 2100 M 42 0 D S
+N 0 2400 M 42 0 D S
+N 0 2550 M 42 0 D S
+N 0 2700 M 42 0 D S
+N 0 2850 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-3600 0 T
+0 setlinecap
 17 W
 1 0.647 0 C
-0 88 M
+clipsave
+0 0 M
+3600 0 D
+0 3000 D
+-3600 0 D
+P
+PSL_clip N
+-1 88 M
+1 0 D
 117 22 D
 171 39 D
 117 33 D
@@ -2637,60 +2786,8 @@ O0
 81 -20 D
 162 -35 D
 63 -11 D
-S
-25 W
-0 A
-2 setlinecap
-3600 0 T
-N 0 3000 M 0 -3000 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 0 M 83 0 D S
-N 0 750 M 83 0 D S
-N 0 1500 M 83 0 D S
-N 0 2250 M 83 0 D S
-N 0 3000 M 83 0 D S
-/PSL_AH0 0
-/MM {exch M} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(0) sw mx
-(1) sw mx
-(2) sw mx
-(3) sw mx
-(4) sw mx
-def
-/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
-0 PSL_A0_y MM
-(0) mr Z
-750 PSL_A0_y MM
-(1) mr Z
-1500 PSL_A0_y MM
-(2) mr Z
-2250 PSL_A0_y MM
-(3) mr Z
-3000 PSL_A0_y MM
-(4) mr Z
-N 0 150 M 42 0 D S
-N 0 300 M 42 0 D S
-N 0 450 M 42 0 D S
-N 0 600 M 42 0 D S
-N 0 900 M 42 0 D S
-N 0 1050 M 42 0 D S
-N 0 1200 M 42 0 D S
-N 0 1350 M 42 0 D S
-N 0 1650 M 42 0 D S
-N 0 1800 M 42 0 D S
-N 0 1950 M 42 0 D S
-N 0 2100 M 42 0 D S
-N 0 2400 M 42 0 D S
-N 0 2550 M 42 0 D S
-N 0 2700 M 42 0 D S
-N 0 2850 M 42 0 D S
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
--3600 0 T
-0 setlinecap
+1 0 D S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ

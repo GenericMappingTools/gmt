@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 17:02:49 2014
+%%CreationDate: Thu Jun 27 12:16:19 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -271,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -290,15 +290,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -306,6 +306,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -342,11 +343,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -366,6 +367,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -432,6 +460,8 @@ end
 {
   /PSL_just PSL_label_justify k get def
   /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
@@ -439,7 +469,7 @@ end
     PSL_drawbox
     {V PSL_setboxpen S U} if N
   } if
-  PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -463,7 +493,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -492,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -510,12 +539,14 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -530,8 +561,8 @@ end
     PSL_ST_prepare_text
     PSL_usebox
     {  PSL_rounded
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if
       PSL_drawbox {V PSL_setboxpen S U} if
@@ -554,7 +585,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -604,7 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -626,50 +657,23 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.5/0.5/-0.5/0.5 -JX2i -P -Ba0.25g0.05 -BWSne -Wthick -Skvolcano/2i -K
-%%PROJ: xy -0.50000000 0.50000000 -0.50000000 0.50000000 -0.500 0.500 -0.500 0.500 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -R-0.5/0.5/-0.5/0.5 -JX2i -Ba0.25g0.05 -BWSne -Wthick -Skvolcano/2i
+%@PROJ: xy -0.50000000 0.50000000 -0.50000000 0.50000000 -0.500 0.500 -0.500 0.500 +xy
+%GMTBoundingBox: 72 72 144 144
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-2400 0 D
-0 2400 D
--2400 0 D
-PSL_clip N
-17 W
-V
-O1
-V 1200 1200 T
--1200 -1200 M
-720 1200 D
-34 -18 D
-60 -24 D
-50 -13 D
-51 -7 D
-51 -2 D
-52 3 D
-51 9 D
-49 14 D
-48 20 D
-34 18 D
-720 -1200 D
--1920 0 D
-FO
-240 -120 360 Sc
-180 360 720 Sc
-120 780 960 Sc
-60 1080 1080 Sc
-U
-U
-PSL_cliprestore
 25 W
 4 W
 0 0 M
@@ -889,6 +893,39 @@ N 2400 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -2400 T
 0 setlinecap
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
+17 W
+V
+O1
+V 1200 1200 T
+-1200 -1200 M
+720 1200 D
+34 -18 D
+60 -24 D
+50 -13 D
+51 -7 D
+51 -2 D
+52 3 D
+51 9 D
+49 14 D
+48 20 D
+34 18 D
+720 -1200 D
+P
+FO
+240 -120 360 Sc
+180 360 720 Sc
+120 780 960 Sc
+60 1080 1080 Sc
+U
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -896,65 +933,12 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.5/0.5/-0.5/0.5 -JX2i -N -Ba0.25g0.05 -BwSnE -Wthick -Skbullseye/2i -O -X2.5i
-%%PROJ: xy -0.50000000 0.50000000 -0.50000000 0.50000000 -0.500 0.500 -0.500 0.500 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -N -Ba0.25g0.05 -BwSnE -Wthick -Skbullseye/2i -X2.5i -R-0.5/0.5/-0.5/0.5 -JX2i
+%@PROJ: xy -0.50000000 0.50000000 -0.50000000 0.50000000 -0.500 0.500 -0.500 0.500 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-V
-O1
-V 1200 1200 T
-8 W
-1 0 0 C
-0 3360 1 0 -1680 SP
-3360 0 1 -1680 0 SP
-17 W
-0 A
-/image12 {<~
-J,is'-mSKes+A0qkQC`<*.M?,i\<1bJ3Og.#MoIUgiOV4"3;`QGMis(-NV$E:e4!_'+L<rU/O%A?>UO>:1LRIjGHYrPJLY2W
-)Pr&'T,@i1$J7i7jsToj`9U-`a^io:$2&HeFn5STMVIa8SoAS8=@o'eB,rrGu1-_V3X@M>%MAT<i6_RKmJ/dITW7E86spm=G
-Y\*f?!pe8RR_:TQNhSR/r,#?D@,7h7<';P<_A~>
-/LZWDecode filter} def
-/pattern12 {V 64 64 scale
-<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
-   {begin [/Indexed /DeviceGray 1 <FF00>] setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
-   /ImageMatrix [64 0 0 -64 0 64] /DataSource image12
->> image end}
->> matrix makepattern U} def
-{pattern12 I} FS
-1080 0 0 Sc
-4 W
-FQ
-1080 0 0 Sc
-{1 1 0 C} FS
-840 0 0 Sc
-17 W
-/image9 {<~
-J.L9D-mJ`kJ:k^8&+B]W)utHg@PKPEn-9_f!8dd$giO%q#KS/UpAfY8-P+#S:e4!_'+L<rU/O%A?>UO>:1LRIjGHYrPJLY2W
-)Pr&'T,@i1$J7i7jsToj`9U-`a^io:$2&HeFn5STMVIa8SoAS8=@o'eB,rrGu1-_V3XLI>%MAs<i6_R`HlrOE*/c786spm=G
-Y\*f?!pe8RR_:TQNhSRK&)"?D@,7h7;L+P<_A~>
-/LZWDecode filter} def
-/pattern9 {V 64 64 scale
-<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
-   {begin [/Indexed /DeviceGray 1 <FF00>] setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
-   /ImageMatrix [64 0 0 -64 0 64] /DataSource image9
->> image end}
->> matrix makepattern U} def
-{pattern9 I} FS
-600 0 0 Sc
-4 W
-FQ
-600 0 0 Sc
-{1 1 0 C} FS
-360 0 0 Sc
-{1 A} FS
-120 0 0 Sc
-U
-U
 25 W
 4 W
 0 0 M
@@ -1173,11 +1157,66 @@ N 2400 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -2400 T
 0 setlinecap
+17 W
+V
+O1
+V 1200 1200 T
+8 W
+1 0 0 C
+0 3360 1 0 -1680 SP
+3360 0 1 -1680 0 SP
+17 W
+0 A
+/image12 {<~
+G[=nX`s@D.runV?*Wcl)6f8&l#lMIKJNqd1n..;X6FAU9[51(U2aFbmJ80Q6ec#TLr<H=!+3%1T#Ln2&OE(:$~>
+/FlateDecode filter} def
+/pattern12 {V 64 64 scale
+<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
+   {begin [/Indexed /DeviceGray 1 <FF00>] setcolorspace
+<< /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
+   /ImageMatrix [64 0 0 -64 0 64] /DataSource image12
+>> image end}
+>> matrix makepattern U} def
+{pattern12 I} FS
+1080 0 0 Sc
+4 W
+FQ
+1080 0 0 Sc
+{1 1 0 C} FS
+840 0 0 Sc
+17 W
+/image9 {<~
+G[@^@?k8"b
+%1r<,!<W9U6Jrqt#lMLKJKOY1n:<\)6FGQ8[F[dRs+b@h#M&eYWr30%qZj(n#POqd&#fF,OE(:$~>
+/FlateDecode filter} def
+/pattern9 {V 64 64 scale
+<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
+   {begin [/Indexed /DeviceGray 1 <FF00>] setcolorspace
+<< /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
+   /ImageMatrix [64 0 0 -64 0 64] /DataSource image9
+>> image end}
+>> matrix makepattern U} def
+{pattern9 I} FS
+600 0 0 Sc
+4 W
+FQ
+600 0 0 Sc
+{1 1 0 C} FS
+360 0 0 Sc
+{1 A} FS
+120 0 0 Sc
+U
+17 W
+U
 %%EndObject
 currentdict /image9 undef
 currentdict /pattern9 undef
 currentdict /image12 undef
 currentdict /pattern12 undef
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:53:02 2018
+%%CreationDate: Thu Jun 27 12:16:30 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,6 +674,172 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
+2 setlinecap
+N 0 11024 M 0 -11024 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 0 M -83 0 D S
+N 0 787 M -83 0 D S
+N 0 1575 M -83 0 D S
+N 0 2362 M -83 0 D S
+N 0 3150 M -83 0 D S
+N 0 3937 M -83 0 D S
+N 0 4724 M -83 0 D S
+N 0 5512 M -83 0 D S
+N 0 6299 M -83 0 D S
+N 0 7087 M -83 0 D S
+N 0 7874 M -83 0 D S
+N 0 8661 M -83 0 D S
+N 0 9449 M -83 0 D S
+N 0 10236 M -83 0 D S
+N 0 11024 M -83 0 D S
+/PSL_AH0 0
+/MM {neg exch M} def
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(5) sw mx
+(10) sw mx
+(15) sw mx
+(20) sw mx
+(25) sw mx
+(30) sw mx
+(35) sw mx
+(40) sw mx
+(45) sw mx
+(50) sw mx
+(55) sw mx
+(60) sw mx
+(65) sw mx
+(70) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) mr Z
+787 PSL_A0_y MM
+(5) mr Z
+1575 PSL_A0_y MM
+(10) mr Z
+2362 PSL_A0_y MM
+(15) mr Z
+3150 PSL_A0_y MM
+(20) mr Z
+3937 PSL_A0_y MM
+(25) mr Z
+4724 PSL_A0_y MM
+(30) mr Z
+5512 PSL_A0_y MM
+(35) mr Z
+6299 PSL_A0_y MM
+(40) mr Z
+7087 PSL_A0_y MM
+(45) mr Z
+7874 PSL_A0_y MM
+(50) mr Z
+8661 PSL_A0_y MM
+(55) mr Z
+9449 PSL_A0_y MM
+(60) mr Z
+10236 PSL_A0_y MM
+(65) mr Z
+11024 PSL_A0_y MM
+(70) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+7087 0 T
+25 W
+N 0 11024 M 0 -11024 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 0 M 83 0 D S
+N 0 787 M 83 0 D S
+N 0 1575 M 83 0 D S
+N 0 2362 M 83 0 D S
+N 0 3150 M 83 0 D S
+N 0 3937 M 83 0 D S
+N 0 4724 M 83 0 D S
+N 0 5512 M 83 0 D S
+N 0 6299 M 83 0 D S
+N 0 7087 M 83 0 D S
+N 0 7874 M 83 0 D S
+N 0 8661 M 83 0 D S
+N 0 9449 M 83 0 D S
+N 0 10236 M 83 0 D S
+N 0 11024 M 83 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-7087 0 T
+25 W
+N 0 0 M 7087 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 0 M 0 -83 D S
+N 787 0 M 0 -83 D S
+N 1575 0 M 0 -83 D S
+N 2362 0 M 0 -83 D S
+N 3150 0 M 0 -83 D S
+N 3937 0 M 0 -83 D S
+N 4724 0 M 0 -83 D S
+N 5512 0 M 0 -83 D S
+N 6299 0 M 0 -83 D S
+N 7087 0 M 0 -83 D S
+/PSL_AH0 0
+/MM {neg M} def
+(”45) sh mx
+(”40) sh mx
+(”35) sh mx
+(”30) sh mx
+(”25) sh mx
+(”20) sh mx
+(”15) sh mx
+(”10) sh mx
+(”5) sh mx
+(0) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(”45) bc Z
+787 PSL_A0_y MM
+(”40) bc Z
+1575 PSL_A0_y MM
+(”35) bc Z
+2362 PSL_A0_y MM
+(”30) bc Z
+3150 PSL_A0_y MM
+(”25) bc Z
+3937 PSL_A0_y MM
+(”20) bc Z
+4724 PSL_A0_y MM
+(”15) bc Z
+5512 PSL_A0_y MM
+(”10) bc Z
+6299 PSL_A0_y MM
+(”5) bc Z
+7087 PSL_A0_y MM
+(0) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 11024 T
+25 W
+N 0 0 M 7087 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 0 M 0 83 D S
+N 787 0 M 0 83 D S
+N 1575 0 M 0 83 D S
+N 2362 0 M 0 83 D S
+N 3150 0 M 0 83 D S
+N 3937 0 M 0 83 D S
+N 4724 0 M 0 83 D S
+N 5512 0 M 0 83 D S
+N 6299 0 M 0 83 D S
+N 7087 0 M 0 83 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -11024 T
+0 setlinecap
 clipsave
 0 0 M
 7087 0 D
@@ -1060,172 +1221,6 @@ V -413 8838 T
 2 dup scale Sk_gallo U
 U
 PSL_cliprestore
-25 W
-2 setlinecap
-N 0 11024 M 0 -11024 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 0 M -83 0 D S
-N 0 787 M -83 0 D S
-N 0 1575 M -83 0 D S
-N 0 2362 M -83 0 D S
-N 0 3150 M -83 0 D S
-N 0 3937 M -83 0 D S
-N 0 4724 M -83 0 D S
-N 0 5512 M -83 0 D S
-N 0 6299 M -83 0 D S
-N 0 7087 M -83 0 D S
-N 0 7874 M -83 0 D S
-N 0 8661 M -83 0 D S
-N 0 9449 M -83 0 D S
-N 0 10236 M -83 0 D S
-N 0 11024 M -83 0 D S
-/PSL_AH0 0
-/MM {neg exch M} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(0) sw mx
-(5) sw mx
-(10) sw mx
-(15) sw mx
-(20) sw mx
-(25) sw mx
-(30) sw mx
-(35) sw mx
-(40) sw mx
-(45) sw mx
-(50) sw mx
-(55) sw mx
-(60) sw mx
-(65) sw mx
-(70) sw mx
-def
-/PSL_A0_y PSL_A0_y 83 add def
-0 PSL_A0_y MM
-(0) mr Z
-787 PSL_A0_y MM
-(5) mr Z
-1575 PSL_A0_y MM
-(10) mr Z
-2362 PSL_A0_y MM
-(15) mr Z
-3150 PSL_A0_y MM
-(20) mr Z
-3937 PSL_A0_y MM
-(25) mr Z
-4724 PSL_A0_y MM
-(30) mr Z
-5512 PSL_A0_y MM
-(35) mr Z
-6299 PSL_A0_y MM
-(40) mr Z
-7087 PSL_A0_y MM
-(45) mr Z
-7874 PSL_A0_y MM
-(50) mr Z
-8661 PSL_A0_y MM
-(55) mr Z
-9449 PSL_A0_y MM
-(60) mr Z
-10236 PSL_A0_y MM
-(65) mr Z
-11024 PSL_A0_y MM
-(70) mr Z
-/PSL_A0_y PSL_A0_y PSL_AH0 add def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-7087 0 T
-25 W
-N 0 11024 M 0 -11024 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 0 M 83 0 D S
-N 0 787 M 83 0 D S
-N 0 1575 M 83 0 D S
-N 0 2362 M 83 0 D S
-N 0 3150 M 83 0 D S
-N 0 3937 M 83 0 D S
-N 0 4724 M 83 0 D S
-N 0 5512 M 83 0 D S
-N 0 6299 M 83 0 D S
-N 0 7087 M 83 0 D S
-N 0 7874 M 83 0 D S
-N 0 8661 M 83 0 D S
-N 0 9449 M 83 0 D S
-N 0 10236 M 83 0 D S
-N 0 11024 M 83 0 D S
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
--7087 0 T
-25 W
-N 0 0 M 7087 0 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 0 M 0 -83 D S
-N 787 0 M 0 -83 D S
-N 1575 0 M 0 -83 D S
-N 2362 0 M 0 -83 D S
-N 3150 0 M 0 -83 D S
-N 3937 0 M 0 -83 D S
-N 4724 0 M 0 -83 D S
-N 5512 0 M 0 -83 D S
-N 6299 0 M 0 -83 D S
-N 7087 0 M 0 -83 D S
-/PSL_AH0 0
-/MM {neg M} def
-(”45) sh mx
-(”40) sh mx
-(”35) sh mx
-(”30) sh mx
-(”25) sh mx
-(”20) sh mx
-(”15) sh mx
-(”10) sh mx
-(”5) sh mx
-(0) sh mx
-def
-/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
-0 PSL_A0_y MM
-(”45) bc Z
-787 PSL_A0_y MM
-(”40) bc Z
-1575 PSL_A0_y MM
-(”35) bc Z
-2362 PSL_A0_y MM
-(”30) bc Z
-3150 PSL_A0_y MM
-(”25) bc Z
-3937 PSL_A0_y MM
-(”20) bc Z
-4724 PSL_A0_y MM
-(”15) bc Z
-5512 PSL_A0_y MM
-(”10) bc Z
-6299 PSL_A0_y MM
-(”5) bc Z
-7087 PSL_A0_y MM
-(0) bc Z
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 11024 T
-25 W
-N 0 0 M 7087 0 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 0 M 0 83 D S
-N 787 0 M 0 83 D S
-N 1575 0 M 0 83 D S
-N 2362 0 M 0 83 D S
-N 3150 0 M 0 83 D S
-N 3937 0 M 0 83 D S
-N 4724 0 M 0 83 D S
-N 5512 0 M 0 83 D S
-N 6299 0 M 0 83 D S
-N 7087 0 M 0 83 D S
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 -11024 T
-0 setlinecap
 %%EndObject
 0 A
 FQ
