@@ -1,7 +1,6 @@
 #
-# $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,21 +12,18 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
 # run tests
 if (DO_TESTS)
-	# list of test dirs
-	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
-		genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify gmtspatial
-		gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour grdcut
-		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
-		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
-		grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject nearneighbor ogr
-		project psbasemap pscoast pscontour pshistogram psimage pslegend psmask postscriptlight psclip
-		psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz sample1d segy spectrum1d sph sph2grd
-		splitxyz surface time trend1d trend2d triangulate img meca mgd77 potential spotter x2sys)
+	# Automatically detect all subdirectories for testing
+	include (GmtHelperMacros)
+	get_subdir_list (GMT_TEST_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+
+	if (NOT DO_API_TESTS)
+		list (REMOVE_ITEM GMT_TEST_DIRS api)
+	endif (NOT DO_API_TESTS)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
@@ -61,5 +57,3 @@ if (DO_TESTS)
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -25,7 +25,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.imgmath', 'sphinx.ext.ifconfig']
+extensions = ['sphinx.ext.mathjax', 'sphinx.ext.ifconfig']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,8 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-gmt_team = u'P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe'
-gmt_team_tex = u'P. Wessel, W. H. F. Smith,\\\\R. Scharroo, J. Luis, and F. Wobbe'
+gmt_team = u'The GMT Team'
 project = u'GMT'
 copyright = u' '.join(['@GMT_VERSION_YEAR@,', gmt_team])
 
@@ -52,7 +51,7 @@ copyright = u' '.join(['@GMT_VERSION_YEAR@,', gmt_team])
 # The short X.Y version.
 version = '@GMT_PACKAGE_VERSION@'
 # The full version, including alpha/beta/rc tags.
-release = '@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@'
+release = '@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@'
 if tags.has('tex'):
   release = release.replace("_", "\\_")
 
@@ -92,6 +91,8 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# Set smartquotes_action to 'qe' to disable Smart Quotes transform of -- and ---
+smartquotes_action = 'qe'
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -174,9 +175,6 @@ html_show_sourcelink = True
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 #html_file_suffix = None
 
-# Output file base name for HTML help builder.
-htmlhelp_basename = 'GMT_Docs'
-
 # Redefine supported_image_types for the HTML builder
 from sphinx.builders.html import StandaloneHTMLBuilder
 StandaloneHTMLBuilder.supported_image_types = [
@@ -188,10 +186,10 @@ StandaloneHTMLBuilder.supported_image_types = [
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('GMT_Docs',  'GMT_Docs.tex',     u'GMT Documentation',     gmt_team_tex, 'manual'),
-  ('GMT_Tutorial',   'GMT_Tutorial.tex',      u'GMT Tutorial', gmt_team_tex, 'manual'),
-  ('GMT_API',   'GMT_API.tex',      u'GMT API Documentation', gmt_team_tex, 'manual'),
-  ('man_pages', 'GMT_Manpages.tex', u'GMT Man Pages',         gmt_team_tex, 'manual'),
+  ('GMT_Docs',  'GMT_Docs.tex',     u'GMT Documentation',     gmt_team, 'manual'),
+  ('GMT_Tutorial',   'GMT_Tutorial.tex',      u'GMT Tutorial', gmt_team, 'manual'),
+  ('GMT_API',   'GMT_API.tex',      u'GMT API Documentation', gmt_team, 'manual'),
+  ('man_pages', 'GMT_Manpages.tex', u'GMT Man Pages',         gmt_team, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -371,44 +369,3 @@ man_pages = [
 ('supplements/x2sys/x2sys_report', 'x2sys_report', 'Report statistics from crossover data base', '', 1),
 ('supplements/x2sys/x2sys_solve', 'x2sys_solve', 'Determine least-squares systematic correction from crossovers', '', 1)
 ]
-
-
-# -- Options for Epub output ---------------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = u'GMT'
-epub_author = gmt_team
-epub_publisher = gmt_team
-epub_copyright = copyright
-
-# The language of the text. It defaults to the language option
-# or en if the language is not set.
-#epub_language = ''
-
-# The scheme of the identifier. Typical schemes are ISBN or URL.
-#epub_scheme = ''
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#epub_identifier = ''
-
-# A unique identification for the text.
-#epub_uid = ''
-
-# HTML files that should be inserted before the pages created by sphinx.
-# The format is a list of tuples containing the path and title.
-#epub_pre_files = []
-
-# HTML files shat should be inserted after the pages created by sphinx.
-# The format is a list of tuples containing the path and title.
-#epub_post_files = []
-
-# A list of files that should not be packed into the epub file.
-#epub_exclude_files = []
-
-# The depth of the table of contents in toc.ncx.
-#epub_tocdepth = 3
-
-# Allow duplicate toc entries.
-#epub_tocdup = True
-

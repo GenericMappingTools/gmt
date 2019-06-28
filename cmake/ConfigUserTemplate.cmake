@@ -1,7 +1,6 @@
 #
-# $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -13,13 +12,13 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 # ----------------------------------------------------------------------------
 
 # Use this file to override variables in 'ConfigDefault.cmake' on a per-user
 # basis.  First copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake', then
 # edit 'ConfigUser.cmake'.  'ConfigUser.cmake' is not version controlled
-# (currently listed in svn:ignore property)
+# (currently listed in .gitignore).
 #
 # Note: CMake considers an empty string, "FALSE", "OFF", "NO", or any string
 # ending in "-NOTFOUND" to be false (this happens to be case-insensitive, so
@@ -107,14 +106,18 @@
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")
 
-# Copy GSHHG files to $/coast [FALSE]:
+# Copy GSHHG files to ${GMT_DATADIR}/coast [FALSE]:
 #set (COPY_GSHHG TRUE)
 
 # Set path to DCW Digital Chart of the World for GMT [auto]:
 #set (DCW_ROOT "dcw-gmt_path")
 
-# Copy DCW files to $/dcw [FALSE]:
+# Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
 #set (COPY_DCW TRUE)
+
+# FOR WINDOWS ONLY
+# Set path to location where the gmtmex is located.
+#set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
 
 # Set location of NetCDF (can be root directory, path to header file or path
 # to nc-config) [auto]:
@@ -164,6 +167,9 @@
 # triangulation (valid values are GPL, LGPL and off) [off]:
 #set (LICENSE_RESTRICTED GPL)
 
+# Allow building of OpenMP if compiler supports it
+# set (GMT_ENABLE_OPENMP TRUE)
+
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
 
@@ -172,7 +178,7 @@
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
-# build on non-x86:
+# build on non-x86):
 #set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 # Build GMT shared lib with supplemental modules [TRUE]:
@@ -214,6 +220,7 @@
 # that link against the full gmt libs (not just the API; for building codes
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
+# Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
 # Directory in which to install the release sources per default
@@ -246,6 +253,11 @@
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
 #set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
 #set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)                  # debug link dependencies
+if (HAVE_OPENMP)
+	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized -flax-vector-conversions")  # check uninitialized variables
+else (HAVE_OPENMP)
+	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
+endif (HAVE_OPENMP)
 
 #
 # System specific tweaks
@@ -286,5 +298,3 @@
 #if(MSVC11)
 #  add_definitions(/D_ALLOW_KEYWORD_MACROS)
 #endif(MSVC11)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

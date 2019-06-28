@@ -1,7 +1,6 @@
 #
-# $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
 # List all PS files and convert them to PDF
@@ -104,9 +103,12 @@ foreach (_script ${_examples})
 endforeach (_script ${_examples})
 
 # Add build target
-add_custom_target (_docs_examples_fig DEPENDS ${_examples_pdf} ${_examples_png})
 add_custom_target (_docs_examples_verbatim DEPENDS ${_examples_txt})
-add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
+add_custom_target (_docs_html_examples_fig DEPENDS ${_examples_png})
+add_custom_target (_docs_pdf_examples_fig DEPENDS ${_examples_pdf})
+add_depend_to_target (docs_html_depends _docs_html_examples_fig _docs_examples_verbatim)
+add_depend_to_target (docs_pdf_depends _docs_pdf_examples_fig _docs_examples_verbatim)
+add_depend_to_target (docs_man_depends _docs_examples_verbatim)
 
 # Animations
 if (UNIX)
@@ -145,23 +147,17 @@ if (UNIX)
 	add_custom_target (animation DEPENDS ${_animations})
 
 	# clean target
-	add_custom_target (_anim_clean
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim01
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim02
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim03
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim04
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim05
-		COMMENT "Removing animations")
-	# register with spotless target
-	add_depend_to_target (spotless _anim_clean)
+	foreach (_num 01 02 03 04 05)
+		add_custom_target (_anim_clean${_num}
+			COMMAND ${CMAKE_COMMAND} -E remove_directory
+			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
+			COMMENT "Removing animation ${_num}")
+		add_depend_to_target (spotless _anim_clean${_num})
+	endforeach ()
 endif (UNIX)
 
 # run examples (test)
+
 if (DO_EXAMPLES) # AND UNIX)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
@@ -192,5 +188,3 @@ elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 	endforeach (_job ${_examples_win})
 endif (DO_EXAMPLES) # AND UNIX)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

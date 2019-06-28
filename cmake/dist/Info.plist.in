@@ -5,27 +5,27 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
+	<string>GMT-@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@</string>
 	<key>CFBundleGetInfoString</key>
 	<string>GMT is an open source collection of ~80 command-line tools for manipulating geographic and Cartesian data sets.</string>
 	<key>CFBundleIconFile</key>
-	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@.icns</string>
+	<string>GMT-@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>edu.hawaii.soest.gmt5</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLongVersionString</key>
-	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
+	<string>GMT-@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@</string>
 	<key>CFBundleName</key>
 	<string>GMT</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
+	<string>@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
+	<string>@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>

@@ -386,7 +386,7 @@ int gmt_verify_sharedir_version (const char *dir) {
 	gmt_M_unused(dir);
 	return true;
 #else
-	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
+	static char *required_version = GMT_PACKAGE_VERSION_WITH_GIT_REVISION;
 	char version_file[PATH_MAX+1];
 
 #ifdef DEBUG_RUNPATH

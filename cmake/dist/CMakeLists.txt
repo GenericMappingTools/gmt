@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 
@@ -24,12 +24,12 @@ set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools data processin
 set (CPACK_PACKAGE_VERSION_MAJOR ${GMT_PACKAGE_VERSION_MAJOR})
 set (CPACK_PACKAGE_VERSION_MINOR ${GMT_PACKAGE_VERSION_MINOR})
 set (CPACK_PACKAGE_VERSION_PATCH ${GMT_PACKAGE_VERSION_PATCH})
-set (CPACK_PACKAGE_VERSION ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+set (CPACK_PACKAGE_VERSION ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION})
 if (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 	if (WIN32)
 		set (CPACK_PACKAGE_INSTALL_DIRECTORY gmt${GMT_PACKAGE_VERSION_MAJOR})
 	else (WIN32)
-		set (CPACK_PACKAGE_INSTALL_DIRECTORY GMT-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+		set (CPACK_PACKAGE_INSTALL_DIRECTORY GMT-${GMT_PACKAGE_VERSION_WITH_GIT_REVISION})
 	endif (WIN32)
 endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
@@ -168,15 +168,15 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-	if (WIN32 AND TRUE) 
-		# Install the gmtmex on Windows. Need to make this work via variables in ConfigUser.cmake
+	if (WIN32 AND GMTMEX_PATH)
+		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
-			install (PROGRAMS ${GMTMEX_PATH}/gmtmex.mexw64 DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		else ()
-			install (PROGRAMS ${GMTMEX_PATH}/gmtmex.mexw32 DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		endif ()
-		install (PROGRAMS ${GMTMEX_PATH}/../../src/gmt.m DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-	endif (WIN32 AND TRUE)
+		install (PROGRAMS "${GMTMEX_PATH}/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+	endif ()
 
 	# Fix bundle:
 	install (CODE "
@@ -201,7 +201,7 @@ if (APPLE)
 	# Configure CPack:
 	set (CPACK_GENERATOR Bundle TGZ TBZ2)
 	set (CPACK_BUNDLE_NAME
-		"${CPACK_PACKAGE_NAME}-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+		"${CPACK_PACKAGE_NAME}-${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")
 	set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/GMT.icns")
 	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/startup_macosx.sh")
@@ -261,5 +261,3 @@ set (CPACK_SOURCE_GENERATOR TGZ TBZ2 ZIP)
 
 # This must always be last:
 include (CPack)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
