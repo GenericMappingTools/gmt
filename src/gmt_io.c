@@ -8548,6 +8548,7 @@ int gmt_mkdir (const char *path)
 
 	if (len >= PATH_MAX) {	/* Make sure we don't exceed limits */
 		errno = ENAMETOOLONG;
+		perror ("gmt_mkdir error");
 		return -1; 
 	}   
 	strcpy (_path, path);	/* Copy string so its mutable */
@@ -8564,8 +8565,10 @@ int gmt_mkdir (const char *path)
 			if (mkdir (_path) != 0)
 #endif
 			{
-				if (errno != EEXIST)	/* Failed to make or visit intermediate directory */
+				if (errno != EEXIST) {	/* Failed to make or visit intermediate directory */
+					perror ("gmt_mkdir error");
 					return -1; 
+				}
 			}
 			*p = sep;	/* Reset the separator */
 		}
@@ -8578,8 +8581,10 @@ int gmt_mkdir (const char *path)
 	if (mkdir (_path) != 0)
 #endif
 	{
-		if (errno != EEXIST)
+		if (errno != EEXIST) {
+			perror ("gmt_mkdir error");
 			return -1; 
+		}
 	}   
 
 	return 0;
