@@ -3556,11 +3556,12 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
 
-	/* Parsing of -B<framesettings> */
+	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>] */
 
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
 
-	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz is tricker; see below) */
+	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz and -Bs are tricker; see below) */
+	if (strchr ("afg", in[0])) return (-1);	/* -Ba|f|g is definitively not the frame settings; looks like axes settings */
 	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
 	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
@@ -3695,6 +3696,11 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
 
+	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+t")) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Found frame setting modifiers (+b|g|n|o|p) mixed with axes settings!\n");
+		return (GMT_PARSE_ERROR);
+	}
+	
 	/* Below here are the axis settings only -B[p|s][x|y|z] */
 	switch (in[0]) {
 		case 's': GMT->current.map.frame.primary = false; k = 1; break;
