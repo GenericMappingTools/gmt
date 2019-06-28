@@ -1,0 +1,90 @@
+# Template for macOS steps in Azure Pipelines
+
+steps:
+
+- bash: |
+    set -x -e
+    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
+  displayName: Install dependencies
+
+- bash: |
+    set -x -e
+    brew install graphicsmagick || true
+  displayName: Install dependencies for runing tests
+  condition: eq(variables['TEST'], true)
+
+- bash: |
+    set -x -e
+    pip3 install --user sphinx
+    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
+  displayName: Install dependencies for building documentation
+  condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    set -x -e
+    # we need the GNU tar
+    brew install gnu-tar md5sha1sum
+  displayName: Install dependencies for packaging
+  condition: eq(variables['PACKAGE'], true)
+
+- bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+  displayName: Set install location
+
+- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
+  displayName: Set coastline location
+
+- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+  displayName: Set PATH
+
+- bash: ci/download-coastlines.sh
+  displayName: Download coastlines
+
+- bash: ci/build-gmt.sh
+  displayName: Compile GMT
+
+- bash: |
+    set -x -e
+    gmt --version
+    gmt defaults -Vd
+    gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+  displayName: Check a few simple commands
+
+# Run the full tests
+- bash: |
+    set -x -e
+    cd build
+    # Download remote files before testing, see #939.
+    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+    ctest --output-on-failure --force-new-ctest-process -j4
+  displayName: Full tests
+  condition: eq(variables['TEST'], true)
+
+# Upload test coverage even if build fails. Keep separate to make sure this task fails
+# if the tests fail.
+- bash: |
+    set -x -e
+    bash <(curl -s https://codecov.io/bash)
+  env:
+    CODECOV_TOKEN: $(codecov.token)
+  condition: and(eq(variables['TEST'], true), succeededOrFailed())
+  displayName: Upload test coverage
+
+- bash: |
+    cd build
+    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_man_depends
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    cd build
+    cmake --build . --target gmt_release
+    cmake --build . --target gmt_release_tar
+    cpack -G Bundle
+    ls -l gmt-*.tar.gz gmt-*.tar.xz GMT-*.dmg
+    md5sum gmt-*.tar.gz gmt-*.tar.xz GMT-*.dmg
+  displayName: Package GMT
+  condition: eq(variables['PACKAGE'], true)
