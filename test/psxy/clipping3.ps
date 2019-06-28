@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:41 2018
+%%CreationDate: Thu Jun 27 12:16:28 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,8 +674,94 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
 8 W
+N 0 0 M 0 -83 D S
+N 0 1789 M 0 83 D S
+N 675 0 M 0 -83 D S
+N 675 1789 M 0 83 D S
+N 1350 0 M 0 -83 D S
+N 1350 1789 M 0 83 D S
+N 2025 0 M 0 -83 D S
+N 2025 1789 M 0 83 D S
+N 2700 0 M 0 -83 D S
+N 2700 1789 M 0 83 D S
+N 3375 0 M 0 -83 D S
+N 3375 1789 M 0 83 D S
+N 4049 0 M 0 -83 D S
+N 4049 1789 M 0 83 D S
+N 4724 0 M 0 -83 D S
+N 4724 1789 M 0 83 D S
+N 0 0 M -83 0 D S
+N 4724 0 M 84 0 D S
+N 0 638 M -83 0 D S
+N 4724 638 M 84 0 D S
+N 0 1232 M -83 0 D S
+N 4724 1232 M 84 0 D S
+N 0 1789 M -83 0 D S
+N 4724 1789 M 84 0 D S
+83 W
+1 A
+N -42 0 M 0 638 D S
+N 4766 0 M 0 638 D S
+0 A
+N -42 638 M 0 594 D S
+N 4766 638 M 0 594 D S
+1 A
+N -42 1232 M 0 557 D S
+N 4766 1232 M 0 557 D S
+0 A
+N 0 -42 M 675 0 D S
+N 0 1830 M 675 0 D S
+1 A
+N 675 -42 M 675 0 D S
+N 675 1830 M 675 0 D S
+0 A
+N 1350 -42 M 675 0 D S
+N 1350 1830 M 675 0 D S
+1 A
+N 2025 -42 M 675 0 D S
+N 2025 1830 M 675 0 D S
+0 A
+N 2700 -42 M 675 0 D S
+N 2700 1830 M 675 0 D S
+1 A
+N 3375 -42 M 674 0 D S
+N 3375 1830 M 674 0 D S
+0 A
+N 4049 -42 M 675 0 D S
+N 4049 1830 M 675 0 D S
+8 W
+N -83 0 M 4891 0 D S
+N -83 -83 M 4891 0 D S
+N 4724 -83 M 0 1955 D S
+N 4808 -83 M 0 1955 D S
+N 4808 1789 M -4891 0 D S
+N 4808 1872 M -4891 0 D S
+N 0 1872 M 0 -1955 D S
+N -83 1872 M 0 -1955 D S
+0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(140è) tc Z
+675 -167 M (145è) tc Z
+1350 -167 M (150è) tc Z
+2025 -167 M (155è) tc Z
+2700 -167 M (160è) tc Z
+3375 -167 M (165è) tc Z
+4049 -167 M (170è) tc Z
+4724 -167 M (175è) tc Z
+-167 0 M (î66è) mr Z
+-167 638 M (î64è) mr Z
+-167 1232 M (î62è) mr Z
+-167 1789 M (î60è) mr Z
 1 0 0 C
+clipsave
+0 0 M
+4724 0 D
+0 1789 D
+-4724 0 D
+P
+PSL_clip N
 {0.745 A} FS
 O1
 /FO {P}!
@@ -746,8 +827,21 @@ P
 FO
 /FO {fs os}!
 FO
-25 W
+PSL_cliprestore
+%%EndObject
 0 A
+FQ
+O0
+0 2760 TM
+
+% PostScript produced by:
+%@GMT: gmt psxy a.txt -Bx5 -By2 -BWSne -R140/175/-66/-60 -JM10c -W0.5p,green -O -K -Y2.3i
+%@PROJ: merc 140.00000000 175.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_2
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 1789 M 0 83 D S
@@ -827,21 +921,14 @@ N -83 1872 M 0 -1955 D S
 -167 638 M (î64è) mr Z
 -167 1232 M (î62è) mr Z
 -167 1789 M (î60è) mr Z
-%%EndObject
-0 A
-FQ
-O0
-0 2760 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy a.txt -Bx5 -By2 -BWSne -R140/175/-66/-60 -JM10c -W0.5p,green -O -K -Y2.3i
-%@PROJ: merc 140.00000000 175.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_2
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-8 W
 0 1 0 C
+clipsave
+0 0 M
+4724 0 D
+0 1789 D
+-4724 0 D
+P
+PSL_clip N
 4049 1789 M
 0 -1464 D
 -29 -4 D
@@ -901,8 +988,21 @@ O0
 -116 18 D
 0 1464 D
 S
-25 W
+PSL_cliprestore
+%%EndObject
 0 A
+FQ
+O0
+0 2760 TM
+
+% PostScript produced by:
+%@GMT: gmt psxy b.txt -Bx5 -By2 -BWSne -R165/200/-66/-60 -JM10c -W0.5p,red -Ggray -O -K -Y2.3i
+%@PROJ: merc 165.00000000 200.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=182.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_3
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 1789 M 0 83 D S
@@ -938,27 +1038,27 @@ N 4766 638 M 0 594 D S
 1 A
 N -42 1232 M 0 557 D S
 N 4766 1232 M 0 557 D S
-0 A
 N 0 -42 M 675 0 D S
 N 0 1830 M 675 0 D S
-1 A
+0 A
 N 675 -42 M 675 0 D S
 N 675 1830 M 675 0 D S
-0 A
+1 A
 N 1350 -42 M 675 0 D S
 N 1350 1830 M 675 0 D S
-1 A
+0 A
 N 2025 -42 M 675 0 D S
 N 2025 1830 M 675 0 D S
-0 A
+1 A
 N 2700 -42 M 675 0 D S
 N 2700 1830 M 675 0 D S
-1 A
+0 A
 N 3375 -42 M 674 0 D S
 N 3375 1830 M 674 0 D S
-0 A
+1 A
 N 4049 -42 M 675 0 D S
 N 4049 1830 M 675 0 D S
+0 A
 8 W
 N -83 0 M 4891 0 D S
 N -83 -83 M 4891 0 D S
@@ -970,33 +1070,26 @@ N 0 1872 M 0 -1955 D S
 N -83 1872 M 0 -1955 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(140è) tc Z
-675 -167 M (145è) tc Z
-1350 -167 M (150è) tc Z
-2025 -167 M (155è) tc Z
-2700 -167 M (160è) tc Z
-3375 -167 M (165è) tc Z
-4049 -167 M (170è) tc Z
-4724 -167 M (175è) tc Z
+(165è) tc Z
+675 -167 M (170è) tc Z
+1350 -167 M (175è) tc Z
+2025 -167 M (180è) tc Z
+2700 -167 M (î175è) tc Z
+3375 -167 M (î170è) tc Z
+4049 -167 M (î165è) tc Z
+4724 -167 M (î160è) tc Z
 -167 0 M (î66è) mr Z
 -167 638 M (î64è) mr Z
 -167 1232 M (î62è) mr Z
 -167 1789 M (î60è) mr Z
-%%EndObject
-0 A
-FQ
-O0
-0 2760 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy b.txt -Bx5 -By2 -BWSne -R165/200/-66/-60 -JM10c -W0.5p,red -Ggray -O -K -Y2.3i
-%@PROJ: merc 165.00000000 200.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=182.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_3
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-8 W
 1 0 0 C
+clipsave
+0 0 M
+4724 0 D
+0 1789 D
+-4724 0 D
+P
+PSL_clip N
 {0.745 A} FS
 O1
 /FO {P}!
@@ -1020,8 +1113,21 @@ P
 FO
 /FO {fs os}!
 FO
-25 W
+PSL_cliprestore
+%%EndObject
 0 A
+FQ
+O0
+0 2760 TM
+
+% PostScript produced by:
+%@GMT: gmt psxy b.txt -Bx5 -By2 -BWSne -R165/200/-66/-60 -JM10c -W0.5p,green -O -Y2.3i
+%@PROJ: merc 165.00000000 200.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=182.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_4
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 1789 M 0 83 D S
@@ -1101,21 +1207,14 @@ N -83 1872 M 0 -1955 D S
 -167 638 M (î64è) mr Z
 -167 1232 M (î62è) mr Z
 -167 1789 M (î60è) mr Z
-%%EndObject
-0 A
-FQ
-O0
-0 2760 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy b.txt -Bx5 -By2 -BWSne -R165/200/-66/-60 -JM10c -W0.5p,green -O -Y2.3i
-%@PROJ: merc 165.00000000 200.00000000 -66.00000000 -60.00000000 -1948091.089 1948091.089 -9837766.745 -8362698.549 +proj=merc +lon_0=182.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_4
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-8 W
 0 1 0 C
+clipsave
+0 0 M
+4724 0 D
+0 1789 D
+-4724 0 D
+P
+PSL_clip N
 675 1789 M
 0 -1464 D
 204 -30 D
@@ -1133,87 +1232,7 @@ O0
 117 18 D
 0 1464 D
 S
-25 W
-0 A
-8 W
-N 0 0 M 0 -83 D S
-N 0 1789 M 0 83 D S
-N 675 0 M 0 -83 D S
-N 675 1789 M 0 83 D S
-N 1350 0 M 0 -83 D S
-N 1350 1789 M 0 83 D S
-N 2025 0 M 0 -83 D S
-N 2025 1789 M 0 83 D S
-N 2700 0 M 0 -83 D S
-N 2700 1789 M 0 83 D S
-N 3375 0 M 0 -83 D S
-N 3375 1789 M 0 83 D S
-N 4049 0 M 0 -83 D S
-N 4049 1789 M 0 83 D S
-N 4724 0 M 0 -83 D S
-N 4724 1789 M 0 83 D S
-N 0 0 M -83 0 D S
-N 4724 0 M 84 0 D S
-N 0 638 M -83 0 D S
-N 4724 638 M 84 0 D S
-N 0 1232 M -83 0 D S
-N 4724 1232 M 84 0 D S
-N 0 1789 M -83 0 D S
-N 4724 1789 M 84 0 D S
-83 W
-1 A
-N -42 0 M 0 638 D S
-N 4766 0 M 0 638 D S
-0 A
-N -42 638 M 0 594 D S
-N 4766 638 M 0 594 D S
-1 A
-N -42 1232 M 0 557 D S
-N 4766 1232 M 0 557 D S
-N 0 -42 M 675 0 D S
-N 0 1830 M 675 0 D S
-0 A
-N 675 -42 M 675 0 D S
-N 675 1830 M 675 0 D S
-1 A
-N 1350 -42 M 675 0 D S
-N 1350 1830 M 675 0 D S
-0 A
-N 2025 -42 M 675 0 D S
-N 2025 1830 M 675 0 D S
-1 A
-N 2700 -42 M 675 0 D S
-N 2700 1830 M 675 0 D S
-0 A
-N 3375 -42 M 674 0 D S
-N 3375 1830 M 674 0 D S
-1 A
-N 4049 -42 M 675 0 D S
-N 4049 1830 M 675 0 D S
-0 A
-8 W
-N -83 0 M 4891 0 D S
-N -83 -83 M 4891 0 D S
-N 4724 -83 M 0 1955 D S
-N 4808 -83 M 0 1955 D S
-N 4808 1789 M -4891 0 D S
-N 4808 1872 M -4891 0 D S
-N 0 1872 M 0 -1955 D S
-N -83 1872 M 0 -1955 D S
-0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(165è) tc Z
-675 -167 M (170è) tc Z
-1350 -167 M (175è) tc Z
-2025 -167 M (180è) tc Z
-2700 -167 M (î175è) tc Z
-3375 -167 M (î170è) tc Z
-4049 -167 M (î165è) tc Z
-4724 -167 M (î160è) tc Z
--167 0 M (î66è) mr Z
--167 638 M (î64è) mr Z
--167 1232 M (î62è) mr Z
--167 1789 M (î60è) mr Z
+PSL_cliprestore
 %%EndObject
 
 grestore

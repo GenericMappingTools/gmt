@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:33 2018
+%%CreationDate: Thu Jun 27 12:16:28 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -681,12 +676,20 @@ O0
 3.32551 setmiterlimit
 4 W
 [33 17] 0 B
+clipsave
+0 0 M
+5600 0 D
+0 10800 D
+-5600 0 D
+P
+PSL_clip N
 4200 0 M
 0 10800 D
 S
 5000 0 M
 0 10800 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -701,8 +704,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
 25 W
 8 W
 N 0 0 M 0 -83 D S
@@ -780,6 +781,16 @@ N -83 686 M 0 -769 D S
 2400 -167 M (0è) tc Z
 3600 -167 M (60è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -793,12 +804,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
-0 399 1 4000 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 1000 0 M 0 -83 D S
@@ -873,6 +878,20 @@ N -83 686 M 0 -769 D S
 2200 -167 M (0è) tc Z
 3400 -167 M (60è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+0 399 1 4000 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -886,12 +905,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--200 0 0 399 200 0 3 3800 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 800 0 M 0 -83 D S
@@ -966,6 +979,20 @@ N -83 686 M 0 -769 D S
 2000 -167 M (0è) tc Z
 3200 -167 M (60è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-200 0 0 399 200 0 3 3800 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -979,12 +1006,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--400 0 0 399 400 0 3 3600 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 600 0 M 0 -83 D S
@@ -1059,6 +1080,20 @@ N -83 686 M 0 -769 D S
 1800 -167 M (0è) tc Z
 3000 -167 M (60è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-400 0 0 399 400 0 3 3600 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1072,12 +1107,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--600 0 0 399 600 0 3 3400 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 400 0 M 0 -83 D S
@@ -1155,6 +1184,20 @@ N -83 686 M 0 -769 D S
 2800 -167 M (60è) tc Z
 4000 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-600 0 0 399 600 0 3 3400 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1168,12 +1211,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--800 0 0 399 800 0 3 3200 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 200 0 M 0 -83 D S
@@ -1251,6 +1288,20 @@ N -83 686 M 0 -769 D S
 2600 -167 M (60è) tc Z
 3800 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-800 0 0 399 800 0 3 3200 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1264,12 +1315,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--800 0 0 399 800 0 3 3000 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 0 0 M 0 -83 D S
@@ -1347,6 +1392,20 @@ N -83 686 M 0 -769 D S
 2400 -167 M (60è) tc Z
 3600 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-800 0 0 399 800 0 3 3000 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1360,12 +1419,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--800 0 0 399 800 0 3 2800 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 1000 0 M 0 -83 D S
@@ -1440,6 +1493,20 @@ N -83 686 M 0 -769 D S
 2200 -167 M (60è) tc Z
 3400 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-800 0 0 399 800 0 3 2800 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1453,12 +1520,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--800 0 0 399 800 0 3 2600 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 800 0 M 0 -83 D S
@@ -1533,6 +1594,20 @@ N -83 686 M 0 -769 D S
 2000 -167 M (60è) tc Z
 3200 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-800 0 0 399 800 0 3 2600 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1546,12 +1621,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
-{1 0 0 C} FS
-/FO {P}!
--800 0 0 399 800 0 3 2400 102 SP
-/FO {fs os}!
-FO
 25 W
 8 W
 N 600 0 M 0 -83 D S
@@ -1626,6 +1695,20 @@ N -83 686 M 0 -769 D S
 1800 -167 M (60è) tc Z
 3000 -167 M (120è) tc Z
 -167 302 M (0è) mr Z
+4 W
+clipsave
+0 0 M
+4000 0 D
+0 603 D
+-4000 0 D
+P
+PSL_clip N
+{1 0 0 C} FS
+/FO {P}!
+-800 0 0 399 800 0 3 2400 102 SP
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ

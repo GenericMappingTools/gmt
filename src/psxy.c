@@ -868,6 +868,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Initialize GMT_SYMBOL structure */
 
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
+	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);
+	gmt_M_memset (&last_spiderpen, 1, struct GMT_PEN);
+        
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -903,7 +906,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
-	current_pen = default_pen = last_headpen = Ctrl->W.pen;
+	current_pen = default_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active && Ctrl->I.mode == 0) {

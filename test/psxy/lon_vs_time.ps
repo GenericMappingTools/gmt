@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:27 2018
+%%CreationDate: Thu Jun 27 12:16:31 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,41 +674,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-7087 0 D
-0 4724 D
--7087 0 D
-P
-PSL_clip N
-12 W
-V
-{0 1 0 C} FS
-O1
-60 302 4344 Sc
-60 605 13 Sc
-60 907 407 Sc
-60 1211 801 Sc
-60 1513 1194 Sc
-60 1816 1588 Sc
-60 2118 1982 Sc
-60 2421 2375 Sc
-60 2724 2769 Sc
-60 3026 3163 Sc
-60 3329 3556 Sc
-60 3632 3950 Sc
-60 3934 4344 Sc
-60 4237 13 Sc
-60 4539 407 Sc
-60 4843 801 Sc
-60 5145 1194 Sc
-60 5448 1588 Sc
-60 5750 1982 Sc
-60 6053 2375 Sc
-60 6356 2769 Sc
-60 6658 3163 Sc
-U
-PSL_cliprestore
 25 W
 2 setlinecap
 N 0 4724 M 0 -4724 D S
@@ -850,6 +810,41 @@ N 6658 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -4724 T
 0 setlinecap
+clipsave
+0 0 M
+7087 0 D
+0 4724 D
+-7087 0 D
+P
+PSL_clip N
+12 W
+V
+{0 1 0 C} FS
+O1
+60 302 4344 Sc
+60 605 13 Sc
+60 907 407 Sc
+60 1211 801 Sc
+60 1513 1194 Sc
+60 1816 1588 Sc
+60 2118 1982 Sc
+60 2421 2375 Sc
+60 2724 2769 Sc
+60 3026 3163 Sc
+60 3329 3556 Sc
+60 3632 3950 Sc
+60 3934 4344 Sc
+60 4237 13 Sc
+60 4539 407 Sc
+60 4843 801 Sc
+60 5145 1194 Sc
+60 5448 1588 Sc
+60 5750 1982 Sc
+60 6053 2375 Sc
+60 6356 2769 Sc
+60 6658 3163 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -863,41 +858,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-7087 0 D
-0 4724 D
--7087 0 D
-P
-PSL_clip N
-12 W
-V
-{0 1 0 C} FS
-O1
-60 6516 202 Sc
-60 20 403 Sc
-60 610 605 Sc
-60 1201 807 Sc
-60 1791 1009 Sc
-60 2382 1210 Sc
-60 2972 1412 Sc
-60 3563 1614 Sc
-60 4154 1816 Sc
-60 4744 2017 Sc
-60 5335 2219 Sc
-60 5925 2421 Sc
-60 6516 2623 Sc
-60 20 2825 Sc
-60 610 3026 Sc
-60 1201 3228 Sc
-60 1791 3430 Sc
-60 2382 3632 Sc
-60 2972 3833 Sc
-60 3563 4036 Sc
-60 4154 4237 Sc
-60 4744 4439 Sc
-U
-PSL_cliprestore
 25 W
 2 setlinecap
 N 0 4724 M 0 -4724 D S
@@ -1006,6 +966,41 @@ N 6713 0 M 0 83 D S
 5531 -167 M (î120è) tc Z
 6122 -167 M (î90è) tc Z
 6713 -167 M (î60è) tc Z
+clipsave
+0 0 M
+7087 0 D
+0 4724 D
+-7087 0 D
+P
+PSL_clip N
+12 W
+V
+{0 1 0 C} FS
+O1
+60 6516 202 Sc
+60 20 403 Sc
+60 610 605 Sc
+60 1201 807 Sc
+60 1791 1009 Sc
+60 2382 1210 Sc
+60 2972 1412 Sc
+60 3563 1614 Sc
+60 4154 1816 Sc
+60 4744 2017 Sc
+60 5335 2219 Sc
+60 5925 2421 Sc
+60 6516 2623 Sc
+60 20 2825 Sc
+60 610 3026 Sc
+60 1201 3228 Sc
+60 1791 3430 Sc
+60 2382 3632 Sc
+60 2972 3833 Sc
+60 3563 4036 Sc
+60 4154 4237 Sc
+60 4744 4439 Sc
+U
+PSL_cliprestore
 %%EndObject
 
 grestore
