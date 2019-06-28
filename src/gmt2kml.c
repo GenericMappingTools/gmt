@@ -443,9 +443,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					Ctrl->N.mode = GET_COL_LABEL;
 					Ctrl->N.col = GMT_Z;
 				}
-				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[0] == '\0') {	/* Trailing text (+ is backwards compatible)  */
+				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[1] == '\0')	/* Trailing text (+ is backwards compatible)  */
 					Ctrl->N.mode = GET_LABEL;
-				}
 				else if (strchr (opt->arg, '%')) {	/* Want a format */
 					Ctrl->N.fmt = strdup (opt->arg);
 					Ctrl->N.mode = FMT_LABEL;
