@@ -120,12 +120,12 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	gmt_M_str_free (t);
 	if (!strcmp (group, "core"))	/* Core module */
-		sprintf (module, "%s.html", docname);
+		snprintf (module, GMT_LEN64, "%s.html", docname);
 	else if (!other_file)		/* A supplemental module */
-		sprintf (module, "supplements/%s/%s.html", group, docname);
+		snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
 
 	/* Get the local URL (which may not exist) */
-	if (other_file) {		/* A local or Web file */
+	if (other_file) {	/* A local or Web file */
 		if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */
 			snprintf (URL, PATH_MAX, "%s", docname);	/* Must assume that the address is correct */
 		else {	/* Must assume this is a local file */

@@ -15223,11 +15223,15 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
+GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
+	/* Loop over all registered figures and their selected formats and
+	 * convert the hidden PostScript figures to selected graphics.
+	 * If show is not NULL then we display them via gmt docs */
+
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, mark;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS;
-	int error, k, f, nf, n_figs;
+	int error, k, f, nf, n_figs, gcode[GMT_LEN16];
 	unsigned int pos = 0;
 
  	if (API->gwf_dir == NULL) {
@@ -15246,7 +15250,10 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		f = nf = 0;
 		while (gmt_session_format[f]) {	/* Go through the list and build array for -T arguments */
-			if (strstr (fig[k].formats, gmt_session_format[f])) fmt[nf++] = gmt_session_code[f];
+			if (strstr (fig[k].formats, gmt_session_format[f])) {
+				gcode[nf] = f;
+				fmt[nf++] = gmt_session_code[f];
+			}
 			f++;
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
@@ -15267,7 +15274,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 			if (fig[k].options[0]) {	/* Append figure-specific settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
-					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
+					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 					}
@@ -15287,6 +15294,18 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
 				gmt_M_free (API->GMT, fig);
 				return error;
+			}
+
+			if (show) {	/* Open the plot in the viewer via call to gmt docs */
+				char ext[GMT_LEN8] = {""};
+				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
+				gmt_str_tolower (ext);	/* In case it was PNG */
+				sprintf (cmd, "%s.%s", fig[k].prefix, ext);
+				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Failed to call docs\n");
+					gmt_M_free (API->GMT, fig);
+					return error;
+				}
 			}
 		}
 	}
@@ -15592,7 +15611,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
-			if ((error = process_figures (API)))
+			if ((error = process_figures (API, text)))
 				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			if (gmt_remove_dir (API, dir, false))
