@@ -343,6 +343,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 				out[ind].proj4 = strdup(pszProj4);
 			if (OSRExportToPrettyWkt(hSRS, &pszWKT, 1) == OGRERR_NONE)
 				out[ind].wkt = strdup(pszWKT);
+			CPLFree(pszProj4);
+			CPLFree(pszWKT);
 		}
 
 		/* Get this layer BoundingBox as two column vectors of X and Y respectively. */
