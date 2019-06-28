@@ -1,7 +1,6 @@
 #
-# $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
@@ -33,6 +32,8 @@ endif (WIN32)
 
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
+
+# Find executable needed by gmt
 
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
@@ -146,7 +147,7 @@ if (OPENMP_FOUND AND GMT_OPENMP)
 		CACHE INTERNAL "OPENMP config message")
 	if (WIN32 AND OMP_DLL_LOC)
 		# UGLY AND RISKY PATCH FOR THE CPACK BUG OF NOT COPYING THE OMP DLL. THIS PATCH RELIES
-		# ON THE SETING OF THE OMP_DLL_LOC VARIABLE IN ConfigUser.cmake. MINE HAS:
+		# ON THE SETTING OF THE OMP_DLL_LOC VARIABLE IN ConfigUser.cmake. MINE HAS:
 		# set (OMP_DLL_LOC "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/redist/x64/Microsoft.VC120.OPENMP/vcomp120.dll")
 		install(FILES ${OMP_DLL_LOC} DESTINATION bin COMPONENT Libraries)
 	endif (WIN32 AND OMP_DLL_LOC)
@@ -432,7 +433,7 @@ set_target_properties (pslib
 # If a renaming of the gmtpslpsl dll has been set in ConfigUser.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
-endif ()
+endif (WIN32 AND PSL_DLL_RENAME)
 
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
@@ -490,7 +491,7 @@ if (BUILD_SUPPLEMENTS)
 		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
 			include (${_f})
 		endforeach(_f)
-	endif ()
+	endif (EXTRA_INCLUDE_GMTSUPPL)
 
 	set_target_properties (supplib
 		PROPERTIES
@@ -504,7 +505,7 @@ if (BUILD_SUPPLEMENTS)
 
 	if (WIN32 AND SUPP_DLL_RENAME)
 		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-	endif ()
+	endif (WIN32 AND SUPP_DLL_RENAME)
 
 	if (HAVE_DLADDR AND HAVE_LIBDL)
 		# link the dynamic linking loader library
@@ -530,7 +531,7 @@ if (EXTRA_INCLUDE_NEWSUPPL)
 	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
 		include (${_f})
 	endforeach(_f)
-endif ()
+endif (EXTRA_INCLUDE_NEWSUPPL)
 
 
 # make UNIX PATH variable
@@ -571,7 +572,7 @@ set_target_properties (gmtlib
 # If a renaming of the gmt dll has been set in ConfigUser.cmake
 if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
-endif ()
+endif (WIN32 AND GMT_DLL_RENAME)
 
 if (HAVE_DLADDR AND HAVE_LIBDL)
 	# link the dynamic linking loader library
@@ -580,7 +581,7 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
 if (MSVC AND FFTW3_FOUND)
-	target_link_libraries(gmtlib ws2_32)
+	target_link_libraries (gmtlib ws2_32)
 endif (MSVC AND FFTW3_FOUND)
 
 # build targets for standalone gmt target and demos
@@ -633,7 +634,7 @@ if (MSVC)
 	# To expand the command line arguments in Windows, see:
 	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
-endif(MSVC)
+endif (MSVC)
 
 # add the install targets
 install (TARGETS gmtlib pslib gmt
@@ -738,5 +739,3 @@ string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
 string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS} " "
 	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}})
 message (STATUS "Using CFLAGS = '${_using_cflags}'")
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

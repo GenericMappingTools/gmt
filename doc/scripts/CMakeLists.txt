@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
 # Scripts which have to be converted to verbatim (with comments)
@@ -152,9 +152,11 @@ foreach (_script ${_scr_strip})
 endforeach (_script)
 
 # Add build target
-add_custom_target (_docs_scripts_fig DEPENDS ${_scripts_pdf} ${_scripts_png})
 add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
-add_depend_to_target (docs_depends _docs_scripts_fig _docs_scripts_verbatim)
+add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png})
+add_custom_target (_docs_pdf_scripts_fig DEPENDS ${_scripts_pdf})
+add_depend_to_target (docs_html_depends _docs_html_scripts_fig _docs_scripts_verbatim)
+add_depend_to_target (docs_pdf_depends _docs_pdf_scripts_fig _docs_scripts_verbatim)
 
 # run tests
 if (DO_TESTS)
@@ -186,16 +188,14 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	endforeach (_fig ${_install_pdf})
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
-# Install target for realease documentation
-if (GIT AND HAVE_SVN_VERSION)
+# Install target for release documentation
+if (GIT_FOUND AND HAVE_GIT_VERSION)
 	foreach (_fig ${_install_pdf})
 		add_custom_target (_${_fig}_release
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${RST_BINARY_DIR}/_images/${_fig}
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/${_fig}
-			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} svn_export_release)
+			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} git_export_release)
 		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
-endif (GIT AND HAVE_SVN_VERSION)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
+endif (GIT_FOUND AND HAVE_GIT_VERSION)

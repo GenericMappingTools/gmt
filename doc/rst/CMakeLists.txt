@@ -1,7 +1,6 @@
 #
-# $Id$
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -13,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
 # reST documentation
@@ -31,11 +30,15 @@ if (SPHINX_FOUND)
 	copy_dir_if_different (_docs_copy_rst_tree_source
 		${CMAKE_CURRENT_SOURCE_DIR}/source/
 		${CMAKE_CURRENT_BINARY_DIR}/_source)
-	add_depend_to_target (docs_depends _docs_copy_rst_tree_source)
+	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_source)
+	add_depend_to_target (docs_pdf_depends _docs_copy_rst_tree_source)
+	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_source)
 	copy_dir_if_different (_docs_copy_rst_tree_themes
 		${CMAKE_CURRENT_SOURCE_DIR}/themes/
 		${CMAKE_CURRENT_BINARY_DIR}/_themes)
-	add_depend_to_target (docs_depends _docs_copy_rst_tree_themes)
+	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_themes)
+	add_depend_to_target (docs_pdf_depends _docs_copy_rst_tree_themes)
+	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_themes)
 	add_custom_target (_docs_rst_mkdir_verbatim
 		COMMAND ${CMAKE_COMMAND} -E make_directory
 		${CMAKE_CURRENT_BINARY_DIR}/_source/_verbatim
@@ -68,7 +71,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/_source
 		${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMENT "Building HTML documentation...")
-	add_dependencies (docs_html docs_depends)
+	add_dependencies (docs_html docs_html_depends)
 
 	# PDF build target
 	find_program(MAKE NAMES make gmake gnumake)
@@ -83,23 +86,26 @@ if (SPHINX_FOUND)
 			COMMAND ${MAKE} -C ${CMAKE_CURRENT_BINARY_DIR}/latex
 			all-pdf LATEXOPTS=-interaction=batchmode
 			COMMENT "Building CookBook PDF...")
-		add_dependencies (docs_pdf docs_depends)
+		add_dependencies (docs_pdf docs_pdf_depends)
 
 		# Shrink PDF files
-		set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf GMT_Manpages.pdf)
-		foreach (_pdf_file ${_docs_pdf_output})
-			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
-			set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
-			add_custom_target (_shrink_${_pdf_target}
-				COMMAND ${GS} -sDEVICE=pdfwrite
-				-dCompatibilityLevel=1.4
-				-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
-				-sOutputFile=${_pdf_file}.shrink ${_pdf_file}
-				COMMAND ${CMAKE_COMMAND} -E rename
-				${_pdf_file}.shrink ${_pdf_file}
-				DEPENDS ${_pdf_file} docs_pdf)
-			add_depend_to_target (docs_pdf_shrink _shrink_${_pdf_target})
-		endforeach (_pdf_file)
+		find_program(GS NAMES gs gswin32c gswin64c)
+		if (GS)
+			set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf)
+			foreach (_pdf_file ${_docs_pdf_output})
+				string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
+				set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
+				add_custom_target (_shrink_${_pdf_target}
+					COMMAND ${GS} -sDEVICE=pdfwrite
+					-dCompatibilityLevel=1.4
+					-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
+					-sOutputFile=${_pdf_file}.shrink ${_pdf_file}
+					COMMAND ${CMAKE_COMMAND} -E rename
+					${_pdf_file}.shrink ${_pdf_file}
+					DEPENDS ${_pdf_file} docs_pdf)
+				add_depend_to_target (docs_pdf_shrink _shrink_${_pdf_target})
+			endforeach (_pdf_file)
+		endif (GS)
 	endif (MAKE)
 
 	# Build and compress manpages
@@ -113,17 +119,17 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			COMMAND ${GZIP} -9 -n -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
 			COMMENT "Building manpages...")
-		add_dependencies (docs_man docs_depends)
+		add_dependencies (docs_man docs_man_depends)
 	endif (GZIP)
 
-	# Install targets for realease documentation
-	if (GIT AND HAVE_SVN_VERSION)
+	# Install targets for release documentation
+	if (GIT_FOUND AND HAVE_GIT_VERSION)
 		# HTML
 		add_custom_target (_html_release
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_BINARY_DIR}/html/
 			${GMT_RELEASE_PREFIX}/doc_release/html
-			DEPENDS docs_html svn_export_release)
+			DEPENDS docs_html git_export_release)
 		add_depend_to_target (gmt_release _html_release)
 		# PDF
 		add_custom_target (_pdf_release
@@ -146,9 +152,9 @@ if (SPHINX_FOUND)
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_BINARY_DIR}/man/
 			${GMT_RELEASE_PREFIX}/man_release
-			DEPENDS docs_man svn_export_release)
+			DEPENDS docs_man git_export_release)
 		add_depend_to_target (gmt_release _man_release)
-	endif (GIT AND HAVE_SVN_VERSION)
+	endif (GIT_FOUND AND HAVE_GIT_VERSION)
 endif (SPHINX_FOUND)
 
 # Install targets
@@ -191,5 +197,3 @@ install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MANDIR}/man5
 	COMPONENT Runtime
 	FILES_MATCHING PATTERN "*.5.gz")
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

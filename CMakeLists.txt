@@ -1,7 +1,5 @@
 #
-#	$Id$
-#
-#	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+#	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -13,10 +11,12 @@
 #	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #	GNU Lesser General Public License for more details.
 #
-#	Contact info: gmt.soest.hawaii.edu
+#	Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+# To configure the cmake process, first copy the configuration template
+# 'cmake/ConfigUserTemplate.cmake' to 'cmake/ConfigUser.cmake',
+# then edit 'cmake/ConfigUser.cmake'.
 #
 # To build out-of-source do (example):
 #
@@ -25,9 +25,6 @@
 #	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 #
 # CMAKE_BUILD_TYPE can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
-#
-# cmake creates a new file cmake/ConfigUser.cmake if it does not already
-# exist. You can configure additional options there.
 #
 
 # Make sure the user doesn't play dirty with symlinks
@@ -49,6 +46,8 @@ cmake_minimum_required (VERSION 2.8.5)
 # Use NEW behavior with newer CMake releases
 foreach(p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
+		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
 	if(POLICY ${p})
 		cmake_policy(SET ${p} NEW)
@@ -71,19 +70,17 @@ project (GMT C)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 	CACHE INTERNAL "Location of our custom CMake modules." FORCE)
 
-# Include configuration options (default options and options overridden by user).
-include (ConfigCMake)
-
 # Find UNIX commands
 include (FindUnixCommands)
-find_program (GIT git)
-find_program (GS gs gswin64)
-find_program (XZ NAMES xz)
+find_package (Git)
+
+# Include configuration options (default options and options overridden by user).
+include (ConfigCMake)
 
 # Global test target
 add_custom_target (check
 	COMMAND ${CMAKE_CTEST_COMMAND}
-	--force-new-ctest-process -j${N_TEST_JOBS})
+	--output-on-failure --force-new-ctest-process -j${N_TEST_JOBS})
 
 # Find test dependencies
 find_program (GRAPHICSMAGICK gm)
@@ -96,17 +93,17 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 #set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
-add_subdirectory (doc)        # share must be processed *after* src (PDF manpages)
+add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
 if (EXISTS ${GMT_SOURCE_DIR}/test/)
 	add_subdirectory (test)
 endif (EXISTS ${GMT_SOURCE_DIR}/test/)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
-if (GIT AND HAVE_SVN_VERSION)
-	# Export svn working tree
+if (GIT_FOUND AND HAVE_GIT_VERSION)
+	# Export git working tree
 	add_custom_target (git_export_release
-	COMMAND ${GIT} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/ 5.4)
+		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
 	# Remove the test dir, so that it is not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
@@ -115,7 +112,6 @@ if (GIT AND HAVE_SVN_VERSION)
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test)
 	add_custom_target (git_prune_files
 		COMMAND ${CMAKE_COMMAND} -E remove
-			${GMT_RELEASE_PREFIX}/.gitattributes
 			${GMT_RELEASE_PREFIX}/.gitignore
 			${GMT_RELEASE_PREFIX}/.travis.yml)
 	add_depend_to_target (git_prune_dirs git_export_release)
@@ -147,7 +143,7 @@ if (GIT AND HAVE_SVN_VERSION)
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			${_release_dirname}-src.tar.gz ${_release_dirname}-src.tar.xz)
 	endif (GNUTAR AND GZIP AND XZ)
-endif (GIT AND HAVE_SVN_VERSION)
+endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
 get_target_property (_location gmtlib LOCATION)
 get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
@@ -187,6 +183,9 @@ configure_file (src/config.h.in src/config.h)
 
 # Configuration done
 message(
+	"*\n"
+	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
+	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
@@ -226,5 +225,3 @@ message(
 #foreach (_variableName ${_variableNames})
 #	message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

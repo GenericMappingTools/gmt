@@ -10977,9 +10977,6 @@ Finally we show an example of a polygon file:
 .. [3]
    The tools can also be installed on other platforms (see Chapter `GMT on non-UNIX Platforms`_).
 
-.. [4]
-   One public-domain RIP is ghostscript, available from `<http://www.gnu.org/>`_.
-
 .. [5]
    Programs now also allow for fast, binary multicolumn file i/o.
 
