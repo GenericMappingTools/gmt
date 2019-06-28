@@ -106,7 +106,6 @@ script:
     # Run a few commands to make sure they don't crash
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    - gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     # Download remote files before testing, see #939.
     - if [[ "$TEST" == "true" ]]; then
         curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc;
@@ -122,15 +121,15 @@ script:
     # The default action for Travis-CI is to continue running even if a command fails.
     - set -e
     - if [[ "$BUILD_DOCS" == "true" ]]; then
-        cmake --build . --target docs_html_depends;
         cmake --build . --target docs_man_depends;
         cmake --build . --target docs_pdf_depends;
+        cmake --build . --target docs_html_depends;
         (while sleep 300; do echo . ; done)&
         cmake --build . --target animation;
         kill %1;
-        cmake --build . --target docs_html;
         cmake --build . --target docs_man;
         cmake --build . --target docs_pdf;
+        cmake --build . --target docs_html;
         cmake --build . --target docs_pdf_shrink;
       fi
     # Make source tarballs
