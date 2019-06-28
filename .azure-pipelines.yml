@@ -1,0 +1,95 @@
+# Configuration for Azure Pipelines
+########################################################################################
+
+# Only build the master branch, tags, and PRs (on by default) to avoid building random
+# branches in the repository until a PR is opened.
+trigger:
+  branches:
+    include:
+    - master
+    - 6.0
+    - 5.4
+    - refs/tags/*
+
+jobs:
+
+# Mac - Compile only
+########################################################################################
+- job:
+  displayName: 'Mac | Compile only'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Mac - Build docs + Package
+########################################################################################
+- job:
+  displayName: 'Mac | Build docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Mac - Test
+########################################################################################
+- job:
+  displayName: 'Mac | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: true
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Windows - Compile + Build Docs + Package
+########################################################################################
+- job:
+  displayName: 'Windows | Compile + Build Docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-windows.yml
+
+  # Set HOME to avoid permission issue of azure-pipelines
+  - bash: echo "##vso[task.setvariable variable=HOME]D:/a/1/s/"
+    displayName: Set HOME
+
+  - script: |
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
