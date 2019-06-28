@@ -19,7 +19,7 @@
  * Date:	23-Jun-2017
  * Version:	6 API
  *
- * Brief synopsis: gmt end terminates a modern mode session and mades registered figures.
+ * Brief synopsis: gmt end terminates a modern mode session and makes registered figures.
  *	gmt end
  */
 
@@ -35,17 +35,18 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [show] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) {
 
 	/* This parses the options provided to end and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -58,6 +59,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
+			case GMT_OPT_INFILE:
+				if (!strncmp (opt->arg, "show", 4U))
+					*show = true;
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized argument %s\n", opt->arg);
+					n_errors++;
+				}
+				break;
 			case 'V':	/* This is OK */
 				break;
 			default:
@@ -75,6 +84,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 int GMT_end (void *V_API, int mode, void *args) {
 	int error = 0;
+	bool show = false;
+	char *display = NULL, *task = "show";
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -98,12 +109,14 @@ int GMT_end (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
-	if ((error = parse (GMT, options)) != 0) Return (error);
+	if ((error = parse (GMT, options, &show)) != 0) Return (error);
 
 	/*---------------------------- This is the end main code ----------------------------*/
 
-	if (gmt_manage_workflow (API, GMT_END_WORKFLOW, NULL))
+	display = (show) ? task : NULL;
+	
+	if (gmt_manage_workflow (API, GMT_END_WORKFLOW, display))
 		error = GMT_RUNTIME_ERROR;
-		
+	
 	Return (error);
 }
