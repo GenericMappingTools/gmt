@@ -28,12 +28,6 @@ install (DIRECTORY ${_gmt_share_dirs}
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
 
-# install version file (used during runtime to check for correct share dir)
-configure_file (VERSION.in VERSION @ONLY NEWLINE_STYLE LF)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
-	DESTINATION ${GMT_DATADIR}
-	COMPONENT Runtime)
-
 # only attempt to install shorelines when requested and path is known
 if (GSHHG_PATH AND COPY_GSHHG)
 	install (DIRECTORY ${GSHHG_PATH}/
