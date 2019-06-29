@@ -10,7 +10,7 @@ steps:
 - bash: |
     set -x -e
     brew install graphicsmagick || true
-  displayName: Install dependencies for runing tests
+  displayName: Install dependencies for running tests
   condition: eq(variables['TEST'], true)
 
 - bash: |

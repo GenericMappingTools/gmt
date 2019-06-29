@@ -90,7 +90,6 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
 # Add subdirectories
-#set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
 add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
