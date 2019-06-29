@@ -216,7 +216,7 @@ Command-line completion
 
 GMT provides basic command-line completion (tab completion) for bash.
 The easiest way to use the feature is to install the
-`bash-completion <http://bash-completion.alioth.debian.org/>`_ package
+`bash-completion <https://github.com/scop/bash-completion>`_ package
 which is available in many operating system distributions.
 
 Depending on the distribution, you may still need to source it from
