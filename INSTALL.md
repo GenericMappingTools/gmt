@@ -41,7 +41,7 @@ Otherwise, installing from the distros goes like this:
 
 Install GMT5 via
 
-    sudo apt-get install gmt gmt-dcw gmt-gshhg
+    sudo apt install gmt gmt-dcw gmt-gshhg
 
 **Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
 include the supplements. If you need them you will need to
