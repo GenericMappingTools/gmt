@@ -45,7 +45,7 @@ if (DO_TESTS)
 			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
 	endif (CYGWIN_INSTALL_PATH)
 
-	# add classic tests
+	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		# find files RELATIVE so that test NAMEs are not absolute paths
 		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

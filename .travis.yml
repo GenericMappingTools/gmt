@@ -81,8 +81,8 @@ before_install:
         echo "Copy cached deb packages"
         sudo rsync -av ${DEB_CACHE}/ /var/cache/apt/archives/
         echo "Start to install software"
-        sudo apt update
-        sudo apt install -y --no-install-recommends --no-install-suggests $DEB_PACKAGES
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends --no-install-suggests $DEB_PACKAGES
         echo "Update the cache"
         rsync -av /var/cache/apt/archives/*.deb ${DEB_CACHE}/
       fi
