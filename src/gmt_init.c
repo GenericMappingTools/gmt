@@ -11528,6 +11528,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
+	GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: Current panel is (%d, %d)\n", *row, *col);
 	(*row)--;	(*col)--;	/* Since they were given on a 1-n,1-m basis */
 	return GMT_NOERROR;
 }
@@ -11604,6 +11605,31 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 		
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
+}
+
+#define GMTINIT_SUBPLOT_ACTIVE 1
+#define GMTINIT_PANEL_NOTSET 2
+
+GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
+	/* Return GMTINIT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMTINIT_PANEL_NOTSET if no panel set yet */
+	char file[PATH_MAX] = {""};
+	bool answer;
+	unsigned int mode = 0;
+	/* Now read subplot information file */
+	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
+	answer = (access (file, F_OK) == 0);	/* true if subplot information file is found */
+	if (answer) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subplot information file found\n");
+		mode |= GMTINIT_SUBPLOT_ACTIVE;
+	}
+	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
+	answer = (access (file, F_OK) == 0);	/* true if curent panel file is found */
+	if (answer)
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
+	else
+		mode |= GMTINIT_PANEL_NOTSET;
+		
+	return (mode);
 }
 
 /*! Return information about current panel */
@@ -11693,7 +11719,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	}
 	fclose (fp);
 	if (!found) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to match specified row,col with subplot information\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to match specified row,col with subplot information in %s\n", file);
 		return NULL;
 	}
 	API->error = GMT_NOERROR;
@@ -12288,7 +12314,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
-		unsigned int n_errors = 0;
+		unsigned int n_errors = 0, subplot_status = 0;
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
 		char arg[GMT_LEN256] = {""}, scl[GMT_LEN64] = {""};
@@ -12363,17 +12389,26 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (opt_J) got_J = true;
 		}
 
-		/* Check if a subplot operation is in effect */
-		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot so must update gmt.panel */
+		/* Check if a subplot operation is in effect and if there is a current panel already */
+		subplot_status = gmtinit_subplot_status (API, fig);
+
+		if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 			unsigned int row = 0, col = 0;
-			if (opt->arg[0])	/* Gave an argument so presumably row,col */
-				sscanf (opt->arg, "%d,%d", &row, &col);
-			else {	/* if there is a current panel, we move to the next, otherwise set to first */
-				if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+			if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
+				if (opt->arg[0])	/* Gave an argument so presumably this is our row,col */
+					sscanf (opt->arg, "%d,%d", &row, &col);
+				else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
+					if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+				}
+				if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;	/* Make this the current panel */
+				if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
 			}
-			if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
-			if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here */
+			else if (subplot_status & GMTINIT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
+				if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+				if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
+			}
 		}
+
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
