@@ -71,22 +71,22 @@ For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
+    sudo apt install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
-    sudo apt-get install graphicsmagick ffmpeg
+    sudo apt install graphicsmagick ffmpeg
 
     # to enable testing
-    sudo apt-get install graphicsmagick
+    sudo apt install graphicsmagick
 
     # to build the documentation
-    sudo apt-get install python-sphinx
+    sudo apt install python-sphinx
 
     # to build the documentation in PDF format
-    sudo apt-get install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
+    sudo apt install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
 
 ### RHEL/CentOS
 
