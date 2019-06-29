@@ -11623,7 +11623,7 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 		mode |= GMTINIT_SUBPLOT_ACTIVE;
 	}
 	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
-	answer = (access (file, F_OK) == 0);	/* true if curent panel file is found */
+	answer = (access (file, F_OK) == 0);	/* true if current panel file is found */
 	if (answer)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
 	else
