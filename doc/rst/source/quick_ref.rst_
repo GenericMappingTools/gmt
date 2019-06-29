@@ -5,6 +5,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`clear`          | Delete current history, conf, cpt, sessions, data or cache          |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`docs`           | Show HTML documentation of specified module or display graphics     |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`end`            | Terminate GMT modern mode session and produce optional graphics     |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`figure`         | Set attributes for the current figure                               |
