@@ -27,7 +27,7 @@
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Show the HTML documentation of the specified module"
+#define THIS_MODULE_PURPOSE	"Show HTML documentation of specified module or display graphics"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	""
