@@ -3285,9 +3285,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 
 GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_of_text) {
 	if (GMT->common.i.word) {	/* Need to extract a specific column from the traiing text */
-		char *word = NULL, *trail = NULL, *orig = strdup (&GMT->current.io.curr_text[start_of_text]);
+		char *word = NULL, *orig = strdup (&GMT->current.io.curr_text[start_of_text]), *trail = orig;
 		uint64_t col = 0;
-		trail = orig;
 		while (col != GMT->common.i.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
 			if (*word != '\0')	/* Skip empty strings */
 				col++;
