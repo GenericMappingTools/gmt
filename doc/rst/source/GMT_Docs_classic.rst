@@ -1961,8 +1961,10 @@ implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then also select the special column
-by requesting column **t**, otherwise we ignore trailing text.  Finally,
-to use the entire numerical record and ignoring trailing text, use **-in**.
+by requesting column **t**, otherwise we ignore trailing text.  If you only
+want to select one word from the trailing text, then append the word number
+(0 is the first word).  Finally, to use the entire numerical record and
+ignore trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1982,9 +1984,10 @@ to use the entire numerical record and ignoring trailing text, use **-in**.
    from the data themselves (such as when reading a binary file).  Finally, if
    a module needs to write out only a portion of the current logical record then
    you may use the corresponding **-o** option to select desired columns, including
-   the trailing text column **t**.  Note that these column numbers now refer to
-   the logical record, not the physical, since after reading the data there is no
-   physical record, only the logical record in memory.
+   the trailing text column **t**.  If you only want to output one word from the
+   trailing text, then append the word number (0 is the first word).  Note that
+   these column numbers now refer to the logical record, not the physical, since
+   after reading the data there is no physical record, only the logical record in memory.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2019,9 +2022,11 @@ You can also use a column more than once, e.g., **-o**\ 3,1,3, to
 duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
-numerical columns.  Note that if you wanted to scale or shift the output
-values you need to do so during reading, using the **-i** option.
-To output all numerical columns and ignoring trailing text, use **-on**.
+numerical columns.  If you only want to output one word from the trailing
+text, then append the word number (0 is the first word).  Note that if you 
+wanted to scale or shift the output values you need to do so during reading,
+using the **-i** option. To output all numerical columns and ignoring
+trailing text, use **-on**.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

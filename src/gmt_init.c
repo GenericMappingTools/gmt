@@ -6461,8 +6461,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'i':	/* -i option for input column order */
 
-			gmt_message (GMT, "\t-i Sets alternate input column order and optional transformations [Default reads all columns in order].\n");
-			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -in for just numerical input.\n");
+			gmt_message (GMT, "\t-i Sets alternate input column order and optional transformations [Default reads all columns in original order].\n");
+			gmt_message (GMT, "\t   Append list of columns; t[<word>] = trailing text; use <word> to pick a word from the text.\n");
+			gmt_message (GMT, "\t   Use -in for considering numerical input only.\n");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
@@ -6491,7 +6492,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'o':	/* -o option for output column order */
 
 			gmt_message (GMT, "\t-o Set alternate output column order [Default writes all columns in order].\n");
-			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -on for just numerical output.\n");
+			gmt_message (GMT, "\t   Append list of columns; t[<word>] = trailing text; use <word> for writing a single word from the text.\n");
+			gmt_message (GMT, "\t   Use -on for numerical output only.\n");
 			break;
 
 		case 'p':	/* Enhanced pseudo-perspective 3-D plot settings */
@@ -7846,8 +7848,20 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 
-		if (!strcmp (p, "t"))	/* Got the trailing test "column" */
+		if (p[0] == 't') {	/* Got the trailing test "column" */
 			GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = true;
+			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
+				int64_t k = atol (&p[1]);
+				if (k < 0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot give negative word position\n");
+					return GMT_PARSE_ERROR;
+				}
+				else {
+					GMT->common.i.word = true;
+					GMT->common.i.w_col = k + 1;	/* Store as 1-nwords */
+				}
+			}
+		}
 		else {	/* Now process column range */
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 
@@ -7924,8 +7938,20 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
-		if (!strcmp (p, "t"))
+		if (p[0] == 't') {
 			GMT->current.io.trailing_text[GMT_OUT] = true;	/* Include trailing text */
+			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
+				int64_t k = atol (&p[1]);
+				if (k < 0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot give negative word position\n");
+					return GMT_PARSE_ERROR;
+				}
+				else {
+					GMT->common.o.word = true;
+					GMT->common.o.w_col = k + 1;	/* Store as 1-nwords */
+				}
+			}
+		}
 		else {
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 
