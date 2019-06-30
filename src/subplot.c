@@ -497,17 +497,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					Ctrl->S[k].has_label = true;
 					if (string[0]) Ctrl->S[k].label[GMT_SECONDARY] = strdup (string);
 				}
-				if (k == GMT_Y) {	/* Modifier for y-axis only */
+				if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for panel titles, this could go with either -SR or -SC so do it outside but save in -SC */
+					Ctrl->S[GMT_X].ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
+				if (k == GMT_Y) {	/* Modifiers for y-axis only */
 					if (gmt_get_modifier (opt->arg, 'p', string))	/* Want axis-parallel annotations [horizontal] */
 						Ctrl->S[k].parallel = 1;
-					if (gmt_get_modifier (opt->arg, 't', string)) {	/* Only for SC */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modifier +t only allowed for -SC\n");
-						n_errors++;
-					}
 				}
 				else {	/* Modifier for x-axis only */
-					if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for panel titles */
-						Ctrl->S[k].ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
 					if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Only for SR */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modifier +p only allowed for -SR\n");
 						n_errors++;
