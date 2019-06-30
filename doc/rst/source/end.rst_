@@ -12,7 +12,6 @@ Synopsis
 **gmt end**
 [ **show** ]
 [ |SYN_OPT-V| ]
-[ |SYN_OPT--| ]
 
 |No-spaces|
 
