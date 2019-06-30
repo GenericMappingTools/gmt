@@ -57,36 +57,38 @@
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 #define GMT_CATCH_CTRL_C
 #include <signal.h>
-struct sigaction new_action, old_action;
+struct sigaction cleanup_action, default_action;
 char *file_to_delete_if_ctrl_C;
 #endif
 
-GMT_LOCAL void delete_then_exit (int sig_no)
+GMT_LOCAL void delete_file_then_exit (int sig_no)
 {	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
 	gmt_M_unused (sig_no);
 #ifdef GMT_CATCH_CTRL_C
 #ifdef DEBUG
 	fprintf (stderr, "Emergency removal of file %s due to Ctrl-C action\n", file_to_delete_if_ctrl_C);
 #endif
-	remove (file_to_delete_if_ctrl_C);	/* Remove if we can */
-	sigaction (SIGINT, &old_action, NULL);	/* Reset default action */
-	kill (0, SIGINT);			/* Perform the Ctrl-C */
+	remove (file_to_delete_if_ctrl_C);	   /* Remove if we can, ignore any returns */
+	sigaction (SIGINT, &default_action, NULL); /* Reset the default action */
+	kill (0, SIGINT);			   /* Perform the final Ctrl-C action and die */
 #endif
 }
 
 GMT_LOCAL void turn_on_ctrl_C_check (char *file) {
 #ifdef GMT_CATCH_CTRL_C
-	file_to_delete_if_ctrl_C = file;			/* File to delete if excrement hits fan */
-	gmt_M_memset (&new_action, 1, struct sigaction);	/* Clean the muzzle */
-	new_action.sa_handler = &delete_then_exit;		/* Set function to call if CTRL-C is caught */
-	sigaction(SIGINT, &new_action, &old_action);		/* Activate signal checking */
+	file_to_delete_if_ctrl_C = file;			/* File to delete if CTRL-C is caught */
+	gmt_M_memset (&cleanup_action, 1, struct sigaction);	/* Initialize the structure to NULL */
+	cleanup_action.sa_handler = &delete_file_then_exit;	/* Set function we should call if CTRL-C is caught */
+	sigaction(SIGINT, &cleanup_action, &default_action);	/* Activate the alternative signal checking */
+#else
+	gmt_M_unused (file);
 #endif
 }
 
 GMT_LOCAL void turn_off_ctrl_C_check () {
 #ifdef GMT_CATCH_CTRL_C
-	file_to_delete_if_ctrl_C = NULL;	/* Just to be clean */
-	sigaction (SIGINT, &old_action, NULL);	/* Reset default action */
+	file_to_delete_if_ctrl_C = NULL;		/* Remove trace of any file name */
+	sigaction (SIGINT, &default_action, NULL);	/* Reset default signal action */
 #endif
 }
 
