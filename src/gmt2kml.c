@@ -1194,7 +1194,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 						else if (Ctrl->N.mode == GET_COL_LABEL) {
-							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], Ctrl->N.col);
+							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], gmt_M_type(GMT,GMT_IN,Ctrl->N.col));
 							kml_print (API, Out, N, "<name>%s</name>", item);
 						}
 						else if (Ctrl->N.mode == GET_LABEL)
@@ -1219,7 +1219,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 								kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
 								kml_print (API, Out, N++, "<value>");
 								if ((n_coord+col) < S->n_columns) {	/* Part of the numerical section */
-									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], n_coord+col);
+									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], gmt_M_type(GMT,GMT_IN,n_coord+col));
 									kml_print (API, Out, N, "%s", item);
 								}
 								else if (all_text) {	/* Place entire trailing text */
