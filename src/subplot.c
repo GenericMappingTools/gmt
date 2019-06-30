@@ -188,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-SC Each subplot Column shares a common x-range. First row (top axis) and last row (bottom axis) are annotated;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append t or b to select only one of those two axes annotations instead [both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +l if annotated x-axes should have a label [none]; optionally append the label if it is fixed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Alternatively, you can also use +s.  If no label is given then you msut set it when the panel is plotted via -B.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Alternatively, you can also use +s.  If no label is given then you must set it when the panel is plotted via -B.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +t to make space for individual titles for all subplots; use +tc for top row titles only [no subplot titles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-SR Each subplot Row shares a common y-range. First column (left axis) and last column (right axis) are annotated;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append l or r to select only one of those two axes annotations instead [both].\n");
@@ -497,13 +497,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					Ctrl->S[k].has_label = true;
 					if (string[0]) Ctrl->S[k].label[GMT_SECONDARY] = strdup (string);
 				}
-				if (k == GMT_Y) {	/* Modifier for y-axis only */
+				if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for panel titles, this could go with either -SR or -SC so do it outside but save in -SC */
+					Ctrl->S[GMT_X].ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
+				if (k == GMT_Y) {	/* Modifiers for y-axis only */
 					if (gmt_get_modifier (opt->arg, 'p', string))	/* Want axis-parallel annotations [horizontal] */
 						Ctrl->S[k].parallel = 1;
-					/* Panel title is a common modifier */
-					if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for panel titles */
-						Ctrl->S[k].ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
-					
+				}
+				else {	/* Modifier for x-axis only */
+					if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Only for SR */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modifier +p only allowed for -SR\n");
+						n_errors++;
+					}
 				}
 				break;
 	
@@ -768,11 +772,11 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (ny == 2 || Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX) y_header_off += label_height;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col labels: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE) {
+		if (Ctrl->S[GMT_X].ptitle == SUBPLOT_PANEL_TITLE) {
 			fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y]-1) * title_height;
 			y_header_off += title_height;
 		}
-		else if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) {
+		else if (Ctrl->S[GMT_X].ptitle == SUBPLOT_PANEL_COL_TITLE) {
 			y_header_off += title_height;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: fluff = {%g, %g}\n", factor, fluff[GMT_X], fluff[GMT_Y]);
@@ -846,7 +850,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					D->table[0]->segment[seg]->n_rows = 4;
 				}
 			}
-			if ((row == 0 && Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) || (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE)) {
+			if ((row == 0 && Ctrl->S[GMT_X].ptitle == SUBPLOT_PANEL_COL_TITLE) || (Ctrl->S[GMT_X].ptitle == SUBPLOT_PANEL_TITLE)) {
 				if (row) y -= title_height;	/* Make space for panel title */
 			}
 			if (Ctrl->S[GMT_X].active)	/* May need shared annotation at top N */
