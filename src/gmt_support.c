@@ -4915,7 +4915,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				if ((c = strchr (s->string, '$'))) {	/* Got a text string variable */
 					s->action = GMT_SYMBOL_VARTEXT;
 					if (c[1] == 't' && isdigit (c[2]))	/* Select this word from trailing text */
-						s->var[0] = atoi (&c[3]) + 1;	/* We add the 1 here so 0-(n-1) becomes 1-n */
+						s->var[0] = atoi (&c[2]) + 1;	/* We add the 1 here so 0-(n-1) becomes 1-n */
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
