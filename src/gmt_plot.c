@@ -2689,6 +2689,8 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
  	 * These are the things that can happen:
 	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
 	 * 2. s->text is $t.  Then we use the trialing text from the input as the text.
+	 *    Optionally, a single word of the trailing text can be selected by appending
+	 *    a word integer, $t0 is the first word, $t1 the second, etc.
 	 * 3. We have a format statement that contains free-form text with interspersed
 	 *    special formatting commands.  These have the syntax
 	 *    %X  Add longitude or x using chosen default format.
@@ -2703,7 +2705,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		strcpy (text, s->string);
 	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
 		strcpy (text, GMT->current.io.curr_trailing_text);
-	else if (!strncmp (s->string, "$t:", 3U)) {	/* Get word number n from trailing text in the input */
+	else if (!strncmp (s->string, "$t", 2U) && isdigit (s->string[2])) {	/* Get word number n from trailing text in the input */
 		char *word = NULL, *trail = NULL, *orig = strdup (GMT->current.io.curr_trailing_text);
 		int col = 0;
 		trail = orig;
@@ -2711,8 +2713,10 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 			col++;	/* Advance to the right word */
 		if (word && *word != '\0')	/* Skip empty strings */
 			strcpy (text, word);
-		else
+		else {	/* Default to the whole trailing text if word does not exist */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No word # %d in the trailing text (%d words) - return all text\n", s->var[0], col);
 			strcpy (text, GMT->current.io.curr_trailing_text);
+		}
 		gmt_M_str_free (orig);
 	}
 	else {	/* Must replace special items within a template string */
