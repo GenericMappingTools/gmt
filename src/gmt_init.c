@@ -7238,7 +7238,8 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 		case 'i':	/* -i option for input column order */
 
 			gmt_message (GMT, "\t%s\n", GMT_i_OPT);
-			gmt_message (GMT, "\t   Sets alternate input column order and/or scaling [Default reads all columns in order].\n");
+			gmt_message (GMT, "\t   Sets alternate numerical input column order and/or scaling. Append ,t to include trailing text.\n");
+			gmt_message (GMT, "\t   [Default reads all numerical columns in order, followed by any trailing text].\n");
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
@@ -7261,7 +7262,8 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 		case 'o':	/* -o option for output column order */
 
 			gmt_message (GMT, "\t%s\n", GMT_o_OPT);
-			gmt_message (GMT, "\t   Sets alternate output column order and/or scaling [Default writes all columns in order].\n");
+			gmt_message (GMT, "\t   Sets alternate numerical output column order and/or scaling; end with [,]t to output trailing text.\n");
+			gmt_message (GMT, "\t   [Default writes all numerical columns in order, followed by any trailing text].\n");
 			break;
 
 		case 'p':
@@ -7787,6 +7789,10 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
+	if (!strcmp (arg, "t") || !strcmp (arg, ",t")) {	/* Cannot just get trailing text, must use -ot instead */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Selection -i%s (just trailing text, no numerical input) is not allowed.  Consider using -ot instead, if available.\n", arg);
+		return GMT_PARSE_ERROR;
+	}
 
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 

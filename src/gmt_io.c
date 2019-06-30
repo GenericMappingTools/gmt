@@ -7497,7 +7497,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				}
 			}
 			if (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) {
-				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				if (GMT->current.io.record.text) GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
 				*data_type = GMT_READ_MIXED;
 			}
 
