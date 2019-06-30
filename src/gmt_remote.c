@@ -72,9 +72,10 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
 	char tag[4] = {""};
 	int k, match = -1, len = (int)strlen(file);
-	strncpy (tag, &file[len-3], 3U);
+	if (strstr (file, ".grd")) len -= 4;    /* If extension was provided we must skip that as well */
+	strncpy (tag, &file[len-3], 3U);	/* Get the xxy part of the file */
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
-		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
+		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {	/* Found the matching information */
 			char name[GMT_LEN32] = {""};
 			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
 			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
