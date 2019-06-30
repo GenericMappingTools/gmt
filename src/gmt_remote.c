@@ -57,7 +57,6 @@
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 #define GMT_CATCH_CTRL_C
 #include <signal.h>
-#include "common_sighandler.h"
 struct sigaction new_action, old_action;
 char *file_to_delete_if_ctrl_C;
 #endif
