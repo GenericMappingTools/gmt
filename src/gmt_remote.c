@@ -73,7 +73,6 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	char tag[4] = {""};
 	int k, match = -1, len = (int)strlen(file);
 	if (strstr (file, ".grd")) len -= 4;		/* If .grd extension was provided we must skip that as well */
-	else if (strstr (file, ".nc")) len -= 3;	/* If .nc extension was provided we must skip that as well */
 	strncpy (tag, &file[len-3], 3U);	/* Get the xxy part of the file */
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {	/* Found the matching information */
