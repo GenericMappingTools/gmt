@@ -166,7 +166,7 @@ Optional Arguments
     feature set by **-F**, and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in a Google Earth balloon when the item is selected.
-    The data file must have enough data columns and trialing text to
+    The data file must have enough data columns and trailing text to
     accommodate the number of columns requested.  If the number of extended
     data is one larger than the number of available numerical columns then
     the entire trailing text is set as the last extended data column.

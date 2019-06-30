@@ -206,7 +206,7 @@ Optional Arguments
 .. _-W:
 
 **-W** [**+n**\ ]
-    Attempt to convert each word in the trialing text to a number and append
+    Attempt to convert each word in the trailing text to a number and append
     such values to the numerical output columns.  Text that cannot be converted
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  Note: These columns are identified based on
