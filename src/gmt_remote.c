@@ -43,6 +43,52 @@
  * this check by first calling gmt_download_file_if_not_found.
  */
 
+/* Need global variables for this black magic. Here is the problem:
+ * When a user accesses a large remote file and there is a power-outage
+ * or the user types Ctrl-C, the remote file is only partially copied
+ * over and is useless.  In those cases we should make sure we delete
+ * the incomplete file before killing ourselves.  Below is the implementation
+ * for Linux/macOS that handles these cases.  The actual CURL calls
+ * are bracketed by turn_on_ctrl_C_check and turn_off_ctrl_C_check which
+ * temporarily activates or deactivates our signal action on Ctrl-C.
+ * P. Wessel, June 30, 2019.
+ */
+
+#if !(defined(WIN32) || defined(NO_SIGHANDLER))
+#define GMT_CATCH_CTRL_C
+struct sigaction new_action, old_action;
+char *file_to_delete_if_ctrl_C;
+#endif
+
+GMT_LOCAL void delete_then_exit (int sig_no)
+{	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
+	gmt_M_unused (sig_no);
+#ifdef GMT_CATCH_CTRL_C
+#ifdef DEBUG
+	fprintf (stderr, "Emergency removal of file %s due to Ctrl-C action\n", file_to_delete_if_ctrl_C);
+#endif
+	remove (file_to_delete_if_ctrl_C);	/* Remove if we can */
+	sigaction (SIGINT, &old_action, NULL);	/* Reset default action */
+	kill (0, SIGINT);			/* Perform the Ctrl-C */
+#endif
+}
+
+GMT_LOCAL void turn_on_ctrl_C_check (char *file) {
+#ifdef GMT_CATCH_CTRL_C
+	file_to_delete_if_ctrl_C = file;			/* File to delete if excrement hits fan */
+	gmt_M_memset (&new_action, 1, struct sigaction);	/* Clean the muzzle */
+	new_action.sa_handler = &delete_then_exit;		/* Set function to call if CTRL-C is caught */
+	sigaction(SIGINT, &new_action, &old_action);		/* Activate signal checking */
+#endif
+}
+
+GMT_LOCAL void turn_off_ctrl_C_check () {
+#ifdef GMT_CATCH_CTRL_C
+	file_to_delete_if_ctrl_C = NULL;	/* Just to be clean */
+	sigaction (SIGINT, &old_action, NULL);	/* Reset default action */
+#endif
+}
+
 struct FtpFile {
 	const char *filename;
 	FILE *fp;
@@ -163,6 +209,7 @@ GMT_LOCAL int gmtmd5_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 		return 1;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
+	turn_on_ctrl_C_check (file);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to down file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -175,6 +222,7 @@ GMT_LOCAL int gmtmd5_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	curl_easy_cleanup (Curl);
 	if (ftpfile.fp) /* close the local file */
 		fclose (ftpfile.fp);
+	turn_off_ctrl_C_check ();
 	return 0;
 }
 
@@ -502,6 +550,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
+	turn_on_ctrl_C_check (local_path);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -516,6 +565,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	curl_easy_cleanup (Curl);
 	if (ftpfile.fp) /* close the local file */
 		fclose (ftpfile.fp);
+	turn_off_ctrl_C_check ();
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
