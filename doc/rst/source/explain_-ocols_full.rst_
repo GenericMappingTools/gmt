@@ -7,5 +7,5 @@
     not specified) separated by commas.  Columns may be repeated.
     [Default writes all columns in order].
     Normally, any trailing text in the internal records will be written but
-    when **-o** is used you must add the column **t**. Finally, **-on** will
+    when **-o** is used you must add the column *t*. Finally, **-on** will
     simply write the numerical output only and skip any trailing text.
