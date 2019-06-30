@@ -109,7 +109,7 @@
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[<unit>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...][t]"
+#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...][,t]"
 #define GMT_j_OPT	"-je|f|g"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...][t]"
