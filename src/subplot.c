@@ -336,22 +336,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				else Bxy = opt;
 				break;
 			case 'C':
-				if (Ctrl->In.mode != SUBPLOT_SET) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -C is only available when setting the active panel\n");
-					n_errors++;
-				}
-				else {
-					Ctrl->C.active = true;
-					switch (opt->arg[0]) {
-						case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -C requires w|e|s|n<clearance>[u]\n");
-							n_errors++;
-							break;
-					}
+				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -C requires w|e|s|n<clearance>[u]\n");
+						n_errors++;
+						break;
 				}
 				break;
 
