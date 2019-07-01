@@ -117,7 +117,7 @@ GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void 
 	return fwrite (buffer, size, nmemb, out->fp);
 }
 
-GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
+GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
 	char tag[4] = {""};
 	int k, match = -1, len = (int)strlen(file);
@@ -125,11 +125,13 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	strncpy (tag, &file[len-3], 3U);	/* Get the xxy part of the file */
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {	/* Found the matching information */
-			char name[GMT_LEN32] = {""};
+			char name[GMT_LEN32] = {""}, *c = NULL;
+			if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for this message */
 			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
 			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
 			match = k;
+			if (c) c[0] = '.';	/* Restore extension */
 		}
 	}
 	return (match == -1);	/* Not found */

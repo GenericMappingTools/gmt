@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+w**\ *word*\ \|\ **+z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by
@@ -124,6 +124,8 @@ Optional Arguments
     **+t**\ *text* to set a fixed text string, or **+z** to format incoming *z* values
     to a string using the supplied *format* [use FORMAT_FLOAT_MAP].  Note: If **-Z** is
     in effect then the *z* value used for formatting is in the 4th, not 3rd column.
+    If you only want a specific word from the trailing text and not the whole line,
+    use **+w**\ *word* to indicate which word (0 is the first word) you want.
 
 .. _-G:
 
@@ -206,6 +208,13 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
+
+.. _-i:
+
+**-it**\ *word*
+    In this module, **-it** can be used to select a specific word from the
+    trailing text [Default is the entire trailing text].  The *word* indicates
+    the word order, with the first word begin 0.  No numerical columns can be specified.
 
 .. include:: explain_colon.rst_
 
