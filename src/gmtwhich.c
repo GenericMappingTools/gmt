@@ -76,9 +76,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place in the cache directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place in the current local directory [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place in the user\'s data directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place it in the cache directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place it in the current local directory [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place it in the user\'s data directory.\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
