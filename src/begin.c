@@ -91,11 +91,13 @@ char *get_session_name_and_format (struct GMT_OPTION *opt) {
 	char buffer[GMT_LEN256] = {""};
 	bool space = false;
 	unsigned int n = 0;
+	size_t len = 0;
 	if (opt == NULL) return NULL;	/* Go with the default settings */
 	while (opt && n < 2) {
 		if (opt->option == GMT_OPT_INFILE) {	/* Valid file argument */
-			if (space) strcat (buffer, " ");
-			strcat (buffer, opt->arg);
+			if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
+			len += strlen (opt->arg);
+			strncat (buffer, opt->arg, GMT_LEN256-len);
 			space = true;
 			n++;
 		}
