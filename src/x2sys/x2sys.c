@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2019 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/pwessel
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys.c contains the source code for the X2SYS crossover library
  * libx2sys.a.  The code is copylefted under the GNU Public Library
@@ -127,7 +127,7 @@ static int n_mgg_paths = 0; /* Number of these directories */
 
 GMT_LOCAL int mggpath_func (char *leg_path, char *leg) {
 	int id;
-	char geo_path[GMT_BUFSIZ] = {""};
+	char geo_path[PATH_MAX] = {""};
 
 	/* First look in current directory */
 
@@ -154,7 +154,7 @@ GMT_LOCAL int mggpath_func (char *leg_path, char *leg) {
  */
 
 GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
-	char line[GMT_BUFSIZ] = {""};
+	char line[PATH_MAX] = {""};
 	FILE *fp = NULL;
 
 	gmt_getsharepath (GMT, "mgg", "gmtfile_paths", "", line, R_OK);
@@ -167,7 +167,7 @@ GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
 		return;
 	}
 
-	while (fgets (line, GMT_BUFSIZ, fp)) {
+	while (fgets (line, PATH_MAX, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
 		mgg_path[n_mgg_paths] = gmt_M_memory (GMT, NULL, strlen (line), char);
@@ -225,7 +225,7 @@ void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path) {
 
 FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode) {
 	FILE *fp = NULL;
-	char file[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""};
 
 	if (mode[0] == 'w') {	/* Writing: Do this only in X2SYS_HOME */
 		x2sys_path (GMT, fname, file);
@@ -242,7 +242,7 @@ FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode) {
 
 int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode) {
 	int k;
-	char file[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""};
 	x2sys_path (GMT, fname, file);
 	if ((k = access (file, mode)) != 0) {	/* Not in X2SYS_HOME directory */
 		k = access (fname, mode);	/* Try in current directory */
@@ -650,7 +650,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	size_t n_alloc;
 	FILE *fp = NULL;
 	double **z = NULL, *rec = NULL;
-	char path[GMT_BUFSIZ] = {""};
+	char path[PATH_MAX] = {""};
 
 	if (x2sys_get_data_path (GMT, path, fname, s->suffix)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_file : Cannot find track %s\n", fname);
@@ -711,7 +711,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	int i, year, n_records;	/* These must remain 4-byte ints */
 	int64_t rata_day;
 	uint64_t j;
-	char path[GMT_BUFSIZ] = {""};
+	char path[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	double **z = NULL;
 	double NaN = GMT->session.d_NaN, t_off;
@@ -808,7 +808,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	uint64_t i, j;
 	size_t n_alloc = GMT_CHUNK;
 	int col[MGD77_N_DATA_EXTENDED];
-	char path[GMT_BUFSIZ] = {""}, *tvals[MGD77_N_STRING_FIELDS];
+	char path[PATH_MAX] = {""}, *tvals[MGD77_N_STRING_FIELDS];
 	double **z = NULL, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
 	struct MGD77_CONTROL MC;
@@ -869,7 +869,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 
 int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
 	uint64_t i;
-	char path[GMT_BUFSIZ] = {""};
+	char path[PATH_MAX] = {""};
 	double **z = NULL;
 	struct MGD77_DATASET *S = NULL;
 	struct MGD77_CONTROL MC;
@@ -927,7 +927,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	int n_fields, ns = s->n_out_columns;
 	uint64_t n_expect = GMT_MAX_COLUMNS;
 	uint64_t i, j;
-	char path[GMT_BUFSIZ] = {""};
+	char path[PATH_MAX] = {""};
 	double **z = NULL, *in = NULL;
 	FILE *fp = NULL;
 	gmt_M_unused(G);
@@ -1060,7 +1060,7 @@ void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 }
 
 int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G) {
-	char tag_file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[GMT_BUFSIZ] = {""}, suffix[16] = {""}, unit[2][2];
+	char tag_file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[PATH_MAX] = {""}, suffix[16] = {""}, unit[2][2];
 	unsigned int n, k, pos = 0, geodetic = GMT_IS_GIVEN_RANGE, n_errors = 0;
 	int dist_flag = 0;
 	bool geographic = false, parsed_command_R = false, n_given[2] = {false, false}, c_given = false;
@@ -1133,7 +1133,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					c_given = true;
 					break;
 				case 'D':
-					strncpy (sfile, &p[2], GMT_BUFSIZ-1);
+					strncpy (sfile, &p[2], PATH_MAX-1);
 					break;
 				case 'E':
 					strncpy (suffix, &p[2], 15);
@@ -1311,7 +1311,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	/* mode = 0 gives linked list [for use in x2sys_put], mode = 1 gives fixed array [for use in x2sys_get] */
 	uint32_t id, flag, last_id = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char track_file[GMT_BUFSIZ] = {""}, track_path[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
+	char track_file[PATH_MAX] = {""}, track_path[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
 
@@ -1373,7 +1373,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 
 int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2SYS_BIX *B, bool swap) {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
-	char index_file[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""};
+	char index_file[PATH_MAX] = {""}, index_path[PATH_MAX] = {""};
 	FILE *fbin = NULL;
 	uint32_t i, index = 0, flag, no_of_tracks, id; /* These must remain uint32_t */
 
@@ -1499,7 +1499,7 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
  */
 
 void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	x2sys_set_home (GMT);
@@ -1540,7 +1540,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	unsigned int id;
 	size_t L_suffix, L_track;
 	bool add_suffix;
-	char geo_path[GMT_BUFSIZ] = {""};
+	char geo_path[PATH_MAX] = {""};
 	gmt_M_unused(GMT);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Given track %s and suffix %s\n", track, suffix);
@@ -1567,7 +1567,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	if (add_suffix)
 		sprintf (geo_path, "%s.%s", track, suffix);
 	else
-		strncpy (geo_path, track, GMT_BUFSIZ-1);
+		strncpy (geo_path, track, PATH_MAX-1);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Testing path for %s: %s\n", track, geo_path);
 	if (!access(geo_path, R_OK)) {
 		strcpy (track_path, geo_path);
@@ -2011,7 +2011,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 	/* Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist) */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
 	int ks;
-	char path[GMT_BUFSIZ] = {""}, **item_names = NULL, **col_name = NULL, **aux_name = NULL;
+	char path[PATH_MAX] = {""}, **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 
 	if (!ctable || !strlen(ctable)) {	/* Try default correction table */
 		sprintf (path, "%s/%s/%s_corrections.txt", X2SYS_HOME, S->TAG, S->TAG);

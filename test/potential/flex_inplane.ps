@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:49:59 2018
+%%CreationDate: Thu Jun 27 12:16:25 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,52 +674,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-{0.647 0.165 0.165 C} FS
-O1
-/FO {P}!
-0 0 M
-2988 0 D
-6 3 D
-30 23 D
-18 18 D
-24 32 D
-24 41 D
-24 54 D
-24 68 D
-30 109 D
-30 141 D
-30 177 D
-36 264 D
-36 320 D
-48 505 D
-108 1266 D
-24 252 D
-6 8 D
-6 -8 D
-216 0 D
-6 8 D
-6 -8 D
-24 -252 D
-120 -1399 D
-42 -429 D
-36 -311 D
-36 -254 D
-30 -170 D
-30 -134 D
-24 -85 D
-24 -68 D
-24 -54 D
-24 -41 D
-24 -32 D
-24 -23 D
-24 -18 D
-6 -3 D
-2988 0 D
-P
-FO
-/FO {fs os}!
-FO
 25 W
 4 W
 3600 0 M
@@ -878,6 +827,60 @@ N 6960 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3600 T
 0 setlinecap
+17 W
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
+{0.647 0.165 0.165 C} FS
+O1
+/FO {P}!
+0 0 M
+2988 0 D
+6 3 D
+30 23 D
+18 18 D
+24 32 D
+24 41 D
+24 54 D
+24 68 D
+30 109 D
+30 141 D
+30 177 D
+36 264 D
+36 320 D
+48 505 D
+108 1266 D
+24 252 D
+6 8 D
+6 -8 D
+216 0 D
+6 8 D
+6 -8 D
+24 -252 D
+120 -1399 D
+42 -429 D
+36 -311 D
+36 -254 D
+30 -170 D
+30 -134 D
+24 -85 D
+24 -68 D
+24 -54 D
+24 -41 D
+24 -32 D
+24 -23 D
+24 -18 D
+6 -3 D
+2988 0 D
+P
+FO
+/FO {fs os}!
+FO
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -915,89 +918,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 3148 M
-408 2 D
-294 5 D
-312 10 D
-408 18 D
-126 4 D
-144 1 D
-96 -4 D
-90 -8 D
-78 -11 D
-72 -15 D
-60 -17 D
-18 -5 D
-66 -25 D
-54 -25 D
-54 -30 D
-54 -35 D
-48 -37 D
-54 -46 D
-36 -35 D
-54 -59 D
-42 -51 D
-48 -64 D
-60 -90 D
-60 -101 D
-66 -124 D
-66 -138 D
-78 -180 D
-90 -228 D
-228 -618 D
-66 -163 D
-42 -94 D
-42 -82 D
-36 -60 D
-36 -48 D
-18 -20 D
-24 -21 D
-24 -15 D
-24 -9 D
-24 -3 D
-24 3 D
-24 9 D
-24 15 D
-24 21 D
-30 35 D
-30 43 D
-36 61 D
-36 71 D
-54 122 D
-66 167 D
-132 359 D
-114 305 D
-78 193 D
-78 176 D
-66 134 D
-72 131 D
-60 96 D
-42 61 D
-48 64 D
-60 70 D
-42 44 D
-42 39 D
-60 49 D
-42 30 D
-48 30 D
-54 29 D
-60 26 D
-48 18 D
-66 19 D
-78 17 D
-72 11 D
-90 8 D
-90 4 D
-138 1 D
-192 -6 D
-330 -15 D
-222 -8 D
-204 -5 D
-204 -3 D
-222 -2 D
-198 -1 D
-S
 25 W
 4 W
 3600 0 M
@@ -1157,6 +1077,97 @@ N 6960 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3600 T
 0 setlinecap
+17 W
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
+0 3148 M
+408 2 D
+294 5 D
+312 10 D
+408 18 D
+126 4 D
+144 1 D
+96 -4 D
+90 -8 D
+78 -11 D
+72 -15 D
+60 -17 D
+18 -5 D
+66 -25 D
+54 -25 D
+54 -30 D
+54 -35 D
+48 -37 D
+54 -46 D
+36 -35 D
+54 -59 D
+42 -51 D
+48 -64 D
+60 -90 D
+60 -101 D
+66 -124 D
+66 -138 D
+78 -180 D
+90 -228 D
+228 -618 D
+66 -163 D
+42 -94 D
+42 -82 D
+36 -60 D
+36 -48 D
+18 -20 D
+24 -21 D
+24 -15 D
+24 -9 D
+24 -3 D
+24 3 D
+24 9 D
+24 15 D
+24 21 D
+30 35 D
+30 43 D
+36 61 D
+36 71 D
+54 122 D
+66 167 D
+132 359 D
+114 305 D
+78 193 D
+78 176 D
+66 134 D
+72 131 D
+60 96 D
+42 61 D
+48 64 D
+60 70 D
+42 44 D
+42 39 D
+60 49 D
+42 30 D
+48 30 D
+54 29 D
+60 26 D
+48 18 D
+66 19 D
+78 17 D
+72 11 D
+90 8 D
+90 4 D
+138 1 D
+192 -6 D
+330 -15 D
+222 -8 D
+204 -5 D
+204 -3 D
+222 -2 D
+198 -1 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1172,6 +1183,13 @@ O0
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 3151 M
 1038 1 D
 210 -3 D
@@ -1248,6 +1266,7 @@ O0
 648 1 D
 414 -1 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1263,6 +1282,13 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 3143 M
 420 -8 D
 174 -2 D
@@ -1359,6 +1385,7 @@ O0
 246 5 D
 72 2 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1398,91 +1425,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0 634 M
-744 1 D
-678 4 D
-234 -1 D
-192 -5 D
-180 -10 D
-108 -10 D
-78 -9 D
-90 -13 D
-114 -20 D
-102 -23 D
-114 -30 D
-192 -56 D
-66 -15 D
-30 -4 D
-36 -1 D
-30 6 D
-18 7 D
-18 10 D
-24 19 D
-30 35 D
-30 49 D
-24 51 D
-24 64 D
-30 98 D
-30 124 D
-36 184 D
-36 229 D
-36 277 D
-42 384 D
-54 578 D
-42 458 D
-18 153 D
-12 73 D
-12 52 D
-12 34 D
-12 22 D
-18 21 D
-18 11 D
-12 5 D
-12 3 D
-24 0 D
-18 -5 D
-18 -10 D
-6 -4 D
-18 -21 D
-12 -22 D
-12 -34 D
-12 -52 D
-18 -119 D
-24 -229 D
-72 -793 D
-42 -402 D
-36 -293 D
-36 -245 D
-36 -198 D
-30 -134 D
-30 -109 D
-30 -85 D
-24 -54 D
-24 -43 D
-18 -26 D
-24 -27 D
-24 -19 D
-24 -13 D
-24 -7 D
-24 -3 D
-30 1 D
-42 6 D
-78 20 D
-192 56 D
-138 34 D
-102 21 D
-144 23 D
-126 14 D
-120 9 D
-120 6 D
-126 4 D
-150 2 D
-324 1 D
-498 -3 D
-534 -2 D
-228 0 D
-S
 25 W
 4 W
 3600 0 M
@@ -1635,6 +1577,99 @@ N 6960 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3600 T
 0 setlinecap
+17 W
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
+0 634 M
+744 1 D
+678 4 D
+234 -1 D
+192 -5 D
+180 -10 D
+108 -10 D
+78 -9 D
+90 -13 D
+114 -20 D
+102 -23 D
+114 -30 D
+192 -56 D
+66 -15 D
+30 -4 D
+36 -1 D
+30 6 D
+18 7 D
+18 10 D
+24 19 D
+30 35 D
+30 49 D
+24 51 D
+24 64 D
+30 98 D
+30 124 D
+36 184 D
+36 229 D
+36 277 D
+42 384 D
+54 578 D
+42 458 D
+18 153 D
+12 73 D
+12 52 D
+12 34 D
+12 22 D
+18 21 D
+18 11 D
+12 5 D
+12 3 D
+24 0 D
+18 -5 D
+18 -10 D
+6 -4 D
+18 -21 D
+12 -22 D
+12 -34 D
+12 -52 D
+18 -119 D
+24 -229 D
+72 -793 D
+42 -402 D
+36 -293 D
+36 -245 D
+36 -198 D
+30 -134 D
+30 -109 D
+30 -85 D
+24 -54 D
+24 -43 D
+18 -26 D
+24 -27 D
+24 -19 D
+24 -13 D
+24 -7 D
+24 -3 D
+30 1 D
+42 6 D
+78 20 D
+192 56 D
+138 34 D
+102 21 D
+144 23 D
+126 14 D
+120 9 D
+120 6 D
+126 4 D
+150 2 D
+324 1 D
+498 -3 D
+534 -2 D
+228 0 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1650,6 +1685,13 @@ O0
 3.32551 setmiterlimit
 4 W
 [33 17] 0 B
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 664 M
 756 1 D
 552 3 D
@@ -1696,6 +1738,7 @@ O0
 390 -2 D
 564 -1 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -1712,6 +1755,13 @@ O0
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 634 M
 1092 -1 D
 342 -4 D
@@ -1794,6 +1844,7 @@ O0
 270 2 D
 960 1 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1810,6 +1861,13 @@ O0
 4 W
 [33 17] 0 B
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 664 M
 1056 -1 D
 348 -4 D
@@ -1855,6 +1913,7 @@ O0
 498 2 D
 576 0 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -1871,6 +1930,13 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 632 M
 666 -1 D
 258 3 D
@@ -1966,6 +2032,7 @@ O0
 576 -1 D
 126 1 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1982,6 +2049,13 @@ O0
 4 W
 [33 17] 0 B
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3600 D
+-7200 0 D
+P
+PSL_clip N
 0 662 M
 666 -1 D
 264 3 D
@@ -2036,6 +2110,7 @@ O0
 306 -2 D
 516 1 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A

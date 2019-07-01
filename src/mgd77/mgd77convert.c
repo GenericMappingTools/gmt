@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2019 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -217,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	int i, argno, n_cruises = 0, n_paths, error = 0;
 	
-	char file[GMT_BUFSIZ] = {""}, **list = NULL, *fcode = "cmat";
+	char file[PATH_MAX] = {""}, **list = NULL, *fcode = "cmat";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77+ netCDF", "MGD77T ASCII", "MGD77 ASCII", "ASCII table"};
 
 	struct MGD77_CONTROL M;
@@ -245,7 +245,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
 	if (Ctrl->C.active) {	/* Just build *.mgd77 from *.h77 and *.a77 */
-		char a77_file[GMT_BUFSIZ] = {""}, h77_file[GMT_BUFSIZ] = {""}, mgd77_file[GMT_BUFSIZ] = {""}, prefix[GMT_BUFSIZ] = {""};
+		char a77_file[PATH_MAX] = {""}, h77_file[PATH_MAX] = {""}, mgd77_file[PATH_MAX] = {""}, prefix[PATH_MAX] = {""};
 		int pos, c, n_files = 0;
 		struct GMT_OPTION *opt = NULL;
 		FILE *fpa77 = NULL, *fph77 = NULL, *fpout = NULL;
@@ -254,10 +254,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
 			if ((pos = (int)(strlen (opt->arg) - 4)) < 0) continue;	/* Odd item, skip */
-			strncpy (prefix, opt->arg, GMT_BUFSIZ);	/* Make copy of name/file */
+			strncpy (prefix, opt->arg, PATH_MAX);	/* Make copy of name/file */
 			if (!strncmp (&prefix[pos], ".a77", 4U) || !strncmp (&prefix[pos], ".h77", 4U)) prefix[pos] = 0;	/* Truncate any extension */
-			sprintf (a77_file, "%s.a77", prefix);
-			sprintf (h77_file, "%s.h77", prefix);
+			snprintf (a77_file, PATH_MAX-4, "%s.a77", prefix);
+			snprintf (h77_file, PATH_MAX-4, "%s.h77", prefix);
 			if (access (a77_file, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "A77 file %s not found - skipping conversion\n", a77_file);
 				continue;
@@ -266,7 +266,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "H77 file %s not found - skipping conversion\n", h77_file);
 				continue;
 			}
-			sprintf (mgd77_file, "%s.mgd77", prefix);
+			snprintf (mgd77_file, PATH_MAX-6, "%s.mgd77", prefix);
 			if ((fpout = fopen (mgd77_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
 				continue;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *
@@ -921,7 +921,7 @@ GMT_LOCAL void plot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL
 	radius = hypot (x1 - GMT->current.proj.c_x0, y1 - GMT->current.proj.c_y0);
 	s = ((GMT->current.proj.north_pole && side == 2) || (!GMT->current.proj.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree cirle */
+	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree circle */
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
 		if (secondary_too) PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_MOVE|PSL_STROKE);
@@ -2689,6 +2689,8 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
  	 * These are the things that can happen:
 	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
 	 * 2. s->text is $t.  Then we use the trialing text from the input as the text.
+	 *    Optionally, a single word of the trailing text can be selected by appending
+	 *    a word integer, $t0 is the first word, $t1 the second, etc.
 	 * 3. We have a format statement that contains free-form text with interspersed
 	 *    special formatting commands.  These have the syntax
 	 *    %X  Add longitude or x using chosen default format.
@@ -2703,7 +2705,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		strcpy (text, s->string);
 	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
 		strcpy (text, GMT->current.io.curr_trailing_text);
-	else if (!strncmp (s->string, "$t:", 3U)) {	/* Get word number n from trailing text in the input */
+	else if (!strncmp (s->string, "$t", 2U) && isdigit (s->string[2])) {	/* Get word number n from trailing text in the input */
 		char *word = NULL, *trail = NULL, *orig = strdup (GMT->current.io.curr_trailing_text);
 		int col = 0;
 		trail = orig;
@@ -2711,8 +2713,10 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 			col++;	/* Advance to the right word */
 		if (word && *word != '\0')	/* Skip empty strings */
 			strcpy (text, word);
-		else
+		else {	/* Default to the whole trailing text if word does not exist */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No word # %d in the trailing text (%d words) - return all text\n", s->var[0], col);
 			strcpy (text, GMT->current.io.curr_trailing_text);
+		}
 		gmt_M_str_free (orig);
 	}
 	else {	/* Must replace special items within a template string */
@@ -4353,9 +4357,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_plotsegment (PSL, 0.0, 0.0, length, 0.0);
 	else
 		PSL_plotsegment (PSL, 0.0, length, 0.0, 0.0);
-	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
+	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis with an arrow */
 		struct GMT_FILL arrow;
-		double vector_width, dim[PSL_MAX_DIMS];
+		double vector_width, dim[PSL_MAX_DIMS], g_scale_begin = 0.0, g_scale_end = 0.0, g_ext = 0.0;
 		gmt_init_fill (GMT, &arrow, GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 		gmt_setfill (GMT, &arrow, false);
 		gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -4364,24 +4368,39 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		dim[5] = GMT->current.setting.map_vector_shape; dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 		dim[11] = 0.5 * GMT->current.setting.map_frame_pen.width;
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, GMT->current.setting.map_frame_pen.style, GMT->current.setting.map_frame_pen.offset, GMT->current.setting.map_frame_pen.rgb);
+
+		/* The start of the vector at the end of a positive axis is computed as x = g_scale_end * length + g_ext;
+		 * The start of the vector at the start of a negative axis is computed as x = g_scale_begin * length - g_ext;
+		 * The required constants are set below */
+		if (GMT->current.setting.map_graph_extension_unit == GMT_GRAPH_EXTENSION_UNIT) {	/* Gave scaling in percent */
+			/* Here, the computed length is to the tip of the vector */
+			g_scale_end = 1.0 + 0.01 * GMT->current.setting.map_graph_extension;
+			g_scale_begin = -0.01 * GMT->current.setting.map_graph_extension;
+		}
+		else {	/* Gave actual length extension (now in inches) */
+			/* Here, the computed length is to the base of the vector */
+			g_scale_end = 1.0;
+			g_ext = GMT->current.setting.map_graph_extension + dim[3];
+		}
+		
 		if (horizontal) {
 			double x = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
 				x = length;
-				dim[0] = 1.075 * length;
+				dim[0] = g_scale_end * length + g_ext;
 			}
 			else
-				dim[0] = -0.075 * length;
+				dim[0] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x, 0.0, dim, PSL_VECTOR);
 		}
 		else {
 			double y = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
 				y = length;
-				dim[1] = 1.075 * length;
+				dim[1] = g_scale_end * length + g_ext;
 			}
 			else
-				dim[1] = -0.075 * length;
+				dim[1] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, 0.0, y, dim, PSL_VECTOR);
 		}
 	}
@@ -4700,7 +4719,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	if ((n-i) < 2) return;	/* Less than 2 points is not a line */
 	if (n <= j) pen[n-1] = pen[j];	/* Skipped trailing duplicates but must maintain initial pen code of last valid point */
 
-	for (j = i + 1; j < n && pen[j] & PSL_DRAW; j++);	/* j == n means no PSL_MOVEs present */
+	for (j = i + 1; j < n && !(pen[j] & PSL_MOVE); j++);	/* j == n means no PSL_MOVEs present */
 	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_CONV4_LIMIT) : false;
 
 	/* First see if we can use the PSL_plotline call directly to save points */
@@ -7094,6 +7113,20 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	PSL_endlayer (GMT->PSL);
 	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
 
+	if (GMT->common.p.do_z_rotation) {	/* Need a undo the rotation about z of the whole page */
+		double x0 = 0.0, y0 = 0.0;	/* Default is to rotate around plot origin */
+		if (GMT->current.proj.z_project.view_given) {	/* Rotation is about another z-axis than through the origin */
+			x0 = GMT->current.proj.z_project.view_x;
+			y0 = GMT->current.proj.z_project.view_y;
+		}
+		else if (GMT->current.proj.z_project.world_given)	/* Rotation is about another lon/lat pole than the origin */
+			gmt_geo_to_xy (GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, &x0, &y0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Transrot: Unrotating plot by %g degrees about (%g, %g)\n", -GMT->common.p.z_rotation, x0, y0);
+		PSL_comment (GMT->PSL, "Possibly translate then unrotate rotate whole page\n");
+		PSL_setorigin (PSL, x0, y0, -GMT->common.p.z_rotation, PSL_FWD);
+		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
+	}
+
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
 	if (abs (GMT->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
@@ -8104,7 +8137,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	 * mode is not yet used.
 	 */
 
-	char ps_file[GMT_LEN256] = {""}, buffer[GMT_LEN256] = {""};
+	char ps_file[PATH_MAX] = {""}, buffer[GMT_LEN256] = {""};
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
@@ -8117,8 +8150,8 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		struct stat buf;
-		char path[GMT_BUFSIZ] = {""};
-		strncpy (ps_file, source, GMT_LEN256-1);
+		char path[PATH_MAX] = {""};
+		strncpy (ps_file, source, PATH_MAX-1);
 		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find PostScript file %s\n", ps_file);
 			return (NULL);
@@ -8205,7 +8238,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	 */
 
 	bool close_file = false, append = false;
-	char ps_file[GMT_BUFSIZ] = {""};
+	char ps_file[PATH_MAX] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	gmt_M_unused(mode);
@@ -8214,7 +8247,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (ps_file, dest, GMT_BUFSIZ-1);
+		strncpy (ps_file, dest, PATH_MAX-1);
 		append = (ps_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&ps_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s PostScript file %s\n", msg2[append], &ps_file[append]);

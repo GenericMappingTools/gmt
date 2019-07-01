@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 
@@ -152,7 +152,7 @@ if (WIN32 AND NOT CYGWIN)
 	endif (NOT DEFINED CPACK_NSIS_INSTALL_ROOT)
 	set (CPACK_NSIS_MODIFY_PATH ON)
 	string(REPLACE "/" "\\\\" _native_share_path "${GMT_DATADIR}")
-	set (CPACK_NSIS_ADD_ENVVAR1 "GMT5_SHAREDIR")
+	set (CPACK_NSIS_ADD_ENVVAR1 "GMT6_SHAREDIR")
 	set (CPACK_NSIS_ADD_ENVVAL1 "\\\$INSTDIR\\\\${_native_share_path}")
 
 	# StartMenu items:

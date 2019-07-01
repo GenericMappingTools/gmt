@@ -211,7 +211,12 @@ set -E # Shell functions and subshells need to inherit ERR trap
 function on_err()
 {
   trap - EXIT ERR SIGSEGV SIGTRAP SIGBUS # Restore trap
-  ((++ERROR))
+  if [ ${known2fail} -eq 1 ]; then  # known to fail
+    now=$(date "+%F %T")
+    echo "$now ${script_name}: Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
+  else
+    ((++ERROR))
+  fi
   echo "ERROR: ${1}:${2}" >&2 # Report error line
   cleanup
 }

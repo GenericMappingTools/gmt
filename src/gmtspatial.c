@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
 *
-*	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+*	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 *	See LICENSE.TXT file for copying and redistribution conditions.
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
 *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *	GNU Lesser General Public License for more details.
 *
-*	Contact info: gmt.soest.hawaii.edu
+*	Contact info: www.generic-mapping-tools.org
 *--------------------------------------------------------------------*/
 /* 
  * gmtspatial performs miscellaneous geospatial operations on polygons, such
@@ -145,6 +145,15 @@ struct PAIR {
 	double node;
 	uint64_t pos;
 };
+
+#ifdef __APPLE__
+/* macOX has it built in, so ensure we define this flag */
+#define HAVE_MERGESORT
+#endif
+
+#ifndef HAVE_MERGESORT
+#include "mergesort.c"
+#endif
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSPATIAL_CTRL *C;
@@ -598,7 +607,9 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 	/* Return array of NN results sorted on smallest distances */
 	int64_t k, k2, np;
 	double *distance = gmt_M_memory (GMT, NULL, *n_points, double);
-	
+#ifdef DEBUG
+	static int iteration = 0;
+#endif
 	np = *n_points;
 	for (k = 0; k < (np-1); k++) {
 		if (gmt_M_is_dnan (P[k].distance)) continue;	/* Skip deleted point */
@@ -626,9 +637,20 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 		}
 	}
 	gmt_M_free (GMT, distance);
-	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
+
+	/* Prefer mergesort since qsort is not stable for equalities */
+	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
+
 	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
+#ifdef DEBUG
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "===> Iteration = %d\n", iteration);
+		for (k = 0; k < (int64_t)(*n_points); k++)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%6d\tID=%6d\tNeighbor=%6d\tDistance = %.12g\n", (int)k, (int)P[k].ID, P[k].neighbor, P[k].distance);
+	}
+	iteration++;
+#endif
 	return (P);
 }
 
@@ -675,8 +697,18 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 		}
 	}
 	gmt_M_free (GMT, distance);
-	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
+
+	/* Prefer mergesort since qsort is not stable for equalities */
+	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);
+	
 	*n_points = (uint64_t)np;
+#ifdef DEBUG
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "===> Initialization\n");
+		for (k = 0; k < (int64_t)(*n_points); k++)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%6d\tID=%6d\tNeighbor=%6d\tDistance = %.12g\n", (int)k, (int)P[k].ID, P[k].neighbor, P[k].distance);
+	}
+#endif
 	return (P);
 }
 
@@ -698,7 +730,10 @@ GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO 
 		info[k].sort_rec = k;
 		info[k].orig_rec = int64_abs (NN_dist[k].ID);
 	}
-	qsort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
+
+	/* Prefer mergesort since qsort is not stable for equalities */
+	mergesort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
+
 	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
 	return (info);
 }
@@ -1127,7 +1162,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	/* OK, with data in hand we can do some damage */
 	
 	if (Ctrl->A.active) {	/* Nearest neighbor analysis. We compute distances between all point pairs and sort on minimum distance */
-		uint64_t n_points, k, a, b, n, col;
+		uint64_t n_points, k, a, b, n, col, n_pairs;
 		double A[3], B[3], w, iw, d_bar, out[7];
 		struct NN_DIST *NN_dist = NULL;
 		struct NN_INFO  *NN_info = NULL;
@@ -1158,15 +1193,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Find # of pairs that are too close together */
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
-				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs are too close and will be combined by their weighted average\n", n_points, n/2);
 				if (Ctrl->A.mode == 2) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
 					n = 1;
 				}
-				for (k = 0; k < n; k++) {	/* Loop over pairs that are too close */
+				for (k = n_pairs = 0; k < n; k++) {	/* Loop over pairs that are too close */
 					if (gmt_M_is_dnan (NN_dist[k].distance)) continue;	/* Already processed */
 					a = k;	/* The current point */
 					b = NN_info[int64_abs(NN_dist[a].neighbor)].sort_rec;	/* a's neighbor location in the sorted NN_dist array */
+					GMT_Report (API, GMT_MSG_DEBUG, "Replace pair %" PRIu64 " and %" PRIu64 " with its weighted average location\n", a, b);
 					w = NN_dist[a].data[GMT_W] + NN_dist[b].data[GMT_W];	/* Weight sum */
 					iw = 1.0 / w;	/* Inverse weight for scaling */
 					/* Compute weighted average z */
@@ -1187,7 +1222,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					NN_dist[a].data[GMT_W] = 0.5 * w;	/* Replace with the average weight */
 					NN_dist[a].ID = -int64_abs (NN_dist[a].ID);	/* Negative means it was averaged with other points */
 					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
+					n_pairs++;
 				}
+				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
 				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
 				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;

@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
 # run tests
@@ -45,7 +45,7 @@ if (DO_TESTS)
 			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
 	endif (CYGWIN_INSTALL_PATH)
 
-	# add classic tests
+	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		# find files RELATIVE so that test NAMEs are not absolute paths
 		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

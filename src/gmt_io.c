@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Table input/output in GMT can be either ASCII, binary, or netCDF COARDS files
@@ -285,11 +285,11 @@ GMT_LOCAL bool gmtio_traverse_dir (const char *file, char *path) {
 	struct dirent *F = NULL;
 	int len, d_namlen;
 	bool ok = false;
-	char savedpath[GMT_BUFSIZ];
+	char savedpath[PATH_MAX];
 
  	if ((D = opendir (path)) == NULL) return (false);	/* Unable to open directory listing */
 	len = (int)strlen (file);
-	strncpy (savedpath, path, GMT_BUFSIZ-1);	/* Make copy of current directory path */
+	strncpy (savedpath, path, PATH_MAX-1);	/* Make copy of current directory path */
 
 	while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
 		d_namlen = (int)strlen (F->d_name);
@@ -938,12 +938,30 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 	return ((e < 0) ? -1 : 0);
 }
 
+GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
+	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
+		char *word = NULL, *orig = strdup (txt), *trail = orig;
+		uint64_t col = 0;
+		while (col != GMT->common.o.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+			if (*word != '\0')	/* Skip empty strings */
+				col++;
+		}
+		if (word)	/* Only write word if not NULL */
+			fprintf (fp, "%s", word);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
+		fprintf (fp, "\n");
+	}
+	else	/* Output the whole enchilada */
+		fprintf (fp, "%s\n", txt);
+}
+
 /*! . */
 GMT_LOCAL int gmtio_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 
-	fprintf (fp, "%s\n", txt);
+	gmtio_output_trailing_text (GMT, fp, txt);
 	
 	return (0);
 }
@@ -975,7 +993,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 
 		wn += e;
 	}
-	fprintf (fp, "%s\n", txt);
+	gmtio_output_trailing_text (GMT, fp, txt);
 	
 	return ((e < 0) ? -1 : 0);
 }
@@ -3265,6 +3283,24 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	return (ret_val);
 }
 
+GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_of_text) {
+	if (GMT->common.i.word) {	/* Need to extract a specific column from the traiing text */
+		char *word = NULL, *orig = strdup (&GMT->current.io.curr_text[start_of_text]), *trail = orig;
+		uint64_t col = 0;
+		while (col != GMT->common.i.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+			if (*word != '\0')	/* Skip empty strings */
+				col++;
+		}
+		if (word)
+			strncpy (GMT->current.io.curr_trailing_text, word, GMT_BUFSIZ-1);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word read\n", GMT->common.i.w_col);
+		gmt_M_str_free (orig);
+	}
+	else	/* Get the whole enchilada */
+		strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
+}
+
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
@@ -3477,7 +3513,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (start_of_text < (GMT_BUFSIZ-1) && GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
-			strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
+			gmtio_extract_trailing_text (GMT, start_of_text);
 			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 		}
 
@@ -3540,7 +3576,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	unsigned int k;
 	uint64_t row = 0, seg, col;
 	int *fd = NULL;
-	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile, *txt = NULL;
+	char open_mode[4] = {""}, file[PATH_MAX] = {""}, tmpfile[PATH_MAX] = {""}, *out_file = tmpfile, *txt = NULL;
 	double *out = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -3570,7 +3606,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "pointer 'dest' cannot be NULL here\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
-			strncpy (file, dest, GMT_BUFSIZ-1);
+			strncpy (file, dest, PATH_MAX-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = gmt_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -3774,7 +3810,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
  * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 
-	char file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
@@ -3795,7 +3831,8 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		"%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
 		file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
-	if (nc_open (gmt_getdatapath (GMT, file, path, R_OK), NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
+	if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) return (NULL);	/* No such file */
+	if (nc_open (path, NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
 	if (gmt_M_compat_check (GMT, 4)) {
 		if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
 			"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
@@ -4390,7 +4427,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	bool close_file = false;
 	int error, append = 0;
 	int *fd = NULL;
-	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, open_mode[4] = {""}, *out_file = tmpfile;
+	char file[PATH_MAX] = {""}, tmpfile[PATH_MAX] = {""}, open_mode[4] = {""}, *out_file = tmpfile;
 	FILE *fp = NULL;
 	struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (D);
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
@@ -4410,7 +4447,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "'dest' pointer cannot be NULL here\n");
 				return (GMT_ARG_IS_NULL);
 			}
-			strncpy (file, dest, GMT_BUFSIZ-1);
+			strncpy (file, dest, PATH_MAX-1);
 			if (DH->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = gmt_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -4509,7 +4546,7 @@ bool gmt_input_is_bin (struct GMT_CTRL *GMT, const char *filename) {
 
 /*! . */
 FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
-	char path[GMT_BUFSIZ], *c = NULL;
+	char path[PATH_MAX], *c = NULL;
 	FILE *fd = NULL;
 	unsigned int first = 0;
 	if (gmt_M_file_is_cache (filename)) {	/* Must be a cache file */
@@ -4793,7 +4830,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	size_t L;
 	bool found;
-	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[GMT_BUFSIZ];
+	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[PATH_MAX];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'}, serverdir[PATH_MAX] = {""}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
@@ -4919,7 +4956,7 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 
 /*! Like access but also checks the GMT_*DIR places */
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
-	char file[GMT_BUFSIZ] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, *c = NULL;
 	unsigned int first = 0;
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
@@ -4936,7 +4973,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
-		char path[GMT_BUFSIZ];
+		char path[PATH_MAX] = {""};
 		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 			strcat (file, ".grd");	/* Must supply the .grd */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
@@ -7294,7 +7331,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0, k;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
-	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
+	char open_mode[4] = {""}, file[PATH_MAX] = {""}, line[GMT_LEN64] = {""};
 	double d;
 	struct GMT_RECORD *In = NULL;
 	FILE *fp = NULL;
@@ -7335,7 +7372,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (file, source, GMT_BUFSIZ-1);
+		strncpy (file, source, PATH_MAX-1);
 		if ((fp = gmt_fopen (GMT, file, open_mode)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
@@ -7497,7 +7534,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				}
 			}
 			if (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) {
-				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				if (GMT->current.io.record.text) GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
 				*data_type = GMT_READ_MIXED;
 			}
 
@@ -8233,7 +8270,8 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	if (!text) return (true);		/* NULL pointer */
 	if (!strlen (text)) return (true);	/* Blank string */
 	if (isalpha ((int)text[0])) return (true);	/* Numbers cannot start with letters */
-	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || isdigit ((int)text[0]))) return (true);	/* Numbers must be [+|-][.][<digits>] */
+	i = (int)text[0];
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i >= 0 && i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that should never appear in any number */
 		if (!strchr (valid, text[i])) return (true);	/* Found a char not among valid letters */
@@ -8409,14 +8447,14 @@ char **gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	}
 	(void)closedir (D);
 #elif defined(WIN32)
-	char text[GMT_LEN256] = {""};
+	char text[PATH_MAX] = {""};
 	int left;
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	sprintf (text, "%s/*", path);
-	left = GMT_LEN256 - (int)strlen (path) - 2;
+	left = PATH_MAX - (int)strlen (path) - 2;
 	left -= ((ext) ? (int)strlen (ext) : 2);
 	if (ext)
 		strncat (text, ext, left);	/* Look for files with given ending in this dir */
@@ -8541,13 +8579,14 @@ int gmt_mkdir (const char *path)
 {	/* Simulates mkdir -p behavior in a function for Unix and Windows */
 	/* Adapted from http://stackoverflow.com/a/2336245/119527 */
 	const size_t len = strlen (path);
-	char _path[PATH_MAX], sep;
+	char _path[PATH_MAX] = {""}, sep;
 	char *p = NULL; 
 
 	errno = 0;	/* Global var: No error so far */
 
 	if (len >= PATH_MAX) {	/* Make sure we don't exceed limits */
 		errno = ENAMETOOLONG;
+		perror ("gmt_mkdir (too long) error");
 		return -1; 
 	}   
 	strcpy (_path, path);	/* Copy string so its mutable */
@@ -8564,8 +8603,10 @@ int gmt_mkdir (const char *path)
 			if (mkdir (_path) != 0)
 #endif
 			{
-				if (errno != EEXIST)	/* Failed to make or visit intermediate directory */
+				if (errno != EEXIST) {	/* Failed to make or visit intermediate directory */
+					perror ("gmt_mkdir (intermediate) error");
 					return -1; 
+				}
 			}
 			*p = sep;	/* Reset the separator */
 		}
@@ -8578,8 +8619,10 @@ int gmt_mkdir (const char *path)
 	if (mkdir (_path) != 0)
 #endif
 	{
-		if (errno != EEXIST)
+		if (errno != EEXIST) {
+			perror ("gmt_mkdir (last dir) error");
 			return -1; 
+		}
 	}   
 
 	return 0;

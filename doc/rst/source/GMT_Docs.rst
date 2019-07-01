@@ -156,8 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991–2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
-Luis and F. Wobbe
+Copyright ©1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 The Generic Mapping Tools (GMT) is free software; you can
 redistribute it and/or modify it under the terms of the GNU Lesser
@@ -217,7 +216,7 @@ Command-line completion
 
 GMT provides basic command-line completion (tab completion) for bash.
 The easiest way to use the feature is to install the
-`bash-completion <http://bash-completion.alioth.debian.org/>`_ package
+`bash-completion <https://github.com/scop/bash-completion/>`_ package
 which is available in many operating system distributions.
 
 Depending on the distribution, you may still need to source it from
@@ -405,7 +404,7 @@ these types of output:
    table output.
 
 GMT is available over the Internet at no charge. To obtain a copy,
-goto GMT home page http://gmt.soest.hawaii.edu/ and follow instructions.
+goto GMT home page https://www.generic-mapping-tools.org and follow instructions.
 We also maintain user forums and a bug and feature tracking system on
 the same page.
 
@@ -806,12 +805,6 @@ ways in which this can be accomplished.
    set the output format for floating points to have lots of decimals,
    say, for map projection coordinate output, append
    **-**\ **-**\ :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`\ =%.16lg to the command in question.
-
-*  Finally, GMT provides to possibility to override the settings only
-   during the running of a single script, reverting to the original
-   settings after the script is run, as if the script was run in
-   "isolation". The isolation mode is discussed in
-   Section `Running GMT in isolation mode`_.
 
 In addition to those parameters that directly affect the plot there are
 numerous parameters than modify units, scales, etc. For a complete
@@ -1524,7 +1517,7 @@ The upper uses Gregorian weeks (which start at the day chosen by
       gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS
       gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
       gmt basemap -Bpa3Kf1k -Bsa1r -BS -Y0.65i
-    gmt end 
+    gmt end
 
 .. _cartesian_axis5:
 
@@ -1907,8 +1900,10 @@ implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then also select the special column
-by requesting column **t**, otherwise we ignore trailing text.  Finally,
-to use the entire numerical record and ignoring trailing text, use **-in**.
+by requesting column **t**, otherwise we ignore trailing text.  If you only
+want to select one word from the trailing text, then append the word number
+(0 is the first word).  Finally, to use the entire numerical record and
+ignore trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1928,9 +1923,10 @@ to use the entire numerical record and ignoring trailing text, use **-in**.
    from the data themselves (such as when reading a binary file).  Finally, if
    a module needs to write out only a portion of the current logical record then
    you may use the corresponding **-o** option to select desired columns, including
-   the trailing text column **t**.  Note that these column numbers now refer to
-   the logical record, not the physical, since after reading the data there is no
-   physical record, only the logical record in memory.
+   the trailing text column **t**.  If you only want to output one word from the
+   trailing text, then append the word number (0 is the first word).  Note that
+   these column numbers now refer to the logical record, not the physical, since
+   after reading the data there is no physical record, only the logical record in memory.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1965,9 +1961,11 @@ You can also use a column more than once, e.g., **-o**\ 3,1,3, to
 duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
-numerical columns.  Note that if you wanted to scale or shift the output
-values you need to do so during reading, using the **-i** option.
-To output all numerical columns and ignoring trailing text, use **-on**.
+numerical columns.  If you only want to output one word from the trailing
+text, then append the word number (0 is the first word).  Note that if you 
+wanted to scale or shift the output values you need to do so during reading,
+using the **-i** option. To output all numerical columns and ignoring
+trailing text, use **-on**.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4311,8 +4309,7 @@ Variable $GMT_CACHEDIR
 Variable $GMT_TMPDIR
     may indicate the location, where GMT will write its state parameters
     via the two files ``gmt.history`` and ``gmt.conf``. If $GMT_TMPDIR is not
-    set, these files are written to the current directory. See Section
-    `Isolation mode`_ for more information.
+    set, these files are written to the current directory.
 
 Parameter DIR_DCW
     specifies where to look for the optional Digital Charts of the World
@@ -4577,7 +4574,7 @@ transformation <GMT_pow>`)
    ::
 
     gmt begin GMT_pow
-      gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt 
+      gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt
       gmt plot -Sc0.075i -Ggreen -W sqrt10.txt
     gmt end
 
@@ -5980,19 +5977,16 @@ This package consists of the program
 global gravity and predicted topography solutions derived from satellite
 altimetry [23]_. The package is maintained by Walter Smith and Paul Wessel.
 
-meca: seismology and geodesy symbols
-------------------------------------
+geodesy: Geodesy
+----------------
 
 This package contains the programs
-:doc:`coupe <supplements/meca/coupe>`,
-:doc:`meca <supplements/meca/meca>`,
-:doc:`polar <supplements/meca/polar>`,
-:doc:`velo <supplements/meca/velo>`, and
-:doc:`sac <supplements/meca/sac>` which are used by seismologists
-and geodesists for plotting focal mechanisms (including cross-sections
-and polarities), error ellipses, velocity arrows, rotational wedges, and
-more. The package was developed by Kurt Feigl and Genevieve
-Patau with contributions from Dongdong Tian but is now maintained by the GMT team.
+:doc:`earthtide <supplements/geodesy/earthtide>` for computing solid Earth tides,
+:doc:`gpsgridder <supplements/geodesy/gpsgridder>` for gridding GPS velocity components, and
+:doc:`velo <supplements/geodesy/velo>` for plotting error ellipses, velocity arrows, and rotational wedges.
+The velo program was developed by Kurt Feigl and Genevieve
+Patau and is now maintained by the GMT team. The earthtide program is a translation to C of a
+program written by Dennis Milbert and distributed with his permission.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
@@ -6034,8 +6028,21 @@ which uses the methods of Talwani to compute various geopotential components
 from 2-D [26]_ or 3-D [27]_ bodies.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
-segyprogs: plotting SEGY seismic data
--------------------------------------
+seis: Seismology
+----------------
+
+This package contains the programs
+:doc:`coupe <supplements/seis/coupe>`,
+:doc:`meca <supplements/seis/meca>`,
+:doc:`polar <supplements/seis/polar>`, and
+:doc:`sac <supplements/seis/sac>` which are used by seismologists
+for plotting focal mechanisms (including cross-sections
+and polarities) and SAC files.
+The coupe, meca, and polar were developed by Kurt Feigl and Genevieve
+Patau, while Dongdong Tian added sac; the package is now maintained by the GMT team.
+
+segy: plotting SEGY seismic data
+--------------------------------
 
 This package contains programs to plot SEGY seismic data files using the
 GMT mapping transformations and postscript library.
@@ -6156,8 +6163,8 @@ used by Matlab or Octave). When these markers are used then no other
 segment header will be considered. Note that :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can
 be set differently for input and output.  Finally, if a segment represents
 a closed polygon that is a hole inside another polygon you indicate this
-with **-Ph**.  This setting will be read and processed if converting a
-file to the OGR format.
+by including **-Ph** in the segment header.  This setting will be read
+and processed if converting a file to the OGR format.
 
 Binary tables
 ~~~~~~~~~~~~~
@@ -6190,7 +6197,7 @@ Shapefiles
 
 GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
 with GDAL support.  By default, only the geographic coordinates are read.  To select
-some or all aspatial fields, see the :ref:`\ **-a** option <-aspatial_full>`
+some or all aspatial fields, see the :ref:`-a option <-aspatial_full>`.
 
 Grid files
 ----------
@@ -7671,7 +7678,7 @@ total file size of the coastlines, rivers, and borders database is only
     gmt begin GMT_App_K_1
       gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
       gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -Dc \
-        -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne 
+        -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne
       echo 130.35 -0.2 | gmt psxy -SJ-4000 -Wthicker
     gmt end
 
@@ -7703,7 +7710,7 @@ resolution in GMT. The plot is generated by the script:
   ::
 
     gmt begin GMT_App_K_2
-      gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -Dl -A100 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne 
+      gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -Dl -A100 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne
       echo 130.35 -0.2 | gmt psxy -SJ-1000 -Wthicker
     gmt end
 
@@ -7733,9 +7740,9 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
     gmt begin GMT_App_K_3
       gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -Di -A20 \
         -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne
-      echo 133 2 | gmt plot -Sc1.4i -Gwhite 
+      echo 133 2 | gmt plot -Sc1.4i -Gwhite
       gmt basemap -Tm133/2+w1i+t45/10/5+jCM --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
-        --FONT_ANNOT_SECONDARY=8p 
+        --FONT_ANNOT_SECONDARY=8p
       echo 130.35 -0.2 | gmt psxy -SJ-200 -Wthicker
     gmt end
 
@@ -7764,7 +7771,7 @@ generated by these commands:
 
     gmt begin GMT_App_K_4
       gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -Dh -A1 \
-        -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne 
+        -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne
       echo 130.35 -0.2 | gmt psxy -SJ-40 -Wthicker
     gmt end
 
@@ -8163,7 +8170,7 @@ Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
 variable **$t** that must be declared with type **s** (string).  The string will be taken
 as all trialing text in your data record.  To select a single word from the trailing text
-you just use $k, where k starts at 1 for the first word, regardless of how many numerical
+you just use **$t**\ *k*, where *k* starts at 0 for the first word, regardless of how many numerical
 columns that precede it.  For each word you plan to use you must add a type **s** above.
 Words must be separated by one tab or space only.  To place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.
@@ -8624,8 +8631,8 @@ lines:
     ::
 
      gmt begin GMT_App_O_1
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH
      gmt end
 
 As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
@@ -8652,7 +8659,7 @@ contour line should have:
     ::
 
      gmt begin GMT_App_O_2
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH
      gmt end
 
@@ -8687,8 +8694,8 @@ distance will host the label.
      130     10.5
      EOF
      gmt begin GMT_App_O_3
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH
      gmt end
 
 The angle of the label is evaluated from the contour line geometry, and
@@ -8716,8 +8723,8 @@ between the contour lines and a well-placed straight line segment. The
     ::
 
      gmt begin GMT_App_O_4
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH
      gmt end
 
 The obvious choice in this example is to specify a great circle between
@@ -8749,8 +8756,8 @@ sense:
     ::
 
      gmt begin GMT_App_O_5
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GX@App_O_cross.txt -S10 -T+lLH 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GX@App_O_cross.txt -S10 -T+lLH
      gmt end
 
 .. _Contour_label_5:
@@ -8788,8 +8795,8 @@ are placed normal to the line:
     ::
 
      gmt begin GMT_App_O_6
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l
        gmt plot -SqD1000k:+g+LD+an+p -Wthick @App_O_transect.txt
      gmt end
 
@@ -8819,7 +8826,7 @@ inverse-video the label:
     ::
 
      gmt begin GMT_App_O_7
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l
        gmt plot -SqD15d:+gblack+fwhite+Ld+o+u@. -Wthick @App_O_transect.txt
      gmt end
@@ -8849,8 +8856,8 @@ labels. This is done with **awk**.
 
      gmt begin GMT_App_O_8
        gmt convert -i0,1,4 -Em150 @App_O_transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
-       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
-       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l 
+       gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+       gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l
      gmt plot -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick @App_O_transect.txt
      gmt end
 
@@ -8886,18 +8893,18 @@ well as a few quoted lines. The final script is
        gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
        km=`echo -17 28 | gmt mapproject -G-74/41+uk -fg --FORMAT_FLOAT_OUT=%.0f -o2`
        gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N > ttt.cpt
-       gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -nc+t1 
+       gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -nc+t1
        gmt grdcontour @App_O_ttt.nc -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
        	  -GL80W/31N/17W/26N,17W/28N/17W/50N -S2
        gmt plot -Wfatter,white great_NY_Canaries.txt
        gmt coast -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick \
-       	  -Glightgray -Wfaint -A500 
+       	  -Glightgray -Wfaint -A500
        gmt convert great_NY_*.txt -E | gmt plot $R -Sa0.15i -Gred -Wthin
        gmt plot -Wthick great_NY_Canaries.txt \
-       	-Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v 
+       	-Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v
        gmt plot great_NY_Paris.txt -Sc0.08c -Gblack
-       gmt plot -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white 
-       cat << EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j 
+       gmt plot -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white
+       cat << EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j
        74W	41N	RT	New York
        2.33E	48.87N	CT	Paris
        17W	28N	CT	Canaries
@@ -8920,84 +8927,6 @@ with the complete illustration presented as Figure
 
 Special Operations
 ==================
-
-.. _Isolation mode:
-
-Running GMT in *isolation mode*
--------------------------------
-
-In Chapter `General features`_ it is described how GMT creates
-several (temporary) files to communicate between the different commands
-that make up the script that finally creates a plot. Among those files
-are:
-
-    **gmt.conf** This file covers about 150 different settings that influence the
-       layout of your plot, from font sizes to tick lengths and date
-       formats (See Section `GMT defaults`_). Those settings can be altered
-       by editing the file, or by running the
-       :doc:`gmtset` command. A problem may arise
-       when those settings are changed half-way through the script: the
-       next time you run the script it will start with the modified
-       settings and hence might alter your scripts results. It is therefore
-       often necessary to revert to the original ``gmt.conf`` file. *Isolation mode*
-       avoids that issue.
-
-    **gmt.history** This file is created to communicate the command line history from
-       one command to the next (Section `Command line history`_) so that
-       shorthands like **-R** or **-J** can be used once it has been set in
-       a previous GMT command. The existence of this file makes if
-       impossible to run two GMT scripts simultaneously in the same
-       directory, since those ``gmt.history`` files may clash (contain different histories)
-       and adversely affect the results of both scripts.
-
-A cure to all these woes is the *isolation mode* introduced in
-GMT version 4.2.2. This mode allows you to run a GMT script without
-leaving any traces other than the resulting PostScript  or data files,
-and not altering the ``gmt.conf`` or ``gmt.history`` files. Those files will be placed in a temporary
-directory instead. And if properly set up, this temporary directory will
-only be used by a single script, even if another GMT script is running
-simultaneously. This also provides the opportunity to create any other
-temporary files that the script might create in the same directory.
-
-The example below shows how *isolation mode* works.
-
-    ::
-
-     ps=GMT_App_P_1.ps
-
-     # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.
-     # XXXXXX is replaced by a unique random combination of characters.
-     export GMT_TMPDIR=`mktemp -d /tmp/gmt.XXXXXX`
-
-     # These settings will be local to this script only since it writes to
-     # $GMT_TMPDIR/gmt.conf
-     gmt set COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
-
-     # Make grid file and color map in temporary directory
-     gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
-     gmt makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
-
-     # The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
-     gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
-     gmt coast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
-
-     # Clean up all temporary files and the temporary directory
-     rm -rf $GMT_TMPDIR
-
-.. figure:: /_images/GMT_App_P_2.*
-   :width: 500 px
-   :align: center
-
-   Example created in isolation mode
-
-
-The files ``gmt.conf`` and ``gmt.history`` are automatically created in the temporary directory
-``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
-``lat.cpt`` are created in that directory as well. To make things even more easy,
-GMT now provides a set of handy shell functions in :doc:`gmt_shell_functions.sh`:
-simply include that file in the script and the creation and the removal
-of the temporary directory is reduced to the single commands **gmt_init_tmpdir** and
-**gmt_remove_tmpdir**, respectively.
 
 .. _OGR_compat:
 

@@ -763,7 +763,15 @@ fonts can be found in the :doc:`gmt` man page.
     ticks and annotations must be inside the maps (e.g., for preparing
     geotiffs), chose **inside**.  Finally, for Cartesian plots you can
     also choose **graph**\ , which adds a vector to the end of each axis.
-    This works best when you reduce the number of axes plotted.
+    This works best when you reduce the number of axes plotted to one
+    per dimension.  By default, the vector tip extends the length of each
+    axis by 7.5%. Alternatively, append ,\ *length*\ [**u**], where **u**
+    can be % (then *length* is the alternate extension in percent) or one
+    of **c**, **i**, or **p** (then *length* is the absolute extension
+    of the axis to the start of the vector base instead).  The vector stem
+    is set to match :ref:`MAP_FRAME_WIDTH <MAP_FRAME_WIDTH>`, while the vector
+    head length and width are 10 and 5 times this width, respectively.  You
+    may control its shape via :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>`.
 
 .. _MAP_FRAME_WIDTH:
 

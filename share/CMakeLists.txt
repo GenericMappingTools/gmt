@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # share CMakeLists.txt
@@ -27,12 +27,6 @@ install (DIRECTORY ${_gmt_share_dirs}
 	COMPONENT Runtime
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
-
-# install version file (used during runtime to check for correct share dir)
-configure_file (VERSION.in VERSION @ONLY NEWLINE_STYLE LF)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
-	DESTINATION ${GMT_DATADIR}
-	COMPONENT Runtime)
 
 # only attempt to install shorelines when requested and path is known
 if (GSHHG_PATH AND COPY_GSHHG)

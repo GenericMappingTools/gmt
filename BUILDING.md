@@ -1,6 +1,7 @@
 # Building GMT
 
-This document describes how to build GMT from source codes on Linux and macOS.
+This document describes how to build GMT from source codes
+(stable release or development version) on Linux, macOS and Windows.
 
 ## Contents
 
@@ -14,6 +15,7 @@ For general users:
   * [Archlinux](#archlinux)
   * [FreeBSD](#freebsd)
   * [macOS with homebrew](#macos-with-homebrew)
+  * [Windows](#windows)
 - [Getting GMT source codes](#getting-gmt-source-codes)
 - [Configuring](#configuring)
 - [Building GMT source codes](#building-gmt-source-codes)
@@ -202,22 +204,58 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     # to build the documentation in PDF format
     brew cask install mactex-no-gui
 
+### Windows
+
+For some software, e.g. CMake, Ghostscript, GraphicsMagick and FFmpeg,
+you can download binary installers to install them.
+If there is an option to add it to the system PATH, remember to tick it.
+
+For other dependency libraries, it's recommended to install them
+via [vcpkg](https://github.com/microsoft/vcpkg).
+To use vcpkg, make sure you have met the prerequisites:
+
+- Windows 10, 8.1, 7
+- [Visual Studio 2015 Update 3 or newer](https://visualstudio.microsoft.com/)
+  with "Desktop development with C++" installed
+- [Git](https://git-scm.com/)
+- [CMake](https://cmake.org) >=3.12.4
+
+Open a command prompt, and install vcpkg with:
+
+    cd C:\
+    git clone https://github.com/microsoft/vcpkg
+    cd C:\vcpkg
+    .\bootstrap-vcpkg.bat
+
+After installing vcpkg, you can install the GMT dependency libraries with (it may take more than 30 minutes):
+
+    # Build and install libraries
+    # If you want to build x64 libraries (recommended)
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+
+    # If you want to build x86 libraries
+    # NOTE: clapack and openblas currently aren't available for x86-windows.
+    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+
+    # hook up user-wide integration (note: requires admin on first use)
+    vcpkg integrate install
+
+After installing these dependency libraries, you need to add the bin path
+(i.e. `C:\vcpkg\installed\x64-windows\bin`) to the system PATH,
+to allow executables find the DLL shared libraries.
+
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from:
-
-- [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-- [GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
+are available from the [GMT website](https://www.generic-mapping-tools.org) and
+[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
     git clone https://github.com/GenericMappingTools/gmt
 
-You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz) from:
-
-- [GMT Download Page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-- [GMT FTP site](ftp://ftp.soest.hawaii.edu/gmt)
+You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
+from any of the [GMT FTP sites](MIRRORS.md).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
 
@@ -228,7 +266,7 @@ open-source system for managing the build process. The building process is
 controlled by two configuration files in the `cmake` directory:
 
 -   *ConfigDefault.cmake*: is version controlled and used to add new default
-    variables and set defaults for everyone. **You should not edit this file.**
+    variables and set defaults for everyone. **You should NOT edit this file.**
 -   *ConfigUser.cmake*: is not version controlled and used to override defaults
     on a per-user basis.
     There is a template file, *ConfigUserTemplate.cmake*, that you should copy
@@ -242,30 +280,62 @@ and edit the file according to your demands. This is an example:
 set (CMAKE_INSTALL_PREFIX /opt/gmt)
 set (GSHHG_ROOT /path/to/gshhg)
 set (DCW_ROOT /path/to/dcw)
+set (COPY_GSHHG true)
+set (COPY_DCW true)
+```
+
+For Windows users, a good example is:
+
+```
+set (CMAKE_INSTALL_PREFIX "C:/programs/gmt6")
+set (GSHHG_ROOT <path to gshhg>)
+set (DCW_ROOT <path to dcw>)
+set (COPY_GSHHG true)
+set (COPY_DCW true)
+set (GMT_INSTALL_MODULE_LINKS FALSE)
+set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
 
 See the additional comments in `cmake/ConfigUserTemplate.cmake` for more details.
 
 Now that you made your configuration choices, it is time for invoking CMake.
-Create a subdirectory where the build files will be generated, e.g., in the
-source tree `mkdir build` and then `cd build`.
-
-In the build subdirectory, type
+To keep separately generated files from binary tree and source files from source tree,
+you should create a build directory in the top-level directory,
+where the build files will be generated, and change into your build directory:
 
 ```
+mkdir build
+cd build
 cmake ..
+```
+
+For Windows users, you need open a command prompt and run:
+
+```
+mkdir build
+cd build
+# For x64 build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x64
+# For x86 build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x86
 ```
 
 For advanced users, you can append the option ``-G Ninja`` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
+
 ## Building GMT source codes
 
 In the build directory, type
 
 ```
+# Linux/macOS
 cmake --build .
+
+# Windows
+cmake --build . --config Release
 ```
 
 which will compile all the programs. You can also append ``--parallel [<jobs>]``
@@ -273,17 +343,20 @@ to enable parallel build, in which *jobs* is the maximum number of concurrent
 processes to use when building. If *jobs* is omitted the native build tool's
 default number is used.
 
-
 ## Installing
 
 ```
+# Linux/macOS
 cmake --build . --target install
+
+# Windows
+cmake --build . --target install --config Release
 ```
 
 will install gmt executable, library, development headers and built-in data
 to the specified GMT install location.
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-UNIX manpages, and HTML and PDF documentation.
+UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
@@ -291,8 +364,8 @@ Using ``sudo`` will often do the trick.
 
 ## Setting path
 
-Make sure you set the PATH to include the directory containing the GMT executables (BINDIR)
-if this is not a standard directory like /usr/local/bin. Then, you should now be able to
+Make sure you set the PATH to include the directory containing the GMT executables
+if this is not a standard directory like `/usr/local/bin`. Then, you should now be able to
 run GMT programs.
 
 ---
@@ -305,13 +378,13 @@ The GMT documentations are available in different formats and can be generated w
 
 ```
 cmake --build . --target docs_man           # UNIX manual pages
-cmake --build . --target docs_html          # HTML manual, cookbook, and API reference
-cmake --build . --target docs_pdf           # PDF manual, cookbook, and API reference
+cmake --build . --target docs_html          # HTML manual, tutorial, cookbook, and API reference
+cmake --build . --target docs_pdf           # PDF tutorial, cookbook, and API reference
 cmake --build . --target docs_pdf_shrink    # Like docs_pdf but with reduced size
 ```
 
-To generate the documentation you need to install the Sphinx documentation
-builder, and for PDFs you also need LaTeX. You can choose to install the
+To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/en/master/)
+documentation builder, and for PDFs you also need LaTeX. You can choose to install the
 documentation files from an external location instead of generating the
 Manpages, PDF, and HTML files from the sources. This is convenient if Sphinx
 and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
@@ -330,6 +403,7 @@ set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
 set (DO_API_TESTS ON)
+set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 ```
 
 Then run:
@@ -343,28 +417,33 @@ Optionally set *N_TEST_JOBS* to the number of ctest jobs to run simultaneously.
 You can also select individual tests using regexp with ctest, e.g.:
 
 ```
-ctest -R ex2[3-6]
+ctest --output-on-failure -R ex2[3-6]
 ```
 
 ## Creating source packages
 
 Edit `cmake/ConfigDefault.cmake` and set
 *GMT_PACKAGE_VERSION_MAJOR*, *GMT_PACKAGE_VERSION_MINOR*, and
-*GMT_PACKAGE_VERSION_PATCH*. Also uncomment and set
-*GMT_SOURCE_CODE_CONTROL_VERSION_STRING* to the current git commit hash.
+*GMT_PACKAGE_VERSION_PATCH*. Also set *GMT_PUBLIC_RELEASE* to TRUE.
 Then create source packages with:
 
 ```
-cmake --build . --target gmt_release      # export the source tree and install doc
-cmake --build . --target gmt_release_tar
+cmake --build . --target gmt_release      # export the source tree and documentation
+cmake --build . --target gmt_release_tar  # create tarballs (in tar.gz and tar.xz formats)
 ```
 
 ## Packaging
 
 Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2),
 Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install
-[NSIS](http://nsis.sourceforge.net/). After building GMT and the documentation run
-either one of these:
+[NSIS](http://nsis.sourceforge.net/). After building GMT and the documentation,
+build and place the executables, including the supplements, with
+
+```
+cmake --build . --target install
+```
+
+and then create the package with either one of these:
 
 ```
 cmake --build . --target package

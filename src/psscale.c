@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -546,18 +546,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
-#if 0
-	if (GMT->current.setting.run_mode == GMT_MODERN && (!Ctrl->C.active || (Ctrl->C.file[0] =='+' && strchr ("uU", Ctrl->C.file[1])))) {
-		sprintf (string, "%s/gmt.cpt", API->gwf_dir);	/* Use this if it exists */
-		if (!access (string, R_OK)) {	/* It does, activate -C<string> */
-			if (Ctrl->C.file) strncat (string, Ctrl->C.file, GMT_LEN256-1);	/* Append the +u|u<unit> instruction */
-			gmt_M_str_free (Ctrl->C.file);
-			Ctrl->C.file = strdup (string);
-			Ctrl->C.active = true;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reuse current CPT file %s/gmt.cpt\n", API->gwf_dir);
-		}
-	}
-#endif
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1496,7 +1485,7 @@ EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
 int GMT_colorbar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: colorbar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}

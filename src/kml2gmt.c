@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: kml2gmt is a reformatter that takes KML files and extracts GMT tables;
@@ -166,9 +166,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	size_t length;
 	bool scan = true, first = true, skip, single = false, extended = false;
 	
-	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
+	char buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	char word[GMT_LEN128] = {""}, description[GMT_BUFSIZ] = {""};
-	char *gm[3] = {"Point", "Line", "Polygon"};
+	char *gm[3] = {"Point", "Line", "Polygon"}, *line = NULL;
 
 	double out[3], elev;
 	
@@ -243,8 +243,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 	Out->text = NULL;
+	line = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, char);
 
-	while (fgets (line, GMT_BUFSIZ, fp)) {
+	while (fgets (line, GMT_INITIAL_MEM_ROW_ALLOC, fp)) {
 		if (strstr (line, "<Placemark")) {	/* New Placemark, reset name and description */
 			scan = true;
 			name[0] = description[0] = 0;
@@ -297,9 +298,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		if (Ctrl->E.active && strstr (line, "<ExtendedData>")) {
 			/* https://developers.google.com/kml/documentation/kmlreference#extendeddata
 			   But only a single <SimpleData name="string" is implemented here. */
-			fgets (line, GMT_BUFSIZ, fp);
+			fgets (line, GMT_INITIAL_MEM_ROW_ALLOC, fp);
 			if (strstr (line, "<SchemaData")) {
-				fgets (line, GMT_BUFSIZ, fp);
+				fgets (line, GMT_INITIAL_MEM_ROW_ALLOC, fp);
 				if (strstr (line, "<SimpleData")) {
 					char *p1, *p2;
 					p1 = strchr(line, '>');		p1++;           /* Find end of <SimpleData */
@@ -356,6 +357,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	gmt_M_free (GMT, Out);
+	gmt_M_free (GMT, line);
 	
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u features with selected geometry\n", n_features);
 	

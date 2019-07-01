@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*void *V_API, int mode
  * API functions to support the gmt2kml application.
@@ -443,9 +443,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					Ctrl->N.mode = GET_COL_LABEL;
 					Ctrl->N.col = GMT_Z;
 				}
-				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[0] == '\0') {	/* Trailing text (+ is backwards compatible)  */
+				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[1] == '\0')	/* Trailing text (+ is backwards compatible)  */
 					Ctrl->N.mode = GET_LABEL;
-				}
 				else if (strchr (opt->arg, '%')) {	/* Want a format */
 					Ctrl->N.fmt = strdup (opt->arg);
 					Ctrl->N.mode = FMT_LABEL;
@@ -1195,7 +1194,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 						else if (Ctrl->N.mode == GET_COL_LABEL) {
-							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], Ctrl->N.col);
+							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], gmt_M_type(GMT,GMT_IN,Ctrl->N.col));
 							kml_print (API, Out, N, "<name>%s</name>", item);
 						}
 						else if (Ctrl->N.mode == GET_LABEL)
@@ -1220,7 +1219,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 								kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
 								kml_print (API, Out, N++, "<value>");
 								if ((n_coord+col) < S->n_columns) {	/* Part of the numerical section */
-									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], n_coord+col);
+									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], gmt_M_type(GMT,GMT_IN,n_coord+col));
 									kml_print (API, Out, N, "%s", item);
 								}
 								else if (all_text) {	/* Place entire trailing text */

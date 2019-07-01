@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2012-2019
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -51,7 +50,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D},GG),A->"},
 	{"clear", "core", "Delete current history, conf, cpt, or the cache, data or sessions directories", ""},
 	{"dimfilter", "core", "Directional filtering of grids in the space domain", "<G{,GG},>DQ"},
-	{"docs", "core", "Show the HTML documentation of the specified module", ""},
+	{"docs", "core", "Show HTML documentation of specified module or display graphics", ""},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", ""},
 	{"figure", "core", "Set attributes for the current modern mode session figure", ""},
 	{"filter1d", "core", "Time domain filtering of 1-D data tables", "<D{,>D},FD(1"},
@@ -73,7 +72,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}"},
 	{"gmtwhich", "core", "Find full path to specified files", ">D}"},
 	{"gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}"},
-	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C}"},
+	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C},H->"},
 	{"grd2kml", "core", "Create KML image quadtree from single grid", "<G{,CC(,IG("},
 	{"grd2xyz", "core", "Convert grid file to data table", "<G{+,>D}"},
 	{"grdblend", "core", "Blend several partially over-lapping grids into one larger grid", "<G{+,GG}"},
@@ -103,7 +102,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"greenspline", "core", "Interpolate using Green's functions for splines in 1-3 dimensions", "<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN"},
 	{"inset", "core", "Manage figure inset setup and completion", ">X}"},
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files", ">D}"},
-	{"makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D("},
+	{"makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D(,H->"},
 	{"mapproject", "core", "Forward and inverse map transformations, datum conversions and geodesy", "<D{,LD(=,>D},W-("},
 	{"movie", "core", "Create animation sequences and movies", "<T("},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}"},
@@ -126,7 +125,6 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}"},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2"},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2"},
-	{"revert", "core", "Revert a figure to a previous state", ""},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}"},
@@ -148,7 +146,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D},GG),A->", &GMT_blockmode},
 	{"clear", "core", "Delete current history, conf, cpt, or the cache, data or sessions directories", "", &GMT_clear},
 	{"dimfilter", "core", "Directional filtering of grids in the space domain", "<G{,GG},>DQ", &GMT_dimfilter},
-	{"docs", "core", "Show the HTML documentation of the specified module", "", &GMT_docs},
+	{"docs", "core", "Show HTML documentation of specified module or display graphics", "", &GMT_docs},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", "", &GMT_end},
 	{"figure", "core", "Set attributes for the current modern mode session figure", "", &GMT_figure},
 	{"filter1d", "core", "Time domain filtering of 1-D data tables", "<D{,>D},FD(1", &GMT_filter1d},
@@ -170,7 +168,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}", &GMT_gmtvector},
 	{"gmtwhich", "core", "Find full path to specified files", ">D}", &GMT_gmtwhich},
 	{"gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}", &GMT_gmtwrite},
-	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C}", &GMT_grd2cpt},
+	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C},H->", &GMT_grd2cpt},
 	{"grd2kml", "core", "Create KML image quadtree from single grid", "<G{,CC(,IG(", &GMT_grd2kml},
 	{"grd2xyz", "core", "Convert grid file to data table", "<G{+,>D}", &GMT_grd2xyz},
 	{"grdblend", "core", "Blend several partially over-lapping grids into one larger grid", "<G{+,GG}", &GMT_grdblend},
@@ -200,7 +198,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"greenspline", "core", "Interpolate using Green's functions for splines in 1-3 dimensions", "<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN", &GMT_greenspline},
 	{"inset", "core", "Manage figure inset setup and completion", ">X}", &GMT_inset},
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files", ">D}", &GMT_kml2gmt},
-	{"makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D(", &GMT_makecpt},
+	{"makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D(,H->", &GMT_makecpt},
 	{"mapproject", "core", "Forward and inverse map transformations, datum conversions and geodesy", "<D{,LD(=,>D},W-(", &GMT_mapproject},
 	{"movie", "core", "Create animation sequences and movies", "<T(", &GMT_movie},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}", &GMT_nearneighbor},
@@ -223,7 +221,6 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}", &GMT_pswiggle},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxyz},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxy},
-	{"revert", "core", "Revert a figure to a previous state", "", &GMT_revert},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}", &GMT_sph2grd},

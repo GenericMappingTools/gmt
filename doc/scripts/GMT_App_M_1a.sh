@@ -42,7 +42,7 @@ n=`cat tt.lis | wc -l`
 let n2=n/2
 # dy is line spacing and y0 is total box height
 dy=0.75
-y0=`echo "$n2 * $dy * 0.5" | bc`
+y0=`gmt math -Q $n2 $dy MUL 0.5 MUL =`
 
 gmt begin GMT_App_M_1a ps
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* Program:	gmt_ogrproj.c
  * Purpose:	routine to do point coordinate transformations indirectly with the proj.4 lib
@@ -24,7 +24,7 @@
 #include "gdal.h"
 #include "ogr_srs_api.h"
 
-OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS) {
+OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, const char *pSrcSRS, const char *pDstSRS) {
     /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination Referencing
 	   System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?). 
 
@@ -60,7 +60,6 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n\n%s\n\n%s\n\n", pszSrcWKT, pszDstWKT);
 		CPLFree(pszSrcWKT);		CPLFree(pszDstWKT);
-		CPLFree(pSrcSRS);		CPLFree(pDstSRS);
 	}
 	OSRDestroySpatialReference(hSrcSRS);	OSRDestroySpatialReference(hDstSRS);
 	return hCT;

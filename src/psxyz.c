@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -523,7 +523,7 @@ GMT_LOCAL int dist_compare (const void *a, const void *b) {
 int GMT_plot3d (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: plot3d\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -583,6 +583,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* Initialize GMT_SYMBOL structure */
 
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
+	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);
+	gmt_M_memset (&last_spiderpen, 1, struct GMT_PEN);
 	gmt_contlabel_init (GMT, &S.G, 0);
 
 	S.base = GMT->session.d_NaN;
@@ -805,11 +807,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (S.symbol == PSL_WEDGE) {
-			if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+			if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 				PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 				last_spiderpen = S.v.pen;
 			}
-			else if (Ctrl->W.active) {	/* use -W as wedge pen as well as outline */
+			else if (Ctrl->W.active || S.w_type || !(Ctrl->G.active || Ctrl->C.active)) {	/* Use -W as wedge pen as well as outline, and default to this pen if neither -C, -W or -G given */
 				current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 				if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
 					PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
@@ -823,6 +825,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (!Ctrl->W.active)	/* No outline of QR code */
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
+		outline_active =  Ctrl->W.active;
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)
@@ -917,7 +920,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (S.symbol == PSL_WEDGE) {
-					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge splider pen specified separately */
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 						last_spiderpen = S.v.pen;
 					}

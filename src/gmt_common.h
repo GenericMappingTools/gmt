@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -174,9 +174,9 @@ struct GMT_COMMON {
 		char *multi_segment;    /* To hold a multi-segment string */
 		char string[GMT_LEN256];
 	} h;
-	struct i {	/* -i[<col>|<colrange>,...][+t[<col>]] */
-		bool active, select, orig;
-		uint64_t n_cols;
+	struct i {	/* -i[<col>|<colrange>,...][t[<word>]] */
+		bool active, select, orig, word;
+		uint64_t n_cols, w_col;
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
 	} i;
@@ -201,9 +201,9 @@ struct GMT_COMMON {
 		double range[2], half_range[2];	/* For periodic non-geographic grids */
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
-	struct o {	/* -o[<col>|<colrange>,...][+t[<col>]] */
-		bool active, select, orig;
-		uint64_t n_cols;
+	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
+		bool active, select, orig, word;
+		uint64_t n_cols, w_col;
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;

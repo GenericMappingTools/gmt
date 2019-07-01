@@ -8,18 +8,18 @@
 
 ## What is GMT?
 
-GMT is an open source collection of about 80 command-line tools for manipulating
+GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing PostScript illustrations ranging from simple x–y
 plots via contour maps to artificially illuminated surfaces and 3D perspective
-views. The GMT supplements add another 40 more specialized and discipline-specific
+views. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
 support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
 [DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
-GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo,
-Joaquim Luis and Florian Wobbe, with help from a global set of [contributors](AUTHORS.md)
+GMT is developed and maintained by [the GMT Team](AUTHORS.md),
+with help from a global set of [contributors](AUTHORS.md)
 and support by the [National Science Foundation](http://www.nsf.gov/).
 It is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -59,20 +59,9 @@ Note there are three GMT tar archives available (#3 is optional):
 3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
 For macOS and Windows users there are separate installers available.
-You can obtain GMT and support data from http://gmt.soest.hawaii.edu/.
-Alternatively you may get GMT from any of the following FTP sites.
+You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
+Alternatively you may get GMT from any of the [FTP sites](MIRRORS.md).
 Try the site that is closest to you to minimize transmission times:
-
-| Site                                                        | FTP address                                         |
-|:------------------------------------------------------------|:----------------------------------------------------|
-| SOEST, U. of Hawaii                                         | ftp://ftp.soest.hawaii.edu/gmt                      |
-| Lab for Satellite Altimetry, NOAA                           | ftp://ftp.star.nesdis.noaa.gov/pub/sod/lsa/gmt      |
-| IRIS, Washington, US                                        | ftp://ftp.iris.washington.edu/pub/gmt               |
-| IAG-USP, U. of Sao Paulo, BRAZIL                            | ftp://ftp.iag.usp.br/pub/gmt                        |
-| TENET, Tertiary Education & Research Networks, SOUTH AFRICA | ftp://gmt.mirror.ac.za/gmt/                         |
-| Tokai U, Shimizu, JAPAN                                     | ftp://ftp.scc.u-tokai.ac.jp/pub/gmt                 |
-| University of Science and Technology of China, Hefei, CHINA | http://mirrors.ustc.edu.cn/gmt                      |
-
 
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
@@ -81,14 +70,15 @@ and [build instructions](BUILDING.md) to build GMT from the sources.
 
 GMT users elsewhere have developed programs that utilize the GMT libraries and
 produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation. Currently, the supplemental archive include the directories:
+manipulation. Currently, the supplemental archive include these directories:
 
+-  geodesy: Velocity arrows and error ellipses, solid Earth tides, GPS gridding.
 -  gshhg: Data extractor for GSHHG shoreline polygons and rivers, borders.
 -  img: Data extractor for Smith/Sandwell altimetry grids.
--  meca: Plotting of focal mechanisms, velocity arrows, and error ellipses on maps.
 -  mgd77: Programs for handling of native MGD77 files.
--  potential: geopotential manipulations
--  segyprogs: Plotting SEGY seismic data sets.
+-  potential: Geopotential manipulations.
+-  segy: Plotting SEGY seismic data sets.
+-  seis: Plotting of focal mechanisms and SAC (seismic Analysis Code) data.
 -  spotter: Plate tectonic & kinematics applications.
 -  x2sys: Track intersection (crossover) tools.
 
@@ -107,12 +97,12 @@ Before running programs, there are a few things you should do/know:
 
 You haven't bought anything so you cannot expect full service.  However, if
 you find a bug in any of the programs, please report it to us
-(http://gmt.soest.hawaii.edu/) rather than trying to fix it yourself so that
+(https://github.com/GenericMappingTools/gmt) rather than trying to fix it yourself so that
 we, and through us, other users may benefit from your find.  Make sure you
 provide us with enough information so that we can recreate the problem.
 
 In addition to the bug tracking feature (New Issues) on the website, you
-can also post general questions on the GMT user forum.  Note that registration
+can also post general questions.  Note that GitHub registration
 is required to post on the site.
 
 ## Ordering the GMT package on CD/DVD-Rs

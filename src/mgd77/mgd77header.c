@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2019 by P. Wessel and Michael Chandler
+ *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and Michael Chandler
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -418,12 +418,12 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 						if (teny >= 9)
 							tquad = 7;
 					}
-					if (teny > 8) sprintf (value,"%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-9.0),fabs(tenx-18.0));
-					else sprintf (value,"%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-8.0),fabs(tenx-18.0));
+					if (teny > 8) snprintf (value, BUFSIZ, "%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-9.0),fabs(tenx-18.0));
+					else snprintf (value, BUFSIZ, "%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-8.0),fabs(tenx-18.0));
 				}
 			}
 		}
-		sprintf (value, "%s9999", value); i++;
+		snprintf (value, BUFSIZ, "%s9999", value); i++;
 		while (i < 30) { /* MGD77 format can store up to this many 10x10 identifiers */
  			sprintf (value,"%s,   0",value);
 			i++;

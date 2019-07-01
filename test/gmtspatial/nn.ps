@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:43 2018
+%%CreationDate: Thu Jun 27 12:16:22 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -679,28 +674,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-5400 0 D
-0 5393 D
--5400 0 D
-P
-PSL_clip N
-4 W
-V
-{1 0 0 C} FS
-60 1940 4526 Sc
-60 5098 2317 Sc
-60 1030 2937 Sc
-60 833 801 Sc
-60 3086 4649 Sc
-60 5136 5144 Sc
-60 1232 2975 Sc
-60 2721 1091 Sc
-60 3335 4788 Sc
-60 612 690 Sc
-U
-PSL_cliprestore
 25 W
 4 W
 245 0 M
@@ -800,6 +773,28 @@ P S
 -167 244 M (0è) mr Z
 -167 2685 M (5è) mr Z
 -167 5145 M (10è) mr Z
+clipsave
+0 0 M
+5400 0 D
+0 5393 D
+-5400 0 D
+P
+PSL_clip N
+4 W
+V
+{1 0 0 C} FS
+60 1940 4526 Sc
+60 5098 2317 Sc
+60 1030 2937 Sc
+60 833 801 Sc
+60 3086 4649 Sc
+60 5136 5144 Sc
+60 1232 2975 Sc
+60 2721 1091 Sc
+60 3335 4788 Sc
+60 612 690 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -848,6 +843,13 @@ O0
 3.32551 setmiterlimit
 17 W
 0 1 0 C
+clipsave
+0 0 M
+5400 0 D
+0 5393 D
+-5400 0 D
+P
+PSL_clip N
 1030 2937 M
 202 38 D
 S
@@ -1152,6 +1154,7 @@ S
 -22 -11 D
 -22 -12 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1165,38 +1168,6 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-5400 0 D
-0 5393 D
--5400 0 D
-P
-PSL_clip N
-4 W
-V
-{0.827 A} FS
-60 1940 4526 Sc
-60 5098 2317 Sc
-60 1030 2937 Sc
-60 833 801 Sc
-60 3086 4649 Sc
-60 5136 5144 Sc
-60 1232 2975 Sc
-60 2721 1091 Sc
-60 3335 4788 Sc
-60 612 690 Sc
-60 1940 4526 Sc
-60 5098 2317 Sc
-60 1030 2937 Sc
-60 833 801 Sc
-60 3086 4649 Sc
-60 5136 5144 Sc
-60 1232 2975 Sc
-60 2721 1091 Sc
-60 3335 4788 Sc
-60 612 690 Sc
-U
-PSL_cliprestore
 25 W
 4 W
 245 0 M
@@ -1293,6 +1264,38 @@ P S
 (0è) mr Z
 -167 2685 M (5è) mr Z
 -167 5145 M (10è) mr Z
+clipsave
+0 0 M
+5400 0 D
+0 5393 D
+-5400 0 D
+P
+PSL_clip N
+4 W
+V
+{0.827 A} FS
+60 1940 4526 Sc
+60 5098 2317 Sc
+60 1030 2937 Sc
+60 833 801 Sc
+60 3086 4649 Sc
+60 5136 5144 Sc
+60 1232 2975 Sc
+60 2721 1091 Sc
+60 3335 4788 Sc
+60 612 690 Sc
+60 1940 4526 Sc
+60 5098 2317 Sc
+60 1030 2937 Sc
+60 833 801 Sc
+60 3086 4649 Sc
+60 5136 5144 Sc
+60 1232 2975 Sc
+60 2721 1091 Sc
+60 3335 4788 Sc
+60 612 690 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1506,63 +1509,6 @@ P S
 -48 13 D
 -37 5 D
 P S
-5400 2453 M
--20 37 D
--29 41 D
--17 18 D
--28 25 D
--20 15 D
--43 25 D
--35 14 D
--48 13 D
--37 5 D
--25 1 D
--13 -1 D
--12 0 D
--13 -1 D
--12 -2 D
--13 -2 D
--12 -3 D
--12 -3 D
--12 -3 D
--12 -4 D
--12 -4 D
--11 -5 D
--23 -11 D
--21 -13 D
--11 -6 D
--29 -23 D
--19 -17 D
--32 -38 D
--20 -31 D
--12 -22 D
--14 -35 D
--10 -36 D
--7 -49 D
--1 -25 D
-5 -49 D
-11 -48 D
-19 -46 D
-19 -33 D
-22 -30 D
-25 -27 D
-19 -17 D
-30 -22 D
-32 -19 D
-46 -19 D
-49 -12 D
-37 -4 D
-50 1 D
-25 3 D
-48 12 D
-46 19 D
-43 26 D
-29 23 D
-26 27 D
-24 29 D
-25 43 D
-5 10 D
-S
 2721 1420 M
 -13 0 D
 -12 -1 D
@@ -1627,6 +1573,63 @@ S
 -24 9 D
 -49 11 D
 P S
+5400 2453 M
+-20 37 D
+-29 41 D
+-17 18 D
+-28 25 D
+-20 15 D
+-43 25 D
+-35 14 D
+-48 13 D
+-37 5 D
+-25 1 D
+-13 -1 D
+-12 0 D
+-13 -1 D
+-12 -2 D
+-13 -2 D
+-12 -3 D
+-12 -3 D
+-12 -3 D
+-12 -4 D
+-12 -4 D
+-11 -5 D
+-23 -11 D
+-21 -13 D
+-11 -6 D
+-29 -23 D
+-19 -17 D
+-32 -38 D
+-20 -31 D
+-12 -22 D
+-14 -35 D
+-10 -36 D
+-7 -49 D
+-1 -25 D
+5 -49 D
+11 -48 D
+19 -46 D
+19 -33 D
+22 -30 D
+25 -27 D
+19 -17 D
+30 -22 D
+32 -19 D
+46 -19 D
+49 -12 D
+37 -4 D
+50 1 D
+25 3 D
+48 12 D
+46 19 D
+43 26 D
+29 23 D
+26 27 D
+24 29 D
+25 43 D
+5 10 D
+S
 4912 5393 M
 -4 -3 D
 -9 -8 D
@@ -1718,7 +1721,9 @@ P S
 9 9 D
 8 10 D
 6 7 D
-5400 5352 M
+3 4 D
+5403 5348 M
+-3 4 D
 -1 2 D
 -8 10 D
 -9 9 D
@@ -1815,8 +1820,8 @@ V
 60 3210 4719 Sc
 60 1131 2956 Sc
 60 723 745 Sc
-60 5098 2317 Sc
 60 2721 1091 Sc
+60 5098 2317 Sc
 60 5136 5144 Sc
 60 1940 4526 Sc
 U

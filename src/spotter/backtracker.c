@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2019 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for moving points along small circles on a sphere given a
@@ -286,13 +286,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
 						Ctrl->L.stage_id = true;
-						/* Fall through on purpose tp 'f' */
+						/* Fall through on purpose to 'f' */
 					case 'f':
 						Ctrl->L.mode = SPOTTER_FLOWLINE;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
 						Ctrl->L.stage_id = true;
-						/* Fall through on purpose tp 'b' */
+						/* Fall through on purpose to 'b' */
 					case 'b':
 						Ctrl->L.mode = SPOTTER_TRAILLINE;
 						break;

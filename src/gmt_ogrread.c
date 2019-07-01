@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /* Program:	gmt_ogrread.c
@@ -73,7 +73,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	15-may-2018
- * Revision: 1		Based on ogrread.c MEX from Mirone 
+ * Revision: 1		Based on ogrread.c MEX from Mirone
  */
 
 #include "gmt_gdalread.h"
@@ -251,7 +251,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
-	int	region = 0;
+	//int	region = 0;
 	int	nLayers;		/* number of layers in dataset */
 	double	x_min, y_min, x_max, y_max;
 
@@ -262,7 +262,9 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGRLayerH hLayer;
 	OGRFeatureH hFeature;
 	OGRFeatureDefnH hFeatureDefn;
-	OGRGeometryH hGeom, hPolygon, poSpatialFilter = NULL;
+	OGRGeometryH hGeom;
+	// OGRGeometryH hPolygon;
+	//OGRGeometryH poSpatialFilter = NULL;
 	OGRSpatialReferenceH hSRS;
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
@@ -286,7 +288,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		return NULL;
 	}
 
-	if (region) {		/* If we have a sub-region request. */
+	/* If we have a sub-region request.
+	if (region) {
 		poSpatialFilter = OGR_G_CreateGeometry(wkbPolygon);
 		hPolygon = OGR_G_CreateGeometry(wkbLinearRing);
 		OGR_G_AddPoint(hPolygon, x_min, y_min, 0.0);
@@ -296,13 +299,14 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		OGR_G_AddPoint(hPolygon, x_min, y_min, 0.0);
 		OGR_G_AddGeometryDirectly(poSpatialFilter, hPolygon);
 	}
+	*/
 
 	/* Get MAX number of features of all layers */
 	nMaxFeatures = nMaxGeoms = 1;
 	for (i = 0; i < nLayers; i++) {
 		hLayer = GDALDatasetGetLayer(hDS, i);
 
-		if (region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
+		//if (region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
 
 		nMaxFeatures = MAX((int)OGR_L_GetFeatureCount(hLayer, 1), nMaxFeatures);
 		OGR_L_ResetReading(hLayer);
@@ -339,6 +343,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 				out[ind].proj4 = strdup(pszProj4);
 			if (OSRExportToPrettyWkt(hSRS, &pszWKT, 1) == OGRERR_NONE)
 				out[ind].wkt = strdup(pszWKT);
+			CPLFree(pszProj4);
+			CPLFree(pszWKT);
 		}
 
 		/* Get this layer BoundingBox as two column vectors of X and Y respectively. */

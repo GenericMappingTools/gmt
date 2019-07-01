@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_constants.h contains definitions of constants used through GMT.
@@ -216,6 +216,10 @@ enum GMT_swap_direction {
 
 #define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
+
+/* Settings for the MAP_FRAME_TYPE = graph */
+#define GMT_GRAPH_EXTENSION		7.5	/* In percent */
+#define GMT_GRAPH_EXTENSION_UNIT	'%'	/* In percent */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -477,7 +481,7 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 #define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
 #define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
 #define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
-#define GMT_SRTM_EXTENSION_REMOTE_LEN  3U			/* Length of JPEG2000 file extension */
+#define GMT_SRTM_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */
 #define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
 #define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
 

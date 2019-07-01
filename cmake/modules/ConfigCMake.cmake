@@ -39,10 +39,10 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 # Here we change it to add the git commit hash for non-public releases
 set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
-# Add the git commit hash to the package version if this is a non-public release.
-# A non-public release has an empty 'GMT_SOURCE_CODE_CONTROL_VERSION_STRING' variable in 'ConfigDefault.cmake'.
+# Add the last git commit hash and date to the package version if this is a non-public release.
+# A non-public release has a FALSE 'GMT_PUBLIC_RELEASE' variable in 'ConfigDefault.cmake'.
 #set (HAVE_GIT_VERSION)
-if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
+if (GIT_FOUND)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
 		COMMAND ${GIT_EXECUTABLE} describe --abbrev=7 --always --dirty
@@ -51,11 +51,13 @@ if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 		OUTPUT_VARIABLE GIT_COMMIT_HASH
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-		if (GIT_RETURN_CODE)
-			message (STATUS "Unable to determine git commit hash for non-public release - ignoring.")
-		else (GIT_RETURN_CODE)
-			if (GIT_COMMIT_HASH)				# Set the updated package version.
-				# get commit date
+	if (GIT_RETURN_CODE)
+		message (STATUS "Unable to determine git commit hash for non-public release - ignoring.")
+	else (GIT_RETURN_CODE)
+		if (GIT_COMMIT_HASH)				
+			set (HAVE_GIT_VERSION TRUE)
+			# For non-public release, add the last git commit hash and date
+			if (NOT GMT_PUBLIC_RELEASE)
 				execute_process (
 					COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
 					WORKING_DIRECTORY ${GMT_SOURCE_DIR}
@@ -63,12 +65,11 @@ if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 					OUTPUT_VARIABLE GIT_COMMIT_DATE
 					OUTPUT_STRIP_TRAILING_WHITESPACE)
 				string(REPLACE "-" "." GIT_COMMIT_DATE "${GIT_COMMIT_DATE}")
-
 				set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION "${GMT_PACKAGE_VERSION}_${GIT_COMMIT_HASH}_${GIT_COMMIT_DATE}")
-				set (HAVE_GIT_VERSION TRUE)
-			endif (GIT_COMMIT_HASH)
-		endif (GIT_RETURN_CODE)
-endif (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
+			endif (NOT GMT_PUBLIC_RELEASE)
+		endif (GIT_COMMIT_HASH)
+	endif (GIT_RETURN_CODE)
+endif (GIT_FOUND)
 
 # The current GMT version.
 set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")

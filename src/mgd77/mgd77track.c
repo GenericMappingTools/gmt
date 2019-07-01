@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2019 by P. Wessel
+ *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
-				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getfont */
+				snprintf (tmp, GMT_LEN64, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getfont */
 				gmt_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (gmt_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Bad fill specification for -T\n");

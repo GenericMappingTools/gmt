@@ -22,8 +22,8 @@ check_md5 ()
 # To return a failure if any commands inside fail
 set -e
 
-# Test if target directory exists, else fail
-test -d $COASTLINEDIR
+# Create the directory for coastline data
+mkdir -p $COASTLINEDIR
 
 # GSHHG and DCW tarballs are cached here:
 test -d $HOME/cache-gshhg-dcw || mkdir $HOME/cache-gshhg-dcw
@@ -37,8 +37,7 @@ echo "==========================================================================
 check_md5 $MD5_GSHHG $GSHHG.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.cn/gmt/$GSHHG.$EXT"
 check_md5 $MD5_GSHHG $GSHHG.$EXT
 tar xzf $GSHHG.$EXT
-mv $GSHHG/* $COASTLINEDIR/
-rmdir $GSHHG
+mv $GSHHG $COASTLINEDIR/gshhg
 
 # DCW (country polygons):
 echo ""
@@ -48,10 +47,9 @@ echo "==========================================================================
 check_md5 $MD5_DCW $DCW.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.cn/gmt/$DCW.$EXT"
 check_md5 $MD5_DCW $DCW.$EXT
 tar xzf $DCW.$EXT
-mv $DCW/* $COASTLINEDIR/
-rmdir $DCW
+mv $DCW $COASTLINEDIR/dcw
 
-ls $COASTLINEDIR
+ls $COASTLINEDIR/gshhg $COASTLINEDIR/dcw
 
 # Turn off exit on failure.
 set +e

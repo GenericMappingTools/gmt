@@ -156,8 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991–2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
-Luis and F. Wobbe
+Copyright ©1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 The Generic Mapping Tools (GMT) is free software; you can
 redistribute it and/or modify it under the terms of the GNU Lesser
@@ -217,7 +216,7 @@ Command-line completion
 
 GMT provides basic command-line completion (tab completion) for bash.
 The easiest way to use the feature is to install the
-`bash-completion <http://bash-completion.alioth.debian.org/>`_ package
+`bash-completion <https://github.com/scop/bash-completion>`_ package
 which is available in many operating system distributions.
 
 Depending on the distribution, you may still need to source it from
@@ -405,7 +404,7 @@ these types of output:
    table output.
 
 GMT is available over the Internet at no charge. To obtain a copy,
-goto GMT home page http://gmt.soest.hawaii.edu/ and follow instructions.
+goto GMT home page https://www.generic-mapping-tools.org and follow instructions.
 We also maintain user forums and a bug and feature tracking system on
 the same page.
 
@@ -1962,8 +1961,10 @@ implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then also select the special column
-by requesting column **t**, otherwise we ignore trailing text.  Finally,
-to use the entire numerical record and ignoring trailing text, use **-in**.
+by requesting column **t**, otherwise we ignore trailing text.  If you only
+want to select one word from the trailing text, then append the word number
+(0 is the first word).  Finally, to use the entire numerical record and
+ignore trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1983,9 +1984,10 @@ to use the entire numerical record and ignoring trailing text, use **-in**.
    from the data themselves (such as when reading a binary file).  Finally, if
    a module needs to write out only a portion of the current logical record then
    you may use the corresponding **-o** option to select desired columns, including
-   the trailing text column **t**.  Note that these column numbers now refer to
-   the logical record, not the physical, since after reading the data there is no
-   physical record, only the logical record in memory.
+   the trailing text column **t**.  If you only want to output one word from the
+   trailing text, then append the word number (0 is the first word).  Note that
+   these column numbers now refer to the logical record, not the physical, since
+   after reading the data there is no physical record, only the logical record in memory.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2020,9 +2022,11 @@ You can also use a column more than once, e.g., **-o**\ 3,1,3, to
 duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
-numerical columns.  Note that if you wanted to scale or shift the output
-values you need to do so during reading, using the **-i** option.
-To output all numerical columns and ignoring trailing text, use **-on**.
+numerical columns.  If you only want to output one word from the trailing
+text, then append the word number (0 is the first word).  Note that if you 
+wanted to scale or shift the output values you need to do so during reading,
+using the **-i** option. To output all numerical columns and ignoring
+trailing text, use **-on**.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6021,19 +6025,17 @@ This package consists of the program
 global gravity and predicted topography solutions derived from satellite
 altimetry [23]_. The package is maintained by Walter Smith and Paul Wessel.
 
-meca: seismology and geodesy symbols
-------------------------------------
+geodesy: Geodesy
+----------------
 
 This package contains the programs
-:doc:`pscoupe <supplements/meca/pscoupe>`,
-:doc:`psmeca <supplements/meca/psmeca>`,
-:doc:`pspolar <supplements/meca/pspolar>`,
-:doc:`psvelo <supplements/meca/psvelo>`, and
-:doc:`pssac <supplements/meca/pssac>` which are used by seismologists
-and geodesists for plotting focal mechanisms (including cross-sections
-and polarities), error ellipses, velocity arrows, rotational wedges, and
-more. The package was developed by Kurt Feigl and Genevieve
-Patau with contributions from Dongdong Tian but is now maintained by the GMT team.
+:doc:`earthtide <supplements/geodesy/earthtide>` for computing solid Earth tides,
+:doc:`gpsgridder <supplements/geodesy/gpsgridder>` for gridding GPS velocity components, and
+:doc:`psvelo <supplements/geodesy/psvelo>` for plotting error ellipses, velocity arrows, and rotational wedges.
+The psvelo program was developed by Kurt Feigl and Genevieve
+Patau and is now maintained by the GMT team. The earthtide program is a translation to C of a
+program written by Dennis Milbert and distributed with his permission.
+
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
@@ -6072,8 +6074,21 @@ which uses the methods of Talwani to compute various geopotential components
 from 2-D [26]_ or 3-D [27]_ bodies.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
-segyprogs: plotting SEGY seismic data
--------------------------------------
+seis: Seismology
+----------------
+
+This package contains the programs
+:doc:`pscoupe <supplements/seis/pscoupe>`,
+:doc:`psmeca <supplements/seis/psmeca>`,
+:doc:`pspolar <supplements/seis/pspolar>`, and
+:doc:`pssac <supplements/seis/pssac>` which are used by seismologists
+for plotting focal mechanisms (including cross-sections
+and polarities) and SAC files.
+The pscoupe, psmeca, and pspolar were developed by Kurt Feigl and Genevieve
+Patau, while Dongdong Tian added pssac; the package is now maintained by the GMT team.
+
+segy: plotting SEGY seismic data
+--------------------------------
 
 This package contains programs to plot SEGY seismic data files using the
 GMT mapping transformations and postscript library.
@@ -6192,8 +6207,8 @@ used by Matlab or Octave). When these markers are used then no other
 segment header will be considered. Note that :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can
 be set differently for input and output.  Finally, if a segment represents
 a closed polygon that is a hole inside another polygon you indicate this
-with **-Ph**.  This setting will be read and processed if converting a
-file to the OGR format.
+by including **-Ph** in the segment header.  This setting will be read
+and processed if converting a file to the OGR format.
 
 Binary tables
 ~~~~~~~~~~~~~
@@ -6226,7 +6241,7 @@ Shapefiles
 
 GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
 with GDAL support.  By default, only the geographic coordinates are read.  To select
-some or all aspatial fields, see the :ref:`\ **-a** option <-aspatial_full>`
+some or all aspatial fields, see the :ref:`-a option <-aspatial_full>`.
 
 Grid files
 ----------
@@ -8192,7 +8207,7 @@ Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
 variable **$t** that must be declared with type **s** (string).  The string will be taken
 as all trialing text in your data record.  To select a single word from the trailing text
-you just use $k, where k starts at 1 for the first word, regardless of how many numerical
+you just use **$t**\ *k*, where *k* starts at 0 for the first word, regardless of how many numerical
 columns that precede it.  For each word you plan to use you must add a type **s** above.
 Words must be separated by one tab or space only.  To place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.

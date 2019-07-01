@@ -4,10 +4,11 @@
 env:
     global:
         - INSTALLDIR="$HOME/gmt-install-dir"
-        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
+        - COASTLINEDIR="$HOME/coastline"
         - PATH="$INSTALLDIR/bin:$PATH"
         - BUILD_DOCS=false
         - DEPLOY_DOCS=false
+        - PACKAGE=false
         - TEST=false
         - CCACHE_MAXSIZE=200M
         - CCACHE_COMPRESS=true
@@ -37,6 +38,7 @@ before_cache:
 branches:
     only:
         - master
+        - 6.0
         - 5.4
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
@@ -50,19 +52,20 @@ matrix:
         - name: "Linux (compile only)"
           os: linux
           if: type != cron
-        - name: "Linux (cron)"
+        - name: "Linux (cron - test)"
           os: linux
           if: type = cron
           env:
             - TEST="true"
         # Only build the docs on Linux cron jobs
-        - name: "Linux (cron - build docs)"
+        - name: "Linux (cron - build docs + package)"
           os: linux
           if: type = cron
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
             - HTML_BUILDDIR="build/doc/rst/html"
+            - PACKAGE=true
 
 # Setup the build environment
 before_install:
@@ -84,8 +87,6 @@ before_install:
         rsync -av /var/cache/apt/archives/*.deb ${DEB_CACHE}/
       fi
     - |-
-    - mkdir "$INSTALLDIR"
-    - mkdir "$COASTLINEDIR"
     - ci/download-coastlines.sh
     # Install GMT documentation dependencies
     - if [[ "$BUILD_DOCS" == "true" ]]; then
@@ -106,8 +107,11 @@ script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
     - gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    # Download remote files before testing, see #939.
     - if [[ "$TEST" == "true" ]]; then
-        ctest --force-new-ctest-process -j4;
+        curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc;
+        gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m;
+        ctest --output-on-failure --force-new-ctest-process -j4;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
@@ -129,13 +133,19 @@ script:
         cmake --build . --target docs_pdf;
         cmake --build . --target docs_pdf_shrink;
       fi
+    # Make source tarballs
+    - if [[ "$PACKAGE" == "true" ]]; then
+        cmake --build . --target gmt_release;
+        cmake --build . --target gmt_release_tar;
+        md5sum gmt-*.tar gmt-*.tar.gz gmt-*.tar.xz;
+      fi
     - set +e
     - cd ..
 
 # Things to do if the build is successful
 after_success:
     - if [ "$DEPLOY_DOCS" == "true" ]; then
-        git clone --branch=1.0.0 --depth=1 https://github.com/fatiando/continuous-integration.git;
+        git clone --branch=1.1.1 --depth=1 https://github.com/fatiando/continuous-integration.git;
       fi
 
 # Deploy build artifacts to external services

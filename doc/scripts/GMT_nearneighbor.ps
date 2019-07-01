@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.3_r14524 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jul 14 17:34:11 2015
+%%CreationDate: Thu Jun 27 12:16:19 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -660,31 +657,23 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/0/2 -Jx1i -P -K -Sc1i -Wthick -Glightgreen@70 -Bg0.25
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -R0/2/0/2 -Jx1i -Sc1i -Wthick -Glightgreen@70 -Bg0.25
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
+%GMTBoundingBox: 72 72 144 144
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-2400 0 D
-0 2400 D
--2400 0 D
-PSL_clip N
-17 W
-V
-{0.565 0.933 0.565 C 0.3 /Normal PSL_transp} FS
-O1
-600 900 1500 Sc
-U
-PSL_cliprestore
 25 W
 4 W
 0 0 M
@@ -764,6 +753,20 @@ N 0 0 M 2400 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -2400 T
 0 setlinecap
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
+17 W
+V
+{0.565 0.933 0.565 C 0.3 /Normal PSL_transp} FS
+O1
+600 900 1500 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -771,8 +774,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/0/2 -Jx1i -Sc0.05i -Gblack -O -K
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -Sc0.05i -Gblack -R0/2/0/2 -Jx1i
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -782,6 +785,7 @@ clipsave
 2400 0 D
 0 2400 D
 -2400 0 D
+P
 PSL_clip N
 4 W
 V
@@ -812,19 +816,27 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/0/2 -Jx1i -O -K -Wthinner
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -Wthinner -R0/2/0/2 -Jx1i
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
 300 1500 M
 1200 0 D
 S
 900 900 M
 0 1200 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -832,13 +844,20 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/0/2 -Jx1i -O -K -Wthinnest
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -Wthinnest -R0/2/0/2 -Jx1i
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
 900 1500 M
 -300 -420 D
 S
@@ -854,6 +873,7 @@ S
 900 1500 M
 300 -444 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -861,17 +881,25 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/0/2 -Jx1i -O -K -W0.5p,.-
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxy -W0.5p,.- -R0/2/0/2 -Jx1i
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
 [8 33 67 33] 0 B
+clipsave
+0 0 M
+2400 0 D
+0 2400 D
+-2400 0 D
+P
+PSL_clip N
 900 1500 M
 424 424 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -880,8 +908,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/2/0/2 -Jx1i -O -F+f8p,Helvetica-Oblique+jBL
-%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt pstext -F+f8p,Helvetica-Oblique+jBL -R0/2/0/2 -Jx1i
+%@PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -891,14 +919,19 @@ clipsave
 2400 0 D
 0 2400 D
 -2400 0 D
+P
 PSL_clip N
-1200 1680 M PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
-133 F2
-(R) Z
+PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
+1200 1680 M 133 F2
+(R) bl Z
 1200 1200 M (r) Z
 0 -33 G 93 F2 (i) Z
 0 33 G PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

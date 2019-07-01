@@ -3,7 +3,7 @@
 # the aspatial field NAME via the CPT to yield pen color 
 ps=categorical.ps
 # Get an OGR file from test cache and convert to shapefile
-gmt which -G @RidgeTest.gmt
+gmt which -Gl @RidgeTest.gmt
 ogr2ogr -f "ESRI Shapefile" RidgeTest.shp RidgeTest.gmt
 # Make a text-based categorical cpt file
 cat << EOF > ridge.cpt

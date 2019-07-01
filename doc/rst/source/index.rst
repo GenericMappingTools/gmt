@@ -69,21 +69,21 @@ Supplements (Modern Mode)
 | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |
-|    SUP_GSHHS    |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_IMGSRC   |    SUP_SPOTTER  |    SUP_X2SYS    |
-|    SUP_MECA     |                 |                 |
+|    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
+|    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
+|    SUP_IMG      |                 |    SUP_X2SYS    |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 
 Supplements (Classic Mode)
 ==========================
 
-+---------------------+----------------------+----------------------+
-| .. toctree::        | .. toctree::         | .. toctree::         |
-|    :maxdepth: 2     |    :maxdepth: 2      |    :maxdepth: 2      |
-|                     |                      |                      |
-|    SUP_MECA_classic |    SUP_MGD77_classic |    SUP_SEGY_classic  |
-+---------------------+----------------------+----------------------+
++-----------------------+----------------------+----------------------+------------------------+
+| .. toctree::          | .. toctree::         | .. toctree::         | .. toctree::           |
+|    :maxdepth: 2       |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
+|                       |                      |                      |                        |
+|    SUP_GEODESY_classic|    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_SEIS_classic    |
++-----------------------+----------------------+----------------------+------------------------+
 
 Gallery
 =======
@@ -97,25 +97,24 @@ Gallery
 |    Users_contrib_symbols   |
 +----------------------------+
 
-The CookBook
-============
+Documentations
+==============
 
-+-----------------+
-| .. toctree::    |
-|    :maxdepth: 2 |
-|                 |
-|    cookbook     |
-+-----------------+
+**Modern mode**
 
-The Tutorial
-============
+.. toctree::
+   :maxdepth: 1
 
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    tutorial        |
-+--------------------+
+   tutorial
+   cookbook
+
+**Classic mode**
+
+.. toctree::
+   :maxdepth: 1
+
+   tutorial_classic
+   cookbook_classic
 
 GMT Data Sets
 =============
@@ -140,32 +139,12 @@ The Software
 API Reference
 =============
 
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    api             |
-+--------------------+
+.. toctree::
+   :maxdepth: 1
 
-MATLAB Wrapper
-==============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    ml_wrapper      |
-+--------------------+
-
-Julia Wrapper
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    jl_wrapper      |
-+--------------------+
+   api
+   ml_wrapper
+   jl_wrapper
 
 .. Include an hidden page with option's examples that can be referenced by individual programs
 
