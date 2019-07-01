@@ -4771,7 +4771,7 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
  * that back as indicated above.  It cannot be any worse that it is. */
 
 GMT_LOCAL void mingw_undo_path_substitution (char *path) {
-	if (support_char_count (path, ':') == 2 && strlen (path) > 3) {
+	if (gmtlib_char_count (path, ':') == 2 && strlen (path) > 3) {
 		char c = tolower (path[2]);
 		path[2] = '/';
 		path[3] = c;

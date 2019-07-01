@@ -50,6 +50,7 @@ struct GMT_XINGS {
 
 EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
 
+EXTERN_MSC unsigned int gmtlib_char_count (char *txt, char c);
 EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);
 EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module);
 EXTERN_MSC const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module);
