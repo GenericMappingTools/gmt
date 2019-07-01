@@ -4775,6 +4775,8 @@ GMT_LOCAL void mingw_undo_path_substitution (char *path) {
 		char c = tolower (path[2]);
 		path[2] = '/';
 		path[3] = c;
+		if (!strncmp (path, &path[2], 2U))	/* Got X:X:/path, left-shift by 2 */
+			gmt_strlshift (path, 2U);
 	}
 }
 #endif
