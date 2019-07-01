@@ -4761,6 +4761,24 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 	return (GMT_OK);
 }
 
+#ifdef WIN32
+/* https://github.com/GenericMappingTools/gmt/issues/1035
+ * MinGW will replace a / with C: in hardwired paths on the command line.
+ * WHile this is insane to sane people, it isnt to the MinGW developers.
+ * Hence, we need a function to find this craziness and undo it.  We find
+ * that files such as C:/a/path/file is changed to C:A:/path/file.  Hence,
+ * we check if two colons appear in a path, and if so we try to revert
+ * that back as indicated above.  It cannot be any worse that it is. */
+
+GMT_LOCAL void mingw_undo_path_substitution (char *path) {
+	if (support_char_count (path, ':') == 2 && strlen (path) > 3) {
+		char c = tolower (path[2]);
+		path[2] = '/';
+		path[3] = c;
+	}
+}
+#endif
+
 /*! . */
 char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	/* stem is the name of the file, e.g., gmt.conf
@@ -4773,11 +4791,11 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	/* If a full path is given, we only look for that file directly */
 
 #ifdef WIN32
-	if (stem[0] == '/' || stem[1] == ':')
+	if (stem[0] == '/' || stem[1] == ':') {
+		mingw_undo_path_substitution (stem);
 #else
-	if (stem[0] == '/')
+	if (stem[0] == '/') {
 #endif
-	{
 		if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
 		return (NULL);	/* No file found, give up */
 	}
