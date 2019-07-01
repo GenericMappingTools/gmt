@@ -938,12 +938,30 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 	return ((e < 0) ? -1 : 0);
 }
 
+GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
+	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
+		char *word = NULL, *orig = strdup (txt), *trail = orig;
+		uint64_t col = 0;
+		while (col != GMT->common.o.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+			if (*word != '\0')	/* Skip empty strings */
+				col++;
+		}
+		if (word)	/* Only write word if not NULL */
+			fprintf (fp, "%s", word);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
+		fprintf (fp, "\n");
+	}
+	else	/* Output the whole enchilada */
+		fprintf (fp, "%s\n", txt);
+}
+
 /*! . */
 GMT_LOCAL int gmtio_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 
-	fprintf (fp, "%s\n", txt);
+	gmtio_output_trailing_text (GMT, fp, txt);
 	
 	return (0);
 }
@@ -975,7 +993,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 
 		wn += e;
 	}
-	fprintf (fp, "%s\n", txt);
+	gmtio_output_trailing_text (GMT, fp, txt);
 	
 	return ((e < 0) ? -1 : 0);
 }
@@ -3265,6 +3283,24 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	return (ret_val);
 }
 
+GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_of_text) {
+	if (GMT->common.i.word) {	/* Need to extract a specific column from the traiing text */
+		char *word = NULL, *orig = strdup (&GMT->current.io.curr_text[start_of_text]), *trail = orig;
+		uint64_t col = 0;
+		while (col != GMT->common.i.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+			if (*word != '\0')	/* Skip empty strings */
+				col++;
+		}
+		if (word)
+			strncpy (GMT->current.io.curr_trailing_text, word, GMT_BUFSIZ-1);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word read\n", GMT->common.i.w_col);
+		gmt_M_str_free (orig);
+	}
+	else	/* Get the whole enchilada */
+		strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
+}
+
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
@@ -3477,7 +3513,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (start_of_text < (GMT_BUFSIZ-1) && GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
-			strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
+			gmtio_extract_trailing_text (GMT, start_of_text);
 			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 		}
 
