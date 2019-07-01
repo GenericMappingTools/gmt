@@ -5682,8 +5682,13 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				}
 				done[level] = false;	/* Have not yet taken any action at this level */
 			}
-			else if (s->conditional == GMT_END_IF)	/* Simply reduce indent */
+			else if (s->conditional == GMT_END_IF) {	/* Simply reduce indent */
+				if (level == 0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting error\n", symbol->name);
+					GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_RUNTIME_ERROR;
+				}
 				level--;
+			}
 			else if (s->conditional == GMT_END_IF_ELSE)	/* else branch */
 				skip[level] = (!done[level] && skip[level] && !skip[level-1]) ? false : true;
 			else if (s->conditional == GMT_BEGIN_ELSEIF)	/* Skip if prior if/elseif was true, otherwise evaluate test at this level */
