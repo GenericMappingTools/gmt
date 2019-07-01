@@ -209,6 +209,13 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
+.. _-i:
+
+**-it**\ *word*
+    In this module, **-it** can be used to select a specific word from the
+    trailing text [Default is the entire trailing text].  The *word* indicates
+    the word order, with the first word begin 0.  No numerical columns can be specified.
+
 .. include:: explain_colon.rst_
 
 .. |Add_perspective| replace:: (Not implemented for paragraph mode). 

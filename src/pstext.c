@@ -275,10 +275,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|t|z[<fmt>]][+w<word>][+j[<justify>]]] [-G<color>|c|C] %s\n", API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|t|z[<fmt>]][+j[<justify>]]] [-G<color>|c|C] %s\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] %s%s[-Q<case>] [%s] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [-it<word>]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
@@ -336,7 +336,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +w<word> will use word number <word> in the text as the label [all the text].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (but see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
@@ -359,7 +358,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
-	GMT_Option (API, "a,c,e,f,h,p,t");
+	GMT_Option (API, "a,c,e,f,h");
+	GMT_Message (API, GMT_TIME_NONE, "\t-i Append t<word> to use word number <word> (0 is first) in the text as the label [all the text].\n");
+	GMT_Option (API, "p,t");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting text with variable transparency read from file, give no value.\n");
 	GMT_Option (API, ":,.");
 
@@ -434,7 +435,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				Ctrl->F.active = true;
 				pos = 0;;
 
-				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtwz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
+				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
 					switch (p[0]) {
 							/* A|a, f, j may be read from input */
 						case 'A':	/* orientation. Deliberate fall-through to next case */
@@ -482,7 +483,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -490,7 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'h':	/* Segment header request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -498,7 +499,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'r':	/* Record number */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else if (p[1])
@@ -507,32 +508,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 't':	/* Use specified text string */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
 								Ctrl->F.text = strdup (&p[1]);
 							Ctrl->F.get_text = GET_CMD_TEXT;
 							break;
-						case 'w':	/* Get a single word from trailing text */
-							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
-								n_errors++;
-							}
-							else {	/* Want a specific word in the text */
-								Ctrl->F.word = true;
-								Ctrl->F.w_col = atoi (&p[1]);
-								if (Ctrl->F.w_col < 0) {
-									GMT_Report (API, GMT_MSG_NORMAL, "Error -F+w<word>: Must select <word> from 0 (first) to nwords-1.\n");
-									n_errors++;
-								}
-								else
-									Ctrl->F.w_col++;	/* So 0th word is 1 */
-							}
-							break;
 						case 'z':	/* z-column formatted */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +w, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -612,6 +597,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 					Ctrl->Z.active = true;
 				break;
 
+			case 'i':	/* Local -i option for pstext to select a specific word in the text */
+				if (opt->arg[0] != 't') {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -i: Must give -it<word> from 0 (first) to nwords-1.\n");
+					n_errors++;
+				}
+				else {
+					Ctrl->F.word = true;
+					Ctrl->F.w_col = atoi (&opt->arg[1]);
+					if (Ctrl->F.w_col < 0) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Error -it<word>: Must select <word> from 0 (first) to nwords-1.\n");
+						n_errors++;
+					}
+					else
+						Ctrl->F.w_col++;	/* So 0th word is 1 */
+				}
+				break;
+			
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
