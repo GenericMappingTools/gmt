@@ -933,6 +933,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GDALDestroyDriverManager();
+			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
 		xOrigin = anSrcWin[0];
