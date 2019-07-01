@@ -214,7 +214,7 @@ Optional Arguments
 **-it**\ *word*
     In this module, **-it** can be used to select a specific word from the
     trailing text [Default is the entire trailing text].  The *word* indicates
-    the word order, with the first word begin 0.  No numerical columns can be specified.
+    the word order, with the first word being 0.  No numerical columns can be specified.
 
 .. include:: explain_colon.rst_
 
