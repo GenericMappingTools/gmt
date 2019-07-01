@@ -9287,6 +9287,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				strncpy (GMT->current.setting.io_col_separator, ",", 8U);
 			else if (!strcmp (lower_value, "none"))
 				GMT->current.setting.io_col_separator[0] = 0;
+#ifdef WIN32
+			/* Fix crazy MinGW obsession of replacing / with C:/somepath... [https://github.com/GenericMappingTools/gmt/issues/1054] */
+			else if (strlen (lower_value) > 1 && lower_value[1] == ':')
+				strncpy (GMT->current.setting.io_col_separator, "/", 8U);
+#endif
 			else
 				strncpy (GMT->current.setting.io_col_separator, value, 8U);
 			GMT->current.setting.io_col_separator[7] = 0;	/* Just a precaution */
