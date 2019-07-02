@@ -427,7 +427,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					default:
