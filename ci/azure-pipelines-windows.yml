@@ -86,6 +86,9 @@ steps:
     # Download remote files before testing, see #939.
     curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+    # disable MinGW's path conversion, see #1035.
+    export MSYS_NO_PATHCONV=1
+    # run all jobs, timeout in 240 s
     ctest --output-on-failure --force-new-ctest-process -j4 --timeout 240
     # rerun some failed jobs
     ctest --output-on-failure --force-new-ctest-process --rerun-failed -j4 --timeout 360
