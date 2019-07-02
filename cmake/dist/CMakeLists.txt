@@ -65,8 +65,8 @@ set (CPACK_COMPONENT_GSHHG_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_DCW_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GDALDATA_INSTALL_TYPES Full)
 
-# One package per COMPONENT:
-set(CPACK_COMPONENTS_GROUPING "IGNORE")
+# Creates a single package with all (requested) components
+set (CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 
 # Enable component install for archive generators:
 set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
