@@ -44,7 +44,7 @@ md5 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 rm -f ../cmake/ConfigUser.cmake
 if [ -f ../cmake/ConfigUser.cmake.orig ]; then
-	mv ../cmake/ConfigUser.cmake.orig cmake/ConfigUser.cmake
+	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
 fi
 # 10. Put the products on my ftp site
 #scp gmt-${Version}-darwin-x86_64.dmg gmt-${Version}-src.tar.* ftp:/export/ftp1/ftp/pub/pwessel/release
