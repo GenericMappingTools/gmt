@@ -35,11 +35,9 @@ rm -f gmt-${Version}${tag}-src.tar
 cmake --build . --target install
 # 6. Build the macOS Bundle
 cpack -G Bundle
-# 7. Rename bundle to match standard package prefix
-mv GMT-${Version}${tag}-Darwin.dmg gmt-${Version}${tag}-darwin-x86_64.dmg
-# 8. Report m5d hash
+# 7. Report m5d hash
 md5 gmt-${Version}${tag}-*
-# 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
+# 8. Replace temporary ConfigReleaseBuild.cmake file with the original file
 rm -f ../cmake/ConfigUser.cmake
 if [ -f ../cmake/ConfigUser.cmake.orig ]; then
 	mv ../cmake/ConfigUser.cmake.orig cmake/ConfigUser.cmake
