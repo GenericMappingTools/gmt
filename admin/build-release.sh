@@ -25,7 +25,7 @@ cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
 rm -rf build
 mkdir build
 cd build
-cmake -G Ninja -DGMT_PACKAGE_VERSION_SUFFIX=${tag} -DGMT_PUBLIC_RELEASE=TRUE ..
+cmake -G Ninja ..
 # 3. Build the release and the tar balls
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
