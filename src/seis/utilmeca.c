@@ -127,7 +127,7 @@ static double proj_radius(double str1, double dip1, double str) {
 /***********************************************************************************************************/
 double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline) {
 	/* Draw beachball for double couples
-	   By Genevieve Patau 
+	   By Genevieve Patau
 	*/
 
 	double x[1000], y[1000];
@@ -628,6 +628,8 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		return (radius_size*2.);
 	}
 
+	if (plot_zerotrace) vi = 0.;
+
 	/* Test to choose the dominant eigenvalue after Frohlich for plotting purposes
 	   by DS Dreger
 	*/
@@ -661,8 +663,6 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		fprintf (stderr, "Warning: bigisotest failed for record %d, please report the issue to us! \n", recno);
 		return -1;
 	}
-
-	if (plot_zerotrace) vi = 0.;
 
 	f = - v[1] / v[d];
 	iso = vi / v[d];
