@@ -34,45 +34,12 @@ endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpack_package_description.txt")
 
-if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
-	# A license with an accept button will only be displayed if
-	# GMT_BUNDLE_ACCEPT_BUTTON is set.
-	set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
-
-	# Read GPL and LGPL license files
-	file(READ ${COPYING_GPL} _license_gpl)
-	file(READ ${COPYING_LGPL} _license_lgpl)
-
-	set (_license_extra)
-	if (NOT LICENSE_RESTRICTED)
-		# Read extra license files
-		foreach (_license_file ${GMT_EXTRA_LICENSE_FILES})
-			file(READ ${_license_file} _license_string)
-			set (_license_extra
-				"${_license_extra}\n---------------------------------------------------------------------------\n\n${_license_string}")
-		endforeach (_license_file ${GMT_EXTRA_LICENSE_FILES})
-
-		# Copy combined license template
-		execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-			${CMAKE_CURRENT_SOURCE_DIR}/COPYING.RESTRICTED.template
-			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-	else (NOT LICENSE_RESTRICTED)
-		# Clear contents of license file if it exists
-		execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f
-			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-	endif (NOT LICENSE_RESTRICTED)
-
-	# Append GPL, LGPL, and licenses from GMT_EXTRA_LICENSE_FILES
-	set (_license_combined "${_license_gpl}")
-	if (NOT LICENSE_RESTRICTED STREQUAL GPL)
-		set (_license_combined
-			"${_license_combined}\n---------------------------------------------------------------------------\n\n${_license_lgpl}")
-	endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
-	set (_license_combined "${_license_combined}\n${_license_extra}")
-
-	# Append to COPYING.COMBINED or create new combined license file
-	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
-endif (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
+if (WIN32)
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+endif (WIN32)
+if (APPLE)
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-x86_64")
+endif (APPLE)
 
 # Install components:
 set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG GDALDATA)
@@ -98,8 +65,8 @@ set (CPACK_COMPONENT_GSHHG_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_DCW_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GDALDATA_INSTALL_TYPES Full)
 
-# One package per COMPONENT:
-set(CPACK_COMPONENTS_GROUPING "IGNORE")
+# Creates a single package with all (requested) components
+set (CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 
 # Enable component install for archive generators:
 set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
