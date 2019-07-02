@@ -34,6 +34,13 @@ endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpack_package_description.txt")
 
+if (WIN32)
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+endif (WIN32)
+if (APPLE)
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-x86_64")
+endif (APPLE)
+
 if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 	# A license with an accept button will only be displayed if
 	# GMT_BUNDLE_ACCEPT_BUTTON is set.
