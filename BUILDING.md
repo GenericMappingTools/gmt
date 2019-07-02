@@ -434,8 +434,8 @@ cmake --build . --target gmt_release_tar  # create tarballs (in tar.gz and tar.x
 
 ## Packaging
 
-Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2),
-Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install
+Currently, packaging with CPack works on macOS (Bundle),
+Windows (NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install
 [NSIS](http://nsis.sourceforge.net/). After building GMT and the documentation,
 build and place the executables, including the supplements, with
 
@@ -447,7 +447,7 @@ and then create the package with either one of these:
 
 ```
 cmake --build . --target package
-cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
+cpack -G <TGZ|TBZ2|Bundle|NSIS>
 ```
 
 ## Updating the development source codes
