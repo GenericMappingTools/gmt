@@ -91,11 +91,19 @@ steps:
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
     # run all jobs, timeout in 240 s
-    ctest --output-on-failure --force-new-ctest-process -j4 --timeout 240
+    ctest -T test --output-on-failure --force-new-ctest-process -j4 --timeout 240
     # rerun some failed jobs
-    ctest --output-on-failure --force-new-ctest-process --rerun-failed -j4 --timeout 360
+    ctest -T test --output-on-failure --force-new-ctest-process --rerun-failed -j4 --timeout 360
   displayName: Full tests
   condition: eq(variables['TEST'], true)
+
+# Publish Test Results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'cTest'
+    testResultsFiles: 'build/Testing/*/Test.xml'
+  condition: eq(variables['TEST'], true)
+  displayName: Publish test results
 
 - bash: |
     set -x -e
