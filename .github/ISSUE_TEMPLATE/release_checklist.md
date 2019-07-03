@@ -42,7 +42,7 @@ assignees: ''
 
 - [ ] create branch 6.x for bug-fixes if this is a minor release (i.e. create branch 6.1 after 6.1.0 is released)
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] set `GMT_PUBLIC_RELEASE` to `FALSE`
+- [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
 - [ ] commit changes to GitHub
 
 **3rd-party update**
