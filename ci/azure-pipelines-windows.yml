@@ -90,11 +90,10 @@ steps:
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
-    # run all jobs, timeout in 240 s
-    ctest -T test --output-on-failure --force-new-ctest-process -j4 --timeout 240
-    # rerun some failed jobs
-    ctest -T test --output-on-failure --force-new-ctest-process --rerun-failed -j4 --timeout 360
+    # run all jobs and rerun if failed
+    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
+  env: {"CTEST_ARGS": "-T test --output-on-failure --force-new-ctest-process -j4 --timeout 360"}
   condition: eq(variables['TEST'], true)
 
 # Publish Test Results
