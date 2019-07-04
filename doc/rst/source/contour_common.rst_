@@ -38,7 +38,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**-**\ \|\*contours*][*labelinfo*]
+**-A**\ [**-**\ \|\ *contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
     contour levels are given in a file vua **-C**. [Default is no annotations]. Prepend
     **-** to disable all annotations implied by **-C**. To just select a few specific

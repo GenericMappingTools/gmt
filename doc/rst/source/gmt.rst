@@ -55,7 +55,16 @@ or the session ends.  The *prefix* is used to build final figure names when exte
 are automatically appended. The *format* setting is a comma-separated list of desired
 extensions (e.g., pdf,png). 
 
-**gmt end**
+**gmt insert** [*arguments*]
+
+Allows users to place a map inset by temporarily changing where plotting takes place
+as well as the region and projection, then resets to previous stage.
+
+**gmt subset** [*arguments*]
+
+Allows users to create a matrix of panels with automatic labeling and advancement.
+
+**gmt end** [**show**]
 
 Terminates a GMT modern mode session and automatically converts the registered
 illustration(s) to the specified formats, then eliminates the temporary work
