@@ -1,32 +1,30 @@
-# Template for macOS steps in Azure Pipelines
+# Template for Linux steps in Azure Pipelines
 
 steps:
 
 - bash: |
     set -x -e
-    brew update
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
+    sudo apt-get update
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
+        libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl
   displayName: Install dependencies
 
 - bash: |
     set -x -e
-    brew install graphicsmagick || true
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        graphicsmagick gdal-bin
   displayName: Install dependencies for running tests
   condition: eq(variables['TEST'], true)
 
 - bash: |
     set -x -e
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        python3-pip python3-setuptools python3-wheel
     pip3 install --user sphinx
-    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
+    echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    set -x -e
-    # we need the GNU tar
-    brew install gnu-tar md5sha1sum
-  displayName: Install dependencies for packaging
-  condition: eq(variables['PACKAGE'], true)
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
   displayName: Set install location
@@ -58,7 +56,7 @@ steps:
     # Download remote files before testing, see #939.
     curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
-    # run all jobs and rerun if failed
+    # run all jobs, and rerun failed jobs
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
   env: {"CTEST_ARGS": "--output-on-failure --force-new-ctest-process -j4 --timeout 360"}
@@ -73,7 +71,7 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: BuildDirectory-macOS
+    artifactName: BuildDirectory-Linux
   displayName: Publish build directory
   condition: failed()
 
@@ -100,7 +98,6 @@ steps:
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
-    cpack -G Bundle
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
+    md5sum gmt-*.tar.gz gmt-*.tar.xz
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
