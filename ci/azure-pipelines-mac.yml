@@ -66,6 +66,7 @@ steps:
   inputs:
     testResultsFormat: 'cTest'
     testResultsFiles: 'build/Testing/*/Test.xml'
+    publishRunAttachments: true
   condition: eq(variables['TEST'], true)
   displayName: Publish test results
 
