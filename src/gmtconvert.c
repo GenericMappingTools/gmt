@@ -130,7 +130,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][:<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][/<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -339,14 +339,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				if ((c = strchr (opt->arg, ':'))) {	/* Got [<first>]:[<last>] */
-					if (opt->arg[0] == ':') /* No first given, default to 0 */
+				if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
+					char div = c[0];	/* Either : or / */
+					if (opt->arg[0] == div) /* No first given, default to 0 */
 						Ctrl->Z.last = atol (&opt->arg[1]);
 					else { /* Gave first, and maybe last */
 						c[0] = '\0';	/* Chop off last */
 						Ctrl->Z.first = atol (opt->arg);
 						Ctrl->Z.last = (c[1]) ? (int64_t)atol (&c[1]) : INTMAX_MAX;	/* Last record if not given */
-						c[0] = ':';	/* Restore */
+						c[0] = div;	/* Restore */
 					}
 				}
 				else /* No colon means first is 0 and given value is last */

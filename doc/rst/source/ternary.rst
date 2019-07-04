@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt ternary** [ *table* ]
-[ **-JX** \ *width*\ [unit] ]
+[ **-JX**\ *width*\ [unit] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
