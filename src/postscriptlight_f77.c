@@ -64,7 +64,7 @@
  * PSL_setdefaults	: Change several PSL session default values
  * PSL_setdash		: Specify pattern for dashed line
  * PSL_setfill		: Sets the fill color or pattern
- * PSL_setfont		: Changes current font and possibly reencodes it to current encoding
+ * PSL_setfont		: Changes current font and possibly re-encodes it to current encoding
  * PSL_setformat	: Changes # of decimals used in color and gray specs [3]
  * PSL_setlinecap	: Changes the line cap setting
  * PSL_setlinejoin	: Changes the line join setting
