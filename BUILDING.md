@@ -39,7 +39,7 @@ To build GMT, you must install:
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
-Optionally install for more capabilities within GMT:
+Optionally install these for more capabilities within GMT:
 
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
@@ -52,13 +52,17 @@ For movie-making capabilities these executables are needed:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
+For viewing plots and documentation under Linux via gmt docs, your need xdg-open:
+
+- xdg-open (Unified open for a variety of files)
+
 Optionally install for building GMT documentations and running tests:
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage, HTML and PDF documentation)
 - [TeXLive](https://www.tug.org/texlive/) (for building the PDF documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
-You also need download support data:
+You also need to download support data:
 
 - [GSHHG](https://www.soest.hawaii.edu/pwessel/gshhg/): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
 - [DCW-GMT](https://www.soest.hawaii.edu/pwessel/dcw/): The Digital Chart of the World (optional, >=1.0.5)
@@ -78,6 +82,9 @@ Install the GMT dependencies with:
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
+
+    # to enable document viewing via gmt docs
+    sudo apt-get install xdg-utils
 
     # to enable testing
     sudo apt-get install graphicsmagick
@@ -108,6 +115,9 @@ You then can install the GMT dependencies with:
     sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
+    # to enable document viewing via gmt docs
+    sudo yum install xdg-utils
+
     # to enable testing
     sudo yum install GraphicsMagick
 
@@ -133,6 +143,9 @@ Install the GMT dependencies with:
     sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
     sudo dnf install GraphicsMagick ffmpeg
 
+    # to enable document viewing via gmt docs
+    sudo dnf install xdg-utils
+
     # to enable testing
     sudo dnf install GraphicsMagick
 
@@ -156,6 +169,9 @@ Install the gmt dependencies with:
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
 
+    # to enable document viewing via gmt docs
+    sudo pacman -S xdg-utils
+
     # to enable testing
     sudo pacman -S graphicsmagick
 
@@ -175,6 +191,9 @@ Install the gmt dependencies with:
 
     # to enable movie-making
     sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
+
+    # to enable document viewing via gmt docs
+    sudo pkg install xdg-utils
 
     # to enable testing
     sudo pkg install graphics/GraphicsMagick
@@ -265,9 +284,9 @@ GMT can be built on any platform supported by CMake. CMake is a cross-platform,
 open-source system for managing the build process. The building process is
 controlled by two configuration files in the `cmake` directory:
 
--   *ConfigDefault.cmake*: is version controlled and used to add new default
+-   *ConfigDefault.cmake* is version controlled and used to add new default
     variables and set defaults for everyone. **You should NOT edit this file.**
--   *ConfigUser.cmake*: is not version controlled and used to override defaults
+-   *ConfigUser.cmake* is not version controlled and used to override defaults
     on a per-user basis.
     There is a template file, *ConfigUserTemplate.cmake*, that you should copy
     to *ConfigUser.cmake* and make your changes therein.
@@ -300,7 +319,7 @@ set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMA
 See the additional comments in `cmake/ConfigUserTemplate.cmake` for more details.
 
 Now that you made your configuration choices, it is time for invoking CMake.
-To keep separately generated files from binary tree and source files from source tree,
+To keep generated files separate from source files in the source tree,
 you should create a build directory in the top-level directory,
 where the build files will be generated, and change into your build directory:
 
@@ -310,7 +329,7 @@ cd build
 cmake ..
 ```
 
-For Windows users, you need open a command prompt and run:
+For Windows users, you need to open a command prompt and run:
 
 ```
 mkdir build

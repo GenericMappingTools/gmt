@@ -1,7 +1,7 @@
 # The Founders
 
 GMT was conceived and designed in the late 1980s and early 1990s
-by [Paul Wessel](http://www.soest.hawaii.edu/pwessel/), and
+by [Paul Wessel](http://www.soest.hawaii.edu/pwessel/) and
 [Walter H.F. Smith](https://www.star.nesdis.noaa.gov/star/Smith_WHF.php).
 The two founders built and maintained GMT from version 1 through 3.
 
@@ -24,7 +24,7 @@ contributed the segy supplement, while
 [Kurt Feigl](http://geoscience.wisc.edu/geoscience/people/faculty/feigl/) and
 Genevieve Patau wrote the seis supplement.
 [Dennis Milbert](https://geodesyworld.github.io) donated the Fortran code that
-was translated to become earthtide.c 
+was translated to become earthtide.c.
 [David Sandwell](https://topex.ucsd.edu/sandwell/) contributed the img supplement.
 
 # Further Acknowledgments
