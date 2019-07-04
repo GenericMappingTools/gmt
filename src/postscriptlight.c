@@ -75,7 +75,7 @@
  * PSL_setdefaults	   : Change several PSL session default values
  * PSL_setdash		   : Specify pattern for dashed line
  * PSL_setfill		   : Sets the fill color or pattern
- * PSL_setfont		   : Changes current font and possibly reencodes it to current encoding
+ * PSL_setfont		   : Changes current font and possibly re-encodes it to current encoding
  * PSL_setformat	   : Changes # of decimals used in color and gray specs [3]
  * PSL_setlinecap	   : Changes the line cap setting
  * PSL_setlinejoin	   : Changes the line join setting
@@ -1465,7 +1465,7 @@ static int psl_putfont (struct PSL_CTRL *PSL, double fontsize) {
 
 static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	if (PSL->init.encoding == NULL) return (PSL_NO_ERROR);		/* Already have StandardEncoding by default */
-	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already reencoded or should not be reencoded ever */
+	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already re-encoded or should not be re-encoded ever */
 
 	/* Re-encode fonts with Standard+ or ISOLatin1[+] encodings */
 	PSL_command (PSL, "PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);

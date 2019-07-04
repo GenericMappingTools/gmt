@@ -1032,7 +1032,7 @@ static char *PSL_prologue_str =
 "% Translate and memorize advance\n"
 "/PSL_xorig 0 def /PSL_yorig 0 def\n"
 "/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!\n"
-"% To reencode one font with the provided encoding vector\n"
+"% To re-encode one font with the provided encoding vector\n"
 "/PSL_reencode {findfont dup length dict begin\n"
 "  {1 index /FID ne {def}{pop pop} ifelse} forall\n"
 "  exch /Encoding edef currentdict end definefont pop\n"
