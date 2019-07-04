@@ -414,6 +414,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					if (c) c[0] = '\0';	/* Chop off modifiers for now */
 					if (strchr (opt->arg, ',')) {	/* Gave separate widths and heights */
 						char *ytxt = strchr (opt->arg, '/');	/* Find the slash */
+						if (ytxt == NULL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Fs requires heights and rows separated by a slash.\n");
+							return GMT_PARSE_ERROR;
+						}
 						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];

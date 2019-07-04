@@ -32,7 +32,6 @@ Synopsis
 [ |-Q| ]
 [ |-S|\ *fill*\ \|\ **c** ]
 [ |-T|\ *rose* ]
-[ |-T|\ *mag_rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*level*/]\ *pen* ]

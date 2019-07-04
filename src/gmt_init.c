@@ -12552,23 +12552,25 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (opt_J) got_J = true;
 		}
 
-		/* Check if a subplot operation is in effect and if there is a current panel already */
-		subplot_status = gmtinit_subplot_status (API, fig);
+		if (GMT->current.ps.active) {	/* Only explore -c settings, etc for plot modules */
+			/* Check if a subplot operation is in effect and if there is a current panel already */
+			subplot_status = gmtinit_subplot_status (API, fig);
 
-		if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
-			unsigned int row = 0, col = 0;
-			if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-				if (opt->arg[0])	/* Gave an argument so presumably this is our row,col */
-					sscanf (opt->arg, "%d,%d", &row, &col);
-				else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
-					if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
+				unsigned int row = 0, col = 0;
+				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
+					if (opt->arg[0])	/* Gave an argument so presumably this is our row,col */
+						sscanf (opt->arg, "%d,%d", &row, &col);
+					else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
+						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+					}
+					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;	/* Make this the current panel */
+					if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
 				}
-				if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;	/* Make this the current panel */
-				if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
-			}
-			else if (subplot_status & GMTINIT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
-				if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
-				if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
+				else if (subplot_status & GMTINIT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
+					if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
+				}
 			}
 		}
 

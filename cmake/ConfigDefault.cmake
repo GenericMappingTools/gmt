@@ -42,7 +42,7 @@ set (GMT_PACKAGE_VERSION_MAJOR 6)
 set (GMT_PACKAGE_VERSION_MINOR 1)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
-#set (GMT_PACKAGE_VERSION_SUFFIX "rc2")
+#set (GMT_PACKAGE_VERSION_SUFFIX "rc3")
 
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.

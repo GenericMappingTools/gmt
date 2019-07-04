@@ -90,7 +90,7 @@ bounding coordinates of rectangular regions that would cover these NaN areas, tr
 
    ::
 
-    gmt grdfill data.grd -L > west_listing.txt
+    gmt grdfill data.grd -L > wesn_listing.txt
 
 To identify the same areas but this time write a multisegment file with polygons
 corresponding to the rectangular subregions, use

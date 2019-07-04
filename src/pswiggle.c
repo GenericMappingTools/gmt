@@ -335,7 +335,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					}
 					c[0] = '\0';	/* Chop off all modifiers */
 				}
-				else if (gmt_M_compat_check (GMT, 5)) {	/* Allow old syntax -G+|-|=<fill> */
+				else if (strchr ("-+=", opt->arg[0])) {	/* Allow old syntax -G+|-|=<fill> */
 					switch (opt->arg[0]) {
 						case '=': j = 1, pos = neg = true; break;
 						case '+': j = 1, pos = true; 	   break;

@@ -876,7 +876,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *mvfile[3] = {"mv -f", "mv -rf", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	char var_token[4] = "$$%", path_sep[4] = "::;";
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
-	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
+	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
 #ifdef _WIN32
@@ -958,7 +958,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			else pclose (fp);
+			else if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+				gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+				sscanf (line, "%*s %s %*s", version);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GraphicsMagick %s found.\n", version);
+			}
+			pclose (fp);
 		}
 		else if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
 			sprintf (cmd, "ffmpeg -version");
@@ -968,10 +973,15 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else {	/* OK, but check if width is odd or even */
-				pclose (fp);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+					gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+					sscanf (line, "%*s %*s %s %*s", version);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "FFmpeg %s found.\n", version);
+				}
 				if (p_width % 2)	/* Don't like odd pixel widths */
 					GMT_Report (API, GMT_MSG_NORMAL, "Your frame width is an odd number of pixels (%u). This may not work with ffmpeg...\n", p_width);
 			}
+			pclose (fp);
 		}
 	}
 	

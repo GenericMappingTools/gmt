@@ -54,6 +54,11 @@ struct PSLEGEND_CTRL {
 		bool active;
 		char *file;
 	} S;
+#ifdef DEBUG
+	struct PSLEGND_DEBUG {	/* -; */
+		bool active;
+	} DBG;
+#endif
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -254,6 +259,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					n_errors++;
 				}
 				break;
+
+#ifdef DEBUG
+			case '+':	/* Dump temp files */
+				Ctrl->DBG.active = true;
+				break;
+#endif
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -1170,6 +1181,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						flush_paragraph = true;
 						column_number = 0;
 						drawn = true;
+						krow[PAR] = 0;	/* Start fresh with new segment */
 						break;
 
 					case 'S':	/* Symbol record: S [dx1 symbol size fill pen [ dx2 text ]] */
@@ -1471,6 +1483,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 							}
 							n_para++;
+							krow[PAR] = 0;	/* Start fresh with new segment */
 						}
 						if ((S[PAR] = get_segment (D, PAR, n_para)) == NULL)	/* Get/Allocate this paragraph segment */
 							S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, n_par_lines, 0U, NULL, NULL);
@@ -1554,6 +1567,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_front.txt", D[FRONT]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 		D[FRONT]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[QLINE]) {
@@ -1570,6 +1590,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_qline.txt", D[QLINE]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 		D[QLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[SYM]) {
@@ -1587,6 +1614,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, "dump_sym.txt", D[SYM]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 		D[SYM]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[TXT]) {
@@ -1603,6 +1637,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "dump_txt.txt", D[TXT]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = GMT_SMALL_CHUNK;	/* To free what we allocated */
 	}
 	if (D[PAR]) {
@@ -1623,6 +1664,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IO_RESET, NULL, "dump_par.txt", D[PAR]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 	}
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */

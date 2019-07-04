@@ -766,8 +766,14 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 				return NULL;
 			}
 			/* Set up virtual files for both input and output perimeter points */
-			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, Din, input);
-			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, output);
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, Din, input) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable opening virtual file for reading.\n");
+				return NULL;
+			}
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, output) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable opening virtual file for writing.\n");
+				return NULL;
+			}
 			/* Call gmt select and return coordinates on land */
 			snprintf (cmd, GMT_LEN128, "-Ns/k -Df %s ->%s", input, output);
 			if (GMT_Call_Module (API, "select", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Failure */

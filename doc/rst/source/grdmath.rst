@@ -87,7 +87,7 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    By default any derivatives calculated are in z_units/ x(or
+    By default any derivatives calculated are in z_units/x(or
     y)\_units. However, the user may choose this option to convert dx,dy
     in degrees of longitude,latitude into meters using a flat Earth
     approximation, so that gradients are in z_units/meter.
