@@ -450,7 +450,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +lXY (or +l\"low,high\") to place X and Y (or low and high) at the center\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of local lows and highs.  If no labels are given we default to - and +.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we use the as L and H.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we place them at local lows and highs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
