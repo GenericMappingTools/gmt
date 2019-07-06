@@ -1395,8 +1395,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[n_contours].do_tick = (Ctrl->T.active && (cont[n_contours].type == 'C' || cont[n_contours].type == 'A')) ? 1 : 0;
 			cont[n_contours].angle = (got == 3) ? tmp : GMT->session.d_NaN;
 			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
-			if (got == 4) {
-				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {
+			if (got == 4) {	/* Also got a pen specification for this contour */
+				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {	/* Bad pen syntax */
 					gmt_pen_syntax (GMT, 'C', " ", 0);
 					Return (GMT_RUNTIME_ERROR);
 				}
