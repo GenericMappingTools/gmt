@@ -534,7 +534,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Q);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (C->n_segments > 1 && C->n_records == 0 || C->table[0]->segment[0]->text == NULL) {
+		if (C->n_segments > 1 || C->n_records == 0 || C->table[0]->segment[0]->text == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Contour file has more than one segment, no records at all, or no text\n");
 			gmt_M_free (GMT, Q);
 			Return (GMT_RUNTIME_ERROR);
