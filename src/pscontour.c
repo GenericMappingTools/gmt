@@ -803,7 +803,7 @@ int GMT_contour (void *V_API, int mode, void *args) {
 int GMT_pscontour (void *V_API, int mode, void *args) {
 	int add, error = 0;
 	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed;
-	bool use_contour = true, skip_points, skip_triangles, individual_pens = false;
+	bool use_contour = true, skip_points, skip_triangles;
 	
 	unsigned int pscontour_sum, m, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
 	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
@@ -1147,7 +1147,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					gmt_pen_syntax (GMT, 'C', " ", 0);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				individual_pens = cont[c].penset = true;
+				cont[c].penset = true;
 			}
 			cont[c].do_tick = Ctrl->T.active;
 			c++;
@@ -1477,7 +1477,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 
-			if (individual_pens && cont[c].penset)
+			if (cont[c].penset)
 				Ctrl->contour.line_pen = cont[c].pen;		/* Load contour-specific pen into contour structure */
 			else
 				Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */

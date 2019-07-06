@@ -974,7 +974,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false;
-	bool use_contour = true, use_t_offset = false, mem_G = false, individual_pens = false;
+	bool use_contour = true, use_t_offset = false, mem_G = false;
 
 	enum grdcontour_contour_type closed;
 
@@ -1400,7 +1400,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					gmt_pen_syntax (GMT, 'C', " ", 0);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				individual_pens = cont[n_contours].penset = true;
+				cont[n_contours].penset = true;
 			}
 			
 			n_contours++;
@@ -1581,7 +1581,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 
-		if (individual_pens && cont[c].penset)
+		if (cont[c].penset)
 			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
 		else
 			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
