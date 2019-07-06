@@ -135,8 +135,9 @@ struct SAVE {
 struct PSCONTOURGRD {
 	double val;
 	double angle;
-	bool do_tick;
+	bool do_tick, penset;
 	char type;
+	struct GMT_PEN pen;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -204,7 +205,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Comma-separated contours (for single contour append comma to be seen as list).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3 and optionally a pen on col 4].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4. Name of a CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
@@ -973,7 +974,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false;
-	bool use_contour = true, use_t_offset = false, mem_G = false;
+	bool use_contour = true, use_t_offset = false, mem_G = false, individual_pens = false;
 
 	enum grdcontour_contour_type closed;
 
@@ -1350,9 +1351,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
 	}
-	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
+	else if (Ctrl->C.file) {	/* Read contour info from file with cval C|A [angle [pen]] records */
 		struct GMT_RECORD *In = NULL;
 		int got, in_ID;
+		char pen[GMT_LEN64] = {""};
 		double tmp;
 
 		n_contours = 0;
@@ -1388,11 +1390,19 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				n_alloc += 32;
 				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
 			}
-			got = sscanf (In->text, "%lf %c %lf", &cont[n_contours].val, &cont[n_contours].type, &tmp);
+			got = sscanf (In->text, "%lf %c %lf %s", &cont[n_contours].val, &cont[n_contours].type, &tmp, pen);
 			if (cont[n_contours].type == '\0') cont[n_contours].type = 'C';
 			cont[n_contours].do_tick = (Ctrl->T.active && (cont[n_contours].type == 'C' || cont[n_contours].type == 'A')) ? 1 : 0;
 			cont[n_contours].angle = (got == 3) ? tmp : GMT->session.d_NaN;
-			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
+			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
+			if (got == 4) {
+				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {
+					gmt_pen_syntax (GMT, 'C', " ", 0);
+					Return (GMT_RUNTIME_ERROR);
+				}
+				individual_pens = cont[n_contours].penset = true;
+			}
+			
 			n_contours++;
 		} while (true);
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
@@ -1571,7 +1581,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 
-		Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
+		if (individual_pens && cont[c].penset)
+			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
+		else
+			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 		if (Ctrl->W.cpt_effect) {
 			gmt_get_rgb_from_z (GMT, P, cval, rgb);
 			if (Ctrl->W.cptmode & 1)	/* Override pen color according to CPT */
