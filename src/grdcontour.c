@@ -200,7 +200,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
 	gmt_label_syntax (API->GMT, 5, 0);
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of three ways:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of four ways:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Comma-separated contours (for single contour append comma to be seen as list).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");

@@ -267,7 +267,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode) {
 	unsigned int k = 0;
 	*mode = GMT_GREATCIRCLE;	/* Default is great circle distances */
-	if (arg[0]) {
+	if (strchr ("-+", arg[0])) {
 		if (gmt_M_compat_check (API->GMT, 6))
 			GMT_Report (API, GMT_MSG_COMPAT, "Leading -|+ with unit to set flat Earth or ellipsoidal mode is deprecated; use -j<mode> instead\n");
 		else {
