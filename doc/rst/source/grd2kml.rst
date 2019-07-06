@@ -23,6 +23,7 @@ Synopsis
 [ |-N|\ *prefix* ]
 [ |-Q| ]
 [ |-T|\ *title* ]
+[ |-W|\ *cfile* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -40,7 +41,7 @@ filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
-clipped. Map colors are specified via a color palette lookup table.
+clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 
 
 Required Arguments
@@ -129,6 +130,12 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ *cfile*
+    Supply a file with records holding a contour value and a contour pen.
+    We then overlay the seelcted contour lines on top of the image [no contours].
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
