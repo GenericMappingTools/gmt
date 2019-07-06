@@ -53,14 +53,14 @@ be passed to :doc:`psconvert` when producing this figure.  All subsequent plotti
 will be directed to this current figure until another **gmt figure** command is issued
 or the session ends.  The *prefix* is used to build final figure names when extensions
 are automatically appended. The *format* setting is a comma-separated list of desired
-extensions (e.g., pdf,png). 
+extensions (e.g., pdf,png).
 
 **gmt inset** [*arguments*]
 
 Allows users to place a map inset by temporarily changing where plotting takes place
 as well as the region and projection, then resets to previous stage.
 
-**gmt subset** [*arguments*]
+**gmt subplot** [*arguments*]
 
 Allows users to create a matrix of panels with automatic labeling and advancement.
 
@@ -79,7 +79,7 @@ several other options are available:
 **-**\ **-show-cores**
     Show number of available cores.
 
-**-**\ **-show-bindir** 
+**-**\ **-show-bindir**
     Show directory of executables and exit.
 
 **-**\ **-show-datadir**

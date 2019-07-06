@@ -81,19 +81,24 @@ Required Arguments
      following columns:
 
       **1**,\ **2**:
-        longitude, latitude of event (**-:** option interchanges order)
-      **3**:
-        depth of event in kilometers
-      **4**,\ **5**,\ **6**:
-        strike, dip and rake
-      **7**:
-        magnitude
-      **8**,\ **9**:
-        not used; can be 0 0; allows use of the :doc:`meca` file format
-      **10**:
-        text string to appear above the beach ball [Default] or under (add **+u**).
+      longitude, latitude of event (**-:** option interchanges order)
 
-  **-Sc**\ *scale*
+      **3**:
+      depth of event in kilometers
+
+      **4**,\ **5**,\ **6**:
+      strike, dip and rake
+
+      **7**:
+      magnitude
+
+      **8**,\ **9**:
+      not used; can be 0 0; allows use of the :doc:`meca` file format
+
+      **10**:
+      text string to appear above the beach ball [Default] or under (add **+u**).
+
+  **-Sc**\ *scale[/fontsize[/offset*\ [**+u**]]]
      Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
      of the radius of the "beach ball", which will be proportional to the
      magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
@@ -107,20 +112,26 @@ Required Arguments
      expected to be in the following columns:
 
       **1**,\ **2**:
-        longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
+
       **3**:
-        depth of event in kilometers
+      depth of event in kilometers
+
       **4**,\ **5**,\ **6**:
-        strike, dip, and slip of plane 1
+      strike, dip, and slip of plane 1
+
       **7**,\ **8**,\ **9**:
-        strike, dip, and slip of plane 2
+      strike, dip, and slip of plane 2
+
       **10**,\ **11**:
-        mantissa and exponent of moment in dyne-cm (if magnitude is uses
-        instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
+      mantissa and exponent of moment in dyne-cm (if magnitude is uses
+      instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
+
       **12**,\ **13**:
-        not used; can be 0 0; allows use of the :doc:`meca` file format
+      not used; can be 0 0; allows use of the :doc:`meca` file format
+
       **14**:
-        text string to appear above the beach ball (default) or under (add **u**).
+      text string to appear above the beach ball (default) or under (add **u**).
 
   **-Sp**\ *scale[/fontsize[/offset*\ [**+u**]]]
      Focal mechanisms given with partial data on both planes. *scale* adjusts
@@ -134,21 +145,28 @@ Required Arguments
      option. Parameters are expected to be in the following columns:
 
       **1**,\ **2**:
-        longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
+
       **3**:
-        depth
+      depth
+
       **4**,\ **5**:
-        strike, dip of plane 1
+      strike, dip of plane 1
+
       **6**:
-        strike of plane 2
+      strike of plane 2
+
       **7**:
-        must be -1/+1 for a normal/inverse fault
+      must be -1/+1 for a normal/inverse fault
+
       **8**:
-        magnitude
+      magnitude
+
       **9**,\ **10**:
-        not used; can be 0 0; allows use of the :doc:`meca` file format
+      not used; can be 0 0; allows use of the :doc:`meca` file format
+
       **11**:
-        text string to appear above the beach ball (default) or under (add **+u**).
+      text string to appear above the beach ball (default) or under (add **+u**).
 
   **-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**+u**]]]
      Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
@@ -169,17 +187,22 @@ Required Arguments
      Parameters are expected to be in the following columns:
 
       **1**,\ **2**:
-         longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
+
       **3**:
-         depth of event in kilometers
+      depth of event in kilometers
+
       **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**:
-         mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
+      mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
+
       **10**:
-         exponent
+      exponent
+
       **11**,\ **12**:
-         Not used; can be 0 0; allows use of the :doc:`meca` file format 
+      Not used; can be 0 0; allows use of the :doc:`meca` file format
+
       **13**:
-         Text string to appear above the beach ball (default) or under (add **+u**).
+      Text string to appear above the beach ball (default) or under (add **+u**).
 
   **-Sx**\ *scale[/fontsize[/offset*\ [**+u**]]]
      Principal axis. *scale* adjusts the scaling of the radius of the "beach
@@ -199,21 +222,26 @@ Required Arguments
      Parameters are expected to be in the following columns:
 
       **1**,\ **2**:
-        longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
+
       **3**:
-        depth of event in kilometers
+      depth of event in kilometers
+
       **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**,\ **10**,\ **11**,\ **12**:
-        value (in 10\*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
+      value (in 10\*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
+
       **13**:
-        exponent
+      exponent
+
       **14**,\ **15**:
-        longitude, latitude at which to place beach ball. Entries in these
-        columns are necessary with the **-C** option. Using 0,0 in columns 9
-        and 10 will plot the beach ball at the longitude, latitude given in
-        columns 1 and 2. The **-:** option will interchange the order of
-        columns (1,2) and (9,10).
+      longitude, latitude at which to place beach ball. Entries in these
+      columns are necessary with the **-C** option. Using 0,0 in columns 9
+      and 10 will plot the beach ball at the longitude, latitude given in
+      columns 1 and 2. The **-:** option will interchange the order of
+      columns (1,2) and (9,10).
+
       **16**:
-        Text string to appear above the beach ball (optional).
+      Text string to appear above the beach ball (optional).
 
 Optional Arguments
 ------------------

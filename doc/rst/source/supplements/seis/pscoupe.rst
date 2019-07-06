@@ -24,7 +24,7 @@ Synopsis
 [ |-M| ] [ |-N| ]
 [ |-O| ]
 [ |-Q| ]
-[ |-S|\ *<symbol><scale>*\ [/**d**] ]
+[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]]
 [ |-T|\ *n* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
