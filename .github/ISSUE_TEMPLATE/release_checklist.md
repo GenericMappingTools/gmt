@@ -1,5 +1,5 @@
 ---
-name: GMT Release Checklist
+name: GMT release checklist
 about: Checklist for a new GMT release.
 title: 'Release GMT x.x.x'
 labels: ''
@@ -40,15 +40,17 @@ assignees: ''
 
 **After release**:
 
+- [ ] create branch 6.x for bug-fixes if this is a minor release (i.e. create branch 6.1 after 6.1.0 is released)
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] set `GMT_PUBLIC_RELEASE` to `FALSE`
+- [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
+- [ ] commit changes to GitHub
 
 **3rd-party update**
 
 - [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
-- [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@seisman)
-- [ ] update fink package (@remkos)
-- [ ] update macports ports
+- [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
+- [ ] update [fink package](https://github.com/fink/fink-distributions/blob/master/10.9-libcxx/stable/main/finkinfo/sci/) (@remkos)
+- [ ] update [macports ports](https://github.com/macports/macports-ports/tree/master/science)
 
 ---
 

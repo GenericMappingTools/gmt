@@ -1746,7 +1746,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff, but pass any font encodings */
 			int dump = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
-			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place temporary EPS files in session dir */
+				sprintf (no_U_file, "%s/psconvert_%db.eps", API->gwf_dir, (int)getpid());
+			else
+				sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
 			if (fp2) {fclose (fp2);		fp2 = NULL;}
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				unsigned int kk;
@@ -1798,7 +1801,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
-			sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place BB file in session dir */
+				sprintf (BB_file, "%s/psconvert_%dc.bb", API->gwf_dir, (int)getpid());
+			else
+				sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %c%s%c 2> %c%s%c",
 			         at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
@@ -1904,7 +1910,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place temporary EPS files in session dir */
+				sprintf (tmp_file, "%s/psconvert_%dd.eps", API->gwf_dir, (int)getpid());
+			else
+				sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				continue;

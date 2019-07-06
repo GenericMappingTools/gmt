@@ -27,10 +27,10 @@ Required Arguments
 
 **-S**\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
 
-    Selects the meaning of the columns in the data file . In order to use
+    Selects the meaning of the columns in the data file. In order to use
     the same file to plot cross-sections, depth is in third column.
     Nevertheless, it is possible to use "old style" **psvelomeca** input
-    files without depth in third column using the **-o** option.
+    files without depth in third column using the **-Fo** option.
 
 **-Sa**\ *scale[/fontsize[/offset*]][**+u**\ ]
 

@@ -20,7 +20,7 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
+[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]]
 [ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
