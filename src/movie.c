@@ -1045,7 +1045,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #endif
 
 	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
-		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[path_id], cwd, path_sep[path_id, GMT->session.DATADIR);
+		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[path_id], cwd, path_sep[path_id], GMT->session.DATADIR);
 	else	/* Set the initial and prefix subdirectory as data dirs */
 		sprintf (datadir, "%s%c%s", topdir, path_sep[path_id], cwd);
 	if (Ctrl->W.active && strlen (Ctrl->W.dir) > 2) {	/* Also append a specific work directory with data files that we should search */
