@@ -867,7 +867,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	unsigned int n_values = 0, n_frames = 0, frame, i_frame, col, p_width, p_height, k, T;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
-	unsigned int dd, hh, mm, ss, flavor = 0;
+	unsigned int dd, hh, mm, ss, flavor = 0, path_id = 0;
 	
 	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false, upper_case = false;
 	
@@ -1038,10 +1038,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside frame directory */
+#ifdef WIN32
+	path_id = DOS_MODE;
+#else
+	path_id = Ctrl->In.mode;
+#endif
+
 	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
-		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd, path_sep[Ctrl->In.mode], GMT->session.DATADIR);
+		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[path_id], cwd, path_sep[path_id, GMT->session.DATADIR);
 	else	/* Set the initial and prefix subdirectory as data dirs */
-		sprintf (datadir, "%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd);
+		sprintf (datadir, "%s%c%s", topdir, path_sep[path_id], cwd);
 	if (Ctrl->W.active && strlen (Ctrl->W.dir) > 2) {	/* Also append a specific work directory with data files that we should search */
 		char work_dir[PATH_MAX] = {""};
 #ifdef WIN32
@@ -1050,9 +1056,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->W.dir[0] != '/') /* Not hard path */
 #endif
 			/* Prepend cwd to the given relative path and update Ctrl->D.dir */
-			sprintf (work_dir, "%c%s%c%s", path_sep[Ctrl->In.mode], topdir, dir_sep, Ctrl->W.dir);
+			sprintf (work_dir, "%c%s%c%s", path_sep[path_id], topdir, dir_sep, Ctrl->W.dir);
 		else
-			sprintf (work_dir, "%c%s", path_sep[Ctrl->In.mode], Ctrl->W.dir);
+			sprintf (work_dir, "%c%s", path_sep[path_id], Ctrl->W.dir);
 		strcat (datadir, work_dir);
 	}
 		
