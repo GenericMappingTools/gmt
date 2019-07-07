@@ -126,9 +126,10 @@ struct PSCONTOUR {
 	double angle;
 	size_t n_alloc;
 	unsigned int nl;
-	bool do_tick;
+	bool do_tick, penset;
 	struct PSCONTOUR_LINE *L;
 	char type;
+	struct GMT_PEN pen;
 };
 
 struct PSCONTOUR_PT {
@@ -412,7 +413,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Comma-separated contours (for single contour append comma to be seen as list).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3 and optionally a pen in col 4].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4. Name of a CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
@@ -1105,9 +1106,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
 	}
-	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
+	else if (Ctrl->C.file) {	/* Read contour info from file with cval C|A [angle [pen]] records */
 		struct GMT_RECORD *Rec = NULL;
 		int got, in_ID, NL;
+		char pen[GMT_LEN64] = {""};
 		double tmp;
 
 		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
@@ -1139,7 +1141,14 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;
 			cont[c].angle = (got == 3) ? tmp : GMT->session.d_NaN;
-			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
+			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
+			if (got == 4) {	/* Also got a pen specification for this contour */
+				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
+					gmt_pen_syntax (GMT, 'C', " ", 0);
+					Return (GMT_RUNTIME_ERROR);
+				}
+				cont[c].penset = true;
+			}
 			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		} while (true);
@@ -1468,7 +1477,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 
-			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
+			if (cont[c].penset)
+				Ctrl->contour.line_pen = cont[c].pen;		/* Load contour-specific pen into contour structure */
+			else
+				Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 
 			if (Ctrl->W.cpt_effect) {
 				gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
