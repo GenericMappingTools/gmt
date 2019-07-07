@@ -6961,6 +6961,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			else	
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+			/* Because PSL_completion is called at the end of the module, we must forget we used fonts here */
+			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
+			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_command (PSL, "U\n}!\n");
 		}

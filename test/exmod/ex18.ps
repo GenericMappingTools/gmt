@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_bb8f585-dirty [64-bit] Document from psxy
+%%Title: GMT v6.0.0_e56b021_2019.07.05 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jan 22 17:32:19 2019
+%%CreationDate: Fri Jul  5 23:11:43 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -687,7 +682,7 @@ O0
 300 5795 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage @AK_gulf_grav.nc -I+d -Cgrav.cpt -BWenS -Bxaf -Byaf -Xa0i -Ya4.8293i -R@AK_gulf_grav.nc -JM5.5i
+%@GMT: gmt grdimage @AK_gulf_grav.nc -I+d -C -BWenS -Bxaf -Byaf -Xa0i -Ya4.8293i -R@AK_gulf_grav.nc -JM5.5i
 %@PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=1 +x_0=0 +y_0=0 +units=m +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -3025,6 +3020,7 @@ N 6683 4558 M -6766 0 D S
 N 6683 4641 M -6766 0 D S
 N 0 4641 M 0 -4724 D S
 N -83 4641 M 0 -4724 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 1886 -167 M 200 F0
 (î145è) tc Z
 4243 -167 M (î140è) tc Z
@@ -3047,6 +3043,13 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
+clipsave
+0 0 M
+6600 0 D
+0 4558 D
+-6600 0 D
+P
+PSL_clip N
 6600 3320 M
 -15 13 D
 -13 -23 D
@@ -3749,7 +3752,8 @@ FO
 -9 4 D
 P
 FO
-6325 4558 M
+6326 4559 M
+-1 -1 D
 -7 -10 D
 -26 -3 D
 5 -24 D
@@ -3761,16 +3765,21 @@ FO
 27 -2 D
 -7 9 D
 6 3 D
-6265 4558 M
+3 2 D
+6263 4560 M
+2 -2 D
 10 -9 D
 24 4 D
 2 5 D
-5994 4558 M
+5993 4559 M
+1 -1 D
 67 -91 D
 55 -50 D
 -39 24 D
 -115 117 D
-5960 4558 M
+-1 1 D
+5960 4559 M
+0 -1 D
 -10 -30 D
 8 -29 D
 45 -33 D
@@ -4048,7 +4057,9 @@ P S
 -14 -4 D
 6 21 D
 -43 36 D
-6177 4558 M
+-2 2 D
+6174 4560 M
+3 -2 D
 55 -40 D
 177 -88 D
 83 -68 D
@@ -4389,6 +4400,7 @@ S
 -3 3 D
 3 -7 D
 S
+PSL_cliprestore
 %%EndObject
 -300 -5795 TM
 0 A
@@ -4397,7 +4409,7 @@ O0
 300 5795 TM
 
 % PostScript produced by:
-%@GMT: gmt psscale -DJCB+o0/0.35i -Cgrav.cpt -Bxaf -By+lmGal -Xa0i -Ya4.8293i
+%@GMT: gmt psscale -DJCB+o0/0.35i -C -Bxaf -By+lmGal -Xa0i -Ya4.8293i
 %@PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=1 +x_0=0 +y_0=0 +units=m +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -14181,6 +14193,7 @@ N 6683 4558 M -6766 0 D S
 N 6683 4641 M -6766 0 D S
 N 0 4641 M 0 -4724 D S
 N -83 4641 M 0 -4724 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 1886 -167 M 200 F0
 (î145è) tc Z
 4243 -167 M (î140è) tc Z
@@ -14204,6 +14217,13 @@ O0
 3.32551 setmiterlimit
 12 W
 0 1 0 C
+clipsave
+0 0 M
+6600 0 D
+0 4558 D
+-6600 0 D
+P
+PSL_clip N
 5885 4380 M
 16 -2 D
 15 -8 D
@@ -14998,6 +15018,7 @@ P S
 16 9 D
 16 7 D
 P S
+PSL_cliprestore
 %%EndObject
 -300 0 TM
 0 A
@@ -15013,6 +15034,13 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
+clipsave
+0 0 M
+6600 0 D
+0 4558 D
+-6600 0 D
+P
+PSL_clip N
 6600 3320 M
 -15 13 D
 -13 -23 D
@@ -15715,7 +15743,8 @@ FO
 -9 4 D
 P
 FO
-6325 4558 M
+6326 4559 M
+-1 -1 D
 -7 -10 D
 -26 -3 D
 5 -24 D
@@ -15727,16 +15756,21 @@ FO
 27 -2 D
 -7 9 D
 6 3 D
-6265 4558 M
+3 2 D
+6263 4560 M
+2 -2 D
 10 -9 D
 24 4 D
 2 5 D
-5994 4558 M
+5993 4559 M
+1 -1 D
 67 -91 D
 55 -50 D
 -39 24 D
 -115 117 D
-5960 4558 M
+-1 1 D
+5960 4559 M
+0 -1 D
 -10 -30 D
 8 -29 D
 45 -33 D
@@ -16014,7 +16048,9 @@ P S
 -14 -4 D
 6 21 D
 -43 36 D
-6177 4558 M
+-2 2 D
+6174 4560 M
+3 -2 D
 55 -40 D
 177 -88 D
 83 -68 D
@@ -16355,6 +16391,7 @@ S
 -3 3 D
 3 -7 D
 S
+PSL_cliprestore
 %%EndObject
 -300 0 TM
 0 A
@@ -16839,7 +16876,7 @@ O1
 /PSL_UL 0 def
 /PSL_show {ashow} def
 /PSL_word
-(Volumes:) (382966) (mGal\264km) (2) () (Areas:) (14157.5) (km) (2)
+(Volumes:) (191401) (mGal\264km) (2) () (Areas:) (4610.48) (km) (2)
 9 array astore def
 /PSL_fnt
 0 0 0 0 0 0 0 0 0

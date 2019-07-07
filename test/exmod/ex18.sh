@@ -40,7 +40,7 @@ gmt begin ex18 ps
     # Then report the volume and area of these seamounts only
     # by masking out data outside the 200 km-radius circle
     # and then evaluate area/volume for the 50 mGal contour
-    gmt grdmath pratt.txt POINT SDIST = mask.nc
+    gmt grdmath pratt.txt POINT SDIST = mask.nc -fg
     gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
     gmt grdmath @AK_gulf_grav.nc mask.nc MUL = tmp.nc
     area=`gmt grdvolume tmp.nc -C50 -Sk -o1`
