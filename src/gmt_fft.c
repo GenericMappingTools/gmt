@@ -355,6 +355,9 @@ double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K
 #ifdef HAVE_FFTW3F
 
 #include <fftw3.h>
+#ifdef _WIN32
+#include <winsock.h>
+#endif
 
 #define FFTWF_WISDOM_FILENAME "fftwf_wisdom"
 
