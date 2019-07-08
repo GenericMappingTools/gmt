@@ -8566,8 +8566,10 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 
 void gmt_replace_backslash_in_path (char *dir) {
 	size_t k = 0;
-	while (dir[k])
+	while (dir[k]) {
 		if (dir[k] == '\\') dir[k] = '/';
+		k++;
+	}
 }
 
 /*! . */
