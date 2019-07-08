@@ -121,7 +121,7 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| unicode:: This is useful when all subplots share a common plot domain.
+.. |Add_-R| replace:: This is useful when all subplots share a common plot domain.
 .. include:: explain_-R.rst_
 
 .. _subplot_begin-S:
