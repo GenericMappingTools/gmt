@@ -331,6 +331,12 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 EXTERN_MSC void gmt_rgb_to_hsv (double rgb[], double hsv[]);
 EXTERN_MSC void gmt_hsv_to_rgb (double rgb[], double hsv[]);
+EXTERN_MSC void gmt_rgb_to_xyz (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_rgb (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_lab (double xyz[], double lab[]);
+EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
+EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
+EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
 EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);
 EXTERN_MSC double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
