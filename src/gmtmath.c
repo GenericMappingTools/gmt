@@ -132,6 +132,7 @@ struct GMTMATH_INFO {
 	bool roots_found;	/* true if roots have been solved for */
 	bool local;		/* Per segment operation (true) or global operation (false) */
 	bool notime;		/* No time-array available for operators who depend on that */
+	bool scalar;		/* -Q in effect */
 	unsigned int n_roots;	/* Number of roots found */
 	unsigned int fit_mode;	/* Used for {LSQ|SVD}FIT */
 	unsigned int w_mode;	/* Used for weighted fit */
@@ -2237,47 +2238,46 @@ GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 
 GMT_LOCAL int table_HSV2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: HSV2RGB 3 3 Convert HSV to RGB, with H = A, S = B and V = C.  */
-	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
 	double rgb[4], hsv[4];
-	struct GMT_DATATABLE *T = S[last]->D->table[0], *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument H to HSV2RGB must be a 0 <= R <= 360!\n");
-		return -1;
-	}
-	if (S[prev1]->constant && (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to HSV2RGB must be a 0 <= S <= 1!\n");
-		return -1;
-	}
-	if (S[last]->constant && (S[last]->factor < 0.0 || S[last]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to HSV2RGB must be a 0 <= V <= 1!\n");
-		return -1;
-	}
-	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
-	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BGB2HSV is given constant arguments */
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument H to HSV2RGB must be a 0 <= R <= 360!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to HSV2RGB must be a 0 <= S <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to HSV2RGB must be a 0 <= V <= 1!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
 		hsv[0] = S[prev2]->factor;
 		hsv[1] = S[prev1]->factor;
 		hsv[2] = S[last]->factor;
 		gmt_hsv_to_rgb (rgb, hsv);
-		for (s = 0; s < info->T->n_segments; s++) {
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-				T_prev2->segment[s]->data[col][row] = gmt_M_s255 (rgb[0]);
-				T_prev1->segment[s]->data[col][row] = gmt_M_s255 (rgb[1]);
-				T->segment[s]->data[col][row] = gmt_M_s255 (rgb[2]);
-			}
-		}
+		T_prev2->segment[0]->data[col][0] = gmt_M_s255 (rgb[0]);
+		T_prev1->segment[0]->data[col][0] = gmt_M_s255 (rgb[1]);
+		T->segment[0]->data[col][0] = gmt_M_s255 (rgb[2]);
 		return 0;
 	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
 	for (s = 0; s < info->T->n_segments; s++) {
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			hsv[0] = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
-			hsv[1] = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row];
-			hsv[2] = (S[last]->constant)  ? S[last]->factor  : T->segment[s]->data[col][row];
-			gmt_rgb_to_hsv (rgb, hsv);
-			T_prev2->segment[s]->data[col][row] = gmt_M_s255 (rgb[0]);
-			T_prev1->segment[s]->data[col][row] = gmt_M_s255 (rgb[1]);
-			T->segment[s]->data[col][row]       = gmt_M_s255 (rgb[2]);
+			hsv[0] = T->segment[s]->data[0][row];
+			hsv[1] = T->segment[s]->data[1][row];
+			hsv[2] = T->segment[s]->data[2][row];
+			gmt_hsv_to_rgb (rgb, hsv);
+			T->segment[s]->data[0][row] = gmt_M_s255 (rgb[0]);
+			T->segment[s]->data[1][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[2][row] = gmt_M_s255 (rgb[2]);
 		}
 	}
 	return 0;
@@ -3960,47 +3960,47 @@ GMT_LOCAL int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 GMT_LOCAL int table_RGB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: RGB2HSV 3 3 Convert RGB to HSV, with R = A, G = B and B = C.  */
-	unsigned int prev1 = last - 1, prev2 = last - 2;
-	uint64_t s, row;
+	uint64_t s = 0, row;
 	double rgb[4], hsv[4];
-	struct GMT_DATATABLE *T = S[last]->D->table[0], *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument R to RGB2HSV must be a 0 <= R <= 255!\n");
-		return -1;
-	}
-	if (S[prev1]->constant && (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument G to RGB2HSV must be a 0 <= G <= 255!\n");
-		return -1;
-	}
-	if (S[last]->constant && (S[last]->factor < 0.0 || S[last]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument B to RGB2HSV must be a 0 <= B <= 255!\n");
-		return -1;
-	}
-	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
-	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BGB2HSV is given constant arguments */
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument R to RGB2HSV must be a 0 <= R <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument G to RGB2HSV must be a 0 <= G <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument B to RGB2HSV must be a 0 <= B <= 255!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
 		rgb[0] = gmt_M_is255 (S[prev2]->factor);
 		rgb[1] = gmt_M_is255 (S[prev1]->factor);
 		rgb[2] = gmt_M_is255 (S[last]->factor);
 		gmt_rgb_to_hsv (rgb, hsv);
-		for (s = 0; s < info->T->n_segments; s++) {
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-				T_prev2->segment[s]->data[col][row] = hsv[0];
-				T_prev1->segment[s]->data[col][row] = hsv[1];
-				T->segment[s]->data[col][row] = hsv[2];
-			}
-		}
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = hsv[0];
+		T_prev1->segment[0]->data[col][0] = hsv[1];
+		T->segment[0]->data[col][0] = hsv[2];
 		return 0;
 	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
 	for (s = 0; s < info->T->n_segments; s++) {
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			rgb[0] = gmt_M_is255 ((S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row]);
-			rgb[1] = gmt_M_is255 ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
-			rgb[2] = gmt_M_is255 ((S[last]->constant)  ? S[last]->factor  : T->segment[s]->data[col][row]);
+			rgb[0] = gmt_M_is255 (T->segment[s]->data[0][row]);
+			rgb[1] = gmt_M_is255 (T->segment[s]->data[1][row]);
+			rgb[2] = gmt_M_is255 (T->segment[s]->data[2][row]);
 			gmt_rgb_to_hsv (rgb, hsv);
-			T_prev2->segment[s]->data[col][row] = hsv[0];
-			T_prev1->segment[s]->data[col][row] = hsv[1];
-			T->segment[s]->data[col][row] = hsv[2];
+			T->segment[s]->data[0][row] = hsv[0];
+			T->segment[s]->data[1][row] = hsv[1];
+			T->segment[s]->data[2][row] = hsv[2];
 		}
 	}
 	return 0;
@@ -5463,7 +5463,7 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 int GMT_gmtmath (void *V_API, int mode, void *args) {
 	int i, k, op = 0, status = 0, last;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
-	unsigned int j, nstack = 0, n_stored = 0, kk;
+	unsigned int j, nstack = 0, n_stored = 0, kk, eaten, created;
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false, dimension = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
@@ -5721,6 +5721,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling of x/y (e.g. lon/lat columns) */
 	GMT->current.io.skip_if_NaN[Ctrl->N.tcol] = t_check_required;	/* Determines if the t-column may have NaNs */
+	info.scalar = Ctrl->Q.active;
 
 	/* Because of how gmtmath works we do not use GMT_Init_IO to register inputfiles */
 
@@ -6093,24 +6094,27 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* Here we have an operator */
 
+		eaten = consumed_operands[op];	created = produced_operands[op];
+		if (!info.scalar && (strcmp (opt->arg, "RGB2HSV") == 0 || strcmp (opt->arg, "HSV2RGB") == 0)) eaten = created = 1;
+
 		if (!strncmp (opt->arg, "ROOTS", 5U) && !(opt->next && opt->next->arg[0] == '=')) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Only = may follow operator ROOTS\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if ((new_stack = nstack - consumed_operands[op] + produced_operands[op]) >= GMTMATH_STACK_SIZE) {
+		if ((new_stack = nstack - eaten + created) >= GMTMATH_STACK_SIZE) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Stack overflow (%s)\n", opt->arg);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (nstack < consumed_operands[op]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
+		if (nstack < eaten) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], eaten);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s ", operator[op]);
 
-		for (i = produced_operands[op] - consumed_operands[op]; i > 0; i--) {
+		for (i = created - eaten; i > 0; i--) {
 			if (stack[nstack+i-1]->D) continue;
 
 			/* Must make space for more */
@@ -6119,7 +6123,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* If operators operates on constants only we may have to make space as well */
 
-		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
+		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (!Ctrl->T.notime) load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
@@ -6150,7 +6154,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		
 		nstack = new_stack;
 
-		for (kk = 1; kk <= produced_operands[op]; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
+		for (kk = 1; kk <= created; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
