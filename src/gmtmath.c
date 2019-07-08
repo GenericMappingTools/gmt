@@ -873,7 +873,8 @@ GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last,
 /* -----------------------------------------------------------------
  *              Definitions of all operator functions
  * -----------------------------------------------------------------*/
-/* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
+/* Note: The OPERATOR: **** lines were used to extract syntax for documentation in the old days.
+ * the first number is input args and the second is the output args. */
 
 GMT_LOCAL int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ABS 1 1 abs (A).  */
@@ -2230,6 +2231,54 @@ GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 		T_prev->segment[s]->data[col][row] = (double)(a > b);
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_HSV2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: HSV2RGB 3 3 Convert HSV to RGB, with H = A, S = B and V = C.  */
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	uint64_t s, row;
+	double rgb[4], hsv[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0], *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument H to HSV2RGB must be a 0 <= R <= 360!\n");
+		return -1;
+	}
+	if (S[prev1]->constant && (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to HSV2RGB must be a 0 <= S <= 1!\n");
+		return -1;
+	}
+	if (S[last]->constant && (S[last]->factor < 0.0 || S[last]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to HSV2RGB must be a 0 <= V <= 1!\n");
+		return -1;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BGB2HSV is given constant arguments */
+		hsv[0] = S[prev2]->factor;
+		hsv[1] = S[prev1]->factor;
+		hsv[2] = S[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);
+		for (s = 0; s < info->T->n_segments; s++) {
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				T_prev2->segment[s]->data[col][row] = gmt_M_s255 (rgb[0]);
+				T_prev1->segment[s]->data[col][row] = gmt_M_s255 (rgb[1]);
+				T->segment[s]->data[col][row] = gmt_M_s255 (rgb[2]);
+			}
+		}
+		return 0;
+	}
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			hsv[0] = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+			hsv[1] = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row];
+			hsv[2] = (S[last]->constant)  ? S[last]->factor  : T->segment[s]->data[col][row];
+			gmt_rgb_to_hsv (rgb, hsv);
+			T_prev2->segment[s]->data[col][row] = gmt_M_s255 (rgb[0]);
+			T_prev1->segment[s]->data[col][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[col][row]       = gmt_M_s255 (rgb[2]);
+		}
 	}
 	return 0;
 }
@@ -3909,6 +3958,54 @@ GMT_LOCAL int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	return 0;
 }
 
+GMT_LOCAL int table_RGB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: RGB2HSV 3 3 Convert RGB to HSV, with R = A, G = B and B = C.  */
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	uint64_t s, row;
+	double rgb[4], hsv[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0], *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument R to RGB2HSV must be a 0 <= R <= 255!\n");
+		return -1;
+	}
+	if (S[prev1]->constant && (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument G to RGB2HSV must be a 0 <= G <= 255!\n");
+		return -1;
+	}
+	if (S[last]->constant && (S[last]->factor < 0.0 || S[last]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument B to RGB2HSV must be a 0 <= B <= 255!\n");
+		return -1;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BGB2HSV is given constant arguments */
+		rgb[0] = gmt_M_is255 (S[prev2]->factor);
+		rgb[1] = gmt_M_is255 (S[prev1]->factor);
+		rgb[2] = gmt_M_is255 (S[last]->factor);
+		gmt_rgb_to_hsv (rgb, hsv);
+		for (s = 0; s < info->T->n_segments; s++) {
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				T_prev2->segment[s]->data[col][row] = hsv[0];
+				T_prev1->segment[s]->data[col][row] = hsv[1];
+				T->segment[s]->data[col][row] = hsv[2];
+			}
+		}
+		return 0;
+	}
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			rgb[0] = gmt_M_is255 ((S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row]);
+			rgb[1] = gmt_M_is255 ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+			rgb[2] = gmt_M_is255 ((S[last]->constant)  ? S[last]->factor  : T->segment[s]->data[col][row]);
+			gmt_rgb_to_hsv (rgb, hsv);
+			T_prev2->segment[s]->data[col][row] = hsv[0];
+			T_prev1->segment[s]->data[col][row] = hsv[1];
+			T->segment[s]->data[col][row] = hsv[2];
+		}
+	}
+	return 0;
+}
+
 GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -4999,7 +5096,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 185
+#define GMTMATH_N_OPERATORS 187
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5190,6 +5287,8 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[182] = table_ZCDF;	n_args[182] = 1;	n_out[182] = 1;
 	ops[183] = table_ZPDF;	n_args[183] = 1;	n_out[183] = 1;
 	ops[184] = table_ROOTS;	n_args[184] = 2;	n_out[184] = 1;
+	ops[185] = table_RGB2HSV;	n_args[185] = 3;	n_out[185] = 3;
+	ops[186] = table_HSV2RGB;	n_args[186] = 3;	n_out[186] = 3;
 }
 
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -5564,6 +5663,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"ZCDF",	/* id = 182 */
 		"ZPDF",	/* id = 183 */
 		"ROOTS",	/* id = 184 */
+		"RGB2HSV",	/* id = 185 */
+		"HSV2RGB",	/* id = 186 */
 		"" /* last element is intentionally left blank */
 	};
 
