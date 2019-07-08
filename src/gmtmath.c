@@ -2786,7 +2786,7 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 }
 
 GMT_LOCAL int table_LAB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: LAB2HSV 3 3 Convert LAB to HSV, with l = A, a = B and b = C.  */
+/*OPERATOR: LAB2HSV 3 3 Convert LAB to HSV, with L = A, a = B and b = C.  */
 	uint64_t s, row;
 	double hsv[4], lab[4], rgb[4];
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2795,7 +2795,7 @@ GMT_LOCAL int table_LAB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2HSV must be a 0 <= l <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
@@ -2837,7 +2837,7 @@ GMT_LOCAL int table_LAB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 }
 
 GMT_LOCAL int table_LAB2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: LAB2RGB 3 3 Convert LAB to RGB, with l = A, a = B and b = C.  */
+/*OPERATOR: LAB2RGB 3 3 Convert LAB to RGB, with L = A, a = B and b = C.  */
 	uint64_t s, row;
 	double lab[3], rgb[3];
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2846,7 +2846,7 @@ GMT_LOCAL int table_LAB2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2RGB must be a 0 <= l <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
@@ -2885,7 +2885,7 @@ GMT_LOCAL int table_LAB2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 }
 
 GMT_LOCAL int table_LAB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: LAB2XYZ 3 3 Convert LAB to XYZ, with l = A, a = B and b = C.  */
+/*OPERATOR: LAB2XYZ 3 3 Convert LAB to XYZ, with L = A, a = B and b = C.  */
 	uint64_t s, row;
 	double lab[3], xyz[3];
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2894,7 +2894,7 @@ GMT_LOCAL int table_LAB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2XYZ must be a 0 <= l <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
@@ -5415,11 +5415,11 @@ GMT_LOCAL int table_XYZ2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		xyz[0] = S[prev2]->factor;
 		xyz[1] = S[prev1]->factor;
 		xyz[2] = S[last]->factor;
-		gmt_xyz_to_rgb (xyz, rgb);
+		gmt_xyz_to_rgb (rgb, xyz);
 		/* Only a single segment with one row */
-		T_prev2->segment[0]->data[col][0] = rgb[0];
-		T_prev1->segment[0]->data[col][0] = rgb[1];
-		T->segment[0]->data[col][0]       = rgb[2];
+		T_prev2->segment[0]->data[col][0] = gmt_M_s255 (rgb[0]);
+		T_prev1->segment[0]->data[col][0] = gmt_M_s255 (rgb[1]);
+		T->segment[0]->data[col][0]       = gmt_M_s255 (rgb[2]);
 		return 0;
 	}
 	/* Operate across rows. col must be 2 */
@@ -5429,10 +5429,10 @@ GMT_LOCAL int table_XYZ2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			xyz[0] = T->segment[s]->data[0][row];
 			xyz[1] = T->segment[s]->data[1][row];
 			xyz[2] = T->segment[s]->data[2][row];
-			gmt_xyz_to_rgb (xyz, rgb);
-			T->segment[s]->data[0][row] = rgb[0];
-			T->segment[s]->data[1][row] = rgb[1];
-			T->segment[s]->data[2][row] = rgb[2];
+			gmt_xyz_to_rgb (rgb, xyz);
+			T->segment[s]->data[0][row] = gmt_M_s255 (rgb[0]);
+			T->segment[s]->data[1][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[2][row] = gmt_M_s255 (rgb[2]);
 		}
 	}
 	return 0;
