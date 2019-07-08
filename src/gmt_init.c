@@ -15140,15 +15140,9 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 		return GMT_RUNTIME_ERROR;
 	}
 	gmt_M_str_free (here);
-	if (rmdir (dir)) {	/* Unable to delete the directory */
+	if (!recreate && rmdir (dir)) {	/* Unable to delete the directory */
 		perror (dir);
 		error = GMT_RUNTIME_ERROR;
-	}
-	else if (recreate) {	/* Create an empty directory to replace what we deleted */
-		if (gmt_mkdir (dir)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
-			error = GMT_RUNTIME_ERROR;
-		}
 	}
 	return error;
 }
