@@ -4286,7 +4286,7 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     the current directory. This allows maintainers to consolidate large
     data files and to simplify scripting that use these files since the
     absolute path need not be specified. Separate multiple directories
-    with colons (:) – under Windows use semi-colons (;). Any directory
+    with commas. Any directory
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 
