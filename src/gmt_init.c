@@ -2830,6 +2830,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #endif
+		gmt_replace_backslash_in_path (GMT->session.DATADIR);
 		gmt_strrepc (GMT->session.DATADIR, PATH_SEPARATOR, ',');	/* Use comma for OS-independent separator */
 	}
 

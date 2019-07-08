@@ -8564,6 +8564,12 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 	return errno;
 }
 
+void gmt_replace_backslash_in_path (char *dir) {
+	size_t k = 0;
+	while (dir[k])
+		if (dir[k] == '\\') dir[k] = '/';
+}
+
 /*! . */
 void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
 	/* Sets the column type for this input or output column or both (dir == GMT_IO) */
