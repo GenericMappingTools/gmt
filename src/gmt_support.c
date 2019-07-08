@@ -55,15 +55,15 @@
  *  gmt_init_pen            Initialize pen attributes
  *  gmt_illuminate          Add illumination effects to rgb
  *  gmt_intpol              1-D interpolation
- *  support_lab_to_rgb          Corvert CIELAB LAB to RGB
- *  support_lab_to_xyz          Convert CIELAB LAB to XYZ
+ *  gmt_lab_to_rgb          Corvert CIELAB LAB to RGB
+ *  gmt_lab_to_xyz          Convert CIELAB LAB to XYZ
  *  gmt_non_zero_winding    Finds if a point is inside/outside a polygon
  *  gmt_putpen              Encode pen argument into textstring
  *  gmtlib_read_cpt            Read color palette file
  *  support_rgb_to_cmyk         Convert RGB to CMYK
  *  gmt_rgb_to_hsv          Convert RGB to HSV
- *  support_rgb_to_lab          Convert RGB to CMYK
- *  support_rgb_to_xyz          Convert RGB to CIELAB XYZ
+ *  gmt_rgb_to_lab          Convert RGB to CMYK
+ *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  gmt_sample_cpt          Resamples the current CPT based on new z-array
  *  gmt_invert_cpt          Flips the current CPT upside down
  *  support_smooth_contour      Use Akima's spline to smooth contour
@@ -71,8 +71,8 @@
  *  gmt_sprintf_float       Make formatted string from float, while checking for %-apostrophe
  *  support_trace_contour       Function that trace the contours in gmt_contours
  *  support_polar_adjust        Adjust label justification for polar projection
- *  support_xyz_to_rgb          Convert CIELAB XYZ to RGB
- *  support_xyz_to_lab          Convert CIELAB XYZ to LAB
+ *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
+ *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
 /*!
@@ -522,7 +522,6 @@ GMT_LOCAL void support_cmyk_to_hsv (double hsv[], double cmyk[]) {
 	gmt_rgb_to_hsv (rgb, hsv);
 }
 
-#if 0	/* Unused */
 /*!
  * Transform sRGB to CIE XYZ with the D65 white point
  *
@@ -530,7 +529,7 @@ GMT_LOCAL void support_cmyk_to_hsv (double hsv[], double cmyk[]) {
  * Wikipedia: http://en.wikipedia.org/wiki/SRGB
  * Wikipedia: http://en.wikipedia.org/wiki/CIE_1931_color_space
  */
-GMT_LOCAL void support_rgb_to_xyz (double rgb[], double xyz[]) {
+void gmt_rgb_to_xyz (double rgb[], double xyz[]) {
 	double R, G, B;
 	R = INVGAMMACORRECTION(rgb[0]);
 	G = INVGAMMACORRECTION(rgb[1]);
@@ -541,7 +540,7 @@ GMT_LOCAL void support_rgb_to_xyz (double rgb[], double xyz[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_xyz_to_rgb (double rgb[], double xyz[]) {
+void gmt_xyz_to_rgb (double rgb[], double xyz[]) {
 	double R, G, B, min;
 	R = ( 3.2406 * xyz[0] - 1.5372 * xyz[1] - 0.4986 * xyz[2]);
 	G = (-0.9689 * xyz[0] + 1.8758 * xyz[1] + 0.0415 * xyz[2]);
@@ -568,7 +567,7 @@ GMT_LOCAL void support_xyz_to_rgb (double rgb[], double xyz[]) {
  * Wikipedia: http://en.wikipedia.org/wiki/Lab_color_space
  */
 
-GMT_LOCAL void support_xyz_to_lab (double xyz[], double lab[]) {
+void gmt_xyz_to_lab (double xyz[], double lab[]) {
 	double X, Y, Z;
 	X = LABF( xyz[0] / WHITEPOINT_X );
 	Y = LABF( xyz[1] / WHITEPOINT_Y );
@@ -579,29 +578,28 @@ GMT_LOCAL void support_xyz_to_lab (double xyz[], double lab[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_lab_to_xyz (double xyz[], double lab[]) {
+void gmt_lab_to_xyz (double xyz[], double lab[]) {
 	xyz[0] = WHITEPOINT_X * LABINVF( lab[0] + lab[1]/500 );
 	xyz[1] = WHITEPOINT_Y * LABINVF( (lab[0] + 16)/116 );
 	xyz[2] = WHITEPOINT_Z * LABINVF( lab[0] - lab[2]/200 );
 }
 
 /*! . */
-GMT_LOCAL void support_rgb_to_lab (double rgb[], double lab[]) {
+void gmt_rgb_to_lab (double rgb[], double lab[]) {
 	/* RGB is in 0-1, LAB will be in ??? range */
 
 	double xyz[3];
 
-	support_rgb_to_xyz (rgb, xyz);
-	support_xyz_to_lab (xyz, lab);
+	gmt_rgb_to_xyz (rgb, xyz);
+	gmt_xyz_to_lab (xyz, lab);
 }
 
 /*! . */
-GMT_LOCAL void support_lab_to_rgb (double rgb[], double lab[]) {
+void gmt_lab_to_rgb (double rgb[], double lab[]) {
 	double xyz[3];
-	support_lab_to_xyz (xyz, lab);
-	support_xyz_to_rgb (rgb, xyz);
+	gmt_lab_to_xyz (xyz, lab);
+	gmt_xyz_to_rgb (rgb, xyz);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int support_comp_double_asc (const void *p_1, const void *p_2) {
