@@ -858,6 +858,18 @@ void close_files (struct MOVIE_CTRL *Ctrl) {
 	if (Ctrl->I.active) fclose (Ctrl->I.fp);
 }
 
+void double_backslahes_if_dos (char *dir) {
+	char tmp[PATH_MAX] = {""};
+	size_t k = 0, j = 0;
+	if (strchr (dir, '\\') == NULL) return;	/* No backslashes */
+	while (dir[k]) {
+		if (dir[k] == '\\') tmp[j++] = '\\';
+		tmp[j++] = dir[k++];
+	}
+	tmp[j] = '\0';
+	strncpy (dir, tmp, j);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1056,7 +1068,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (work_dir, ",%s", Ctrl->W.dir);
 		strcat (datadir, work_dir);
 	}
-		
+	double_backslahes_if_dos (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	
 	/* Create the initialization file with settings common to all frames */
 	
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
