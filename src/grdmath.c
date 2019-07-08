@@ -2334,6 +2334,51 @@ GMT_LOCAL void grd_GT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct G
 	}
 }
 
+GMT_LOCAL void grd_HSV2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: HSV2RGB 3 3 Convert HSV to RGB, with H = A, S = B and V = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[4], hsv[4];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument H to HSV2RGB must be a 0 <= R <= 360!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to HSV2RGB must be a 0 <= S <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to HSV2RGB must be a 0 <= V <= 1!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		hsv[0] = stack[prev2]->factor;
+		hsv[1] = stack[prev1]->factor;
+		hsv[2] = stack[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+			stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+			stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		hsv[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		hsv[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		hsv[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_hsv_to_rgb (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+		stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+		stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+	}
+}
+
 GMT_LOCAL void grd_HYPOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: HYPOT 2 1 hypot (A, B) = sqrt (A*A + B*B).  */
 {
@@ -3854,6 +3899,51 @@ GMT_LOCAL void grd_RCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : M_SQRT2 * sqrtf (-logf (1.0f - stack[last]->G->data[node])));
 }
 
+GMT_LOCAL void grd_RGB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RGB2HSV 3 3 Convert RGB to HSV, with R = A, G = B and B = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[4], hsv[4];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument R to RGB2HSV must be a 0 <= R <= 255!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument G to RGB2HSV must be a 0 <= G <= 255!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument B to RGB2HSV must be a 0 <= B <= 255!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		rgb[0] = gmt_M_is255 (stack[prev2]->factor);
+		rgb[1] = gmt_M_is255 (stack[prev1]->factor);
+		rgb[2] = gmt_M_is255 (stack[last]->factor);
+		gmt_rgb_to_hsv (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)hsv[0];
+			stack[prev1]->G->data[node] = (float)hsv[1];
+			stack[last]->G->data[node]  = (float)hsv[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		rgb[0] = gmt_M_is255 ((stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node]);
+		rgb[1] = gmt_M_is255 ((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]);
+		rgb[2] = gmt_M_is255 ((stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node]);
+		gmt_rgb_to_hsv (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)hsv[0];
+		stack[prev1]->G->data[node] = (float)hsv[1];
+		stack[last]->G->data[node]  = (float)hsv[2];
+	}
+}
+
 GMT_LOCAL void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -4962,7 +5052,7 @@ GMT_LOCAL void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 209
+#define GRDMATH_N_OPERATORS 211
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5177,6 +5267,8 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[206] = grd_ZCRIT;	n_args[206] = 1;	n_out[206] = 1;
 	ops[207] = grd_ZCDF;	n_args[207] = 1;	n_out[207] = 1;
 	ops[208] = grd_ZPDF;	n_args[208] = 1;	n_out[208] = 1;
+	ops[209] = grd_RGB2HSV;	n_args[209] = 3;	n_out[209] = 3;
+	ops[210] = grd_HSV2RGB;	n_args[210] = 3;	n_out[210] = 3;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -5578,6 +5670,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		"ZCRIT",	/* id = 206 */
 		"ZCDF",	/* id = 207 */
 		"ZPDF",	/* id = 208 */
+		"RGB2HSV",	/* id = 209 */
+		"HSV2RGB",	/* id = 210 */
 		"" /* last element is intentionally left blank */
 	};
 

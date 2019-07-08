@@ -50,7 +50,7 @@
  *  gmt_getinc              Decipher and check increment argument
  *  gmt_getpen              Decipher and check pen argument
  *  gmt_getrgb              Decipher and check color argument
- *  support_hsv_to_rgb          Convert HSV to RGB
+ *  gmt_hsv_to_rgb          Convert HSV to RGB
  *  gmt_init_fill           Initialize fill attributes
  *  gmt_init_pen            Initialize pen attributes
  *  gmt_illuminate          Add illumination effects to rgb
@@ -61,7 +61,7 @@
  *  gmt_putpen              Encode pen argument into textstring
  *  gmtlib_read_cpt            Read color palette file
  *  support_rgb_to_cmyk         Convert RGB to CMYK
- *  support_rgb_to_hsv          Convert RGB to HSV
+ *  gmt_rgb_to_hsv          Convert RGB to HSV
  *  support_rgb_to_lab          Convert RGB to CMYK
  *  support_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  gmt_sample_cpt          Resamples the current CPT based on new z-array
@@ -411,7 +411,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 }
 
 /*! . */
-GMT_LOCAL void support_rgb_to_hsv (double rgb[], double hsv[]) {
+void gmt_rgb_to_hsv (double rgb[], double hsv[]) {
 	double diff;
 	unsigned int i, imax = 0, imin = 0;
 
@@ -434,7 +434,7 @@ GMT_LOCAL void support_rgb_to_hsv (double rgb[], double hsv[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_hsv_to_rgb (double rgb[], double hsv[]) {
+void gmt_hsv_to_rgb (double rgb[], double hsv[]) {
 	int i;
 	double h, f, p, q, t, rr, gg, bb;
 
@@ -519,7 +519,7 @@ GMT_LOCAL void support_cmyk_to_hsv (double hsv[], double cmyk[]) {
 	double rgb[4];
 
 	support_cmyk_to_rgb (rgb, cmyk);
-	support_rgb_to_hsv (rgb, hsv);
+	gmt_rgb_to_hsv (rgb, hsv);
 }
 
 #if 0	/* Unused */
@@ -801,7 +801,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 	if (buffer[0] == '#') {	/* #rrggbb */
 		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
 		if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -813,7 +813,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 			return (true);
 		}
 		for (i = 0; i < 3; i++) rgb[i] = gmt_M_is255 (gmt_M_color_rgb[n][i]);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -840,7 +840,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		else {		/* r/g/b */
 			n = sscanf (buffer, "%d/%d/%d", &irgb[0], &irgb[1], &irgb[2]);
 			if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-			support_rgb_to_hsv (rgb, hsv);
+			gmt_rgb_to_hsv (rgb, hsv);
 			return (false);
 		}
 	}
@@ -854,7 +854,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		n = sscanf (buffer, "%d", &irgb[0]);
 		irgb[1] = irgb[2] = irgb[0];
 		if (n != 1 || support_check_irgb (irgb, rgb)) return (true);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -1295,11 +1295,11 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	unsigned int k;
 	if (do_hsv) {	/* Interpolation in HSV space */
 		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + S->hsv_diff[k] * f;
-		support_hsv_to_rgb (rgb, hsv);
+		gmt_hsv_to_rgb (rgb, hsv);
 	}
 	else {	/* Interpolation in RGB space */
 		for (k = 0; k < 4; k++) rgb[k] = S->rgb_low[k] + S->rgb_diff[k] * f;
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 	}
 	if (side == -1) {
 		gmt_M_memcpy (S->hsv_low, hsv, 4, double);
@@ -6265,7 +6265,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		if (GMT->current.setting.color_model & GMT_HSV) {	/* h/s/v */
 			n = sscanf (buffer, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
 			if (n != 3 || support_check_hsv (hsv)) return (true);
-			support_hsv_to_rgb (rgb, hsv);
+			gmt_hsv_to_rgb (rgb, hsv);
 			return (false);
 		}
 		else {		/* r/g/b */
@@ -6278,7 +6278,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	if (support_char_count (buffer, '-') == 2) {		/* h-s-v despite pretending to be r/g/b */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		if (n != 3 || support_check_hsv (hsv)) return (true);
-		support_hsv_to_rgb (rgb, hsv);
+		gmt_hsv_to_rgb (rgb, hsv);
 		return (false);
 	}
 
@@ -7234,7 +7234,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	/* Set default BFN colors; these may be overwritten by things in the CPT */
 	for (id = 0; id < 3; id++) {
 		gmt_M_rgb_copy (X->bfn[id].rgb, GMT->current.setting.color_patch[id]);
-		support_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
+		gmt_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
 		if (X->bfn[id].rgb[0] == -1.0) X->bfn[id].skip = true;
 		if (X->is_gray && !gmt_M_is_gray (X->bfn[id].rgb)) X->is_gray = X->is_bw = false;
 		if (X->is_bw && !gmt_M_is_bw(X->bfn[id].rgb)) X->is_bw = false;
@@ -7359,11 +7359,11 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 					snprintf (clo, GMT_LEN64, "%s/%s/%s", T1, T2, T3);
 				if (X->model & GMT_HSV) {
 					if (support_gethsv (GMT, clo, X->bfn[id].hsv)) error = true;
-					support_hsv_to_rgb (X->bfn[id].rgb, X->bfn[id].hsv);
+					gmt_hsv_to_rgb (X->bfn[id].rgb, X->bfn[id].hsv);
 				}
 				else {
 					if (gmt_getrgb (GMT, clo, X->bfn[id].rgb)) error = true;
-					support_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
+					gmt_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
 				}
 				if (X->is_gray && !gmt_M_is_gray (X->bfn[id].rgb)) X->is_gray = X->is_bw = false;
 				if (X->is_bw && !gmt_M_is_bw(X->bfn[id].rgb)) X->is_bw = false;
@@ -7496,16 +7496,16 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				if (!strcmp (chi, "-"))	/* Duplicate first color */
 					gmt_M_memcpy (X->data[n].hsv_high, X->data[n].hsv_low, 4, double);
 				else if (support_gethsv (GMT, chi, X->data[n].hsv_high)) error = true;
-				support_hsv_to_rgb (X->data[n].rgb_low,  X->data[n].hsv_low);
-				support_hsv_to_rgb (X->data[n].rgb_high, X->data[n].hsv_high);
+				gmt_hsv_to_rgb (X->data[n].rgb_low,  X->data[n].hsv_low);
+				gmt_hsv_to_rgb (X->data[n].rgb_high, X->data[n].hsv_high);
 			}
 			else {
 				if (gmt_getrgb (GMT, clo, X->data[n].rgb_low)) error = true;
 				if (!strcmp (chi, "-"))	/* Duplicate first color */
 					gmt_M_memcpy (X->data[n].rgb_high, X->data[n].rgb_low, 4, double);
 				else if (gmt_getrgb (GMT, chi, X->data[n].rgb_high)) error = true;
-				support_rgb_to_hsv (X->data[n].rgb_low,  X->data[n].hsv_low);
-				support_rgb_to_hsv (X->data[n].rgb_high, X->data[n].hsv_high);
+				gmt_rgb_to_hsv (X->data[n].rgb_low,  X->data[n].hsv_low);
+				gmt_rgb_to_hsv (X->data[n].rgb_high, X->data[n].hsv_high);
 			}
 			if (!X->categorical) {
 				dz = X->data[n].z_high - X->data[n].z_low;
@@ -8004,20 +8004,20 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		if (set_z_only) { /* Just duplicate the RGB colors */
 			gmt_M_memcpy (rgb_low, Pin->data[i].rgb_low, 4, double);
 			gmt_M_memcpy (rgb_high, Pin->data[i].rgb_high, 4, double);
-			support_rgb_to_hsv (rgb_low, hsv_low);
-			support_rgb_to_hsv (rgb_high, hsv_high);
+			gmt_rgb_to_hsv (rgb_low, hsv_low);
+			gmt_rgb_to_hsv (rgb_high, hsv_high);
 		}
 		else if (no_inter) { /* Just pick the first n_colors */
 			j = MIN (i, Pin->n_colors);
 			if (Pin->model & GMT_HSV) {	/* Pick in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = lut[j].hsv_low[k], hsv_high[k] = lut[j].hsv_high[k];
-				support_hsv_to_rgb (rgb_low, hsv_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Pick in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = lut[j].rgb_low[k], rgb_high[k] = lut[j].rgb_low[k];
-				support_rgb_to_hsv (rgb_low, hsv_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 		}
 		else if (continuous) { /* Interpolate color at lower and upper value */
@@ -8029,11 +8029,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[lower] - lut[j].z_low);
-				support_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low);
-				support_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
 			}
 
 			while (j < Pin->n_colors && x[upper] > lut[j].z_high) j++;
@@ -8042,11 +8042,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[upper] - lut[j].z_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_high[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[upper] - lut[j].z_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 #if 0
 			/* Avoid aliasing for continuous CPTs */
@@ -8055,11 +8055,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "CPT resampling caused aliasing - corrected by averaging at boundaries\n");
 				if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 					for (k = 0; k < 4; k++) P->data[i-1].hsv_high[k] = hsv_low[k] = 0.5 * (P->data[i-1].hsv_high[k] + hsv_low[k]);
-					support_hsv_to_rgb (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
+					gmt_hsv_to_rgb (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
 				}
 				else {
 					for (k = 0; k < 4; k++) P->data[i-1].rgb_high[k] = rgb_low[k] = 0.5 * (P->data[i-1].rgb_high[k] + rgb_low[k]);
-					support_rgb_to_hsv (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
+					gmt_rgb_to_hsv (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
 				}
 			}
 #endif
@@ -8074,13 +8074,13 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (a - lut[j].z_low);
-				support_hsv_to_rgb (rgb_low, hsv_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low);
-				support_rgb_to_hsv (rgb_low, hsv_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 		}
 
@@ -8371,8 +8371,8 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	unsigned int k, n;
 
 	for (n = 0; n < P->n_colors; n++) {
-		support_rgb_to_hsv (P->data[n].rgb_low,  P->data[n].hsv_low);
-		support_rgb_to_hsv (P->data[n].rgb_high, P->data[n].hsv_high);
+		gmt_rgb_to_hsv (P->data[n].rgb_low,  P->data[n].hsv_low);
+		gmt_rgb_to_hsv (P->data[n].rgb_high, P->data[n].hsv_high);
 		P->data[n].i_dz = 1.0 / (P->data[n].z_high - P->data[n].z_low);	/* Recompute inverse stepsize */
 		/* Differences used in gmt_get_rgb_from_z */
 		for (k = 0; k < 4; k++) P->data[n].rgb_diff[k] = P->data[n].rgb_high[k] - P->data[n].rgb_low[k];
@@ -8456,7 +8456,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 		rel = (value - P->data[index].z_low) * P->data[index].i_dz;
 		if (GMT->current.setting.color_model == (GMT_HSV | GMT_COLORINT)) {	/* Interpolation in HSV space */
 			for (i = 0; i < 4; i++) hsv[i] = P->data[index].hsv_low[i] + rel * P->data[index].hsv_diff[i];
-			support_hsv_to_rgb (rgb, hsv);
+			gmt_hsv_to_rgb (rgb, hsv);
 		}
 		else {	/* Interpolation in RGB space */
 			for (i = 0; i < 4; i++) rgb[i] = P->data[index].rgb_low[i] + rel * P->data[index].rgb_diff[i];
@@ -8566,7 +8566,7 @@ void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double rgb[]) {
 	if (intensity == 0.0) return;
 	if (fabs (intensity) > 1.0) intensity = copysign (1.0, intensity);
 
-	support_rgb_to_hsv (rgb, hsv);
+	gmt_rgb_to_hsv (rgb, hsv);
 	if (intensity > 0.0) {	/* Lighten the color */
 		di = 1.0 - intensity;
 		if (hsv[1] != 0.0) hsv[1] = di * hsv[1] + intensity * GMT->current.setting.color_hsv_max_s;
@@ -8581,7 +8581,7 @@ void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double rgb[]) {
 	if (hsv[2] < 0.0) hsv[2] = 0.0;
 	if (hsv[1] > 1.0) hsv[1] = 1.0;
 	if (hsv[2] > 1.0) hsv[2] = 1.0;
-	support_hsv_to_rgb (rgb, hsv);
+	gmt_hsv_to_rgb (rgb, hsv);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
