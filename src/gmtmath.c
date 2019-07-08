@@ -6637,8 +6637,13 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		/* Here we have an operator */
 
 		eaten = consumed_operands[op];	created = produced_operands[op];
-		if (color_operator_on_table (info.scalar, opt->arg))	/* These operators read across 3 columns instead */
+		if (color_operator_on_table (info.scalar, opt->arg)) {	/* These operators read across 3 columns instead */
+			if (info.n_col != 3) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input tables must have 3 columns for using the color triplet operator %s!\n", opt->arg);
+				Return (GMT_RUNTIME_ERROR);
+			}
 			eaten = created = 1;
+		}
 
 		if (!strncmp (opt->arg, "ROOTS", 5U) && !(opt->next && opt->next->arg[0] == '=')) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Only = may follow operator ROOTS\n");

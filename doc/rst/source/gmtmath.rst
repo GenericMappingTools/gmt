@@ -654,7 +654,13 @@ Notes On Operators
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
-   sRGB (x, y, z) conversions between all four color spaces.
+   sRGB (x, y, z) conversions between all four color spaces.  These functions
+   behave differently whether **-Q** is used or not.  With **-Q** we expect
+   three input constants and we place three output results on the stack.  Since
+   only the top stack item is printed, you must use operators such as POP and
+   ROLL to get to the item of interest.  Without **-Q**, these operators work
+   across the three columns and modify the three column entries, returning their
+   result as a single three-column item on the stack.
 
 Macros
 ------
