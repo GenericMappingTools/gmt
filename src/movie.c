@@ -874,16 +874,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
 	char *mvfile[3] = {"mv -f", "mv -rf", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%", path_sep[4] = "::;";
+	char var_token[4] = "$$%";
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
-#ifdef _WIN32
-	char dir_sep = '\\';
-#else
 	char dir_sep = '/';
-#endif
 	double percent = 0.0, L_col = 0;
 	
 	FILE *fp = NULL;
@@ -1038,10 +1034,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside frame directory */
+
 	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
-		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd, path_sep[Ctrl->In.mode], GMT->session.DATADIR);
+		sprintf (datadir, "%s,%s,%s", topdir, cwd, GMT->session.DATADIR);	/* Start with topdir */
 	else	/* Set the initial and prefix subdirectory as data dirs */
-		sprintf (datadir, "%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd);
+		sprintf (datadir, "%s,%s", topdir, cwd);
 	if (Ctrl->W.active && strlen (Ctrl->W.dir) > 2) {	/* Also append a specific work directory with data files that we should search */
 		char work_dir[PATH_MAX] = {""};
 #ifdef WIN32
@@ -1050,12 +1047,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->W.dir[0] != '/') /* Not hard path */
 #endif
 			/* Prepend cwd to the given relative path and update Ctrl->D.dir */
-			sprintf (work_dir, "%c%s%c%s", path_sep[Ctrl->In.mode], topdir, dir_sep, Ctrl->W.dir);
+			sprintf (work_dir, ",%s,%s", topdir, Ctrl->W.dir);
 		else
-			sprintf (work_dir, "%c%s", path_sep[Ctrl->In.mode], Ctrl->W.dir);
+			sprintf (work_dir, ",%s", Ctrl->W.dir);
 		strcat (datadir, work_dir);
 	}
-		
+	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	
 	/* Create the initialization file with settings common to all frames */
 	
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
@@ -1406,20 +1404,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "A+g%s+n", Ctrl->G.fill);
 		else
 			sprintf (extra, "A+n");	/* No cropping, image size is fixed */
-		if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
-#ifdef WIN32
-			strcat (extra, ",Mb..\\movie_background.ps");
-#else
+		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
-#endif
-		}
-		if (!access ("movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
-#ifdef WIN32
-			strcat (extra, ",Mf..\\movie_foreground.ps");
-#else
+		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
 			strcat (extra, ",Mf../movie_foreground.ps");
-#endif
-		}
 		if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 			sprintf (line, ",H%d", Ctrl->H.factor);
 			strncat (extra, line, GMT_LEN128);
@@ -1519,19 +1507,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	else
 		sprintf (extra, "A+n");	/* No cropping, image size is fixed */
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
-#ifdef WIN32
-		strcat (extra, ",Mb..\\movie_background.ps");
-#else
 		strcat (extra, ",Mb../movie_background.ps");
-#endif
 		layers = true;
 	}
 	if (!access ("movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which will be in parent dir when script is run) */
-#ifdef WIN32
-		strcat (extra, ",Mf..\\movie_foreground.ps");
-#else
 		strcat (extra, ",Mf../movie_foreground.ps");
-#endif
 		layers = true;
 	}
 	if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
