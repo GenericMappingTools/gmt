@@ -5362,7 +5362,7 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 }
 
 int GMT_gmtmath (void *V_API, int mode, void *args) {
-	int i, k, op = 0, status = 0;
+	int i, k, op = 0, status = 0, last;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, nstack = 0, n_stored = 0, kk;
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false, dimension = false;
@@ -5855,8 +5855,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GMTMATH_ARG_IS_STORE) {
 				/* Duplicate stack into stored memory location */
-				int last = nstack - 1;
 				bool new = false;
+				last = nstack - 1;
 				if (nstack == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
 					Return (GMT_RUNTIME_ERROR);
@@ -6056,17 +6056,23 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		(Ctrl->Out.file) ? GMT_Message (API, GMT_TIME_NONE, "= %s", Ctrl->Out.file) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
 	}
 
-	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
-		if (!stack[0]->D)
-			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+	if (nstack == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No operands left on the stack!\n");
+		Return (API->error);
+	}
+	last = nstack - 1;	/* Index of top of stack (also hopefully bottom of stack) */
+	
+	if (stack[last]->constant) {	/* Only a constant provided, set table accordingly */
+		if (!stack[last]->D)
+			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
 			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
-				load_column (stack[0]->D, j, info.T, COL_T);
+				load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
-				load_const_column (stack[0]->D, j, stack[0]->factor);
+				load_const_column (stack[last]->D, j, stack[last]->factor);
 		}
-		DH = gmt_get_DD_hidden (stack[0]->D);
-		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
+		DH = gmt_get_DD_hidden (stack[last]->D);
+		gmt_set_tbl_minmax (GMT, stack[last]->D->geometry, stack[last]->D->table[0]);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -6091,8 +6097,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	else {	/* Regular table result */
 		bool template_used = false, place_t_col = (Ctrl->T.active && t_check_required && !Ctrl->Q.active && !touched_t_col);
 
-		if (stack[0]->D)	/* There is an output stack, select it */
-			R = stack[0]->D;
+		if (stack[last]->D)	/* There is an output stack, select it */
+			R = stack[last]->D;
 		else {		/* Can happen if only -T [-N] was specified with no operators */
 			R = Template;
 			template_used = true;
