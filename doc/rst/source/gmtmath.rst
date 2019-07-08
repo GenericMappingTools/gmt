@@ -318,6 +318,8 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **GT**          | 2 1    | 1 if A > B, else 0                                                                         |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **HSV2RGB**     | 3 3    | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)        |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **HYPOT**       | 2 1    | hypot (A, B) = sqrt (A\*A + B\*B)                                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **I0**          | 1 1    | Modified Bessel function of A (1st kind, order 0)                                          |
@@ -455,6 +457,8 @@ and output arguments.
 | **RCDF**        | 1 1    | Rayleigh cumulative distribution function for z = A                                        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RCRIT**       | 1 1    | Rayleigh distribution critical value for alpha = A                                         |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RGB2HSV**     | 3 3    | Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (in 0-255 range)    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -728,6 +732,13 @@ cos (60)) and store the result in the shell variable z:
    ::
 
     set z = `gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+
+To convert the r,g,b value for yellow to h,s,v and save the hue, try
+
+   ::
+
+    set hue = `gmt math -Q 255 255 0 RGB2HSV POP POP =`
+
 
 To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
