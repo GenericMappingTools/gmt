@@ -579,9 +579,9 @@ void gmt_xyz_to_lab (double xyz[], double lab[]) {
 
 /*! . */
 void gmt_lab_to_xyz (double xyz[], double lab[]) {
-	xyz[0] = WHITEPOINT_X * LABINVF( lab[0] + lab[1]/500 );
+	xyz[0] = WHITEPOINT_X * LABINVF( (lab[0] + 16)/116 + lab[1]/500 );
 	xyz[1] = WHITEPOINT_Y * LABINVF( (lab[0] + 16)/116 );
-	xyz[2] = WHITEPOINT_Z * LABINVF( lab[0] - lab[2]/200 );
+	xyz[2] = WHITEPOINT_Z * LABINVF( (lab[0] + 16)/116 - lab[2]/200 );
 }
 
 /*! . */

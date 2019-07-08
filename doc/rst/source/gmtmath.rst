@@ -318,7 +318,11 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **GT**          | 2 1    | 1 if A > B, else 0                                                                         |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **HSV2LAB**     | 3 3    | Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)        |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **HSV2RGB**     | 3 3    | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)        |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **HSV2XYZ**     | 3 3    | Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **HYPOT**       | 2 1    | hypot (A, B) = sqrt (A\*A + B\*B)                                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -357,6 +361,12 @@ and output arguments.
 | **KER**         | 1 1    | ker (A)                                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KURT**        | 1 1    | Kurtosis of A                                                                              |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LAB2HSV**     | 3 3    | Convert l,a,b triplets to h,s,v triplets                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LAB2RGB**     | 3 3    | Convert l,a,b triplets to r,g,b triplets                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LAB2XYZ**     | 3 3    | Convert l,a,b triplets to x,y,z triplets                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LCDF**        | 1 1    | Laplace cumulative distribution function for z = A                                         |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -460,6 +470,10 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RGB2HSV**     | 3 3    | Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (in 0-255 range)    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RGB2LAB**     | 3 3    | Convert r,g,b triplets to l,a,b triplets, with r = A, g = B, and b = C (in 0-255 range)    |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RGB2XYZ**     | 3 3    | Convert r,g,b triplets to x,y,x triplets, with r = A, g = B, and b = C (in 0-255 range)    |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RMS**         | 1 1    | Root-mean-square of A                                                                      |
@@ -534,6 +548,12 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **XOR**         | 2 1    | B if A == NaN, else A                                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **XYZ2HSV**     | 3 3    | Convert x,y,z triplets to h,s,v triplets                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **XYZ2LAB**     | 3 3    | Convert x,y,z triplets to l,a,b triplets                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **XYZ2RGB**     | 3 3    | Convert x,y,z triplets to r,g,b triplets                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **Y0**          | 1 1    | Bessel function of A (2nd kind, order 0)                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **Y1**          | 1 1    | Bessel function of A (2nd kind, order 1)                                                   |
@@ -590,47 +610,51 @@ The following symbols have special meaning:
 Notes On Operators
 ------------------
 
-1. The operators **PLM** and **PLMg** calculate the associated Legendre
-polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
-and 0 <= M <= L. x, L, and M are the three arguments preceding the
-operator. **PLM** is not normalized and includes the Condon-Shortley
-phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-used in geophysics. The C-S phase can be added by using -M as argument.
-**PLM** will overflow at higher degrees, whereas **PLMg** is stable
-until ultra high degrees (at least 3000).
+#. The operators **PLM** and **PLMg** calculate the associated Legendre
+   polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
+   and 0 <= M <= L. x, L, and M are the three arguments preceding the
+   operator. **PLM** is not normalized and includes the Condon-Shortley
+   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The C-S phase can be added by using -M as argument.
+   **PLM** will overflow at higher degrees, whereas **PLMg** is stable
+   until ultra high degrees (at least 3000).
 
-2. Files that have the same names as some operators, e.g., **ADD**,
-**SIGN**, **=**, etc. should be identified by prepending the current
-directory (i.e., ./).
+#. Files that have the same names as some operators, e.g., **ADD**,
+   **SIGN**, **=**, etc. should be identified by prepending the current
+   directory (i.e., ./).
 
-3. The stack depth limit is hard-wired to 100.
+#. The stack depth limit is hard-wired to 100.
 
-4. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
-etc.) are passed the absolute value of their argument.
+#. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
+   etc.) are passed the absolute value of their argument.
 
-5. The **DDT** and **D2DT2** functions only work on regularly spaced data.
+#. The **DDT** and **D2DT2** functions only work on regularly spaced data.
 
-6. All derivatives are based on central finite differences, with
-natural boundary conditions.
+#. All derivatives are based on central finite differences, with
+   natural boundary conditions.
 
-7. **ROOTS** must be the last operator on the stack, only followed by **=**. 
+#. **ROOTS** must be the last operator on the stack, only followed by **=**. 
 
 .. include:: explain_sto_rcl_clr.rst_
 
 
-8. The bitwise operators
-(**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
-**BITTEST**, and **BITXOR**) convert a tables's double precision values
-to unsigned 64-bit ints to perform the bitwise operations. Consequently,
-the largest whole integer value that can be stored in a double precision
-value is 2^53 or 9,007,199,254,740,992. Any higher result will be masked
-to fit in the lower 54 bits.  Thus, bit operations are effectively limited
-to 54 bits.  All bitwise operators return NaN if given NaN arguments or
-bit-settings <= 0.
+#. The bitwise operators
+   (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
+   **BITTEST**, and **BITXOR**) convert a tables's double precision values
+   to unsigned 64-bit ints to perform the bitwise operations. Consequently,
+   the largest whole integer value that can be stored in a double precision
+   value is 2^53 or 9,007,199,254,740,992. Any higher result will be masked
+   to fit in the lower 54 bits.  Thus, bit operations are effectively limited
+   to 54 bits.  All bitwise operators return NaN if given NaN arguments or
+   bit-settings <= 0.
 
-9. TAPER will interpret its argument to be a width in the same units as
-the time-axis, but if no time is provided (i.e., plain data tables) then
-the width is taken to be given in number of rows.
+#. TAPER will interpret its argument to be a width in the same units as
+   the time-axis, but if no time is provided (i.e., plain data tables) then
+   the width is taken to be given in number of rows.
+
+#. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
+   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
+   sRGB (x, y, z) conversions between all four color spaces.
 
 Macros
 ------

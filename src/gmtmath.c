@@ -558,6 +558,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	FPDF       3  1    F probability density distribution for F = A, nu1 = B and nu2 = C\n"
 		"	GE         2  1    1 if A >= B, else 0\n"
 		"	GT         2  1    1 if A > B, else 0\n"
+		"	HSV2LAB    3  3    Convert hsv to lab, with h = A, s = B and v = C\n"
+		"	HSV2RGB    3  3    Convert hsv to rgb, with h = A, s = B and v = C\n"
+		"	HSV2XYZ    3  3    Convert hsv to xyz, with h = A, s = B and v = C\n"
 		"	HYPOT      2  1    hypot (A, B) = sqrt (A*A + B*B)\n"
 		"	I0         1  1    Modified Bessel function of A (1st kind, order 0)\n"
 		"	I1         1  1    Modified Bessel function of A (1st kind, order 1)\n"
@@ -577,6 +580,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	KEI        1  1    kei (A)\n"
 		"	KER        1  1    ker (A)\n"
 		"	KURT       1  1    Kurtosis of A\n"
+		"	LAB2HSV    3  3    Convert lab to hsv, with l = A, a = B and b = C\n"
+		"	LAB2RGB    3  3    Convert lab to rgb, with l = A, a = B and b = C\n"
+		"	LAB2XYZ    3  3    Convert lab to xyz, with l = A, a = B and b = C\n"
 		"	LCDF       1  1    Laplace cumulative distribution function for z = A\n"
 		"	LCRIT      1  1    Laplace distribution critical value for alpha = A\n"
 		"	LE         2  1    1 if A <= B, else 0\n"
@@ -626,6 +632,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	RAND       2  1    Uniform random values between A and B\n"
 		"	RCDF       1  1    Rayleigh cumulative distribution function for z = A\n"
 		"	RCRIT      1  1    Rayleigh distribution critical value for alpha = A\n"
+		"	RGB2HSV    3  3    Convert rgb to hsv, with r = A, g = B and b = C\n"
+		"	RGB2LAB    3  3    Convert rgb to lab, with r = A, g = B and b = C\n"
+		"	RGB2XYZ    3  3    Convert rgb to xyz, with r = A, g = B and b = C\n"
 		"	RPDF       1  1    Rayleigh probability density function for z = A\n"
 		"	RINT       1  1    rint (A) (round to integral value nearest to A)\n"
 		"	RMS        1  1    Root-mean-square of A\n"
@@ -666,6 +675,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
 		"	XOR        2  1    B if A == NaN, else A\n"
+		"	XYZ2HSV    3  3    Convert xyz to hsv, with x = A, y = B and z = C\n"
+		"	XYZ2LAB    3  3    Convert xyz to lab, with x = A, y = B and z = C\n"
+		"	XYZ2RGB    3  3    Convert xyz to rgb, with x = A, y = B and z = C\n"
 		"	Y0         1  1    Bessel function of A (2nd kind, order 0)\n"
 		"	Y1         1  1    Bessel function of A (2nd kind, order 1)\n"
 		"	YN         2  1    Bessel function of A (2nd kind, order B)\n"
@@ -2239,7 +2251,7 @@ GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 GMT_LOCAL int table_HSV2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: HSV2LAB 3 3 Convert HSV to LAB, with h = A, s = B and v = C.  */
 	uint64_t s, row;
-	double hsv[4], lab[4], rgb[4];
+	double hsv[4], rgb[4], lab[3];
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (info->scalar) {	/* Scalars have a stack of 3 constants */
@@ -5330,9 +5342,9 @@ GMT_LOCAL int table_XYZ2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			xyz[2] = T->segment[s]->data[2][row];
 			gmt_xyz_to_rgb (rgb, xyz);
 			gmt_rgb_to_hsv (rgb, hsv);
-			T->segment[s]->data[0][row] = xyz[0];
-			T->segment[s]->data[1][row] = xyz[1];
-			T->segment[s]->data[2][row] = xyz[2];
+			T->segment[s]->data[0][row] = hsv[0];
+			T->segment[s]->data[1][row] = hsv[1];
+			T->segment[s]->data[2][row] = hsv[2];
 		}
 	}
 	return 0;
@@ -6195,7 +6207,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"XYZ2HSV",	/* id = 194 */
 		"XYZ2LAB",	/* id = 195 */
 		"XYZ2RGB",	/* id = 196 */
-		
 		"" /* last element is intentionally left blank */
 	};
 
