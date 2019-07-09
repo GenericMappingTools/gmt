@@ -2819,7 +2819,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Determine GMT_DATADIR (data directories) */
 
 	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {		/* GMT_DATADIR was set */
-		if (strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
+		if (strchr (this_c, ',') || strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
 			/* A list of directories or a single directory that is accessible */
 			GMT->session.DATADIR = strdup (this_c);
 			gmt_dos_path_fix (GMT->session.DATADIR);
@@ -2827,9 +2827,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #ifdef WIN32
 		else if (strchr(this_c, ':')) {		/* May happen to have ':' as a path separator when running a MSYS bash shell*/
 			GMT->session.DATADIR = strdup(this_c);
-			gmt_dos_path_fix(GMT->session.DATADIR);
+			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #endif
+		gmt_replace_backslash_in_path (GMT->session.DATADIR);
+		gmt_strrepc (GMT->session.DATADIR, PATH_SEPARATOR, ',');	/* Use comma for OS-independent separator */
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
