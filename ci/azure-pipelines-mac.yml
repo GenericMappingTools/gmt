@@ -61,6 +61,19 @@ steps:
   displayName: Full tests
   condition: eq(variables['TEST'], true)
 
+# Publish the whole build directory for debugging purpose
+- task: CopyFiles@2
+  inputs:
+    contents: 'build/**/*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+  condition: failed()
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: BuildDirectory
+  displayName: Publish build directory
+  condition: failed()
+
 # Upload test coverage even if build fails. Keep separate to make sure this task fails
 # if the tests fail.
 - bash: |
