@@ -96,6 +96,19 @@ steps:
   env: {"CTEST_ARGS": "-T test --output-on-failure --force-new-ctest-process -j4 --timeout 360"}
   condition: eq(variables['TEST'], true)
 
+# Publish the whole build directory for debugging purpose
+- task: CopyFiles@2
+  inputs:
+    contents: 'build/**/*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+  condition: failed()
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: BuildDirectory
+  displayName: Publish build directory
+  condition: failed()
+
 # Publish Test Results
 - task: PublishTestResults@2
   inputs:
