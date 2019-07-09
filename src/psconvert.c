@@ -1849,7 +1849,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c -f%c%s%c",
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c %c%s%c",
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
@@ -2329,7 +2329,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				sprintf (resolution, "-g%dx%d -r%g -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
 			else
 				sprintf (resolution, "-g%dx%d -r%g", pix_w, pix_h, Ctrl->E.dpi);
-			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c -f%c%s%c",
+			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
 
