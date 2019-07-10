@@ -5,10 +5,6 @@
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
 
-. gmt_shell_functions.sh
-
-gmt_init_tmpdir
-
 SIZE=$1
 COL=16
 ROW=35
@@ -27,12 +23,12 @@ else
 fi
 
 ps=GMT_RGBchart_$SIZE.ps
-allinfo=$GMT_TMPDIR/allinfo.tmp
-cpt=$GMT_TMPDIR/lookup.cpt
-rects=$GMT_TMPDIR/rects.tmp
-whitetags=$GMT_TMPDIR/whitetags.tmp
-blacktags=$GMT_TMPDIR/blacktags.tmp
-labels=$GMT_TMPDIR/labels.tmp
+allinfo=allinfo.tmp
+cpt=lookup.cpt
+rects=rects.tmp
+whitetags=whitetags.tmp
+blacktags=blacktags.tmp
+labels=labels.tmp
 gmt set PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
@@ -69,5 +65,3 @@ gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
 L ${fontsizeL}p,Helvetica-Bold R Values are R/G/B. Names are case-insensitive.
 L ${fontsizeL}p,Helvetica-Bold R Optionally, use GREY instead of GRAY.
 END
-
-gmt_remove_tmpdir
