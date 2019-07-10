@@ -45,7 +45,6 @@ EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned in
 EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);
 EXTERN_MSC void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify);
-EXTERN_MSC void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool is_main);
 EXTERN_MSC struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC int get_V (char arg);
 EXTERN_MSC int gmt_get_V (char arg);
