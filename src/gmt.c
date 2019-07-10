@@ -92,12 +92,7 @@ int main (int argc, char *argv[]) {
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
-	gmt_check_if_modern_mode_oneliner (api_ctrl, argc, argv, gmt_main);	/* If a modern mode one-liner we must switch run--mode here */
-	/* Under modern mode we MUST initiate a module call via the gmt driver */
-	if (api_ctrl->GMT->current.setting.run_mode == GMT_MODERN && !gmt_main) {
-		fprintf (stderr, "%s [ERROR]: GMT modern mode requires all modules to be accessed via %s\n", PROGRAM_NAME, PROGRAM_NAME);
-		return GMT_RUNTIME_ERROR;
-	}
+
 	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */
 	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
