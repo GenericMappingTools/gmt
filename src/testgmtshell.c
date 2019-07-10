@@ -26,13 +26,16 @@
 #include "gmt.h"
 #include <string.h>
 
-int main () {
+int main (int argc, char *argv[]) {
 
 	int status = 0;			/* Status code from GMT API */
+	int debug = 0;
 	char line[BUFSIZ] = {""};	/* Input line buffer */
 	char first[64] = {""}, module[32] = {""}, args[1024] = {""};
 	struct GMTAPI_CTRL *API = NULL;	/* GMT API control structure */
+	(void) (argv);
 
+	if (argc > 1) debug = 1;
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
@@ -41,6 +44,10 @@ int main () {
 	while (fgets (line, BUFSIZ, stdin)) {
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 		sscanf (line, "%s %s %[^\n]", first, module, args);
+		if (debug) {	/* Echo back the command in brackets */
+			line[strlen(line)-1] = '\0';	/* Chop off newline */
+			fprintf (stderr, "cmd = [%s]\n", line);
+		}
 		if (strncmp (first, "gmt", 3U)) {	/* 3a. Make a system call since not GMT module */
 			status = system (line);
 			if (status) {
@@ -49,7 +56,7 @@ int main () {
 			}
 		}
 		else {	/* 3b. Call the module */
-			status = GMT_Call_Module (API, module, GMT_MODULE_CMD, args);	/* This allocates memory for the export grid associated with the -G option */
+			status = GMT_Call_Module (API, module, GMT_MODULE_CMD, args);
 			if (status) {
 				GMT_Report (API, GMT_MSG_NORMAL, "%s returned error %d\n", module, status);
 				exit (EXIT_FAILURE);
