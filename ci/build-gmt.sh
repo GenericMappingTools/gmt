@@ -10,6 +10,8 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (COPY_GSHHG TRUE)
 set (COPY_DCW TRUE)
+set (GMT_USE_THREADS TRUE)
+set (GMT_ENABLE_OPENMP TRUE)
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 EOF
 

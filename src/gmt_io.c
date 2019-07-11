@@ -8627,7 +8627,8 @@ int gmt_mkdir (const char *path)
 	strcpy (_path, path);	/* Copy string so its mutable */
 
 	/* Iterate the string */
-	for (p = _path + 1; *p; p++) {	/* Create intermediate directoreis if not already present */
+	p = (_path[1] == ':') ? _path + 3 : _path + 1;  /* Skip any leading X: drive designators */
+	while (*p) { /* Create intermediate directoreis recursively */
 		if (*p == '/' || *p == '\\') {	/* Found start of next directory */
 			sep = *p;	/* What separator did we use? */
 			*p = '\0';	/* Temporarily truncate */
@@ -8645,6 +8646,7 @@ int gmt_mkdir (const char *path)
 			}
 			*p = sep;	/* Reset the separator */
 		}
+		p++;
 	}   
 
 	/* Finally create the last directory name in the path */
