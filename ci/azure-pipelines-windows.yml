@@ -71,10 +71,6 @@ steps:
     cmake --build . --target install
   displayName: Compile GMT
 
-# Set HOME to avoid permission issue of azure-pipelines
-- bash: echo "##vso[task.setvariable variable=HOME]D:/a/1/s/"
-  displayName: Set HOME
-
 - script: |
     gmt --version
     gmt defaults -Vd
