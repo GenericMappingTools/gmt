@@ -4791,13 +4791,21 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 
 	/* Then look in the current working directory */
 
-	if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
+
+	if (!access (stem, R_OK)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", stem);
+		return (strcpy (path, stem));	/* Yes, found it */
+	}
 
 	/* If still not found, see if there is a file in the GMT_{HOME,USER}DIR directories */
 
 	if (GMT->session.HOMEDIR) {
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, stem);
-		if (!access (path, R_OK)) return (path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s\n", path);
+		if (!access (path, R_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			return (path);
+		}
 	}
 	if (GMT->session.USERDIR) {
 		if (strstr (stem, ".SRTMGL1.")) /* Special srtm1 subdirs */
@@ -4806,16 +4814,29 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 			sprintf (path, "%s/server/srtm3/%s", GMT->session.USERDIR, stem);
 		else {
 			sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
-			if (!access (path, R_OK)) return (path);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s\n", path);
+			if (!access (path, R_OK)) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+				return (path);
+			}
 			sprintf (path, "%s/server/%s", GMT->session.USERDIR, stem);
-			if (!access (path, R_OK)) return (path);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s\n", path);
+			if (!access (path, R_OK)) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+				return (path);
+			}
 		}
 	}
 	if (GMT->session.CACHEDIR) {
 		sprintf (path, "%s/%s", GMT->session.CACHEDIR, stem);
-		if (!access (path, R_OK)) return (path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s\n", path);
+		if (!access (path, R_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			return (path);
+		}
 	}
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Could not find file %s\n", stem);
 	return (NULL);	/* No file found, give up */
 }
 
@@ -4842,6 +4863,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (!access (stem, F_OK)) {	/* Yes, found it */
 		if (mode == F_OK || gmt_file_is_readable (GMT, (char *)stem)) {	/* Yes, found it or can read it */
 			strcpy (path, stem);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
 			return (path);
 		}
 		return (NULL);	/* Cannot read, give up */
@@ -4871,10 +4893,12 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 
 	for (d = 0; d < 6; d++) {	/* Loop over USER, DATA and CACHE dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s in %s\n", stem, udir[d]);
 		found = false;
 		pos = 0;
 		while (!found && (gmt_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
+			
 #ifdef HAVE_DIRENT_H_
 			if (dir[L-1] == '/' || (gmt_M_compat_check (GMT, 4) && dir[L-1] == '*')) {	/* Must search recursively from this dir */
 				N = (dir[L-1] == '/') ? L - 1 : L - 2;
@@ -4889,7 +4913,10 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 			}
 #endif /* HAVE_DIRENT_H_ */
 		}
-		if (found && gmt_file_is_readable (GMT, path)) return (path);	/* Yes, can read it */
+		if (found && gmt_file_is_readable (GMT, path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			return (path);	/* Yes, can read it */
+		}
 	}
 
 	return (NULL);	/* No file found, give up */
