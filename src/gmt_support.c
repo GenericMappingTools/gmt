@@ -10114,8 +10114,8 @@ GMT_LOCAL void make_fraction (struct GMT_CTRL *GMT, double x0, int maxden, int *
 /*! . */
 void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x) {
 	/* Determines if %-apostrophe is used in the format for a float. If so, must temporarily switch to LC_NUMERIC=en_US */
-#ifdef HAVE_SETLOCALE
 	char *use_locale = strstr (format, "%'");
+#ifdef HAVE_SETLOCALE
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 #endif
 	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi. This variable is set per axis in gmt_xy_axis */
@@ -10147,10 +10147,22 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 		//fprintf (stderr, "f = %g n = %d  m = %d.  String = %s\n", f, n, m, string);
 	}
 	else
+#ifndef WIN32
 		sprintf (string, format, x);
-#ifdef HAVE_SETLOCALE
+#else
+	{	/* Windows doesn't support %' format */
+		if (use_locale) {
+			char *new_format;
+			new_format = gmt_strrep(format, "%'", "%");
+			sprintf (string, new_format, x);
+		} else
+			sprintf (string, format, x);
+	}
+#endif
 	if (use_locale) {
+#ifdef HAVE_SETLOCALE
 		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
+#endif
 		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && fabs (x - irint (x)) < GMT_CONV8_LIMIT) {
 			/* System not capable of printf groups for integers so we insert those commas manually... */
 			char *tmp = strdup (string);
@@ -10169,7 +10181,6 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 			gmt_M_str_free (tmp);
 		}
 	}
-#endif
 }
 
 /*! . */
