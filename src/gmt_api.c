@@ -10376,7 +10376,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false, strip_colon = false, strip = false;
+	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
@@ -10537,6 +10537,12 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if ((opt = GMT_Find_Option (API, 'Q', *head)) && opt->arg[0] == 'c')
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
+	/* 1m. Check if this is the grdgradient module, where primary dataset output should be turned off if -Qc and no -G is set */
+	else if (!strncmp (module, "pstext", 6U) && (opt = GMT_Find_Option (API, 'F', *head))) {
+		/* With -F+c<just>+t<label> there is no file to read */
+		if (gmt_no_pstext_input (API, opt->arg))
+			deactivate_input = true;	/* Turn off implicit input since none is in effect */
+	}
 
 	gmt_M_str_free (module);
 
@@ -10554,6 +10560,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = api_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
 		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit output file already specified or not required */
+
+	/* 2c. Make some specific modifications to the keys given the options passed */
+	if (deactivate_input && (k = api_get_key (API, GMT_OPT_INFILE, key, n_keys)) >= 0)
+		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit input file already specified or not required */
 
 	/* 3. Count command line output files */
 	for (opt = *head; opt; opt = opt->next)
