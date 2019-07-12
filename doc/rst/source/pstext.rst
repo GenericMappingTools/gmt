@@ -74,6 +74,12 @@ To add a typeset figure caption for a 3-inch wide illustration, use
     of cities where it is @\_impossible@\_ to get any good Thai food; these are to be avoided.
     EOF
 
+To add a text without using input data but only the fixed text option
+
+   ::
+
+    gmt pstext -R0/10/0/10 -JX14 -Baf -F+f40+cTC+t"Inner Title" -D0/-0.5 -P > lifigurexo.ps
+
 .. include:: text_notes.rst_
 
 See Also
