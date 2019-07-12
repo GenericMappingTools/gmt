@@ -78,7 +78,7 @@ To add a text without using input data but only the fixed text option
 
    ::
 
-    gmt pstext -R0/10/0/10 -JX14 -Baf -F+f40+cTC+t"Inner Title" -D0/-0.5 -P > lifigurexo.ps
+    gmt pstext -R0/10/0/10 -JX14 -Baf -F+f40+cTC+t"Inner Title" -D0/-0.5 -P > figure.ps
 
 .. include:: text_notes.rst_
 
