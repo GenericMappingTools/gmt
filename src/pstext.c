@@ -898,6 +898,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 		PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 
+		if (clip_set)
+			gmt_map_clip_off (GMT);
 		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
