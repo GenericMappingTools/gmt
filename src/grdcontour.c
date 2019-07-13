@@ -1390,6 +1390,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				n_alloc += 32;
 				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
 			}
+			gmt_M_memset (&cont[n_contours], 1, struct PSCONTOURGRD);	/* Cause the pen structure needs to be empty */
 			got = sscanf (In->text, "%lf %c %lf %s", &cont[n_contours].val, &cont[n_contours].type, &tmp, pen);
 			if (cont[n_contours].type == '\0') cont[n_contours].type = 'C';
 			cont[n_contours].do_tick = (Ctrl->T.active && (cont[n_contours].type == 'C' || cont[n_contours].type == 'A')) ? 1 : 0;
@@ -1441,6 +1442,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				n_alloc += 32;
 				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
 			}
+			gmt_M_memset (&cont[n_contours], 1, struct PSCONTOURGRD);	/* Cause the pen structure needs to be empty */
 			cont[n_contours].val = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[n_contours].val - aval) > noise) aval += Ctrl->A.interval;
 			if (Ctrl->A.mode)	/* No labels */
