@@ -38,9 +38,9 @@ plot_one -Eo -Nr wesn -Xa5.4i -Ya3.2i >> $ps
 plot_one -Ex -Nr wesn -Xa5.4i -Ya5.4i >> $ps
 plot_one -Ey -Nr wesn+tLMS -Xa5.4i -Ya7.6i >> $ps
 # Labels
-echo REDUCED MAJOR AXIS | gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya1i >> $ps
-echo ORTHOGONAL | gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya3.2i >> $ps
-echo X ON Y | gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya5.4i >> $ps
-echo Y ON X | gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya7.6i >> $ps
+gmt pstext -R -J -O -K -F+cRM+jTC+a90+t"REDUCED MAJOR AXIS" -N -Dj0.2i -Xa5.4i -Ya1i >> $ps
+gmt pstext -R -J -O -K -F+cRM+jTC+a90+tORTHOGONAL -N -Dj0.2i -Xa5.4i -Ya3.2i >> $ps
+gmt pstext -R -J -O -K -F+cRM+jTC+a90+t"X ON Y" -N -Dj0.2i -Xa5.4i -Ya5.4i >> $ps
+gmt pstext -R -J -O -K -F+cRM+jTC+a90+t"Y ON X" -N -Dj0.2i -Xa5.4i -Ya7.6i >> $ps
 gmt psxy -R -J -O -T >> $ps
 rm -f tmp data giants
