@@ -2819,7 +2819,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Determine GMT_DATADIR (data directories) */
 
 	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {		/* GMT_DATADIR was set */
-		if (strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
+		if (strchr (this_c, ',') || strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
 			/* A list of directories or a single directory that is accessible */
 			GMT->session.DATADIR = strdup (this_c);
 			gmt_dos_path_fix (GMT->session.DATADIR);
@@ -2827,9 +2827,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #ifdef WIN32
 		else if (strchr(this_c, ':')) {		/* May happen to have ':' as a path separator when running a MSYS bash shell*/
 			GMT->session.DATADIR = strdup(this_c);
-			gmt_dos_path_fix(GMT->session.DATADIR);
+			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #endif
+		gmt_replace_backslash_in_path (GMT->session.DATADIR);
+		gmt_strrepc (GMT->session.DATADIR, PATH_SEPARATOR, ',');	/* Use comma for OS-independent separator */
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
@@ -9173,14 +9175,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("PS_PAGE_ORIENTATION");
 			break;
 		case GMTCASE_PS_PAGE_ORIENTATION:
-			if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Ignore under modern mode */
-				if (!strcmp (lower_value, "landscape"))
-					GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				else if (!strcmp (lower_value, "portrait"))
-					GMT->current.setting.ps_orientation = PSL_PORTRAIT;
-				else
-					error = true;
-			}
+			if (!strcmp (lower_value, "landscape"))
+				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+			else if (!strcmp (lower_value, "portrait"))
+				GMT->current.setting.ps_orientation = PSL_PORTRAIT;
+			else
+				error = true;
 			break;
 		case GMTCASE_PAPER_MEDIA:
 			GMT_COMPAT_TRANSLATE ("PS_MEDIA");
@@ -12803,71 +12803,6 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
-void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool gmt_main) {
-	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
-	 * This is needed since there is not gmt begin | end sequence in this case.
-	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
-	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
-	
-	unsigned modern = 0, pos, k = 0;
-	int n_args = argc - 1;
-	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
-	bool usage = false;
-
-	if (n_args == 0) return;    /* This is just typing gmt with no args */
-	if (gmt_main) {
-		n_args--;	/* Count number of args after module name */
-		k = 1;
-	}
-	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, argv[k]);
-	
-	if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (argv[k], "ps", 2U)) {	/* Gave classic ps* name in modern mode */
-		char not_used[GMT_LEN32] = {""};
-		const char *mod_name = gmt_current_name (argv[k], not_used);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", argv[k], mod_name);
-	}
-	if (API->GMT->current.setting.use_modern_name) {
-		if (n_args == 0) {	/* Gave none or a single argument */
-			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
-			return;
-		}
-		if (n_args == 1) {	/* Gave a single argument */
-			if (argv[argc-1][0] == '+' && argv[argc-1][1] == '\0') {	/* Gave + */
-				modern = 1;
-			}
-			else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
-				modern = 1;
-			}
-			if (modern) usage = true;
-		}
-	}
-	/* Must check if a one-liner with special graphics format settings were given, e.g., -png map */
-	for (k = 1; !modern && k < (unsigned int)argc; k++) {
-		if (argv[k][0] != '-') continue;	/* Skip file names */
-		if (strlen (argv[k]) < 3 || strlen (argv[k]) >= GMT_LEN128) continue;	/* -ps is the shortest format extension, and very long args are filenames*/
-		strncpy (figure, &argv[k][1],  GMT_LEN128-1);	/* Get a local copy so we can mess with it, but skip the leading - */
-		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
-		if (gmt_get_graphics_id (API->GMT, figure) != GMT_NOTSET) {	/* Found a valid one-liner option */
-			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
-			if (c == NULL) continue;	/* Nothing else to check */
-			/* Make sure any other formats are valid, too */
-			if (c) c[0] = ',';	/* Restore any comma we found */
-			pos = 0;
-			while (modern && gmt_strtok (figure, ",", &pos, p)) {	/* Check each format to make sure each is OK */
-				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)
-					modern = 0;
-			}
-		}
-	}
-	if (modern) {	/* This is indeed a modern mode one-liner */
-		API->GMT->current.setting.run_mode = GMT_MODERN;
-		API->usage = usage;
-	}
-	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
-		API->GMT->current.setting.use_modern_name = true;
-}
-
 /*! Update vector head length and width parameters based on size_z and v_angle, and deal with pen/fill settings */
 int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill) {
 	bool no_outline = false, no_fill = false;
@@ -15140,15 +15075,9 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 		return GMT_RUNTIME_ERROR;
 	}
 	gmt_M_str_free (here);
-	if (rmdir (dir)) {	/* Unable to delete the directory */
+	if (!recreate && rmdir (dir)) {	/* Unable to delete the directory */
 		perror (dir);
 		error = GMT_RUNTIME_ERROR;
-	}
-	else if (recreate) {	/* Create an empty directory to replace what we deleted */
-		if (gmt_mkdir (dir)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
-			error = GMT_RUNTIME_ERROR;
-		}
 	}
 	return error;
 }

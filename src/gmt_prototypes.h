@@ -45,7 +45,6 @@ EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned in
 EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);
 EXTERN_MSC void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify);
-EXTERN_MSC void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool is_main);
 EXTERN_MSC struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC int get_V (char arg);
 EXTERN_MSC int gmt_get_V (char arg);
@@ -233,6 +232,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_replace_backslash_in_path (char *dir);
 EXTERN_MSC void gmt_disable_bhi_opts (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reenable_bhi_opts (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_insert_tableheader (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, char *txt);
@@ -329,6 +329,15 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_rgb_to_hsv (double rgb[], double hsv[]);
+EXTERN_MSC void gmt_hsv_to_rgb (double rgb[], double hsv[]);
+EXTERN_MSC void gmt_rgb_to_xyz (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_rgb (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_lab (double xyz[], double lab[]);
+EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
+EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
+EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
+EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);
 EXTERN_MSC double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
@@ -594,7 +603,7 @@ EXTERN_MSC void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *thet
 
 /* From gmt_parse.c */
 /* This macro is called via each modules Return macro so API and options are set */
-#define gmt_M_free_options(mode) {if (mode >= 0 && GMT_Destroy_Options (API, &options) != GMT_OK) exit (GMT_MEMORY_ERROR);}
+#define gmt_M_free_options(mode) {if (GMT_Destroy_Options (API, &options) != GMT_OK) exit (GMT_MEMORY_ERROR);}
 
 /* From gmt_api.c */
 EXTERN_MSC struct GMTAPI_CTRL *gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
