@@ -424,6 +424,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	uniq = (int)getpid();	/* Unique number for temporary files  */
+
 	if (!Ctrl->C.active) {	/* If no cpt given then we must compute one from the grid and use throughout */
 		unsigned int zmode = gmt_cpt_default (GMT, G->header);
 		char cfile[PATH_MAX] = {""};
@@ -432,7 +434,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create a CPT\n");
 			Return (API->error);	/* Well, that did not go well... */
 		}
-		sprintf (cfile, "%s/grd2kml_%d.cpt", API->tmp_dir, (int)getpid());
+		sprintf (cfile, "%s/grd2kml_%d.cpt", API->tmp_dir, uniq);
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, cfile, P) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -480,9 +482,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (gmt_mkdir (Ctrl->N.prefix))
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Directory %s already exist - will overwrite files\n", Ctrl->N.prefix);
 	
-	uniq = (int)(time (NULL) % 1000000);	/* remainder of seconds - lazy way to get some unique number for the files  */
 	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from data grid to ensure constant scaling */
-		sprintf (file, "grd2kml_intensity_tmp_%6.6d.grd", uniq);
+		sprintf (file, "%s/grd2kml_intensity_tmp_%6.6d.grd", API->tmp_dir, uniq);
 		Ctrl->I.file = strdup (file);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Derive an intensity grid from data grid\n");
 		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect */
@@ -520,7 +521,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
-		sprintf (DataGrid, "grd2kml_extended_data_%6.6d.grd", uniq);
+		sprintf (DataGrid, "%s/grd2kml_extended_data_%6.6d.grd", API->tmp_dir, uniq);
 		sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->In.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], DataGrid);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extend original data grid to multiple of largest grid spacing\n");
 		if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
@@ -529,7 +530,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		z_extend = true;	/* We made a temp file we need to zap */
 		if (Ctrl->I.active) {	/* Also extend the intensity grid */
-			sprintf (IntensGrid, "grd2kml_extended_intens_%6.6d.grd", uniq);
+			sprintf (IntensGrid, "%s/grd2kml_extended_intens_%6.6d.grd", API->tmp_dir, uniq);
 			sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->I.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], IntensGrid);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extend intensity grid to multiple of largest grid spacing\n");
 			if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
@@ -597,7 +598,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		if (level < max_level) {	/* Filter the data to match level resolution */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Filtering down the grid(s)\n", level);
-			sprintf (Zgrid, "grd2kml_Z_L%d_tmp_%6.6d.grd", level, uniq);
+			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 			sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", DataGrid, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Zgrid);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
@@ -606,7 +607,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
-				sprintf (Igrid, "grd2kml_I_L%d_tmp_%6.6d.grd", level, uniq);
+				sprintf (Igrid, "%s/grd2kml_I_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 				sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", IntensGrid, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Igrid);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 				if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
@@ -666,8 +667,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
 						Return (API->error);
 					}
-					/* Will pass -W to notify us if there was no valid image data imaged */
-					sprintf (psfile, "grd2kml_tile_tmp_%6.6d.ps", uniq);
+					/* Will pass -W so grdimage will notify us if there was no valid image data imaged */
+					sprintf (psfile, "%s/grd2kml_tile_tmp_%6.6d.ps", API->tmp_dir, uniq);
 					if (Ctrl->I.active)	/* Must pass two grids */
 						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
 					else
