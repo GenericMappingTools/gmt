@@ -359,7 +359,7 @@ EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi;
-	bool use_tile = false, z_extend = false, i_extend = false;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false;
 	
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
 
@@ -411,6 +411,22 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (!Ctrl->C.active) {	/* If no cpt given then we must compute one from the grid and use throughout */
+		unsigned int zmode = gmt_cpt_default (GMT, G->header);
+		char cfile[PATH_MAX] = {""};
+		struct GMT_PALETTE *P = NULL;
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, 0.0, zmode)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create a CPT\n");
+			Return (API->error);	/* Well, that did not go well... */
+		}
+		sprintf (cfile, "%s/grd2kml_%d.cpt", API->tmp_dir, (int)getpid());
+		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, cfile, P) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		Ctrl->C.active = tmp_cpt = true;
+		Ctrl->C.file = strdup (cfile);
+	}
+	
 	Ctrl->L.size /= Ctrl->M.magnify;
 	dpi = 100 * Ctrl->M.magnify;
 	/* Set specific grdimage option -Q or -Ei or neither */
@@ -808,5 +824,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, Q);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
+	if (tmp_cpt) gmt_remove_file (GMT, Ctrl->C.file);
 	Return (GMT_NOERROR);
 }
