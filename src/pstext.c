@@ -336,7 +336,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +h will use as text the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is. Add modifier last if text contains + characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (but see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
@@ -379,7 +379,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	int j, k;
 	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false, mess = false;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -436,15 +436,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				Ctrl->F.active = true;
 				pos = 0;
 				Ctrl->F.no_input = gmt_no_pstext_input (API, opt->arg);
-				if ((c = strstr (opt->arg, "+t"))) {	/* Worry about plus symbols in the text. If not a valid modifier then we hide the plus symbol for now */
-					c++;
-					while (c[0]) {
-						if (c[0] == '+' && (c[1] == '\0' || strchr ("Aafjclhrtz", c[1]) == NULL)) {
-							c[0] = 1;	/* Use ASCII 1 for a regular plus until we are done with this parsing */
-							mess = true;
-						}
-						c++;
-					}
+				if ((c = strstr (opt->arg, "+t")) && (q = strchr (&c[1], '+'))) {	/* Worry about plus symbols in the text. If not a valid modifier then we hide the plus symbol for now */
+					c++;	/* Advance past the + in +t */
+					gmt_strrepc (c, '+', 1);	/* Replace any other + characters with 1 */
+					mess = true;
 				}
 
 				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
@@ -525,10 +520,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							}
 							else
 								Ctrl->F.text = strdup (&p[1]);
-							if (mess) {	/* Restore ASCII 1 to + */
-								c = Ctrl->F.text;
-								while (c[0]) { if (c[0] == 1) c[0] = '+'; c++; }
-							}
+							if (mess)	/* Restore ASCII 1 to + */
+								gmt_strrepc (Ctrl->F.text, 1, '+');	/* Put back the + characters */
 							Ctrl->F.get_text = GET_CMD_TEXT;
 							break;
 						case 'z':	/* z-column formatted */
@@ -543,10 +536,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
-				if (mess) {	/* Restore ASCII 1 to + */
-					c = opt->arg;
-					while (c[0]) { if (c[0] == 1) c[0] = '+'; c++; }
-				}
+				if (mess)	/* Put back the + characters */
+					gmt_strrepc (opt->arg, 1, '+');
 				break;
 			case 'G':
 				Ctrl->G.active = true;
