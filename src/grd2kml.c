@@ -675,7 +675,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
 					error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 					if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
-						sprintf (cmd, "%s -J -R -O -C%s -Vn ->%s", z_data, cfile, psfile);
+						sprintf (cmd, "%s -JX%3.2lfid -R%s/%s/%s/%s -O -C%s -Vn ->>%s", z_data, dim, W, E, S, N, cfile, psfile);
 						GMT_Init_VirtualFile (API, 0, z_data);	/* Read the same grid again */
 						GMT_Init_VirtualFile (API, 0, cfile);	/* Read the same contours again */
 						if ((error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd))) {
