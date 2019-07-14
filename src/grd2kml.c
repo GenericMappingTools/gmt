@@ -142,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-T<title>] [%s] [-W<contfile>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -170,7 +170,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to overlay contours [no contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to draw contours on the images [no contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and use the contours implied by the CPT file.\n");
 	GMT_Option (API, "f,n,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -308,8 +309,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Contours and pens */
 				Ctrl->W.active = true;
-				gmt_M_str_free (Ctrl->W.file);
-				Ctrl->W.file = strdup (opt->arg);
+				if (opt->arg[0]) {
+					gmt_M_str_free (Ctrl->W.file);
+					Ctrl->W.file = strdup (opt->arg);
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -548,24 +551,47 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	if (Ctrl->W.active) {	/* Want to overlay contours given via file */
 		uint64_t c;
-		char cval[GMT_LEN64] = {""}, pen[GMT_LEN64] = {""}, line[GMT_LEN256] = {""};
-		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
-			gmt_M_free (GMT, Q);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (C->n_segments > 1 || C->n_records == 0 || C->table[0]->segment[0]->text == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Contour file has more than one segment, no records at all, or no text\n");
-			gmt_M_free (GMT, Q);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		for (c = 0; c < C->n_records; c++) {	/* Must reformat the records to fit grdcontour requirements */
-			if (C->table[0]->segment[0]->text[c] == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "No text record found\n");
+		char line[GMT_LEN256] = {""};
+		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actul file */
+			char cval[GMT_LEN64] = {""}, pen[GMT_LEN64] = {""};
+			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			sscanf (C->table[0]->segment[0]->text[c], "%s %s", cval, pen);
-			sprintf (line, "%s C 0 %s", cval, pen);	/* Build the required record format for grdcontour */
+			if (C->n_segments > 1 || C->n_records == 0 || C->table[0]->segment[0]->text == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Contour file has more than one segment, no records at all, or no text\n");
+				gmt_M_free (GMT, Q);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			for (c = 0; c < C->n_records; c++) {	/* Must reformat the records to fit grdcontour requirements */
+				if (C->table[0]->segment[0]->text[c] == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "No text record found\n");
+					gmt_M_free (GMT, Q);
+					Return (GMT_RUNTIME_ERROR);
+				}
+				sscanf (C->table[0]->segment[0]->text[c], "%s %s", cval, pen);
+				sprintf (line, "%s C 0 %s", cval, pen);	/* Build the required record format for grdcontour */
+				gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
+				C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
+			}
+		}
+		else {	/* Use contours from CPT file, with -W<pen> */
+			struct GMT_PALETTE *P = NULL;
+			uint64_t dim_c[4] = {1, 1, 0, 0};
+			if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+				Return (API->error);
+			}
+			dim_c[GMT_ROW] = P->n_colors + 1;	/* Number of contours implied by CPT */
+			if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim_c, NULL, NULL, 0, 0, NULL)) == NULL) {
+				gmt_M_free (GMT, Q);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			for (c = 0; c < P->n_colors; c++) {	/* Do all the low boundaries */
+				sprintf (line, "%.16g C 0 %s", P->data[c].z_low, Ctrl->W.file);	/* Build the required record format for grdcontour */
+				gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
+				C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
+			}
+			sprintf (line, "%.16g C 0 %s", P->data[P->n_colors-1].z_high, Ctrl->W.file);	/* Must add the last high boundary */
 			gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
 			C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
 		}
