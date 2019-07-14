@@ -5,10 +5,6 @@
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
 
-. gmt_shell_functions.sh
-
-gmt_init_tmpdir
-
 SIZE=$1
 COL=16
 ROW=35
@@ -27,12 +23,12 @@ else
 fi
 
 ps=GMT_RGBchart_$SIZE.ps
-allinfo=$GMT_TMPDIR/allinfo.tmp
-cpt=$GMT_TMPDIR/lookup.cpt
-rects=$GMT_TMPDIR/rects.tmp
-whitetags=$GMT_TMPDIR/whitetags.tmp
-blacktags=$GMT_TMPDIR/blacktags.tmp
-labels=$GMT_TMPDIR/labels.tmp
+allinfo=allinfo.tmp
+cpt=lookup.cpt
+rects=rects.tmp
+whitetags=whitetags.tmp
+blacktags=blacktags.tmp
+labels=labels.tmp
 gmt set PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
@@ -43,7 +39,7 @@ fontsize=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
 fontsizeL=`gmt math -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 
 # Produce $allinfo from color and name files
-paste ${GMT_SOURCE_DIR}/src/gmt_color_rgb.h ${GMT_SOURCE_DIR}/src/gmt_colornames.h | tr '{,}"' ' ' > Colors.txt
+paste ${GMT_SOURCE_DIR}/src/gmt_color_rgb.h ${GMT_SOURCE_DIR}/src/gmt_colornames.h | tr '{,}"\r' ' ' > Colors.txt
 egrep -v "^#|grey" Colors.txt | $AWK -v COL=$COL -v ROW=$ROW \
 	'BEGIN{col=0;row=0}{if(col==0&&row<2){col++};if ($1 == $2 && $2 == $3) {printf "%s", $1} else {printf "%s/%s/%s", $1, $2,
 	$3};printf " %g %s %g %g\n",0.299*$1+0.587*$2+0.114*$3,$4,col,row;col++;if(col==COL){col=0;row++}}' > $allinfo
@@ -69,5 +65,3 @@ gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
 L ${fontsizeL}p,Helvetica-Bold R Values are R/G/B. Names are case-insensitive.
 L ${fontsizeL}p,Helvetica-Bold R Optionally, use GREY instead of GRAY.
 END
-
-gmt_remove_tmpdir

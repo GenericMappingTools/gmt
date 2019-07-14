@@ -260,6 +260,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	FPDF       3  1    F probability density function for F = A, nu1 = B and nu2 = C\n"
 		"	GE         2  1    1 if A >= B, else 0\n"
 		"	GT         2  1    1 if A > B, else 0\n"
+		"	HSV2LAB    3  3    Convert hsv to lab, with h = A, s = B and v = C\n"
+		"	HSV2RGB    3  3    Convert hsv to rgb, with h = A, s = B and v = C\n"
+		"	HSV2XYZ    3  3    Convert hsv to xyz, with h = A, s = B and v = C\n"
 		"	HYPOT      2  1    hypot (A, B) = sqrt (A*A + B*B)\n"
 		"	I0         1  1    Modified Bessel function of A (1st kind, order 0)\n"
 		"	I1         1  1    Modified Bessel function of A (1st kind, order 1)\n"
@@ -280,6 +283,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	KM2DEG     1  1    Converts Kilometers to Spherical Degrees\n"
 		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
 		"	KURT       1  1    Kurtosis of A\n"
+		"	LAB2HSV    3  3    Convert lab to hsv, with l = A, a = B and b = C\n"
+		"	LAB2RGB    3  3    Convert lab to rgb, with l = A, a = B and b = C\n"
+		"	LAB2XYZ    3  3    Convert lab to xyz, with l = A, a = B and b = C\n"
 		"	LCDF       1  1    Laplace cumulative distribution function for z = A\n"
 		"	LCRIT      1  1    Laplace distribution critical value for alpha = A\n"
 		"	LDIST      1  1    Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A\n"
@@ -333,6 +339,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	RAND       2  1    Uniform random values between A and B\n"
 		"	RCDF       1  1    Rayleigh cumulative distribution function for z = A\n"
 		"	RCRIT      1  1    Rayleigh distribution critical value for alpha = A\n"
+		"	RGB2HSV    3  3    Convert rgb to hsv, with r = A, g = B and b = C\n"
+		"	RGB2LAB    3  3    Convert rgb to lab, with r = A, g = B and b = C\n"
+		"	RGB2XYZ    3  3    Convert rgb to xyz, with r = A, g = B and b = C\n"
 		"	RINT       1  1    rint (A) (round to integral value nearest to A)\n"
 		"	RMS        1  1    Root-mean-square of A\n"
 		"	RMSW       2  1    Weighted Root-mean-square of A for weights in B\n"
@@ -379,6 +388,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
 		"	WRAP       1  1    wrap (A). (A in radians)\n"
 		"	XOR        2  1    0 if A == NaN and B == NaN, NaN if B == NaN, else A\n"
+		"	XYZ2HSV    3  3    Convert xyz to hsv, with x = A, y = B and z = C\n"
+		"	XYZ2LAB    3  3    Convert xyz to lab, with x = A, y = B and z = C\n"
+		"	XYZ2RGB    3  3    Convert xyz to rgb, with x = A, y = B and z = C\n"
 		"	Y0         1  1    Bessel function of A (2nd kind, order 0)\n"
 		"	Y1         1  1    Bessel function of A (2nd kind, order 1)\n"
 		"	YLM        2  2    Re and Im orthonormalized spherical harmonics degree A order B\n"
@@ -2334,6 +2346,145 @@ GMT_LOCAL void grd_GT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct G
 	}
 }
 
+GMT_LOCAL void grd_HSV2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: HSV2LAB 3 3 Convert hsv to lab, with h = A, s = B and v = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double hsv[4], rgb[4], lab[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		hsv[0] = stack[prev2]->factor;
+		hsv[1] = stack[prev1]->factor;
+		hsv[2] = stack[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_lab (rgb, lab);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)lab[0];
+			stack[prev1]->G->data[node] = (float)lab[1];
+			stack[last]->G->data[node]  = (float)lab[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		hsv[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		hsv[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		hsv[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_lab (rgb, lab);
+		stack[prev2]->G->data[node] = (float)lab[0];
+		stack[prev1]->G->data[node] = (float)lab[1];
+		stack[last]->G->data[node]  = (float)lab[2];
+	}
+}
+
+GMT_LOCAL void grd_HSV2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: HSV2RGB 3 3 Convert hsv to rgb, with h = A, s = B and v = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[4], hsv[4];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		hsv[0] = stack[prev2]->factor;
+		hsv[1] = stack[prev1]->factor;
+		hsv[2] = stack[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+			stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+			stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		hsv[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		hsv[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		hsv[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_hsv_to_rgb (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+		stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+		stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+	}
+}
+
+GMT_LOCAL void grd_HSV2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: HSV2XYZ 3 3 Convert hsv to xyz, with h = A, s = B and v = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double hsv[4], rgb[4], xyz[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2XYZ must be a 0 <= v <= 1!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		hsv[0] = stack[prev2]->factor;
+		hsv[1] = stack[prev1]->factor;
+		hsv[2] = stack[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_xyz (rgb, xyz);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)xyz[0];
+			stack[prev1]->G->data[node] = (float)xyz[1];
+			stack[last]->G->data[node]  = (float)xyz[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		hsv[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		hsv[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		hsv[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_xyz (rgb, xyz);
+		stack[prev2]->G->data[node] = (float)xyz[0];
+		stack[prev1]->G->data[node] = (float)xyz[1];
+		stack[last]->G->data[node]  = (float)xyz[2];
+	}
+}
+
 GMT_LOCAL void grd_HYPOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: HYPOT 2 1 hypot (A, B) = sqrt (A*A + B*B).  */
 {
@@ -2748,6 +2899,147 @@ GMT_LOCAL int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		return 1;
 	}
 	return 0;
+}
+
+GMT_LOCAL void grd_LAB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LAB2HSV 3 3 Convert lab to hsv, with l = A, a = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double hsv[4], lab[4], rgb[4];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2HSV must be a 0 <= l <= 100!\n");
+		error++;
+	}
+#if 0
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to LAB2HSV must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to LAB2HSV must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		lab[0] = stack[prev2]->factor;
+		lab[1] = stack[prev1]->factor;
+		lab[2] = stack[last]->factor;
+		gmt_lab_to_rgb (rgb, lab);	/* Must do this via RGB */
+		gmt_rgb_to_hsv (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)hsv[0];
+			stack[prev1]->G->data[node] = (float)hsv[1];
+			stack[last]->G->data[node]  = (float)hsv[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		lab[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		lab[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		lab[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_lab_to_rgb (rgb, lab);	/* Must do this via RGB */
+		gmt_rgb_to_hsv (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)hsv[0];
+		stack[prev1]->G->data[node] = (float)hsv[1];
+		stack[last]->G->data[node]  = (float)hsv[2];
+	}
+}
+
+GMT_LOCAL void grd_LAB2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LAB2RGB 3 3 Convert lab to rgb, with l = A, a = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double lab[3], rgb[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2RGB must be a 0 <= l <= 100!\n");
+		error++;
+	}
+#if 0
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to LAB2RGB must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to LAB2RGB must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		lab[0] = stack[prev2]->factor;
+		lab[1] = stack[prev1]->factor;
+		lab[2] = stack[last]->factor;
+		gmt_lab_to_rgb (rgb, lab);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+			stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+			stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		lab[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		lab[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		lab[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_lab_to_rgb (rgb, lab);
+		stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+		stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+		stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+	}
+}
+
+GMT_LOCAL void grd_LAB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LAB2XYZ 3 3 Convert lab to xyz, with l = A, a = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double lab[3], xyz[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to LAB2XYZ must be a 0 <= l <= 100!\n");
+		error++;
+	}
+#if 0
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to LAB2XYZ must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to LAB2XYZ must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		lab[0] = stack[prev2]->factor;
+		lab[1] = stack[prev1]->factor;
+		lab[2] = stack[last]->factor;
+		gmt_lab_to_xyz (xyz, lab);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)xyz[0];
+			stack[prev1]->G->data[node] = (float)xyz[1];
+			stack[last]->G->data[node]  = (float)xyz[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		lab[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		lab[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		lab[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_lab_to_xyz (xyz, lab);
+		stack[prev2]->G->data[node] = (float)xyz[0];
+		stack[prev1]->G->data[node] = (float)xyz[1];
+		stack[last]->G->data[node]  = (float)xyz[2];
+	}
 }
 
 GMT_LOCAL void grd_LCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3854,6 +4146,139 @@ GMT_LOCAL void grd_RCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : M_SQRT2 * sqrtf (-logf (1.0f - stack[last]->G->data[node])));
 }
 
+GMT_LOCAL void grd_RGB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RGB2HSV 3 3 Convert rgb to hsv, with r = A, g = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[4], hsv[4];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+		error++;
+	}
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		rgb[0] = gmt_M_is255 (stack[prev2]->factor);
+		rgb[1] = gmt_M_is255 (stack[prev1]->factor);
+		rgb[2] = gmt_M_is255 (stack[last]->factor);
+		gmt_rgb_to_hsv (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)hsv[0];
+			stack[prev1]->G->data[node] = (float)hsv[1];
+			stack[last]->G->data[node]  = (float)hsv[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		rgb[0] = gmt_M_is255 ((stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node]);
+		rgb[1] = gmt_M_is255 ((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]);
+		rgb[2] = gmt_M_is255 ((stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node]);
+		gmt_rgb_to_hsv (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)hsv[0];
+		stack[prev1]->G->data[node] = (float)hsv[1];
+		stack[last]->G->data[node]  = (float)hsv[2];
+	}
+}
+
+GMT_LOCAL void grd_RGB2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RGB2LAB 3 3 Convert rgb to lab, with r = A, g = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[3], lab[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2LAB must be a 0 <= r <= 255!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2LAB must be a 0 <= g <= 255!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2LAB must be a 0 <= b <= 255!\n");
+		error++;
+	}
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		rgb[0] = gmt_M_is255 (stack[prev2]->factor);
+		rgb[1] = gmt_M_is255 (stack[prev1]->factor);
+		rgb[2] = gmt_M_is255 (stack[last]->factor);
+		gmt_rgb_to_lab (rgb, lab);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)lab[0];
+			stack[prev1]->G->data[node] = (float)lab[1];
+			stack[last]->G->data[node]  = (float)lab[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		rgb[0] = gmt_M_is255 ((stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node]);
+		rgb[1] = gmt_M_is255 ((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]);
+		rgb[2] = gmt_M_is255 ((stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node]);
+		gmt_rgb_to_lab (rgb, lab);
+		stack[prev2]->G->data[node] = (float)lab[0];
+		stack[prev1]->G->data[node] = (float)lab[1];
+		stack[last]->G->data[node]  = (float)lab[2];
+	}
+}
+
+GMT_LOCAL void grd_RGB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RGB2XYZ 3 3 Convert rgb to xyz, with r = A, g = B and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[3], xyz[3];
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
+		error++;
+	}
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		rgb[0] = gmt_M_is255 (stack[prev2]->factor);
+		rgb[1] = gmt_M_is255 (stack[prev1]->factor);
+		rgb[2] = gmt_M_is255 (stack[last]->factor);
+		gmt_rgb_to_xyz (rgb, xyz);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)xyz[0];
+			stack[prev1]->G->data[node] = (float)xyz[1];
+			stack[last]->G->data[node]  = (float)xyz[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		rgb[0] = gmt_M_is255 ((stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node]);
+		rgb[1] = gmt_M_is255 ((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]);
+		rgb[2] = gmt_M_is255 ((stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node]);
+		gmt_rgb_to_xyz (rgb, xyz);
+		stack[prev2]->G->data[node] = (float)xyz[0];
+		stack[prev1]->G->data[node] = (float)xyz[1];
+		stack[last]->G->data[node]  = (float)xyz[2];
+	}
+}
+
 GMT_LOCAL void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -4825,6 +5250,150 @@ GMT_LOCAL void grd_XOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
+GMT_LOCAL void grd_XYZ2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: XYZ2HSV 3 3 Convert xyz to hsv, with x = A, y = B and z = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[4], hsv[4], xyz[3];
+	gmt_M_unused (GMT);
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+#if 0
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to XYZ2HSV must be a 0 <= l <= 100!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to XYZ2HSV must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to XYZ2HSV must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		xyz[0] = stack[prev2]->factor;
+		xyz[1] = stack[prev1]->factor;
+		xyz[2] = stack[last]->factor;
+		gmt_xyz_to_rgb (rgb, xyz);
+		gmt_rgb_to_hsv (rgb, hsv);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)hsv[0];
+			stack[prev1]->G->data[node] = (float)hsv[1];
+			stack[last]->G->data[node]  = (float)hsv[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		xyz[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		xyz[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		xyz[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_xyz_to_rgb (rgb, xyz);
+		gmt_rgb_to_hsv (rgb, hsv);
+		stack[prev2]->G->data[node] = (float)hsv[0];
+		stack[prev1]->G->data[node] = (float)hsv[1];
+		stack[last]->G->data[node]  = (float)hsv[2];
+	}
+}
+
+GMT_LOCAL void grd_XYZ2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: XYZ2LAB 3 3 Convert xyz to lab, with x = A, y = B and z = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double lab[3], xyz[3];
+	gmt_M_unused (GMT);
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+#if 0
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to XYZ2LAB must be a 0 <= l <= 100!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to XYZ2LAB must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to XYZ2LAB must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		xyz[0] = stack[prev2]->factor;
+		xyz[1] = stack[prev1]->factor;
+		xyz[2] = stack[last]->factor;
+		gmt_xyz_to_lab (xyz, lab);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)lab[0];
+			stack[prev1]->G->data[node] = (float)lab[1];
+			stack[last]->G->data[node]  = (float)lab[2];
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		xyz[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		xyz[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		xyz[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_xyz_to_lab (xyz, lab);
+		stack[prev2]->G->data[node] = (float)lab[0];
+		stack[prev1]->G->data[node] = (float)lab[1];
+		stack[last]->G->data[node]  = (float)lab[2];
+	}
+}
+
+GMT_LOCAL void grd_XYZ2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: XYZ2RGB 3 3 Convert xyz to rgb, with x = A, y = B and z = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double rgb[3], xyz[3];
+	gmt_M_unused (GMT);
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+#if 0
+	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument l to XYZ2RGB must be a 0 <= l <= 100!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to XYZ2RGB must be a 0 <= s <= 1!\n");
+		error++;
+	}
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to XYZ2RGB must be a 0 <= v <= 1!\n");
+		error++;
+	}
+#endif
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
+		xyz[0] = stack[prev2]->factor;
+		xyz[1] = stack[prev1]->factor;
+		xyz[2] = stack[last]->factor;
+		gmt_xyz_to_rgb (rgb, xyz);
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+			stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+			stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+		}
+		return;
+	}
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		xyz[0] = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		xyz[1] = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+		xyz[2] = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+		gmt_xyz_to_rgb (rgb, xyz);
+		stack[prev2]->G->data[node] = (float)gmt_M_s255 (rgb[0]);
+		stack[prev1]->G->data[node] = (float)gmt_M_s255 (rgb[1]);
+		stack[last]->G->data[node]  = (float)gmt_M_s255 (rgb[2]);
+	}
+}
+
 GMT_LOCAL void grd_Y0 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: Y0 1 1 Bessel function of A (2nd kind, order 0).  */
 {
@@ -4962,7 +5531,7 @@ GMT_LOCAL void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 209
+#define GRDMATH_N_OPERATORS 221
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5177,6 +5746,18 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[206] = grd_ZCRIT;	n_args[206] = 1;	n_out[206] = 1;
 	ops[207] = grd_ZCDF;	n_args[207] = 1;	n_out[207] = 1;
 	ops[208] = grd_ZPDF;	n_args[208] = 1;	n_out[208] = 1;
+	ops[209] = grd_HSV2LAB;	n_args[209] = 3;	n_out[209] = 3;
+	ops[210] = grd_HSV2RGB;	n_args[210] = 3;	n_out[210] = 3;
+	ops[211] = grd_HSV2XYZ;	n_args[211] = 3;	n_out[211] = 3;
+	ops[212] = grd_LAB2HSV;	n_args[212] = 3;	n_out[212] = 3;
+	ops[213] = grd_LAB2RGB;	n_args[213] = 3;	n_out[213] = 3;
+	ops[214] = grd_LAB2XYZ;	n_args[214] = 3;	n_out[214] = 3;
+	ops[215] = grd_RGB2HSV;	n_args[215] = 3;	n_out[215] = 3;
+	ops[216] = grd_RGB2LAB;	n_args[216] = 3;	n_out[216] = 3;
+	ops[217] = grd_RGB2XYZ;	n_args[217] = 3;	n_out[217] = 3;
+	ops[218] = grd_XYZ2HSV;	n_args[218] = 3;	n_out[218] = 3;
+	ops[219] = grd_XYZ2LAB;	n_args[219] = 3;	n_out[219] = 3;
+	ops[220] = grd_XYZ2RGB;	n_args[220] = 3;	n_out[220] = 3;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -5578,6 +6159,18 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		"ZCRIT",	/* id = 206 */
 		"ZCDF",	/* id = 207 */
 		"ZPDF",	/* id = 208 */
+		"HSV2LAB",	/* id = 209 */
+		"HSV2RGB",	/* id = 210 */
+		"HSV2XYZ",	/* id = 211 */
+		"LAB2HSV",	/* id = 212 */
+		"LAB2RGB",	/* id = 213 */
+		"LAB2XYZ",	/* id = 214 */
+		"RGB2HSV",	/* id = 215 */
+		"RGB2LAB",	/* id = 216 */
+		"RGB2XYZ",	/* id = 217 */
+		"XYZ2HSV",	/* id = 218 */
+		"XYZ2LAB",	/* id = 219 */
+		"XYZ2RGB",	/* id = 220 */
 		"" /* last element is intentionally left blank */
 	};
 

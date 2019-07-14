@@ -2492,7 +2492,7 @@ straight lines of finite thickness should behave when joined at a common
 point. By default, line segments have rectangular ends, but this can
 change to give rounded ends. When :ref:`PS_LINE_CAP <PS_LINE_CAP>` is set to round the
 a segment length of zero will appear as a circle. This can be used to
-created circular dotted lines, and by manipulating the phase shift in
+create circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
@@ -4286,7 +4286,7 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     the current directory. This allows maintainers to consolidate large
     data files and to simplify scripting that use these files since the
     absolute path need not be specified. Separate multiple directories
-    with colons (:) – under Windows use semi-colons (;). Any directory
+    with commas. Any directory
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 

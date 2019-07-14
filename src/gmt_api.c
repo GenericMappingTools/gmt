@@ -22,7 +22,7 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 67 documented functions.  For a full
+ * The API presently consists of 68 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
@@ -39,38 +39,39 @@
  * GMT_Message		      : Report an message given a verbosity level
  * GMT_Report		      : Report an error given an error code
  *
- * There are 30 further public functions used for GMT i/o activities:
+ * There are 31 further public functions used for GMT i/o activities:
  *
- * GMT_Alloc_Segment      : Allocate a single DATASET segment
- * GMT_Begin_IO	          : Allow i/o to take place for rec-by-rec operations
- * GMT_Convert_Data       : Convert between different data sets, if possible
- * GMT_Create_Data        : Return an empty container for a new data set
- * GMT_Destroy_Data       : Destroy a data set and its container
- * GMT_Duplicate_Data     : Make an exact duplicate of a dataset
- * GMT_Duplicate_String   : Allocates a copy of a string to be freed by API
- * GMT_End_IO             : Disallow further rec-by-rec i/o
- * GMT_Get_Info           : Get meta-data from the object passed
- * GMT_Get_Record         : Get the next single data record from the source(s)
- * GMT_Get_Row            : Read one row from a grid
- * GMT_Get_Status         : Exmine current status of record-by-record i/o
- * GMT_Get_Matrix         : Get user matrix from GMT_MATRIX array
- * GMT_Get_Vector         : Get user vector from GMT_VECTOR column
- * GMT_Put_Strings        : Get user strings from GMT_VECTOR or MATRIX container
- * GMT_Init_IO            : Initialize rec-by-rec i/o machinery before program use
- * GMT_Init_VirtualFile   : Reset a virtual file for reuse
- * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
- * GMT_Put_Record         : Send the next output record to its destination
- * GMT_Put_Row            : Write one row to a grid
- * GMT_Put_Matrix         : Hook user matrix to GMT_MATRIX array
- * GMT_Put_Vector         : Hook user vector to GMT_VECTOR column
- * GMT_Put_Strings        : Hook user strings to GMT_VECTOR or MATRIX container
- * GMT_Read_Data          : Load data into program memory from selected source
- * GMT_Read_Group         : Read numerous files into an array of objects
- * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
- * GMT_Register_IO        : Register a source (or destination) for i/o use
- * GMT_Set_Comment        : Update a comment for a data set
- * GMT_Write_Data         : Place data set from program memory to selected destination
- * GMT_Encode_Options     : Used by external APIs to fill out options from implicit rules
+ * GMT_Alloc_Segment       : Allocate a single DATASET segment
+ * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
+ * GMT_Convert_Data        : Convert between different data sets, if possible
+ * GMT_Create_Data         : Return an empty container for a new data set
+ * GMT_Destroy_Data        : Destroy a data set and its container
+ * GMT_Duplicate_Data      : Make an exact duplicate of a dataset
+ * GMT_Duplicate_String    : Allocates a copy of a string to be freed by API
+ * GMT_End_IO              : Disallow further rec-by-rec i/o
+ * GMT_Get_Info            : Get meta-data from the object passed
+ * GMT_Get_Record          : Get the next single data record from the source(s)
+ * GMT_Get_Row             : Read one row from a grid
+ * GMT_Get_Status          : Exmine current status of record-by-record i/o
+ * GMT_Get_Matrix          : Get user matrix from GMT_MATRIX array
+ * GMT_Get_Vector          : Get user vector from GMT_VECTOR column
+ * GMT_Put_Strings         : Get user strings from GMT_VECTOR or MATRIX container
+ * GMT_Init_IO             : Initialize rec-by-rec i/o machinery before program use
+ * GMT_Init_VirtualFile    : Reset a virtual file for reuse
+ * GMT_Inquire_VirtualFile : Determine family of a virtual file
+ * GMT_Open_VirtualFile    : Open a memory location for reading or writing by a module
+ * GMT_Put_Record          : Send the next output record to its destination
+ * GMT_Put_Row             : Write one row to a grid
+ * GMT_Put_Matrix          : Hook user matrix to GMT_MATRIX array
+ * GMT_Put_Vector          : Hook user vector to GMT_VECTOR column
+ * GMT_Put_Strings         : Hook user strings to GMT_VECTOR or MATRIX container
+ * GMT_Read_Data           : Load data into program memory from selected source
+ * GMT_Read_Group          : Read numerous files into an array of objects
+ * GMT_Read_VirtualFile    : Obtain the memory resource that a module wrote to.
+ * GMT_Register_IO         : Register a source (or destination) for i/o use
+ * GMT_Set_Comment         : Update a comment for a data set
+ * GMT_Write_Data          : Place data set from program memory to selected destination
+ * GMT_Encode_Options      : Used by external APIs to fill out options from implicit rules
 
  * The above 29 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
@@ -83,7 +84,7 @@
  *
  * GMT_Get_Common	      : Checks for and returns values for GMT common options
  * GMT_Get_Default	      : Return the value of a GMT parameter as a string
- * GMT_Get_Enum	          : Return the integer constant of a GMT API enum.
+ * GMT_Get_Enum               : Return the integer constant of a GMT API enum.
  * GMT_Get_Values	      : Convert string to one or more coordinates or dimensions
  * GMT_Set_Default	      : Set a GMT parameter via a strings
  * GMT_Option		      : Display syntax for one or more GMT common options
@@ -97,26 +98,26 @@
  * GMT_Get_Coord	      : Return array of coordinates for one dimension
  * GMT_Get_Index	      : Return 1-D grid index given row, col
  * GMT_Get_Pixel	      : Return 1-D image index given row, col, layer
- * GMT_Set_Columns        : Specify number of output columns for rec-by-rec writing
+ * GMT_Set_Columns            : Specify number of output columns for rec-by-rec writing
  *
  * For FFT operations there are 8 additional API functions:
  *
- * GMT_FFT		          : Call the forward or inverse FFT
+ * GMT_FFT                    : Call the forward or inverse FFT
  * GMT_FFT_1D		      : Lower-level 1-D FFT call
  * GMT_FFT_2D		      : Lower-level 2-D FFT call
  * GMT_FFT_Create	      : Initialize the FFT machinery for given dimension
  * GMT_FFT_Destroy	      : Destroy FFT machinery
  * GMT_FFT_Option	      : Display the syntax of the GMT FFT option settings
  * GMT_FFT_Parse	      : Parse the GMT FFT option
- * GMT_FFT_Wavenumber	  : Return selected wavenumber given its type
+ * GMT_FFT_Wavenumber         : Return selected wavenumber given its type
  *
  * There are also 13 functions for argument and option parsing.  See gmt_parse.c for these.
  *
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *
- * gmt_f77_readgrdinfo_	  : Read the header of a GMT grid
- * gmt_f77_readgrd_		  : Read a GMT grid from file
- * gmt_f77_writegrd_	  : Write a GMT grid to file
+ * gmt_f77_readgrdinfo_   : Read the header of a GMT grid
+ * gmt_f77_readgrd_       : Read a GMT grid from file
+ * gmt_f77_writegrd_      : Write a GMT grid to file
  *
  * --------------------------------------------------------------------------------------------
  * Guru notes on memory management: Paul Wessel, June 2013.
@@ -613,6 +614,74 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 }
 #endif
 
+GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, int mode, void *args) {
+	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
+	 * This is needed since there is not gmt begin | end sequence in this case.
+	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
+	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
+	
+	unsigned modern = 0, pos;
+	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+	bool usage = false;
+	size_t len;
+	struct GMT_OPTION *opt = NULL, *head = NULL;
+
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Just need to check if a classic name was given... */
+		if (!strncmp (module, "ps", 2U)) {	/* Gave classic ps* name in modern mode */
+			char not_used[GMT_LEN32] = {""};
+			const char *mod_name = gmt_current_name (module, not_used);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
+		}
+		return;	/* Done, since we know it is a modern mode session */
+	}
+	
+	head = GMT_Create_Options (API, mode, args);	/* Get option list */
+	
+	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
+	
+	if (API->GMT->current.setting.use_modern_name) {	/* Make some checks needed to handle synopsis and usage messages in classic vs modern mode */
+		if (head == NULL) {	/* Gave none or a single argument */
+			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
+			return;
+		}
+		if (head->next == NULL) {	/* Gave a single argument */
+			if (head->arg[0] == '+' && head->arg[1] == '\0')	/* Gave + */
+				modern = 1;
+			else if (head->arg[0] == '-' && (head->arg[1] == '\0' || head->arg[1] == GMT_OPT_USAGE || head->arg[1] == GMT_OPT_SYNOPSIS))	/* Gave a single argument */
+				modern = 1;
+			if (modern) usage = true;
+		}
+	}
+	
+	/* Finally, must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
+	for (opt = head; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
+		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
+		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
+		sprintf (format, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
+		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
+		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
+			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
+			if (c == NULL) continue;	/* Nothing else to check, go to next option */
+			/* Make sure any other formats are valid, too */
+			if (c) c[0] = ',';	/* Restore any comma we found */
+			pos = 0;
+			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
+					modern = 0;
+			}
+		}
+	}
+	if (modern) {	/* This is indeed a modern mode one-liner command */
+		API->GMT->current.setting.run_mode = GMT_MODERN;
+		API->usage = usage;
+	}
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
+		API->GMT->current.setting.use_modern_name = true;
+
+	GMT_Destroy_Options (API, &head);	/* Done with these here */
+}
 
 /* This was our effort to get PPID under Windows.  Remains as comments for now */
 #ifdef _WIN32
@@ -6882,6 +6951,27 @@ void *GMT_Read_VirtualFile_ (char *string, int len) {
 }
 #endif
 
+int GMT_Inquire_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, retrieve the family of the resulting object */
+	int object_ID, item;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	if ((item = gmtapi_validate_id (V_API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	API = api_get_api_ptr (V_API);
+	return API->object[item]->family;
+}
+
+#ifdef FORTRAN_API
+int *GMT_Inquire_VirtualFile_ (char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Inquire_VirtualFile (GMT_FORTRAN, string));
+}
+#endif
+
  /*! . */
 int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 	/* Reset a virtual file back to its original configuration so that it can be
@@ -10014,17 +10104,20 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 		if (p_func) break;	/* Found it in this shared library */
 	}
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
-		status = GMT_NOT_A_VALID_MODULE;
+		status = GMT_NOT_A_VALID_MODULE;	/* Most likely, but we will try again: */
 		if (strncasecmp (module, "gmt", 3)) {	/* For any module not already starting with "gmt..." */
 			char gmt_module[GMT_LEN32] = "gmt";
 			strncat (gmt_module, module, GMT_LEN32-4);	/* Prepend "gmt" to module and try again */
-			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix */
+			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix this time */
 		}
 	}
-	else if (mode == GMT_MODULE_EXIST)	/* Just wanted to know it is there */
+	else if (mode == GMT_MODULE_EXIST)	/* Just wanted to know it is a valid module */
 		return (GMT_NOERROR);
-	else	/* Call the function and pass back its return value */
-		status = (*p_func) (V_API, mode, args);
+	else {	/* Call the function and pass back its return value */
+		gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* First detect and set modern mode if modern mode session dir is found */
+		gmtapi_check_for_modern_oneliner (API, module, mode, args);	/* If a modern mode one-liner we must switch run--mode here */
+		status = (*p_func) (V_API, mode, args);				/* Call the module in peace */
+	}
 	return (status);
 }
 
@@ -10305,7 +10398,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false, strip_colon = false, strip = false;
+	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
@@ -10466,6 +10559,12 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if ((opt = GMT_Find_Option (API, 'Q', *head)) && opt->arg[0] == 'c')
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
+	/* 1m. Check if this is the grdgradient module, where primary dataset output should be turned off if -Qc and no -G is set */
+	else if (!strncmp (module, "pstext", 6U) && (opt = GMT_Find_Option (API, 'F', *head))) {
+		/* With -F+c<just>+t<label> there is no file to read */
+		if (gmt_no_pstext_input (API, opt->arg))
+			deactivate_input = true;	/* Turn off implicit input since none is in effect */
+	}
 
 	gmt_M_str_free (module);
 
@@ -10483,6 +10582,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = api_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
 		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit output file already specified or not required */
+
+	/* 2c. Make some specific modifications to the keys given the options passed */
+	if (deactivate_input && (k = api_get_key (API, GMT_OPT_INFILE, key, n_keys)) >= 0)
+		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit input file already specified or not required */
 
 	/* 3. Count command line output files */
 	for (opt = *head; opt; opt = opt->next)

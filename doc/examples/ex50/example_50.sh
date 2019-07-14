@@ -71,7 +71,7 @@ gmt psxy -R0/6/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.
 # Plot Chi-squared cumulative distribution
 gmt math -T0/12/0.1 T 4 CHI2CDF = p.txt
 gmt psxy -R0/12/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
-echo "Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions" | gmt pstext -R0/6.5/0/1.25 -Jx1i -N -X-3.5i -O -K -F+f18p+cTC >> $ps
+gmt pstext -R0/6.5/0/1.25 -Jx1i -N -X-3.5i -O -K -F+f18p+cTC+t"Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions" >> $ps
 gmt pstext -R0/6.5/0/10 -J -O -F+f14p,Times-Italic+jTC -Dj0.35i -N -Y-8.1i << EOF >> $ps
 3.25 0.9 Binomial P@-8,0.25@-
 3.25 1.8 Poisson P(@~l=2@~)
