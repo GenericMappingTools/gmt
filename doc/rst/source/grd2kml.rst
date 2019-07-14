@@ -23,6 +23,7 @@ Synopsis
 [ |-N|\ *prefix* ]
 [ |-Q| ]
 [ |-T|\ *title* ]
+[ |-W|\ *cfile*\ \|\ *pen* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -40,7 +41,7 @@ filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
-clipped. Map colors are specified via a color palette lookup table.
+clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 
 
 Required Arguments
@@ -131,6 +132,14 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
+**-W**\ *cfile*\ \|\ *pen*
+    Supply a file with records each holding a contour value and a contour pen.
+    We then overlay the selected contour lines on top of the image [no contours].
+    If *cfile* is not a valid file we assume you instead gave a *pen* and want
+    to draw all the contours implied by the *cpt* in effect.
+
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
@@ -148,11 +157,11 @@ Examples
 
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
 the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,
-supplying a suitable title, try
+supplying a suitable title, and using color masking for unmapped area, try
 
    ::
 
-    gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -T"Ellice Basin Bathymetry"
+    gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -Q -T"Ellice Basin Bathymetry"
 
 See Also
 --------
