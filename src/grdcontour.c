@@ -401,8 +401,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				if (GMT->current.setting.run_mode == GMT_MODERN && gmt_M_no_cpt_given (opt->arg))
 					c_check = true;
 				else if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
+					enum GMT_enum_family family = GMT_Inquire_VirtualFile (API, opt->arg);
 					Ctrl->C.interval = 1.0;
-					Ctrl->C.cpt = true;
+					Ctrl->C.cpt = (family == GMT_IS_PALETTE);
 					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
