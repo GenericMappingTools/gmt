@@ -15925,6 +15925,19 @@ void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T) {
 	if (T->array) gmt_M_free (GMT, T->array);
 }
 
+bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg) {
+	char *c = NULL;
+	gmt_M_unused (API);
+	/* Determine if -F is such that there is nothing to read */
+	if (strstr (arg, "+c") == NULL) return false;	/* Without +c there will be input */
+	if (strstr (arg, "+t") == NULL) return false;	/* Without +t there will be input */
+	if ((c = strstr (arg, "+A")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
+	if ((c = strstr (arg, "+a")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
+	if ((c = strstr (arg, "+j")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +j and no arg there must be input */
+	if ((c = strstr (arg, "+f")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +f and no arg there must be input */
+	return true;
+}
+
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

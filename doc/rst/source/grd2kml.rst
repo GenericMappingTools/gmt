@@ -152,7 +152,7 @@ supplying a suitable title, try
 
    ::
 
-    gmt grd2kml ellice_basin.nc -I+ -Nellice -L512 -T"Ellice Basin Bathymetry"
+    gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -T"Ellice Basin Bathymetry"
 
 See Also
 --------
