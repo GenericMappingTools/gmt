@@ -12800,6 +12800,13 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->PSL->current.fontsize = 0;
 	}
 
+	/*
+	if (GMT->parent->external) {
+		gmtinit_conf (GMT);
+		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
+	}
+	*/
+
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
