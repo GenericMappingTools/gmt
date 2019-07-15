@@ -71,7 +71,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 #ifdef WIN32
-	static const char *file_viewer "cmd /c start";
+	static const char *file_viewer = "cmd /c start";
 	bool together = false;	/* Must call file_viewer separately on each file */
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
