@@ -86,7 +86,7 @@ To display the URL to the surface man page,.run
 
     gmt docs -Q surface
 
-To open all png files in current directory and the documentation for :doc:`begin`, run
+To open all png files in current directory and the documentation for :doc:`movie`, run
 
    ::
 
