@@ -6,7 +6,7 @@ flex () {	# $1 is width, $2 is Te, $3 is dy build a 4.05 km tall ridge and compu
 	R=`gmt info -I100/1 flex.txt topo.txt`
 	gmt psxy $R -JX3i/1.4i -O -K -W1p flex.txt -Y1.65i -Bafg1000 $3
 	gmt psxy -R -J -O -K -Ggray topo.txt
-	echo "Te = $2, W = $1" | gmt pstext -R -J -O -K -F+cTR+f9p+jTR -Dj0.03i
+	gmt pstext -R -J -O -K -F+cTR+f9p+jTR+t"Te = $2, W = $1" -Dj0.03i
 }
 
 ps=flex2d.ps

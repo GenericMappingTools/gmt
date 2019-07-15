@@ -18,7 +18,7 @@ cat << EOF > ML.txt
 EOF
 gmt psxy -R-0.6/8.6/0/0.35 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Binomial P@-8,0.25@-" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Binomial P@-8,0.25@-" >> $ps
 # Plot POISSON distribution
 cat << EOF > ML.txt
 0	0.135335283236613
@@ -34,7 +34,7 @@ EOF
 gmt math -T0/8/1 T 2 PPDF = p.d
 gmt psxy -R-0.6/8.6/0/0.3 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Poisson P(@~l=2@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Poisson P(@~l=2@~)" >> $ps
 # Plot normal distribution
 cat << EOF > ML.txt
 -4	0.000133830225765
@@ -50,7 +50,7 @@ EOF
 gmt math -T-4/4/0.1 T ZPDF = p.d
 gmt psxy -R-4/4/0/0.4 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Normal P(z)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Normal P(z)" >> $ps
 # Plot t distribution
 cat << EOF > ML.txt
 -4	0.006708203932499
@@ -67,7 +67,7 @@ gmt psxy -R-4/4/0/0.4 -J -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_T
 gmt math -T-4/4/0.1 T 4 TPDF = p.d
 gmt psxy -R -J -O -K p.d -W1p >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Student t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Student t(@~n=4@~)" >> $ps
 # Plot FDIST distribution
 cat << EOF > ML.txt
 0	                0
@@ -83,6 +83,6 @@ EOF
 gmt math -T0/8/0.02 T 20 12 FPDF = p.d
 gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "F(@~n@-1@-=20, n@-2@- = 12@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"F(@~n@-1@-=20, n@-2@- = 12@~)" >> $ps
 # Done
 gmt psxy -R -J -O -T >> $ps
