@@ -22,7 +22,7 @@ gmt math -T-3/3/0.1 T ${q[1]} MUL ${q[0]} ADD 0.5 STEPT ${q[2]} MUL ADD = stepfi
 gmt psxy -R-3/3/0/4 -JX6.5i/4i -P -Baf -BWSne @stepdata.txt -Sc0.15c -Gblue -K -Xc > $ps
 gmt psxy -R -J -O -K stepfit_lsq.txt -W2p >> $ps
 gmt psxy -R -J -O -K stepfit_svd.txt -Sc2p -Gred >> $ps
-echo "Fit y(x) = a + b*x + c*H(x-$x0) + @~e@~(x)" | gmt pstext -R -J -O -K -F+f12p+jRB+cRB -Dj0.2i >> $ps
+gmt pstext -R -J -O -K -F+f12p+jRB+cRB+t"Fit y(x) = a + b*x + c*H(x-$x0) + @~e@~(x)" -Dj0.2i >> $ps
 gmt pslegend -R -J -O -K -DjTL+w1.75i+jTL+o0.1i/0.1i -F+p << EOF >> $ps
 S 0.1i - 0.15i - 2p 0.3i LSQFIT solution
 S 0.1i c 2p  red - 0.3i SVDFIT solution
@@ -44,5 +44,5 @@ gmt math -A@sinusoiddata.txt+e+r -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 
 gmt psxy -R0/2/-3/4 -J -O -Baf @sinusoiddata.txt -Sc0.15c -Gblue -K -Y5i >> $ps
 gmt psxy -R -J -O -K sinusoidfit_lsq.txt -W2p -i0,2 >> $ps
 gmt psxy -R -J -O -K sinusoidfit_svd.txt -Sc2p -Gred -i0,2 >> $ps
-echo "Fit y(x) = a + b*cos(6@~p@~x - c) + @~e@~(x) = a + b@-1@-*cos(6@~p@~x) + b@-2@-*sin(6@~p@~x) + @~e@~(x)" | gmt pstext -R -J -O -K -F+f12p+jRB+cRB -Dj0.2i >> $ps
+gmt pstext -R -J -O -K -F+f12p+jRB+cRB+t"Fit y(x) = a + b*cos(6@~p@~x - c) + @~e@~(x) = a + b@-1@-*cos(6@~p@~x) + b@-2@-*sin(6@~p@~x) + @~e@~(x)" -Dj0.2i >> $ps
 gmt psxy -R -J -O -T >> $ps
