@@ -2,14 +2,14 @@
 
 .. only:: not man
 
-    Show the HTML documentation for selected module
+    Show the HTML documentation for selected module or display plots
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** [ **-Q** ] *module-name* [*-option*]
+**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] [ *module-name* [*-option*] ] [ *figs* ]
 
 |No-spaces|
 
@@ -21,7 +21,7 @@ For the time being, only modern mode module names are displayed. That is, if use
 *gmt docs psxy* she will see the (near-equivalent) *plot* documentation. Besides the modules names, the special
 forms *cookbook*, *gallery*, *gmt.conf*, *api* and *tutorial* are also accepted.
 
-However, **docs** can also be used to open local files such as PDF or image files or even
+However, **docs** can also be used to open local files (*figs*) such as PDF or image files or even
 web link addresses.
 
 Optional Arguments
@@ -29,9 +29,14 @@ Optional Arguments
 
 **-Q**
     This option means we are doing a "dry-run" and simply want the final URL to be
-    printed to standard output.  No browser command will take place. This is useful
+    printed to standard output.  No file open command will take place. This is useful
     if you are working remotely on a server and do not wish to launch a GUI browser.
+    If used, **-Q** must be the first option to **docs**.
 
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
 
 Optional Module Arguments
 -------------------------
@@ -80,6 +85,13 @@ To display the URL to the surface man page,.run
    ::
 
     gmt docs -Q surface
+
+To open all png files in current directory and the documentation for movie, run
+
+   ::
+
+    gmt docs movie *.png
+
 
 See Also
 --------
