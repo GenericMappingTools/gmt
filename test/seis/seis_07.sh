@@ -98,4 +98,4 @@ echo 4.0 0.0 0.0  1.0 -2.0  1.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -
 echo 5.0 1.0 0.0 -2.0  1.0  1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -K -J -O >> $ps
 # Vertical CLVD
 echo 5.0 0.0 0.0  2.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-echo "Dahlen and Tromp (1998) page 174" | gmt pstext -R -J -O -F+f12p,+cLB -Dj0.1i  >> $ps
+gmt pstext -R -J -O -F+f12p,+cLB+t"Dahlen and Tromp (1998) page 174" -Dj0.1i  >> $ps

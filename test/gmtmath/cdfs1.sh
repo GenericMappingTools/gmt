@@ -18,7 +18,7 @@ cat << EOF > ML.txt
 EOF
 gmt psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Binomial C@-8,0.25@-" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Binomial C@-8,0.25@-" -Dj0.1i/0 >> $ps
 # Plot Poisson cumulative distribution
 cat << EOF > ML.txt
 0	0.135335283236613
@@ -34,7 +34,7 @@ EOF
 gmt math -T0/8/1 T 2 PCDF = p.d
 gmt psxy -R-0.6/8.6/0/1.2 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Poisson C(@~l=2@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Poisson C(@~l=2@~)" -Dj0.1i/0 >> $ps
 # Plot normal cumulative distribution
 cat << EOF > ML.txt
 -4	0.000031671241833
@@ -50,7 +50,7 @@ EOF
 gmt math -T-4/4/0.1 T ZCDF = p.d
 gmt psxy -R-4/4/0/1.2 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Normal C(0,1)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Normal C(0,1)" -Dj0.1i/0 >> $ps
 # Plot t cumulative distribution
 cat << EOF > ML.txt
 -4	0.008065044950046
@@ -67,7 +67,7 @@ gmt psxy -R-4/4/0/1.2 -J -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_T
 gmt math -T-4/4/0.1 T 4 TCDF = p.d
 gmt psxy -R -J -O -K p.d -W1p >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Student t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Student t(@~n=4@~)" -Dj0.1i/0 >> $ps
 # Plot F cumulative distribution
 cat << EOF > ML.txt
 0	                0
@@ -83,6 +83,6 @@ EOF
 gmt math -T0/8/0.02 T 20 12 FCDF = p.d
 gmt psxy -R0/8/0/1.2 -J -O -K p.d -W1p -BWS+t"Cumulative Distribution Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "F(@~n@-1@-=20, n@-2@- = 12@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"F(@~n@-1@-=20, n@-2@- = 12@~)" -Dj0.1i/0 >> $ps
 # Done
 gmt psxy -R -J -O -T >> $ps
