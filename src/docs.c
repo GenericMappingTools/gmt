@@ -56,7 +56,7 @@ EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false;
 	int error = 0, os;
-	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
+	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
 	static const char *known_group[2] = {"core", "other"}, *known_doc[5] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf"};
 	static const char *can_opener[3] = {"cmd /c start", "open", "xdg-open"};
@@ -65,6 +65,14 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
+
+#ifdef WIN32
+	os = 0;
+#elif defined(__APPLE__)
+	os = 1;
+#else
+	os = 2;
+#endif
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
@@ -85,6 +93,26 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	/* First check if we have a plot of known extension */
+	
+	if ((ext = gmt_get_ext (opt->arg)) && gmt_get_graphics_id (GMT, ext) != GMT_NOTSET) {
+		if (print_url) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", opt->arg);
+			printf ("%s\n", opt->arg);
+		}
+		else {
+			sprintf (cmd, "%s %s", can_opener[os], opt->arg);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening local file %s via %s\n", opt->arg, can_opener[os]);
+			if ((error = system (cmd))) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening local file %s via %s failed with error %d\n",
+					opt->arg, can_opener[os], error);
+				perror ("docs");
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+		Return (error);
+	}
+	
 	docname = gmt_current_name (opt->arg, name);
 	
 	if (strcmp (opt->arg, docname))
@@ -154,13 +182,6 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		strncat (URL, t, PATH_MAX-1);
 	}
 
-#ifdef WIN32
-	os = 0;
-#elif defined(__APPLE__)
-	os = 1;
-#else
-	os = 2;
-#endif
 	if (print_url) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
 		printf ("%s\n", URL);

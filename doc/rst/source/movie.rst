@@ -391,4 +391,5 @@ See Also
 --------
 
 :doc:`gmt`,
+:doc:`events`,
 :doc:`psconvert`

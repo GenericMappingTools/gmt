@@ -239,7 +239,7 @@
                 **-SqN**\ \|\ **n**\ +\|-1 is used.
 
             **+l**\ *label*
-                Sets the constant label text.
+                Sets the constant label text. Warning: if the text length exceeds the line length then no text will appear.
 
             **+L**\ *flag*
                 Sets the label text according to the specified flag:
