@@ -10,14 +10,14 @@ gmt polespotter -FFZ.txt -Sp -R-80/-40/-20/20 -I20m -Gmisfit.nc -N
 gmt makecpt -Chot -T0/0.01 > t.cpt
 gmt grdimage misfit.nc -BWSne -JM2.85i -Ct.cpt -P -K -Baf -X1.25i -Y0.75i > $ps
 gmt grdcontour misfit.nc -J -O -K -C0.01 -L0.009/0.011 >> $ps
-echo "FZ" | gmt pstext -R -J -O -K -F+f18p+cTL+jTL -Dj0.2i -Gwhite -W1p >> $ps
+gmt pstext -R -J -O -K -F+f18p+cTL+jTL+tFZ -Dj0.2i -Gwhite -W1p >> $ps
 # Determine the pole chi-squared just from AH
 gmt polespotter -AAH.txt -Sp -R-80/-40/-20/20 -I20m -Gmisfit.nc -N
 gmt grdimage misfit.nc -BwSne -J -Ct.cpt -O -K -Baf -X3.15i >> $ps
 gmt grdcontour misfit.nc -J -O -K -C0.01 -L0.009/0.011 >> $ps
-echo "AH" | gmt pstext -R -J -O -K -F+f18p+cTL+jTL -Dj0.2i -Gwhite -W1p >> $ps
+gmt pstext -R -J -O -K -F+f18p+cTL+jTL+tAH -Dj0.2i -Gwhite -W1p >> $ps
 # Determine the pole chi-squared from both FZ AH
 gmt polespotter -AAH.txt -FFZ.txt -Sp -R-80/-40/-20/20 -I20m -Gmisfit.nc -N
 gmt grdimage misfit.nc -BWSne -JM6i -Ct.cpt -O -K -Baf -X-3.15i -Y3.35i >> $ps
 gmt grdcontour misfit.nc -J -O -K -C0.01 -L0.009/0.011 >> $ps
-echo "AH+FZ" | gmt pstext -R -J -O -F+f18p+cTL+jTL -Dj0.2i -Gwhite -W1p >> $ps
+gmt pstext -R -J -O -F+f18p+cTL+jTL+t"AH+FZ" -Dj0.2i -Gwhite -W1p >> $ps

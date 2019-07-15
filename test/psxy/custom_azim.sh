@@ -55,6 +55,6 @@ S
 0.025	0.20	D
 EOF
 gmt psxy -R0/20/10/30 -JM4i -P -K -Bag -BWSne -W1.5p,red -Skdip2/1i -Xc t.txt > $ps
-echo "AZIMUTH 0-80" | gmt pstext -R -J -O -K -F+f16p+jTL+cTL -Dj0.1i -Gwhite -W0.25p >> $ps
+gmt pstext -R -J -O -K -F+f16p+jTL+cTL+t"AZIMUTH 0-80" -Dj0.1i -Gwhite -W0.25p >> $ps
 gmt psxy -R -JX4i -Bag -BWSne -W1.5p,red -Skdip3/1i t.txt -O -K -Y4.75i >> $ps
-echo "ANGLE 0-80" | gmt pstext -R -J -O -F+f16p+jTL+cTL -Dj0.1i -Gwhite -W0.25p >> $ps
+gmt pstext -R -J -O -F+f16p+jTL+cTL+t"ANGLE 0-80" -Dj0.1i -Gwhite -W0.25p >> $ps

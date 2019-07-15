@@ -9,18 +9,18 @@ EOF
 gmt makecpt -Cjet -T0.005/0.007 > t.cpt
 gmt psxyz -R-107:30/-106:30/33:30/34:30 -JM3i -P -Baf -BWSne -Sx0.1i -W0.5p t.txt -K > $ps
 gmt psxyz -R -J -O -K -SV0.2i+e -W2.16p+c -Ct.cpt t.txt >> $ps
-echo "-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt" | gmt pstext -R -J -O -K -F+f12p+cBL -Dj0.1i >> $ps
-echo "GMT5-6" | gmt pstext -R -J -O -K -F+f16p+cTL -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f12p+cBL+t"-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt" -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f16p+cTL+t"GMT5-6" -Dj0.1i >> $ps
 # GMT5 syntax
 gmt psxyz -R -J -O -Baf -BWSne -Sx0.1i -W0.5p t.txt -K -X3.75i >> $ps
 gmt psxyz -R -J -O -K -SV0.2i+bc -W2.16p+c -Ct.cpt t.txt >> $ps
-echo "-SV0.2i+bc -W2.16p+c -Ct.cpt" | gmt pstext -R -J -O -K -F+f12p+cBL -Dj0.1i >> $ps
-echo "GMT5-6" | gmt pstext -R -J -O -K -F+f16p+cTL -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f12p+cBL+t"-SV0.2i+bc -W2.16p+c -Ct.cpt" -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f16p+cTL+t"GMT5-6" -Dj0.1i >> $ps
 gmt psxyz -R -J -O -Baf -BWSne -Sx0.1i -W0.5p t.txt -K -X-3.75i -Y4.25i >> $ps
 gmt psxyz -R -J -O -K -SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt t.txt >> $ps
-echo "-SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt" | gmt pstext -R -J -O -K -F+f12p+cBL -Dj0.1i >> $ps
-echo "GMT2-6" | gmt pstext -R -J -O -K -F+f16p+cTL -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f12p+cBL+t"-SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt" -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f16p+cTL+t"GMT2-6" -Dj0.1i >> $ps
 gmt psxyz -R -J -O -Baf -BWSne -Sx0.1i -W0.5p t.txt -K -X3.75i >> $ps
 gmt psxyz -R -J -O -K -SV0.12i+e+a90 -W2.16p+cf -Ct.cpt t.txt >> $ps
-echo "-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt" | gmt pstext -R -J -O -K -F+f12p+cBL -Dj0.1i >> $ps
-echo "GMT5-6" | gmt pstext -R -J -O -F+f16p+cTL -Dj0.1i >> $ps
+gmt pstext -R -J -O -K -F+f12p+cBL+t"-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt" -Dj0.1i >> $ps
+gmt pstext -R -J -O -F+f16p+cTL+t"GMT5-6" -Dj0.1i >> $ps
