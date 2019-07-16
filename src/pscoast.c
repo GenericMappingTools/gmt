@@ -551,7 +551,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Syntax error: Cannot combine -E -M with -W\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Syntax error: Cannot combine -E -M with -G\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Syntax error: Cannot combine -E -M with -I\n");
@@ -780,7 +780,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->common.R.wesn[XHI] -= 360.0;
 	}
 
-	if (Ctrl->Q.active && !GMT->common.J.active) {	/* Set fake area and linear projection */
+	if ((Ctrl->Q.active || Ctrl->E.active) && !GMT->common.J.active) {	/* Set fake area and linear projection */
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");
 		GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[YHI] = 1.0;
