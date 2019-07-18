@@ -13,4 +13,4 @@ files and scripts useful for building the actual releases.**
 Make sure you are in the top gmt directory and then
 run
 
-    admin/build-release.sh [tag]
+    admin/build-release.sh [-help]
