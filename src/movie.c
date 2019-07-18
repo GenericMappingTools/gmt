@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	"<T("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-Vfx"
+#define THIS_MODULE_OPTIONS	"-Vf"
 
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
@@ -162,6 +162,10 @@ struct MOVIE_CTRL {
 	struct MOVIE_Z {	/* -Z */
 		bool active;
 	} Z;
+	struct MOVIE_x {	/* -x[[-]<ncores>] */
+		bool active;
+		unsigned int n_threads;
+	} x;
 };
 
 struct MOVIE_STATUS {
@@ -178,7 +182,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
-	GMT->common.x.n_threads = GMT->parent->n_cores;
+	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }
 
@@ -202,21 +206,18 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_free (GMT, C);
 }
 
-/*! -x[[-]<ncores>] parsing needed even if no OPenMP since cores are not managed by OpenMP in this
- * module, yet we want to use -x for that purpose */
-#ifndef GMT_MP_ENABLED
-GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
+/*! -x[[-]<ncores>] parsing needed but here not related to OpenMP etc - it is just a local option */
+GMT_LOCAL int parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg) {
 	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
 	if (arg[0])
-		GMT->common.x.n_threads = atoi (arg);
+		Ctrl->x.n_threads = atoi (arg);
 
-	if (GMT->common.x.n_threads == 0)
-		GMT->common.x.n_threads = 1;
-	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(GMT->parent->n_cores - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+	if (Ctrl->x.n_threads == 0)	/* Not having any of that.  At least one */
+		Ctrl->x.n_threads = 1;
+	else if (Ctrl->x.n_threads < 0)	/* Meant to reduce the number of threads */
+		Ctrl->x.n_threads = MAX(GMT->parent->n_cores - Ctrl->x.n_threads, 1);		/* Max-n but at least one */
 	return (GMT_NOERROR);
 }
-#endif
 
 GMT_LOCAL int gmt_sleep (unsigned int microsec) {
 	/* Waiting before checking if the PNG has been completed */
@@ -365,7 +366,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -442,7 +443,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Add the given <workdir> to the search path where data files may be found.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default searches current dir, <prefix> dir, and directories set via DIR_DATA].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
-	/* Number of threads (repurposed from -x in GMT_Option since this option is always available and not using OpenMP) */
+	GMT_Option (API, "f");
+	/* Number of threads (repurposed from -x in GMT_Option since this local option is always available and not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
@@ -713,7 +715,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			
-			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs tp only write scripts */
+			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
@@ -771,13 +773,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->Z.active = true;
 				break;
 
-#ifndef GMT_MP_ENABLED
-			/* Need this ifndef to ensure we can access the x parsing when OpenMP has turn it off */
 			case 'x':
-				n_errors += gmtinit_parse_x_option (GMT, opt->arg);
-				GMT->common.x.active = true;
+				n_errors += parse_x_option (GMT, Ctrl, opt->arg);
+				Ctrl->x.active = true;
 				break;
-#endif
 		
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -870,6 +869,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int dd, hh, mm, ss, flavor = 0;
 	
 	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false, upper_case = false;
+	bool n_written = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
@@ -1055,7 +1055,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
 	
 	/* Create the initialization file with settings common to all frames */
-	
+
+	n_written = (n_frames > 0);
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
@@ -1070,6 +1071,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
+	if (n_written) set_ivalue (fp, Ctrl->In.mode, "MOVIE_NFRAMES", n_frames);	/* Total frames (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
@@ -1290,7 +1292,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
 		set_ivalue (fp, Ctrl->In.mode, "MOVIE_FRAME", frame);		/* Current frame number */
-		set_ivalue (fp, Ctrl->In.mode, "MOVIE_NFRAMES", n_frames);	/* Total frames */
+		if (!n_written) set_ivalue (fp, Ctrl->In.mode, "MOVIE_NFRAMES", n_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
 		set_tvalue (fp, Ctrl->In.mode, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
 		set_tvalue (fp, Ctrl->In.mode, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
@@ -1571,7 +1573,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	i_frame = first_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
-	n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
+	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build frames using %u cores\n", n_cores_unused);
 	/* START PARALLEL EXECUTION OF FRAME SCRIPTS */
