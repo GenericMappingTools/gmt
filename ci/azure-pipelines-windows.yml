@@ -56,7 +56,7 @@ steps:
     echo "##vso[task.prependpath]C:\\Program Files\\GraphicsMagick-1.3.32-Q8"
     choco install ffmpeg
     echo "##vso[task.prependpath]C:\\ProgramData\\chocolatey\\lib\\ffmpeg\\tools"
-  displayName: Install dependecies for testing
+  displayName: Install dependencies for testing
   condition: eq(variables['TEST'], true)
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
