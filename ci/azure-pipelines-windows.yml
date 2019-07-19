@@ -21,7 +21,7 @@ steps:
     #vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
     vcpkg install netcdf-c gdal pcre fftw3 --triplet x64-windows
   displayName: Install dependencies via vcpkg
-  condition: ne(variables.CACHE_RESTORED, 'true')
+  condition: ne(variables.CACHE_VCPKG_RESTORED, 'true')
 
 - bash: |
     # hook up user-wide integration
