@@ -125,7 +125,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		# Targets for creating tarballs
 		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
-			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX
+			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
