@@ -2,14 +2,26 @@
 
 steps:
 
+# Cache vcpkg installed libraries
+# Change the date in the key list to rebuild the cache
 - task: CacheBeta@0
   inputs:
     key: |
+      20190718
       vcpkg
       $(Agent.OS)
-    path: $(VCPKG_INSTALLATION_ROOT)/installed/x64-windows/
+    path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
+
+- task: CacheBeta@0
+  inputs:
+    key:
+      20190718
+      build
+      $(Agent.OS)
+    path: $(Build.SourcesDirectory)/build
+  displayName: Cache build directory
 
 - bash: |
     set -x -e
