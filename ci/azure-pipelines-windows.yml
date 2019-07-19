@@ -9,7 +9,7 @@ steps:
       $(Agent.OS)
     path: $(VCPKG_INSTALLATION_ROOT)/installed/x64-windows/
     cacheHitVar: CACHE_VCPKG_RESTORED
-  displayName: Cache vcpkg
+  displayName: Cache vcpkg libraries
 
 - bash: |
     set -x -e
