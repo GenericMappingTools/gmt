@@ -2,6 +2,18 @@
 
 steps:
 
+# Cache vcpkg installed libraries
+# Change the date in the key list to rebuild the cache
+- task: CacheBeta@0
+  inputs:
+    key: |
+      20190718
+      vcpkg
+      $(Agent.OS)
+    path: $(VCPKG_INSTALLATION_ROOT)/installed/
+    cacheHitVar: CACHE_VCPKG_RESTORED
+  displayName: Cache vcpkg libraries
+
 - bash: |
     set -x -e
     # By default, vcpkg builds both release and debug configurations.
@@ -11,6 +23,10 @@ steps:
     # install libraries
     #vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
     vcpkg install netcdf-c gdal pcre fftw3 --triplet x64-windows
+  displayName: Install dependencies via vcpkg
+  condition: ne(variables.CACHE_VCPKG_RESTORED, 'true')
+
+- bash: |
     # hook up user-wide integration
     vcpkg integrate install
     # list installed libraries
@@ -19,7 +35,7 @@ steps:
     echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
     # Tools like gdal_translate, ogr2ogr are located in tools/gdal
     echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/tools/gdal"
-  displayName: Install dependencies via vcpkg
+  displayName: Configure vcpkg
 
 - bash: |
     set -x -e
