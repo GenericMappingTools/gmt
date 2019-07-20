@@ -5011,6 +5011,46 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 }
 
 /*! . */
+GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north) {
+	double w, e, s = 90.0, n = -90.0, lat, *lon = NULL, *work_x = NULL, *work_y = NULL;
+	uint64_t np, k;
+	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
+	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
+	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
+	 * cases.  P. Wessel, July 20, 2019. */
+	
+	np = (GMT->current.proj.polar && (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0)) ? GMT->current.map.n_lon_nodes + 2: 2 * (GMT->current.map.n_lon_nodes + 1);
+	work_x = gmt_M_memory (GMT, NULL, np, double);
+	work_y = gmt_M_memory (GMT, NULL, np, double);
+	gmtlib_genper_map_clip_path (GMT, np, work_x, work_y);
+
+	/* Search for extreme lon/lat coordinates by matching along the genper boundary */
+
+	/* Need temp array to hold all the longitudes we compute */
+	lon = gmt_M_memory (GMT, NULL, np, double);
+	for (k = 0; k < np; k++) {
+		gmt_xy_to_geo (GMT, &lon[k], &lat, work_x[k], work_y[k]);
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
+	}
+	gmt_M_free (GMT, work_x);
+	gmt_M_free (GMT, work_y);
+
+	gmtlib_get_lon_minmax (GMT, lon, np, &w, &e);	/* Determine lon-range by robust quandrant check */
+	gmt_M_free (GMT, lon);
+
+	/* Then check if one or both poles are inside map; then the above won't be correct */
+
+	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
+	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+
+	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
+	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
+	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
+}
+
+/*! . */
 GMT_LOCAL int map_horizon_search (struct GMT_CTRL *GMT, double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
 	unsigned int i, j;
@@ -9261,7 +9301,10 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
-		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+		if (GMT->current.proj.projection_GMT == GMT_GENPER)	/* Need special considerations for this projection */
+			gmtmap_genper_search (GMT, &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+		else	/* Search along the projected boarder */
+			gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) map_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);
