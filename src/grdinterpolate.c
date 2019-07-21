@@ -30,7 +30,7 @@
 
 #define THIS_MODULE_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Interpolate a 3-D data cube"
+#define THIS_MODULE_PURPOSE	"Interpolate new layers from a 3-D netCDF data cube"
 #define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->RV"
@@ -72,6 +72,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
+	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
 
@@ -80,25 +81,25 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> -G<outgrid> -T[<min>/<max>/]<inc>[<unit>][+n]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2]  [%s] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<3Dgrid> is name of a 3D netCDF data cube.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Interpolate the 3-D grid at given knots in the 3rd dimension\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<3Dgrid> is the name of the input 3D netCDF data cube.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Interpolate the 3-D grid at given levels across the 3rd dimension\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of knot-values to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output knots in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the interpolation mode.  Choose from:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "RV,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -158,7 +159,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_NOMINMAX, GMT_Z);
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE, GMT_Z);
 				break;
 
 			default:	/* Report bad options */
@@ -170,6 +171,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No 3D grid cube specified.\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] != 1, "Syntax error: Must specify one input 3D grid cube file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -R option: Must specify output knot(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] != 1, "Syntax error: Must specify only one output grid file\n");
 
@@ -180,10 +182,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdinterpolate (void *V_API, int mode, void *args) {
+	char file[PATH_MAX] = {""};
 	int error = 0;
-	uint64_t nz = 0;
-	double *zarray = NULL;
-	struct GMT_GRID *G = NULL;
+	unsigned int int_mode, row, col;
+	uint64_t n_layers = 0, k, node;
+	double wesn[4], *level = NULL, *i_value = NULL, *o_value = NULL;
+	struct GMT_GRID **G[2] = {NULL, NULL};
 	struct GRDINTERPOLATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -206,7 +210,72 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdinterpolate main code ----------------------------*/
 
-	if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file, &nz, &zarray))) Return (error);
+	/* See if we got a 3D netCDF data cube; if so return number of layers and their levels */
+	
+	if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file, &n_layers, &level))) Return (error);
 
-	Return ((error) ? error : GMT_NOERROR);
+	/* Create output level array */
+	if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to set up otput level array\n");
+		Return (API->error);
+	}
+
+	if (Ctrl->T.T.n > 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Sorry, writing 3-D output netCDF cube is not implemented yet\n");
+		Return (GMT_MEMORY_ERROR);
+	}
+
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+
+	if ((G[GMT_IN] = gmt_M_memory (GMT, NULL, n_layers, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);
+	
+	for (k = 0; k < n_layers; k++) {	/* Read in the n layers into individual grid structures */
+		sprintf (file, "%s?[%" PRIu64 "]", Ctrl->In.file, k);
+		if ((G[GMT_IN][k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, file, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read layer %d from file %s.\n", k, file);
+			Return (API->error);
+			
+		}
+	}
+	
+	/* Create grid layers for each output level */
+	
+	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
+	if ((G[GMT_OUT] = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);
+	for (k = 0; k < Ctrl->T.T.n; k++)	{	/* Duplicate grid headers and allocate arrays */
+		if ((G[GMT_OUT][k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G[GMT_IN][0])) == NULL) Return (API->error);
+	}
+	
+	if ((i_value = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) Return (GMT_MEMORY_ERROR);
+	if ((o_value = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double)) == NULL) Return (GMT_MEMORY_ERROR);
+	
+	gmt_M_grd_loop (GMT, G[GMT_IN][0], row, col, node) {	/* Loop over all coregistererd nodes (picking G[GMT_IN][0] to represent all grid layouts) */
+		for (k = 0; k < n_layers; k++)	/* For all input levels */
+			i_value[k] = G[GMT_IN][k]->data[node];	/* Get the values at this (x,y) across all input levels */
+		gmt_intpol (GMT, level, i_value, n_layers, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
+		for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels */
+			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
+	}
+	
+	if (Ctrl->T.T.n == 1) {	/* Special case of only sampling the cube at one layer and thus only return a 2-D slice */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G[GMT_OUT][0]) != GMT_NOERROR) {
+			Return (API->error);
+		}
+	}
+	
+	/* Here we must write an output 3-D data cube - not implemented yet */
+	
+	/* Done with everything */
+		
+	gmt_M_free (GMT, level);
+	gmt_M_free (GMT, i_value);
+	gmt_M_free (GMT, o_value);
+	for (k = 0; k < n_layers; k++)
+		GMT_Destroy_Data (API, &(G[GMT_IN][k]));
+	gmt_M_free (GMT, G[GMT_IN]);
+	for (k = 0; k < Ctrl->T.T.n; k++)
+		GMT_Destroy_Data (API, &(G[GMT_OUT][k]));
+	gmt_M_free (GMT, G[GMT_OUT]);
+		
+	Return (GMT_NOERROR);
 }
