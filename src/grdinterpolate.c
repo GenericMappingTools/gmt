@@ -221,7 +221,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""};
 	int error = 0;
 	unsigned int int_mode, row, col;
-	uint64_t n_layers = 0, k, node;
+	uint64_t n_layers = 0, k, node, start_k, stop_k, n_use;
 	double wesn[4], *level = NULL, *i_value = NULL, *o_value = NULL;
 	struct GMT_GRID **G[2] = {NULL, NULL};
 	struct GRDINTERPOLATE_CTRL *Ctrl = NULL;
@@ -273,18 +273,35 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Sorry, writing 3-D output netCDF cube is not implemented yet\n");
 		Return (GMT_MEMORY_ERROR);
 	}
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
 
+	/* Determine the range of input layers needed for interpolation */
+	
+	start_k = 0; stop_k = n_layers - 1;
+	while (start_k < n_layers && Ctrl->T.T.array[0] > level[start_k])
+		start_k++;
+	if (start_k && Ctrl->T.T.array[0] < level[start_k]) start_k--;
+	if (start_k && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
+		start_k--;	/* One more to define the spline */
+	while (stop_k && Ctrl->T.T.array[Ctrl->T.T.n-1] < level[stop_k])
+		stop_k--;
+	if (stop_k < n_layers && Ctrl->T.T.array[Ctrl->T.T.n-1] > level[stop_k]) stop_k++;
+	if (stop_k < (n_layers-1) && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
+		stop_k++;	/* One more to define the spline */
+	n_use = stop_k - start_k + 1;	/* Total number of input layers needed */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
+	
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if ((G[GMT_IN] = gmt_M_memory (GMT, NULL, n_layers, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);
 	
-	for (k = 0; k < n_layers; k++) {	/* Read in the n layers into individual grid structures */
+	for (k = start_k; k <= stop_k; k++) {	/* Read in the required layers into individual grid structures */
 		if (Ctrl->Z.active[GMT_IN])	/* Get the k'th file */
 			sprintf (file, "%s", Ctrl->In.file[k]);
 		else	/* Get the k'th layer from 3D cube */
 			sprintf (file, "%s?[%" PRIu64 "]", Ctrl->In.file[0], k);
 		if ((G[GMT_IN][k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read layer %d from file %s.\n", k, file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
 			Return (API->error);
 		}
 	}
@@ -294,16 +311,17 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
 	if ((G[GMT_OUT] = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);
 	for (k = 0; k < Ctrl->T.T.n; k++)	{	/* Duplicate grid headers and allocate arrays */
-		if ((G[GMT_OUT][k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G[GMT_IN][0])) == NULL) Return (API->error);
+		if ((G[GMT_OUT][k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G[GMT_IN][start_k])) == NULL)
+			Return (API->error);
 	}
 	
 	if ((i_value = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) Return (GMT_MEMORY_ERROR);
 	if ((o_value = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double)) == NULL) Return (GMT_MEMORY_ERROR);
 	
-	gmt_M_grd_loop (GMT, G[GMT_IN][0], row, col, node) {	/* Loop over all coregistererd nodes (picking G[GMT_IN][0] to represent all grid layouts) */
-		for (k = 0; k < n_layers; k++)	/* For all input levels */
+	gmt_M_grd_loop (GMT, G[GMT_IN][start_k], row, col, node) {	/* Loop over all coregistererd nodes (picking G[GMT_IN][start_k] to represent all grid layouts) */
+		for (k = start_k; k <= stop_k; k++)	/* For all available input levels */
 			i_value[k] = G[GMT_IN][k]->data[node];	/* Get the values at this (x,y) across all input levels */
-		gmt_intpol (GMT, level, i_value, n_layers, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
+		gmt_intpol (GMT, &level[start_k], &i_value[start_k], n_use, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
 		for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels */
 			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
 	}
@@ -311,7 +329,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.n == 1 || Ctrl->Z.active[GMT_OUT]) {	/* Special case of only sampling the cube at one layer or asking for 2-D slices */
 		for (k = 0; k < Ctrl->T.T.n; k++) {	/* For all output levels */
 			if (Ctrl->Z.active[GMT_OUT])	/* Create the k'th layer file */
-				sprintf (file, Ctrl->G.file, level[k]);
+				sprintf (file, Ctrl->G.file, Ctrl->T.T.array[k]);
 			else	/* Just this one file */
 				sprintf (file, "%s", Ctrl->G.file);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G[GMT_OUT][k]) != GMT_NOERROR) {
@@ -322,9 +340,10 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	
 	/* Here we must write an output 3-D data cube - not implemented yet - but caught earlier */
 	
-	/* Done with everything */
+	/* Done with everything; free memory */
 		
-	gmt_M_free (GMT, level);
+	if (!Ctrl->Z.active[GMT_IN])
+		gmt_M_free (GMT, level);
 	gmt_M_free (GMT, i_value);
 	gmt_M_free (GMT, o_value);
 	for (k = 0; k < n_layers; k++)
