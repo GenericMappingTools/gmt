@@ -181,6 +181,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	int error = 0;
+	uint64_t nz = 0;
+	double *zarray = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GRDINTERPOLATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -203,6 +205,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdinterpolate main code ----------------------------*/
+
+	if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file, &nz, &zarray))) Return (error);
 
 	Return ((error) ? error : GMT_NOERROR);
 }

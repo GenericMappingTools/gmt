@@ -1761,3 +1761,117 @@ nc_err:
 	}
 	return status;
 }
+
+/* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
+
+int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray) {
+	int i, err, ID = -1, dim = 0, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
+	int has_vector, has_range, registration, ndims = 0, xy_dim[3], status;
+	uint64_t n_layers = 0;
+	size_t lens[5];
+	bool set_reg = true;
+	char varname[GMT_GRID_VARNAME_LEN80], dimname[GMT_GRID_UNIT_LEN80], z_units[GMT_GRID_UNIT_LEN80];
+	double inc, dummy[2], dz = 0, *z = NULL;
+	
+	
+	gmt_M_err_trap (nc_open (file, NC_NOWRITE, &ncid));
+
+	gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
+	i = 0;
+	while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (3-4D) grid if 3D not found */
+		gmt_M_err_trap (nc_inq_varndims (ncid, i, &ndims));
+		if (ndims == 3)	/* Found the first 3-D grid */
+			z_id = i;
+		else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+			ID = i;
+			dim = ndims;
+		}
+		i++;
+	}
+	if (z_id < 0) {	/* No 3-D grid found, check if we found a higher dimension cube */
+		if (ID == -1) {	/* No we didn't */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No 3-D data cube found in file %s.\n", file);
+			return GMT_GRDIO_NO_2DVAR;
+		}
+		z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+		nc_inq_varname (ncid, z_id, varname);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
+	}
+	gmt_M_err_trap (nc_inq_vardimid (ncid, z_id, dims));
+	
+	/* Get the ids of the x and y (and depth and time) coordinate variables */
+	for (i = 0; i < ndims; i++) {
+		gmt_M_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
+		if ((status = nc_inq_varid (ncid, dimname, &ids[i])) != NC_NOERR)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
+				dimname, nc_strerror(status));
+	}
+	xy_dim[0] = ndims-1;
+	xy_dim[1] = ndims-2;
+	xy_dim[2] = ndims-3;
+	n_layers = lens[xy_dim[GMT_Z]];
+	
+	/* Create enough memory to store the level-coordinate values */
+	z = gmt_M_memory (GMT, NULL, n_layers, double);
+	
+	/* Get information about z variable */
+	gmtnc_get_units (GMT, ncid, ids[xy_dim[GMT_Z]], z_units);
+	/* Set default range to number of nodes in case nothing is found further down */
+	dummy[0] = 0.0, dummy[1] = (double) n_layers-1; /* Default */
+	registration = GMT_GRID_NODE_REG;
+
+	/* Look for the z-coordinate vector */
+	if ((has_vector = !nc_get_var_double (ncid, ids[xy_dim[GMT_Z]], z))) {
+		gmtnc_check_step (GMT, n_layers, z, z_units, file);
+		dz = fabs (z[1] - z[0]);	/* Grid spacing in z */
+	}
+		
+	/* Look for the z-coordinate range attributes */
+	has_range = (!nc_get_att_double (ncid, ids[xy_dim[GMT_Z]], "actual_range", dummy) ||
+		!nc_get_att_double (ncid, ids[xy_dim[GMT_Z]], "valid_range", dummy) ||
+		!(nc_get_att_double (ncid, ids[xy_dim[GMT_Z]], "valid_min", &dummy[0]) +
+		nc_get_att_double (ncid, ids[xy_dim[GMT_Z]], "valid_max", &dummy[1])));
+
+	if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
+		if (fabs (dummy[0] - z[0]) > (0.5001 * dz) || fabs (dummy[1] - z[n_layers-1]) > (0.5001 * dz)) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The z-coordinates and range attribute are in conflict; must rely on coordinates only\n");
+			dummy[0] = z[0], dummy[1] = z[n_layers-1];
+			has_range = false;	/* Since useless information */
+			/* For registration, we have to assume that the actual range is an integer multiple of increment.
+			 * If so, then if the coordinates are off by 0.5*dz then we assume we have pixel registration */
+			if (set_reg && fabs (fmod (dummy[0], dz)) > (0.4999 * dz)) {	/* Pixel registration */
+				registration = GMT_GRID_PIXEL_REG;
+				dummy[0] -= 0.5 * dz;	dummy[1] += 0.5 * dz;
+			}
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing registration to be %s\n", regtype[registration]);
+		}
+		else {	/* Data seems OK; determine registration */
+			dummy[0] = z[0], dummy[1] = z[n_layers-1];
+			if (set_reg && (fabs(dummy[1] - dummy[0]) / fabs(z[n_layers-1] - z[0]) - 1.0 > 0.5 / (n_layers - 1)))
+				registration = GMT_GRID_PIXEL_REG;
+		}
+	}
+	else if (has_vector) {	/* No attribute for range, use coordinates */
+		dummy[0] = z[0], dummy[1] = z[n_layers-1];
+		if (set_reg && fabs (fmod (dummy[0], dz)) > (0.4999 * dz)) {	/* Most likely pixel registration since off by dx/2 */
+			registration = GMT_GRID_PIXEL_REG;
+			dummy[0] -= 0.5 * dz;	dummy[1] += 0.5 * dz;
+		}
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No range attribute, guessing registration to be %s\n", regtype[registration]);
+	}
+	else {	/* Only has the valid_range settings.  If no registration set, and no dx available, guess based on nx */
+		if (set_reg && (n_layers%2) == 0) {	/* Pixel registration */
+			registration = GMT_GRID_PIXEL_REG;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No z-coordinates, guessing registration to be %s since nz is odd\n", regtype[registration]);
+		}
+	}
+
+	/* Determine grid step */
+	inc = gmt_M_get_inc (GMT, dummy[0], dummy[1], n_layers, registration);
+	if (gmt_M_is_dnan(inc)) inc = 1.0;
+	
+	*zarray = z;
+	*nz = n_layers;
+
+	return GMT_NOERROR;
+}
