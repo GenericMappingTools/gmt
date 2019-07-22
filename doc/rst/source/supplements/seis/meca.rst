@@ -21,7 +21,7 @@ Synopsis
 [ |-M| ]
 [ |-N| ]
 [ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
-[ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
+[ |-T|\ *num\_of\_plane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
