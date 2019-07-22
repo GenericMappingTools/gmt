@@ -1168,6 +1168,23 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (Ctrl->L.active) {    /* Make sure we have the information requested if -Lc or -Lt were used */
+		for (T = 0; T < Ctrl->L.n_tags; T++) {
+			if ((Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C || Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
+				GMT_Report (API, GMT_MSG_NORMAL, "No table given via -T for data-based labels - exiting\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C && Ctrl->L.tag[T].col >= D->n_columns) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have enough columns for your -Lc%d request - exiting\n", Ctrl->L.tag[T].col);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have trailing text for your -Lt%d request - exit\n", Ctrl->L.tag[T].col);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+	}
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of animation frames: %d\n", n_frames);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
