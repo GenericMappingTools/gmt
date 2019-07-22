@@ -39,6 +39,10 @@ EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid
 EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 #endif
 
+/* gmt_nc.c: */
+
+EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray);
+
 /* gmt_init.c: */
 
 EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col);
