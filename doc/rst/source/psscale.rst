@@ -13,9 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** |-D|\ *refpoint*
+**psscale**
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
+[ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [*max\_intens*\ \|\ *low_i*/*high_i*] ]
