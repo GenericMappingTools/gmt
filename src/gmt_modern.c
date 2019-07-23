@@ -49,7 +49,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "coast",        5U)) { strcpy (modname, "pscoast");     return module; }
 	else if (!strncmp (module, "velo",         4U)) { strcpy (modname, "psvelo");      return module; }
 	else if (!strncmp (module, "segy",         4U)) { strcpy (modname, "pssegy");      return module; }
-	else if (!strncmp (module, "text",         4U)) { strcpy (modname, "text");        return module; }
+	else if (!strncmp (module, "text",         4U)) { strcpy (modname, "pstext");      return module; }
 	else if (!strncmp (module, "plot",         4U)) { strcpy (modname, "psxy");        return module; }
 	else if (!strncmp (module, "meca",         4U)) { strcpy (modname, "psmeca");      return module; }
 	else if (!strncmp (module, "rose",         4U)) { strcpy (modname, "psrose");      return module; }
