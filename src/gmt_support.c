@@ -1056,8 +1056,9 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 
 		for (i = 1, c_pos = 0; line[i] && c_pos == 0; i++) if (line[i] == ':') c_pos = i;
 		if (c_pos == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Pen style %s do not follow format <pattern>:<phase>. <phase> set to 0\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Pen style %s does not contain :<phase>. <phase> set to 0\n", line);
 			P->offset = 0.0;
+			sscanf (line, "%s", P->style);
 		}
 		else {
 			line[c_pos] = ' ';
@@ -1115,7 +1116,7 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	int n;
 
 	/* Returns true if we are sure the word is a style string - else false.
-	 * style syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>]
+	 * style syntax is a|o|<pattern>[:<phase>]|<string made up of -|. only>[<unit>]
 	 * Also recognized "dashed" for -, "dotted" for . as well as "solid" */
 
 	n = (int)strlen (word);
@@ -1134,6 +1135,10 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	}
 	if (strchr(word,'t')) return (false);	/* Got a t somewhere */
 	if (strchr(word,':')) return (true);	/* Got <pattern>:<phase> */
+	if (strchr(word,'_')) {	/* Got <pattern> without optional :<phase>, add :0 */
+		strcat (word, ":0");
+		return (true);
+	}
 	while (n >= 0 && (word[n] == '-' || word[n] == '.')) n--;	/* Wind down as long as we find - or . */
 	return ((n == -1));	/* true if we only found -/., false otherwise */
 }
@@ -6627,7 +6632,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		}
 		/* Unstated else branch means we got width stored correctly */
 	}
-	/* Unstated else branch means we got all 3: width,color,style */
+	/* Unstated else branch means we got width stored correctly */
 
 	/* Assign width, color, style if given */
 	if (support_getpenwidth (GMT, width, P)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of pen width (%s) not recognized. Using default.\n", width);

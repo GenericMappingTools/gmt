@@ -6753,9 +6753,9 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	gmt_message (GMT, "\t             (4) any valid color name.\n");
 	gmt_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>.\n");
 	gmt_message (GMT, "\t             (2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\".\n");
-	gmt_message (GMT, "\t             (3) <pattern>:<offset>; <pattern> holds lengths (default unit points)\n");
+	gmt_message (GMT, "\t             (3) <pattern>[:<offset>]; <pattern> holds lengths (default unit points)\n");
 	gmt_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
-	gmt_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");
+	gmt_message (GMT, "\t                The optional <offset> shifts elements from start of the line [0].\n");
 	gmt_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
 	if (mode)
 		gmt_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
