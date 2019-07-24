@@ -2450,11 +2450,11 @@ option argument, with commas separating the given attributes, e.g.,
     relative to the pen width (dots has a length that equals the pen
     width while dashes are 8 times as long; gaps between segments are 4
     times the pen width). For more detailed attributes including exact
-    dimensions you may specify *string*:*offset*, where *string* is a
+    dimensions you may specify *string*\ [:*offset*\ ], where *string* is a
     series of numbers separated by underscores. These numbers represent
     a pattern by indicating the length of line segments and the gap
-    between segments. The *offset* phase-shifts the pattern from the
-    beginning the line. For example, if you want a yellow line of width
+    between segments. The optional *offset* phase-shifts the pattern from the
+    beginning the line [0]. For example, if you want a yellow line of width
     0.1 cm that alternates between long dashes (4 points), an 8 point
     gap, then a 5 point dash, then another 8 point gap, with pattern
     offset by 2 points from the origin, specify
