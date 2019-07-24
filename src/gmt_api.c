@@ -11066,6 +11066,7 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	size_t source_info_len;
 	char *stamp = NULL;
 	struct GMTAPI_CTRL *API = NULL;
+	FILE *err = stderr;
 	va_list args;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -11080,7 +11081,8 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	vsnprintf (API->message + source_info_len, GMT_MSGSIZ - source_info_len, format, args);
 	va_end (args);
 	assert (strlen (API->message) < GMT_MSGSIZ);
-	API->print_func (API->GMT->session.std[GMT_ERR], API->message);	/* Do the printing */
+	if (API->GMT) err = API->GMT->session.std[GMT_ERR];
+	API->print_func (err, API->message);	/* Do the printing */
 	return_error (V_API, GMT_NOERROR);
 }
 
@@ -11096,6 +11098,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
+	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
 	va_list args;
@@ -11104,6 +11107,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
 	GMT = API->GMT;	/* Short-hand for the GMT sub-structure */
 	g_level = (GMT) ? GMT->current.setting.verbose : 0;
+	if (GMT) err = GMT->session.std[GMT_ERR];
 	if (level > MAX(API->verbose, g_level))
 		return 0;
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
@@ -11123,7 +11127,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	va_end (args);
 	assert (strlen (API->message) < GMT_MSGSIZ);
 	gmt_M_memcpy (API->error_msg, API->message, GMT_BUFSIZ-1, char);
-	API->print_func (GMT ? GMT->session.std[GMT_ERR] : stderr, API->message);
+	API->print_func (err, API->message);
 	return_error (V_API, GMT_NOERROR);
 }
 

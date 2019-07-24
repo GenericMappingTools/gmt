@@ -6938,6 +6938,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+			/* Because this is run later we must force the correct font color here */
+			PSL_command (PSL, PSL_makecolor (PSL, GMT->current.setting.font_tag.fill.rgb));
+			PSL_command (PSL, " ");
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
 			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
 				int outline = 0;
@@ -6964,6 +6967,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* Because PSL_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
+			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_command (PSL, "U\n}!\n");
 		}
