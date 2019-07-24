@@ -68,11 +68,11 @@ struct GRDGRADIENT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[t_or_e][<amp>][+o<offset>][+s<sigma>] */
+	struct N {	/* -N[t_or_e][<amp>][+<ambient>][+o<offset>][+s<sigma>] */
 		bool active;
 		unsigned int set[3];	/* 1 if values are specified for amp, offset and sigma, 2 means we want last-run values */
 		unsigned int mode;	/* 1 = atan, 2 = exp */
-		double norm, sigma, offset;
+		double norm, sigma, offset, ambient;
 	} N;
 	struct Q {	/* -Qc|r|R */
 		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
@@ -131,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -160,6 +160,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append +a<ambient> to add <ambient> to the result [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    For -Nt|e, optionally append +s<sigma> and/or +o<offset> to set\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    sigma and offset for the transform [Default estimates from the data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    See -Q to use the same offset, sigma for multiple grid calculations.\n");
@@ -330,10 +331,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 					Ctrl->N.mode = (opt->arg[0] == 't') ? 1 : 2;
 					j = 1;
 				}
-				if ((c = gmt_first_modifier (GMT, opt->arg, "os"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "aos"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'N', c, "os", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'N', c, "aos", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
+							case 'a': Ctrl->N.ambient = atof (&p[1]); break;
 							case 'o': Ctrl->N.set[1] = 1; if (p[1]) Ctrl->N.offset = atof (&p[1]); else Ctrl->N.set[1] = 2; break;
 							case 's': Ctrl->N.set[2] = 1; if (p[1]) Ctrl->N.sigma  = atof (&p[1]); else Ctrl->N.set[2] = 2; break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -743,10 +745,10 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				}
 				rpi = 2.0 * Ctrl->N.norm / M_PI;
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)(rpi * atan ((Out->data[ij] - ave_gradient) * denom));
+					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)(rpi * atan ((Out->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient);
 				}
-				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom);
-				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom);
+				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
+				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
 			}
 			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
 				if (!Ctrl->N.set[2]) {
@@ -764,14 +766,14 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
 					if (gmt_M_is_fnan (Out->data[ij])) continue;
 					if (Out->data[ij] < ave_gradient) {
-						Out->data[ij] = (gmt_grdfloat)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)));
+						Out->data[ij] = (gmt_grdfloat)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
 					}
 					else {
-						Out->data[ij] = (gmt_grdfloat)( Ctrl->N.norm * (1.0 - exp (-(Out->data[ij] - ave_gradient) * denom)));
+						Out->data[ij] = (gmt_grdfloat)( Ctrl->N.norm * (1.0 - exp (-(Out->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
 					}
 				}
-				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom));
-				Out->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom));
+				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
+				Out->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
 			}
 			else {	/* Linear transformation */
 				if ((max_gradient - ave_gradient) > (ave_gradient - min_gradient))
@@ -779,10 +781,10 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				else
 					denom = Ctrl->N.norm / (ave_gradient - min_gradient);
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)((Out->data[ij] - ave_gradient) * denom);
+					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)((Out->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient;
 				}
-				Out->header->z_max = (max_gradient - ave_gradient) * denom;
-				Out->header->z_min = (min_gradient - ave_gradient) * denom;
+				Out->header->z_max = (max_gradient - ave_gradient) * denom + Ctrl->N.ambient;
+				Out->header->z_min = (min_gradient - ave_gradient) * denom + Ctrl->N.ambient;
 			}
 		}
 	}
@@ -846,7 +848,6 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		}
 		fclose (fp);
 	}
-	
 
 	Return (GMT_NOERROR);
 }
