@@ -11980,6 +11980,19 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
 			if (!exact) gmtinit_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
+			/* Safety valve if w == e or s == n */
+			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
+				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
+					wesn[XLO] = -1.0, wesn[XHI] = +1.0;
+				else
+					wesn[XLO] *= 0.9, wesn[XHI] *= 1.1;	/* +/- 10% of values */
+			}
+			if (doubleAlmostEqualZero (wesn[YLO], wesn[YHI])) {
+				if (gmt_M_is_zero (wesn[YLO]))	/* No info to do anything other than this */
+					wesn[YLO] = -1.0, wesn[YHI] = +1.0;
+				else
+					wesn[YLO] *= 0.9, wesn[YHI] *= 1.1;	/* +/- 10% of values */
+			}
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Family %d not supported", family);
