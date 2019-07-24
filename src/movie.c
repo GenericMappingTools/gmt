@@ -245,9 +245,9 @@ GMT_LOCAL void set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, cha
 GMT_LOCAL void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
 	/* Assigns a single named Cartesian floating point variable given the script mode */
 	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%g", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %g", name, value); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%g", name, value);   break;
+		case BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
+		case CSH_MODE:  fprintf (fp, "set %s = %.12g", name, value); break;
+		case DOS_MODE:  fprintf (fp, "set %s=%.12g", name, value);   break;
 	}
 	if (unit) fprintf (fp, "%c", unit);	/* Append the unit [c|i|p] unless 0 */
 	fprintf (fp, "\n");
@@ -1431,9 +1431,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+			sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
 		else
-			sprintf (extra, "A+n");	/* No cropping, image size is fixed */
+			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
 		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
@@ -1533,9 +1533,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	extra[0] = '\0';	/* Reset */
 	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+		sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
 	else
-		sprintf (extra, "A+n");	/* No cropping, image size is fixed */
+		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
 		strcat (extra, ",Mb../movie_background.ps");
 		layers = true;
