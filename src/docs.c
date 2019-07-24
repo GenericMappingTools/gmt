@@ -156,7 +156,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[3];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf")) {
+			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "default", 7U)) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (gmt_get_ext (docname)) {
