@@ -570,15 +570,14 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
 	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
-		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) ) {
-			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
-		}
+		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) )
+			printf ("%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
 		printf ("  %s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
 		if ((list_mode & 2) && gmt_dcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
 			for (j = 0; j < GMT_DCW_STATES; j++) {
-				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) GMT_Message (GMT->parent, GMT_TIME_NONE, "\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
+				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) printf ("\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
 			}
 		}
 	}
