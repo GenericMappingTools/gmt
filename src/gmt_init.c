@@ -14782,20 +14782,36 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 #ifdef WIN32
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
-		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin.\n");
-		return NULL;
+		if (API->external)
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin. This may no be a fatal error but...\n");
+		else {
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin.\n");
+			return NULL;
+		}
 	}
 	if ( _setmode(_fileno(stdout), _O_BINARY) == -1 ) {
-		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout.\n");
-		return NULL;
+		if (API->external)
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout. This may no be a fatal error but...\n");
+		else {
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout.\n");
+			return NULL;
+		}
 	}
 	if ( _setmode(_fileno(stderr), _O_BINARY) == -1 ) {
-		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr.\n");
-		return NULL;
+		if (API->external)
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr. This may no be a fatal error but...\n");
+		else {
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr.\n");
+			return NULL;
+		}
 	}
 	if ( _set_fmode(_O_BINARY) != 0 ) {
-		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O.\n");
-		return NULL;
+		if (API->external)
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
+		else {
+			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O.\n");
+			return NULL;
+		}
 	}
 #endif
 
