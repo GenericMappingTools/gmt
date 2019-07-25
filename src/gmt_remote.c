@@ -26,6 +26,13 @@
 #include "gmt_remote.h"
 #include <curl/curl.h>
 
+#ifdef	__APPLE__
+	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
+#ifndef _Nullable
+#	define _Nullable
+#	endif
+#	endif
+
 /* Copy a file from the GMT auto-download directory or the Internet.  We recognize
  * different types and names of files.
  * 1. There are data sets of use to all GMT users, such as global relief:
