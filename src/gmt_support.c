@@ -833,7 +833,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 	if (count == 2) {	/* r/g/b */
 		n = sscanf (buffer, "%d/%d/%d", &irgb[0], &irgb[1], &irgb[2]);
 		if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
