@@ -830,17 +830,11 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		return (false);
 	}
 
-	if (count == 2) {	/* r/g/b or h/s/v */
-		if (GMT->current.setting.color_model & GMT_HSV) {	/* h/s/v */
-			n = sscanf (buffer, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
-			return (n != 3 || support_check_hsv (hsv));
-		}
-		else {		/* r/g/b */
-			n = sscanf (buffer, "%d/%d/%d", &irgb[0], &irgb[1], &irgb[2]);
-			if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-			gmt_rgb_to_hsv (rgb, hsv);
-			return (false);
-		}
+	if (count == 2) {	/* r/g/b */
+		n = sscanf (buffer, "%d/%d/%d", &irgb[0], &irgb[1], &irgb[2]);
+		if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
+		support_rgb_to_hsv (rgb, hsv);
+		return (false);
 	}
 
 	if (support_char_count (buffer, '-')  == 2) {		/* h-s-v */
@@ -6264,21 +6258,13 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		return (false);
 	}
 
-	if (count == 2) {	/* r/g/b or h/s/v */
-		if (GMT->current.setting.color_model & GMT_HSV) {	/* h/s/v */
-			n = sscanf (buffer, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
-			if (n != 3 || support_check_hsv (hsv)) return (true);
-			gmt_hsv_to_rgb (rgb, hsv);
-			return (false);
-		}
-		else {		/* r/g/b */
-			n = sscanf (buffer, "%lf/%lf/%lf", &rgb[0], &rgb[1], &rgb[2]);
-			rgb[0] /= 255.0 ; rgb[1] /= 255.0 ; rgb[2] /= 255.0;
-			return (n != 3 || support_check_rgb (rgb));
-		}
+	if (count == 2) {	/* r/g/b */
+		n = sscanf (buffer, "%lf/%lf/%lf", &rgb[0], &rgb[1], &rgb[2]);
+		rgb[0] /= 255.0 ; rgb[1] /= 255.0 ; rgb[2] /= 255.0;
+		return (n != 3 || support_check_rgb (rgb));
 	}
 
-	if (support_char_count (buffer, '-') == 2) {		/* h-s-v despite pretending to be r/g/b */
+	if (support_char_count (buffer, '-') == 2) {	/* h-s-v despite pretending to be r/g/b */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		if (n != 3 || support_check_hsv (hsv)) return (true);
 		gmt_hsv_to_rgb (rgb, hsv);
