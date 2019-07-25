@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
 #define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID"
 #define THIS_MODULE_NEEDS	"Jg"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 #ifdef HAVE_GDAL
 #define N_IMG_EXTENSIONS 6
@@ -146,8 +146,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\n", 
-	             GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", 
+	             GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Option (API, "R");
-	GMT_Option (API, "U,V,X,c,f,n,p,t,.");
+	GMT_Option (API, "U,V,X,c,f,n,p,t,x,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -598,7 +598,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids, intensity_mode;
 	unsigned int colormask_offset = 0, try, row, col, mixed = 0, *actual_row = NULL, *actual_col = NULL;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
-	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
+	uint64_t node, k, kk, byte, step, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int index = 0, ks, error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 	
 	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_LEN16] = {""};
@@ -1163,59 +1163,91 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	set_gray = (P && gray_only);
 	rgb_from_z = (!Ctrl->D.active && !Ctrl->In.do_rgb);		/* Normal case of getting rgb from z(x,y) */
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.return_image);	/* Need to look for unique rgb for masking */
+	step = (set_gray || Ctrl->M.active) ? 1 : 3;
 	
 	/* Evaluate colors at least once (try = 0), or twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {
-		for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines */
-			kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
-			if (Ctrl->D.active && row == 0) node_RGBA = kk;		/* First time per row equals 'node', afterwards it grows alone */
-			for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
-				node = kk + actual_col[col];
-				if (rgb_from_z) {	/* Got a single grid and need to look up color via the CPT */
+		if (rgb_from_z && !Ctrl->Q.active) {	/* Got a single grid and need to look up color via the CPT */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Basic z(x,y) with optional illumination and no colormasking.\n");
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row,byte,kk,col,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
+//#endif 
+			for (row = 0; row < n_rows; row++) {	/* March along scanlines */
+				byte = colormask_offset + row * n_columns * step;
+				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
+				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
+					node = kk + actual_col[col];
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
-					if (index != (GMT_NAN - 3)) has_content = true;
-				}
-				else if (Ctrl->D.active) {	/* Input was an image, not grid */
-					if (!Ctrl->In.do_rgb) {
-						k = (int)Img_proj->data[node];
-						rgb[0] = r_table[k];	/* Either shade or red */
-						if (do_indexed) {	/* Color via index colortable */
-							rgb[1] = g_table[k];
-							rgb[2] = b_table[k];
-						}
+					if (index != (GMT_NAN - 3) && Ctrl->I.active) {	/* Need to deal with illumination */
+						if (intensity_mode & 1)	/* Intensity value comes from the grid */
+							gmt_illuminate (GMT, Intens_proj->data[node], rgb);
+						else	/* A constant (ambient) intensity was given via -I */
+							gmt_illuminate (GMT, Ctrl->I.value, rgb);
 					}
-					else {	/* Got RGBA image, convert to rgb in 0-1 range */
-						for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
-						if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
+					/* Assigning bytes to colorimage */
+					if (set_gray)	/* Color table only has grays, just use r since r = g = b here */
+						bitimage_8[byte] = gmt_M_u255 (rgb[0]);
+					else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
+						bitimage_8[byte] = gmt_M_u255 (gmt_M_yiq (rgb));
+					else {	/* Here we do r/g/b 24-bit color */
+						for (k = 0; k < 3; k++) bitimage_24[byte+k] = gmt_M_u255 (rgb[k]);
 					}
-				}
-				else	/* Got three grids with red, green, blue values */
-					index = set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
-
-				if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
-					if (intensity_mode & 1) {	/* Intensity value comes from the grid */
-						if (intensity_mode & 2)	/* Must recompute "node" with the gmt_M_ijp macro suitable for the image */
-							node = gmt_M_ijp (Intens_proj->header, actual_row[row], actual_col[col]);
-						gmt_illuminate (GMT, Intens_proj->data[node], rgb);
-					}
-					else	/* A constant (ambient) intensity was given via -I */
-						gmt_illuminate (GMT, Ctrl->I.value, rgb);
-				}
-
-				if (set_gray)	/* Color table only has grays, just use r since r = g = b here */
-					bitimage_8[byte++] = gmt_M_u255 (rgb[0]);
-				else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
-					bitimage_8[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
-				else {	/* Here we do r/g/b 24-bit color */
-					for (k = 0; k < 3; k++) bitimage_24[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
-					if (rgb_cube_scan && index != (GMT_NAN - 3)) /* Keep track of all r/g/b combinations used except for NaN */
-						rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = true;
+					byte += step;
 				}
 			}
-
-			if (!n_grids) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row */
+			done = true;	/* Only doing the loop once here since no -Q */
 		}
+		else {	/* Dealing with images, three grids, and/or colormasking */
+			for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines */
+				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
+				if (Ctrl->D.active && row == 0) node_RGBA = kk;		/* First time per row equals 'node', afterwards it grows alone */
+				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
+					node = kk + actual_col[col];
+					if (rgb_from_z) {	/* Got a single grid and need to look up color via the CPT */
+						index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
+						if (index != (GMT_NAN - 3)) has_content = true;
+					}
+					else if (Ctrl->D.active) {	/* Input was an image, not grid */
+						if (!Ctrl->In.do_rgb) {
+							k = (int)Img_proj->data[node];
+							rgb[0] = r_table[k];	/* Either shade or red */
+							if (do_indexed) {	/* Color via index colortable */
+								rgb[1] = g_table[k];
+								rgb[2] = b_table[k];
+							}
+						}
+						else {	/* Got RGBA image, convert to rgb in 0-1 range */
+							for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
+							if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
+						}
+					}
+					else	/* Got three grids with red, green, blue values */
+						index = set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
 
+					if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
+						if (intensity_mode & 1) {	/* Intensity value comes from the grid */
+							if (intensity_mode & 2)	/* Must recompute "node" with the gmt_M_ijp macro suitable for the image */
+								node = gmt_M_ijp (Intens_proj->header, actual_row[row], actual_col[col]);
+							gmt_illuminate (GMT, Intens_proj->data[node], rgb);
+						}
+						else	/* A constant (ambient) intensity was given via -I */
+							gmt_illuminate (GMT, Ctrl->I.value, rgb);
+					}
+
+					if (set_gray)	/* Color table only has grays, just use r since r = g = b here */
+						bitimage_8[byte++] = gmt_M_u255 (rgb[0]);
+					else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
+						bitimage_8[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
+					else {	/* Here we do r/g/b 24-bit color */
+						for (k = 0; k < 3; k++) bitimage_24[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
+						if (rgb_cube_scan && index != (GMT_NAN - 3)) /* Keep track of all r/g/b combinations used except for NaN */
+							rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = true;
+					}
+				}
+
+				if (!n_grids) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row */
+			}
+		}
 		if (rgb_cube_scan) {	/* Check that we found an unused r/g/b value so colormasking will work as advertised */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
