@@ -7878,10 +7878,12 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
+	
+/* Open MP does not work yet */
 
-#ifdef _OPENMP
-#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
-#endif 
+// #ifdef _OPENMP
+// #pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
+// #endif 
 	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
