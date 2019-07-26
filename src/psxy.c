@@ -93,8 +93,9 @@ struct PSXY_CTRL {
 		bool cpt_effect;
 		struct GMT_PEN pen;
 	} W;
-	struct PSXY_Z {	/* -Z<value> */
+	struct PSXY_Z {	/* -Z[l|f]<value> */
 		bool active;
+		unsigned int mode;	/* 1 for line, 2 for fill, 3 for both */
 		double value;
 	} Z;
 };
@@ -390,7 +391,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s] [-Z<val>]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s] [-Z[l|f]<val>]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -524,7 +525,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l for just pen color or f for fill color [Default sets both].\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,p,t");
@@ -791,7 +793,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 			case 'Z':		/* Get value for CPT lookup */
 				Ctrl->Z.active = true;
 				ztype = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, GMT_Z);
-				n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, opt->arg, ztype, false, &Ctrl->Z.value), opt->arg);
+				switch (opt->arg[0]) {
+					case 'l': Ctrl->Z.mode = 1; j=1; break;
+					case 'f': Ctrl->Z.mode = 2; j=1; break;
+					default:  Ctrl->Z.mode = 3; j=0; break;
+				}
+				n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, &opt->arg[j], ztype, false, &Ctrl->Z.value), &opt->arg[j]);
 				break;
 
 			default:	/* Report bad options */
@@ -924,9 +931,17 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
 		PH = gmt_get_C_hidden (P);
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
-			(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, Ctrl->G.fill.rgb);
-			Ctrl->G.active = true;	/* -C plus -Z = -G */
-			get_rgb = false;
+			double rgb[4];
+			(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, rgb);
+			if (Ctrl->Z.mode & 1) {	/* To be used in polygon or symbol outline */
+				gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
+				Ctrl->W.active = true;	/* -C plus -Zl = -W */
+			}
+			if (Ctrl->Z.mode & 2) {	/* To be used in polygon or symbol fill */
+				gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
+				Ctrl->G.active = true;	/* -C plus -Zf = -G */
+			}
+			get_rgb = false;	/* Not reading z from data */
 		}
 		else if ((P->categorical & 2))	/* Get rgb from trailing text, so read no extra z columns */
 			rgb_from_z = false;

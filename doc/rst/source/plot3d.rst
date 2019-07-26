@@ -30,7 +30,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value* ]
+[ |-Z|\ [**l**\ \|\ **f**] *value* ]
 [ |SYN_OPT-a| ] 
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -60,7 +60,7 @@ southeast at 30 degree elevation, use:
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
               -U+c -W -pdf heights
 
-To plot a point with color dictated by the *t.cpt* file for the *level*-value 65, try
+To plot a point with color and outline dictated by the *t.cpt* file for the *level*-value 65, try
 
    ::
 
