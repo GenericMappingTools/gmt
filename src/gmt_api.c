@@ -10539,18 +10539,23 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
 	}
 	/* 1l. Check if this is makecpt using -E or -S with no args */
-	else if (!strncmp (module, "makecpt", 7U) && ((opt = GMT_Find_Option (API, 'E', *head)) || (opt = GMT_Find_Option (API, 'S', *head)))) {
-		if (opt->arg[0] == '\0') {	/* Found the -E or -S option without arguments */
-			gmt_M_str_free (opt->arg);
-			if (opt->option == 'E')	/* Gave -E but we need to pass -E0 */
-				opt->arg = strdup ("0");
-			else	/* Replace -S with -Sr */
-				opt->arg = strdup ("r");
+	else if (!strncmp (module, "makecpt", 7U)) {
+		if (((opt = GMT_Find_Option (API, 'E', *head)) || (opt = GMT_Find_Option (API, 'S', *head)))) {
+			if (opt->arg[0] == '\0') {	/* Found the -E or -S option without arguments */
+				gmt_M_str_free (opt->arg);
+				if (opt->option == 'E')	/* Gave -E but we need to pass -E0 */
+					opt->arg = strdup ("0");
+				else	/* Replace -S with -Sr */
+					opt->arg = strdup ("r");
+			}
+			/* Then add implicit ? if no input file found */
+			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head)) == NULL) {	/* Must assume implicit input file is available */
+				new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "?");
+				*head = GMT_Append_Option (API, new_ptr, *head);
+			}
 		}
-		/* Then add implicit ? if no input file found */
-		if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head)) == NULL) {	/* Must assume implicit input file is available */
-			new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "?");
-			*head = GMT_Append_Option (API, new_ptr, *head);
+		else if (API->GMT->current.setting.run_mode == GMT_MODERN && (opt = GMT_Find_Option (API, 'H', *head)) == NULL) {	/* Modern mode, no -H */
+			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 		}
 	}
 	/* 1m. Check if this is the grdgradient module, where primary dataset output should be turned off if -Qc and no -G is set */
@@ -10565,7 +10570,12 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (gmt_no_pstext_input (API, opt->arg))
 			deactivate_input = true;	/* Turn off implicit input since none is in effect */
 	}
-
+	/* 1n. Check that in modern mode, grd2cpt requires -H to write out to stdout */
+	else if (!strncmp (module, "grd2cpt", 7U)) {
+		if (API->GMT->current.setting.run_mode == GMT_MODERN && (opt = GMT_Find_Option (API, 'H', *head)) == NULL) {	/* Modern mode, no -H */
+			deactivate_output = true;	/* Turn off implicit output since none is in effect */
+		}
+	}
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
