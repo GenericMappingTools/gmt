@@ -34,6 +34,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ *value* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -75,7 +76,13 @@ sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
    ::
 
-    gmt psxy trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
+    gmt psxy trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -Baf > map.ps
+
+To plot a point with color dictated by the *t.cpt* file for the *z*-value 65, try
+
+   ::
+
+    echo 175 30 | gmt psxy -R150/200/20/50 -JX15c -Sc0.5c -Z65 -Ct.cpt > map.ps
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,

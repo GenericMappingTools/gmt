@@ -31,6 +31,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ *value* ]
 [ |SYN_OPT-a| ] 
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -61,6 +62,12 @@ southeast at 30 degree elevation, use:
     gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
               -U+c -W -P > heights.ps
+
+To plot a point with color dictated by the *t.cpt* file for the *level*-value 65, try
+
+   ::
+
+    echo 175 30 0 | gmt psxyz -R150/200/20/50 -JX15c -Sc0.5c -Z65 -Ct.cpt > map.ps
 
 .. include:: plot3d_notes.rst_
 
