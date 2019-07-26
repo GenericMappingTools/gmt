@@ -64,7 +64,7 @@ To plot a point with color and outline dictated by the *t.cpt* file for the *lev
 
    ::
 
-    echo 175 30 0 | gmt plot3d -R150/200/20/50 -J15c -Sc0.5c -Z65 -Ct.cpt -pdf map
+    echo 175 30 0 | gmt plot3d -R150/200/20/50 -JM15c -Sc0.5c -Z65 -Ct.cpt -pdf map
 
 .. include:: plot3d_notes.rst_
 

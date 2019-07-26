@@ -77,7 +77,7 @@ To plot a point with color dictated by the *t.cpt* file for the *z*-value 65, tr
 
    ::
 
-    echo 175 30 | gmt plot -R150/200/20/50 -J15c -Sc0.5c -Zf65 -Ct.cpt -pdf map
+    echo 175 30 | gmt plot -R150/200/20/50 -JM15c -Sc0.5c -Zf65 -Ct.cpt -pdf map
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
