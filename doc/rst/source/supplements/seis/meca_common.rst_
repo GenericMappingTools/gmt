@@ -69,7 +69,7 @@ Required Arguments
 
 **-Sc**\ *scale[/fontsize[/offset*]][**+u**\ ]
 
-    Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
+    Focal mechanisms in Global CMT convention. *scale* adjusts the scaling
     of the radius of the "beach ball", which will be proportional to the
     magnitude. Scale is the size for magnitude = 5 (that is M0 = 4.0E23
     dynes-cm) in inch (unless **c**, **i**, or **p** is appended).
@@ -108,12 +108,12 @@ Required Arguments
 
 **-Sm\|d\|z**\ *scale[/fontsize[/offset*]][**+u**\ ]
 
-    Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
+    Seismic moment tensor (Global CMT, with zero trace). *scale* adjusts
     the scaling of the radius of the "beach ball", which will be
     proportional to the magnitude. Scale is the size for magnitude = 5 (that
     is scalar seismic moment = 4.0E23 dynes-cm) in inch (unless **c**,
     **i**, **m**, or **p** is appended). (**-T**\ *0* option overlays best
-    double couple transparently.) Use **-Sm** to plot the Harvard CMT
+    double couple transparently.) Use **-Sm** to plot the Global CMT
     seismic moment tensor with zero trace. Use **-Sd** to plot only the
     double couple part of moment tensor. Use **-Sz** to plot the anisotropic
     part of moment tensor (zero trace). The color or shade of the
@@ -192,7 +192,7 @@ Required Arguments
     for magnitude = 5 (that is seismic scalar moment = 4\*10e+23 dynes-cm)
     in inch (unless **c**, **i**, or **p** is appended). (**-T**\ *0*
     option overlays best double couple transparently.) Use **-Sx** to plot
-    standard Harvard CMT. Use **-Sy** to plot only the double couple part of
+    standard Global CMT. Use **-Sy** to plot only the double couple part of
     moment tensor. Use **-St** to plot zero trace moment tensor. The color
     or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
