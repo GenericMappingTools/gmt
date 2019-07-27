@@ -26,7 +26,6 @@ gmt begin ex23 ps
 	237.67	47.58	RM	SEATTLE
 	28.20	-25.75	LM	PRETORIA
 	END
-	
 	gmt coast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 \
 		-B+t"Distances from $name to the World" -Wthinnest
 	
