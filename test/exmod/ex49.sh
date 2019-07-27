@@ -7,31 +7,30 @@
 #
 
 gmt begin ex49 ps
-
 	# Convert coarser age grid to pixel registration to match bathymetry grid
 	gmt grdsample @age_gridline.nc -T -Gage_pixel.nc
 	# Image depths with color-coded age contours
-	gmt makecpt -Cabyss -T-7000/0
-	gmt grdimage @depth_pixel.nc -JM6i -B -BWSne -X1.5i --FORMAT_GEO_MAP=dddF
-	gmt colorbar -DjTR+w2i/0.15i+h+o0.3i/0.15i -Baf+u" km" -W0.001 -F+p1p+gbeige
+	gmt makecpt -Cabyss -T-7000/0 -H > z.cpt
+	gmt makecpt -Chot -T0/100/10 -H > t.cpt
+	gmt grdimage @depth_pixel.nc -JM6i -Cz.cpt -B -BWSne -X1.5i --FORMAT_GEO_MAP=dddF
 	gmt plot -W1p @ridge_49.txt
-	gmt makecpt -Chot -T0/100/10
-	gmt grdcontour age_pixel.nc -A+f14p -C -Wa0.1p+c -GL30W/22S/5E/13S
+	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
+	gmt colorbar -Cz.cpt -DjTR+w2i/0.15i+h+o0.3i/0.15i -Baf+u" km" -W0.001 -F+p1p+gbeige
 	# Obtain depth, age pairs by dumping grids and pasting results
 	gmt grd2xyz age_pixel.nc   -bof > age.bin
 	gmt grd2xyz @depth_pixel.nc -bof > depth.bin
 	gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f > depth-age.bin
 	# Create and map density grid of (age,depth) distribution
 	gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc
-	gmt makecpt -Chot -T0/100
-	gmt grdimage density.nc -JX6i/4i -Q -Y4.8i
+	# WHy do we need the -R below? otherwise it failes to work
+	gmt grdimage density.nc -R0/100/-6500/0 -JX6i/4i -Q -Y4.8i -Ct.cpt
 	# Obtain modal depths every ~5 Myr
 	gmt blockmode -R0/100/-10000/0 -I5/10000 -r -E depth-age.bin -bi3f -o0,2,3 > modal.txt
 	# Compute Parsons & Sclater [1977] depth-age curve
 	# depth(t) =   350 * sqrt(t) + 2500, t < 70 Myr
 	#	   =  6400 - 3200 exp (-t/62.8), t > 70 Myr
 	gmt math -T0/100/0.1 T SQRT 350 MUL 2500 ADD T 70 LE MUL 6400 T 62.8 DIV NEG EXP 3200 MUL SUB T 70 GT MUL ADD NEG = ps.txt
-	gmt plot -Rdensity.nc ps.txt -W4p,green
+	gmt plot ps.txt -W4p,green
 	gmt plot ps.txt -W1p
 	# Compute Stein & Stein [1992] depth-age curve
 	# depth(t) =  365 * sqrt(t) + 2600,  t < 20 Myr

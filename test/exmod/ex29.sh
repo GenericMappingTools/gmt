@@ -25,13 +25,13 @@ gmt begin ex29 ps
 	gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 	gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 	gmt makecpt -Crainbow -T-7/15
-	gmt grdimage mars2.nc -I+ne0.75+a45 -B30g30 -BWsne -JH0/7i -E200 --FONT_ANNOT_PRIMARY=12p -X0.75i
+	gmt grdimage mars2.nc -I+ne0.75+a45 -B30g30 -BWsne -Rg -JH0/7i -E200 --FONT_ANNOT_PRIMARY=12p -X0.75i
 	gmt grdcontour mars2.nc -C1 -A5 -Glz+/z-
 	gmt plot -Sc0.045i -Gblack @mars370.txt
 	echo "0 90 b)" | gmt text -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB
 	gmt grdimage mars.nc -I+ne0.75+a45 -B30g30 -BWsne -Y4.2i -E200 --FONT_ANNOT_PRIMARY=12p
 	gmt grdcontour mars.nc -C1 -A5 -Glz+/z-
 	gmt plot -Sc0.045i -Gblack @mars370.txt
-	gmt colorbar -Cmars.cpt -DJBC+o0/0.15i+w6i/0.1i -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm
+	gmt colorbar -DJBC+o0/0.15i+w6i/0.1i -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm
 	echo "0 90 a)" | gmt text -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB
 gmt end
