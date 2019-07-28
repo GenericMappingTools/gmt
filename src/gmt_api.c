@@ -626,7 +626,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	struct GMT_OPTION *opt = NULL, *head = NULL;
 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Just need to check if a classic name was given... */
-		if (!strncmp (module, "ps", 2U)) {	/* Gave classic ps* name in modern mode */
+		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
