@@ -4072,7 +4072,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char;
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char, *d = NULL;
 	char txt_arr[11][GMT_LEN256];
 
 	if (args == NULL) {
@@ -4091,25 +4091,37 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		strncpy (GMT->common.J.zstring, args, GMT_LEN128-1);	/* Verbatim copy of -Jz|Z */
 	else
 		strncpy (GMT->common.J.string, args, GMT_LEN128-1);	/* Verbatim copy or map -J */
-	args += i;	/* Skip to first argument */
-	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
-	last_char = args[last_pos];
-	if (width_given) mod_flag = 1;
-	if (last_pos > 0) {	/* Avoid having -JXh|v be misinterpreted */
-		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
-			case 'h':	/* Want map HEIGHT instead */
-				mod_flag = 2;
-				break;
-			case '+':	/* Want this to be the MAX dimension of map */
-				mod_flag = 3;
-				break;
-			case '-':	/* Want this to be the MIN dimension of map */
-				mod_flag = 4;
-				break;
+
+	args += i;		/* Skip to first argument */
+	if (width_given) {	/* If given size (not scale) then we may have modifiers */
+		mod_flag = 1;	/* Default is that size meant width */
+		if ((d = strstr (args, "+d"))) {	/* Specify type of size argument via modifier +d */
+			switch (d[2]) {
+				case 'l':	mod_flag = 4; break;	/* Want this to be the MIN (lower) dimension of map */
+				case 'u':	mod_flag = 3; break;	/* Want this to be the MAX (upper) dimension of map */
+				case 'h':	mod_flag = 2; break;	/* Want map HEIGHT instead of width */
+				case 'w':	mod_flag = 1; break;	/* Want map width [Default] */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -J option: Invalid modifier %s\n", d);
+					return (true);
+					break;
+			}
+			d[0] = '\0';	/* Chop off this modifier */
+		}
+		else {	/* Backwards compatibility for trailing +,-,h */
+			last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
+			last_char = args[last_pos];
+			if (last_pos > 0) {	/* Examine trailing character for modifying behavior */
+				switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
+					case 'h':	mod_flag = 2; break;	/* Want map HEIGHT instead */
+					case '+':	mod_flag = 3; break;	/* Want this to be the MAX dimension of map */
+					case '-':	mod_flag = 4; break;	/* Want this to be the MIN dimension of map */
+				}
+				if (mod_flag > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
+			}
 		}
 	}
-	if (mod_flag > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
-
+	
 	n_slashes = gmtlib_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
@@ -4742,7 +4754,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		GMT->current.proj.projection = project;
 		GMT->current.proj.projection_GMT = project;		/* Make a copy to use when using the Proj4 lib */
 	}
-	if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier */
+	if (d) d[0] = '+';	/* Restore modifier +dl|h|w|h */
+	else if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier +,-,h,w */
 
 	return (error > 0);
 }
@@ -6039,7 +6052,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t   Capitalized, <scale>|<width> denotes the width of the plot in %s\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
+			gmt_message (GMT, "\t   Append +dh for map height, +du for max map dimension, and +dl for min map dimension [Default +dw is width].\n");
 			gmt_message (GMT, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
 			gmt_message (GMT, "\t   longitude range specified by -R is used. The default standard parallel is the equator\n");
 			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n");

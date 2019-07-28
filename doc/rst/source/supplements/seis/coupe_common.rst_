@@ -100,7 +100,7 @@ Required Arguments
       text string to appear above the beach ball [Default] or under (add **+u**).
 
   **-Sc**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
+     Focal mechanisms in Global CMT convention. *scale* adjusts the scaling
      of the radius of the "beach ball", which will be proportional to the
      magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
      dynes-cm.) in **PROJ_LENGTH_UNIT** (unless **c**, **i**, or
@@ -170,7 +170,7 @@ Required Arguments
       text string to appear above the beach ball (default) or under (add **+u**).
 
   **-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
+     Seismic moment tensor (Global CMT, with zero trace). *scale* adjusts
      the scaling of the radius of the "beach ball", which will be
      proportional to the magnitude. The *scale* is the size for magnitude = 5
      (that is seismic scalar moment = 4E+23 dynes-cm) in

@@ -7878,8 +7878,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
+	
+/* Open MP does not work yet */
 
-/* THe OpenMP loop below fails and yields nodes still set to NaN.  I cannot see any errors but obviously
+/* The OpenMP loop below fails and yields nodes still set to NaN.  I cannot see any errors but obviously
  * there is something that is not quite correct. */
 
 //#ifdef _OPENMP
