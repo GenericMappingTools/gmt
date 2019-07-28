@@ -4095,7 +4095,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
 	if (width_given) mod_flag = 1;
-	if (last_pos > 0) {	/* Avoid having -JXh|v be misinterpreted */
+	if (last_pos > 0) {	/* Examine trailing character for modifying behavior */
 		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
 			case 'h':	/* Want map HEIGHT instead */
 				mod_flag = 2;
