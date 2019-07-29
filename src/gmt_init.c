@@ -12529,6 +12529,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				c[0] = '\0';	/* Remove the question mark */
 				sprintf (scl, "%.12gi", inset_dim[GMT_X]);
 				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
+				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
 				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
 			}
@@ -12630,9 +12631,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 					else	/* Just append dummy width */
 						sprintf (scl, "%gi",  P->w);
+					arg[0] = '\0';
 					if ((c = strchr (opt_J->arg, '?'))) {	/* Scale or width was marked with ? */
 						c[0] = '\0';
-						strcat (arg, &c[1]);	/* Append the rest of the arguments */
+						sprintf (arg, "%s%s%s", opt_J->arg, scl, &c[1]);
 						c[0] = '?';
 					}
 					else if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))	/* No markings, assume we just append */
