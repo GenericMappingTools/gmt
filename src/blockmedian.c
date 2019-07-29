@@ -39,7 +39,7 @@
 
 #include "block_subs.h"
 
-GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
