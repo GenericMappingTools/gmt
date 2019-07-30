@@ -138,9 +138,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			docname = gmt_current_name (opt->arg, name);
 	
 			if (strcmp (opt->arg, docname))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-				            "For now, HTML documentation only uses GMT modern mode names, hence %s will display as %s\n",
-				            opt->arg, docname);
+				docname = opt->arg;
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
