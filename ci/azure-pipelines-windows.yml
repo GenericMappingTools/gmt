@@ -90,8 +90,8 @@ steps:
 - script: |
     gmt --version
     gmt defaults -Vd
-    gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
+    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
   displayName: Check a few simple commands
 
 - bash: |
