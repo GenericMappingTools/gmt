@@ -6693,6 +6693,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *PSL= NULL;
 	struct GMT_SUBPLOT *P = NULL;
+	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
 	PSL = GMT->PSL;	/* Shorthand */
 
@@ -6824,6 +6825,11 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		GMT->current.setting.map_origin[GMT_Y] += (P->dy + P->gap[YLO]);
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
+	}
+	if (I->active && I->first) {
+		GMT->current.setting.map_origin[GMT_X] += (I->dx);
+		GMT->current.setting.map_origin[GMT_Y] += (I->dy);
+		I->active = I->first = false;	/* For MATLAB mostly */
 	}
 	
 	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
@@ -6977,7 +6983,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
 			return NULL;	/* Should never happen */
 	}
-	else if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
+	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
 		/* Decode x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
 		double off[2] = {0.0, 0.0};
 		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};

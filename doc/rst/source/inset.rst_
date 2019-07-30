@@ -29,7 +29,11 @@ Description
 
 The **begin** directive of **inset** defines the dimension and placement of the inset canvas.  It
 records the current region and projection so that we may return to the initial
-plot environment when  the inset is completed.
+plot environment when  the inset is completed.  The user may select any plot region
+and projection once plotting in the inset, but if the first command uses
+? as scale or width then we adjust the scale or width to fill the inset as best
+as possible, given the inset size and margins.
+
 
 Required Arguments
 ------------------
