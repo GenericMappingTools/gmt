@@ -35,8 +35,9 @@ assignees: ''
     ```
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
-- [ ] update README and VERSION files on the GMT FTP
+- [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make announcements
+- [ ] update links on the main site (News, Download & Documentation)
 
 **After release**:
 
