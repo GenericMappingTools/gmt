@@ -14,13 +14,13 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt meca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+|-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ]
-[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
 [ |-T|\ *num\_of\_plane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

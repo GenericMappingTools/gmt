@@ -14,13 +14,13 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+|-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]]
 [ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
