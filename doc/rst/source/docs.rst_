@@ -2,14 +2,14 @@
 
 .. only:: not man
 
-    Show the HTML documentation for selected module or display plots
+    Show the HTML documentation for selected module
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] [ *module-name* [*-option*] ] [ *figs* ]
+**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] [ *module-name* [*-option*] ]
 
 |No-spaces|
 
@@ -17,12 +17,8 @@ Description
 -----------
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
-For the time being, only modern mode module names are displayed. That is, if user asks for
-*gmt docs psxy* she will see the (near-equivalent) *plot* documentation. Besides the modules names, the special
-forms *cookbook*, *gallery*, *gmt.conf*, *api* and *tutorial* are also accepted.
-
-However, **docs** can also be used to open local files (*figs*) such as PDF or image files or even
-web link addresses.
+Besides the modules names, the special targets *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
+are also accepted.
 
 Optional Arguments
 ------------------
@@ -68,29 +64,23 @@ To see the documentation of the **-B** option in *pscoast*
 
 And do not be surprised to see that it says *coast* instead of *pscoast*.
 
+To examine the list of GMT defaults, try
+
+   ::
+
+    gmt docs defaults
+
 To see the Gallery
 
    ::
 
     gmt docs gallery
 
-To see the beautiful figure that I just created with GMT.
-
-   ::
-
-    gmt docs my_beautiful_figure.pdf
-
 To display the URL to the surface man page,.run
 
    ::
 
     gmt docs -Q surface
-
-To open all png files in current directory and the documentation for :doc:`movie`, run
-
-   ::
-
-    gmt docs movie *.png
 
 
 See Also
