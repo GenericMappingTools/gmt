@@ -48,7 +48,7 @@ The following file should give a normal-faulting CMT mechanism:
 
    ::
 
-    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
+    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc2c -h1 << END > test.ps
     lon lat depth str dip slip st dip slip mant exp plon plat
     239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
     END
