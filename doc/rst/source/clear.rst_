@@ -2,14 +2,14 @@
 
 .. only:: not man
 
-    Delete current history, conf, cpt, or the cache, data or sessions directories
+    Delete current defaults, or the cache, data or sessions directories
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** [ **all** \| **cache** \| **conf** \| **cpt** \| **data** \| **history** \| **sessions** ]
+**gmt clear** [ **all** \| **cache** \| **defaults** \| **data** \| **sessions** ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -17,8 +17,8 @@ Synopsis
 Description
 -----------
 
-The clear command allows users to delete their current history, conf,
-or cpt files, remove the entire user cache, data, or sessions directory, or all of the above.
+The clear command allows users to delete their entire user cache, data, or sessions
+directories, and in modern mode their defaults settings (i.e., gmt.conf), or all of the above.
 
 Optional Arguments
 ------------------
@@ -31,12 +31,7 @@ Optional Arguments
 .. _clear-conf:
 
 **conf**
-    Delete the current gmt.conf file used for the current modern session.
-
-.. _clear-cpt:
-
-**cpt**
-    Delete the current (and hidden) cpt in effect (if any) for the modern session.
+    Delete the current defaults (gmt.conf) file used for the current modern session.
 
 .. _clear-cache:
 
@@ -47,11 +42,6 @@ Optional Arguments
 
 **data**
     Delete the user's data download directory and all of its contents.
-
-.. _clear-history:
-
-**history**
-    Deletes the current gmt.history file for the modern session.
 
 .. _clear-sessions:
 
@@ -68,12 +58,11 @@ Optional Arguments
 Examples
 --------
 
-To remove the current CPT file that was created by grdimage in an
-earlier command, use
+To remove the current default settings in a modern mode session, use
 
    ::
 
-    gmt clear cpt
+    gmt clear defaults
 
 To completely wipe your GMT cache directory, try
 
