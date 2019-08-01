@@ -157,7 +157,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\ \|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
 Note: Any **-J** option passed when plotting subplots must give ? as scale or width
@@ -173,7 +173,8 @@ Optional Arguments
     Sets the current subplot until further notice.  If not given we go to the next panel by order
     specified via **-A**.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
-    GMT maintains information about the current figure and subplot.
+    GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
+    *index* instead which starts at 1 and follows the row or column order set via **-A**.
 
 .. _subplot_set-A:
 
