@@ -20,14 +20,15 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt docs 
- *	gmt docs 
+ *	Opens GMT HTML docs in the default viewer (browser); when called from
+ *	gmt end show it also opens illustrations. 
  */
 
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Show HTML documentation of specified module or display graphics"
+#define THIS_MODULE_PURPOSE	"Show HTML documentation of specified module"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
@@ -35,12 +36,11 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [%s] [<module-name> [<-option>]] [<figs>]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [%s] [<module-name> [<-option>]]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of api, cookbook, gallery, gmt.conf, and tutorial.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<figs> is one or more local illustrations in a known graphics format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or one of api, cookbook, gallery, defaults, and tutorial.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If given, -Q must be the first argument to %s.\n", name);
 
@@ -106,7 +106,12 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		}
 		
 		if ((ext = gmt_get_ext (opt->arg)) && gmt_get_graphics_id (GMT, ext) != GMT_NOTSET) {	/* Got a graphics file */
-			if (print_url) {
+			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called via gmt end show */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument %s is not a known module or documentation short-hand\n",
+					opt->arg);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			else if (print_url) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", opt->arg);
 				printf ("%s\n", opt->arg);
 			}
