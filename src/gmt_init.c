@@ -6560,6 +6560,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t(See gmt.conf man page for GMT default parameters).\n");
 			break;
 
+		case ';':	/* Trailer message without --PAR=value etc */
+
+			gmt_message (GMT, "\t-^ (or -) Print short synopsis message.\n");
+			gmt_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
+			gmt_message (GMT, "\t-? (or no arguments) Print this usage message.\n");
+			break;
+
 		case '<':	/* Table input */
 
 			gmt_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF).\n");

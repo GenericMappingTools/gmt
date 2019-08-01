@@ -51,7 +51,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
