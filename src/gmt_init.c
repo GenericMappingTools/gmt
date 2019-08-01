@@ -11643,6 +11643,18 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 	
 	if (*row == UINT_MAX && *col == UINT_MAX)	/* First panel */
 		*row = *col = 1;
+	else if (*col == UINT_MAX) {	/* row has index which gives (row,col) depending on order */
+		unsigned int index = *row;
+		if (order == GMT_IS_COL_FORMAT) {	/* March down colums */
+			*col = (index - 1) / n_rows + 1;
+			*row = index % n_rows;
+		}
+		else {
+			*col = index % n_cols;
+			*row = (index - 1) / n_cols + 1;
+		}
+		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index, *row, *col);
+	}
 	else {	/* Auto-advance to next panel */
 		if (order == GMT_IS_COL_FORMAT) {	/* Going down columns */
 			if (*row == (n_rows-1)) /* Top of next column */
@@ -12521,8 +12533,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				unsigned int row = 0, col = 0;
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-					if (opt->arg[0])	/* Gave an argument so presumably this is our row,col */
+					if (opt->arg[0] && strchr (opt->arg,','))	/* Gave a comma-separate argument so presumably this is our row,col */
 						sscanf (opt->arg, "%d,%d", &row, &col);
+					else if (opt->arg[0] && isdigit (opt->arg[0])) {	/* Probably gave index */
+						row = atoi (opt->arg);
+						col = UINT_MAX;
+						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
+					}
 					else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
 						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
 					}
