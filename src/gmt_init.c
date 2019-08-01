@@ -11636,7 +11636,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 	fclose (fp);
 	
 	/* If the panel file does not exist we initialize to row = col = 0 */
-	if (get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
+	if (*col != UINT_MAX && get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
@@ -11644,16 +11644,16 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 	if (*row == UINT_MAX && *col == UINT_MAX)	/* First panel */
 		*row = *col = 1;
 	else if (*col == UINT_MAX) {	/* row has index which gives (row,col) depending on order */
-		unsigned int index = *row;
+		unsigned int index = *row - 1;
 		if (order == GMT_IS_COL_FORMAT) {	/* March down colums */
-			*col = (index - 1) / n_rows + 1;
-			*row = index % n_rows;
+			*col = index / n_rows + 1;
+			*row = index % n_rows + 1;
 		}
 		else {
-			*col = index % n_cols;
-			*row = (index - 1) / n_cols + 1;
+			*col = index % n_cols + 1;
+			*row = index / n_cols + 1;
 		}
-		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index, *row, *col);
+		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index+1, *row, *col);
 	}
 	else {	/* Auto-advance to next panel */
 		if (order == GMT_IS_COL_FORMAT) {	/* Going down columns */
