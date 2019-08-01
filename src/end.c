@@ -41,7 +41,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }

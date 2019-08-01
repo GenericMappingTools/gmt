@@ -53,7 +53,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }

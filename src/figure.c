@@ -59,7 +59,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
