@@ -2570,11 +2570,6 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 
-	if (GMT->parent->clear) {	/* gmt clear history was called, override put history once */
-		GMT->parent->clear = false;
-		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
-	}
-	
 	if (!(GMT->current.setting.history & GMT_HISTORY_WRITE)) {
 		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == GMT_HISTORY_OFF)
 			GMT->current.setting.history = GMT->current.setting.history_orig;
