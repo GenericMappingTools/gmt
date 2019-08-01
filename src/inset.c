@@ -48,7 +48,7 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+t] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
