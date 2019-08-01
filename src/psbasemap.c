@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A, GMT_INSET_B);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A_CL, GMT_INSET_B_CL);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, API->K_OPT);
 	}
 	else {
