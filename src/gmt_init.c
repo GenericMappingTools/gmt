@@ -12551,11 +12551,18 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 				}
 			}
-			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
-				c[0] = '\0';	/* Remove the question mark */
+			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Want optimal map width for given inset dimensions */
 				sprintf (scl, "%.12gi", GMT->current.plot.inset.w);
-				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
-				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
+				if ((c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+					c[0] = '\0';	/* Remove the question mark */
+					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
+					if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
+				}
+				else { /* assume we just append it aftert a slash */
+					strcpy (arg, opt_J->arg);	/* Start with what we have */
+					if (strlen (opt_J->arg) > 2) strcat (arg, "/");
+					strcat (arg, scl);
+				}
 				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
 			}
