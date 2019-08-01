@@ -6845,7 +6845,6 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	\param string ...
 */
 void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
-	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_message (GMT, "\t     Specify the map inset region using one of three specifications:\n");
@@ -6856,7 +6855,8 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
-	gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
+	if (GMT->current.setting.run_mode == GMT_CLASSIC)
+		gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
 	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }

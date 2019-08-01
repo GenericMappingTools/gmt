@@ -11783,6 +11783,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
+	 * Note: the [+s<file>] is only valid in classic mode (via psbasemap)
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -11856,7 +11857,11 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			}
 		}
 		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
-			if (string[0] == '\0') {	/* Got nutin' */
+			if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+				error++;
+			}
+			else if (string[0] == '\0') {	/* Got nutin' */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No filename given to +s modifier\n", option);
 				error++;
 			}
@@ -11877,7 +11882,14 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			while (gmt_getmodopt (GMT, option, c, "rstu", &pos, p, &error) && error == 0) {
 				switch (p[0]) {
 					case 'r': B->oblique = true;	break;
-					case 's': B->file = strdup (&p[1]);	break;
+					case 's':
+						if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+							error++;
+						}
+						else
+							B->file = strdup (&p[1]);
+						break;
 					case 't': B->translate = true;	break;
 					case 'u': B->unit = p[1]; break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
