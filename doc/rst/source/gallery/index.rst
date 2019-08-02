@@ -1,7 +1,7 @@
 .. _example_gallery:
 
-The GMT historical collection
-=============================
+Example gallery
+===============
 
 The 50 Examples
 ----------------
@@ -236,56 +236,56 @@ complex illustration.
 .. toctree::
    :hidden:
 
-   gallery/ex01.rst
-   gallery/ex02.rst
-   gallery/ex03.rst
-   gallery/ex04.rst
-   gallery/ex05.rst
-   gallery/ex06.rst
-   gallery/ex07.rst
-   gallery/ex08.rst
-   gallery/ex09.rst
-   gallery/ex10.rst
-   gallery/ex11.rst
-   gallery/ex12.rst
-   gallery/ex13.rst
-   gallery/ex14.rst
-   gallery/ex15.rst
-   gallery/ex16.rst
-   gallery/ex17.rst
-   gallery/ex18.rst
-   gallery/ex19.rst
-   gallery/ex20.rst
-   gallery/ex21.rst
-   gallery/ex22.rst
-   gallery/ex23.rst
-   gallery/ex24.rst
-   gallery/ex25.rst
-   gallery/ex26.rst
-   gallery/ex27.rst
-   gallery/ex28.rst
-   gallery/ex29.rst
-   gallery/ex30.rst
-   gallery/ex31.rst
-   gallery/ex32.rst
-   gallery/ex33.rst
-   gallery/ex34.rst
-   gallery/ex35.rst
-   gallery/ex36.rst
-   gallery/ex37.rst
-   gallery/ex38.rst
-   gallery/ex39.rst
-   gallery/ex40.rst
-   gallery/ex41.rst
-   gallery/ex42.rst
-   gallery/ex43.rst
-   gallery/ex44.rst
-   gallery/ex45.rst
-   gallery/ex46.rst
-   gallery/ex47.rst
-   gallery/ex48.rst
-   gallery/ex49.rst
-   gallery/ex50.rst
+   ex01.rst
+   ex02.rst
+   ex03.rst
+   ex04.rst
+   ex05.rst
+   ex06.rst
+   ex07.rst
+   ex08.rst
+   ex09.rst
+   ex10.rst
+   ex11.rst
+   ex12.rst
+   ex13.rst
+   ex14.rst
+   ex15.rst
+   ex16.rst
+   ex17.rst
+   ex18.rst
+   ex19.rst
+   ex20.rst
+   ex21.rst
+   ex22.rst
+   ex23.rst
+   ex24.rst
+   ex25.rst
+   ex26.rst
+   ex27.rst
+   ex28.rst
+   ex29.rst
+   ex30.rst
+   ex31.rst
+   ex32.rst
+   ex33.rst
+   ex34.rst
+   ex35.rst
+   ex36.rst
+   ex37.rst
+   ex38.rst
+   ex39.rst
+   ex40.rst
+   ex41.rst
+   ex42.rst
+   ex43.rst
+   ex44.rst
+   ex45.rst
+   ex46.rst
+   ex47.rst
+   ex48.rst
+   ex49.rst
+   ex50.rst
 
 
 Animations
@@ -294,7 +294,7 @@ Animations
 .. toctree::
    :maxdepth: 2
 
-   gallery/anim_introduction.rst
+   anim_introduction.rst
 
 +------------------+----------------+
 |:ref:`anim_01`    | :ref:`anim_02` |
@@ -337,15 +337,3 @@ Animations
 
 .. |anim08| image:: /_images/anim_08.*
    :width: 150 px
-
-.. toctree::
-   :hidden:
-
-   gallery/anim01.rst
-   gallery/anim02.rst
-   gallery/anim03.rst
-   gallery/anim04.rst
-   gallery/anim05.rst
-   gallery/anim06.rst
-   gallery/anim07.rst
-   gallery/anim08.rst

@@ -6,56 +6,41 @@ The Generic Mapping Tools Documentation
 Welcome to the GMT Docs! Here you'll find resources for using GMT and examples of what
 it can do.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting started
 
-Quick Reference
----------------
-
-+-----------------+-----------------+-------------------+-------------------+---------------------+
-| .. toctree::    | .. toctree::    | .. toctree::      | .. toctree::      | .. toctree::        |
-|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1   |    :maxdepth: 1     |
-|                 |                 |                   |                   |                     |
-|    quick_ref    |    std_opts     |    Defaults       |    proj_codes_GMT |    proj_codes_PROJ4 |
-+-----------------+-----------------+-------------------+-------------------+---------------------+
+   gallery/index.rst
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Getting Started
+   :maxdepth: 1
+   :caption: Reference documentation
 
-   Gallery
+   modules
+   Users_contrib_script
+   Users_contrib_symbols
+   datasets
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 1
    :caption: Tutorial
 
    tutorial
    cookbook
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Reference Documentation
+   :maxdepth: 1
+   :caption: Other resources
 
-   modules
-   modules_classic
-   Users_contrib_script
-   Users_contrib_symbols
-   datasets
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Advanced Resources
-
-   api
    changes
    compatibility
    switching
-
-.. Include an hidden page with option's examples that can be referenced by individual programs
+   api
 
 .. toctree::
-   :hidden:
+   :maxdepth: 1
+   :caption: Classic mode
 
-   examples_options
+   quick_ref_classic
+   modules_classic
+   std_opts_classic
