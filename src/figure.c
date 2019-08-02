@@ -86,12 +86,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
+	gmt_filename_set (opt->arg);
 	
 	/* Gave a figure prefix so can go on to check optional items */
 	
 	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
 	
 	while (opt) {
+		gmt_filename_set (opt->arg);
 		arg_category = GMT_NOTSET;	/* We know noothing */
 		pos = 0;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what kind it is */
@@ -138,7 +140,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	int error = 0;
 	char *arg = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -169,6 +171,12 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		error = GMT_RUNTIME_ERROR;
 		
 	if (options) GMT_Destroy_Cmd (API, &arg);
+
+	opt = options;
+	while (opt) {
+		gmt_filename_get (opt->arg);
+		opt = opt->next;
+	}
 	
 	reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
 	

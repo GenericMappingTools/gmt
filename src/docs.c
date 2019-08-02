@@ -106,18 +106,24 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		}
 		
 		if ((ext = gmt_get_ext (opt->arg)) && gmt_get_graphics_id (GMT, ext) != GMT_NOTSET) {	/* Got a graphics file */
+			if (strchr (opt->arg, GMT_ASCII_RS)) {
+				sprintf (name, "\'%s\'", opt->arg);
+				gmt_filename_get (name);
+			}
+			else
+				strcpy (name, opt->arg);
 			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called via gmt end show */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument %s is not a known module or documentation short-hand\n",
-					opt->arg);
+					name);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", name);
 				printf ("%s\n", opt->arg);
 			}
 			else {	/* Open in viewer */
 				if (!together || !got_file) {	/* Either Windows|Linux, or first time under macOS */
-					snprintf (view, PATH_MAX, "%s %s", file_viewer, opt->arg);
+					snprintf (view, PATH_MAX, "%s %s", file_viewer, name);
 					got_file = true;
 					vlen = PATH_MAX - strlen (view);
 				}

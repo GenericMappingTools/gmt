@@ -37,6 +37,8 @@ Required Arguments
 *prefix*
     Name stem used to construct the figure name.  The extension(s) are appended
     automatically from your *formats* selection(s).
+    While not recommended, if your *prefix* has spaces in it then you must enclose your
+    prefix in single quotes.
 
 Optional Arguments
 ------------------
@@ -81,6 +83,12 @@ around the image, try
    ::
 
     gmt figure GlobalMap jpg A1c
+
+If the same figure were to be called Global Map.jpg you would need quotes:
+
+   ::
+
+    gmt figure 'Global Map' jpg A1c
 
 See Also
 --------
