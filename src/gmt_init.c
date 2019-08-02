@@ -15366,7 +15366,7 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create session file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}	
-	if ((c = strrchr (arg, ' ')) && c[1] && gmtlib_char_count (buffer, ' ') > 1) {	/* Determine if last arg is psconvert options or not */
+	if ((c = strrchr (arg, ' ')) && c[1] && gmtlib_char_count (arg, ' ') > 1) {	/* Determine if last arg is psconvert options or not */
 		unsigned int bad = 0, pos = 0;
 		char p[GMT_LEN256] = {""};
 		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
