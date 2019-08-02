@@ -1175,7 +1175,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Evaluate colors at least once (try = 0), or twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {
 		if (rgb_from_z && !Ctrl->Q.active) {	/* Got a single grid and need to look up color via the CPT */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Basic z(x,y) with optional illumination and no colormasking.\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Basic z(x,y) with optional illumination and no colormasking.\n");
 #ifdef _OPENMP
 #pragma omp parallel for private(row,byte,kk,col,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
 #endif 

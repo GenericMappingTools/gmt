@@ -104,7 +104,9 @@ Optional Arguments
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply to all panels.
+    be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
+    to all panels, while settings under **set** only apply to the selected panel.  Note: Common options **-X**
+    and **-Y** are not available during subplots; use **-C** instead.
 
 .. _-J:
 
