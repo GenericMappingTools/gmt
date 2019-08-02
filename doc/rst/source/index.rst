@@ -1,7 +1,14 @@
-.. GMT documentation master file
+.. GMT documentation front page
 
-Quick Reference (Modern Mode)
-=============================
+The Generic Mapping Tools Documentation
+=======================================
+
+Welcome to the GMT Docs! Here you'll find resources for using GMT and examples of what
+it can do.
+
+
+Quick Reference
+---------------
 
 +-----------------+-----------------+-------------------+-------------------+---------------------+
 | .. toctree::    | .. toctree::    | .. toctree::      | .. toctree::      | .. toctree::        |
@@ -10,141 +17,41 @@ Quick Reference (Modern Mode)
 |    quick_ref    |    std_opts     |    Defaults       |    proj_codes_GMT |    proj_codes_PROJ4 |
 +-----------------+-----------------+-------------------+-------------------+---------------------+
 
-Quick Reference (Classic Mode)
-==============================
-
-+----------------------+---------------------+
-| .. toctree::         | .. toctree::        |
-|    :maxdepth: 1      |    :maxdepth: 1     |
-|                      |                     |
-|    quick_ref_classic |    std_opts_classic |
-+----------------------+---------------------+
-
-Session Management
-==================
-
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |
-|                 |                 |                 |                 |                 |                 |                 |
-|    begin        |    end          |    docs         |    figure       |    inset        |    subplot      |    clear        |
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
-
 .. toctree::
+   :maxdepth: 2
    :hidden:
+   :caption: Getting Started
 
-
-Data Processing Man pages
-=========================
-
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    B            |    P            |    GR           |
-|    C            |    R            |    Scripts      |
-|    D            |    S            |                 |
-|    F            |    T            |                 |
-|    G            |    V            |                 |
-|    I            |    W            |                 |
-|    K            |    X            |                 |
-|    M            |                 |                 |
-|    N            |                 |                 |
-+-----------------+-----------------+-----------------+
-
-Plotting Man pages
-==================
-
-+-----------------+-----------------+
-| .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |
-|    PS           |    PS_classic   |
-+-----------------+-----------------+
-
-Supplements (Modern Mode)
-=========================
-
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
-|    SUP_IMG      |                 |    SUP_X2SYS    |
-|    SUP_MGD77    |                 |                 |
-+-----------------+-----------------+-----------------+
-
-Supplements (Classic Mode)
-==========================
-
-+-----------------------+----------------------+----------------------+------------------------+
-| .. toctree::          | .. toctree::         | .. toctree::         | .. toctree::           |
-|    :maxdepth: 2       |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
-|                       |                      |                      |                        |
-|    SUP_GEODESY_classic|    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_SEIS_classic    |
-+-----------------------+----------------------+----------------------+------------------------+
-
-Gallery
-=======
-
-+----------------------------+
-| .. toctree::               |
-|    :maxdepth: 2            |
-|                            |
-|    Gallery                 |
-|    Users_contrib_script    |
-|    Users_contrib_symbols   |
-+----------------------------+
-
-Documentations
-==============
-
-**Modern mode**
+   Gallery
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :hidden:
+   :caption: Tutorial
 
    tutorial
    cookbook
 
-**Classic mode**
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Reference Documentation
+
+   modules
+   modules_classic
+   Users_contrib_script
+   Users_contrib_symbols
+   datasets
 
 .. toctree::
-   :maxdepth: 1
-
-   tutorial_classic
-   cookbook_classic
-
-GMT Data Sets
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    datasets        |
-+--------------------+
-
-The Software
-============
-
-+-----------------+-------------------+---------------------+
-| .. toctree::    | .. toctree::      | .. toctree::        |
-|    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1     |
-|                 |                   |                     |
-|    changes      |    compatibility  |    switching        |
-+-----------------+-------------------+---------------------+
-
-API Reference
-=============
-
-.. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :hidden:
+   :caption: Advanced Resources
 
    api
-   ml_wrapper
-   jl_wrapper
+   changes
+   compatibility
+   switching
 
 .. Include an hidden page with option's examples that can be referenced by individual programs
 
