@@ -367,6 +367,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
+		wesn[XLO] = Ctrl->D.refpoint->x;	wesn[YLO] = Ctrl->D.refpoint->y;
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT->common.R.active[RSET] = GMT->common.J.active = true;
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
