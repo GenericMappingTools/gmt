@@ -15349,7 +15349,9 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	/* Write the session name to file GMT_SESSION_FILE unless default. */
 	FILE *fp = NULL;
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, *c = NULL;
+	bool restore = false;
+	
 	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
 	GMT_Report (API, GMT_MSG_DEBUG, "Set session name to be %s\n", arg);
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
@@ -15357,7 +15359,23 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create session file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
+	c = strrchr (arg, ' ');	/* Find last space */
+	if ((c = strrchr (arg, ' ')) && c[1]) {	/* Determine if last arg is psconvert options or not */
+		unsigned int bad = 0, pos = 0;
+		char p[GMT_LEN256] = {""};
+		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
+			if (!strchr ("ACDEHMQS", p[0])) {	/* Check if valid psconvert options */
+				bad++;
+			}
+		}
+		if (bad == 0) {	/* Got psconvert options, update defaults */
+			strcpy (API->GMT->current.setting.ps_convert, GMT_SESSION_CONVERT);
+			c[0] = '\0';
+			restore = true;
+		}
+	}
 	fprintf (fp, "%s\n", arg);
+	if (restore) c[0] = ' ';
 	fclose (fp);
 	return GMT_NOERROR;
 }
@@ -15731,8 +15749,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
+			error = put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
 			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */
-			error = put_session_name (API, text);		/* Store session name */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
