@@ -12551,18 +12551,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 				}
 			}
-			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Want optimal map width for given inset dimensions */
-				sprintf (scl, "%.12gi", GMT->current.plot.inset.w);
-				if ((c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
-					c[0] = '\0';	/* Remove the question mark */
-					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
-					if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
-				}
-				else { /* assume we just append it aftert a slash */
-					strcpy (arg, opt_J->arg);	/* Start with what we have */
-					if (strlen (opt_J->arg) > 2) strcat (arg, "/");
-					strcat (arg, scl);
-				}
+			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+				c[0] = '\0';	/* Remove the question mark */
+				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
+				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
 				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
 			}
@@ -12650,6 +12642,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
+				char *c = NULL;
 				/* Set -X -Y for absolute positioning */
 				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -12657,23 +12650,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/')))) {
-					char *c = NULL;
+				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/'))) && ((c = strchr (opt_J->arg, '?')))) {
 					/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
 					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 					else	/* Just append dummy width */
 						sprintf (scl, "%gi",  P->w);
-					arg[0] = '\0';
-					if ((c = strchr (opt_J->arg, '?'))) {	/* Scale or width was marked with ? */
-						c[0] = '\0';
-						sprintf (arg, "%s%s%s", opt_J->arg, scl, &c[1]);
-						c[0] = '?';
-					}
-					else if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))	/* No markings, assume we just append */
-						sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the dummy width as only argument */
-					else
-						sprintf (arg, "%s/%s", opt_J->arg, scl);	/* Append the dummy width to other arguments */
+					arg[0] = c[0] = '\0';
+					sprintf (arg, "%s%s%s", opt_J->arg, scl, &c[1]);
+					c[0] = '?';
 					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
 				}
@@ -15356,15 +15341,33 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	/* Write the session name to file GMT_SESSION_FILE unless default. */
 	FILE *fp = NULL;
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, *c = NULL;
+	bool restore = false;
+	
 	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
 	GMT_Report (API, GMT_MSG_DEBUG, "Set session name to be %s\n", arg);
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create session file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
+	}	
+	if ((c = strrchr (arg, ' ')) && c[1] && gmtlib_char_count (arg, ' ') > 1) {	/* Determine if last arg is psconvert options or not */
+		unsigned int bad = 0, pos = 0;
+		char p[GMT_LEN256] = {""};
+		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
+			if (!strchr ("ACDEHMQS", p[0])) {	/* Check if valid psconvert options */
+				bad++;
+			}
+		}
+		if (bad == 0 && strcmp (API->GMT->current.setting.ps_convert, &c[1])) {	/* Got psconvert options, and if different we update defaults */
+			strcpy (API->GMT->current.setting.ps_convert, &c[1]);
+			GMT_keywords_updated[GMTCASE_PS_CONVERT] = true;	/* To make sure it will write it to gmt.conf */
+			c[0] = '\0';
+			restore = true;
+		}
 	}
 	fprintf (fp, "%s\n", arg);
+	if (restore) c[0] = ' ';
 	fclose (fp);
 	return GMT_NOERROR;
 }
@@ -15738,8 +15741,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
+			error = put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
 			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */
-			error = put_session_name (API, text);		/* Store session name */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
