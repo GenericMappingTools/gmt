@@ -7,7 +7,7 @@ steps:
 - task: CacheBeta@0
   inputs:
     key: |
-      20190718
+      20190802
       vcpkg
       $(Agent.OS)
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
