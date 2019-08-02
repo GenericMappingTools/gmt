@@ -15427,7 +15427,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				}
 			}
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
-			sprintf (cmd, "'%s/gmt_%d.ps-' -T%c -F'%s'", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			sprintf (cmd, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
 			if (fig[k].options[0]) {	/* Append figure-specific settings */
