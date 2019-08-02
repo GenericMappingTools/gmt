@@ -12552,6 +12552,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+				sprintf (scl, "%gi",  GMT->current.plot.inset.w);
 				c[0] = '\0';	/* Remove the question mark */
 				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
 				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
