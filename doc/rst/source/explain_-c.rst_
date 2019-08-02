@@ -1,2 +1,2 @@
-**-c**\ [*row*\ ,\ *col*] :ref:`(more ...) <-c_full>` 
+**-c**\ [*row*\ ,\ *col*\ \|\ *index*\ ] :ref:`(more ...) <-c_full>` 
     Select next panel for subplot. |Add_-c|

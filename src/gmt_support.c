@@ -765,7 +765,7 @@ GMT_LOCAL bool support_check_cmyk (double cmyk[]) {
 }
 
 /*! . */
-GMT_LOCAL unsigned int support_char_count (char *txt, char c) {
+unsigned int gmtlib_char_count (char *txt, char c) {
 	unsigned int i = 0, n = 0;
 	while (txt[i]) if (txt[i++] == c) n++;
 	return (n);
@@ -821,7 +821,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 	c = buffer[strlen(buffer)-1];
 	if (!(isdigit (c) || c == '.')) return (true);
 
-	count = (int)support_char_count (buffer, '/');
+	count = (int)gmtlib_char_count (buffer, '/');
 
 	if (count == 3) {	/* c/m/y/k */
 		n = sscanf (buffer, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
@@ -837,7 +837,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		return (false);
 	}
 
-	if (support_char_count (buffer, '-')  == 2) {		/* h-s-v */
+	if (gmtlib_char_count (buffer, '-')  == 2) {		/* h-s-v */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		return (n != 3 || support_check_hsv (hsv));
 	}
@@ -6249,7 +6249,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	c = buffer[strlen(buffer)-1];
 	if (c <= 0 || !(isdigit (c) || c == '.')) return (true);
 
-	count = (int)support_char_count (buffer, '/');
+	count = (int)gmtlib_char_count (buffer, '/');
 
 	if (count == 3) {	/* c/m/y/k */
 		n = sscanf (buffer, "%lf/%lf/%lf/%lf", &cmyk[0], &cmyk[1], &cmyk[2], &cmyk[3]);
@@ -6264,7 +6264,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		return (n != 3 || support_check_rgb (rgb));
 	}
 
-	if (support_char_count (buffer, '-') == 2) {	/* h-s-v despite pretending to be r/g/b */
+	if (gmtlib_char_count (buffer, '-') == 2) {	/* h-s-v despite pretending to be r/g/b */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		if (n != 3 || support_check_hsv (hsv)) return (true);
 		gmt_hsv_to_rgb (rgb, hsv);
@@ -11781,6 +11781,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
+	 * Note: the [+s<file>] is only valid in classic mode (via psbasemap)
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -11854,7 +11855,11 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			}
 		}
 		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
-			if (string[0] == '\0') {	/* Got nutin' */
+			if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+				error++;
+			}
+			else if (string[0] == '\0') {	/* Got nutin' */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No filename given to +s modifier\n", option);
 				error++;
 			}
@@ -11875,7 +11880,14 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			while (gmt_getmodopt (GMT, option, c, "rstu", &pos, p, &error) && error == 0) {
 				switch (p[0]) {
 					case 'r': B->oblique = true;	break;
-					case 's': B->file = strdup (&p[1]);	break;
+					case 's':
+						if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+							error++;
+						}
+						else
+							B->file = strdup (&p[1]);
+						break;
 					case 't': B->translate = true;	break;
 					case 'u': B->unit = p[1]; break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */

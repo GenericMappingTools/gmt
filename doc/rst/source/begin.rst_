@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt begin** [*prefix*] [*formats*]
+**gmt begin** [*prefix*] [*formats*] [*options*]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -26,6 +26,10 @@ keeps track of all default and history settings and isolates them from any other
 that may run concurrently.  Thus unlike in classic mode you can run multiple modern sessions
 simultaneously without having destructive interference in updating the history of common
 options.
+In addition to *prefix* and *formats*, you can supply a comma-separated series of
+:doc:`psconvert` *options* that will override the default settings provided via
+:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
+and default parameter settings.
 
 Optional Arguments
 ------------------
@@ -43,12 +47,21 @@ Optional Arguments
     Give one or more comma-separated graphics extensions from the list of allowable graphics formats
     :ref:`formats <tbl-formats>` [pdf].
 
+.. _begin-options:
+
+*options*
+    Sets one or more comma-separated options (and possibly arguments) that
+    can be passed to :doc:`psconvert` when preparing a session figure [**A**].
+    The valid subset of options are
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    See the :doc:`psconvert` documentation for details on these options.
+
 .. _begin-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. include:: explain_help.rst_
+.. include:: explain_help_nopar.rst_
 
 .. _tbl-formats:
 
@@ -94,6 +107,12 @@ are produced then we do not need to give any further arguments:
 
 Should we give such a command and still produce a plot then it will automatically
 be called gmtsession.pdf.
+
+To set up proceedings for a jpg figure with 0.5c white margin, we would run
+
+   ::
+
+    gmt begin Figure_4 pdf,png A+m1c
 
 .. include:: explain_postscript.rst_
 

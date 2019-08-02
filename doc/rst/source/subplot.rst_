@@ -56,7 +56,7 @@ Required Arguments
     dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between panels.
     The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
     To specify different subplot dimensions for each row (or column), append **+f** followed by a comma-separated list of width
-    fractions, a slash, and then the list of height fractions.  For example **–Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will make the first column
+    fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will make the first column
     three times as wide as the second, while the second row will be twice as tall as the first row.
     A single number means constant widths (or heights) [Default].
 
@@ -66,7 +66,7 @@ Required Arguments
     The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
     To specify different subplot dimensions for each row (or column),  append a comma-separated list of widths,
     a slash, and then the comma-separated list of heights.  A single number means constant widths (or heights) [Default].
-    For example **–Fs**\ 5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
+    For example **-Fs**\ 5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
     all having a constant height of 8 cm. The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
@@ -157,7 +157,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\ \|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
 Note: Any **-J** option passed when plotting subplots must give ? as scale or width
@@ -173,7 +173,8 @@ Optional Arguments
     Sets the current subplot until further notice.  If not given we go to the next panel by order
     specified via **-A**.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
-    GMT maintains information about the current figure and subplot.
+    GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
+    *index* instead which starts at 1 and follows the row or column order set via **-A**.
 
 .. _subplot_set-A:
 

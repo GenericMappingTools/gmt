@@ -36,7 +36,7 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<prefix>] [<format(s)>] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<prefix>] [<format(s)>] [<psconvertoptions] [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -53,7 +53,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
-	GMT_Option (API, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<psconvertoptions> contains one or more comma-separated options that\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing this figure [%s].\n", GMT_SESSION_CONVERT);
+	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -87,17 +92,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 }
 
 char *get_session_name_and_format (struct GMT_OPTION *opt) {
-	/* Extract session arguments (including optional graphics format) from options */
+	/* Extract session arguments (including optional graphics format) from options:
+	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-V<arg>]  */
 	char buffer[GMT_LEN256] = {""};
 	bool space = false;
 	unsigned int n = 0;
 	size_t len = 0;
 	if (opt == NULL) return NULL;	/* Go with the default settings */
-	while (opt && n < 2) {
-		if (opt->option == GMT_OPT_INFILE) {	/* Valid file argument */
-			if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
-			len += strlen (opt->arg);
-			strncat (buffer, opt->arg, GMT_LEN256-len);
+	while (opt && n < 3) {
+		if (opt->option == GMT_OPT_INFILE) {	/* Valid "file" argument */
+			if (strchr (opt->arg, ' ')) {	/* Must be file name with spaces given in quotes */
+				if (space) len++;
+				len += strlen (opt->arg) + 2;
+				strncat (buffer, "'", GMT_LEN256-len);
+				strncat (buffer, opt->arg, GMT_LEN256-len);
+				strncat (buffer, "'", GMT_LEN256-len);
+			}
+			else {
+				if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
+				len += strlen (opt->arg);
+				strncat (buffer, opt->arg, GMT_LEN256-len);
+			}
 			space = true;
 			n++;
 		}
