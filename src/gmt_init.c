@@ -15241,7 +15241,7 @@ int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
 GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT_LEN256], char formats[GMT_LEN256]) {
 	/* Read the session name [and graphics format] from file GMT_SESSION_FILE */
 	int n;
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, *c = NULL;
 	FILE *fp = NULL;
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if (access (file, F_OK)) {	/* Use default session name and format */
@@ -15253,7 +15253,17 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open session file %s\n", file);
 		return;
 	}
-	if ((n = fscanf (fp, "%s %s\n", prefix, formats)) < 1) {
+	/* Recycle file as line record */
+	gmt_fgets (API->GMT, file, PATH_MAX, fp);
+	gmt_chop (file);	/* Strip off trailing return */
+	if ((c = strrchr (file, '\''))) {	/* Got file name with spaces */
+		c[0] = '\0';
+		strcpy (prefix, &file[1]);
+		n = 1;
+		if (c[1] && c[2]) strcpy (formats, &c[2]), n = 2;
+		c[0] = '\'';
+	}
+	else if ((n = sscanf (file, "%s %s\n", prefix, formats)) < 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to read from session file %s\n", file);
 		fclose (fp);
 		return;
@@ -15417,7 +15427,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				}
 			}
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
-			sprintf (cmd, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			sprintf (cmd, "'%s/gmt_%d.ps-' -T%c -F'%s'", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
 			if (fig[k].options[0]) {	/* Append figure-specific settings */
