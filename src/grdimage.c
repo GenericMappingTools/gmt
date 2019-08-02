@@ -401,13 +401,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
 		n_errors += gmtinit_parse_n_option (GMT, "b+c");
 	
-#if 0	/* Want this to be in modern mode only and done centrally instead */
-	if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
-		gmt_parse_common_options (GMT, "J", 'J', "X15c");
-		GMT->common.J.active = true;
-	}
-#endif
-
 	if (n_files == 3) Ctrl->In.do_rgb = true;
 	if (Ctrl->D.active) {	/* Only OK with memory input or GDAL support */
 		if (!gmt_M_file_is_memory (Ctrl->In.file[0])) {
@@ -417,8 +410,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 #endif
 		}	
 	}
-	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active, 
-	                                   "Syntax error: Must specify a map projection with the -J option\n");
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 		                                   "Syntax error: Must specify one (or three) input file(s)\n");
@@ -756,6 +747,16 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig[k]->header))) {	/* Used map projection on a Mercator (cartesian) grid */
 				Return (API->error);
+			}
+		}
+		if (!GMT->common.J.active) {
+			if ((Grid_orig[0]->header->ProjRefWKT != NULL) || (Grid_orig[0]->header->ProjRefPROJ4 != NULL)) {
+				gmt_parse_common_options (GMT, "J", 'J', "X15c");	/* No projection specified, use fake linear */
+				GMT->common.J.active = true;
+			}
+			else if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Must specify a map projection with the -J option\n");
+				Return (GMT_PARSE_ERROR);
 			}
 		}
 		if (!Ctrl->C.active)
@@ -1122,6 +1123,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
 		else if (header_work->ProjRefPROJ4 != NULL)
 			Out->header->ProjRefPROJ4 = strdup (header_work->ProjRefPROJ4);
+		else if (header_work->ProjRefWKT != NULL)
+			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
 		else {
 			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
 				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
