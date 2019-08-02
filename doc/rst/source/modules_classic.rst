@@ -8,7 +8,7 @@ These modules are fully compatible with GMT 4 and 5.
 
 .. note::
 
-   Looking for the *modern mode* modules like ``begi`` and ``figure``? See the
+   Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
    :ref:`equivalent page for modern mode <modules>`.
 
 Quick Reference
