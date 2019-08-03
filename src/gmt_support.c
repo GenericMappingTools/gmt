@@ -15941,6 +15941,16 @@ bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg) {
 	return true;
 }
 
+void gmt_filename_set (char *name) {
+	/* Replace spaces with GMT_ASCII_RS */
+	gmt_strrepc (name, ' ', GMT_ASCII_RS);
+}
+
+void gmt_filename_get (char *name) {
+	/* Replace GMT_ASCII_RS with spaces */
+	gmt_strrepc (name, GMT_ASCII_RS, ' ');
+}
+
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

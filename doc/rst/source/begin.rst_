@@ -40,6 +40,8 @@ Optional Arguments
     Name-stem used to construct the single final figure name.  The extension is appended
     automatically from your *formats* selection(s) [gmtsession].  If your script only
     performs calculations or needs to make several figures then you will not use this argument.
+    While not recommended, if your *prefix* has spaces in it then you must enclose your
+    prefix in single quotes.
 
 .. _begin-formats:
 
@@ -112,7 +114,7 @@ To set up proceedings for a jpg figure with 0.5c white margin, we would run
 
    ::
 
-    gmt begin Figure_4 pdf,png A+m1c
+    gmt begin 'My Figure4' pdf,png A+m1c
 
 .. include:: explain_postscript.rst_
 

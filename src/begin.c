@@ -101,19 +101,12 @@ char *get_session_name_and_format (struct GMT_OPTION *opt) {
 	if (opt == NULL) return NULL;	/* Go with the default settings */
 	while (opt && n < 3) {
 		if (opt->option == GMT_OPT_INFILE) {	/* Valid "file" argument */
-			if (strchr (opt->arg, ' ')) {	/* Must be file name with spaces given in quotes */
-				if (space) len++;
-				len += strlen (opt->arg) + 2;
-				strncat (buffer, "'", GMT_LEN256-len);
-				strncat (buffer, opt->arg, GMT_LEN256-len);
-				strncat (buffer, "'", GMT_LEN256-len);
-			}
-			else {
-				if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
-				len += strlen (opt->arg);
-				strncat (buffer, opt->arg, GMT_LEN256-len);
-			}
+			gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29 */
+			if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
+			len += strlen (opt->arg);
+			strncat (buffer, opt->arg, GMT_LEN256-len);
 			space = true;
+			gmt_filename_get (opt->arg);	/* Undo ASCII 29 */
 			n++;
 		}
 		opt = opt->next;
