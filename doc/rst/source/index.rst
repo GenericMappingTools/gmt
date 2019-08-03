@@ -17,9 +17,8 @@ it can do.
    :caption: Reference documentation
 
    modules
-   Users_contrib_script
-   Users_contrib_symbols
    datasets
+   api
 
 .. toctree::
    :maxdepth: 1
@@ -30,12 +29,13 @@ it can do.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Other resources
+   :caption: Resources
 
+   Users_contrib_script
+   Users_contrib_symbols
    changes
    compatibility
    switching
-   api
 
 .. toctree::
    :maxdepth: 1
