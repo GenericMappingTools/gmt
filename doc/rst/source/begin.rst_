@@ -118,6 +118,26 @@ To set up proceedings for a jpg figure with 0.5c white margin, we would run
 
 .. include:: explain_postscript.rst_
 
+Note on UNIX shells
+-------------------
+
+Modern mode works by communicating across gmt modules via the shell script's (or terminal's)
+process ID, which is the common parent process ID (PPID) for each module.  This number is used to
+create the unique session directories where gmt keeps its book-keeping records.  However, inconsistencies
+across various UNIX shells and other differences in their implementations may occasionally lead
+to problems for gmt to properly determine the unique PPID.  The most common situation is
+related to a shell spawning sub-shells when you are linking two or more processes via UNIX pipes.
+Each sub-shell will then have its own process ID and gmt modules started by the sub-shell will then
+have that ID as PPID and it will differ from the one determined by gmt begin.
+If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
+then you can add this command to the top of your script to make the issue go away (in Bourne shell):
+
+export GMT_SESSION_NAME=$$
+
+or in cshell:
+
+setenv GMT_SESSION_NAME $$
+
 See Also
 --------
 
