@@ -11884,6 +11884,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 	 */
 	unsigned int item;
 	bool geo;
+	bool is_PS, is_oneliner;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
@@ -11991,9 +11992,16 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 			if ((tmp = GMT_Make_Option (API, GMT_OPT_OUTFILE, virt_file)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 		        return API->error;	/* Failure to make new output option or append to the list */
 
+			/* Since we will be calling another module (gmtinfo), we must prevent it from ending the session prematurely.
+			 * Thus we temporarily unset any PS and oneliner values before calling it, then reset afterwrds */
+			is_PS = API->GMT->current.ps.active;
+			is_oneliner = API->GMT->current.ps.oneliner;
+			API->GMT->current.ps.active = API->GMT->current.ps.oneliner = false;	/* To avoid gmtinfo from ending things */
 			if (GMT_Call_Module (API, "gmtinfo", GMT_MODULE_OPT, head) != GMT_OK)	/* Get the data domain via gmtinfo */
 				return (API->error);
-
+			/* Restore these settings to what they were before */
+			API->GMT->current.ps.active = is_PS;
+			API->GMT->current.ps.oneliner = is_oneliner;
 			if (GMT_Destroy_Options (API, &head))	/* Free the temporary option list */
 				return (API->error);
 
@@ -12782,7 +12790,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
 #endif
 
-	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner) {
+	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner && GMT->current.ps.active) {
 		GMT->current.ps.oneliner = false;
 		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, ""))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to call module end for a one-liner plot.\n");
