@@ -1579,7 +1579,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		return_image = true;
 #ifndef HAVE_GDAL
-		GMT_Report (API, GMT_MSG_DEBUG, "Selecting ppmraw device since GDAL not available.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Selecting ppmraw device since GDAL not available.\n");
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
 	}
