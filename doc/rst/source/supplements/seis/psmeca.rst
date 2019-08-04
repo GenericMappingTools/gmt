@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
-|-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
+|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
