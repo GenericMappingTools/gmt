@@ -29,6 +29,8 @@ if [ "$1" = "GMT_PROMPT" ]; then
     test -f ~/.bashrc && source ~/.bashrc
     source "${BUNDLE_RESOURCES}/share/tools/gmt_completion.bash"
     unset DYLD_LIBRARY_PATH
+    # Assist modern mode scripts by setting a unique session name
+    export GMT_SESSION_NAME=$$
 EOF
   exec /bin/bash --rcfile "${_temp_bashrc}" -i
 fi
