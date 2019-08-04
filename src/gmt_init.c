@@ -12552,6 +12552,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+				sprintf (scl, "%gi",  GMT->current.plot.inset.w);
 				c[0] = '\0';	/* Remove the question mark */
 				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
 				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
@@ -15241,7 +15242,7 @@ int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
 GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT_LEN256], char formats[GMT_LEN256]) {
 	/* Read the session name [and graphics format] from file GMT_SESSION_FILE */
 	int n;
-	char file[PATH_MAX] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if (access (file, F_OK)) {	/* Use default session name and format */
@@ -15256,20 +15257,14 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 	/* Recycle file as line record */
 	gmt_fgets (API->GMT, file, PATH_MAX, fp);
 	gmt_chop (file);	/* Strip off trailing return */
-	if ((c = strrchr (file, '\''))) {	/* Got file name with spaces */
-		c[0] = '\0';
-		strcpy (prefix, &file[1]);
-		n = 1;
-		if (c[1] && c[2]) strcpy (formats, &c[2]), n = 2;
-		c[0] = '\'';
-	}
-	else if ((n = sscanf (file, "%s %s\n", prefix, formats)) < 1) {
+	if ((n = sscanf (file, "%s %s\n", prefix, formats)) < 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to read from session file %s\n", file);
 		fclose (fp);
 		return;
 	}
 	if (n == 1)	/* Assign default format */
 		strcpy (formats, gmt_session_format[GMT_SESSION_FORMAT]);
+	gmt_filename_get (prefix);
 	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s and default graphics formats as %s\n", prefix, formats);
 	fclose (fp);
 }
@@ -15427,7 +15422,9 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				}
 			}
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
+			gmt_filename_set (fig[k].prefix);
 			sprintf (cmd, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			gmt_filename_get (fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
 			if (fig[k].options[0]) {	/* Append figure-specific settings */
@@ -15460,6 +15457,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
 				gmt_str_tolower (ext);	/* In case it was PNG */
 				sprintf (cmd, "%s.%s", fig[k].prefix, ext);
+				gmt_filename_set (cmd);
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to call docs\n");
 					gmt_M_free (API->GMT, fig);

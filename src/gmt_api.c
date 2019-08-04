@@ -683,7 +683,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	GMT_Destroy_Options (API, &head);	/* Done with these here */
 }
 
-/* This was our effort to get PPID under Windows.  Remains as comments for now */
+/* Function to get PPID under Windows is a bit different */
 #ifdef _WIN32
 #include <TlHelp32.h>
 int winppid (int pidin) {

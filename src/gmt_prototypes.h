@@ -341,6 +341,8 @@ EXTERN_MSC void gmt_xyz_to_lab (double xyz[], double lab[]);
 EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
 EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
 EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
+EXTERN_MSC void gmt_filename_set (char *name);
+EXTERN_MSC void gmt_filename_get (char *name);
 EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);

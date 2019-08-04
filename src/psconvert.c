@@ -714,6 +714,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
 							gmt_chop_ext (Ctrl->F.file);
 					}
+					gmt_filename_get (Ctrl->F.file);
 				}
 				else
 					n_errors++;
