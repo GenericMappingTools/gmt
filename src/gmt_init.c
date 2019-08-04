@@ -11645,7 +11645,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 		*row = *col = 1;
 	else if (*col == UINT_MAX) {	/* row has index which gives (row,col) depending on order */
 		unsigned int index = *row - 1;
-		if (order == GMT_IS_COL_FORMAT) {	/* March down colums */
+		if (order == GMT_IS_COL_FORMAT) {	/* March down columns */
 			*col = index / n_rows + 1;
 			*row = index % n_rows + 1;
 		}
