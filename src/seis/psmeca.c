@@ -27,7 +27,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_PURPOSE	"Plot focal mechanisms on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehipt" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipt" GMT_OPT("Hc")
 
 #define DEFAULT_FONTSIZE		9.0	/* In points */
 #define DEFAULT_OFFSET			3.0	/* In points */
