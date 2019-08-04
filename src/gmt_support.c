@@ -11857,7 +11857,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			}
 		}
 		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
-			if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+			if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in modern node */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
 				error++;
 			}
@@ -11883,7 +11883,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 				switch (p[0]) {
 					case 'r': B->oblique = true;	break;
 					case 's':
-						if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in moderm node */
+						if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in modern node */
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
 							error++;
 						}
