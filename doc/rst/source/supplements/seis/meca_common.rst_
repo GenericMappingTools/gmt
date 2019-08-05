@@ -59,7 +59,7 @@ Optional Arguments
 
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
-**-Fa**\ [*size*\ ][/\ *P\_axis\_symbol*\ [*T\_axis\_symbol*\ ]]
+**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
