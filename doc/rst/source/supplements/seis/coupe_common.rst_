@@ -84,7 +84,7 @@ Optional Arguments
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol[size[/fontsize[/offset*\ [**+u**]]]
+**-Fs**\ *symbol[size][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
    selects a symbol instead of mechanism. Choose from the following:
    (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
    (**t**) triangle, (**x**) cross. *size* is the symbol size in
