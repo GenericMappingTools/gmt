@@ -61,4 +61,5 @@ install (DIRECTORY examples
 	USE_SOURCE_PERMISSIONS
 	PATTERN "${_exclude_bat}" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
+	PATTERN "gmt.history" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)
