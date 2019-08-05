@@ -29,6 +29,57 @@ schedules:
 
 jobs:
 
+# Linux - Compile only
+########################################################################################
+- job:
+  displayName: 'Linux | Compile only'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
+# Linux - Build docs + Package
+########################################################################################
+- job:
+  displayName: 'Linux | Build docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
+# Linux - Test
+########################################################################################
+- job:
+  displayName: 'Linux | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: true
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
 # Mac - Compile only
 ########################################################################################
 - job:
