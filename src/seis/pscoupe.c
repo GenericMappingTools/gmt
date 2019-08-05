@@ -82,7 +82,7 @@ struct PSCOUPE_CTRL {
 	struct Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<format><scale>[+f<font>][+j<justification>][+o<dx>[/<dy>]] and -Fs */
+	struct S {	/* -S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
 		bool active;
 		bool zerotrace;
 		bool no_label;
@@ -426,9 +426,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format><scale>[+f<font>][+j<justification>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<fill>] [-Fa[<size>][/<Psymbol>[<Tsymbol>]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justfication>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -626,7 +626,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						Ctrl->S.active = true;
 						Ctrl->S.symbol = opt->arg[1];
 						if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) { 
-							/* New syntax: -Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justfication> */
+							/* New syntax: -Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify> */
 							char word[GMT_LEN256] = {""}, *c = NULL;
 
 							/* parse beachball size */
@@ -751,7 +751,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				}
 
 				if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) { 
-					/* New syntax: -S<format><scale>+f<font>+o<dx>/<dy>+j<justfication> */
+					/* New syntax: -S<format><scale>+f<font>+o<dx>/<dy>+j<justify> */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 
 					/* parse beachball size */
