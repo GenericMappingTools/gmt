@@ -78,7 +78,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
