@@ -7659,8 +7659,11 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 }
 
 void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
+	int fig, subplot, inset;
+
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
+	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	/* Save cpt for use by session */
 	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
 	if (gmtlib_write_cpt (GMT, file, GMT_IS_FILE, P->cpt_flags, P) != GMT_NOERROR)
@@ -7671,8 +7674,11 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 
 char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
-	char path[GMT_LEN256] = {""}, *file = NULL;
+	char path[GMT_LEN256] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
+	int fig, subplot, inset;
+	
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;	/* Not available in classic mode */
+	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	sprintf (path, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
 	if (!access (path, R_OK)) {
 		file = strdup (path);
