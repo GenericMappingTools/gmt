@@ -96,7 +96,7 @@ endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Default location of release documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOCDIR instead of creating
-# PDFs from source:
+# documentation from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
