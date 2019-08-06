@@ -23,7 +23,7 @@ Synopsis
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
-[ |-T|\ *n* ]
+[ |-T|\ *nplane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

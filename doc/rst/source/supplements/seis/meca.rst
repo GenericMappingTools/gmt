@@ -21,7 +21,7 @@ Synopsis
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ]
-[ |-T|\ *num\_of\_plane*\ [/*pen*\ ] ]
+[ |-T|\ *nplane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

@@ -110,7 +110,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -Fa[size][/Psymbol[Tsymbol]] */
+	struct A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
@@ -579,7 +579,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
+						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
 						if (p) {
