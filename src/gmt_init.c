@@ -11542,7 +11542,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 
 /* Subplot functions */
 
-GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col, double gap[], char *tag, unsigned int *first) {
+GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col, double gap[], char *tag, unsigned int *first) {
 	/* Gets the current subplot panel, returns 1 if found and 0 otherwise.
 	 * If gap == NULL that means that not finding a panel file is OK since it may be the first; we are just trying to get row,col. */
 	char file[PATH_MAX] = {""};
@@ -11551,7 +11551,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
 		if (gap == NULL) {	/* By default we do the first panel */
-			*row = *col = UINT_MAX;
+			*row = *col = INT_MAX;
 			return GMT_NOERROR;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
@@ -11579,17 +11579,16 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 		return GMT_RUNTIME_ERROR;
 	}
 	fclose (fp);
-	if (*row == 0 || *col == 0) {
+	if (*row < 0 || *col < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Current panel has row or column outsiden range!\n");
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: Current panel is (%d, %d)\n", *row, *col);
-	(*row)--;	(*col)--;	/* Since they were given on a 1-n,1-m basis */
 	return GMT_NOERROR;
 }
 
-int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, unsigned int col, double gap[], char *label, unsigned first) {
+int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, double gap[], char *label, unsigned first) {
 	/* Update gmt.panel with current pane's (row,col) and write first as 0 or 1.
 	 * first should be 1 the first time we visit this panel so that the automatic -B
 	 * and panel tag stuff only happens once. */
@@ -11612,11 +11611,11 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 	return GMT_NOERROR;
 }
 
-int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col) {
+int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 	/* Auto-advance to next panel, with initialization at first panel.  The order of advancement
 	 * was set by -A's +v modifier and is found by reading the subplotorder file */
 	
-	unsigned int n_rows, n_cols, order;
+	int n_rows, n_cols, order;
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	
@@ -11636,24 +11635,24 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 	fclose (fp);
 	
 	/* If the panel file does not exist we initialize to row = col = 0 */
-	if (*col != UINT_MAX && get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
+	if (*col != INT_MAX && get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
 	
-	if (*row == UINT_MAX && *col == UINT_MAX)	/* First panel */
-		*row = *col = 1;
-	else if (*col == UINT_MAX) {	/* row has index which gives (row,col) depending on order */
-		unsigned int index = *row - 1;
+	if (*row == INT_MAX && *col == INT_MAX)	/* First panel */
+		*row = *col = 0;
+	else if (*col == INT_MAX) {	/* row has index which gives (row,col) depending on order */
+		unsigned int index = *row;
 		if (order == GMT_IS_COL_FORMAT) {	/* March down columns */
-			*col = index / n_rows + 1;
-			*row = index % n_rows + 1;
+			*col = index / n_rows;
+			*row = index % n_rows;
 		}
 		else {
-			*col = index % n_cols + 1;
-			*row = index / n_cols + 1;
+			*col = index % n_cols;
+			*row = index / n_cols;
 		}
-		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index+1, *row, *col);
+		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index, *row, *col);
 	}
 	else {	/* Auto-advance to next panel */
 		if (order == GMT_IS_COL_FORMAT) {	/* Going down columns */
@@ -11668,7 +11667,6 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, uns
 			else	/* Across current row */
 				(*col)++;
 		}
-		(*row)++;	(*col)++;	/* Since they are needed on a 1-n,1-m basis */
 	}
 		
 	API->error = GMT_NOERROR;
@@ -11705,7 +11703,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
 	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
 	bool found = false;
-	unsigned int row, col, first, k;
+	int row, col;
+	unsigned int first, k;
 	int n;
 	double gap[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_SUBPLOT *P = NULL;
@@ -12316,7 +12315,7 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 	double margin[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
 	
-	inset->active = false;	/* It is not an inset until we detect that it is */
+	if (inset) inset->active = false;	/* It is not an inset until we detect that it is */
 	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
 
 	if (access (file, F_OK)) return (GMT_NOERROR);	/* No inset active */
@@ -12541,13 +12540,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
-				unsigned int row = 0, col = 0;
+				int row = 0, col = 0;
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
 					if (opt->arg[0] && strchr (opt->arg,','))	/* Gave a comma-separate argument so presumably this is our row,col */
 						sscanf (opt->arg, "%d,%d", &row, &col);
 					else if (opt->arg[0] && isdigit (opt->arg[0])) {	/* Probably gave index */
 						row = atoi (opt->arg);
-						col = UINT_MAX;
+						col = INT_MAX;
 						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
 					}
 					else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
@@ -15533,7 +15532,7 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 	panel[0] = '\0';
 	if ((*subplot) & GMTINIT_SUBPLOT_ACTIVE) {	/* subplot active */
 		if (((*subplot) & GMTINIT_PANEL_NOTSET) == 0) {
-			unsigned int row, col;
+			int row, col;
 			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
 				sprintf (panel, "%u-%u", row, col);
 		}
