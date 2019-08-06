@@ -1472,7 +1472,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							S_Diag->data[GMT_Y][0] = S_Diag->data[GMT_Y][1] = S_Diag->data[GMT_Y][4] = in[GMT_Y];
 							S_Diag->data[GMT_Y][2] = S_Diag->data[GMT_Y][3] = in[pos2y];
 							S_Diag->n_rows = 5;
-							if (gmt_M_is_geographic (GMT, GMT_IN))	/* May need to resample */
+							if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->A.active)	/* May need to resample */
 								S_Diag->n_rows = gmt_fix_up_path (GMT, &S_Diag->data[GMT_X], &S_Diag->data[GMT_Y], S_Diag->n_rows, Ctrl->A.step, Ctrl->A.mode);
 							/* Plot it */
 							gmt_setfill (GMT, &current_fill, outline_active);
