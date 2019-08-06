@@ -472,7 +472,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		PSL_comment (PSL, "Placing plot title\n");
 		PSL_plottext (PSL, tri_x[2], tri_y[2]+2.0*T_off, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
 	}
-	if (Ctrl->L.active) {	/* Plot the vertix labels */
+	if (Ctrl->L.active) {	/* Plot the vertex labels */
 		double dx = L_off * cosd (30.0), dy = L_off * sind (30.0);
 		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_comment (PSL, "Placing vertices labels\n");

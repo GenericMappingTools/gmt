@@ -22,7 +22,7 @@ gmt begin ex49 ps
 	gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f > depth-age.bin
 	# Create and map density grid of (age,depth) distribution
 	gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc
-	# WHy do we need the -R below? otherwise it failes to work
+	# WHy do we need the -R below? otherwise it fails to work
 	gmt grdimage density.nc -R0/100/-6500/0 -JX6i/4i -Q -Y4.8i -Ct.cpt
 	# Obtain modal depths every ~5 Myr
 	gmt blockmode -R0/100/-10000/0 -I5/10000 -r -E depth-age.bin -bi3f -o0,2,3 > modal.txt

@@ -51,7 +51,7 @@ if [ `uname` = "Darwin" ]; then
 	cpack -G Bundle
 fi
 # 8. Report m5d hash
-echo "build-release.sh: Report m5d hash per file"
+echo "build-release.sh: Report md5 hash per file"
 md5 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 rm -f ../cmake/ConfigUser.cmake
