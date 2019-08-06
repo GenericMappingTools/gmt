@@ -12321,6 +12321,8 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 
 	if (access (file, F_OK)) return (GMT_NOERROR);	/* No inset active */
 
+	if (inset == NULL) return 1;	/* Just wanted to know if there is an inset active */
+	
 	/* Extract dimensions from the inset information file */
 	if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
@@ -15522,6 +15524,22 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 	}
 	fclose (fp);
 	return (fig_no);
+}
+
+void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
+	/* Determine figure number, subplot panel, inset */
+	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
+	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
+	panel[0] = '\0';
+	if ((*subplot) & GMTINIT_SUBPLOT_ACTIVE) {	/* subplot active */
+		if (((*subplot) & GMTINIT_PANEL_NOTSET) == 0) {
+			unsigned int row, col;
+			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
+				sprintf (panel, "%u-%u", row, col);
+		}
+	}
+	*inset = gmtinit_get_inset_dimensions (API, *fig, NULL);	/* True if inset is active */
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_cpt_level: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
 }
 
 GMT_LOCAL bool is_integer (char *L) {
