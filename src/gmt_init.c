@@ -12542,10 +12542,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-					if (opt->arg[0] && strchr (opt->arg,','))	/* Gave a comma-separate argument so presumably this is our row,col */
+					if (opt->arg[0] && strchr (opt->arg,',')) {	/* Gave a comma-separate argument so presumably this is our row,col */
 						sscanf (opt->arg, "%d,%d", &row, &col);
-					else if (opt->arg[0] && isdigit (opt->arg[0])) {	/* Probably gave index */
+						if (row < 0 || col < 0) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Negative row and/or column given to -c!\n");
+							return NULL;
+						}
+					}
+					else if (opt->arg[0] && (strchr ("-+", opt->arg[0]) || isdigit (opt->arg[0]))) {	/* Probably gave index */
 						row = atoi (opt->arg);
+						if (row < 0) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Negative index given to -c!\n");
+							return NULL;
+						}
 						col = INT_MAX;
 						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
 					}
