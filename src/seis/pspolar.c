@@ -203,7 +203,7 @@ GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSP
 	}
 	if ((c = strchr (text, 'G'))) {	/* Found trailing G for fill */
 		if (gmt_getfill (GMT, &c[1], &Ctrl->S2.fill)) {
-			gmt_fill_syntax (GMT, 's', NULL, " ");
+			gmt_fill_syntax (GMT, ' ', "QsG", " ");
 			n_errors++;
 		}
 		Ctrl->S2.scolor = true;
@@ -320,21 +320,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					case 'e':	/* Outline station symbol in extensive part */
 						Ctrl->E.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->E.pen)) {
-							gmt_pen_syntax (GMT, 'Q', NULL, "Outline station symbol (extensive part) [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qe", "Outline station symbol (extensive part) [Default current pen]", 0);
 							n_errors++;
 						}
 						break;
 					case 'f':	/* Outline beach ball */
 						Ctrl->F.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen)) {
-							gmt_pen_syntax (GMT, 'Q', NULL, "Outline beach ball [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qf", "Outline beach ball [Default current pen]", 0);
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Outline station symbol in compressive part */
 						Ctrl->G.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->G.pen)) {
-							gmt_pen_syntax (GMT, 'Q', NULL, "Outline station symbol (compressive part) [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qg", "Outline station symbol (compressive part) [Default current pen]", 0);
 							n_errors++;
 						}
 						break;
@@ -371,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					case 't':	/* Set color for station label */
 						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'Q', NULL, "Station code symbol[Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qt", "Station code symbol[Default current pen]", 0);
 							n_errors++;
 						}
 						break;

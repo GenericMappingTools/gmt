@@ -597,28 +597,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 'e':	/* Set color for T axis symbol */
 						Ctrl->E2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
-							gmt_fill_syntax (GMT, 'e', NULL, " ");
+							gmt_fill_syntax (GMT, ' ', "Fe", " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
 						Ctrl->G2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
-							gmt_fill_syntax (GMT, 'g', NULL, " ");
+							gmt_fill_syntax (GMT, ' ', "Fg", " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							gmt_pen_syntax (GMT, 'p', NULL, " ", 0);
+							gmt_pen_syntax (GMT, ' ', "Fp", " ", 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
 						Ctrl->R2.active = true;
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
-							gmt_fill_syntax (GMT, 'r', NULL, " ");
+							gmt_fill_syntax (GMT, ' ', "Fr", " ");
 							n_errors++;
 						}
 						break;
@@ -673,7 +673,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							gmt_pen_syntax (GMT, 't', NULL, " ", 0);
+							gmt_pen_syntax (GMT, ' ', "Ft", " ", 0);
 							n_errors++;
 						}
 						break;

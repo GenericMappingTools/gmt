@@ -6739,7 +6739,11 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	}
-	gmt_message (GMT, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
+	if (longoption)
+		gmt_message (GMT, "\t-%s<fill> ", longoption);
+	else
+		gmt_message (GMT, "\t-%c<fill> ", option);
+	gmt_message (GMT, "%s Specify <fill> as one of:\n", string);
 	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
 	gmt_message (GMT, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
