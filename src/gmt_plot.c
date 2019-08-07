@@ -6980,7 +6980,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, "U\n}!\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row, P->col, P->gap, P->tag, 0))
 			return NULL;	/* Should never happen */
 	}
 	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */

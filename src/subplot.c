@@ -61,7 +61,7 @@ struct SUBPLOT_CTRL {
 	struct In {	/* begin | end | set */
 		bool active;
 		unsigned int mode;	/* SUBPLOT_BEGIN|SET|END*/
-		unsigned int row, col;
+		int row, col;
 	} In;
 	struct A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
 		bool active;
@@ -123,7 +123,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct SUBPLOT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
-	C->In.row = C->In.col = UINT_MAX;
+	C->In.row = C->In.col = GMT_NOTSET;
 	sprintf (C->A.placement, "TL");
 	sprintf (C->A.justify, "TL");
 	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
@@ -154,7 +154,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>] [-A<autolabelinfo>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-C<side><clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -242,15 +243,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
-		if (n == 1) Ctrl->In.col = UINT_MAX;	/* Flag we gave the index instead */
-		if (Ctrl->In.row == 0 || Ctrl->In.col == 0) {
+		if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the index instead */
+		if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}
 	else if (strchr (opt->arg, ',')) {	/* Implicitly called set without using the word "set" */
-		if (sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 2 || Ctrl->In.row == 0 || Ctrl->In.col == 0) {
+		if (sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 2 || Ctrl->In.row < 0 || Ctrl->In.col < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not a subplot command: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
@@ -1096,7 +1097,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if (Ctrl->In.col == UINT_MAX) {	/* Auto-set which panel */
+		if (Ctrl->In.col == INT_MAX) {	/* Auto-set which panel */
 			if ((error = gmt_get_next_panel (API, fig, &Ctrl->In.row, &Ctrl->In.col)))	/* Bad */
 				Return (error)
 		}
