@@ -99,7 +99,7 @@ struct PSMECA_CTRL {
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -Fa[size][/Psymbol[/Tsymbol]] */
+	struct A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
@@ -275,7 +275,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				if (txt[0] != 'P' && strncmp (txt, "+s", 2U)) {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (gmt_getpen (GMT, txt, &Ctrl->C.pen)) {
-						gmt_pen_syntax (GMT, 'C', " ", 0);
+						gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
 						n_errors++;
 					}
 				}
@@ -287,7 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 			case 'E':	/* Set color for extensive parts  */
 				Ctrl->E.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
-					gmt_fill_syntax (GMT, 'E', " ");
+					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
+						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
 						if (p) {	/* Also specified symbols */
@@ -314,35 +314,35 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 					case 'e':	/* Set color for T axis symbol */
 						Ctrl->E2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
-							gmt_fill_syntax (GMT, 'e', " ");
+							gmt_fill_syntax (GMT, 'e', NULL, " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
 						Ctrl->G2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
-							gmt_fill_syntax (GMT, 'g', " ");
+							gmt_fill_syntax (GMT, 'g', NULL, " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							gmt_pen_syntax (GMT, 'p', " ", 0);
+							gmt_pen_syntax (GMT, 'p', NULL, " ", 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
 						Ctrl->R2.active = true;
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
-							gmt_fill_syntax (GMT, 'r', " ");
+							gmt_fill_syntax (GMT, 'r', NULL, " ");
 							n_errors++;
 						}
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							gmt_pen_syntax (GMT, 't', " ", 0);
+							gmt_pen_syntax (GMT, 't', NULL, " ", 0);
 							n_errors++;
 						}
 						break;
@@ -352,7 +352,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 					case 'z':	/* overlay zerotrace moment tensor */
 						Ctrl->Z2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
-							gmt_pen_syntax (GMT, 'z', " ", 0);
+							gmt_pen_syntax (GMT, 'z', NULL, " ", 0);
 							n_errors++;
 						}
 						break;
@@ -361,14 +361,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					gmt_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
@@ -461,14 +461,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
-					gmt_pen_syntax (GMT, 'T', " ", 0);
+					gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;

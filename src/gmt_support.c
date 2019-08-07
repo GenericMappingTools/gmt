@@ -4989,7 +4989,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			else if (fill_p[0] == '-')	/* Do not want to fill this polygon */
 				s->fill->rgb[0] = -1.0;
 			else if (gmt_getfill (GMT, fill_p, s->fill)) {
-				gmt_fill_syntax (GMT, 'G', " ");
+				gmt_fill_syntax (GMT, 'G', NULL, " ");
 				fclose (fp);
 				gmt_M_free (GMT, head);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
@@ -5016,7 +5016,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					if (k) pen_p[k-1] = '1';	/* Now we have a unit pen thickness for later scaling */
 				}
 				if (gmt_getpen (GMT, pen_p, s->pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					fclose (fp);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				}
@@ -7657,8 +7657,11 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 }
 
 void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
+	int fig, subplot, inset;
+
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
+	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	/* Save cpt for use by session */
 	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
 	if (gmtlib_write_cpt (GMT, file, GMT_IS_FILE, P->cpt_flags, P) != GMT_NOERROR)
@@ -7669,8 +7672,11 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 
 char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
-	char path[GMT_LEN256] = {""}, *file = NULL;
+	char path[GMT_LEN256] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
+	int fig, subplot, inset;
+	
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;	/* Not available in classic mode */
+	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	sprintf (path, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
 	if (!access (path, R_OK)) {
 		file = strdup (path);

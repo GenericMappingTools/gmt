@@ -21,7 +21,7 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
+[ |-T|\ *nplane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

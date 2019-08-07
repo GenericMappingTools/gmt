@@ -45,7 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
-EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col);
+EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col);
 EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);
 EXTERN_MSC void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify);
@@ -56,7 +56,7 @@ EXTERN_MSC char gmt_set_V (int mode);
 EXTERN_MSC void gmtinit_conf_US (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtinit_conf (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size);
-EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, unsigned int col, double gap[], char *label, unsigned int first);
+EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, double gap[], char *label, unsigned int first);
 EXTERN_MSC int gmt_get_current_figure (struct GMTAPI_CTRL *API);
 EXTERN_MSC int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *arg);
@@ -91,8 +91,8 @@ EXTERN_MSC void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *st
 EXTERN_MSC void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind);
-EXTERN_MSC void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *string);
-EXTERN_MSC void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode);
+EXTERN_MSC void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string);
+EXTERN_MSC void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode);
 EXTERN_MSC void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error);
 EXTERN_MSC void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);

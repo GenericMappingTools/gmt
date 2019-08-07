@@ -101,23 +101,23 @@ Optional Arguments
     **4**:
       Text string to appear above the beach ball (default) or under (add **+u**).
 
-**-Fa**\ [*size*][/\ *P\_symbol*\ [/\ *T\_symbol*]]
+**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
 
-**-Fe**\ *color*
+**-Fe**\ *fill*
     Sets the color or fill pattern for the T axis symbol. [Default as set by |-E|]
 
-**-Fg**\ *color*
+**-Fg**\ *fill*
     Sets the color or fill pattern for the P axis symbol. [Default as set by |-G|]
 
 **-Fp**\ [*pen*]
     Draws the P axis outline using current pen (see |-W|), or sets pen attributes.
 
-**-Fr**\ [*color*]
+**-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
 
 **-Ft**\ [*pen*]
@@ -125,7 +125,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color*
+**-G**\ *fill*
     Sets color or fill pattern for compressional quadrants [Default is black].
 
 .. _-L:
@@ -151,13 +151,18 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*num_of_planes*]
+**-T**\ [*nplane*\ ][\ **/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
-    If *num_of_planes* is
+    If *nplane* is
+
     *0*: both nodal planes are plotted;
+
     *1*: only the first nodal plane is plotted;
-    *2*: only the second nodal plane is plotted
-    [Default: 0].
+
+    *2*: only the second nodal plane is plotted.
+
+    Append **/**\ *pen* to set the pen attributes for this feature.
+    Default pen is as set by **-W**. [Default: 0].
 
 .. _-U:
 

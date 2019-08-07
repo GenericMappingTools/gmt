@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 					GMT->current.map.frame.paint = true;
 					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
-						gmt_fill_syntax (GMT, 'G', " ");
+						gmt_fill_syntax (GMT, 'G', NULL, " ");
 						n_errors++;
 					}
 				}

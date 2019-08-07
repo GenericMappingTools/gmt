@@ -87,7 +87,7 @@ manipulation. Currently, the supplemental archive include these directories:
 Before running programs, there are a few things you should do/know:
 
     Read carefully the documentation for the gmt system. This can be
-    found as both PDF and HTML files in the doc/pdf|html directories.
+    found as HTML files in the doc/html directories.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms. Then, before running individual gmt programs, read

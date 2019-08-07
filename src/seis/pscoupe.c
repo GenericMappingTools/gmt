@@ -110,7 +110,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -Fa[size][/Psymbol[Tsymbol]] */
+	struct A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
@@ -473,7 +473,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	gmt_fill_syntax (API->GMT, 'E', "Set color used for extensive parts [Default is white]");
+	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white]");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Set color used for T_symbol [default as set by -E].\n");
@@ -484,7 +484,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	gmt_fill_syntax (API->GMT, 'G', "Set color used for compressive parts [Default is black]");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Set color used for compressive parts [Default is black]");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set same size for any magnitude. Size is given with -S.\n");
@@ -569,7 +569,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 			case 'E':	/* Set color for extensive parts  */
 				Ctrl->E.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
-					gmt_fill_syntax (GMT, 'E', " ");
+					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
 				}
 				Ctrl->A.polygon = true;
@@ -579,7 +579,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
+						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
 						if (p) {
@@ -597,28 +597,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 'e':	/* Set color for T axis symbol */
 						Ctrl->E2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
-							gmt_fill_syntax (GMT, 'e', " ");
+							gmt_fill_syntax (GMT, 'e', NULL, " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
 						Ctrl->G2.active = true;
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
-							gmt_fill_syntax (GMT, 'g', " ");
+							gmt_fill_syntax (GMT, 'g', NULL, " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							gmt_pen_syntax (GMT, 'p', " ", 0);
+							gmt_pen_syntax (GMT, 'p', NULL, " ", 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
 						Ctrl->R2.active = true;
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
-							gmt_fill_syntax (GMT, 'r', " ");
+							gmt_fill_syntax (GMT, 'r', NULL, " ");
 							n_errors++;
 						}
 						break;
@@ -673,7 +673,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							gmt_pen_syntax (GMT, 't', " ", 0);
+							gmt_pen_syntax (GMT, 't', NULL, " ", 0);
 							n_errors++;
 						}
 						break;
@@ -682,7 +682,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				Ctrl->A.polygon = true;
@@ -690,7 +690,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					gmt_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
@@ -796,14 +796,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
-					gmt_pen_syntax (GMT, 'T', " ", 0);
+					gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
