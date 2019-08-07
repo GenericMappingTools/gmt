@@ -277,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 					switch (p[0]) {
 						case 'g':  /* fill */
 							if (gmt_getfill (GMT, &p[1], &Ctrl->G.fill[k])) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G+g<fill> option.\n");
+								gmt_fill_syntax (GMT, ' ', "G[p|n]+g", " ");
 								n_errors++;
 							}
 							break;
