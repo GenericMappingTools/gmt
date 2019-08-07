@@ -6958,12 +6958,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
 					if (gmt_getpen (GMT, P->pen, &pen))
-						gmt_pen_syntax (GMT, 'w', "sets pen attributes:", 3);
+						gmt_pen_syntax (GMT, 'w', NULL, "sets pen attributes:", 3);
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
 				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
-					gmt_fill_syntax (GMT, 'g', " ");
+					gmt_fill_syntax (GMT, 'g', NULL, " ");
 					
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);

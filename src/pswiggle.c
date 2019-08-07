@@ -242,7 +242,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +a to move label to the opposite side of vertical scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +l to set the unit label of the z-values for the scale bar label [no label].\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the vertical scale.", 4);
-	gmt_fill_syntax (API->GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color/pattern for positive and/or negative areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to fill positive areas only (Default).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to fill negative areas only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append both to fill positive and negative areas.\n");
@@ -253,7 +253,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify track pen attributes. [Default is no track].\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				k = (pos) ? PSWIGGLE_POS : PSWIGGLE_NEG;
 				Ctrl->G.active[k] = true;
 				if (gmt_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -389,14 +389,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 			case 'T':
 				Ctrl->T.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
-					gmt_pen_syntax (GMT, 'T', " ", 0);
+					gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
