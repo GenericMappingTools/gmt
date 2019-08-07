@@ -7668,7 +7668,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Set the correct output file name given the CPT level */
 	if (inset)	/* Only one inset may be active at any given time */
 		sprintf (file, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
-	else if (subplot) {	/* Either subplot master or a panel-specific CPT */
+	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
 			sprintf (file, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
 		else	/* CPT for just this panel */
@@ -7698,7 +7698,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 		sprintf (path, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 	}
-	if (!file && subplot) {	/* Nothing yet, see if subplot has one */
+	if (!file && (subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
 		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific CPT available? */
 			sprintf (path, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
