@@ -11652,7 +11652,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 			*col = index % n_cols;
 			*row = index / n_cols;
 		}
-		GMT_Report (API, GMT_MSG_NORMAL, "Index %u goes to (%u, %u)\n", index, *row, *col);
+		GMT_Report (API, GMT_MSG_DEBUG, "Index %u goes to (%u, %u)\n", index, *row, *col);
 	}
 	else {	/* Auto-advance to next panel */
 		if (order == GMT_IS_COL_FORMAT) {	/* Going down columns */
