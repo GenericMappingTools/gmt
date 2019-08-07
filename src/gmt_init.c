@@ -6732,8 +6732,13 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	\param option ...
 	\param string ...
 */
-void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *string) {
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string) {
+	if (string[0] == ' ') {
+		if (longoption)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%s option.  Correct syntax:\n", longoption);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	}
 	gmt_message (GMT, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
 	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
@@ -6750,10 +6755,18 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	\param option ...
 	\param string ...
 */
-void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode) {
+void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode) {
 	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c ", option);
+	if (string[0] == ' ') {
+		if (longoption)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%s option.  Correct syntax:\n", longoption);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	}
+	if (longoption)
+		gmt_message (GMT, "\t-%s ", longoption);
+	else
+		gmt_message (GMT, "\t-%c ", option);
 	if (strstr (string, "%s"))
 		gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	else

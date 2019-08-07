@@ -453,7 +453,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force clip contours to be oriented so that the higher z-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
-	gmt_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to change inside nodes to NaNs or +o to change outside nodes to NaNs.\n");
@@ -535,7 +535,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 			case 'G':
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
