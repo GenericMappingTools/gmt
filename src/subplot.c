@@ -1117,7 +1117,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		API->GMT->current.map.width  = P->dim[GMT_X];
 		API->GMT->current.map.height = P->dim[GMT_Y];
-		P->active = 0;
+		P->active = 0;	/* Ensure subplot mode is terminated */
 		
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No workflow directory\n");
