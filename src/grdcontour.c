@@ -1399,7 +1399,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			if (got == 4) {	/* Also got a pen specification for this contour */
 				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {	/* Bad pen syntax */
-					gmt_pen_syntax (GMT, 'C', " ", 0);
+					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				cont[n_contours].penset = true;
