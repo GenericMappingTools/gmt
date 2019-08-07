@@ -506,6 +506,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     <labelinfo> controls the label attributes.  Choose from\n");
 	gmt_label_syntax (API->GMT, 7, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: x- and y-dimensions must be in columns 3-4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s if instead the diagonal corner coordinates are given in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, psxy will expect azimuth and\n");
@@ -1063,6 +1064,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
 		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
+	if (S.symbol == PSL_RECT && S.diagonal) {	/* Getting lon1,lat1,lon2,lat2 of a diagonal and will draw the rectangle subject to -A */
+		/* Reading 2nd coordinate so must set column types */
+		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
@@ -1137,6 +1143,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
+		struct GMT_DATASET *Diag = NULL;
+		struct GMT_DATASEGMENT *S_Diag = NULL;
 
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
@@ -1173,6 +1181,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
 		
+		if (S.diagonal) {
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};	/* Put everything in one table */
+			if ((Diag = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_NO_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			S_Diag = Diag->table[0]->segment[0];
+		}
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
@@ -1362,7 +1375,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &current_pen);
 			}
 
-			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses and rectangles */
+			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT)) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
 					in[ex2] = in[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
@@ -1445,6 +1458,27 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						/* Fall through on purpose to pick up the other parameters */
 					case PSL_RECT:
+						if (S.diagonal) {	/* Special rectangle give by opposing corners on a diagonal */
+							if (gmt_M_is_dnan (in[pos2x])) {
+								GMT_Report (API, GMT_MSG_VERBOSE, "Diagonal longitude = NaN near line %d\n", n_total_read);
+								continue;
+							}
+							if (gmt_M_is_dnan (in[pos2y])) {
+								GMT_Report (API, GMT_MSG_VERBOSE, "Diagonal latitude = NaN near line %d\n", n_total_read);
+								continue;
+							}
+							S_Diag->data[GMT_X][0] = S_Diag->data[GMT_X][3] = S_Diag->data[GMT_X][4] = in[GMT_X];
+							S_Diag->data[GMT_X][1] = S_Diag->data[GMT_X][2] = in[pos2x];
+							S_Diag->data[GMT_Y][0] = S_Diag->data[GMT_Y][1] = S_Diag->data[GMT_Y][4] = in[GMT_Y];
+							S_Diag->data[GMT_Y][2] = S_Diag->data[GMT_Y][3] = in[pos2y];
+							S_Diag->n_rows = 5;
+							if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->A.active)	/* May need to resample */
+								S_Diag->n_rows = gmt_fix_up_path (GMT, &S_Diag->data[GMT_X], &S_Diag->data[GMT_Y], S_Diag->n_rows, Ctrl->A.step, Ctrl->A.mode);
+							/* Plot it */
+							gmt_setfill (GMT, &current_fill, outline_active);
+							gmt_geo_polygons (GMT, S_Diag);
+							break;
+						}
 						dim[0] = in[ex1];
 						if (gmt_M_is_dnan (dim[0])) {
 							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
@@ -1711,6 +1745,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &Diag) != GMT_NOERROR) {	/* Be gone with the diagonal */
 			Return (API->error);
 		}
 	}
