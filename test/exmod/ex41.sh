@@ -6,9 +6,7 @@
 # Unix progs:   cat, rm
 #
 gmt begin ex41 ps
-
 	gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p
-	
 	gmt makecpt -Cred,orange,yellow,green,bisque,cyan,magenta,white,gray -T1/10/1 -N
 	gmt coast -R130W/50W/8N/56N -JM5.6i -B0 -Glightgray -Sazure1 -A1000 -Wfaint -Xc -Y1.2i --MAP_FRAME_TYPE=plain
 	gmt coast -EUS+glightyellow+pfaint -ECU+glightred+pfaint -EMX+glightgreen+pfaint -ECA+glightblue+pfaint

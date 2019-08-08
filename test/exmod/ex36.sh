@@ -16,5 +16,5 @@ gmt begin ex36 ps
 	gmt sphinterpolate @mars370d.txt -Rg -I1 -Q3 -Gtt.nc
 	gmt grdimage tt.nc -Bag -Y-3.25i
 	# cleanup
-	rm -f tt.cpt tt.nc
+	rm -f tt.nc
 gmt end

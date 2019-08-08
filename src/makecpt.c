@@ -587,7 +587,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 
 	Return (GMT_NOERROR);
 }
