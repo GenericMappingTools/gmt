@@ -25,5 +25,5 @@ gmt begin ex39 ps
 	gmt grdimage v3.nc -I+a45+nt0.75 -JG -Bg -X-1.25i -Y1.9i
 	echo 4 4.5 L = 180 | gmt text -R0/6/0/6 -Jx1i -Dj0.2i -F+f16p+jLM -N
 	echo 3.75 5.4 Venus Spherical Harmonic Model | gmt text -F+f24p+jCM -N
-	rm -f v?.nc t.cpt
+	rm -f v?.nc
 gmt end

@@ -6739,7 +6739,11 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	}
-	gmt_message (GMT, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
+	if (longoption)
+		gmt_message (GMT, "\t-%s<fill> ", longoption);
+	else
+		gmt_message (GMT, "\t-%c<fill> ", option);
+	gmt_message (GMT, "%s Specify <fill> as one of:\n", string);
 	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
 	gmt_message (GMT, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
@@ -11686,11 +11690,8 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 	return GMT_NOERROR;
 }
 
-#define GMTINIT_SUBPLOT_ACTIVE 1
-#define GMTINIT_PANEL_NOTSET 2
-
 GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
-	/* Return GMTINIT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMTINIT_PANEL_NOTSET if no panel set yet */
+	/* Return GMT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMT_PANEL_NOTSET if no panel set yet */
 	char file[PATH_MAX] = {""};
 	bool answer;
 	unsigned int mode = 0;
@@ -11699,14 +11700,14 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 	answer = (access (file, F_OK) == 0);	/* true if subplot information file is found */
 	if (answer) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subplot information file found\n");
-		mode |= GMTINIT_SUBPLOT_ACTIVE;
+		mode |= GMT_SUBPLOT_ACTIVE;
 	}
 	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 	answer = (access (file, F_OK) == 0);	/* true if current panel file is found */
 	if (answer)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
 	else
-		mode |= GMTINIT_PANEL_NOTSET;
+		mode |= GMT_PANEL_NOTSET;
 		
 	return (mode);
 }
@@ -12552,7 +12553,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				return (NULL);
 			}
 
-			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMTINIT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
+			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
 					if (opt->arg[0] && strchr (opt->arg,',')) {	/* Gave a comma-separate argument so presumably this is our row,col */
@@ -12577,7 +12578,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;	/* Make this the current panel */
 					if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
 				}
-				else if (subplot_status & GMTINIT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
+				else if (subplot_status & GMT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
 					if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 				}
@@ -15554,8 +15555,8 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
 	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
 	panel[0] = '\0';
-	if ((*subplot) & GMTINIT_SUBPLOT_ACTIVE) {	/* subplot active */
-		if (((*subplot) & GMTINIT_PANEL_NOTSET) == 0) {
+	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot active */
+		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {
 			int row, col;
 			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
 				sprintf (panel, "%u-%u", row, col);
@@ -15565,7 +15566,7 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_cpt_level: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
 }
 
-GMT_LOCAL bool is_integer (char *L) {
+bool gmt_is_integer (char *L) {
 	/* Return true if string L is not an integer or is empty */
 	if (!L || L[0] == '\0') return false;
 	for (size_t k = 0; k < strlen (L); k++) {
@@ -15654,7 +15655,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
 		unsigned int T, n_tags;
 		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
-		if (!is_integer (L)) {
+		if (!gmt_is_integer (L)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "MOVIE_N_LABELS = %s but must be an integer\n", L);
 			return GMT_RUNTIME_ERROR;
 		}

@@ -20,5 +20,5 @@ gmt begin ex35 ps
 	gmt plot tt.pol -W0.25p,green,.
 	gmt coast -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t"Distances from GSHHG crude coastlines"
 	# cleanup
-	rm -f gmt.conf tt.pol tt.nc t.cpt
+	rm -f tt.pol tt.nc
 gmt end

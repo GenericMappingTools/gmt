@@ -222,6 +222,10 @@ enum GMT_swap_direction {
 #define GMT_GRAPH_EXTENSION		7.5	/* In percent */
 #define GMT_GRAPH_EXTENSION_UNIT	'%'	/* In percent */
 
+/* Modes for subplot status */
+#define GMT_SUBPLOT_ACTIVE	1
+#define GMT_PANEL_NOTSET	2
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,

@@ -7662,8 +7662,21 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
 	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	/* Save cpt for use by session */
-	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
+	/* Save this specially scaled CPT for other uses in the modern session */
+	/* Set the correct output file name given the CPT level */
+	if (inset)	/* Only one inset may be active at any given time */
+		sprintf (file, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
+	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
+		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
+			sprintf (file, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
+		else	/* CPT for just this panel */
+			sprintf (file, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+	}
+	else if (fig)	/* Limited to one figure only */
+		sprintf (file, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+	else
+		sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);
+		
 	if (gmtlib_write_cpt (GMT, file, GMT_IS_FILE, P->cpt_flags, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
 	else
@@ -7675,15 +7688,36 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 	char path[GMT_LEN256] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
 	
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;	/* Not available in classic mode */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;		/* Not available in classic mode */
 	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	sprintf (path, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
-	if (!access (path, R_OK)) {
-		file = strdup (path);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recycle existing CPT file %s\n", file);
+	/* Find the appropriate level CPT for where we are but may have to go up the list */
+	
+	if (inset) {	/* See if an inset CPT exists */
+		sprintf (path, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 	}
+	if (!file && (subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
+		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific CPT available? */
+			sprintf (path, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		}
+		if (!file && (subplot & GMT_PANEL_NOTSET)) {	/* No, try subplot master CPT instead? */
+			sprintf (path, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
+			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		}
+	}
+	if (!file && fig) {	/* Not found a CPT yet, so try one for this specific figure */
+		sprintf (path, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+	}
+	if (!file) {	/* Not found a CPT yet, finally try the session master */
+		sprintf (path, "%s/gmt.cpt", GMT->parent->gwf_dir);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+	}
+	if (file)
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected current CPT file %s\n", file);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No existing CPT file %s to recycle\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current CPT file found\n");
 	return (file);
 }
 
