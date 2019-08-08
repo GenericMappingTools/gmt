@@ -357,7 +357,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
  * the new long-format GMT options (e.g., --timestamp="My plot"+o5c/6c) to regular GMT short format
  * options (e.g., -U/5c/6c/"My plot") that the common and module parsers expect. */
 
-GMT_LOCAL struct GMT_KW_DICT gmt_kw_common[] = {
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ '/', 'I', "increment",     "",        "",                                        "e,n",      "exact,number" },
 	{   0, 'J', "projection",    "",        "",                                        "",         ""},
@@ -476,7 +476,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 #endif
 
 /*! . */
-GMT_LOCAL struct GMT_KW_DICT * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw1, struct GMT_KW_DICT *kw2, char *arg, int *k) {
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this arg is found in one of the two keyword lists */
 	size_t len, lent = strlen(arg);
 	gmt_M_unused (API);
@@ -548,7 +548,7 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options) {
+GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value]
 	 * with the corresponding short option version -<code>[value]. Specifically, format is
 	 *
@@ -564,7 +564,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 	 */
 
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_KW_DICT *kw = NULL;
+	struct GMT_KEYWORD_DICTIONARY *kw = NULL;
 	char new_arg[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""};
 	char *e = NULL, *p = NULL, c = 0, e_code = '=', sep[2] = {'\0', '\0'};
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
@@ -12502,7 +12502,7 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
