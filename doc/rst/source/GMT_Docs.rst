@@ -1962,7 +1962,7 @@ duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
 numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you 
+text, then append the word number (0 is the first word).  Note that if you
 wanted to scale or shift the output values you need to do so during reading,
 using the **-i** option. To output all numerical columns and ignoring
 trailing text, use **-on**.
@@ -5941,8 +5941,6 @@ Centered on the Dateline, the example below was created by this command:
 
    World map using the Van der Grinten projection.
 
-
-.. include:: examples_chapter.rst_
 
 
 GMT Supplemental Packages
