@@ -42,8 +42,10 @@ it can do.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Classic mode
+   :caption: Classic Mode
 
    std_opts_classic
    modules_classic
    supplements_classic
+   The GMT Tutorial (Classic Mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>
+   The GMT Cookbook (Classic mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Docs.html>
