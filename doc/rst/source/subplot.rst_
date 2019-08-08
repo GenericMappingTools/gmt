@@ -116,10 +116,11 @@ Optional Arguments
 .. _subplot_begin-M:
 
 **-M**\ *margins*
-    This is margin space that is added around each subplot beyond the automatic space allocated for tick marks,
-    annotations, and labels.  The margins can be a single value, a pair of values separated by slashes
-    (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-    separate left, right, bottom, and top margins) [0.5c].
+    This is margin space that is added *between* neighboring subplots (i.e., interior margins) in addition
+    to the automatic space added for tick marks, annotations, and labels.  The margins can be specified as
+    a single value (for same margin on all sides), a pair of values separated by slashes
+    (for setting separate horizontal and vertical margins), or the full set of four slash-separated margins
+    (for setting separate left, right, bottom, and top margins) [0.5c].
 
 .. _-R:
 
