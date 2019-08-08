@@ -17,6 +17,9 @@ it can do.
    :caption: Reference documentation
 
    modules
+   supplements
+   Users_contrib_script
+   Users_contrib_symbols
    datasets
    api
 
