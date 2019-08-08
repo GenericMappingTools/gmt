@@ -15566,7 +15566,7 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_cpt_level: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
 }
 
-GMT_LOCAL bool is_integer (char *L) {
+bool gmt_is_integer (char *L) {
 	/* Return true if string L is not an integer or is empty */
 	if (!L || L[0] == '\0') return false;
 	for (size_t k = 0; k < strlen (L); k++) {
@@ -15655,7 +15655,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
 		unsigned int T, n_tags;
 		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
-		if (!is_integer (L)) {
+		if (!gmt_is_integer (L)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "MOVIE_N_LABELS = %s but must be an integer\n", L);
 			return GMT_RUNTIME_ERROR;
 		}
