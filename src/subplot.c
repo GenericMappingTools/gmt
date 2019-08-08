@@ -715,20 +715,17 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After correcting for inside panel margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 
-		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 axes per row or per panel */
+		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 W/E axes per row or per panel */
+		/* Note: Usually, we will tick both the west and east side of a panel.  With -SR in effect
+		 * we will have selected either the left, right, or both end sides (i.e., the two outer panels).
+		 * However, this can be overridden by selecting "l" and/or "r" in the general -B string which controls
+		 * all the axes not implicitly handled by -SR.  Hence, we assume two sides of ticks will need space
+		 * but override if users have turned any of those sides off with l or r */
 
-		nx = 0;
-		if (Ctrl->S[GMT_Y].tick) {	/* Used -SR so must check the settings */
-			if ((Ctrl->S[GMT_Y].tick & SUBPLOT_PLACE_AT_MIN) && !strchr (Ctrl->S[GMT_Y].axes, 'l')) nx++;
-			if ((Ctrl->S[GMT_Y].tick & SUBPLOT_PLACE_AT_MAX) && !strchr (Ctrl->S[GMT_Y].axes, 'r')) nx++;
-		}
-		else {	/* Must see what -B specified instead since that will apply to all panels */
-			if (strchr (Ctrl->S[GMT_Y].axes, 'W') || strchr (Ctrl->S[GMT_Y].axes, 'w')) nx++;	/* All panels need west ticks */
-			if (strchr (Ctrl->S[GMT_Y].axes, 'E') || strchr (Ctrl->S[GMT_Y].axes, 'e')) nx++;	/* All panels need east ticks */
-		}
-		factor = (Ctrl->S[GMT_Y].active) ? 2 : Ctrl->N.dim[GMT_X];	/* Either just one or each row may need separate x-axis ticks */
-		nx *= (factor - 1);
-		fluff[GMT_X] += nx * tick_height;
+		nx = 2;	/* Default is ticks on both W and E */
+		if (strchr (Ctrl->S[GMT_Y].axes, 'l')) nx--;	/* But not on the west (left) side */
+		if (strchr (Ctrl->S[GMT_Y].axes, 'r')) nx--;	/* But not on the east (right) side */
+		fluff[GMT_X] += (Ctrl->N.dim[GMT_X] - 1) * nx * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d rows of map ticks: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 		/* Limit annotations/labels to 1 or 2 axes per row or per panel */
 		if (Ctrl->S[GMT_Y].annotate)	/* Used -SR so check settings */
@@ -748,25 +745,17 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row labels: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 
 		/* COLUMN SETTINGS: Limit annotations/labels to 1 or 2 axes per column or per panel */
+		/* Note: Usually, we will tick both the south and north side of a panel.  With -SC in effect
+		 * we will have selected either the bottom, top, or both end sides (i.e., the two outer panels).
+		 * However, this can be overridden by selecting "b" and/or "t" in the general -B string which controls
+		 * all the axes not implicitly handled by -SC.  Hence, we assume two sides of ticks will need space
+		 * but override if users have turned any of those sides off with b or t */
 
-		ny = 0;
-		if (Ctrl->S[GMT_X].tick) {	/* Gave -SC so check settings */
-			if ((Ctrl->S[GMT_X].tick & SUBPLOT_PLACE_AT_MIN) && !strchr (Ctrl->S[GMT_X].axes, 'b')) ny++;
-			if ((Ctrl->S[GMT_X].tick & SUBPLOT_PLACE_AT_MAX)) {
-				if (!strchr (Ctrl->S[GMT_X].axes, 't')) ny++;
-				y_header_off += tick_height + annot_height;
-			}
-		}
-		else {	/* Must see what -B specified instead since that will apply to all panels */
-			if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) ny++;	/* All panels need south ticks */
-			if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) {
-				ny++;	/* All panels need north ticks */
-				y_header_off += tick_height;
-			}
-		}
-		factor = (Ctrl->S[GMT_X].active) ? 2 : Ctrl->N.dim[GMT_Y];	/* Each row may need separate x-axis ticks */
-		ny *= (factor - 1);
-		fluff[GMT_Y] += ny * tick_height;
+		ny = 2;	/* Default is ticks on both S and N */
+		if (strchr (Ctrl->S[GMT_Y].axes, 'b')) ny--;	/* But not on the south (bottom) side */
+		if (strchr (Ctrl->S[GMT_Y].axes, 't')) ny--;	/* But not on the north (top) side */
+		else y_header_off += tick_height;
+		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->S[GMT_X].annotate) {	/* Gave -SC so check settings */
 			ny = 0;	/* For -Sc there are no internal annotations, only ticks */
