@@ -40,16 +40,17 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: false
 
   steps:
   - template: ci/azure-pipelines-linux.yml
 
-# Linux - Build docs + Package
+# Linux - Build docs + Deploy docs + Package
 ########################################################################################
 - job:
-  displayName: 'Linux | Build docs + Package'
+  displayName: 'Linux | Build docs + Deploy docs + Package'
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
@@ -57,6 +58,7 @@ jobs:
 
   variables:
     BUILD_DOCS: true
+    DEPLOY_DOCS: true
     PACKAGE: true
     TEST: false
 
@@ -74,6 +76,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: true
 
@@ -91,6 +94,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: false
 
@@ -108,6 +112,7 @@ jobs:
 
   variables:
     BUILD_DOCS: true
+    DEPLOY_DOCS: false
     PACKAGE: true
     TEST: false
 
@@ -125,6 +130,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: true
 
@@ -143,6 +149,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: false
 
@@ -161,6 +168,7 @@ jobs:
 
   variables:
     BUILD_DOCS: true
+    DEPLOY_DOCS: false
     PACKAGE: true
     TEST: false
 
@@ -179,6 +187,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: true
 

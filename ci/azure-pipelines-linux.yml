@@ -97,10 +97,19 @@ steps:
     cd build
     cmake --build . --target docs_html_depends
     cmake --build . --target docs_man_depends
+    cmake --build . --target animation
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: bash ci/deploy-gh-pages.sh
+  displayName: Deploy documentations
+  env:
+    HTML_BUILDDIR: "build/doc/rst/html"
+    GITHUB_TOKEN: $(github.token)
+  # only deploy if on master, 6.0 and 5.4 branches
+  condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
 
 - bash: |
     cd build
