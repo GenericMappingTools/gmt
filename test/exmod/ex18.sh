@@ -12,16 +12,16 @@ gmt begin ex18 ps
   gmt set PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
   # Define location of Pratt seamount and the 400 km diameter
   echo "-142.65 56.25 400" > pratt.txt
-  gmt makecpt -Crainbow -T-60/60
   gmt subplot begin 2x1 -A+JTL+o0.2i -Fs6i/3.5i -M0.2i/0.35i -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
-    gmt subplot 1,1
-    gmt grdimage @AK_gulf_grav.nc -I+d -C
+    gmt subplot 0,0
+    gmt makecpt -Crainbow -T-60/60
+    gmt grdimage @AK_gulf_grav.nc -I+d -Vd
     gmt coast -Di -Ggray -Wthinnest
-    gmt colorbar -DJCB+o0/0.35i -C -Bxaf -By+l"mGal"
+    gmt colorbar -DJCB+o0/0.35i -Bxaf -By+l"mGal"
     gmt text pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt
     gmt plot pratt.txt -SE- -Wthinnest
     # Then draw 10 mGal contours and overlay 50 mGal contour in green
-    gmt subplot 2,1
+    gmt subplot 1,0
     gmt grdcontour @AK_gulf_grav.nc -C20
     # Save 50 mGal contours to individual files, then plot them
     gmt grdcontour @AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt

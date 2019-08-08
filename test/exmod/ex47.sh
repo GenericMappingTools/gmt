@@ -24,23 +24,23 @@ gmt begin ex47 ps
   grep '#' $file | sed -e s/#//g > giants.txt
   gmt subplot begin 4x3 -M0p -Fs2i/2i -R2.85/5.25/3.9/6.3 -JX-2i/2i -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
   # L1 regressions
-  plot_one -Ey -N1 -c1,1 +tL@-1@-
-  plot_one -Er -N1 -c2,1
-  plot_one -Eo -N1 -c3,1
-  plot_one -Ex -N1 -c4,1
+  plot_one -Ey -N1 -c0,0 +tL@-1@-
+  plot_one -Er -N1 -c1,0
+  plot_one -Eo -N1 -c2,0
+  plot_one -Ex -N1 -c3,0
   #L2 regressions
-  plot_one -Er -N2 -c1,2 +tL@-2@- 
-  plot_one -Eo -N2 -c2,2
-  plot_one -Ex -N2 -c3,2
-  plot_one -Ey -N2 -c4,2
+  plot_one -Er -N2 -c0,1 +tL@-2@- 
+  plot_one -Eo -N2 -c1,1
+  plot_one -Ex -N2 -c2,1
+  plot_one -Ey -N2 -c3,1
   #LMS regressions - also add labels on right side
-  plot_one -Er -Nr -c1,3 +tLMS
+  plot_one -Er -Nr -c0,2 +tLMS
   gmt text -F+cRM+jTC+a90+t"Y ON X" -N -Dj0.2i
-  plot_one -Eo -Nr -c2,3
+  plot_one -Eo -Nr -c1,2
   gmt text -F+cRM+jTC+a90+t"X ON Y" -N -Dj0.2i
-  plot_one -Ex -Nr -c3,3
+  plot_one -Ex -Nr -c2,2
   gmt text -F+cRM+jTC+a90+tORTHOGONAL -N -Dj0.2i
-  plot_one -Ey -Nr -c4,3
+  plot_one -Ey -Nr -c3,2
   gmt text -F+cRM+jTC+a90+t"REDUCED MAJOR AXIS" -N -Dj0.2i
   gmt subplot end
 gmt end

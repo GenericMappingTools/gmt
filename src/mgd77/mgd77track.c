@@ -459,14 +459,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				Ctrl->T.marker[mrk].marker_size = gmt_M_to_inch (GMT, ms);
 				if (gmt_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Bad fill specification for -T\n");
-					gmt_fill_syntax (GMT, 'T', " ");
+					gmt_fill_syntax (GMT, 'T', NULL, " ");
 					n_errors++;
 				}
 				snprintf (tmp, GMT_LEN64, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getfont */
 				gmt_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (gmt_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Bad fill specification for -T\n");
-					gmt_fill_syntax (GMT, 'T', " ");
+					gmt_fill_syntax (GMT, 'T', NULL, " ");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].font_size = Ctrl->T.marker[mrk].font.size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -475,7 +475,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;

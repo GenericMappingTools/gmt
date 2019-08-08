@@ -15,7 +15,7 @@ Synopsis
 
 **gmt coupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
+|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-E|\ *color* ]
 [ |-F|\ *mode*\ [*args*] ]
@@ -23,7 +23,7 @@ Synopsis
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
-[ |-T|\ *n* ]
+[ |-T|\ *nplane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

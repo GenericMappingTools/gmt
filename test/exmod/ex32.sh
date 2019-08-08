@@ -57,5 +57,5 @@ gmt begin ex32 ps
 	
 	# cleanup
 	
-	rm -f gmt.conf euflag.cpt cities.txt
+	rm -f gmt.conf cities.txt
 gmt end

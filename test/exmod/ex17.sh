@@ -40,5 +40,5 @@ gmt begin ex17 ps
 	
 	# Clean up
 	
-	rm -f geoid.cpt shade.cpt
+	rm -f geoid.cpt
 gmt end

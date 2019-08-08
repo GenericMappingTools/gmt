@@ -13,5 +13,5 @@ gmt begin ex05 ps
 	-C -R-15/15/-15/15/-1/1 -p120/30
 	echo "4.1 5.5 z(r) = cos (2@~p@~r/8) @~\327@~e@+-r/10@+" | gmt text -R0/11/0/8.5 -Jx1i \
 	-F+f50p,ZapfChancery-MediumItalic+jBC
-	rm -f g.cpt sombrero.nc
+	rm -f sombrero.nc
 gmt end

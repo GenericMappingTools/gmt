@@ -137,13 +137,13 @@ struct GMT_INSET {
 
 /*! For keeping track of GMT subplots under modern mode */
 struct GMT_SUBPLOT {
-	unsigned int active;		/* 1 if subplot is in effect */
-	unsigned int row, col;		/* Current panel position e.g., 0,0 */
-	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	unsigned int active;	/* 1 if subplot is in effect */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
-	unsigned int parallel;		/* 1 for axis-parallel annotations [0 for standard] */
-	int dir[2];			/* Cartesian axis direction: +1 or -1 [1/1] */
+	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
+	int row, col;			/* Current panel position e.g., 0,0 */
+	int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	int dir[2];				/* Cartesian axis direction: +1 or -1 [1/1] */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */

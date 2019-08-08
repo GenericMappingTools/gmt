@@ -30,7 +30,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\ \|\ **f**] *value* ]
+[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
 [ |SYN_OPT-a| ] 
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]

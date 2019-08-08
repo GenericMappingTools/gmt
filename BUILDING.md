@@ -58,8 +58,7 @@ For viewing plots and documentation under Linux via gmt docs, your need xdg-open
 
 Optionally install for building GMT documentations and running tests:
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage, HTML and PDF documentation)
-- [TeXLive](https://www.tug.org/texlive/) (for building the PDF documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need to download support data:
@@ -78,7 +77,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -91,9 +90,6 @@ Install the GMT dependencies with:
 
     # to build the documentation
     sudo apt-get install python-sphinx
-
-    # to build the documentation in PDF format
-    sudo apt-get install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
 
 ### RHEL/CentOS
 
@@ -124,9 +120,6 @@ You then can install the GMT dependencies with:
     # to build the documentation
     sudo yum install python-sphinx
 
-    # to build the documentation in PDF format
-    sudo yum install python3-sphinx-latex
-
 ### Fedora
 
 For Fedora, there are prepackaged development binaries available.
@@ -151,9 +144,6 @@ Install the GMT dependencies with:
 
     # to build the documentation
     sudo dnf install python-sphinx
-
-    # to build the documentation in PDF format
-    sudo dnf install python-sphinx-latex
 
 ### Archlinux
 
@@ -219,9 +209,6 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
 
     # to build the documentation
     brew install sphinx-doc
-
-    # to build the documentation in PDF format
-    brew cask install mactex-no-gui
 
 ### Windows
 
@@ -396,17 +383,14 @@ run GMT programs.
 The GMT documentations are available in different formats and can be generated with:
 
 ```
-cmake --build . --target docs_man           # UNIX manual pages
-cmake --build . --target docs_html          # HTML manual, tutorial, cookbook, and API reference
-cmake --build . --target docs_pdf           # PDF tutorial, cookbook, and API reference
-cmake --build . --target docs_pdf_shrink    # Like docs_pdf but with reduced size
+cmake --build . --target docs_man   # UNIX manual pages
+cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
 ```
 
-To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/en/master/)
-documentation builder, and for PDFs you also need LaTeX. You can choose to install the
-documentation files from an external location instead of generating the
-Manpages, PDF, and HTML files from the sources. This is convenient if Sphinx
-and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
+To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
+documentation builder. You can choose to install the documentation files
+from an external location instead of generating the Manpages, and HTML files from the sources.
+This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 
 
