@@ -44,6 +44,6 @@ it can do.
    :maxdepth: 1
    :caption: Classic mode
 
-   quick_ref_classic
-   modules_classic
    std_opts_classic
+   modules_classic
+   supplements_classic
