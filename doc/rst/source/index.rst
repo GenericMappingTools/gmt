@@ -47,6 +47,7 @@ it can do.
    quick_ref_classic
    std_opts_classic
    modules_classic
+   supplements_classic
    Tutorial (Classic Mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>
    The GMT Cookbook (Classic mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Docs.html>
 
