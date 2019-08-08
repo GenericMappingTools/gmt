@@ -452,12 +452,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the gmt_M_yiq transformation, append +m.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
-	gmt_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
+	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles.\n"
 	                "\t   Append +s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
 	                "\t   Append +o[<pen>] to draw tile outline [Default uses no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", gmt_putpen (API->GMT, &P));
@@ -678,7 +678,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				if (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6)) {	/* New syntax */
 					if (strstr (opt->arg, "+s")) Ctrl->T.skip = true;
 					if ((c = strstr (opt->arg, "+o")) && gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
-						gmt_pen_syntax (GMT, 'T', " ", 0);
+						gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 						n_errors++;
 					}
 				}
@@ -689,7 +689,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->T.outline = true;
 						k++;
 						if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'T', " ", 0);
+							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 							n_errors++;
 						}
 					}
@@ -710,7 +710,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */

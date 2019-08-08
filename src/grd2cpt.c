@@ -37,7 +37,7 @@
 #define THIS_MODULE_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
-#define THIS_MODULE_KEYS	"<G{+,>C},H->"
+#define THIS_MODULE_KEYS	"<G{+,>C}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->RVh"
 
@@ -730,7 +730,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
-	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);

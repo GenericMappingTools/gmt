@@ -231,7 +231,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, new_set, want_state, outline, fill = false;
+	bool done, new_set, want_state, outline, fill = false, is_Antarctica = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
@@ -391,6 +391,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			snprintf (TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
 			snprintf (msg, GMT_BUFSIZ, "Extract data for %s\n", GMT_DCW_country[k].name);
 		}
+		if (!strncmp (GMT_DCW_country[k].code, "AQ", 2U)) is_Antarctica = true;
 
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, msg);
 		k = strlen (msg) - 1;
@@ -532,6 +533,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				wesn[YHI] = ceil  (wesn[YHI] / F->inc[YHI]) * F->inc[YHI];
 			}
 		}
+		if (is_Antarctica) {	/* Must override to include pole and full longitude range */
+			wesn[YLO] = -90.0;	/* Since it is a South polar cap */
+			wesn[XLO] = 0.0;
+			wesn[XHI] = 360.0;
+		}
 		/* Do basic sanity checks */
 		if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
 		if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
@@ -564,15 +570,14 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
 	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
-		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) ) {
-			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
-		}
+		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) )
+			printf ("%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
 		printf ("  %s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
 		if ((list_mode & 2) && gmt_dcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
 			for (j = 0; j < GMT_DCW_STATES; j++) {
-				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) GMT_Message (GMT->parent, GMT_TIME_NONE, "\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
+				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) printf ("\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
 			}
 		}
 	}
@@ -667,7 +672,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					break;
 				case 'p':
 					if (gmt_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
-						gmt_pen_syntax (GMT, option, " ", 0);
+						gmt_pen_syntax (GMT, option, NULL, " ", 0);
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;
@@ -676,7 +681,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'g':
 					if ((q = strchr (p, GMT_ASCII_US))) q[0] = '+';	/* Restore +r<dpi> */
 					if (gmt_getfill (GMT, &p[1], &(this_item->fill))) {
-						gmt_fill_syntax (GMT, option, " ");
+						gmt_fill_syntax (GMT, option, NULL, " ");
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_FILL;

@@ -10,4 +10,4 @@ gmt grdimage islands.nc -JQ6i -Ct.cpt -P -Baf -BWSne -Xc -K -Y0.75i > $ps
 gmt grdimage islands.nc -J -Ct.cpt -O -K -Baf -BWSne -Y5.15i >> $ps
 gmt psxy -R -J -O -K -A -W3p,white t.txt >> $ps
 gmt psxy -R -J -O -K -A -W1p t.txt >> $ps
-echo "-Lp" | gmt pstext -R -J -O -F+f24p+cTR -Dj0.2i -Gwhite >> $ps
+gmt pstext -R -J -O -F+f24p+cTR+t"-Lp" -Dj0.2i -Gwhite >> $ps

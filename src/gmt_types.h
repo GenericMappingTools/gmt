@@ -131,15 +131,22 @@ struct GMT_FIGURE {
 	char options[GMT_LEN256];	/* Optional arguments to psconvert (e.g., -A, -E, ...) */
 };
 
+struct GMT_INSET {
+	bool active;	/* true the first time we set up scaling for a map inset */
+	bool first;	/* true the first time we plot into the map inset */
+	double w, h;	/* Width and height of current inset */
+	double dx, dy;	/* offsets */
+};
+
 /*! For keeping track of GMT subplots under modern mode */
 struct GMT_SUBPLOT {
-	unsigned int active;		/* 1 if subplot is in effect */
-	unsigned int row, col;		/* Current panel position e.g., 0,0 */
-	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	unsigned int active;	/* 1 if subplot is in effect */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
-	unsigned int parallel;		/* 1 for axis-parallel annotations [0 for standard] */
-	int dir[2];			/* Cartesian axis direction: +1 or -1 [1/1] */
+	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
+	int row, col;			/* Current panel position e.g., 0,0 */
+	int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	int dir[2];				/* Cartesian axis direction: +1 or -1 [1/1] */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
@@ -324,6 +331,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	double *y;
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
+	struct GMT_INSET inset;		/* Current inset settings */
 };
 
 struct GMT_CURRENT {

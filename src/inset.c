@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Manage figure inset setup and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"-JRV"
+#define THIS_MODULE_OPTIONS	"JRV"
 
 /* Control structure for inset */
 
@@ -48,7 +48,7 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+t] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
@@ -83,7 +83,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -92,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for padding around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -16,7 +16,7 @@ Synopsis
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
-[ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
+[ |-N|\ [**e**\ \|\ **t**][*amp*][**+a**\ *ambient*\ ][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
 [ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
@@ -103,7 +103,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
+**-N**\ [**e**\ \|\ **t**][*amp*][**+a**\ *ambient*\ ][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
     Normalization. [Default is no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
     maximum output magnitude of *amp*. If *amp* is not given, default
@@ -118,7 +118,8 @@ Optional Arguments
     *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
     *offset*) if it is not given. To use *offset* and/or *sigma* from a
     previous calculation, leave out the argument to the modifier(s) and
-    see **-Q** for usage.
+    see **-Q** for usage.  As a final option, you may add **+a**\ *ambient*
+    to add *ambient* to all nodes after gradient calculations are completed.
 
 .. _-Q:
 
@@ -202,6 +203,14 @@ with the resulting *offset* and *sigma*.  Then, for each of your grid tile calcu
 **+o** and/or **+s** without arguments to **-N** and specify **-Qr**.  This option will read
 the values from the hidden statistics file and use them in the normalization.
 If you use **-QR** for the final tile then the statistics file is removed after use.
+
+Ambient
+-------
+
+The *ambient* light offset is used to darken or brighten all intensities.  This
+modifier is typically used to darken an entire image by subtracting a constant from
+all the intensities.  E.g., if you use **+a**\ -0.5 then you subtract 0.5 from all
+intensities, making them more negative and hence darken the image.
 
 Examples
 --------

@@ -42,7 +42,7 @@ set (GMT_PACKAGE_VERSION_MAJOR 6)
 set (GMT_PACKAGE_VERSION_MINOR 1)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
-#set (GMT_PACKAGE_VERSION_SUFFIX "rc3")
+#set (GMT_PACKAGE_VERSION_SUFFIX "rc4")
 
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
@@ -61,7 +61,7 @@ set (GMT_LIB_SOVERSION 6)
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 # The GMT documentation URL
-set (GMT_DOC_URL "http://docs.generic-mapping-tools.org/latest")
+set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/dev")
 
 # Use SI units per default
 if (NOT UNITS)
@@ -96,7 +96,7 @@ endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Default location of release documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOCDIR instead of creating
-# PDFs from source:
+# documentation from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)

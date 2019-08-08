@@ -28,7 +28,8 @@ be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` *options* that will override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
-and default parameter settings.
+and default parameter settings.  Each figure maintains its own history and settings, so
+memory of region and projection settings only apply on a per figure basis.
 
 Required Arguments
 ------------------
@@ -36,6 +37,8 @@ Required Arguments
 *prefix*
     Name stem used to construct the figure name.  The extension(s) are appended
     automatically from your *formats* selection(s).
+    While not recommended, if your *prefix* has spaces in it then you must enclose your
+    prefix in single quotes.
 
 Optional Arguments
 ------------------
@@ -60,7 +63,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. include:: explain_help.rst_
+.. include:: explain_help_nopar.rst_
 
 .. include:: explain_postscript.rst_
 
@@ -80,6 +83,12 @@ around the image, try
    ::
 
     gmt figure GlobalMap jpg A1c
+
+If the same figure were to be called Global Map.jpg you would need quotes:
+
+   ::
+
+    gmt figure 'Global Map' jpg A1c
 
 See Also
 --------

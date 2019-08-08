@@ -168,13 +168,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (requires -C) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
-	gmt_fill_syntax (API->GMT, 'G', "Specify a fixed symbol color [no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol color [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Append i for intensity, s for size, or t for transparency; repeatable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to use during rise, plateau, or decay phases.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal value for the coda [no coda].\n");
 	GMT_Option (API, "K,O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Save intermediate events symbol and labels files; append file prefix [temporary files deleted].\n");
-	gmt_pen_syntax (API->GMT, 'W', "Set symbol outline pen attributes [Default pen is %s]:", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
 	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,:,.");
 	
 	return (GMT_MODULE_USAGE);

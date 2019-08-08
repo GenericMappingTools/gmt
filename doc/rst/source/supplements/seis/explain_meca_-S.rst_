@@ -1,0 +1,193 @@
+**-S**\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Selects the meaning of the columns in the data file. In order to use
+    the same file to plot cross-sections, depth is in third column.
+    Nevertheless, it is possible to use "old style" **psvelomeca** input
+    files without depth in third column using the **-Fo** option.
+
+**-Sa**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Focal mechanisms in Aki and Richards convention. *scale* adjusts the
+    scaling of the radius of the "beach ball", which will be proportional to
+    the magnitude. *scale* is the size for magnitude = 5. Use the **-T** option to
+    render the beach ball transparent by drawing only the nodal planes and
+    the circumference. The color or shade of the compressive quadrants can
+    be specified with the **-G** option. The color or shade of the extensive
+    quadrants can be specified with the **-E** option. Append **+u** to have
+    the text appear below the beach ball (default is above). Parameters are
+    expected to be in the following columns:
+
+    **1**,\ **2**:
+    longitude, latitude of event (**-:** option interchanges order)
+
+    **3**:
+    depth of event in kilometers
+
+    **4**,\ **5**,\ **6**:
+    strike, dip and rake in degrees
+
+    **7**:
+    magnitude
+
+    **8**,\ **9**:
+    longitude, latitude at which to place beach ball. Entries in these
+    columns are necessary with the **-C** option. Using 0,0 in columns 8
+    and 9 will plot the beach ball at the longitude, latitude given in
+    columns 1 and 2. The **-:** option will interchange the order of
+    columns (1,2) and (8,9).
+
+    **10**:
+    Text string to appear above or below the beach ball (optional).
+
+**-Sc**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Focal mechanisms in Global CMT convention. *scale* adjusts the scaling
+    of the radius of the "beach ball", which will be proportional to the
+    magnitude. *scale* is the size for magnitude = 5 (that is M0 = 4.0E23 dynes-cm).
+    Use the **-T** option to render the beach ball transparent by drawing
+    only the nodal planes and the circumference. The color or shade of the
+    compressive quadrants can be specified with the **-G** option. The color
+    or shade of the extensive quadrants can be specified with the **-E**
+    option. Append **+u** to have the text appear below the beach ball
+    (default is above). Parameters are expected to be in the following
+    columns:
+
+    **1**,\ **2**:
+    longitude, latitude of event (**-:** option interchanges order)
+
+    **3**:
+    depth of event in kilometers
+
+    **4**,\ **5**,\ **6**:
+    strike, dip, and rake of plane 1
+
+    **7**,\ **8**,\ **9**:
+    strike, dip, and rake of plane 2
+
+    **10**,\ **11**:
+    mantissa and exponent of moment in dyne-cm
+
+    **12**,\ **13**:
+    longitude, latitude at which to place beach ball. Entries in these
+    columns are necessary with the **-C** option. Using (0,0) in columns
+    12 and 13 will plot the beach ball at the longitude, latitude given
+    in columns 1 and 2. The **-:** option will interchange the order of
+    columns (1,2) and (12,13).
+
+    **14**:
+    Text string to appear above or below the beach ball (optional).
+
+**-Sm\|d\|z**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Seismic moment tensor (Global CMT, with zero trace). *scale* adjusts
+    the scaling of the radius of the "beach ball", which will be
+    proportional to the magnitude. *scale* is the size for magnitude = 5
+    (that is scalar seismic moment = 4.0E23 dynes-cm).
+    **-T**\ *0* option overlays best double couple transparently.
+    Use **-Sm** to plot the Global CMT
+    seismic moment tensor with zero trace. Use **-Sd** to plot only the
+    double couple part of moment tensor. Use **-Sz** to plot the anisotropic
+    part of moment tensor (zero trace). The color or shade of the
+    compressive quadrants can be specified with the **-G** option. The color
+    or shade of the extensive quadrants can be specified with the **-E**
+    option. Append **+u** to have the text appear below the beach ball
+    (default is above). Parameters are expected to be in the following
+    columns:
+
+    **1**,\ **2**:
+    longitude, latitude of event (**-:** option interchanges order)
+
+    **3**:
+    depth of event in kilometers
+
+    **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**:
+    mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
+
+    **10**:
+    exponent
+
+    **11**,\ **12**:
+    longitude, latitude at which to place beach ball. Entries in these
+    columns are necessary with the **-C** option. Using (0,0) in columns
+    11 and 12 will plot the beach ball at the longitude, latitude given
+    in columns 1 and 2. The **-:** option will interchange the order of
+    columns (1,2) and (11,12).
+
+    **13**:
+    Text string to appear above or below the beach ball (optional).
+
+**-Sp**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Focal mechanisms given with partial data on both planes. *scale* adjusts
+    the scaling of the radius of the "beach ball", which will be
+    proportional to the magnitude. *scale* is the size for magnitude = 5
+    The color or shade of the compressive quadrants can be specified with the **-G**
+    option. The color or shade of the extensive quadrants can be specified
+    with the **-E** option. Append **+u** to have the text appear below the
+    beach ball (default is above). Parameters are expected to be in the
+    following columns:
+
+    **1**,\ **2**:
+    longitude, latitude of event (**-:** option interchanges order)
+
+    **3**:
+    depth of event in kilometers
+
+    **4**,\ **5**:
+    strike, dip of plane 1
+
+    **6**:
+    strike of plane 2
+
+    **7**:
+    must be -1/+1 for a normal/inverse fault
+
+    **8**:
+    magnitude
+
+    **9**,\ **10**:
+    longitude, latitude at which to place beach ball. Entries in these
+    columns are necessary with the **-C** option. Using (0,0) in columns
+    9 and 10 will plot the beach ball at the longitude, latitude given
+    in columns 1 and 2. The **-:** option will interchange the order of
+    columns (1,2) and (9,10).
+
+    **11**:
+    Text string to appear above or below the beach ball (optional).
+
+**-Sx\|y\|t**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+
+    Principal axis. *scale* adjusts the scaling of the radius of the "beach
+    ball", which will be proportional to the magnitude. Scale is the size
+    for magnitude = 5 (that is seismic scalar moment = 4\*10e+23 dynes-cm)
+    in inch (unless **c**, **i**, or **p** is appended). (**-T**\ *0*
+    option overlays best double couple transparently.) Use **-Sx** to plot
+    standard Global CMT. Use **-Sy** to plot only the double couple part of
+    moment tensor. Use **-St** to plot zero trace moment tensor. The color
+    or shade of the compressive quadrants can be specified with the **-G**
+    option. The color or shade of the extensive quadrants can be specified
+    with the **-E** option. Append **+u** to have the text appear below the
+    beach ball (default is above). Parameters are expected to be in the
+    following columns:
+
+    **1**,\ **2**:
+    longitude, latitude of event (**-:** option interchanges order)
+
+    **3**:
+    depth of event in kilometers
+
+    **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**,\ **10**,\ **11**,\ **12**:
+    value (in 10\*exponent dynes-cm), azimuth, plunge of T, N, P axis.
+
+    **13**:
+    exponent
+
+    **14**,\ **15**:
+    longitude, latitude at which to place beach ball. Entries in these
+    columns are necessary with the **-C** option. Using (0,0) in columns
+    14 and 15 will plot the beach ball at the longitude, latitude given
+    in columns 1 and 2. The **-:** option will interchange the order of
+    columns (1,2) and (14,15).
+
+    **16**:
+    Text string to appear above or below the beach ball (optional).

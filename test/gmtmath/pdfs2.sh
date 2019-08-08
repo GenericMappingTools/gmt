@@ -9,7 +9,7 @@ cat << EOF > ML.txt
 EOF
 gmt psxy -R-4/4/0/0.5 -JX6i/1.2i -P -K p.d -W1p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 #gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Laplace P(z)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Laplace P(z)" >> $ps
 # Plot Exponential distribution
 cat << EOF > ML.txt
 0	2.000000000000000
@@ -25,7 +25,7 @@ EOF
 gmt math -T0/8/0.1 T 2 EPDF = p.d
 gmt psxy -R0/8/0/2.5 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Exponential P(@~l=2@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Exponential P(@~l=2@~)" >> $ps
 # Plot Rayleigh distribution
 cat << EOF > ML.txt
 0	                0
@@ -41,7 +41,7 @@ EOF
 gmt math -T0/8/0.1 T RPDF = p.d
 gmt psxy -R0/8/0/0.8 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Rayleigh P(z)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Rayleigh P(z)" >> $ps
 # Plot Weibull distribution
 cat << EOF > ML.txt
 0	                0
@@ -57,7 +57,7 @@ EOF
 gmt math -T0/8/0.1 T 1 1.5 WPDF = p.d
 gmt psxy -R0/8/0/0.8 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Weibull P(z,1,1.5)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Weibull P(z,1,1.5)" >> $ps
 # Plot CHI2DIST distribution
 cat << EOF > ML.txt
 0	                0
@@ -73,6 +73,6 @@ EOF
 gmt math -T0/8/0.1 T 4 CHI2PDF = p.d
 gmt psxy -R0/8/0/0.25 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "@~c@~@+2@+(z,@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"@~c@~@+2@+(z,@~n=4@~)" >> $ps
 # Done
 gmt psxy -R -J -O -T >> $ps

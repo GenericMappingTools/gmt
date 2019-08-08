@@ -436,7 +436,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_cont_syntax (API->GMT, 3, 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Color triangles using the CPT.\n");
 	GMT_Option (API, "K");
-	gmt_pen_syntax (API->GMT, 'L', "Draws the triangular mesh with the specified pen.", 0);
+	gmt_pen_syntax (API->GMT, 'L', NULL, "Draws the triangular mesh with the specified pen.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
@@ -454,7 +454,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we place them at local lows and highs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default settings are\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", gmt_putpen (API->GMT, &P));
@@ -607,7 +607,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 			case 'L':	/* Draw triangular mesh lines */
 				Ctrl->L.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					gmt_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
@@ -730,7 +730,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				}
 				if (j == k && opt->arg[j]) {	/* Set both */
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
-						gmt_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
 					else
@@ -744,7 +744,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? 1 : 0;
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-						gmt_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
 					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
@@ -1144,7 +1144,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			if (got == 4) {	/* Also got a pen specification for this contour */
 				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
-					gmt_pen_syntax (GMT, 'C', " ", 0);
+					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				cont[c].penset = true;

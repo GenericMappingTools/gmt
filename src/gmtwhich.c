@@ -192,7 +192,8 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
-
+		else if (opt->arg[0] == '@') /* Giave @ without -G is likely a user mistake; remove it */
+			first = 1;
 		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
 			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
 		else

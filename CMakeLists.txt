@@ -92,7 +92,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
-add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
+add_subdirectory (doc)        # doc must be processed *after* src
 if (EXISTS ${GMT_SOURCE_DIR}/test/)
 	add_subdirectory (test)
 endif (EXISTS ${GMT_SOURCE_DIR}/test/)
@@ -125,7 +125,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		# Targets for creating tarballs
 		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
-			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX
+			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..

@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A, GMT_INSET_B);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A_CL, GMT_INSET_B_CL);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, API->K_OPT);
 	}
 	else {
@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 					GMT->current.map.frame.paint = true;
 					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
-						gmt_fill_syntax (GMT, 'G', " ");
+						gmt_fill_syntax (GMT, 'G', NULL, " ");
 						n_errors++;
 					}
 				}

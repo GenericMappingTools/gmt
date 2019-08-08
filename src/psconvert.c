@@ -320,7 +320,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 					error++;
 				}
 				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					gmt_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background fill attributes", 0);
 					error++;
 				}
 				break;
@@ -354,7 +354,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
 				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background outline pen attributes", 0);
 					error++;
 				}
 				break;
@@ -714,6 +714,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
 							gmt_chop_ext (Ctrl->F.file);
 					}
+					gmt_filename_get (Ctrl->F.file);
 				}
 				else
 					n_errors++;
@@ -1437,6 +1438,15 @@ GMT_LOCAL int get_extension_period (char *file) {
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
+char *noquote_name (char *file) {
+	if (file[0] == '\'') {	/* Skip single quotes */
+		size_t len = strlen (file);
+		return (strndup (&file[1], len-2));
+	}
+	else
+		return strdup (file);
+}
+
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
@@ -1569,7 +1579,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		return_image = true;
 #ifndef HAVE_GDAL
-		GMT_Report (API, GMT_MSG_DEBUG, "Selecting ppmraw device since GDAL not available.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Selecting ppmraw device since GDAL not available.\n");
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
 	}
@@ -1619,14 +1629,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->In.n_files = (unsigned int)T->n_records;
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
-			ps_names[k] = T->table[0]->segment[0]->text[k];
+			ps_names[k] = noquote_name (T->table[0]->segment[0]->text[k]);
 	}
 	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);
 		j = 0;
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option != '<') continue;
-			ps_names[j++] = strdup (opt->arg);
+			ps_names[j++] = noquote_name (opt->arg);
 		}
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
@@ -1637,7 +1647,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
 			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
-			ps_names[0] = strdup (GMT->current.ps.filename);
+			ps_names[0] = noquote_name (GMT->current.ps.filename);
 			Ctrl->In.n_files = 1;
 		}
 		if (access (ps_names[0], F_OK) == 0) {	/* File exist, so complete it */
@@ -1670,7 +1680,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		else
 			error = in_mem_PS_convert(API, Ctrl, ps_names, gs_BB, gs_params, device, device_options, ext);
 
-		if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
+		gmt_M_str_free (ps_names[0]);
 		gmt_M_free (GMT, ps_names);
 		gmt_M_free (GMT, line);
 		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
@@ -1694,7 +1704,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		all_names_in = gmt_M_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_qlist (all_names_in, ps_names[k]);
-			if (!Ctrl->L.active) gmt_M_str_free (ps_names[k]);		/* Otherwise ps_names contents are the Garbageman territory */
+			gmt_M_str_free (ps_names[k]);
 		}
 		cmd2 = gmt_M_memory (GMT, NULL, n_alloc + PATH_MAX, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%g -sOutputFile=%c%s.pdf%c %s",
@@ -1765,8 +1775,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
-				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
-					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
+				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				gmt_M_free (GMT, PS);
 				gmt_M_free (GMT, line);
@@ -2658,8 +2667,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->L.active)		/* Otherwise ps_names contents are the Garbageman territory */
-		for (k = 0; k < Ctrl->In.n_files; k++) gmt_M_str_free (ps_names[k]);
+	for (k = 0; k < Ctrl->In.n_files; k++) gmt_M_str_free (ps_names[k]);
 	gmt_M_free (GMT, ps_names);
 	gmt_M_free (GMT, line);
 	gmt_M_free (GMT, PS);

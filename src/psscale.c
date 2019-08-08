@@ -77,6 +77,7 @@ struct PSSCALE_CTRL {
 		unsigned int emode;
 		double elength;
 		char *etext;
+		char *opt;
 	} D;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
@@ -125,6 +126,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->D.opt = strdup ("JBC");
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	C->N.dpi = 600.0;
 	C->I.min = -1.0;
@@ -138,6 +140,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->C.file);
 	gmt_free_refpoint (GMT, &C->D.refpoint);
 	gmt_M_str_free (C->D.etext);
+	gmt_M_str_free (C->D.opt);
 	gmt_M_free (GMT, C->F.panel);
 	gmt_M_str_free (C->Z.file);
 	gmt_M_free (GMT, C);
@@ -148,15 +151,24 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s\n", name, GMT_XYANCHOR, GMT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-F%s]\n", GMT_B_OPT, GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C<cpt>]\n", name, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the scale bar.", GMT_ANCHOR_COLORBAR, 1);
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT with a L, U, or B\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT is given the -Li is set automatically.\n");
+	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the scale bar [JBC].", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For -DJ|j w/TC|BC|ML|MR the values for +w (85%% of map width),+h|v,+j,+o,+m have defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You can override any of these settings with these explicit modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>[/<width>] for the scale dimensions [Default width is 4%% of <length>].\n");
@@ -170,14 +182,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of a, l, or u to move the annotations, labels, or unit, respectively.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append c to plot vertical labels as column text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT with a L, U, or B\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT is given the -Li is set automatically.\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
@@ -258,130 +262,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
-					n_errors++;	/* Failed basic parsing */
-				else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
-					/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
-					double bar_offset[2];	/* Will be initialized in gmt_auto_offsets_for_colorbar */
-					gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify);
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
-					else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
-						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-						auto_m = true;
-						switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
-							case PSL_TC:
-								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-								Ctrl->D.horizontal = true;
-								Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
-								break;
-							case PSL_BC:
-								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-								Ctrl->D.horizontal = true;
-								Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
-								break;
-							case PSL_ML:
-								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-								Ctrl->D.horizontal = false;
-								Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
-								break;
-							case PSL_MR:
-								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-								Ctrl->D.horizontal = false;
-								Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
-								break;
-							default:
-								auto_m = false;	/* None of the 4 above */
-								break;
-						}
-					}
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw")) n_errors++;
-					/* Required modifier +w */
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
-							string[j] = '\0';
-							Ctrl->D.horizontal = true;
-						}
-						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) == 0)
-							n_errors++;
-						else if (n == 1)	/* Set height as 4% of width */
-							Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * fabs (Ctrl->D.dim[GMT_X]);
-					}
-					/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
-						Ctrl->D.extend = true;
-						if (strchr (string, 'b')) Ctrl->D.emode |= 1;
-						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
-						if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
-						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
-						if (string[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &string[j]);
-					}
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'h', string))
-						Ctrl->D.horizontal = true;
-					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'v', string))
-						Ctrl->D.horizontal = false;
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
-						Ctrl->D.move = true;
-						if (auto_m && !string[0]) {	/* Means flip might have been set and no arg, so invert it */
-							switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
-								case PSL_TC:
-									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-									break;
-								case PSL_BC:
-									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-									break;
-								case PSL_ML:
-									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-									break;
-								case PSL_MR:
-									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-									break;
-								default:
-									break;
-							}
-						}
-						else {
-							if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
-							for (j = 0; string[j]; j++) {
-								switch (string[j]) {
-									case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
-									case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
-									case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
-									case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
-								}
-							}
-						}
-					}
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
-						Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
-						Ctrl->D.emode |= 4;
-					}
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
-					}
-				}
-				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
-					n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-					/* First deal with bar dimensions and horizontal vs vertical */
-					j = (unsigned int)strlen (txt_b) - 1;
-					if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
-						Ctrl->D.horizontal = true;
-						txt_b[j] = 0;	/* Remove this to avoid unit confusion */
-					}
-					Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
-					Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
-					if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
-						Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
-					else
-						Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
-					/* Now deal with optional arguments, if any */
-					switch (n) {
-						case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
-						case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
-						case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
-					}
-				}
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
+				gmt_M_str_free (Ctrl->D.opt);
+				if (opt->arg[0]) Ctrl->D.opt = strdup (opt->arg);
 				break;
 			case 'E':
 				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
@@ -521,13 +403,134 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, Ctrl->D.opt, 'D')) == NULL)
+		n_errors++;	/* Failed basic parsing */
+	else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
+		/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
+		double bar_offset[2];	/* Will be initialized in gmt_auto_offsets_for_colorbar */
+		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify);
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+			Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
+		else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
+			Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+			auto_m = true;
+			switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
+				case PSL_TC:
+					Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+					Ctrl->D.horizontal = true;
+					Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
+					break;
+				case PSL_BC:
+					Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+					Ctrl->D.horizontal = true;
+					Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
+					break;
+				case PSL_ML:
+					Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+					Ctrl->D.horizontal = false;
+					Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
+					break;
+				case PSL_MR:
+					Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+					Ctrl->D.horizontal = false;
+					Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? bar_offset[GMT_OUT] : bar_offset[GMT_IN];
+					break;
+				default:
+					auto_m = false;	/* None of the 4 above */
+					break;
+			}
+		}
+		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw")) n_errors++;
+		/* Required modifier +w */
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
+				string[j] = '\0';
+				Ctrl->D.horizontal = true;
+			}
+			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) == 0)
+				n_errors++;
+			else if (n == 1)	/* Set height as 4% of width */
+				Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * fabs (Ctrl->D.dim[GMT_X]);
+		}
+		/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
+			Ctrl->D.extend = true;
+			if (strchr (string, 'b')) Ctrl->D.emode |= 1;
+			if (strchr (string, 'f')) Ctrl->D.emode |= 2;
+			if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+			j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
+			if (string[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &string[j]);
+		}
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'h', string))
+			Ctrl->D.horizontal = true;
+		else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'v', string))
+			Ctrl->D.horizontal = false;
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
+			Ctrl->D.move = true;
+			if (auto_m && !string[0]) {	/* Means flip might have been set and no arg, so invert it */
+				switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
+					case PSL_TC:
+						Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+						break;
+					case PSL_BC:
+						Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+						break;
+					case PSL_ML:
+						Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+						break;
+					case PSL_MR:
+						Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+						break;
+					default:
+						break;
+				}
+			}
+			else {
+				if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
+				for (j = 0; string[j]; j++) {
+					switch (string[j]) {
+						case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
+						case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
+						case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
+						case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
+					}
+				}
+			}
+		}
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
+			Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
+			Ctrl->D.emode |= 4;
+		}
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+		}
+	}
+	else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
+		n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+		/* First deal with bar dimensions and horizontal vs vertical */
+		j = (unsigned int)strlen (txt_b) - 1;
+		if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
+			Ctrl->D.horizontal = true;
+			txt_b[j] = 0;	/* Remove this to avoid unit confusion */
+		}
+		Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+		Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
+		if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
+			Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
+		else
+			Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
+		/* Now deal with optional arguments, if any */
+		switch (n) {
+			case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
+			case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
+			case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
+		}
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
+
 	/* Check that the options selected are mutually consistent */
 
-	if (!Ctrl->D.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -D is required and must be specified\n");
-		n_errors++;
-	}
-	else if (Ctrl->D.refpoint) {
+	if (Ctrl->D.refpoint) {
 		if (!(Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP || Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)) {	/* Only -DJ|j takes auto-width */
 			n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
@@ -544,6 +547,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
+
+	if (!Ctrl->C.active && (c = gmt_get_current_cpt (API->GMT))) {
+		Ctrl->C.active = true;	/* Select current CPT */
+		gmt_M_str_free (c);
+	}
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 

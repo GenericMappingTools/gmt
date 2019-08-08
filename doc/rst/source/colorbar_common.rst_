@@ -17,6 +17,45 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 Required Arguments
 ------------------
 
+None.
+
+Optional Arguments
+------------------
+
+.. _-B:
+
+**-B**\ [**p**\ \|\ **s**]\ *parameters*
+    Set annotation, tick, and gridline interval for the colorbar. The
+    x-axis label will plot beneath a horizontal bar (or vertically to
+    the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
+    option, use the y-axis label to plot the data unit to the right of a
+    horizontal bar (and above a vertical bar). If **-B** is omitted, or no annotation intervals are
+    provided, the default is to annotate every color level based on the
+    numerical entries in the CPT (which may be overridden by ULB
+    flags in the CPT). To specify custom text annotations for
+    intervals, you must append ;\ *annotation* to each z-slice in the CPT.
+    For standard **-B** operations, see below.
+
+.. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**\ [*cpt*]
+    *cpt* is the CPT to be used. If no *cpt* is appended or no **-C** is given
+    then we use the current CPT (modern mode only).  In classic mode, if no **-C**
+    is given then we read stdin.  By default all
+    color changes are annotated. To use a subset, add an extra column to
+    the CPT with a L, U, or B to annotate Lower, Upper, or Both
+    color segment boundaries (but see **-B**). If not given, the module
+    will read stdin. Like :doc:`grdview`, we can understand
+    pattern specifications in the CPT. For CPTs where the
+    *z* range is in meters, it may be useful to change to another unit
+    when plotting.  To do so, append **+U**\ *unit* to the file name.
+    Likewise, if the CPT uses another unit than meter and you wish
+    to plot the CPT versus meters, append **+u**\ *unit*.
+    If a GMT master dynamic CPT is given instead then its *z*-range will
+    be set to its default range (if it has one) before plotting.
+
 .. _-D:
 
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [\ **+w**\ *length*\ [/\ *width*\ ]]\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**\ \|\ **v**\ ][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
@@ -56,41 +95,7 @@ Required Arguments
     vertical label as a column of characters (does not work with special characters).
     Append **+n** to plot a rectangle with the NaN color at
     the start of the bar, append *text* to change label from NaN.
-
-Optional Arguments
-------------------
-
-.. _-B:
-
-**-B**\ [**p**\ \|\ **s**]\ *parameters*
-    Set annotation, tick, and gridline interval for the colorbar. The
-    x-axis label will plot beneath a horizontal bar (or vertically to
-    the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
-    option, use the y-axis label to plot the data unit to the right of a
-    horizontal bar (and above a vertical bar). When using **-Ba** or
-    **-Baf** annotation and/or minor tick intervals are chosen
-    automatically. If **-B** is omitted, or no annotation intervals are
-    provided, the default is to annotate every color level based on the
-    numerical entries in the CPT (which may be overridden by ULB
-    flags in the CPT). To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the CPT.
-
-.. _-C:
-
-**-C**\ [*cpt*]
-    *cpt* is the CPT to be used. If no *cpt* is appended then we use the
-    current CPT.  If no **-C** is given the we read stdin.  By default all
-    color changes are annotated. To use a subset, add an extra column to
-    the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). If not given, the module
-    will read stdin. Like :doc:`grdview`, we can understand
-    pattern specifications in the CPT. For CPTs where the
-    *z* range is in meters, it may be useful to change to another unit
-    when plotting.  To do so, append **+U**\ *unit* to the file name.
-    Likewise, if the CPT uses another unit than meter and you wish
-    to plot the CPT versus meters, append **+u**\ *unit*.
-    If a GMT master dynamic CPT is given instead then its *z*-range will
-    be set to its default range (if it has one) before plotting.
+    If not given, the default argument is JBC (Place color bar centered beneath current plot).
 
 .. _-F:
 

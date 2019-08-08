@@ -256,7 +256,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
 	GMT_Option (API, "V");
-	gmt_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].\n", 8);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen attributes for lines and polygon outlines [Default is %s].\n", 8);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give width in pixels and append p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit].\n");
@@ -277,7 +277,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', "sets pen attributes [Default pen is %s]:", 8);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 8);
 		n_errors++;
 	}
 	return n_errors;
@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					GMT_Report (API, GMT_MSG_COMPAT, "Using - for no fill is deprecated, use -G[+f|n] instead\n");
 				}
 				else if (gmt_getfill (GMT, &opt->arg[k], &Ctrl->G.fill[ind])) {
-					gmt_fill_syntax (GMT, 'G', "(-G[<fill>]+f|n)");
+					gmt_fill_syntax (GMT, 'G', NULL, "(-G[<fill>]+f|n)");
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore */
@@ -511,7 +511,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-						gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 11);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
 						n_errors++;
 					}
 				}

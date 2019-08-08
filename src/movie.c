@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	"<T("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-Vfx"
+#define THIS_MODULE_OPTIONS	"-Vf"
 
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
@@ -162,6 +162,10 @@ struct MOVIE_CTRL {
 	struct MOVIE_Z {	/* -Z */
 		bool active;
 	} Z;
+	struct MOVIE_x {	/* -x[[-]<ncores>] */
+		bool active;
+		unsigned int n_threads;
+	} x;
 };
 
 struct MOVIE_STATUS {
@@ -178,7 +182,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
-	GMT->common.x.n_threads = GMT->parent->n_cores;
+	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }
 
@@ -202,21 +206,18 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_free (GMT, C);
 }
 
-/*! -x[[-]<ncores>] parsing needed even if no OPenMP since cores are not managed by OpenMP in this
- * module, yet we want to use -x for that purpose */
-#ifndef GMT_MP_ENABLED
-GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
+/*! -x[[-]<ncores>] parsing needed but here not related to OpenMP etc - it is just a local option */
+GMT_LOCAL int parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg) {
 	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
 	if (arg[0])
-		GMT->common.x.n_threads = atoi (arg);
+		Ctrl->x.n_threads = atoi (arg);
 
-	if (GMT->common.x.n_threads == 0)
-		GMT->common.x.n_threads = 1;
-	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(GMT->parent->n_cores - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+	if (Ctrl->x.n_threads == 0)	/* Not having any of that.  At least one */
+		Ctrl->x.n_threads = 1;
+	else if (Ctrl->x.n_threads < 0)	/* Meant to reduce the number of threads */
+		Ctrl->x.n_threads = MAX(GMT->parent->n_cores - Ctrl->x.n_threads, 1);		/* Max-n but at least one */
 	return (GMT_NOERROR);
 }
-#endif
 
 GMT_LOCAL int gmt_sleep (unsigned int microsec) {
 	/* Waiting before checking if the PNG has been completed */
@@ -244,36 +245,48 @@ GMT_LOCAL void set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, cha
 GMT_LOCAL void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
 	/* Assigns a single named Cartesian floating point variable given the script mode */
 	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%g", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %g", name, value); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%g", name, value);   break;
+		case BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
+		case CSH_MODE:  fprintf (fp, "set %s = %.12g", name, value); break;
+		case DOS_MODE:  fprintf (fp, "set %s=%.12g", name, value);   break;
 	}
 	if (unit) fprintf (fp, "%c", unit);	/* Append the unit [c|i|p] unless 0 */
 	fprintf (fp, "\n");
 }
 
-GMT_LOCAL void set_ivalue (FILE *fp, int mode, char *name, int value) {
+GMT_LOCAL void set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
 	/* Assigns a single named integer variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %d\n", name, value); break;
+		case CSH_MODE:  if (env)
+					fprintf (fp, "%s %d\n", name, value);
+				else
+					fprintf (fp, "set %s = %d\n", name, value);
+				break;
 		case DOS_MODE:  fprintf (fp, "set %s=%d\n", name, value);   break;
 	}
 }
 
-GMT_LOCAL void set_tvalue (FILE *fp, int mode, char *name, char *value) {
+GMT_LOCAL void set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
 	if (strchr (value, ' ') || strchr (value, '\t')) {	/* String has spaces or tabs */
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
-			case CSH_MODE:  fprintf (fp, "set %s = \"%s\"\n", name, value); break;
+			case CSH_MODE:  if (env)
+						fprintf (fp, "%s \"%s\"\n", name, value);
+					else
+						fprintf (fp, "set %s = \"%s\"\n", name, value);
+					break;
 			case DOS_MODE:  fprintf (fp, "set %s=\"%s\"\n", name, value);   break;
 		}
 	}
 	else {	/* Single word */
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
-			case CSH_MODE:  fprintf (fp, "set %s = %s\n", name, value); break;
+			case CSH_MODE:  if (env)
+						fprintf (fp, "%s %s\n", name, value);
+					else
+						fprintf (fp, "set %s = %s\n", name, value);
+					break;
 			case DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
 		}
 	}
@@ -365,7 +378,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -442,7 +455,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Add the given <workdir> to the search path where data files may be found.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default searches current dir, <prefix> dir, and directories set via DIR_DATA].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
-	/* Number of threads (repurposed from -x in GMT_Option since this option is always available and not using OpenMP) */
+	GMT_Option (API, "f");
+	/* Number of threads (repurposed from -x in GMT_Option since this local option is always available and not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
@@ -713,7 +727,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			
-			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs tp only write scripts */
+			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
@@ -771,13 +785,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->Z.active = true;
 				break;
 
-#ifndef GMT_MP_ENABLED
-			/* Need this ifndef to ensure we can access the x parsing when OpenMP has turn it off */
 			case 'x':
-				n_errors += gmtinit_parse_x_option (GMT, opt->arg);
-				GMT->common.x.active = true;
+				n_errors += parse_x_option (GMT, Ctrl, opt->arg);
+				Ctrl->x.active = true;
 				break;
-#endif
 		
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -870,10 +881,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int dd, hh, mm, ss, flavor = 0;
 	
 	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false, upper_case = false;
+	bool n_written = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
-	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
-	char *mvfile[3] = {"mv -f", "mv -rf", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
+	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
+	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	char var_token[4] = "$$%";
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
@@ -925,7 +937,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Ctrl->L.tag[T].y = 0.5 * Ctrl->C.dim[GMT_Y] * row;
 			if (col != 1) Ctrl->L.tag[T].x += (1-col) * Ctrl->L.tag[T].off[GMT_X];
 			if (row != 1) Ctrl->L.tag[T].y += (1-row) * Ctrl->L.tag[T].off[GMT_Y];
-			Ctrl->L.tag[T].col--;	/* So 0 becomes -1 (INTMAX, actually, since unsigned), 1 becomes 0, etc */
 			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T && !strchr (Ctrl->L.tag[T].format, 's')) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L: Using +f<format> with word variables requires a \'%%s\'-style format.\n");
 				close_files (Ctrl);
@@ -1055,7 +1066,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
 	
 	/* Create the initialization file with settings common to all frames */
-	
+
+	n_written = (n_frames > 0);
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
@@ -1070,6 +1082,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
+	if (n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_frames);	/* Total frames (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
@@ -1104,7 +1117,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
+			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
 			if (strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
@@ -1167,6 +1180,23 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (Ctrl->L.active) {    /* Make sure we have the information requested if -Lc or -Lt were used */
+		for (T = 0; T < Ctrl->L.n_tags; T++) {
+			if ((Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C || Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
+				GMT_Report (API, GMT_MSG_NORMAL, "No table given via -T for data-based labels - exiting\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C && Ctrl->L.tag[T].col >= D->n_columns) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have enough columns for your -Lc%d request - exiting\n", Ctrl->L.tag[T].col);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have trailing text for your -Lt%d request - exit\n", Ctrl->L.tag[T].col);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+	}
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of animation frames: %d\n", n_frames);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
@@ -1193,7 +1223,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
+			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
 			if (strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line */
@@ -1289,16 +1319,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (state_prefix, "Parameter file for frame %s", state_tag);
 		set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
-		set_ivalue (fp, Ctrl->In.mode, "MOVIE_FRAME", frame);		/* Current frame number */
-		set_ivalue (fp, Ctrl->In.mode, "MOVIE_NFRAMES", n_frames);	/* Total frames */
-		set_tvalue (fp, Ctrl->In.mode, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
-		set_tvalue (fp, Ctrl->In.mode, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
+		set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", frame);		/* Current frame number */
+		if (!n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
+		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
+		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
 			set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][frame]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
-			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
+			set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);
 				col = 0;
@@ -1306,7 +1336,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				while ((word = strsep (&trail, " \t")) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "MOVIE_WORD%u", col++);
-						set_tvalue (fp, Ctrl->In.mode, string, word);
+						set_tvalue (fp, Ctrl->In.mode, false, string, word);
 					}
 				}
 				gmt_M_str_free (orig);
@@ -1317,7 +1347,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			unsigned int type;
 			/* Set MOVIE_N_LABELS as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movie in session directory */
 			fprintf (fp, "%s", export[Ctrl->In.mode]);
-			set_ivalue (fp, Ctrl->In.mode, "MOVIE_N_LABELS", Ctrl->L.n_tags);
+			set_ivalue (fp, Ctrl->In.mode, true, "MOVIE_N_LABELS", Ctrl->L.n_tags);
 			for (T = 0; T < Ctrl->L.n_tags; T++) {
 				sprintf (name, "MOVIE_LABEL_ARG%d", T);
 				/* Place x/y/just/clearance_x/clearance_Y/pen/fill/font/txt in MOVIE_LABEL_ARG */
@@ -1384,7 +1414,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				strcat (label, string);
 				/* Set MOVIE_LABEL_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
-				set_tvalue (fp, Ctrl->In.mode, name, label);
+				set_tvalue (fp, Ctrl->In.mode, true, name, label);
 			}
 		}
 		fclose (fp);	/* Done writing this parameter file */
@@ -1401,9 +1431,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+			sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
 		else
-			sprintf (extra, "A+n");	/* No cropping, image size is fixed */
+			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
 		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
@@ -1418,7 +1448,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
+			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
@@ -1503,9 +1533,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	extra[0] = '\0';	/* Reset */
 	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+		sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
 	else
-		sprintf (extra, "A+n");	/* No cropping, image size is fixed */
+		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
 		strcat (extra, ",Mb../movie_background.ps");
 		layers = true;
@@ -1525,7 +1555,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-		set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
+		set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 	set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
@@ -1571,7 +1601,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	i_frame = first_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
-	n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
+	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build frames using %u cores\n", n_cores_unused);
 	/* START PARALLEL EXECUTION OF FRAME SCRIPTS */

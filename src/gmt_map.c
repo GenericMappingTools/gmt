@@ -2168,6 +2168,7 @@ GMT_LOCAL void adjust_panel_for_gaps (struct GMT_CTRL *GMT, struct GMT_SUBPLOT *
 GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax) {
 	/* Set x/y parameters */
 	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
+	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
@@ -2200,12 +2201,36 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for subplot panel by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
 		//GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
 		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
 			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
 			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
 		}
+	}
+	else if (I->active) {
+		double fw, fh, fx, fy, w, h;
+		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+		fw = w / I->w;	fh = h / I->h;
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
+			if (fw > fh) {	/* Wider than taller given inset dims; adjust width to fit exactly and set dy for centering */
+				fx = fy = 1.0 / fw;	I->dx = 0.0;	I->dy = 0.5 * (I->h - h * fy);
+			}
+			else {	/* Taller than wider given inset dims; adjust height to fit exactly and set dx for centering */
+				fx = fy = 1.0 / fh;	I->dy = 0.0;	I->dx = 0.5 * (I->w - w * fx);
+			}
+		}
+		else {	/* Cartesian is scaled independently to fit the panel */
+			fx = 1.0 / fw;	fy = 1.0 / fh;	I->dx = I->dy = 0.0;
+		}
+		GMT->current.proj.scale[GMT_X] *= fx;
+		GMT->current.proj.scale[GMT_Y] *= fy;
+		GMT->current.proj.w_r *= fx;	/* Only matter for geographic where fx = fy anyway */
+		GMT->current.proj.rect[XHI] = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
+		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for inset by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, I->dx, I->dy);
 	}
 }
 
@@ -5011,6 +5036,46 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 }
 
 /*! . */
+GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north) {
+	double w, e, s = 90.0, n = -90.0, lat, *lon = NULL, *work_x = NULL, *work_y = NULL;
+	uint64_t np, k;
+	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
+	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
+	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
+	 * cases.  P. Wessel, July 20, 2019. */
+	
+	np = (GMT->current.proj.polar && (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0)) ? GMT->current.map.n_lon_nodes + 2: 2 * (GMT->current.map.n_lon_nodes + 1);
+	work_x = gmt_M_memory (GMT, NULL, np, double);
+	work_y = gmt_M_memory (GMT, NULL, np, double);
+	gmtlib_genper_map_clip_path (GMT, np, work_x, work_y);
+
+	/* Search for extreme lon/lat coordinates by matching along the genper boundary */
+
+	/* Need temp array to hold all the longitudes we compute */
+	lon = gmt_M_memory (GMT, NULL, np, double);
+	for (k = 0; k < np; k++) {
+		gmt_xy_to_geo (GMT, &lon[k], &lat, work_x[k], work_y[k]);
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
+	}
+	gmt_M_free (GMT, work_x);
+	gmt_M_free (GMT, work_y);
+
+	gmtlib_get_lon_minmax (GMT, lon, np, &w, &e);	/* Determine lon-range by robust quandrant check */
+	gmt_M_free (GMT, lon);
+
+	/* Then check if one or both poles are inside map; then the above won't be correct */
+
+	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
+	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+
+	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
+	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
+	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
+}
+
+/*! . */
 GMT_LOCAL int map_horizon_search (struct GMT_CTRL *GMT, double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
 	unsigned int i, j;
@@ -7801,6 +7866,8 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7836,8 +7903,16 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
+	
+/* Open MP does not work yet */
 
-	gmt_M_row_loop (GMT, O, row_out) {	/* Loop over the output grid row coordinates */
+/* The OpenMP loop below fails and yields nodes still set to NaN.  I cannot see any errors but obviously
+ * there is something that is not quite correct. */
+
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
+//#endif 
+	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -7856,15 +7931,15 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				}
 			}
 
-			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
+			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now the interpret the input grid at that projected output point */
 
 			z_int = gmt_bcr_get_z (GMT, I, x_proj, y_proj);
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (gmt_grdfloat)z_int;
 			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
-				O->data[ij_out] /= nz[ij_out];		/* Plain average */
-			else {						/* Weighted average between blockmean'ed and interpolated values */
+				O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			else {					/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (gmt_grdfloat) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
 			}
@@ -7873,7 +7948,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		}
 	}
 
-	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrama */
+	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrema */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g] due to resampling\n",
 			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
 		if (GMT->common.n.truncate) {
@@ -8000,6 +8075,8 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -8036,7 +8113,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* PART 2: Create weighted average of interpolated and observed points */
 
-	gmt_M_row_loop (GMT, O, row_out) {	/* Loop over the output grid row coordinates */
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz,b) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz,z_int_bg,nb)
+//#endif 
+	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -9261,7 +9341,10 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
-		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+		if (GMT->current.proj.projection_GMT == GMT_GENPER)	/* Need special considerations for this projection */
+			gmtmap_genper_search (GMT, &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+		else	/* Search along the projected boarder */
+			gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) map_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);

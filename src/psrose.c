@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Plot vectors listed in the <modefile> file. For calculated mean direction, choose -Em.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To write the calculated mean direction etc. to file, append +w<modfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
-	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color for diagram [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute and report statistics - no plot is created.\n");
 	r = (API->GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width>[unit] to set the plot diameter [%g %s].\n", r, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -202,7 +202,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   This implies both <azimuth> and <azimuth> + 180 will be counted as inputs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for outline of rose [Default is no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Wv<pen> to set a different pen for the vector (requires -E) [Same as rose outline].\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting; use -Zu to set input radii to 1.\n");
@@ -299,7 +299,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set Gray shade */
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -379,7 +379,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				n = (opt->arg[0] == 'v') ? 1 : 0;
 				Ctrl->W.active[n] = true;
 				if (gmt_getpen (GMT, &opt->arg[n], &Ctrl->W.pen[n])) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;

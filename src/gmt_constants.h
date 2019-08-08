@@ -76,6 +76,7 @@
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
 #define GMT_ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
+#define GMT_ASCII_RS	30	/* ASCII code for record separator (temporarily replacing spaces in filenames) */
 #define GMT_ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
 
 #define GMT_RENAME_FILE	0
@@ -220,6 +221,10 @@ enum GMT_swap_direction {
 /* Settings for the MAP_FRAME_TYPE = graph */
 #define GMT_GRAPH_EXTENSION		7.5	/* In percent */
 #define GMT_GRAPH_EXTENSION_UNIT	'%'	/* In percent */
+
+/* Modes for subplot status */
+#define GMT_SUBPLOT_ACTIVE	1
+#define GMT_PANEL_NOTSET	2
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

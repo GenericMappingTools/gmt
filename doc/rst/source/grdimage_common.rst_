@@ -114,9 +114,10 @@ Optional Arguments
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grd_z*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth* and **+n**\ *args*
-    to specify azimuth and intensity arguments for that module or just give **+d**
-    to select the default arguments (**+a**\ -45\ **+nt**\ 1). If you want a more
+    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
+    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
+    for that module, or just give **+d** to select the
+    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
     specific intensity scenario then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 

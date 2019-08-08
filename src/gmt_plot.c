@@ -6693,6 +6693,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *PSL= NULL;
 	struct GMT_SUBPLOT *P = NULL;
+	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
 	PSL = GMT->PSL;	/* Shorthand */
 
@@ -6718,22 +6719,24 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
-		if (wants_PS && media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must specify a paper size when requesting a PostScript file\n");
-			if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
-				media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
+		if (wants_PS) {	/* Requesting a PostScript file in modern mode */
+			if (media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must specify a paper size when requesting a PostScript file\n");
+				if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
+					media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
+				}
+				else {	/* Use SI settings */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
+					media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
+				}
 			}
-			else {	/* Use SI settings */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
-				media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
-			}
-			if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
+			if ((GMT->current.map.width > GMT->current.map.height) && (((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
 				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing to PostScript landscape orientation based on plot and paper dimensions but cannot not sure.  Use PS_PAGE_ORIENTATION to correct any error\n");
 			}
 		}
-		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
+		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
 			if (!(GMT->common.X.active || GMT->common.Y.active))
 				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
@@ -6822,6 +6825,11 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		GMT->current.setting.map_origin[GMT_Y] += (P->dy + P->gap[YLO]);
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
+	}
+	if (I->active && I->first) {
+		GMT->current.setting.map_origin[GMT_X] += (I->dx);
+		GMT->current.setting.map_origin[GMT_Y] += (I->dy);
+		I->active = I->first = false;	/* For MATLAB mostly */
 	}
 	
 	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
@@ -6938,6 +6946,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+			/* Because this is run later we must force the correct font color here */
+			PSL_command (PSL, PSL_makecolor (PSL, GMT->current.setting.font_tag.fill.rgb));
+			PSL_command (PSL, " ");
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
 			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
 				int outline = 0;
@@ -6947,12 +6958,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
 					if (gmt_getpen (GMT, P->pen, &pen))
-						gmt_pen_syntax (GMT, 'w', "sets pen attributes:", 3);
+						gmt_pen_syntax (GMT, 'w', NULL, "sets pen attributes:", 3);
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
 				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
-					gmt_fill_syntax (GMT, 'g', " ");
+					gmt_fill_syntax (GMT, 'g', NULL, " ");
 					
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
@@ -6964,14 +6975,15 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* Because PSL_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
+			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_command (PSL, "U\n}!\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row, P->col, P->gap, P->tag, 0))
 			return NULL;	/* Should never happen */
 	}
-	else if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
+	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
 		/* Decode x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
 		double off[2] = {0.0, 0.0};
 		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};

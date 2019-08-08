@@ -1,6 +1,18 @@
-# Template for the basic Windows steps in Azure Pipelines
+# Template for Windows steps in Azure Pipelines
 
 steps:
+
+# Cache vcpkg installed libraries
+# Change the date in the key list to rebuild the cache
+- task: CacheBeta@0
+  inputs:
+    key: |
+      20190802
+      vcpkg
+      $(Agent.OS)
+    path: $(VCPKG_INSTALLATION_ROOT)/installed/
+    cacheHitVar: CACHE_VCPKG_RESTORED
+  displayName: Cache vcpkg libraries
 
 - bash: |
     set -x -e
@@ -11,27 +23,41 @@ steps:
     # install libraries
     #vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
     vcpkg install netcdf-c gdal pcre fftw3 --triplet x64-windows
+  displayName: Install dependencies via vcpkg
+  condition: ne(variables.CACHE_VCPKG_RESTORED, 'true')
+
+- bash: |
     # hook up user-wide integration
     vcpkg integrate install
     # list installed libraries
     vcpkg list
-  displayName: Install dependencies via vcpkg
-
-# Executable files search for DLL files in the directories listed in the PATH environment variable.
-- bash: echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
-  displayName: Add vcpkg bin directory to PATH
+    # Executable files search for DLL files in the directories listed in the PATH environment variable.
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
+    # Tools like gdal_translate, ogr2ogr are located in tools/gdal
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/tools/gdal"
+  displayName: Configure vcpkg
 
 - bash: |
     set -x -e
-    choco install ghostscript ninja
+    choco install ninja
+    choco install ghostscript --version 9.26 # gs 9.27 is buggy
   displayName: Install dependencies via chocolatey
 
 - bash: |
     set -x -e
     pip install --user sphinx
     echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
-  displayName: Install dependencies for building documentations
+  displayName: Install dependencies for documentation
   condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    set -x -e
+    choco install graphicsmagick
+    echo "##vso[task.prependpath]C:\\Program Files\\GraphicsMagick-1.3.32-Q8"
+    choco install ffmpeg
+    echo "##vso[task.prependpath]C:\\ProgramData\\chocolatey\\lib\\ffmpeg\\tools"
+  displayName: Install dependencies for testing
+  condition: eq(variables['TEST'], true)
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
   displayName: Set install location
@@ -45,7 +71,7 @@ steps:
 - bash: ci/download-coastlines.sh
   displayName: Download coastlines
 
-- bash: ci/build-gmt-windows.sh
+- bash: ci/config-gmt-windows.sh
   displayName: Configure GMT
 
 # Azure Pipelines cannot find Visual Studio correctly if Ninja is used.
@@ -61,6 +87,40 @@ steps:
     cmake --build . --target install
   displayName: Compile GMT
 
+- script: |
+    gmt --version
+    gmt defaults -Vd
+    gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
+    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
+  displayName: Check a few simple commands
+
+- bash: |
+    set -x -e
+    cd build
+    # Download remote files before testing, see #939.
+    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+    # disable MinGW's path conversion, see #1035.
+    export MSYS_NO_PATHCONV=1
+    # run all jobs and rerun if failed
+    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
+  displayName: Full tests
+  env: {"CTEST_ARGS": "--output-on-failure --force-new-ctest-process -j4 --timeout 360"}
+  condition: eq(variables['TEST'], true)
+
+# Publish the whole build directory for debugging purpose
+- task: CopyFiles@2
+  inputs:
+    contents: 'build/**/*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+  condition: failed()
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: BuildDirectory-Windows
+  displayName: Publish build directory
+  condition: failed()
+
 - bash: |
     set -x -e
     cd build
@@ -74,6 +134,10 @@ steps:
 - bash: |
     set -x -e
     cd build
+    cmake --build . --target gmt_release
+    cmake --build . --target gmt_release_tar
+    # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
+    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

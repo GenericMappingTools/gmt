@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* Set color for error ellipse  */
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
-					gmt_fill_syntax (GMT, 'E', " ");
+					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
 				}
 				Ctrl->E.active = true;
@@ -224,7 +224,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set Gray shade for polygon */
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -281,7 +281,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;

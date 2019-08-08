@@ -15,6 +15,7 @@ Synopsis
 
 **pscoupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
+|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-E|\ *color* ]
 [ |-F|\ *mode*\ [*args*] ]
@@ -24,8 +25,7 @@ Synopsis
 [ |-M| ] [ |-N| ]
 [ |-O| ]
 [ |-Q| ]
-[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]]
-[ |-T|\ *n* ]
+[ |-T|\ *nplane*\ [/*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

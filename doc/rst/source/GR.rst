@@ -19,6 +19,7 @@ GR
    grdgradient
    grdhisteq
    grdinfo
+   grdinterpolate
    grdlandmask
    grdmask
    grdmath
