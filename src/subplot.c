@@ -60,6 +60,7 @@
 struct SUBPLOT_CTRL {
 	struct In {	/* begin | end | set */
 		bool active;
+		bool next;
 		unsigned int mode;	/* SUBPLOT_BEGIN|SUBPLOT_SET|SUBPLOT_END*/
 		int row, col;		/* Current (row,col) subplot */
 	} In;
@@ -155,7 +156,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>] [-A<autolabelinfo>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-C<side><clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -239,14 +240,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		Ctrl->In.mode = SUBPLOT_END;
 	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set row,col or set index */
 		opt = opt->next;	/* The row,col part */
-		if (opt && isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 1)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
-			return GMT_PARSE_ERROR;
+		if (opt) {	/* There is an argument */
+			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 1)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
+				return GMT_PARSE_ERROR;
+			}
+			if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
+			if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col|index: %s\n", opt->arg);
+				return GMT_PARSE_ERROR;
+			}
 		}
-		if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
-		if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col|index: %s\n", opt->arg);
-			return GMT_PARSE_ERROR;
+		else {	/* Default to go to next subplot */
+			Ctrl->In.row = Ctrl->In.row = 0;
+			Ctrl->In.next = true;
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}
@@ -1099,7 +1106,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if (Ctrl->In.col == INT_MAX) {	/* Auto-determine which subplot */
+		if (Ctrl->In.col == INT_MAX || Ctrl->In.next) {	/* Auto-determine which subplot */
 			if ((error = gmt_get_next_panel (API, fig, &Ctrl->In.row, &Ctrl->In.col)))	/* Bad */
 				Return (error)
 		}
