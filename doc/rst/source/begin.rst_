@@ -47,7 +47,7 @@ Optional Arguments
 
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable graphics formats
-    :ref:`formats <tbl-formats>` [pdf].
+    :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
 
 .. _begin-options:
 
@@ -108,7 +108,7 @@ are produced then we do not need to give any further arguments:
     gmt begin
 
 Should we give such a command and still produce a plot then it will automatically
-be called gmtsession.pdf.
+be called gmtsession.pdf (assuming GMT_GRAPHICS_FORMAT is pdf).
 
 To set up proceedings for a jpg figure with 0.5c white margin, we would run
 
