@@ -15,7 +15,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
 [ **-C**\ *side*\ /*clearance*\ [**u**]
 [ |SYN_OPT-B| ]
@@ -46,7 +46,7 @@ Required Arguments
 
 .. _subplot_begin-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -72,6 +72,10 @@ Required Arguments
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
     to compute the height of each subplot.  All subplots must share the same region and projection and you specify
     a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
+
+    Optionally, you may draw or paint the figure rectangle behind the subplots, and even expand it via **+c**.  This
+    is most useful if you supply **-B+n** to subplot begin, meaning no ticks or annotations will take place in the
+    subplots.
 
 Optional Arguments
 ------------------
