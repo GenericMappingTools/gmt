@@ -20,7 +20,7 @@ steps:
 - bash: |
     set -x -e
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        python3-pip python3-setuptools python3-wheel
+        python3-pip python3-setuptools python3-wheel graphicsmagick
     pip3 install --user sphinx
     echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
