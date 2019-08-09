@@ -12618,16 +12618,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 				}
 			}
-			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
-				sprintf (scl, "%gi",  GMT->current.plot.inset.w);
-				c[0] = '\0';	/* Remove the question mark */
-				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
-				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
-				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
+			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Map inset and gave -J */
+				if ((c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+					sprintf (scl, "%gi",  GMT->current.plot.inset.w);
+					c[0] = '\0';	/* Remove the question mark */
+					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
+					if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
+					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
+				}
+				else
+					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
-
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
@@ -12719,7 +12722,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/'))) && ((c = strchr (opt_J->arg, '?')))) {
-					/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
+					/* Gave -J that passed the log/power/special check, must subplot width dummy scale/width; these get changed in map_setxy in gmt_map.c */
 					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 					else	/* Just append dummy width */
@@ -12730,6 +12733,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
 				}
+				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* DO not auto-scale the dimensions */
+					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
 
