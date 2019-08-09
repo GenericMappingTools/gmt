@@ -74,7 +74,7 @@ Required Arguments
     a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
 
     Optionally, you may draw or paint the figure rectangle behind the subplots, and even expand it via **+c**.  This
-    is most useful if you supply **-B=n** to subplot begin, meaning no ticks or annotations will take place in the
+    is most useful if you supply **-B+n** to subplot begin, meaning no ticks or annotations will take place in the
     subplots.
 
 Optional Arguments
