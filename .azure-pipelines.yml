@@ -51,7 +51,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Linux | Build docs + Deploy docs + Package'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  #condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'ubuntu-16.04'
