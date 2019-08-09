@@ -61,6 +61,7 @@ struct SUBPLOT_CTRL {
 	struct In {	/* begin | end | set */
 		bool active;
 		bool next;
+		bool no_B;
 		unsigned int mode;	/* SUBPLOT_BEGIN|SUBPLOT_SET|SUBPLOT_END*/
 		int row, col;		/* Current (row,col) subplot */
 	} In;
@@ -583,8 +584,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				Ctrl->S[GMT_X].b = (Bx) ? strdup (Bx->arg) : strdup (Bxy->arg);
 			if (Bxy || By)	/* Did get y-axis annotation settings */
 				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
-			if (noB) /* Make sure we turn off everything */
+			if (noB) { /* Make sure we turn off everything */
 				Ctrl->S[GMT_X].extra = strdup ("+n");
+				Ctrl->In.no_B = true;
+			}
 			else if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
 				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot"))) {	/* Gave valid frame modifiers */
@@ -702,6 +705,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		label_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 		title_height = (GMT_LETTER_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
 		y_header_off = GMT->current.setting.map_heading_offset;
+		if (Ctrl->In.no_B) tick_height = annot_height = 0.0;	/* No tick or annotations on subplot frames */
 		/* Report plot/media area dimensions as we shrink them.  Here is the starting point: */
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: origin          = %g/%g\n", off[GMT_X], off[GMT_Y]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: rows            = %d\n", Ctrl->N.dim[GMT_Y]);
