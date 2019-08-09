@@ -1631,10 +1631,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 1;	/* Do not rescale dimensions */
+		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 0;	/* Reset candy flag */
+		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
 	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */

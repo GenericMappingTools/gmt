@@ -139,7 +139,7 @@ struct GMT_INSET {
 struct GMT_SUBPLOT {
 	unsigned int active;	/* 1 if subplot is in effect */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
-	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
+	unsigned int no_scaling;	/* 1 when we are plotting a scale, bar, etc and not map and dont want to auto-scale plot */
 	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
 	int row, col;			/* Current panel position e.g., 0,0 */
 	int nrows, ncolumns;	/* Panel arrangement for subplot window */
