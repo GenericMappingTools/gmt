@@ -11712,6 +11712,39 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 	return (mode);
 }
 
+void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap) {
+	/* Need to determine any subplot-wide gaps in gmt subplot set before we even start plotting */
+	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
+	bool found = false;
+	FILE *fp = NULL;
+
+	gmt_M_memset (gap, 4, double);
+	/* Now read subplot information file */
+	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
+	if (access (file, F_OK)) {	/* Subplot information file not available */
+		GMT_Report (API, GMT_MSG_NORMAL, "No subplot information file found!\n");
+		return;
+	}
+	/* Here there is an information file, get it */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s!\n", file);
+		return;
+	}
+
+	/* Now read it */
+	while (!found && fgets (line, PATH_MAX, fp)) {
+		if (line[0] == '\n')	/* Blank line */
+			continue;
+		if (!strncmp (line, "# GAPS:", 7U)) {
+			sscanf (&line[8], "%lg %lg %lg %lg", &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI]);
+			found = true;
+		}
+		else if (line[0] != '#')
+			found = true;	/* Done reading */
+	}
+	fclose (fp);
+}
+
 /*! Return information about current panel */
 struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
@@ -11730,7 +11763,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 
 	/* Now read subplot information file */
 	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
-	if (access (file, F_OK))	{	/* Subplot information file not available */
+	if (access (file, F_OK)) {	/* Subplot information file not available */
 		GMT_Report (API, GMT_MSG_NORMAL, "No subplot information file found!\n");
 		return NULL;
 	}
@@ -11756,6 +11789,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
 				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
+			else if (!strncmp (line, "# GAPS:", 7U))
+				sscanf (&line[8], "%lg %lg %lg %lg", &P->gap[XLO], &P->gap[XHI], &P->gap[YLO], &P->gap[YHI]);
 			continue;
 		}
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
