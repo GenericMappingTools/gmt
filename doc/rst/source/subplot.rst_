@@ -216,8 +216,9 @@ Synopsis (end mode)
 **gmt subplot end** [ |SYN_OPT-V| ]
 
 This command finalizes the current subplot, including any placement of tags, and updates the
-dimensions of the last plot to that of the entire subplot. This allows **-X** and **-Y** to
-use the codes *w* and *h* in setting the current point relative to the entire subplot.  We also reset
+gmt.history to reflect the dimensions and linear projection required to draw the entire figure
+outline. This allows subsequent commands, such as colorbar, to use **-DJ** to place bars with
+reference to the complete figure dimensions. We also reset
 the current plot location to where it was prior to the subplot.
 
 Optional Arguments
