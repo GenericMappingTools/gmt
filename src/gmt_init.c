@@ -134,7 +134,7 @@ struct GMT5_params {
 	const char *name;
 };
 
-/* These are the active GMT5 keywords, containing no backwards-compatible variants.
+/* These are the active GMT5+ keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
 
@@ -184,6 +184,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_EXPORT_TYPE"},
 	{ 0, "GMT_EXTRAPOLATE_VAL"},
 	{ 0, "GMT_FFT"},
+	{ 0, "GMT_GRAPHICS_FORMAT"},
 	{ 0, "GMT_HISTORY"},
 	{ 0, "GMT_INTERPOLANT"},
 	{ 0, "GMT_LANGUAGE"},
@@ -5475,6 +5476,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
+	/* GMT_GRAPHICS_FORMAT */
+	GMT->current.setting.graphics_format = GMT_SESSION_FORMAT;
 	/* GMT_HISTORY */
 	GMT->current.setting.history = (GMT_HISTORY_READ | GMT_HISTORY_WRITE);
 	/* GMT_INTERPOLANT */
@@ -9728,6 +9731,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_GRAPHICS_FORMAT:
+		 	if ((ival = gmt_get_graphics_id (GMT, value)) == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", value);
+				error = true;
+			}
+			else
+				GMT->current.setting.graphics_format = ival;
+			break;
 		case GMTCASE_HISTORY:
 			GMT_COMPAT_TRANSLATE ("GMT_HISTORY");
 			break;
@@ -10890,6 +10901,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				default:
 					strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_GMT_GRAPHICS_FORMAT:
+			strcpy (value, gmt_session_format[GMT->current.setting.graphics_format]);
 			break;
 		case GMTCASE_HISTORY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -15316,7 +15330,7 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if (access (file, F_OK)) {	/* Use default session name and format */
 		strcpy (prefix, GMT_SESSION_NAME);
-		strcpy (formats, gmt_session_format[GMT_SESSION_FORMAT]);
+		strcpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format]);
 		return;
 	}
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -15332,7 +15346,7 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 		return;
 	}
 	if (n == 1)	/* Assign default format */
-		strcpy (formats, gmt_session_format[GMT_SESSION_FORMAT]);
+		strcpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format]);
 	gmt_filename_get (prefix);
 	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s and default graphics formats as %s\n", prefix, formats);
 	fclose (fp);
@@ -15666,7 +15680,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	else if (!found) {	/* Here we have a new valid entry */
 		this_k = n_figs + 1;	/* This is the ID number of the new figure we are adding */
 		if (n == 1) /* Only got a prefix so must set the default pdf format */
-			strncpy (formats, gmt_session_format[GMT_SESSION_FORMAT], GMT_LEN64-1);
+			strncpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format], GMT_LEN64-1);
 		if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
 			return GMT_ERROR_ON_FOPEN;
 		/* Append the new entry */

@@ -47,7 +47,7 @@ Optional Arguments
 
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable graphics
-    :ref:`formats <tbl-formats>` [pdf].
+    :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
 
 .. _figure-options:
 
