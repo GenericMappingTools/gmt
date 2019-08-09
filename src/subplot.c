@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set row,col or set index */
 		opt = opt->next;	/* The row,col part */
 		if (opt) {	/* There is an argument */
-			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 1)) {
+			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
