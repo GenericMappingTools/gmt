@@ -720,10 +720,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: subplot margin  = %g/%g/%g/%g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
 		/* Shrink these if media margins were requested */
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Start: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->M.active) {	/* Add up space used by interior subplot margins */
-			fluff[GMT_X] += (Ctrl->N.dim[GMT_X] - 1) * (Ctrl->M.margin[XLO] + Ctrl->M.margin[XHI]);
-			fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * (Ctrl->M.margin[YLO] + Ctrl->M.margin[YHI]);
-		}
+		/* Add up space used by interior subplot margins */
+		fluff[GMT_X] += (Ctrl->N.dim[GMT_X] - 1) * (Ctrl->M.margin[XLO] + Ctrl->M.margin[XHI]);
+		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * (Ctrl->M.margin[YLO] + Ctrl->M.margin[YHI]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After correcting for inside subplot margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 
 		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 W/E axes per row or per subplot */
