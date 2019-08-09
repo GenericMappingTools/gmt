@@ -12423,7 +12423,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int E_flags;
 		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
 		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
-			int id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
+			int id = gmt_get_option_id (0, "R");		/* The -RP history item */
 			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
 			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
 		}
@@ -12700,7 +12700,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
-			id = gmtlib_get_option_id (0, "R");	/* The -RP history item */
+			id = gmt_get_option_id (0, "R");	/* The -RP history item */
 			if (GMT->current.ps.active || !strncmp (mod_name, "pscoast", 7U)) {	/* A plotting module (or pscoast which may run -M); first check -RP history */
 				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
 			}
@@ -12717,12 +12717,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 		if (got_J == false && strchr (required, 'J')) {	/* Need a projection but no -J was set */
-			if ((id = gmtlib_get_option_id (0, "J")) >= 0 && GMT->init.history[id]) {	/* There is history for -J */
+			if ((id = gmt_get_option_id (0, "J")) >= 0 && GMT->init.history[id]) {	/* There is history for -J */
 				/* Must now search for actual option since -J only has the code (e.g., -JM) */
 				/* Continue looking for -J<code> */
 				char str[3] = {"J"};
 				str[1] = GMT->init.history[id][0];
-				if ((id = gmtlib_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
+				if ((id = gmt_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
 					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
@@ -12848,7 +12848,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	if (GMT->current.setting.run_mode == GMT_MODERN && !GMT->current.ps.active && GMT->common.R.active[RSET]) {	/* Modern mode: Add enhanced RG history, if possible */
 		/* For grid regions we add history under RG in the form <region>[+I<incs>][+GP|G] */
 		char RG[GMT_LEN256] = {""}, tmp[GMT_LEN64] = {""};
-		int id = gmtlib_get_option_id (0, "R") + 1;	/* The RG history slot */
+		int id = gmt_get_option_id (0, "R") + 1;	/* The RG history slot */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);
 		sprintf (RG, "%.16g/%.16g/%.16g/%.16g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		if (GMT->common.R.active[ISET]) {	/* Also want grid increment saved */
@@ -14808,7 +14808,7 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 	return (error);
 }
 
-int gmtlib_get_option_id (int start, char *this_option) {
+int gmt_get_option_id (int start, char *this_option) {
 	/* Search the GMT_unique_option list starting at given position for this_option */
 	int k, id = -1;
 	for (k = start; k < GMT_N_UNIQUE && id == -1; k++)
@@ -14840,13 +14840,13 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 		/* Must dig around in the history array */
 		gmt_M_memset (str, 3, char);
 		str[0] = options[j];
-		if ((id = gmtlib_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
+		if ((id = gmt_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
 		if (options[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
 		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		if (options[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
 			/* Continue looking for -J<code> */
 			str[1] = GMT->init.history[id][0];
-			if ((id = gmtlib_get_option_id (id + 1, str)) == -1) continue;	/* Not an option we have history for yet */
+			if ((id = gmt_get_option_id (id + 1, str)) == -1) continue;	/* Not an option we have history for yet */
 			if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		}
 		/* Here we should have a parsable command option */

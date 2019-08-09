@@ -1114,8 +1114,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (error)
 	}
 	else {	/* SUBPLOT_END */
-		int k;
-		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""};
+		int k, id;
+		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""}, Rtxt[GMT_LEN64] = {""};
 		FILE *fp = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 		
@@ -1168,6 +1168,21 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			gmt_remove_file (GMT, file);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Removed panel and subplot files\n");
+		
+		/* Set -R and J to match subplot frame so later calls, e.g., colorbar, can use -DJ */
+		/* First set R (i.e., RP for plotting) */
+		id = gmt_get_option_id (0, "R");		/* The -RP history item */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
+		sprintf (Rtxt, "0/%.16g/0/%.16g", P->dim[GMT_X], P->dim[GMT_Y]);
+		GMT->init.history[id] = strdup (Rtxt);
+		/* Now set -Jx1i */
+		id = gmt_get_option_id (0, "J");	/* Top level -J history */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
+		GMT->init.history[id] = strdup ("x");	/* Just the flavor */
+		id = gmt_get_option_id (id, "Jx");	/* Find Jx history, if any */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
+		GMT->init.history[id] = strdup ("x1i");
+		
 		gmt_M_memset (&GMT->current.plot.panel, 1, struct GMT_SUBPLOT);	/* Wipe that smile off your face */
 	}
 		

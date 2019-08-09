@@ -64,8 +64,6 @@
 
 #define NOT_REALLY_AN_ERROR -999
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {

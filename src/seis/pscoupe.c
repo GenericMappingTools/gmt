@@ -846,8 +846,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 int GMT_coupe (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -1216,7 +1214,7 @@ Definition of scalar moment.
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Deal with the fact that -R was set implicitly via -A */
 		char r_code[GMT_LEN256] = {""};
-		int id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
+		int id = gmt_get_option_id (0, "R");		/* The -RP history item */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/*  Free previous -R */
 		sprintf (r_code, "%.16g/%.16g/%.16g/%.16g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		GMT->init.history[id] = strdup (r_code);

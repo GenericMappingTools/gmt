@@ -197,8 +197,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 int GMT_inset (void *V_API, int mode, void *args) {
 	int error = 0, fig, k;
 	bool exist;
@@ -302,7 +300,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		}
 		/* For now, skip the first 5 comments and get the 6th record which holds the REGION line */
 		for (k = 0; k < 6; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
-		id = gmtlib_get_option_id (0, "R");	/* Get index for the -RP history item */
+		id = gmt_get_option_id (0, "R");	/* Get index for the -RP history item */
 		if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Free what it was */
 		gmt_chop (line);
@@ -310,13 +308,13 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_fgets (GMT, line, GMT_LEN128, fp);		/* Read the PROJ line */
 		fclose (fp);
 		gmt_chop (line);
-		j_id = gmtlib_get_option_id (0, "J");	/* Get the -J index */
+		j_id = gmt_get_option_id (0, "J");	/* Get the -J index */
 		if (GMT->init.history[j_id])	/* There is prior history for this -J (it should be) */
 			gmt_M_str_free (GMT->init.history[j_id]);	/* Remove it */
 		/* Must now search for actual option since -J only has the code (e.g., -JM) */
 		/* Continue looking for -J<code> */
 		str[1] = line[8];	/* This is the -J code */
-		id = gmtlib_get_option_id (j_id + 1, str);	/* Get the actual -J? code id */
+		id = gmt_get_option_id (j_id + 1, str);	/* Get the actual -J? code id */
 		if (GMT->init.history[id])	/* There is prior history for this -J (it should be) */
 			gmt_M_str_free (GMT->init.history[id]);	/* Remove it */
 		GMT->init.history[id] = strdup (&line[8]);	/* Insert the original code */
