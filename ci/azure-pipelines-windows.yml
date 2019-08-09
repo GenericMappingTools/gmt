@@ -3,13 +3,11 @@
 steps:
 
 # Cache vcpkg installed libraries
-# Change the date in the key list to rebuild the cache
+# Currently, caches are immutable and can't be updated.
+# To rebuild the cache, you have to change the date in the key list
 - task: CacheBeta@0
   inputs:
-    key: |
-      20190802
-      vcpkg
-      $(Agent.OS)
+    key: $(Agent.OS) | vcpkg | 20190802
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -18,13 +16,15 @@ steps:
     set -x -e
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
-    echo 'set(VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
-    cat ${VCPKG_INSTALLATION_ROOT}/triplets/x64-windows.cmake
+    echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
+    cat ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     # install libraries
-    #vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x64-windows
+    #vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet ${WIN_PLATFORM}
+    vcpkg install netcdf-c gdal pcre fftw3 --triplet ${WIN_PLATFORM}
   displayName: Install dependencies via vcpkg
-  condition: ne(variables.CACHE_VCPKG_RESTORED, 'true')
+  env:
+    WIN_PLATFORM: "x64-windows"
+  condition: ne(variables['CACHE_VCPKG_RESTORED'], true)
 
 - bash: |
     # hook up user-wide integration
@@ -32,10 +32,12 @@ steps:
     # list installed libraries
     vcpkg list
     # Executable files search for DLL files in the directories listed in the PATH environment variable.
-    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin"
     # Tools like gdal_translate, ogr2ogr are located in tools/gdal
-    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/tools/gdal"
+    echo "##vso[task.prependpath]${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/tools/gdal"
   displayName: Configure vcpkg
+  env:
+    WIN_PLATFORM: "x64-windows"
 
 - bash: |
     set -x -e
@@ -59,17 +61,24 @@ steps:
   displayName: Install dependencies for testing
   condition: eq(variables['TEST'], true)
 
-- bash: echo "##vso[task.setvariable variable=INSTALLDIR]D:/a/1/s/gmt-install-dir"
-  displayName: Set install location
-
-- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]D:/a/1/s/coastline"
-  displayName: Set coastline location
+- bash: |
+    echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+    echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
+  displayName: Set install location and coastline location
 
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
 
+- task: CacheBeta@0
+  inputs:
+    key: coastline
+    path: $(COASTLINEDIR)
+    cacheHitVar: CACHE_COASTLINE_RESTORED
+  displayName: Cache GSHHG and DCW data
+
 - bash: ci/download-coastlines.sh
   displayName: Download coastlines
+  condition: ne(variables['CACHE_COASTLINE_RESTORED'], true)
 
 - bash: ci/config-gmt-windows.sh
   displayName: Configure GMT
@@ -105,7 +114,8 @@ steps:
     # run all jobs and rerun if failed
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
-  env: {"CTEST_ARGS": "--output-on-failure --force-new-ctest-process -j4 --timeout 360"}
+  env:
+    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose

@@ -26,17 +26,24 @@ steps:
   displayName: Install dependencies for building documentation
   condition: eq(variables['BUILD_DOCS'], true)
 
-- bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
-  displayName: Set install location
-
-- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
-  displayName: Set coastline location
+- bash: |
+    echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+    echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
+  displayName: Set install location and coastline location
 
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
 
+- task: CacheBeta@0
+  inputs:
+    key: coastline
+    path: $(COASTLINEDIR)
+    cacheHitVar: CACHE_COASTLINE_RESTORED
+  displayName: Cache GSHHG and DCW data
+
 - bash: ci/download-coastlines.sh
   displayName: Download coastlines
+  condition: ne(variables['CACHE_COASTLINE_RESTORED'], true)
 
 - bash: ci/build-gmt.sh
   displayName: Compile GMT
@@ -59,7 +66,8 @@ steps:
     # run all jobs, and rerun failed jobs
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
-  env: {"CTEST_ARGS": "--output-on-failure --force-new-ctest-process -j4 --timeout 360"}
+  env:
+    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose
