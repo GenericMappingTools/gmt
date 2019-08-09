@@ -12733,7 +12733,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
 				}
-				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* DO not auto-scale the dimensions */
+				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale the dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
