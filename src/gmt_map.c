@@ -2169,7 +2169,6 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	/* Set x/y parameters */
 	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
-	bool is_psrose = !strncmp (GMT->init.module_name, "psrose", 6U);
 	
 	/* Set up the original min/max values, the rectangular map dimensionsm and the projection offset */
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
@@ -2196,7 +2195,6 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		else {	/* Cartesian is scaled independently to fit the subplot fully */
 			fx = 1.0 / fw;	fy = 1.0 / fh;	P->dx = P->dy = 0.0;
 		}
-		if (is_psrose) fx *= 0.5, fy *= 0.5;	/* Not sure about this yet but we are off by a factor of 2 */
 		/* Update all projection parameters given the reduction factors fx, fy */
 		GMT->current.proj.scale[GMT_X] *= fx;
 		GMT->current.proj.scale[GMT_Y] *= fy;
@@ -2227,7 +2225,6 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		else {	/* Cartesian is scaled independently to fit the panel */
 			fx = 1.0 / fw;	fy = 1.0 / fh;	I->dx = I->dy = 0.0;
 		}
-		if (is_psrose) fx *= 0.5, fy *= 0.5;	/* Not sure about this yet but we are off by a factor of 2 */
 		/* Update all projection parameters given the reduction factors fx, fy */
 		GMT->current.proj.scale[GMT_X] *= fx;
 		GMT->current.proj.scale[GMT_Y] *= fy;
