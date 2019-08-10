@@ -47,7 +47,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
