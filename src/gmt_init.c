@@ -12485,7 +12485,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
 		/* Running psrose with old -S[n]<radius syntax.  Need to replace with new -J [-S] syntax */
 		struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
-		if (S) {	/* Gave -S option */
+        if (S && S->arg[0]) {	/* Gave -S option with some arguments */
 			char j_code[GMT_LEN256] = {""};
 			unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
 			double radius;
@@ -12506,7 +12506,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 		else {	/* No -S option given either, so user expects default radius and no normalization */
-			if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;		/* Failure to make -J option */
+			if (GMT->current.setting.run_mode == GMT_MODERN) {
+				if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;		/* Failure to make -J option */
+			}
+			else {
+				if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;		/* Failure to make -J option */
+			}
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
 		}
 	}
