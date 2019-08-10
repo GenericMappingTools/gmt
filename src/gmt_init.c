@@ -12508,7 +12508,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		else {	/* No old-style -S option given either, so user expects default radius and no normalization */
 			if (GMT->current.setting.run_mode == GMT_MODERN) {
 				is_psrose = true;	/* Since psrose does not really parse -J properly we need to flag this */
-				if ((opt = GMT_Make_Option (API, 'J', "x?")) == NULL) return NULL;	/* Failure to make -J option */
+				if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;	/* Failure to make -J option */
 			}
 			else {
 				if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;	/* Failure to make -J option */
