@@ -417,7 +417,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						break;
 				}
 
-				if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) { 
+				if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
 					/* New syntax: -S<format><scale>+f<font>+o<dx>/<dy>+j<justify> */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 
@@ -428,7 +428,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 
 					if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 						Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
-					if (gmt_get_modifier (opt->arg, 'f', word)) 
+					if (gmt_get_modifier (opt->arg, 'f', word))
 						n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
 					if (gmt_get_modifier (opt->arg, 'o', word)) {
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
@@ -445,7 +445,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						Ctrl->S.justify = PSL_BC;
 						p[0] = '\0';	/* Chop off modifier */
 					} else if (opt->arg[strlen(opt->arg)-1] == 'u') {
-						Ctrl->S.justify = PSL_BC; 
+						Ctrl->S.justify = PSL_BC;
 						opt->arg[strlen(opt->arg)-1] = '\0';
 					}
 					txt[0] = txt_b[0] = txt_c[0] = '\0';
@@ -642,18 +642,18 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = in[2+new_fmt];
-			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0; 
+			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
 			else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = in[3+new_fmt];
 			meca.NP1.rake = in[4+new_fmt];
-			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0; 
+			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0;
 			else if (meca.NP1.rake < -180.0) 	meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.NP2.str = in[5+new_fmt];
-			if (meca.NP2.str > 180.0)			meca.NP2.str -= 360.0; 
+			if (meca.NP2.str > 180.0)			meca.NP2.str -= 360.0;
 			else if (meca.NP2.str < -180.0) 	meca.NP2.str += 360.0;	/* Strike must be in -180/+180 range*/
 			meca.NP2.dip = in[6+new_fmt];
 			meca.NP2.rake = in[7+new_fmt];
-			if (meca.NP2.rake > 180.0)			meca.NP2.rake -= 360.0; 
+			if (meca.NP2.rake > 180.0)			meca.NP2.rake -= 360.0;
 			else if (meca.NP2.rake < -180.0) 	meca.NP2.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.moment.mant = in[8+new_fmt];
 			meca.moment.exponent = irint (in[9+new_fmt]);
@@ -661,11 +661,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
 			meca.NP1.str = in[2+new_fmt];
-			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0; 
+			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
 			else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = in[3+new_fmt];
 			meca.NP1.rake = in[4+new_fmt];
-			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0; 
+			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0;
 			else if (meca.NP1.rake < -180.0) 	meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;	/* Fixing the issue http://gmt.soest.hawaii.edu/issues/894 */
 			meca.magms = in[5+new_fmt];
@@ -674,11 +674,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
 			meca.NP1.str = in[2+new_fmt];
-			if (meca.NP1.str > 180.0)		meca.NP1.str -= 360.0; 
+			if (meca.NP1.str > 180.0)		meca.NP1.str -= 360.0;
 			else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = in[3+new_fmt];
 			meca.NP2.str = in[4+new_fmt];
-			if (meca.NP2.str > 180.0)		meca.NP2.str -= 360.0; 
+			if (meca.NP2.str > 180.0)		meca.NP2.str -= 360.0;
 			else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
 			fault = in[5+new_fmt];
 			meca.magms = in[6+new_fmt];
@@ -823,12 +823,14 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		if (!Ctrl->S.no_label) {
 			int label_justify = 0;
-			double label_x = plot_x; 
-			double label_y = plot_y;
-			
+			double label_x, label_y;
+			double label_offset[2];
+
 			label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
-			label_x += 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
-			label_y += 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
+			label_offset[0] = label_offset[1] = GMT_TEXT_CLEARANCE * 0.01 * Ctrl->S.font.size / PSL_POINTS_PER_INCH;
+
+			label_x = plot_x + 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
+			label_y = plot_y + 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
 
 			/* Also deal with any justified offsets if given */
 			if (Ctrl->S.justify%4 == 1) /* Left aligned */
@@ -842,7 +844,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
-			// if (Ctrl->R2.active) PSL_plotbox (PSL, label_x, label_y, label_x + Ctrl->S.font.size / PSL_POINTS_PER_INCH, label_y + Ctrl->S.font.size / PSL_POINTS_PER_INCH);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, form);
 		}

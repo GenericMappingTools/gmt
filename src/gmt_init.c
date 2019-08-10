@@ -134,7 +134,7 @@ struct GMT5_params {
 	const char *name;
 };
 
-/* These are the active GMT5 keywords, containing no backwards-compatible variants.
+/* These are the active GMT5+ keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
 
@@ -184,6 +184,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_EXPORT_TYPE"},
 	{ 0, "GMT_EXTRAPOLATE_VAL"},
 	{ 0, "GMT_FFT"},
+	{ 0, "GMT_GRAPHICS_FORMAT"},
 	{ 0, "GMT_HISTORY"},
 	{ 0, "GMT_INTERPOLANT"},
 	{ 0, "GMT_LANGUAGE"},
@@ -5475,6 +5476,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
+	/* GMT_GRAPHICS_FORMAT */
+	GMT->current.setting.graphics_format = GMT_SESSION_FORMAT;
 	/* GMT_HISTORY */
 	GMT->current.setting.history = (GMT_HISTORY_READ | GMT_HISTORY_WRITE);
 	/* GMT_INTERPOLANT */
@@ -9728,6 +9731,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_GRAPHICS_FORMAT:
+		 	if ((ival = gmt_get_graphics_id (GMT, value)) == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", value);
+				error = true;
+			}
+			else
+				GMT->current.setting.graphics_format = ival;
+			break;
 		case GMTCASE_HISTORY:
 			GMT_COMPAT_TRANSLATE ("GMT_HISTORY");
 			break;
@@ -10891,6 +10902,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 					strcpy (value, "undefined");
 			}
 			break;
+		case GMTCASE_GMT_GRAPHICS_FORMAT:
+			strcpy (value, gmt_session_format[GMT->current.setting.graphics_format]);
+			break;
 		case GMTCASE_HISTORY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
@@ -11712,6 +11726,39 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 	return (mode);
 }
 
+void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap) {
+	/* Need to determine any subplot-wide gaps in gmt subplot set before we even start plotting */
+	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
+	bool found = false;
+	FILE *fp = NULL;
+
+	gmt_M_memset (gap, 4, double);
+	/* Now read subplot information file */
+	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
+	if (access (file, F_OK)) {	/* Subplot information file not available */
+		GMT_Report (API, GMT_MSG_NORMAL, "No subplot information file found!\n");
+		return;
+	}
+	/* Here there is an information file, get it */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s!\n", file);
+		return;
+	}
+
+	/* Now read it */
+	while (!found && fgets (line, PATH_MAX, fp)) {
+		if (line[0] == '\n')	/* Blank line */
+			continue;
+		if (!strncmp (line, "# GAPS:", 7U)) {
+			sscanf (&line[8], "%lg %lg %lg %lg", &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI]);
+			found = true;
+		}
+		else if (line[0] != '#')
+			found = true;	/* Done reading */
+	}
+	fclose (fp);
+}
+
 /*! Return information about current panel */
 struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
@@ -11730,7 +11777,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 
 	/* Now read subplot information file */
 	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
-	if (access (file, F_OK))	{	/* Subplot information file not available */
+	if (access (file, F_OK)) {	/* Subplot information file not available */
 		GMT_Report (API, GMT_MSG_NORMAL, "No subplot information file found!\n");
 		return NULL;
 	}
@@ -11756,6 +11803,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
 				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
+			else if (!strncmp (line, "# GAPS:", 7U))
+				sscanf (&line[8], "%lg %lg %lg %lg", &P->gap[XLO], &P->gap[XHI], &P->gap[YLO], &P->gap[YHI]);
 			continue;
 		}
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
@@ -12583,16 +12632,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 				}
 			}
-			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J && (c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
-				sprintf (scl, "%gi",  GMT->current.plot.inset.w);
-				c[0] = '\0';	/* Remove the question mark */
-				sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
-				if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
-				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
+			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Map inset and gave -J */
+				if ((c = strchr (opt_J->arg, '?'))) {	/* Want optimal map width for given inset dimensions */
+					sprintf (scl, "%gi",  GMT->current.plot.inset.w);
+					c[0] = '\0';	/* Remove the question mark */
+					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the new width as only argument */
+					if (c[1]) strcat (arg, &c[1]);	/* Append the rest of the old projection option */
+					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s for inset.\n", GMT->hidden.func_level, opt_J->arg);
+				}
+				else
+					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
-
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
@@ -12684,7 +12736,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/'))) && ((c = strchr (opt_J->arg, '?')))) {
-					/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
+					/* Gave -J that passed the log/power/special check, must subplot width dummy scale/width; these get changed in map_setxy in gmt_map.c */
 					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 					else	/* Just append dummy width */
@@ -12695,6 +12747,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
 				}
+				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale the dimensions */
+					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
 
@@ -15281,7 +15335,7 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if (access (file, F_OK)) {	/* Use default session name and format */
 		strcpy (prefix, GMT_SESSION_NAME);
-		strcpy (formats, gmt_session_format[GMT_SESSION_FORMAT]);
+		strcpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format]);
 		return;
 	}
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -15297,7 +15351,7 @@ GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT
 		return;
 	}
 	if (n == 1)	/* Assign default format */
-		strcpy (formats, gmt_session_format[GMT_SESSION_FORMAT]);
+		strcpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format]);
 	gmt_filename_get (prefix);
 	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s and default graphics formats as %s\n", prefix, formats);
 	fclose (fp);
@@ -15631,7 +15685,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	else if (!found) {	/* Here we have a new valid entry */
 		this_k = n_figs + 1;	/* This is the ID number of the new figure we are adding */
 		if (n == 1) /* Only got a prefix so must set the default pdf format */
-			strncpy (formats, gmt_session_format[GMT_SESSION_FORMAT], GMT_LEN64-1);
+			strncpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format], GMT_LEN64-1);
 		if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
 			return GMT_ERROR_ON_FOPEN;
 		/* Append the new entry */

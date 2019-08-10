@@ -2178,7 +2178,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P->active && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
+	if (P->active && P->no_scaling == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
 		double fw, fh, fx, fy, w, h;
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */
@@ -2208,7 +2208,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
 		}
 	}
-	else if (I->active) {
+	else if (I->active && P->no_scaling == 0) {
 		double fw, fh, fx, fy, w, h;
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 		fw = w / I->w;	fh = h / I->h;

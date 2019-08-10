@@ -1168,12 +1168,14 @@ Definition of scalar moment.
 
 		if (!Ctrl->S.no_label) {
 			int label_justify = 0;
-			double label_x = plot_x; 
-			double label_y = plot_y;
-			
+			double label_x, label_y;
+			double label_offset[2];
+
 			label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
-			label_x += 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
-			label_y += 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
+			label_offset[0] = label_offset[1] = GMT_TEXT_CLEARANCE * 0.01 * Ctrl->S.font.size / PSL_POINTS_PER_INCH;
+
+			label_x = plot_x + 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
+			label_y = plot_y + 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
 
 			/* Also deal with any justified offsets if given */
 			if (Ctrl->S.justify%4 == 1) /* Left aligned */
@@ -1187,7 +1189,7 @@ Definition of scalar moment.
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
-			// if (Ctrl->R2.active) PSL_plotbox (PSL, label_x, label_y, label_x + Ctrl->S.font.size / PSL_POINTS_PER_INCH, label_y + Ctrl->S.font.size / PSL_POINTS_PER_INCH);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, form);
 		}
