@@ -12448,7 +12448,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS;
+	bool is_PS, is_psrose = false;
 	unsigned int srtm_res = 0;
 	char *required = (char *)in_required;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
@@ -12485,7 +12485,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
 		/* Running psrose with old -S[n]<radius syntax.  Need to replace with new -J [-S] syntax */
 		struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
-		if (S) {	/* Gave -S option */
+		if (S && S->arg[0]) {	/* Gave -S option with some arguments */
 			char j_code[GMT_LEN256] = {""};
 			unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
 			double radius;
@@ -12505,8 +12505,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if (GMT_Delete_Option (API, S, options)) return NULL;		/* Failed to remove -S */
 			}
 		}
-		else {	/* No -S option given either, so user expects default radius and no normalization */
-			if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;		/* Failure to make -J option */
+		else {	/* No old-style -S option given either, so user expects default radius and no normalization */
+			if (GMT->current.setting.run_mode == GMT_MODERN) {
+				is_psrose = true;	/* Since psrose does not really parse -J properly we need to flag this */
+				if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;	/* Failure to make -J option */
+			}
+			else {
+				if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;	/* Failure to make -J option */
+			}
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
 		}
 	}
@@ -12523,6 +12529,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int n_errors = 0, subplot_status = 0, inset_status = 0;
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
+		;
 		char arg[GMT_LEN256] = {""}, scl[GMT_LEN64] = {""}, *c = NULL;
 		struct GMT_OPTION *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
@@ -12739,8 +12746,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					/* Gave -J that passed the log/power/special check, must subplot width dummy scale/width; these get changed in map_setxy in gmt_map.c */
 					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
+					else if (is_psrose)	/* Just append minimum dimension */
+						sprintf (scl, "%gi", MIN(P->w, P->h));
 					else	/* Just append dummy width */
-						sprintf (scl, "%gi",  P->w);
+						sprintf (scl, "%gi", P->w);
 					arg[0] = c[0] = '\0';
 					sprintf (arg, "%s%s%s", opt_J->arg, scl, &c[1]);
 					c[0] = '?';
