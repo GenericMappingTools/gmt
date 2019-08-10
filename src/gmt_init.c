@@ -177,8 +177,8 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
 	{ 0, "GMT_AUTO_DOWNLOAD"},
-	{ 0, "GMT_DATA_URL"},
-	{ 0, "GMT_DATA_URL_LIMIT"},
+	{ 0, "GMT_DATA_SERVER"},
+	{ 0, "GMT_DATA_SERVER_LIMIT"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -2805,12 +2805,14 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 
-	if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL was set */
-		GMT->session.DATAURL = strdup (this_c);
+	if ((this_c = getenv ("GMT_DATA_SERVER")) != NULL)		/* GMT_DATA_SERVER was set */
+		GMT->session.DATASERVER = strdup (this_c);
+	else if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL [deprecated in 6.0.0] was set */
+		GMT->session.DATASERVER = strdup (this_c);
 	else
-		GMT->session.DATAURL = strdup (GMT_DATA_URL);	/* SOEST default */
-	if (GMT->session.DATAURL)
-		trim_off_any_slash_at_end (GMT->session.DATAURL);
+		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);	/* SOEST default */
+	if (GMT->session.DATASERVER)
+		trim_off_any_slash_at_end (GMT->session.DATASERVER);
 
 	/* Determine GMT_DATADIR (data directories) */
 
@@ -5467,7 +5469,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.compatibility = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
-	/* GMTCASE_GMT_DATA_URL_LIMIT */
+	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
@@ -5713,7 +5715,7 @@ GMT_LOCAL void gmtinit_free_dirnames (struct GMT_CTRL *GMT) {
 	gmt_M_str_free (GMT->session.CACHEDIR);
 	gmt_M_str_free (GMT->session.TMPDIR);
 	gmt_M_str_free (GMT->session.CUSTOM_LIBS);
-	gmt_M_str_free (GMT->session.DATAURL);
+	gmt_M_str_free (GMT->session.DATASERVER);
 }
 
 
@@ -9606,19 +9608,21 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
-		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
+		case GMTCASE_GMT_DATA_URL:	/* Deprecated in 6.0.0 */
+		case GMTCASE_GMT_DATA_SERVER:	/* The default is set by cmake, see ConfigDefault.cmake */
 			if (*value) {
-				if (GMT->session.DATAURL) {
-					if ((strcmp (GMT->session.DATAURL, value) == 0))
+				if (GMT->session.DATASERVER) {
+					if ((strcmp (GMT->session.DATASERVER, value) == 0))
 						break; /* stop here if string in place is equal */
-					gmt_M_str_free (GMT->session.DATAURL);
+					gmt_M_str_free (GMT->session.DATASERVER);
 				}
-				/* Set session DATAURL dir */
-				GMT->session.DATAURL = strdup (value);
+				/* Set session DATASERVER dir */
+				GMT->session.DATASERVER = strdup (value);
 			}
 			break;
 
-		case GMTCASE_GMT_DATA_URL_LIMIT:	/* The default is set by cmake, see ConfigDefault.cmake */
+		case GMTCASE_GMT_DATA_URL_LIMIT:	/* Deprecated in 6.0.0 */
+		case GMTCASE_GMT_DATA_SERVER_LIMIT:	/* The default is set by cmake, see ConfigDefault.cmake */
 			if (!strcmp (lower_value, "0") || !strncmp (lower_value, "unlim", 5U))
 				GMT->current.setting.url_size_limit = 0;
 			else {
@@ -10814,11 +10818,11 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_BUFSIZ-1);
 			break;
 
-		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
-			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_BUFSIZ-1);
+		case GMTCASE_GMT_DATA_SERVER:	/* The default is set by cmake, see ConfigDefault.cmake */
+			strncpy (value, (GMT->session.DATASERVER) ? GMT->session.DATASERVER : "", GMT_BUFSIZ-1);
 			break;
 
-		case GMTCASE_GMT_DATA_URL_LIMIT:
+		case GMTCASE_GMT_DATA_SERVER_LIMIT:
 			if (GMT->current.setting.url_size_limit == 0)
 				strcpy (value, "unlimited");
 			else if (GMT->current.setting.url_size_limit < 1024)
@@ -11550,7 +11554,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	Csave->session.DATADIR = (GMT->session.DATADIR) ? strdup (GMT->session.DATADIR) : NULL;
 	Csave->session.TMPDIR = (GMT->session.TMPDIR) ? strdup (GMT->session.TMPDIR) : NULL;
 	Csave->session.CUSTOM_LIBS = (GMT->session.CUSTOM_LIBS) ? strdup (GMT->session.CUSTOM_LIBS) : NULL;
-	Csave->session.DATAURL = (GMT->session.DATAURL) ? strdup (GMT->session.DATAURL) : NULL;
+	Csave->session.DATASERVER = (GMT->session.DATASERVER) ? strdup (GMT->session.DATASERVER) : NULL;
 
 	/* Reset all the common.?.active settings to false */
 
@@ -12980,7 +12984,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->session.DATADIR = (Ccopy->session.DATADIR) ? strdup (Ccopy->session.DATADIR) : NULL;
 	GMT->session.TMPDIR = (Ccopy->session.TMPDIR) ? strdup (Ccopy->session.TMPDIR) : NULL;
 	GMT->session.CUSTOM_LIBS = (Ccopy->session.CUSTOM_LIBS) ? strdup (Ccopy->session.CUSTOM_LIBS) : NULL;
-	GMT->session.DATAURL = (Ccopy->session.DATAURL) ? strdup (Ccopy->session.DATAURL) : NULL;
+	GMT->session.DATASERVER = (Ccopy->session.DATASERVER) ? strdup (Ccopy->session.DATASERVER) : NULL;
 
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {

@@ -105,7 +105,7 @@
 ##
 
 # Set URL to GMT Data server [auto]:
-#set (GMT_DATA_URL "data_server_url")
+#set (GMT_DATA_SERVER "data_server_url")
 
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")

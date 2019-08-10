@@ -2222,11 +2222,11 @@ Three classes of files are given special treatment in GMT.
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
-   can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
-   the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
-   parameter GMT_DATA_URL at compile time.
+   can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
+   the default setting for **GMT_DATA_SERVER**.  Alternatively, configure the CMake
+   parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via **GMT_DATA_URL_LIMIT** to be 0.
+   set the size of the largest datafile to download via **GMT_DATA_SERVER_LIMIT** to be 0.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
