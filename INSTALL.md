@@ -85,6 +85,21 @@ or:
 in the terminal. Then prepend this directory to your PATH environment variable,
 e.g., in `~/.bashrc`. Note: The installer is always built for the latest macOS version only.
 
+Note: While the installer comes with all GMT executables and needed libraries, there are some
+run-time dependencies on executables that you will need to install separately:
+
+- [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
+- [Ghostscript](https://www.ghostscript.com/) (Convert PostScript to PDF or raster images)
+- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
+- [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
+
+If you are already using any of fink, macport, or homebrew then please see
+[build from source](BUILDING.md) for how to install these packages.  If you do not then
+we recommend installing [homebrew](https://brew.sh/), then run
+
+    brew install gdal ghostscript graphicsmagick ffmpeg 
+
+
 ### Install via macports
 
 Install [macports](https://www.macports.org/) and then the required ports in this order:
