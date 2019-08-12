@@ -374,17 +374,17 @@ fonts can be found in the :doc:`gmt` man page.
 
 **GMT_AUTO_DOWNLOAD**
     Determines if GMT is allowed to automatically download datasets and
-    files from the remote server selected via **GMT_DATA_URL**.  Default
+    files from the remote server selected via **GMT_DATA_SERVER**.  Default
     is *on* but you can turn this off by setting it to *off*.
 
-.. _GMT_DATA_URL:
+.. _GMT_DATA_SERVER:
 
-**GMT_DATA_URL**
+**GMT_DATA_SERVER**
     Address of the data directory on the remote server [The SOEST server].
 
-.. _GMT_DATA_URL_LIMIT:
+.. _GMT_DATA_SERVER_LIMIT:
 
-**GMT_DATA_URL_LIMIT**
+**GMT_DATA_SERVER_LIMIT**
     Upper limit on the size of remote file to download [unlimited].  Give
     the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
     or giga-bytes.
