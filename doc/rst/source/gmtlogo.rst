@@ -6,7 +6,7 @@ gmtlogo
 
 .. only:: not man
 
-    gmtlogo - Place the GMT graphics logo on a map
+    Place the GMT graphics logo on a map
 
 Synopsis
 --------

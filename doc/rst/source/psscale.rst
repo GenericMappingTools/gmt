@@ -6,14 +6,14 @@ psscale
 
 .. only:: not man
 
-    psscale - Plot a gray or color scale-bar on maps
+    Plot a gray or color scale-bar on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale**
+**gmt psscale**
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *refpoint* ]

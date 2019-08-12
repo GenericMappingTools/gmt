@@ -6,14 +6,14 @@ psxyz
 
 .. only:: not man
 
-    psxyz - Plot lines, polygons, and symbols in 3-D
+    Plot lines, polygons, and symbols in 3-D
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxyz** [ *table* ] |-J|\ *parameters*
+**gmt psxyz** [ *table* ] |-J|\ *parameters*
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
