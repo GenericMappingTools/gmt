@@ -6,14 +6,14 @@ pssolar
 
 .. only:: not man
 
-    pssolar - Calculate and plot the day-night terminator
+    Calculate and plot the day-night terminator
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pssolar** 
+**gmt pssolar**
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-G|\ *fill*\ \|\ **c** ]

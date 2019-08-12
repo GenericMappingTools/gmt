@@ -6,14 +6,14 @@ psrose
 
 .. only:: not man
 
-    psrose - Plot a polar histogram (rose, sector, windrose diagrams)
+    Plot a polar histogram (rose, sector, windrose diagrams)
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ |-A|\ *sector_width*\ [**+r**] ]
+**gmt psrose** [ *table* ] [ |-A|\ *sector_width*\ [**+r**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-D| ]
