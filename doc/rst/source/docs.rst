@@ -1,5 +1,99 @@
-####
-docs
-####
+.. index:: ! docs
 
-.. include:: docs.rst_
+****
+docs
+****
+
+.. only:: not man
+
+    Show the HTML documentation for selected module
+
+Synopsis
+--------
+
+.. include:: common_SYN_OPTs.rst_
+
+**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] [ *module-name* [*-option*] ]
+
+|No-spaces|
+
+Description
+-----------
+
+**docs** tells GMT to display the HTML version of a module's documentation using the default browser.
+Besides the modules names, the special targets *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
+are also accepted.
+
+Optional Arguments
+------------------
+
+**-Q**
+    This option means we are doing a "dry-run" and simply want the final URL to be
+    printed to standard output.  No file open command will take place. This is useful
+    if you are working remotely on a server and do not wish to launch a GUI browser.
+    If used, **-Q** must be the first option to **docs**.
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+Optional Module Arguments
+-------------------------
+
+*-option*
+    Where *-option* is the one-letter option of the module in question (e.g, **-R**).
+    We then display the *module* documentation positioned at that specific option.
+
+Examples
+--------
+
+To see the documentation of *grdimage*
+
+   ::
+
+    gmt docs grdimage
+
+To see the link to the documentation of *grdimage*
+
+   ::
+
+    gmt docs -Q grdimage
+
+To see the documentation of the **-B** option in *pscoast*
+
+   ::
+
+    gmt docs pscoast -B
+
+And do not be surprised to see that it says *coast* instead of *pscoast*.
+
+To examine the list of GMT defaults, try
+
+   ::
+
+    gmt docs defaults
+
+To see the Gallery
+
+   ::
+
+    gmt docs gallery
+
+To display the URL to the surface man page,.run
+
+   ::
+
+    gmt docs -Q surface
+
+
+See Also
+--------
+
+:doc:`begin`,
+:doc:`clear`,
+:doc:`end`,
+:doc:`figure`,
+:doc:`inset`,
+:doc:`subplot`,
+:doc:`gmt`
