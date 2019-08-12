@@ -93,12 +93,13 @@ run-time dependencies on executables that you will need to install separately:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
 
-If you are already using any of fink, macport, or homebrew then please see
-[build from source](BUILDING.md) for how to install these packages.  If you do not then
-we recommend installing [homebrew](https://brew.sh/), then run
+Install these via fink, macport, or homebrew.  If you do not use any of these, then
+we recommend installing [homebrew](https://brew.sh/). Now, run either the fink, port,
+or brew command:
 
+    fink install gdal ghostscript graphicsmagick ffmpeg 
+    port install gdal ghostscript graphicsmagick ffmpeg 
     brew install gdal ghostscript graphicsmagick ffmpeg 
-
 
 ### Install via macports
 
