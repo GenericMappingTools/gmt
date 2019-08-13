@@ -19,8 +19,7 @@ Description
 
 The **begin** module instructs GMT to begin a new modern session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
-and format(s) of your plot.  However, if you want to create multiple illustrations within this
-session or need more control over the conversion from the internal PostScript to the output format,
+and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
 you will instead use :doc:`figure` for the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session
 that may run concurrently.  Thus unlike in classic mode you can run multiple modern sessions
@@ -41,7 +40,7 @@ Optional Arguments
     automatically from your *formats* selection(s) [gmtsession].  If your script only
     performs calculations or needs to make several figures then you will not use this argument.
     While not recommended, if your *prefix* has spaces in it then you must enclose your
-    prefix in single quotes.
+    prefix in single or double quotes.
 
 .. _begin-formats:
 
@@ -132,11 +131,11 @@ have that ID as PPID and it will differ from the one determined by gmt begin.
 If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
 then you can add this command to the top of your script to make the issue go away (in Bourne shell):
 
-export GMT_SESSION_NAME=$$
+    export GMT_SESSION_NAME=$$
 
 or in cshell:
 
-setenv GMT_SESSION_NAME $$
+    setenv GMT_SESSION_NAME $$
 
 See Also
 --------
