@@ -198,9 +198,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_inset (void *V_API, int mode, void *args) {
-	int error = 0, fig, k;
+	int error = 0, fig, k, id;
 	bool exist;
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, ffile[PATH_MAX] = {""}, Bopts[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -266,6 +266,14 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
 		
+		/* First get the -B options in place before inset was called */
+		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+		if ((fp = fopen (ffile, "r")) == NULL)
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", ffile);
+		fgets (Bopts, PATH_MAX, fp);
+		gmt_chop (Bopts);
+		fclose (fp);
+		
 		/* Write out the inset information file */
 		
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
@@ -281,6 +289,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		fprintf (fp, "# MARGINS: %g %g %g %g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
 		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
 		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
+		fprintf (fp, "# FRAME: %s\n", Bopts);
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Wrote inset settings to information file %s\n", file);
 		
@@ -288,7 +297,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
-		int id, j_id;
+		int j_id;
 		char line[GMT_LEN128] = {""}, str[3] = {"J"};
 			
 		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
@@ -306,7 +315,6 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_chop (line);
 		GMT->init.history[id] = strdup (&line[10]);	/* Put back the original figure region */
 		gmt_fgets (GMT, line, GMT_LEN128, fp);		/* Read the PROJ line */
-		fclose (fp);
 		gmt_chop (line);
 		j_id = gmt_get_option_id (0, "J");	/* Get the -J index */
 		if (GMT->init.history[j_id])	/* There is prior history for this -J (it should be) */
@@ -321,6 +329,17 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		for (k = 8; isalpha (line[k]); k++);		/* Find end of code which may be 2 */
 		line[k] = '\0';
 		GMT->init.history[j_id] = strdup (&line[8]);	/* Insert the original code */
+		gmt_fgets (GMT, line, GMT_LEN128, fp);		/* Read the FRAME line */
+		gmt_chop (line);
+		fclose (fp);
+		/* Restore gmt.frame to what it was before inset begin was called */
+		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+		if ((fp = fopen (ffile, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Unable to create file %s\n", ffile);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		fprintf (fp, "%s", &line[9]);
+		fclose (fp);
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");

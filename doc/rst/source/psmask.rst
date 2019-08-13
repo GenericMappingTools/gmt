@@ -6,14 +6,14 @@ psmask
 
 .. only:: not man
 
-    psmask - Clip or mask map areas with no data table coverage
+    Clip or mask map areas with no data table coverage
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psmask** [ *table* ]
+**gmt psmask** [ *table* ]
 |SYN_OPT-I|
 |-J|\ *parameters*
 |SYN_OPT-R|

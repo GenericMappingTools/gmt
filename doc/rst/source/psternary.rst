@@ -6,14 +6,14 @@ psternary
 
 .. only:: not man
 
-    psternary - Plot data on ternary diagrams
+    Plot data on ternary diagrams
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psternary** [ *table* ]
+**gmt psternary** [ *table* ]
 [ **-JX**\ *width*\ [unit] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-B| ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psimage** *imagefile*
+**gmt psimage** *imagefile*
 [ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]

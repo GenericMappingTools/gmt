@@ -6,14 +6,14 @@ psmeca
 
 .. only:: not man
 
-    psmeca - Plot focal mechanisms on maps
+    Plot focal mechanisms on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+**gmt psmeca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 |-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]

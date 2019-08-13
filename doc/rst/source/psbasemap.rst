@@ -6,14 +6,14 @@ psbasemap
 
 .. only:: not man
 
-    psbasemap - Plot base maps and frames
+    Plot base maps and frames
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psbasemap** |-J|\ *parameters*
+**gmt psbasemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
