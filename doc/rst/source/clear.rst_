@@ -30,7 +30,7 @@ Optional Arguments
 
 .. _clear-conf:
 
-**conf**
+**defaults**
     Delete the current defaults (gmt.conf) file used for the current modern session.
 
 .. _clear-cache:
