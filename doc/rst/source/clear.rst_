@@ -28,7 +28,7 @@ Optional Arguments
 **all**
     Deletes all the items under the control of the individual targets.
 
-.. _clear-conf:
+.. _clear-defaults:
 
 **defaults**
     Delete the current defaults (gmt.conf) file used for the current modern session.
