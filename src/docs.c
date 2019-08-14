@@ -84,8 +84,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
-	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
-
+	/* Here we do not want to call GMT_Parse_Common since common options may be passed as sections in the docs */
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
