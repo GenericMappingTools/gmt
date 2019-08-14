@@ -15505,7 +15505,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		f = nf = 0;
 		while (gmt_session_format[f]) {	/* Go through the list and build array for -T arguments */
-			if (strstr (fig[k].formats, gmt_session_format[f])) {
+			if (!strcmp (fig[k].formats, gmt_session_format[f])) {
 				gcode[nf] = f;
 				fmt[nf++] = gmt_session_code[f];
 			}
