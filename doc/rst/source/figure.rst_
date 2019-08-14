@@ -18,8 +18,7 @@ Description
 -----------
 
 A GMT modern session can make any number of illustrations (including none).
-In situations when multiple illustrations will be made during a single session or when you need
-specific control over the conversion from PostScript to the output format,
+In situations when multiple illustrations will be made during a single session ,
 the **figure** module is used to specify the name and format(s) to use for the next plot.
 It must be issued before you start plotting to the intended figure, and each
 new **figure** call changes plotting focus to the next figure.  You may go back and forth between
@@ -58,7 +57,7 @@ Optional Arguments
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
-.. _figure-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -71,24 +70,50 @@ Examples
 --------
 
 To start a new figure in your current modern mode session by the name Regional and
-request we make both a PDF and an EPS file, try
+request we make both a PDF and an EPS file, try:
 
-   ::
-
+    gmt begin
     gmt figure Regional pdf,eps
+    gmt ...
+    gmt end
 
 To start a new figure GlobalMap that should be returned as a JPEG file with a 1 cm padding
-around the image, try
+around the image, try:
 
-   ::
-
+    gmt begin
     gmt figure GlobalMap jpg A1c
+    gmt ...
+    gmt end
 
-If the same figure were to be called Global Map.jpg you would need quotes:
+If the same figure were to be called Global Map.jpg you would need quotes::
 
-   ::
-
+    gmt begin
     gmt figure 'Global Map' jpg A1c
+    gmt ...
+    gmt end
+
+To make two figures in one session and go back and forth between different figures::
+
+    gmt begin
+
+    # Activate figure Fig1
+    gmt figure Fig1 pdf
+    gmt ...
+
+    # Activate figure Fig1
+    gmt figure Fig2 pdf
+    gmt ...
+
+    # Go back to figure Fig1
+    gmt figure Fig1
+    gmt ...
+
+    # Go back to figure Fig2
+    gmt figure Fig2
+    gmt ...
+
+    gmt end show
+
 
 See Also
 --------
