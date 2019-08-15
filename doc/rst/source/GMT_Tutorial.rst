@@ -850,7 +850,7 @@ symbols with a line we must use the overlay approach:
     gmt begin GMT_tut_8 pdf
       gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
       gmt plot tut_data.txt -Wthin -Si0.2
-    gmt end
+    gmt end show
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
 two-step procedure also makes it easy to plot the line over the symbols
@@ -925,7 +925,7 @@ We may now complete our example using the Mercator projection:
       gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
       gmt coast -R130/150/35/50 -JM6i -B -Ggray
       gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt
-    gmt end
+    gmt end show
 
 where the **c** appended to the **-Sc** option ensures that symbols
 sizes are interpreted to be in cm.  Your plot should look like :ref:`our example 9 below <gmt_tut_9>`
@@ -1375,7 +1375,7 @@ call to :doc:`mask`.  Here's the recipe:
       gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B -V
       gmt grdcontour ship.nc -C250 -A1000
       gmt mask -C
-    gmt end
+    gmt end show
 
 Your plot should look like :ref:`our example 13 below <gmt_tut_13>`
 
@@ -1480,7 +1480,7 @@ Here is an example of four different ways of presenting the color bar:
       gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous
       gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5
       gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5
-    gmt end
+    gmt end show
 
 Your plot should look like :ref:`our example 14 below <gmt_tut_14>`
 
@@ -1585,7 +1585,7 @@ the plot.  We try
     gmt begin GMT_tut_15 pdf
       gmt grdimage @tut_relief.nc -JM6i -B -Ctopo.cpt -V
       gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
-    gmt end
+    gmt end show
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
 
@@ -1653,7 +1653,7 @@ create the shaded relief image:
     gmt begin GMT_tut_16 pdf
       gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -B -Ctopo.cpt
       gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
-    gmt end
+    gmt end show
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
 

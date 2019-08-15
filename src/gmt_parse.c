@@ -262,7 +262,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	 */
 	int id = 0, k, n_B = 0, B_id, update_id = 0;
 	unsigned int pos = 0, B_replace = 1;
-	bool update, remember;
+	bool update, remember, check_B;
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
 	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
 
@@ -277,7 +277,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 
-	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && strncmp (GMT->init.module_name, "psscale", 7U)) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
+	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
+	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
 		sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);

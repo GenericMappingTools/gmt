@@ -26,7 +26,7 @@ Optional Arguments
 ------------------
 
 **show**
-    Open all graphics produced by the session in the default viewer via call(s) to gmt :doc:`docs`.
+    Open all graphics produced by the session in the default viewer.
 
 .. _end-V:
 

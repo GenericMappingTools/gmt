@@ -248,7 +248,7 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try
         gmt basemap -c
         gmt basemap -c
       gmt subplot end
-    gmt end
+    gmt end show
 
 
 See Also

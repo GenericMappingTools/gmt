@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] [ *module-name* [*-option*] ]
+**gmt docs** [ **-Q** ] [ |SYN_OPT-V| ] *module-name* [*-option*]
 
 |No-spaces|
 
@@ -33,6 +33,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. include:: explain_help_nopar.rst_
 
 Optional Module Arguments
 -------------------------
@@ -62,8 +64,6 @@ To see the documentation of the **-B** option in *pscoast*
 
     gmt docs pscoast -B
 
-And do not be surprised to see that it says *coast* instead of *pscoast*.
-
 To examine the list of GMT defaults, try
 
    ::
@@ -75,12 +75,6 @@ To see the Gallery
    ::
 
     gmt docs gallery
-
-To display the URL to the surface man page,.run
-
-   ::
-
-    gmt docs -Q surface
 
 
 See Also

@@ -450,6 +450,11 @@ fonts can be found in the :doc:`gmt` man page.
     significant. In that case, stick to the default planner, *estimate*,
     based on heuristics.
 
+.. _GMT_GRAPHICS_FORMAT:
+
+**GMT_GRAPHICS_FORMAT**
+    Default graphics format in modern mode [pdf].
+
 .. _GMT_HISTORY:
 
 **GMT_HISTORY**

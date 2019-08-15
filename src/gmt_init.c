@@ -386,10 +386,7 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
-/* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
-
 #include "gmt_gsformats.h"
-static char gmt_session_code[] =    { 'f',   'j',    'j',   'g',   'G', 'm',   't',    't',   'b',   'e',  'p',    0};
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -2223,8 +2220,9 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
 
-	int i, k;
-	bool go = true;
+	int i, k, orig_i;
+	unsigned int side_orig[5];
+	bool go = true, orig_draw_box = *draw_box;
 
 	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
@@ -2233,8 +2231,11 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	}
 	i = (int)strlen (in);
 	if (i == 0) return (0);
+	i--;	/* Now last char in in[] */
+	orig_i = i;
+	gmt_M_memcpy (side_orig, side, 5, unsigned int);
 
-	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
+	for (k = 0; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
 		if (k == 0 && part == 0) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
@@ -2264,6 +2265,10 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	}
 	if (i >= 0 && in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
 
+	if (i == orig_i) {	/* No frame flags.  Restore what we wiped */
+		gmt_M_memcpy (side, side_orig, 5, unsigned int);
+		*draw_box = orig_draw_box;
+	}
 	return (i+1);	/* Return remaining string length */
 }
 
@@ -6867,14 +6872,15 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t     Specify the map inset region using one of three specifications:\n");
 	gmt_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	gmt_message (GMT, "\t        Append +r if coordinates are the lower left and upper right corners of a rectangular area.\n");
-	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>+u<unit> of bounding rectangle in projected coordinates.\n");
+	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].\n");
 	gmt_message (GMT, "\t     c) Set reference point and dimensions of the inset:\n");
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
-	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
+	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).\n", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
-	if (GMT->current.setting.run_mode == GMT_CLASSIC)
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
-	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
+		gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
+	}
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }
 
@@ -15478,6 +15484,20 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[]) {
+	/* Count up how many graphics formats were selected and what their codes were.
+	 * We know the arguments are all valid formats since checked by figure or begin */
+	int k, n = 0;
+	unsigned int pos = 0;
+	char p[GMT_LEN32] = {""};
+	while ((gmt_strtok (formats, ",", &pos, p))) {
+		k = gmt_get_graphics_id (GMT, p);
+		gcode[n] = k;
+		fmt[n++] = gmt_session_code[k];
+	}
+	return (n);
+}
+
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
@@ -15503,14 +15523,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
-		f = nf = 0;
-		while (gmt_session_format[f]) {	/* Go through the list and build array for -T arguments */
-			if (strstr (fig[k].formats, gmt_session_format[f])) {
-				gcode[nf] = f;
-				fmt[nf++] = gmt_session_code[f];
-			}
-			f++;
-		}
+		/* Go through the format list and build array for -T arguments */
+		nf = get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode);
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
 			sprintf (cmd, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
