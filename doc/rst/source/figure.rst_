@@ -75,7 +75,7 @@ request we make both a PDF and an EPS file, try:
     gmt begin
     gmt figure Regional pdf,eps
     gmt ...
-    gmt end
+    gmt end show
 
 To start a new figure GlobalMap that should be returned as a JPEG file with a 1 cm padding
 around the image, try:
@@ -83,14 +83,14 @@ around the image, try:
     gmt begin
     gmt figure GlobalMap jpg A1c
     gmt ...
-    gmt end
+    gmt end show
 
 If the same figure were to be called Global Map.jpg you would need quotes::
 
     gmt begin
     gmt figure 'Global Map' jpg A1c
     gmt ...
-    gmt end
+    gmt end show
 
 To make two figures in one session and go back and forth between different figures::
 
@@ -112,7 +112,7 @@ To make two figures in one session and go back and forth between different figur
     gmt figure Fig2
     gmt ...
 
-    gmt end show
+    gmt end show show
 
 
 See Also
