@@ -6872,14 +6872,15 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t     Specify the map inset region using one of three specifications:\n");
 	gmt_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	gmt_message (GMT, "\t        Append +r if coordinates are the lower left and upper right corners of a rectangular area.\n");
-	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>+u<unit> of bounding rectangle in projected coordinates.\n");
+	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].\n");
 	gmt_message (GMT, "\t     c) Set reference point and dimensions of the inset:\n");
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
-	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
+	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).\n", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
-	if (GMT->current.setting.run_mode == GMT_CLASSIC)
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
-	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
+		gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
+	}
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }
 

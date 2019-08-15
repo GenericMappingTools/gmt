@@ -40,12 +40,12 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-    Define the map inset box on the map.  Specify the box in one of three ways:
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+    Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
-    and meridians; append **r** if the coordinates instead are the lower left and
-    upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
-    of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
+    and meridians; append **+r** if the coordinates instead are the lower left and
+    upper right corners of the desired rectangle. (b) Give *xmin/xmax/ymin/ymax*
+    of bounding rectangle in projected coordinates and optionally append **+u**\ *unit* [Default coordinate unit is meter (e)].
     (c) Give the reference point on the map for the inset using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -124,13 +124,12 @@ To make a simple basemap plot called inset.pdf that demonstrates the inset modul
 
     gmt begin inset pdf
       gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
-        gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
-          gmt basemap -Rg -JA20/20/2i -Bafg
-          echo INSET | gmt text -F+f18p+cTR -Dj-0.15i
-        gmt inset end
-      echo MAP | gmt text -F+f18p+cBL -Dj0.2i
+      gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
+        gmt basemap -Rg -JA20/20/2i -Bafg
+        gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
+      gmt inset end
+      gmt text -F+f18p+cBL+tMAP -Dj0.2i
     gmt end
-
 
 See Also
 --------
