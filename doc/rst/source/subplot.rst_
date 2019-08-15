@@ -203,8 +203,6 @@ Optional Arguments
 
 .. include:: explain_-V.rst_
 
-.. include:: explain_help.rst_
-
 Any number of plotting command can now take place and all output will be directed to the
 selected subplot.  There are a few other rules that need to be followed:
 (1) The subplot machinery expects the first plotting command in a new subplot window
@@ -231,8 +229,6 @@ Optional Arguments
 .. _subplot_end-V:
 
 .. include:: explain_-V.rst_
-.. include:: explain_help.rst_
-
 
 Examples
 --------
