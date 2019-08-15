@@ -684,11 +684,12 @@ int GMT_coast (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -E+l|L was given, which is part of usage */
 		struct GMT_OPTION *opt = NULL, *options = GMT_Create_Options (API, mode, args);
-		bool list_items = false;
+		bool list_items = false, dump_data = false;
 		if (API->error) return (API->error);	/* Set or get option list */
 		list_items = ((opt = GMT_Find_Option (API, 'E', options)) && opt->arg[0] == '+' && strchr ("lL", opt->arg[1]));
+		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
-		if (!list_items) {
+		if (!list_items && !dump_data) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: coast\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
