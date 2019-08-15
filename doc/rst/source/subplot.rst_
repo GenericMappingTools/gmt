@@ -40,9 +40,8 @@ Required Arguments
 
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
-    the same number of subplots.  To construct figures with different number of
-    subplots per row you will need to stack separate subplots.  Note: You are not
-    required to place a plot in each subplot.
+    the same number of subplots.
+    Note: You are not required to place a plot in each subplot.
 
 .. _subplot_begin-F:
 
