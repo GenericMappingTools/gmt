@@ -17,7 +17,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 **-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
-[ **-C**\ *side*\ /*clearance*\ [**u**]
+[ **-C**\ *side*\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
