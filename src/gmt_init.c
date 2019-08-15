@@ -386,10 +386,7 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
-/* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
-
 #include "gmt_gsformats.h"
-static char gmt_session_code[] =    { 'f',   'j',    'j',   'g',   'G', 'm',   't',    't',   'b',   'e',  'p',    0};
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -15478,6 +15475,20 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[]) {
+	/* Count up how many graphics formats were selected and what their codes were.
+	 * We know the arguments are all valid formats since checked by figure or begin */
+	int k, n = 0;
+	unsigned int pos = 0;
+	char p[GMT_LEN32] = {""};
+	while ((gmt_strtok (formats, ",", &pos, p))) {
+		k = gmt_get_graphics_id (GMT, p);
+		gcode[n] = k;
+		fmt[n++] = gmt_session_code[k];
+	}
+	return (n);
+}
+
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
@@ -15503,14 +15514,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
-		f = nf = 0;
-		while (gmt_session_format[f]) {	/* Go through the list and build array for -T arguments */
-			if (!strcmp (fig[k].formats, gmt_session_format[f])) {
-				gcode[nf] = f;
-				fmt[nf++] = gmt_session_code[f];
-			}
-			f++;
-		}
+		/* Go through the format list and build array for -T arguments */
+		nf = get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode);
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
 			sprintf (cmd, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
