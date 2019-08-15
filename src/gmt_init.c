@@ -2223,8 +2223,9 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
 
-	int i, k;
-	bool go = true;
+	int i, k, orig_i;
+	unsigned int side_orig[5];
+	bool go = true, orig_draw_box = *draw_box;
 
 	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
@@ -2233,8 +2234,11 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	}
 	i = (int)strlen (in);
 	if (i == 0) return (0);
+	i--;	/* Now last char in in[] */
+	orig_i = i;
+	gmt_M_memcpy (side_orig, side, 5, unsigned int);
 
-	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
+	for (k = 0; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
 		if (k == 0 && part == 0) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
@@ -2264,6 +2268,10 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	}
 	if (i >= 0 && in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
 
+	if (i == orig_i) {	/* No frame flags.  Restore what we wiped */
+		gmt_M_memcpy (side, side_orig, 5, unsigned int);
+		*draw_box = orig_draw_box;
+	}
 	return (i+1);	/* Return remaining string length */
 }
 
