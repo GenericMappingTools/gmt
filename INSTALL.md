@@ -1,8 +1,6 @@
 # Installing GMT
 
-**GMT 6.x is not released yet. This instruction works for GMT 5.x only.
-To build the latest GMT 6 developing source codes, please refer to the
-[Building Instructions](BUILDING.md).**
+[![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
 GMT is available on Windows, macOS and Linux.
 Source and binary packages are provided for the latest release version,
@@ -18,16 +16,15 @@ for compiling GMT source package (either stable release or development version).
 - [Linux](#linux)
   * [Ubuntu/Debian](#ubuntudebian)
   * [RHEL/CentOS/Fedora](#rhelcentosfedora)
-  * [Install via conda](#install-via-conda)
 - [macOS](#macos)
   * [Standalone Installer](#standalone-installer)
   * [Install via macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
   * [Install via Homebrew](#install-via-homebrew)
-  * [Install via conda](#install-via-conda-1)
 - [Windows](#windows)
   * [Standalone Installer](#standalone-installer-1)
-  * [Install via conda](#install-via-conda-2)
+- [Cross Platform Install Instructions](#cross-platform-install-instructions)
+  * [Install via conda](#install-via-conda)
 
 ## Linux
 
@@ -57,13 +54,6 @@ For RHEL and CentOS you can add this repository by telling yum:
 then, you can install GMT5 via
 
     sudo yum install GMT gshhg-gmt-nc4-all dcw-gmt
-
-### Install via conda
-
-You can use the [conda package manager](https://conda.io/) that comes with the
-[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
-
-    conda install gmt --channel conda-forge
 
 ## macOS
 
@@ -148,21 +138,14 @@ and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc a
 
     brew unlink gmt && brew link gmt4
 
-### Install via conda
-
-You can use the [conda package manager](https://conda.io/) that comes with the
-[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
-
-    conda install gmt --channel conda-forge
-
 ## Windows
-
-### Standalone Installer
 
 We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
 on the [GMT main site](https://www.generic-mapping-tools.org).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
+
+## Cross Platform Install Instructions
 
 ### Install via conda
 
