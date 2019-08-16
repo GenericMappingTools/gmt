@@ -112,7 +112,7 @@ To make two figures in one session and go back and forth between different figur
     gmt figure Fig2
     gmt ...
 
-    gmt end show show
+    gmt end show
 
 
 See Also

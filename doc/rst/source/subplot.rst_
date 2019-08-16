@@ -17,7 +17,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 **-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
-[ **-C**\ *side*\ /*clearance*\ [**u**]
+[ **-C**\ *side*\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
@@ -40,9 +40,8 @@ Required Arguments
 
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
-    the same number of subplots.  To construct figures with different number of
-    subplots per row you will need to stack separate subplots.  Note: You are not
-    required to place a plot in each subplot.
+    the same number of subplots.
+    Note: You are not required to place a plot in each subplot.
 
 .. _subplot_begin-F:
 
@@ -91,10 +90,10 @@ Optional Arguments
     Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **+p** [3pt/3pt, i.e., 15% of the :ref:`FONT_TAG size <FONT_TAG>` dimension].
+    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :ref:`FONT_TAG size <FONT_TAG>` dimension].
     Append **+g**\ *fill* to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [4pt/4pt, i.e., 20% of the :ref:`FONT_TAG size <FONT_TAG>`].
+    by the justification [4p/4p, i.e., 20% of the :ref:`FONT_TAG size <FONT_TAG>`].
     Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
@@ -167,11 +166,10 @@ Synopsis (set mode)
 **gmt subplot set** [ *row,col*\ \|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
-Note: Any **-J** option passed when plotting subplots must give **?** as scale or width
-since the dimensions of the map are completely determined by the subplot size and your region.
-Specifying map width will result in an error.  For Cartesian plots: If you want the scale
-to apply *equally* to both dimensions then you must specify **-Jx** [The default **-JX** will
-fill the subplot by using unequal scales].
+Note: If any **-J** option is passed with **?** as scale or width when plotting subplots,
+then the dimensions of the map are automatically determined by the subplot size and your region.
+For Cartesian plots: If you want the scale to apply *equally* to both dimensions
+then you must specify **-Jx** [The default **-JX** will fill the subplot by using unequal scales].
 
 Optional Arguments
 ------------------
@@ -203,8 +201,6 @@ Optional Arguments
 
 .. include:: explain_-V.rst_
 
-.. include:: explain_help.rst_
-
 Any number of plotting command can now take place and all output will be directed to the
 selected subplot.  There are a few other rules that need to be followed:
 (1) The subplot machinery expects the first plotting command in a new subplot window
@@ -231,8 +227,6 @@ Optional Arguments
 .. _subplot_end-V:
 
 .. include:: explain_-V.rst_
-.. include:: explain_help.rst_
-
 
 Examples
 --------
@@ -243,10 +237,14 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try
 
     gmt begin panels pdf
       gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr
+        gmt subplot set
         gmt basemap -R0/80/0/10
-        gmt basemap -c
-        gmt basemap -c
-        gmt basemap -c
+        gmt subplot set
+        gmt basemap
+        gmt subplot set
+        gmt basemap
+        gmt subplot set
+        gmt basemap
       gmt subplot end
     gmt end show
 
