@@ -11822,8 +11822,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			fclose (fp);
 			return NULL;
 		}
-		if (row > P->nrows || col > P->ncolumns) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)]\n", row, col, P->nrows, P->ncolumns);
+		if (row >= P->nrows || col >= P->ncolumns) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)\n", row, col, P->nrows, P->ncolumns);
 			fclose (fp);
 			return NULL;
 		}
