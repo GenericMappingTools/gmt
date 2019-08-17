@@ -5323,9 +5323,9 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_logo_pos[GMT_X] = GMT->current.setting.map_logo_pos[GMT_Y] = -54 * pt;	/* -54p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LOGO_POS] = 'p';
 	/* MAP_ORIGIN_X, MAP_ORIGIN_Y */
-	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 1;	/* 1i */
-	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'i';
-	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_Y] = 'i';
+	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 72 * pt;	/* 72p = 1i */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'p';
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_Y] = 'p';
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
