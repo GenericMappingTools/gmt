@@ -25,6 +25,7 @@ Synopsis (begin mode)
 [ **-S**\ *layout* ]
 [ **-T**\ *title* ]
 [ |SYN_OPT-V| ]
+[ **-W**\ *pen* ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -157,6 +158,11 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _subplot_begin-W:
+
+**-W**\ *pen*
+    Draw horizontal and vertical lines between interior panels using selected pen [no lines].
 
 .. include:: explain_help.rst_
 
