@@ -5323,9 +5323,9 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_logo_pos[GMT_X] = GMT->current.setting.map_logo_pos[GMT_Y] = -54 * pt;	/* -54p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LOGO_POS] = 'p';
 	/* MAP_ORIGIN_X, MAP_ORIGIN_Y */
-	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 1;	/* 1i */
-	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'i';
-	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_Y] = 'i';
+	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 72 * pt;	/* 72p = 1i */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'p';
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_Y] = 'p';
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
@@ -11822,8 +11822,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			fclose (fp);
 			return NULL;
 		}
-		if (row > P->nrows || col > P->ncolumns) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)]\n", row, col, P->nrows, P->ncolumns);
+		if (row >= P->nrows || col >= P->ncolumns) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)\n", row, col, P->nrows, P->ncolumns);
 			fclose (fp);
 			return NULL;
 		}
@@ -12621,7 +12621,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
+				double gap[4];
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
+					gmt_subplot_gaps (API, fig, gap);	/* First see if there were subplot-wide -Cgaps settings in effect */
 					if (opt->arg[0] && strchr (opt->arg,',')) {	/* Gave a comma-separate argument so presumably this is our row,col */
 						sscanf (opt->arg, "%d,%d", &row, &col);
 						if (row < 0 || col < 0) {
@@ -12641,12 +12643,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					else {	/* If there is a previously set panel, we move to the next panel, otherwise set to first */
 						if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
 					}
-					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;	/* Make this the current panel */
+					if (gmt_set_current_panel (API, fig, row, col, gap, NULL, 1)) return NULL;	/* Make this the current panel */
 					if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
 				}
 				else if (subplot_status & GMT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
+					gmt_subplot_gaps (API, fig, gap);	/* First see if there were subplot-wide -Cgaps settings in effect */
 					if (gmt_get_next_panel (API, fig, &row, &col)) return NULL;	/* Bad */
-					if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
+					if (gmt_set_current_panel (API, fig, row, col, gap, NULL, 1)) return NULL;
 				}
 			}
 			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Map inset and gave -J */
