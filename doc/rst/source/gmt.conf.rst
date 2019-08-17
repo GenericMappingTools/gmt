@@ -848,13 +848,13 @@ fonts can be found in the :doc:`gmt` man page.
 
 **MAP_ORIGIN_X**
     (**-X**) Sets the x-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0.
+    new plot [72p]. For an overlay, the default offset is 0.
 
 .. _MAP_ORIGIN_Y:
 
 **MAP_ORIGIN_Y**
     (**-Y**) Sets the y-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0.
+    new plot [72p]. For an overlay, the default offset is 0.
 
 .. _MAP_POLAR_CAP:
 
