@@ -32,7 +32,7 @@ records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.  The user may select any plot region
 and projection once plotting in the inset, but if the first command uses
 ? as scale or width then we adjust the scale or width to fill the inset as best
-as possible, given the inset size and margins.
+as possible, given the inset size and margins (if selected).
 
 
 Required Arguments
@@ -85,10 +85,9 @@ Optional Arguments
 
 **-M**\ *margins*
     This is clearance that is added around the inside of the inset.  Plotting will take place
-    within the inner region only.
-    The margins can be a single value, a pair of values separated by slashes
+    within the inner region only. The margins can be a single value, a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-    separate left, right, bottom, and top margins) [0.5c].
+    separate left, right, bottom, and top margins) [no margins].
 
 .. _inset_begin-V:
 

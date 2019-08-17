@@ -66,7 +66,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct INSET_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct INSET_CTRL);
-	for (unsigned int k = 0; k < 4; k++) C->M.margin[k] = 0.5 * GMT->session.u2u[GMT_CM][GMT_INCH];	/* 0.5 cm -> inches */
 	return (C);
 }
 
@@ -90,8 +89,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mapinset_syntax (API->GMT, 'D', "Design a simple map inset as specified below:");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset.", 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for padding around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for space around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -142,8 +141,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
-				if (opt->arg[0] == 0) {	/* Accept default margins */
-					for (k = 0; k < 4; k++) Ctrl->M.margin[k] = 0.5 * INSET_CM_TO_INCH;
+				if (opt->arg[0] == 0) {	/* Gave nothing */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: No margins given.\n");
+					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
 					k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->M.margin, 4);
