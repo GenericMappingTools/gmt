@@ -15,7 +15,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
 [ **-C**\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
@@ -147,6 +147,8 @@ Optional Arguments
     for the entire subplot.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
+    Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
+
 
 .. _subplot_begin-T:
 
@@ -158,11 +160,6 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
-
-.. _subplot_begin-W:
-
-**-W**\ *pen*
-    Draw horizontal and vertical lines between interior panels using selected pen [no lines].
 
 .. include:: explain_help.rst_
 
