@@ -158,7 +158,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>] [-A<autolabelinfo>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<side><clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [-W<pen>] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<side>]<clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [-W<pen>] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
@@ -194,7 +194,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [subplots are numbered across rows].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance>[u] to the <side> (w|e|s|n) of the plottable subplot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side [no clearances].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side. Use <side> = x or y to set w|e or s|n, respectively.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   No specified <side> means set the same clearance on all sides [no clearances].\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set shared subplot layout for rows (-SR) and columns (-SC); can be overridden via -B:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-SC Each subplot Column shares a common x-range. First row (top axis) and last row (bottom axis) are annotated;\n");
@@ -367,15 +368,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Clearance/inside margins */
 				Ctrl->C.active = true;
-				switch (opt->arg[0]) {
-					case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-					case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-					case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-					case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -C requires w|e|s|n<clearance>[u]\n");
-						n_errors++;
-						break;
+				if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a side directive */
+					switch (opt->arg[0]) {
+						case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'x':	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'y':	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					}
+				}
+				else {	/* Constant clearance on all side */
+					Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, opt->arg);
 				}
 				break;
 
@@ -776,8 +780,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		 * but override if users have turned any of those sides off with b or t */
 
 		ny = 2;	/* Default is ticks on both S and N */
-		if (strchr (Ctrl->S[GMT_Y].axes, 'b')) ny--;	/* But not on the south (bottom) side */
-		if (strchr (Ctrl->S[GMT_Y].axes, 't')) ny--;	/* But not on the north (top) side */
+		if (strchr (Ctrl->S[GMT_X].axes, 'b')) ny--;	/* But not on the south (bottom) side */
+		if (strchr (Ctrl->S[GMT_X].axes, 't')) ny--;	/* But not on the north (top) side */
 		else y_header_off += tick_height;
 		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);

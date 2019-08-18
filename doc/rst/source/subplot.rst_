@@ -17,7 +17,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 **-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
-[ **-C**\ *side*\ /*clearance*\ [**u**]]
+[ **-C**\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
@@ -104,7 +104,7 @@ Optional Arguments
 
 .. _subplot_set-C1:
 
-**-C**\ *side*\ /*clearance*\ [**u**\ ]
+**-C**\ [*side*]\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and *nn**.  No *side* means all sides. The option is repeatable to set aside space
