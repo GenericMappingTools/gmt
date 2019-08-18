@@ -17,7 +17,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 **-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
-[ **-C**\ *side*\ /*clearance*\ [**u**]]
+[ **-C**\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
@@ -103,10 +103,12 @@ Optional Arguments
 
 .. _subplot_set-C1:
 
-**-C**\ *side*\ /*clearance*\ [**u**\ ]
+**-C**\ [*side*]\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
-    on more than one side.  Such space will be left untouched by the main map plotting but can
+    side, using *side* values from **w**, **e**, **s**, **n**, or **xx** for both **w** and **e**
+    or **y** for both **s** and **n**.  The option is repeatable to set aside space
+    on more than one side.  If no *side* is given the it means the same constant clearance on all sides.
+    Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
     to all subplots, while settings under **set** only apply to the selected (active) subplot.  Note: Common options **-X**
     and **-Y** are not available during subplots; use **-C** instead.
@@ -115,7 +117,7 @@ Optional Arguments
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
-
+s
 .. _subplot_begin-M:
 
 **-M**\ *margins*
