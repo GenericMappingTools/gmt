@@ -84,8 +84,9 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
-	struct F {	/* -F[f|s][<width>[u]/<height>[u]][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d] */
+	struct F {	/* -F[f|s][<width>[u]/<height>[u]][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
 		bool active;
+		bool lines;
 		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning */
 		bool reset_h;		/* True when height was given as 0 and we need to update based on what was learned */
 		unsigned int mode;	/* Whether dimensions given are for figure or individual subplots */
@@ -94,6 +95,7 @@ struct SUBPLOT_CTRL {
 		double clearance[2];	/* Optionally extend the figure rectangle with padding [0] */
 		char fill[GMT_LEN64];	/* Fill for the entire figure canvas */
 		char pen[GMT_LEN64];	/* Pen outline for the entire figure canvas */
+		char Lpen[GMT_LEN64];	/* Pen to draw midlines */
 	} F;
 	struct S {	/* -S[C|R]<layout> */
 		bool active;
@@ -120,10 +122,6 @@ struct SUBPLOT_CTRL {
 		bool active;
 		char *title;	/* Title above the entire set of subplots */
 	} T;
-	struct W {	/* -W<pen> */
-		bool active;
-		char pen[GMT_LEN64];
-	} W;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -159,7 +157,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>] [-A<autolabelinfo>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>] [-A<autolabelinfo>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<side><clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [-W<pen>] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
@@ -177,9 +175,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   list of widths and/or heights.  A single value means constant width or height.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   As an option the composite figure rectangle may be extended, drawn or filled.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is most useful if you are not plotting any map frames in the subplots.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for extending the figure rectangle outwards [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the figure rectangle using selected pen [no outline].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to draw dividing lines between interior subplots using selected pen [no lines].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot.  Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
@@ -212,9 +211,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify a main heading to be centered above the figure [none].\n");
-	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Draw dividing lines between interior subplots using selected pen [no lines].\n");
-	GMT_Option (API, ".");
+	GMT_Option (API, "V.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -487,7 +484,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpf")) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpfw")) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for rectangle */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->F.clearance) < 0) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
@@ -498,6 +495,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					}
 					if (gmt_get_modifier (opt->arg, 'd', string))
 						Ctrl->F.debug = true;
+					if (gmt_get_modifier (opt->arg, 'w', Ctrl->F.Lpen) && Ctrl->F.Lpen[0]) {
+						if (gmt_getpen (GMT, Ctrl->F.Lpen, &pen)) n_errors++;
+					}
 				}
 				break;
 			
@@ -569,11 +569,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			case 'T':	/* Gave figure heading */
 				Ctrl->T.active = true;
 				Ctrl->T.title = strdup (opt->arg);
-				break;
-				
-			case 'W':
-				Ctrl->W.active = true;
-				strcpy (Ctrl->W.pen,opt->arg);
 				break;
 				
 			default:	/* Report bad options */
@@ -1070,7 +1065,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote subplot order to information file %s\n", file);
 		
-		if (Ctrl->W.active) {	/* Must draw divider lines between subplots so we need to allocate a dataset */
+		if (Ctrl->F.Lpen[0]) {	/* Must draw divider lines between subplots so we need to allocate a dataset */
 			uint64_t dim[4] = {1, last_row + last_col, 2, 2};	/* One segment line per interior row/col */
 			if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Subplot: Unable to allocate a dataset\n");
@@ -1140,11 +1135,11 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 		}
-		if (Ctrl->W.active) {	/* Draw lines between interior tiles */
+		if (Ctrl->F.Lpen[0]) {	/* Draw lines between interior tiles */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->W.pen, vfile);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for psxy: %s\n", command);
 			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
