@@ -25,7 +25,6 @@ Synopsis (begin mode)
 [ **-S**\ *layout* ]
 [ **-T**\ *title* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
