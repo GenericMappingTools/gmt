@@ -781,8 +781,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		 * but override if users have turned any of those sides off with b or t */
 
 		ny = 2;	/* Default is ticks on both S and N */
-		if (strchr (Ctrl->S[GMT_Y].axes, 'b')) ny--;	/* But not on the south (bottom) side */
-		if (strchr (Ctrl->S[GMT_Y].axes, 't')) ny--;	/* But not on the north (top) side */
+		if (strchr (Ctrl->S[GMT_X].axes, 'b')) ny--;	/* But not on the south (bottom) side */
+		if (strchr (Ctrl->S[GMT_X].axes, 't')) ny--;	/* But not on the north (top) side */
 		else y_header_off += tick_height;
 		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
