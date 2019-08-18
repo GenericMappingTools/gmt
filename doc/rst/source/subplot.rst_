@@ -15,7 +15,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
 [ **-C**\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
@@ -105,10 +105,9 @@ Optional Arguments
 
 **-C**\ [*side*]\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from **w**, **e**, **s**, **n**, or **x** for both **w** and **e**
-    or **y** for both **s** and **n**.  The option is repeatable to set aside space
-    on more than one side.  If no *side* is given the it means the same constant clearance on all sides.
-    Such space will be left untouched by the main map plotting but can
+    side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
+    or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
+    on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
     to all subplots, while settings under **set** only apply to the selected (active) subplot.  Note: Common options **-X**
     and **-Y** are not available during subplots; use **-C** instead.
@@ -148,6 +147,8 @@ Optional Arguments
     for the entire subplot.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
+    Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
+
 
 .. _subplot_begin-T:
 
