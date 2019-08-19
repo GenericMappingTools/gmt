@@ -1,8 +1,6 @@
 # Installing GMT
 
-**GMT 6.x is not released yet. This instruction works for GMT 5.x only.
-To build the latest GMT 6 developing source codes, please refer to the
-[Building Instructions](BUILDING.md).**
+[![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
 GMT is available on Windows, macOS and Linux.
 Source and binary packages are provided for the latest release version,
@@ -18,16 +16,15 @@ for compiling GMT source package (either stable release or development version).
 - [Linux](#linux)
   * [Ubuntu/Debian](#ubuntudebian)
   * [RHEL/CentOS/Fedora](#rhelcentosfedora)
-  * [Install via conda](#install-via-conda)
 - [macOS](#macos)
   * [Standalone Installer](#standalone-installer)
   * [Install via macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
   * [Install via Homebrew](#install-via-homebrew)
-  * [Install via conda](#install-via-conda-1)
 - [Windows](#windows)
   * [Standalone Installer](#standalone-installer-1)
-  * [Install via conda](#install-via-conda-2)
+- [Cross Platform Install Instructions](#cross-platform-install-instructions)
+  * [Install via conda](#install-via-conda)
 
 ## Linux
 
@@ -58,13 +55,6 @@ then, you can install GMT5 via
 
     sudo yum install GMT gshhg-gmt-nc4-all dcw-gmt
 
-### Install via conda
-
-You can use the [conda package manager](https://conda.io/) that comes with the
-[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
-
-    conda install gmt --channel conda-forge
-
 ## macOS
 
 ### Standalone Installer
@@ -84,6 +74,22 @@ or:
 
 in the terminal. Then prepend this directory to your PATH environment variable,
 e.g., in `~/.bashrc`. Note: The installer is always built for the latest macOS version only.
+
+Note: While the installer comes with all GMT executables and needed libraries, there are some
+run-time dependencies on executables that you will need to install separately:
+
+- [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
+- [Ghostscript](https://www.ghostscript.com/) (Convert PostScript to PDF or raster images)
+- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
+- [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
+
+Install these via fink, macport, or homebrew.  If you do not use any of these, then
+we recommend installing [homebrew](https://brew.sh/). Now, run either the fink, port,
+or brew command:
+
+    fink install gdal ghostscript graphicsmagick ffmpeg 
+    port install gdal ghostscript graphicsmagick ffmpeg 
+    brew install gdal ghostscript graphicsmagick ffmpeg 
 
 ### Install via macports
 
@@ -132,21 +138,14 @@ and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc a
 
     brew unlink gmt && brew link gmt4
 
-### Install via conda
-
-You can use the [conda package manager](https://conda.io/) that comes with the
-[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
-
-    conda install gmt --channel conda-forge
-
 ## Windows
-
-### Standalone Installer
 
 We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
 on the [GMT main site](https://www.generic-mapping-tools.org).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
+
+## Cross Platform Install Instructions
 
 ### Install via conda
 

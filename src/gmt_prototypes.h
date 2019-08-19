@@ -41,6 +41,9 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap);
+EXTERN_MSC int gmt_get_option_id (int start, char *this_option);
+EXTERN_MSC bool gmt_is_integer (char *L);
 EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col);
 EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);

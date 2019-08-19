@@ -42,7 +42,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for unnamed figures [%s].\n", GMT_SESSION_NAME);
-	GMT_Message (API, GMT_TIME_NONE, "\t<format(s)> sets the default plot format(s) [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
+	GMT_Message (API, GMT_TIME_NONE, "\t<format(s)> sets the default plot format(s) [%s].\n", gmt_session_format[API->GMT->current.setting.graphics_format]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose one or more of these valid extensions separated by commas:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");

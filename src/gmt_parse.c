@@ -262,7 +262,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	 */
 	int id = 0, k, n_B = 0, B_id, update_id = 0;
 	unsigned int pos = 0, B_replace = 1;
-	bool update, remember;
+	bool update, remember, check_B;
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
 	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
 
@@ -277,7 +277,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 
-	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && strncmp (GMT->init.module_name, "psscale", 7U)) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
+	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
+	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
 		sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
@@ -304,7 +305,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
-			if ((id = gmtlib_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
+			if ((id = gmt_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
@@ -319,7 +320,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 				str[1] = GMT->init.history[id][0];
 			}
 			/* Continue looking for -J<code> */
-			if ((id = gmtlib_get_option_id (id + 1, str)) == GMT_NOTSET) Return;	/* No -J<code> found */
+			if ((id = gmt_get_option_id (id + 1, str)) == GMT_NOTSET) Return;	/* No -J<code> found */
 			update_id = id;
 		}
 		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
@@ -345,7 +346,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			}
 		}
 		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
-			update_id = id = gmtlib_get_option_id (0, str);	/* If -R then we get id for RP */
+			update_id = id = gmt_get_option_id (0, str);	/* If -R then we get id for RP */
 			if (id == GMT_NOTSET) Return;	/* Error: user gave shorthand option but there is no record in the history */
 			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R') {	/* Must deal with both RP and RG under modern mode */
 				if (GMT->current.ps.active || !strncmp (GMT->init.module_name, "pscoast", 7U)) {	/* Plotting module: First check RP if it exists */

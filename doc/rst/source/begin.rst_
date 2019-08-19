@@ -19,8 +19,7 @@ Description
 
 The **begin** module instructs GMT to begin a new modern session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
-and format(s) of your plot.  However, if you want to create multiple illustrations within this
-session or need more control over the conversion from the internal PostScript to the output format,
+and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
 you will instead use :doc:`figure` for the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session
 that may run concurrently.  Thus unlike in classic mode you can run multiple modern sessions
@@ -41,13 +40,13 @@ Optional Arguments
     automatically from your *formats* selection(s) [gmtsession].  If your script only
     performs calculations or needs to make several figures then you will not use this argument.
     While not recommended, if your *prefix* has spaces in it then you must enclose your
-    prefix in single quotes.
+    prefix in single or double quotes.
 
 .. _begin-formats:
 
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable graphics formats
-    :ref:`formats <tbl-formats>` [pdf].
+    :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
 
 .. _begin-options:
 
@@ -108,7 +107,7 @@ are produced then we do not need to give any further arguments:
     gmt begin
 
 Should we give such a command and still produce a plot then it will automatically
-be called gmtsession.pdf.
+be called gmtsession.pdf (assuming GMT_GRAPHICS_FORMAT is pdf).
 
 To set up proceedings for a jpg figure with 0.5c white margin, we would run
 
@@ -132,11 +131,11 @@ have that ID as PPID and it will differ from the one determined by gmt begin.
 If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
 then you can add this command to the top of your script to make the issue go away (in Bourne shell):
 
-export GMT_SESSION_NAME=$$
+    export GMT_SESSION_NAME=$$
 
 or in cshell:
 
-setenv GMT_SESSION_NAME $$
+    setenv GMT_SESSION_NAME $$
 
 See Also
 --------

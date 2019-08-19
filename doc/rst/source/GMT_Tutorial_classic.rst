@@ -423,7 +423,7 @@ to the common switches we may need to use some of several pscoast-specific optio
   +========+================================================================================================+
   | **-A** | Exclude small features or those of high hierarchical levels (see Appendix K)                   |
   +--------+------------------------------------------------------------------------------------------------+
-  | **-D** | Select data resolution (**b**\ ull, **h**\ igh, **i**\ ntermediate, **l**\ ow, or **c**\ rude) |
+  | **-D** | Select data resolution (**f**\ ull, **h**\ igh, **i**\ ntermediate, **l**\ ow, or **c**\ rude) |
   +--------+------------------------------------------------------------------------------------------------+
   | **-G** | Set color of dry areas (default does not paint)                                                |
   +--------+------------------------------------------------------------------------------------------------+

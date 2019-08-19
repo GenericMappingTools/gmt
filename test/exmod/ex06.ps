@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_010caf5-dirty_2019.08.09 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:53:09 2018
+%%CreationDate: Fri Aug  9 19:52:40 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -669,12 +664,12 @@ gsave
 0 A
 FQ
 O0
-1800 1800 TM
+1500 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R0/6/0/8.32311 -Jx1i -T -Xr1.5i -Yr1.5i --GMT_HISTORY=false
+%@GMT: gmt psxy -R0/6/0/8.32311 -Jx1i -T -Xr1.25i -Yr1i --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 6.00000000 0.00000000 8.32311000 0.000 6.000 0.000 8.323 +xy
-%GMTBoundingBox: 108 108 432 599.264
+%GMTBoundingBox: 90 72 432 599.264
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -684,121 +679,19 @@ PSL_completion /PSL_completion {} def
 0 A
 FQ
 O0
-1500 0 TM
+0 5788 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @fractures_06.txt -: -A10r -Sn -JX3.6i6i -Gorange -R0/1/0/360 -Bx0.2g0.2 -By30g30 -BWENS+glightblue -W1p -Xa0i -Ya0i
-%@PROJ: xy -1.80000000 1.80000000 -1.80000000 1.80000000 -1.800 1.800 -1.800 1.800 +xy
+%@GMT: gmt pshistogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue @v3206_06.txt -R-6000/0/0/30 -Gorange -L1p -Z1 -W250 -Xa0i -Ya4.8231i -JX15c
+%@PROJ: xy -6000.00000000 0.00000000 0.00000000 30.00000000 -6000.000 0.000 0.000 30.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 /PSL_completion {
 V
-1500 0 T
--1860 4560 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-333 F0
-(b\)) br Z
-U
-}!
-2160 2160 T
-{0.678 0.847 0.902 C} FS
-2160 0 0 Sc
-25 W
-FQ
-O1
-2160 0 0 Sc
-17 W
-{1 0.647 0 C} FS
-60 688 M
-163 145 D
-326 344 D
-414 198 D
-406 -6 D
-400 -130 D
-185 -328 D
--121 -420 D
--388 -365 D
--464 -212 D
--259 -107 D
--200 -51 D
--277 72 D
--45 -28 D
-31 -130 D
--27 -107 D
--79 -28 D
--50 -390 D
--167 -195 D
--182 28 D
--191 24 D
--107 180 D
--110 136 D
--30 183 D
--50 144 D
-153 192 D
-212 128 D
--20 71 D
-57 61 D
-150 1 D
--83 107 D
--187 275 D
-31 161 D
-153 -6 D
-107 69 D
-139 -135 D
-FO
-4 W
-N 0 0 M 2160 0 D S
-N 0 0 M 1871 1080 D S
-N 0 0 M 1080 1871 D S
-N 0 0 M 0 2160 D S
-N 0 0 M -1080 1871 D S
-N 0 0 M -1871 1080 D S
-N 0 0 M -2160 0 D S
-N 0 0 M -1871 -1080 D S
-N 0 0 M -1080 -1871 D S
-N 0 0 M 0 -2160 D S
-N 0 0 M 1080 -1871 D S
-N 0 0 M 1871 -1080 D S
-N 0 0 M 2160 0 D S
-N 0 0 432 0 360 arc S
-N 0 0 864 0 360 arc S
-N 0 0 1296 0 360 arc S
-N 0 0 1728 0 360 arc S
-N 0 0 2160 0 360 arc S
-0 2860 M 400 F0
-() bc Z
-0 -2327 M 267 F0
-(South) tc Z
-N 2160 -2160 M -432 0 D S
-N 2160 -2160 M 0 83 D S
-N 1728 -2160 M 0 83 D S
-1944 -2243 M 200 F0
-(0.2) tc Z
-2327 0 M 267 F0
-(East) ml Z
--2327 0 M (West) mr Z
-0 2327 M (North) bc Z
--2160 -2160 T
-%%EndObject
--1500 0 TM
-PSL_completion /PSL_completion {} def
-0 A
-FQ
-O0
-0 5788 TM
-
-% PostScript produced by:
-%@GMT: gmt pshistogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue @v3206_06.txt -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -L1p -Z1 -W250 -Xa0i -Ya4.8231i
-%@PROJ: xy -6000.00000000 0.00000000 0.00000000 30.00000000 -6000.000 0.000 0.000 30.000 +xy
-%%BeginObject PSL_Layer_3
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-/PSL_completion {
-V
 0 5788 T
--360 4560 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0 A -360 4560 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 333 F0
 (a\)) br Z
 U
@@ -850,6 +743,7 @@ N 0 0 M -83 0 D S
 N 0 1400 M -83 0 D S
 N 0 2800 M -83 0 D S
 N 0 4200 M -83 0 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
@@ -1022,6 +916,109 @@ N 6960 0 M 0 42 D S
 (Histograms) bc Z
 %%EndObject
 0 -5788 TM
+PSL_completion /PSL_completion {} def
+0 A
+FQ
+O0
+1500 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psrose @fractures_06.txt -: -A10r -S -Gorange -R0/1/0/360 -Bx0.2g0.2 -By30g30 -BWENS+glightblue -W1p -Jx3.5i -Xa0i -Ya0i
+%@PROJ: xy -1.75000000 1.75000000 -1.75000000 1.75000000 -1.750 1.750 -1.750 1.750 +xy
+%%BeginObject PSL_Layer_3
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+/PSL_completion {
+V
+1500 0 T
+0 A -1860 4560 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+333 F0
+(b\)) br Z
+U
+}!
+2100 2100 T
+{0.678 0.847 0.902 C} FS
+2100 0 0 Sc
+25 W
+FQ
+O1
+2100 0 0 Sc
+17 W
+{1 0.647 0 C} FS
+59 669 M
+158 140 D
+317 336 D
+402 192 D
+395 -6 D
+389 -126 D
+179 -319 D
+-117 -409 D
+-377 -354 D
+-452 -206 D
+-251 -105 D
+-194 -49 D
+-270 70 D
+-44 -27 D
+31 -127 D
+-27 -104 D
+-77 -27 D
+-48 -380 D
+-162 -189 D
+-177 27 D
+-186 24 D
+-105 175 D
+-106 132 D
+-29 178 D
+-49 140 D
+149 186 D
+206 125 D
+-19 69 D
+55 59 D
+146 1 D
+-81 104 D
+-182 268 D
+31 156 D
+148 -6 D
+105 67 D
+135 -131 D
+FO
+4 W
+N 0 0 M 2100 0 D S
+N 0 0 M 1819 1050 D S
+N 0 0 M 1050 1819 D S
+N 0 0 M 0 2100 D S
+N 0 0 M -1050 1819 D S
+N 0 0 M -1819 1050 D S
+N 0 0 M -2100 0 D S
+N 0 0 M -1819 -1050 D S
+N 0 0 M -1050 -1819 D S
+N 0 0 M 0 -2100 D S
+N 0 0 M 1050 -1819 D S
+N 0 0 M 1819 -1050 D S
+N 0 0 M 2100 0 D S
+N 0 0 420 0 360 arc S
+N 0 0 840 0 360 arc S
+N 0 0 1260 0 360 arc S
+N 0 0 1680 0 360 arc S
+N 0 0 2100 0 360 arc S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0 2800 M 400 F0
+() bc Z
+0 -2267 M 267 F0
+(South) tc Z
+N 2100 -2100 M -420 0 D S
+N 2100 -2100 M 0 83 D S
+N 1680 -2100 M 0 83 D S
+1890 -2183 M 200 F0
+(0.2) tc Z
+2267 0 M 267 F0
+(East) ml Z
+-2267 0 M (West) mr Z
+0 2267 M (North) bc Z
+-2100 -2100 T
+%%EndObject
+-1500 0 TM
 PSL_completion /PSL_completion {} def
 
 grestore

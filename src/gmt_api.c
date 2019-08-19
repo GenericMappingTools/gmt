@@ -645,10 +645,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 			return;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
-			if (head->arg[0] == '+' && head->arg[1] == '\0')	/* Gave + */
-				modern = 1;
-			else if (head->arg[0] == '-' && (head->arg[1] == '\0' || head->arg[1] == GMT_OPT_USAGE || head->arg[1] == GMT_OPT_SYNOPSIS))	/* Gave a single argument */
-				modern = 1;
+			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS) modern = 1;
 			if (modern) usage = true;
 		}
 	}
@@ -9995,14 +9992,11 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	API = api_get_api_ptr (V_API);
 	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
-	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
-		sprintf (full_name, "gmt %s", mode_name);
-		mode_name = full_name;
-	}
-	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
+	sprintf (full_name, "gmt %s", mode_name);
+	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", full_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
 	gmtlib_set_KOP_strings (API);
-	return mode_name;
+	return full_name;
 }
 
 /* Module Extension: Allow listing and calling modules by name */

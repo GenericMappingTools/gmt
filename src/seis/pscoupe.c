@@ -846,8 +846,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 int GMT_coupe (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -1170,12 +1168,14 @@ Definition of scalar moment.
 
 		if (!Ctrl->S.no_label) {
 			int label_justify = 0;
-			double label_x = plot_x; 
-			double label_y = plot_y;
-			
+			double label_x, label_y;
+			double label_offset[2];
+
 			label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
-			label_x += 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
-			label_y += 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
+			label_offset[0] = label_offset[1] = GMT_TEXT_CLEARANCE * 0.01 * Ctrl->S.font.size / PSL_POINTS_PER_INCH;
+
+			label_x = plot_x + 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
+			label_y = plot_y + 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
 
 			/* Also deal with any justified offsets if given */
 			if (Ctrl->S.justify%4 == 1) /* Left aligned */
@@ -1189,7 +1189,7 @@ Definition of scalar moment.
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
-			// if (Ctrl->R2.active) PSL_plotbox (PSL, label_x, label_y, label_x + Ctrl->S.font.size / PSL_POINTS_PER_INCH, label_y + Ctrl->S.font.size / PSL_POINTS_PER_INCH);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, form);
 		}
@@ -1216,7 +1216,7 @@ Definition of scalar moment.
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Deal with the fact that -R was set implicitly via -A */
 		char r_code[GMT_LEN256] = {""};
-		int id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
+		int id = gmt_get_option_id (0, "R");		/* The -RP history item */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/*  Free previous -R */
 		sprintf (r_code, "%.16g/%.16g/%.16g/%.16g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		GMT->init.history[id] = strdup (r_code);

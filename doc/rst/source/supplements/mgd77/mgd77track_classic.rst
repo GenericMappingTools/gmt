@@ -6,14 +6,14 @@ mgd77track
 
 .. only:: not man
 
-    mgd77track - Plot track-line map of MGD77 cruises
+    Plot track-line map of MGD77 cruises
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77track** *NGDC-ids*
+**gmt mgd77track** *NGDC-ids*
 |SYN_OPT-R|
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
