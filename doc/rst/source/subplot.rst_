@@ -15,9 +15,9 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
 [ **-A**\ *autolabel* ]
-[ **-C**\ *side*\ /*clearance*\ [**u**]]
+[ **-C**\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
@@ -103,9 +103,10 @@ Optional Arguments
 
 .. _subplot_set-C1:
 
-**-C**\ *side*\ /*clearance*\ [**u**\ ]
+**-C**\ [*side*]\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
+    side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
+    or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
     to all subplots, while settings under **set** only apply to the selected (active) subplot.  Note: Common options **-X**
@@ -119,11 +120,13 @@ Optional Arguments
 .. _subplot_begin-M:
 
 **-M**\ *margins*
-    This is margin space that is added *between* neighboring subplots (i.e., interior margins) in addition
+    This is margin space that is added *between* neighboring subplots (i.e., the interior margins) *in addition*
     to the automatic space added for tick marks, annotations, and labels.  The margins can be specified as
     a single value (for same margin on all sides), a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four slash-separated margins
-    (for setting separate left, right, bottom, and top margins) [0.5c].
+    (for setting separate left, right, bottom, and top margins).  The actual gap created is always a sum of
+    the margins for the two opposing sides (e.g., east plus west or south plus north margins) [Default is
+    half the primary annotation font size, giving the full annotation font size as the default gap].
 
 .. _-R:
 
@@ -146,6 +149,8 @@ Optional Arguments
     for the entire subplot.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
+    Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
+
 
 .. _subplot_begin-T:
 
