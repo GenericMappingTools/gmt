@@ -1054,7 +1054,7 @@ ways, such as
    the corresponding FONT defaults (e.g., :ref:`FONT_TITLE <FONT_TITLE>`).
 
 *  All color or fill specifications may append @\ *transparency* to
-   change the PDF transparency level for that item. See **-t** for
+   change the transparency level for that item. See **-t** for
    limitations on how to visualize this transparency.
 
 *  GMT now ships with 36 standard color palette tables (CPT), up from 24.
