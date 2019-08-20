@@ -899,7 +899,7 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-s**   | Control output of records containing one or more NaNs              |
 +----------+--------------------------------------------------------------------+
-| **-t**   | Change layer PDF transparency                                      |
+| **-t**   | Change layer transparency                                          |
 +----------+--------------------------------------------------------------------+
 | **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
@@ -2127,8 +2127,8 @@ or more fields (and not necessarily *z*) equal NaN. Finally, you can
 supply a comma-separated list of all columns or column ranges to
 consider (before the optional modifiers) for this NaN test.
 
-Layer PDF transparency: The **-t** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Layer transparency: The **-t** option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
@@ -2754,7 +2754,7 @@ However, PostScript extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., the feature will be invisible). As
-noted in section `Layer PDF transparency: The -t option`_, we can control transparency on a
+noted in section `Layer transparency: The -t option`_, we can control transparency on a
 layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
