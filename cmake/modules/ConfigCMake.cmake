@@ -43,7 +43,7 @@ set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
 # A non-public release has a FALSE 'GMT_PUBLIC_RELEASE' variable in 'ConfigDefault.cmake'.
 #set (HAVE_GIT_VERSION)
 if (GIT_FOUND)
-	# Get the location, inside the staging area location, to copy the application bundle to.
+	# Get the last git commit hash
 	execute_process (
 		COMMAND ${GIT_EXECUTABLE} describe --abbrev=7 --always --dirty
 		WORKING_DIRECTORY ${GMT_SOURCE_DIR}
@@ -54,7 +54,7 @@ if (GIT_FOUND)
 	if (GIT_RETURN_CODE)
 		message (STATUS "Unable to determine git commit hash for non-public release - ignoring.")
 	else (GIT_RETURN_CODE)
-		if (GIT_COMMIT_HASH)				
+		if (GIT_COMMIT_HASH)
 			set (HAVE_GIT_VERSION TRUE)
 			# For non-public release, add the last git commit hash and date
 			if (NOT GMT_PUBLIC_RELEASE)

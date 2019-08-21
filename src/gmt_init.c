@@ -3056,7 +3056,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 					n_int[3]++;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognixed type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
 					n_errors++;
 					break;
 			}
