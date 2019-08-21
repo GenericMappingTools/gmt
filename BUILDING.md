@@ -52,7 +52,7 @@ For movie-making capabilities these executables are needed:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
-For viewing plots and documentation under Linux via gmt docs, your need xdg-open:
+For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 - xdg-open (Unified open for a variety of files)
 
@@ -327,7 +327,7 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAK
 cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x86
 ```
 
-For advanced users, you can append the option ``-G Ninja`` to use the
+For advanced users, you can append the option `-G Ninja` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
@@ -344,7 +344,7 @@ cmake --build .
 cmake --build . --config Release
 ```
 
-which will compile all the programs. You can also append ``--parallel [<jobs>]``
+which will compile all the programs. You can also append **--parallel** [*jobs*]
 to enable parallel build, in which *jobs* is the maximum number of concurrent
 processes to use when building. If *jobs* is omitted the native build tool's
 default number is used.
@@ -366,7 +366,7 @@ UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
-Using ``sudo`` will often do the trick.
+Using `sudo` will often do the trick.
 
 ## Setting path
 
