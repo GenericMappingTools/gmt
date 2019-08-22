@@ -103,7 +103,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# Export git working tree
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
-	# Remove the test dir, so that it is not included in the final release tarball
+	# Remove some directories and files, so that they are not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
