@@ -22,6 +22,7 @@ it can do.
    Users_contrib_symbols
    datasets
    api
+   GMT Defaults <gmt.conf>
 
 .. toctree::
    :maxdepth: 1
