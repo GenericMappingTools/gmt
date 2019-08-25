@@ -3056,7 +3056,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 					n_int[3]++;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognixed type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
 					n_errors++;
 					break;
 			}
@@ -15554,6 +15554,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						strcat (cmd, option);
 					}
 				}
+				if (not_PS && strchr (fig[k].options, 'A') == NULL)	/* Must always add -A if not PostScript */
+					strcat (cmd, " -A");
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
@@ -15563,7 +15565,11 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						strcat (cmd, option);
 					}
 				}
+				if (not_PS && strchr (API->GMT->current.setting.ps_convert, 'A') == NULL)	/* Must always add -A if not PostScript */
+					strcat (cmd, " -A");
 			}
+			else if (not_PS)
+				strcat (cmd, " -A");
 			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
