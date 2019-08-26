@@ -12434,6 +12434,57 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, bool is_psrose) {
+	/* Look for -J<code>?[l|p<pow>][/?[l|p<pow>]] which needs one or two ?-marks to be replaced with dummy scales */
+	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""};
+	char *slash = NULL, *c = NULL, *c2 = NULL;
+	
+	if (opt_J == NULL) return false;	/* No -J option to update */
+	if ((c = strchr (opt_J->arg, '?')) == NULL) return false;	/* No questionmark in the argument to update */
+	
+	/* Here, c[0] is the first question mark (there may be one or two) */
+	if (strchr ("xX", opt_J->arg[0]))	/* Cartesian projection */
+		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear/log/power axes */
+	if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1) {	/* Nonstandard Cartesian directions set via subplot */
+		sprintf (sclX, "%gi",  P->dir[GMT_X]*P->w);
+		sprintf (sclY, "%gi",  P->dir[GMT_Y]*P->h);
+	}
+	else if (slash) {	/* Found separate x and y scales */
+		sprintf (sclX, "%gi", P->w);
+		sprintf (sclY, "%gi", P->h);
+	}
+	else if (is_psrose)	/* Just append the minimum dimension as the diameter */
+		sprintf (sclX, "%gi", MIN(P->w, P->h));
+	else	/* Just append a dummy width */
+		sprintf (sclX, "%gi", P->w);
+		
+	arg[0] = c[0] = '\0';	/* Chop off everything from first ? to end */
+	sprintf (arg, "%s%s", opt_J->arg, sclX);	/* Build new -J<arg> from initial J arg, then replace first ? with sclX */
+	c[0] = '?';	/* Put back the ? we removed */
+	if (c[1] == 'l')	/* Must add the log character after the scale */
+		strcat (arg, "l");
+	else if (c[1] == 'p') {	/* Must add p<power> after the scale */
+		size_t len = strlen (arg), k = 1;
+		while (c[k] && c[k] != '/')	/* Copy letters until we hit the slash or run out */
+			arg[len++] = c[k++];
+	}
+	else if (!slash && c[1])	/* More arguments after initial scale, probably -JPa?/angle */
+		strcat (arg, &c[1]);
+	if (slash && (c2 = strchr (c, '?'))) {	/* Must place a Y-scale instead of the 2nd ? mark */
+		strcat (arg, "/");	/* Add the slash divider */
+		strcat (arg, sclY);	/* Append the y scale/height */
+		if (c2[1] == 'l')	/* Must add the log character */
+			strcat (arg, "l");
+		else if (c2[1] == 'p') {	/* Must add p<power> */
+			size_t len = strlen (arg), k = 1;
+			while (c2[k])	/* Keep copying until we run out */
+				arg[len++] = c2[k++];
+		}
+	}
+	GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+	return true;
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -12748,7 +12799,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
-				char *c = NULL;
 				/* Set -X -Y for absolute positioning */
 				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -12756,21 +12806,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/'))) && ((c = strchr (opt_J->arg, '?')))) {
-					/* Gave -J that passed the log/power/special check, must subplot width dummy scale/width; these get changed in map_setxy in gmt_map.c */
-					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
-						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
-					else if (is_psrose)	/* Just append minimum dimension */
-						sprintf (scl, "%gi", MIN(P->w, P->h));
-					else	/* Just append dummy width */
-						sprintf (scl, "%gi", P->w);
-					arg[0] = c[0] = '\0';
-					sprintf (arg, "%s%s%s", opt_J->arg, scl, &c[1]);
-					c[0] = '?';
-					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+				if (build_new_J_option (API, opt_J, P, is_psrose))	/* Found ?-mark(s) and replaced them */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
-				}
-				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale the dimensions */
+				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale but use the given dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
