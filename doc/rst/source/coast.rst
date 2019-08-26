@@ -87,7 +87,7 @@ in your analysis, try
 
    ::
 
-    gmt pscoast -RIS -Dh -W -M > iceland.txt
+    gmt coast -RIS -Dh -W -M > iceland.txt
 
 **coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
