@@ -12436,11 +12436,12 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 
 GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, bool is_psrose) {
 	/* Look for -J<code>?[l|p<pow>][/?[l|p<pow>]] which needs one or two ?-marks to be replaced with dummy scales */
-	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""};
+	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""}, oldarg[GMT_LEN128] = {""};
 	char *slash = NULL, *c = NULL, *c2 = NULL;
 	
 	if (opt_J == NULL) return false;	/* No -J option to update */
 	if ((c = strchr (opt_J->arg, '?')) == NULL) return false;	/* No questionmark in the argument to update */
+	strcpy (oldarg, opt_J->arg);
 	
 	/* Here, c[0] is the first question mark (there may be one or two) */
 	if (strchr ("xX", opt_J->arg[0]))	/* Cartesian projection */
@@ -12470,7 +12471,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	}
 	else if (!slash && c[1])	/* More arguments after initial scale, probably -JPa?/angle */
 		strcat (arg, &c[1]);
-	if (slash && (c2 = strchr (c, '?'))) {	/* Must place a Y-scale instead of the 2nd ? mark */
+	if (slash && (c2 = strchr (&c[1], '?'))) {	/* Must place a Y-scale instead of the 2nd ? mark */
 		strcat (arg, "/");	/* Add the slash divider */
 		strcat (arg, sclY);	/* Append the y scale/height */
 		if (c2[1] == 'l')	/* Must add the log character */
@@ -12482,6 +12483,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 		}
 	}
 	GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+	GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J%s to -J%s.\n", API->GMT->hidden.func_level, oldarg, opt_J->arg);
 	return true;
 }
 
@@ -12807,7 +12809,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if (build_new_J_option (API, opt_J, P, is_psrose))	/* Found ?-mark(s) and replaced them */
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
+					GMT->current.plot.panel.no_scaling = 0;
 				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale but use the given dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
 			}
