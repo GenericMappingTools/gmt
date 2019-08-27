@@ -6,7 +6,6 @@
 # Unix progs:   [curl grdconvert]
 #
 gmt begin ex42 ps
-
 	gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p PROJ_ELLIPSOID WGS-84 FORMAT_GEO_MAP dddF
 	# Data obtained via website and converted to netCDF thus:
 	# curl http://www.antarctica.ac.uk//bas_research/data/access/bedmap/download/bedelev.asc.gz
@@ -38,4 +37,4 @@ gmt begin ex42 ps
 	0 9.65 GSHHG
 	EOF
 gmt end
-	
+

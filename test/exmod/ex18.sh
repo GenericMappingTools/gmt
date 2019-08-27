@@ -15,7 +15,7 @@ gmt begin ex18 ps
   gmt subplot begin 2x1 -A+JTL+o0.2i -Fs6i/3.5i -M0.2i/0.35i -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
     gmt subplot set 0,0
     gmt makecpt -Crainbow -T-60/60
-    gmt grdimage @AK_gulf_grav.nc -I+d -Vd
+    gmt grdimage @AK_gulf_grav.nc -I+d
     gmt coast -Di -Ggray -Wthinnest
     gmt colorbar -DJCB+o0/0.35i -Bxaf -By+l"mGal"
     gmt text pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt

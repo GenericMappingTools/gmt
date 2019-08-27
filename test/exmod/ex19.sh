@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 19
 #
 # Purpose:	Illustrates various color pattern effects for maps
-# GMT modules:	grdimage, grdmath, makecpt, coast, text, image
+# GMT modules:	grdimage, grdmath, makecpt, coast, text, image, makecpt
 # Unix progs:	echo, rm
 gmt begin ex19 ps
   gmt grdmath -Rd -I1 -r Y COSD 2 POW = lat.nc

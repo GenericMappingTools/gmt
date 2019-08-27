@@ -3,7 +3,7 @@
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
-# GMT modules:	spectrum1d, plot, subplot, legend
+# 		spectrum1d, plot, subplot, legend, math
 # Unix progs:	rm
 #
 # This example begins with data files "ship_03.txt" and "sat_03.txt" which
@@ -56,4 +56,4 @@ gmt begin ex03 ps
     gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
   gmt subplot end
 gmt end
-rm -f report tmp samp* *.pg *.extr spectrum.*
+rm -f samp* *.pg spectrum.*

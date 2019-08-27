@@ -10,14 +10,12 @@ gmt begin ex11 ps
 
 	# First, create grids of ascending X and Y and constant 0.
 	# These are to be used to represent R, G and B values of the darker 3 faces of the cube.
-
 	gmt grdmath -I1 -R0/255/0/255 X = x1.nc
 	gmt grdmath Y = y1.nc
 	gmt grdmath 0 = c1.nc
-	
+
 	# Second, create grids of descending X and Y and constant 255.
 	# These are to be used to represent R, G and B values of the lighter 3 faces of the cube.
-	
 	gmt grdmath 255 X SUB = x2.nc
 	gmt grdmath 255 Y SUB = y2.nc
 	gmt grdmath 255       = c2.nc
@@ -58,7 +56,7 @@ gmt begin ex11 ps
 	END
 	echo 0 0 0 128 | gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
 	echo 0 0 128 0 | gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
-	
+
 	gmt grdimage x2.nc y2.nc c2.nc -JX-2.5i/-2.5i -X2.5i -Y2.5i
 	gmt plot -Wthinner,black,- @rays_11.txt
 	gmt text -F+a+f <<- END
@@ -66,7 +64,7 @@ gmt begin ex11 ps
 	102  26 270 12p 0.4
 	204  26 270 12p 0.8
 	END
-	
+
 	gmt grdimage c2.nc y2.nc x2.nc -JX2.5i/-2.5i -X2.5i
 	gmt plot -Wthinner,black,- @rays_11.txt
 	gmt text -F+a+f <<- END
@@ -87,6 +85,6 @@ gmt begin ex11 ps
 	26  204 180 12p 0.8
 	200 200 225 16p GMT
 	END
-	
+
 	rm -f *.nc
 gmt end

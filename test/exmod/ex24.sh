@@ -3,7 +3,7 @@
 #
 # Purpose:	Extract subsets of data based on geospatial criteria
 # GMT modules:	select, coast, plot, info
-# Unix progs:	echo, cat
+# Unix progs:	echo, cat, rm
 #
 # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline
 gmt begin ex24 ps

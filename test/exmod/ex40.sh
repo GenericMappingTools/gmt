@@ -2,7 +2,7 @@
 #               GMT EXAMPLE 40
 #
 # Purpose:      Illustrate line simplification and area calculations
-# GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial
+# GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial, subplot
 # Unix progs:   awk, rm
 #
 gmt begin ex40 ps

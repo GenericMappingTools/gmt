@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 17
 #
 # Purpose:	Illustrates clipping of images using coastlines
-# GMT modules:	grd2cpt, grdimage, coast, text
+# GMT modules:	grd2cpt, grdimage, coast, text, makecpt
 # Unix progs:	rm
 #
 gmt begin ex17 ps
