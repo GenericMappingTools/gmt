@@ -2,8 +2,7 @@
 #               GMT EXAMPLE 41
 #
 # Purpose:      Illustrate typesetting of legend with table
-# GMT modules:  set, coast, legend, plot
-# Unix progs:   cat, rm
+# GMT modules:  set, coast, legend, plot, makecpt
 #
 gmt begin ex41 ps
 	gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p

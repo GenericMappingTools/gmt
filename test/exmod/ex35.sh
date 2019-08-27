@@ -6,7 +6,6 @@
 # Unix progs:   rm
 #
 gmt begin ex35 ps
-
 	# Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 	# gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | $AWK '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
 	# Get Voronoi polygons

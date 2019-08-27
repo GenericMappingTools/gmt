@@ -5,9 +5,6 @@
 # GMT modules:	gmtset, grdview, grdfilter, contour, colorbar, surface, triangulate
 # Unix progs:	rm
 #
-# Illustrate various means of contouring, using triangulate and surface.
-# PW: Trouble with annotations and offset to title?
-#
 gmt begin ex16 ps
   gmt set FONT_ANNOT_PRIMARY 9p FONT_TITLE 18p,Times-Roman
   gmt subplot begin 2x2 -M0.05i -Fs3.25i/0 -R0/6.5/-0.2/6.5 -Jx1i -SCb -SRl+t -Bwesn -Y2i -T"Gridding of Data"

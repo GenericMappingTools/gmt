@@ -3,7 +3,6 @@
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
 # GMT modules:	convert, wiggle, text, plot
-# Unix progs:	
 #
 gmt begin ex09 ps
 	gmt wiggle @tracks_09.txt -R185/250/-68/-42 -Jm0.13i -B -BWSne+g240/255/240 -Gred+p \

@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 28
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
-# GMT modules:	makecpt, grdimage, grdmath, coast, text,
+# GMT modules:	makecpt, grdimage, coast, text, basemap
 #
 gmt begin ex28 ps
 	# Set up a color table

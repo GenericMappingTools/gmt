@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 05
 #
 # Purpose:	Generate grid and show monochrome 3-D perspective
-# GMT modules:	grdmath, grdview, text
+# GMT modules:	grdmath, grdview, text, makecpt
 # Unix progs:	echo, rm
 #
 gmt begin ex05 ps

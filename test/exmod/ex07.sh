@@ -3,7 +3,6 @@
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT modules:	coast, legend, text, plot
-# Unix progs:	
 #
 gmt begin ex07 ps
 	gmt coast -R-50/0/-10/20 -JM9i -Slightblue -GP26+r300+ftan+bdarkbrown -Dl -Wthinnest -B --FORMAT_GEO_MAP=dddF

@@ -3,7 +3,7 @@
 #
 # Purpose:	Make a 3-D bar plot
 # GMT modules:	grd2xyz, makecpt, text, plot3d
-# Unix progs:	echo, rm
+# Unix progs:	echo
 #
 gmt begin ex08 ps
 	gmt makecpt -Ccubhelix -T-5000/0

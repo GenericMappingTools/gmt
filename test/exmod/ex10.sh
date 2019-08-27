@@ -2,8 +2,7 @@
 #		GMT EXAMPLE 10
 #
 # Purpose:	Make 3-D bar graph on top of perspective map
-# GMT modules:	coast, text, plot3d, legend
-# Unix progs:
+# GMT modules:	coast, text, plot3d, legend, makecpt, math
 #
 gmt begin ex10 ps
 	gmt coast -Rd -JQ0/37.5/8i -Sazure2 -Gwheat -Wfaint -A5000 -p200/40
@@ -16,4 +15,4 @@ gmt begin ex10 ps
 	gmt legend -JZ -DjLB+o0.2i+w1.35i/0+jBL --FONT=Helvetica-Bold \
 		-F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p @legend_10.txt
 gmt end
-	
+
