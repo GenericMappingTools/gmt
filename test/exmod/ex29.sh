@@ -2,8 +2,8 @@
 #		GMT EXAMPLE 29
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
-# GMT modules:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext
-# Unix progs:	rm, echo
+# GMT modules:	makecpt, grdcontour, grdimage, grdmath greenspline, colorbar, text
+# Unix progs:	echo
 #
 gmt begin ex29 ps
 

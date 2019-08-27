@@ -4,7 +4,6 @@
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT modules:	makecpt, grdimage, grdinfo, coast, colorbar
 # GMT supplement: img2grd (to read Sandwell/Smith img files)
-# Unix progs:	rm
 #
 gmt begin ex27 ps
 
@@ -19,7 +18,7 @@ gmt begin ex27 ps
 	
 	gmt grdimage @tasman_grav.nc=ns+s0.1 -I+d -Jx0.25i
 	
-	# Then use gmt pscoast to plot land; get original -R from grid img remark
+	# Then use gmt coast to plot land; get original -R from grid img remark
 	# and use Mercator gmt projection with same scale as above on a spherical Earth
 	
 	R=`gmt grdinfo @tasman_grav.nc -Ii`

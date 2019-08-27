@@ -3,7 +3,6 @@
 #
 # Purpose:	Demonstrate general vertical perspective projection
 # GMT modules:	coast
-# Unix progs:	rm
 #
 gmt begin ex26 ps
 

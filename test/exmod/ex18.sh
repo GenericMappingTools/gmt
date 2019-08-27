@@ -53,4 +53,4 @@ Areas: $area km@+2@+
 END
   gmt subplot end
 gmt end
-rm -f sm_*.txt tmp.nc mask.nc pratt.txt center* gmt.conf
+rm -f sm_*.txt tmp.nc mask.nc pratt.txt center*

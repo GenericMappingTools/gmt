@@ -3,7 +3,7 @@
 #
 # Purpose:	Gridding and clipping when data are missing
 # GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo
-# GMT modules:	info, nearneighbor, coast, mask, surface
+# GMT modules:	info, nearneighbor, coast, mask, surface, plot
 # Unix progs:	rm
 #
 gmt begin ex15 ps
@@ -26,7 +26,7 @@ gmt begin ex15 ps
     gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
     gmt grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd2i -c0,1
     gmt coast -Ggray -Wthinnest
-    gmt grdinfo -Cn -M ship.nc | gmt psxy -Sa0.15i -Wthick -i10,11
+    gmt grdinfo -Cn -M ship.nc | gmt plot -Sa0.15i -Wthick -i10,11
   gmt subplot end
 gmt end
 rm -f ship.b ship_10m.b ship.nc ship_clipped.nc
