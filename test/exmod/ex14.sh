@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 14
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
-# GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, pstext,
+# GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, text,
 # GMT modules:	set, plot, surface, subplot
 # Unix progs:	rm
 #
@@ -32,6 +32,5 @@ gmt begin ex14 ps
     gmt grdcontour trend.nc -C25 -A50 -Glct/cb -S4 -c1,1
     gmt plot track -Wthick,.
   gmt subplot end
-  gmt plot trend.d -Wthinner,-
 gmt end
 rm -f mean.xyz track trend.nc data.nc data.d trend.d

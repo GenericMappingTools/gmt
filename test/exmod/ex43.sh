@@ -2,8 +2,8 @@
 #               GMT EXAMPLE 43
 #
 # Purpose:      Illustrate regression and outlier detection
-# GMT modules:  gmtregress, psbasemap, pslegend, pstext, plot
-# Unix progs:   grep, paste, awk, sed
+# GMT modules:  gmtregress, basemap, legend, text, plot
+# Unix progs:   grep, awk, sed
 #
 
 # Data from Table 7 in Rousseeuw and Leroy, 1987.
@@ -24,7 +24,7 @@ gmt begin ex43 ps
 	gmt plot rls_line.txt -W3p
 	gmt plot ls_line.txt -W1p,-
 	gmt plot -Sc0.15i -C -Wfaint -i0,1,6 model.txt
-	gmt pstext A.txt -F+f8p+jCM+r1 -B0
+	gmt text A.txt -F+f8p+jCM+r1 -B0
 	# Build legend
 	cat <<- EOF > legend.txt
 	H 18p,Times-Roman Index of Animals

@@ -42,7 +42,7 @@ gmt begin ex49 ps
 	gmt plot -Ss0.4c -Gblue modal.txt -Ey+p1p,blue
 	gmt plot -Ss0.1c -Gwhite modal.txt
 	gmt basemap -R0/100/0/6.5 -JX6i/-4i -Bxaf+u" Myr" -Byaf+u" km" -BWsNe
-	gmt pslegend -DjRT+w2.5i+o0.1i -F+p1p+gbeige+s <<- EOF
+	gmt legend -DjRT+w2.5i+o0.1i -F+p1p+gbeige+s <<- EOF
 	S 0.2i - 0.35i - 4p,green 0.5i Parsons & Sclater (1977)
 	S 0.2i - 0.35i - 4p,white 0.5i Stein & Stein (1992)
 	S 0.2i s 0.15i blue - 0.5i Modal depth estimates

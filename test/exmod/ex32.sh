@@ -39,7 +39,7 @@ gmt begin ex32 ps
 	gmt grdview @topo_32.nc -JM13c $Rplot -C -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30
 	
 	# We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
-	# So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
+	# So we write out the borders, pipe them through grdtrack and then plot them with plot3d.
 	
 	gmt coast $Rflag -Df -M -N1 | gmt grdtrack -G@topo_32.nc -s+a | gmt plot3d $Rplot -JZ -p -W1p,white
 	

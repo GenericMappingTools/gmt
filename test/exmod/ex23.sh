@@ -37,14 +37,14 @@ gmt begin ex23 ps
 	
 	# Plot red squares at cities and plot names:
 	gmt plot -Ss0.2 -Gred -Wthinnest cities.txt
-	gmt pstext -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt
+	gmt text -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt
 	# Place a yellow star at Rome
 	echo "$lon $lat" | gmt plot -Sa0.2i -Gyellow -Wthin
 	
 	# Sample the distance grid at the cities and use the distance in integer km for labels
 	
 	gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f \
-		| gmt pstext -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT
+		| gmt text -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT
 	
 	# Clean up after ourselves:
 	
