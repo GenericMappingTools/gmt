@@ -81,5 +81,5 @@ gmt begin ex21 ps
 	
 	# Clean up after ourselves:
 	
-	rm -f RHAT.* gmt.conf
+	rm -f RHAT.*
 gmt end

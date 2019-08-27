@@ -3,8 +3,8 @@
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
-# GMT modules:	spectrum1d, trend1d, histogram, plot, text
-# Unix progs:	echo, rm
+# GMT modules:	spectrum1d, plot, subplot, legend
+# Unix progs:	rm
 #
 # This example begins with data files "ship_03.txt" and "sat_03.txt" which
 # are measurements of a quantity "g" (a "gravity anomaly" which is an
@@ -17,9 +17,9 @@
 # Thus the two data sets are not measured at the same of points,
 # and we use various GMT tools to facilitate their comparison.
 #
-gmt set GMT_FFT kiss
 
 gmt begin ex03 ps
+  gmt set GMT_FFT kiss
   # First, we use "gmt fitcircle" to find the parameters of a great circle
   # most closely fitting the x,y points in "sat_03.txt":
   cpos=`gmt fitcircle @sat_03.txt -L2 -Fm --IO_COL_SEPARATOR=/`
@@ -39,22 +39,21 @@ gmt begin ex03 ps
   # it because of the gaps > 1 km we found.  So we use gmt filter1d | gmt sample1d.  We also
   # use the -E on gmt filter1d to use the data all the way out to bounds :
   gmt filter1d ship.pg -Fm1 -T$bounds/1 -E | gmt sample1d -Tsamp.x > samp_ship.pg
-  # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
+  # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output
   # data, we do this:
   gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
   # Time to plot spectra
   gmt set FONT_TAG 18p,Helvetica-Bold
   gmt subplot begin 2x1 -M0.1i -SCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR+o0.1i -BWeSn+g240/255/240 -X2i -Y1.5i
-    gmt subplot 0,0 -A"Input Power"
-    gmt plot spectrum.xpower -JX-4il/3.75il -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
-	-Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
+    gmt subplot set 0,0 -A"Input Power"
+    gmt plot spectrum.xpower -JX-?l/?l -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
     gmt plot spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p
     gmt legend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
 	S 0.1i T 0.07i red  - 0.3i Ship
 	S 0.1i c 0.07i blue - 0.3i Satellite
 	EOF
-    gmt subplot 1,0 -A"Coherency@+2@+"
-    gmt plot spectrum.coh -JX-4il/3.75i -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
+    gmt subplot set 1,0 -A"Coherency@+2@+"
+    gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
   gmt subplot end
 gmt end
 rm -f report tmp samp* *.pg *.extr spectrum.*

@@ -26,7 +26,7 @@ gmt begin ex22 ps
 	last=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o1 --FORMAT_CLOCK_OUT=-`
 	
 	# Assign a string that contains the current user @ the current computer node.
-	# Note that two @@ is needed to print a single @ in gmt pstext:
+	# Note that two @@ is needed to print a single @ in gmt text:
 	
 	#set me = "$user@@`hostname`"
 	me="GMT guru @@ GMTbox"
@@ -82,7 +82,7 @@ gmt begin ex22 ps
 	L 12p,Times-Italic LB $me
 	END
 	
-	# OK, now we can actually run gmt pslegend.  We center the legend below the map.
+	# OK, now we can actually run gmt legend.  We center the legend below the map.
 	# Trial and error shows that 1.7i is a good legend height:
 	
 	gmt legend -DJBC+o0/0.4i+w7i/1.7i -F+p+glightyellow neis.legend

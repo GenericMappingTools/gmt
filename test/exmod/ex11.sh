@@ -88,5 +88,5 @@ gmt begin ex11 ps
 	200 200 225 16p GMT
 	END
 	
-	rm -f *.nc gmt.conf
+	rm -f *.nc
 gmt end
