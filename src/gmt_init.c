@@ -12498,6 +12498,22 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	return true;
 }
 
+GMT_LOCAL int gmtinit_J_index (struct GMT_CTRL *GMT) {
+	int id;
+	if ((id = gmt_get_option_id (0, "J")) >= 0 && GMT->init.history[id]) {	/* There is history for top-level -J */
+		/* Must now search for actual option since -J only has the code (e.g., -JM) */
+		/* Continue looking for -J<code> */
+		char str[3] = {"J"};
+		str[1] = GMT->init.history[id][0];
+		id = gmt_get_option_id (id + 1, str);
+		if (id >= 0 && !GMT->init.history[id])	/* There is no history for this -J */
+			id = GMT_NOTSET;
+	}
+	else
+		id = GMT_NOTSET;
+	return (id);	/* Either a valid -J history selection or -1 */
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -12805,7 +12821,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
-				/* Set -X -Y for absolute positioning */
+				/* Set -X -Y for absolute positioning to current subplot */
 				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
@@ -12816,6 +12832,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT->current.plot.panel.no_scaling = 0;
 				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale but use the given dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
+#if 0
+				/* Part of a solution to allow custom -J to override panel selection.  Howeer, there are two problems:
+				 * 1. gmt.history.0 is read by the subplot commands.  subplot should have its own history.
+				 * 2. A -J set on subplot begin is not treated differently than other -J settings
+				 */
+				else if (opt_J == NULL && P->first == 0 && (id = gmtinit_J_index (GMT)) >= 0) {	/* Use previous -J */
+					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
+					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
+					got_J = true;
+					GMT->current.plot.panel.no_scaling = 1;
+				}
+#endif
 			}
 		}
 
@@ -12838,25 +12867,25 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 		if (got_J == false && strchr (required, 'J')) {	/* Need a projection but no -J was set */
-			if ((id = gmt_get_option_id (0, "J")) >= 0 && GMT->init.history[id]) {	/* There is history for -J */
-				/* Must now search for actual option since -J only has the code (e.g., -JM) */
-				/* Continue looking for -J<code> */
-				char str[3] = {"J"};
-				str[1] = GMT->init.history[id][0];
-				if ((id = gmt_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
-					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
-					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
-					got_J = true;
-				}
+			if ((id = gmtinit_J_index (GMT)) >= 0) {	/* There is history for a -J option */
+				if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
+				got_J = true;
 			}
 			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots */
-				static char *arg[2] = {"X15c", "Q15c+"};
+				static char *arg[2] = {"X15c", "Q15c+du"};
 				unsigned int geo = is_region_geographic (GMT, *options, mod_name);
-				if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
-					sprintf (scl, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
-				else	/* Just append dummy width */
-					sprintf (scl, "%s",  arg[geo]);
+				if (P) {	/* Subplot so we know something about subplot width */
+					if ((P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
+						sprintf (scl, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
+					else if (geo)
+						sprintf (scl, "Q%gi+du", P->w);
+					else
+						sprintf (scl, "X%gi/%gi", P->w, P->h);
+				}
+				else	/* Just append dummy default width */
+					sprintf (scl, "%s", arg[geo]);
 				if ((opt = GMT_Make_Option (API, 'J', scl)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", scl);
