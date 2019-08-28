@@ -97,6 +97,31 @@ smartquotes_action = 'qe'
 #html_theme = 'default'
 html_theme = 'rtd'
 html_theme_path = ["_themes"]
+html_context = {
+    "menu_links": [
+        (
+            '<i class="fa fa-users fa-fw"></i> Contributing',
+            "https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md",
+        ),
+        (
+            '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
+            "https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md",
+        ),
+        (
+            '<i class="fa fa-book fa-fw"></i> License',
+            "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
+        ),
+        (
+            '<i class="fa fa-comment fa-fw"></i> Contact',
+            "https://gitter.im/GenericMappingTools/Lobby",
+        ),
+        (
+            '<i class="fa fa-github fa-fw"></i> Source Code',
+            "https://github.com/GenericMappingTools/gmt",
+        ),
+    ],
+}
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -120,13 +145,13 @@ html_theme_path = ["_themes"]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = "_static/favicon.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # We set html_static below so that sphinx copies video files to html/_static
-html_static_path = ['_source/_static']
+html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -171,6 +196,12 @@ html_show_sourcelink = True
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 #html_file_suffix = None
+
+
+# Load the custom CSS files (needs sphinx >= 1.6 for this to work)
+def setup(app):
+    app.add_stylesheet("style.css")
+
 
 # Redefine supported_image_types for the HTML builder
 from sphinx.builders.html import StandaloneHTMLBuilder
@@ -334,3 +365,5 @@ man_pages = [
 ('supplements/x2sys/x2sys_report', 'x2sys_report', 'Report statistics from crossover data base', '', 1),
 ('supplements/x2sys/x2sys_solve', 'x2sys_solve', 'Determine least-squares systematic correction from crossovers', '', 1)
 ]
+
+
