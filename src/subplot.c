@@ -30,6 +30,15 @@
  *	   gmt subplot end [-V]
  */
 
+/* Note: subplot is currently not able to be nested (i.e., a subplot inside another subplot).
+ * This will be required to do more complicated layouts where the number of items vary for
+ * different columns and/or rows.  So until such time, all subplots must have a constant number
+ * of items in all rows and a constant number of items in all columns.  The dimensions can vary
+ * on a per-column or per-row basis, but the number of items must remain the same. To implement
+ * nesting we would place all the subplot control files inside a subdirectory and have nested
+ * subdirectories.
+ */
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"subplot"

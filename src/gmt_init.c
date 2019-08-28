@@ -2554,7 +2554,10 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 }
 
 void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
-	/* tag should be of size 16 */
+	/* Under modern mode we maintain separate history files for
+	 * figures, subplot, and inset, since they should not share
+	 * settings like -R -J between them.
+	 * tag should be of size 16 */
 	int fig = gmt_get_current_figure (API);
 	int inset = gmtinit_get_inset_dimensions (API, fig, NULL);	/* 1 if inset is active */
 	unsigned int subplot_status = gmtinit_subplot_status (API, fig); /* >0 if subplot is true */
