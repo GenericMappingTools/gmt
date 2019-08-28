@@ -1,16 +1,15 @@
-**-S**\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]
+**-S**\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Selects the meaning of the columns in the data file. In order to use
     the same file to plot cross-sections, depth is in third column.
     Nevertheless, it is possible to use "old style" **psvelomeca** input
     files without depth in third column using the **-Fo** option.
 
-**-Sa**\ *scale[/fontsize[/offset*]][**+u**\ ]
+**-Sa**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Focal mechanisms in Aki and Richards convention. *scale* adjusts the
     scaling of the radius of the "beach ball", which will be proportional to
-    the magnitude. Scale is the size for magnitude = 5 in inch (unless
-    **c**, **i**, or **p** is appended). Use the **-T** option to
+    the magnitude. *scale* is the size for magnitude = 5. Use the **-T** option to
     render the beach ball transparent by drawing only the nodal planes and
     the circumference. The color or shade of the compressive quadrants can
     be specified with the **-G** option. The color or shade of the extensive
@@ -40,12 +39,11 @@
     **10**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sc**\ *scale[/fontsize[/offset*]][**+u**\ ]
+**-Sc**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Focal mechanisms in Global CMT convention. *scale* adjusts the scaling
     of the radius of the "beach ball", which will be proportional to the
-    magnitude. Scale is the size for magnitude = 5 (that is M0 = 4.0E23
-    dynes-cm) in inch (unless **c**, **i**, or **p** is appended).
+    magnitude. *scale* is the size for magnitude = 5 (that is M0 = 4.0E23 dynes-cm).
     Use the **-T** option to render the beach ball transparent by drawing
     only the nodal planes and the circumference. The color or shade of the
     compressive quadrants can be specified with the **-G** option. The color
@@ -79,14 +77,14 @@
     **14**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sm\|d\|z**\ *scale[/fontsize[/offset*]][**+u**\ ]
+**-Sm\|d\|z**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Seismic moment tensor (Global CMT, with zero trace). *scale* adjusts
     the scaling of the radius of the "beach ball", which will be
-    proportional to the magnitude. Scale is the size for magnitude = 5 (that
-    is scalar seismic moment = 4.0E23 dynes-cm) in inch (unless **c**,
-    **i**, **m**, or **p** is appended). (**-T**\ *0* option overlays best
-    double couple transparently.) Use **-Sm** to plot the Global CMT
+    proportional to the magnitude. *scale* is the size for magnitude = 5
+    (that is scalar seismic moment = 4.0E23 dynes-cm).
+    **-T**\ *0* option overlays best double couple transparently.
+    Use **-Sm** to plot the Global CMT
     seismic moment tensor with zero trace. Use **-Sd** to plot only the
     double couple part of moment tensor. Use **-Sz** to plot the anisotropic
     part of moment tensor (zero trace). The color or shade of the
@@ -118,13 +116,12 @@
     **13**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sp**\ *scale[/fontsize[/offset*]][**+u**\ ]
+**-Sp**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Focal mechanisms given with partial data on both planes. *scale* adjusts
     the scaling of the radius of the "beach ball", which will be
-    proportional to the magnitude. Scale is the size for magnitude = 5 in
-    inch (unless **c**, **i**, or **p** is appended). The color or
-    shade of the compressive quadrants can be specified with the **-G**
+    proportional to the magnitude. *scale* is the size for magnitude = 5
+    The color or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
     with the **-E** option. Append **+u** to have the text appear below the
     beach ball (default is above). Parameters are expected to be in the
@@ -158,7 +155,7 @@
     **11**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sx\|y\|t**\ *scale[/fontsize[/offset*]][**+u**\ ]
+**-Sx\|y\|t**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
     Principal axis. *scale* adjusts the scaling of the radius of the "beach
     ball", which will be proportional to the magnitude. Scale is the size

@@ -6942,7 +6942,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, "/PSL_completion {\nV\n");
 			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_comment (PSL, "Will not execute until end of panel\n");
-			PSL_setorigin (PSL, GMT->current.setting.map_origin[GMT_X], GMT->current.setting.map_origin[GMT_Y], 0.0, PSL_FWD);
+			PSL_setorigin (PSL, GMT->current.setting.map_origin[GMT_X] - P->gap[XLO], GMT->current.setting.map_origin[GMT_Y] - P->gap[YLO], 0.0, PSL_FWD);
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
@@ -6958,12 +6958,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
 					if (gmt_getpen (GMT, P->pen, &pen))
-						gmt_pen_syntax (GMT, 'w', "sets pen attributes:", 3);
+						gmt_pen_syntax (GMT, 'w', NULL, "sets pen attributes:", 3);
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
 				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
-					gmt_fill_syntax (GMT, 'g', " ");
+					gmt_fill_syntax (GMT, 'g', NULL, " ");
 					
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
@@ -6980,7 +6980,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, "U\n}!\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row, P->col, P->gap, P->tag, 0))
 			return NULL;	/* Should never happen */
 	}
 	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */

@@ -3039,7 +3039,7 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	n_read = (GMT->common.i.select) ? gmtlib_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
 
-	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (GMT->current.io.curr_rec); }
+	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (&GMT->current.io.record); }
 	GMT->current.io.pt_no++;
 
 	*retval = (int)n_read;

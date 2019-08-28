@@ -6,14 +6,14 @@ psxy
 
 .. only:: not man
 
-    psxy - Plot lines, polygons, and symbols on maps
+    Plot lines, polygons, and symbols on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxy** [ *table* ] |-J|\ *parameters*
+**gmt psxy** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
@@ -34,7 +34,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\ \|\ **f**] *value* ]
+[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]

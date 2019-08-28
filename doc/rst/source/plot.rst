@@ -31,7 +31,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\ \|\ **f**] *value* ]
+[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -143,7 +143,7 @@ See Also
           gmt plot -B t.txt -Gred -W2p -L+xr -X3.25i</br>
           gmt plot -B t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i</br>
           gmt plot -B t.txt -Gred -W2p -L+x4.5 -X3.25i</br>
-        gmt end</br>
+        gmt end show</br>
         </p>
     </div>
    </div>

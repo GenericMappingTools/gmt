@@ -92,7 +92,7 @@
 #set (GMT_MANDIR "share/doc/gmt/man")
 
 # Install documentation files from this external location instead of creating
-# new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
+# new HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
 #set (GMT_INSTALL_EXTERNAL_DOC OFF)
 
 # Install manual pages from this external location instead of creating the
@@ -105,7 +105,7 @@
 ##
 
 # Set URL to GMT Data server [auto]:
-#set (GMT_DATA_URL "data_server_url")
+#set (GMT_DATA_SERVER "data_server_url")
 
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")

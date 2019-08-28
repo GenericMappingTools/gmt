@@ -40,7 +40,7 @@
  * We may add more data later but this is our start.
  * 2. Data sets only used to run an example or a test script
  * and these are all called @*, i.e., a '@' is pre-pended to the name.
- * They live in a cache subdirectory under the GMT_DATA_URL
+ * They live in a cache subdirectory under the GMT_DATA_SERVER
  * and will be placed in a cache directory in the users ~/.gmt directory.
  * 3. Generic URLs starting with http:, https:, or ftp:  These will be
  * downloaded to the cache directory.
@@ -297,7 +297,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT server directory : %s\n", serverdir);
 			return;
 		}
-		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
+		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATASERVER);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
@@ -338,7 +338,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", md5path, old_md5path);
 			return;
 		}
-		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
+		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATASERVER);	/* Set remote path to new MD5 file */
 		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", md5path);
 			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
@@ -474,7 +474,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		snprintf (url, PATH_MAX, "%s", file);
 	else {	/* Use GMT data dir, possible from subfolder cache */
-		snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
+		snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATASERVER, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
@@ -483,7 +483,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	
 	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
 		char *S = strdup (gmt_memory_use (fsize, 3));
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_URL_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
 		gmt_M_free (GMT, file);
 		gmt_M_str_free (S);
 		return 0;

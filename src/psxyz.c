@@ -164,7 +164,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header.  Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy>[/<dz>] [no offset].\n");
-	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [Default is no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is specified but not -S, then psxyz draws a filled polygon.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
@@ -269,7 +269,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Implicitly draws symbol outline with this pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append l to let pen colors follow the CPT setting (requires -C).\n");
@@ -292,7 +292,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
 		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
 		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
 		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +c for both effects [none].\n");
@@ -356,7 +356,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 			case 'G':		/* Set color for symbol or polygon */
 				Ctrl->G.active = true;
 				if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -395,7 +395,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
 					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
-						gmt_pen_syntax (GMT, 'W', "sets pen attributes [no outline]", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", 0);
 						n_errors++;
 					}
 					Ctrl->L.outline = true;
@@ -434,7 +434,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 11);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
 					n_errors++;
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;

@@ -141,7 +141,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**l**\ \|\ **f**] *value*
+**-Z**\ [**l**\ \|\ **f**]\ *value*
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *level* value via **-Z** and a color lookup table via **-C**.  To just set the
     fill or outline, use **-Zf** or **-Zl**, respectively.

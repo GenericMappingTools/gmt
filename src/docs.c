@@ -36,18 +36,18 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [%s] [<module-name> [<-option>]]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or one of api, cookbook, gallery, defaults, and tutorial.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If given, -Q must be the first argument to %s.\n", name);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If given, -Q must be the first argument to %s.\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -84,8 +84,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
-	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
-
+	/* Here we do not want to call GMT_Parse_Common since common options may be passed as sections in the docs */
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
@@ -106,18 +105,24 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		}
 		
 		if ((ext = gmt_get_ext (opt->arg)) && gmt_get_graphics_id (GMT, ext) != GMT_NOTSET) {	/* Got a graphics file */
+			if (strchr (opt->arg, GMT_ASCII_RS)) {
+				sprintf (name, "\'%s\'", opt->arg);
+				gmt_filename_get (name);
+			}
+			else
+				strcpy (name, opt->arg);
 			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called via gmt end show */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument %s is not a known module or documentation short-hand\n",
-					opt->arg);
+					name);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", name);
 				printf ("%s\n", opt->arg);
 			}
 			else {	/* Open in viewer */
 				if (!together || !got_file) {	/* Either Windows|Linux, or first time under macOS */
-					snprintf (view, PATH_MAX, "%s %s", file_viewer, opt->arg);
+					snprintf (view, PATH_MAX, "%s %s", file_viewer, name);
 					got_file = true;
 					vlen = PATH_MAX - strlen (view);
 				}

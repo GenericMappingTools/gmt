@@ -6,14 +6,14 @@ pshistogram
 
 .. only:: not man
 
-    pshistogram - Calculate and plot histograms
+    Calculate and plot histograms
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pshistogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
+**gmt pshistogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
 |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]

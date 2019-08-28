@@ -16,7 +16,7 @@
 #  Contact info: www.generic-mapping-tools.org
 #
 # gmt-config simply reports various paths and settings that are useful
-# to developers that need to include/link GMT5 resources.
+# to developers that need to include/link GMT resources.
 #--------------------------------------------------------------------*/
 #
 GMT_EXEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -82,6 +82,8 @@ remotely located Jessica Rabbit
         http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg
         -pdf jess
 
+.. include:: explain_cpt.rst_
+
 See Also
 --------
 

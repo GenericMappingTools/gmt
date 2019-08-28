@@ -31,13 +31,11 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/source/
 		${CMAKE_CURRENT_BINARY_DIR}/_source)
 	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_source)
-	add_depend_to_target (docs_pdf_depends _docs_copy_rst_tree_source)
 	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_source)
 	copy_dir_if_different (_docs_copy_rst_tree_themes
 		${CMAKE_CURRENT_SOURCE_DIR}/themes/
 		${CMAKE_CURRENT_BINARY_DIR}/_themes)
 	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_themes)
-	add_depend_to_target (docs_pdf_depends _docs_copy_rst_tree_themes)
 	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_themes)
 	copy_dir_if_different (_docs_copy_rst_tree_static
 		${CMAKE_CURRENT_SOURCE_DIR}/_static/
@@ -61,8 +59,6 @@ if (SPHINX_FOUND)
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
 		${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/latex
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
 		${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Removing rst tree")
 	# register with spotless target
@@ -78,41 +74,6 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMENT "Building HTML documentation...")
 	add_dependencies (docs_html docs_html_depends)
-
-	# PDF build target
-	find_program(MAKE NAMES make gmake gnumake)
-	if (MAKE)
-		add_custom_target (docs_pdf
-			COMMAND ${SPHINX_EXECUTABLE} -q -b latex -t tex
-			-c "${CMAKE_CURRENT_BINARY_DIR}"
-			-d "${SPHINX_CACHE_DIR}"
-			-w "${CMAKE_CURRENT_BINARY_DIR}/latex.log"
-			${CMAKE_CURRENT_BINARY_DIR}/_source
-			${CMAKE_CURRENT_BINARY_DIR}/latex
-			COMMAND ${MAKE} -C ${CMAKE_CURRENT_BINARY_DIR}/latex
-			all-pdf LATEXOPTS=-interaction=batchmode
-			COMMENT "Building CookBook PDF...")
-		add_dependencies (docs_pdf docs_pdf_depends)
-
-		# Shrink PDF files
-		find_program(GS NAMES gs gswin32c gswin64c)
-		if (GS)
-			set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf)
-			foreach (_pdf_file ${_docs_pdf_output})
-				string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
-				set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
-				add_custom_target (_shrink_${_pdf_target}
-					COMMAND ${GS} -sDEVICE=pdfwrite
-					-dCompatibilityLevel=1.4
-					-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
-					-sOutputFile=${_pdf_file}.shrink ${_pdf_file}
-					COMMAND ${CMAKE_COMMAND} -E rename
-					${_pdf_file}.shrink ${_pdf_file}
-					DEPENDS ${_pdf_file} docs_pdf)
-				add_depend_to_target (docs_pdf_shrink _shrink_${_pdf_target})
-			endforeach (_pdf_file)
-		endif (GS)
-	endif (MAKE)
 
 	# Build and compress manpages
 	if (GZIP)
@@ -137,19 +98,6 @@ if (SPHINX_FOUND)
 			${GMT_RELEASE_PREFIX}/doc_release/html
 			DEPENDS docs_html git_export_release)
 		add_depend_to_target (gmt_release _html_release)
-		# PDF
-		add_custom_target (_pdf_release
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_API.pdf
-			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_API.pdf
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf
-			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Docs.pdf
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Tutorial.pdf
-			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Tutorial.pdf
-			DEPENDS docs_pdf_shrink git_export_release)
-		#add_depend_to_target (gmt_release _pdf_release)
 		# Manpages
 		add_custom_target (_man_release
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -165,15 +113,6 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install html (if available)
 	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
 		DESTINATION ${GMT_DOCDIR}/html
-		COMPONENT Documentation
-		OPTIONAL)
-
-	# Install pdf (if available)
-	install (FILES
-		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_API.pdf
-		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf
-		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Tutorial.pdf
-		DESTINATION ${GMT_DOCDIR}/pdf
 		COMPONENT Documentation
 		OPTIONAL)
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})

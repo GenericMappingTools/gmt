@@ -490,7 +490,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o sets the offset <off> between bar and label [6p]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r rotates the label to be vertical [horizontal]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F The bin boundaries given should be considered bin centers instead.\n");
-	gmt_fill_syntax (API->GMT, 'G', "Select color/pattern for columns.");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Select color/pattern for columns.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
@@ -507,7 +507,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Specify pen for histogram outline or stair-step curves.", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen for histogram outline or stair-step curves.", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z To choose type of vertical axis.  Select from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 - Counts [Default].\n");
@@ -586,7 +586,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 			case 'G':
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -611,7 +611,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						gmt_pen_syntax (GMT, 'L', " ", 0);
+						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
 						n_errors++;
 					}
 				}
@@ -668,7 +668,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 		if (w_arg) {	/* Gave -W<pen> */
 			Ctrl->W.active = true;
 			if (gmt_getpen (GMT, w_arg, &Ctrl->W.pen)) {
-				gmt_pen_syntax (GMT, 'W', " ", 0);
+				gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 				n_errors++;
 			}
 		}
@@ -704,7 +704,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				Ctrl->W.active = true;
 				//GMT_Report (API, GMT_MSG_COMPAT, "The -L<pen> option is deprecated; use -W<pen> instead.\n");
 				if (gmt_getpen (GMT, l_arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 			}

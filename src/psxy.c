@@ -389,9 +389,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z[l|f]<val>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s] [-Z[l|f]<val>]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z[l|f]<val>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -422,7 +422,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the median.  A 5th extra column with the sample size is required.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The settings of -W, -G affect the appearance of the 25-75%% box.\n");
 	gmt_segmentize_syntax (API->GMT, 'F', 1);
-	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
@@ -506,6 +506,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     <labelinfo> controls the label attributes.  Choose from\n");
 	gmt_label_syntax (API->GMT, 7, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: x- and y-dimensions must be in columns 3-4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s if instead the diagonal corner coordinates are given in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, psxy will expect azimuth and\n");
@@ -523,7 +524,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append l for just pen color or f for fill color [Default sets both].\n");
@@ -541,7 +542,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXY_CTRL *C
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', "sets pen attributes [Default pen is %s]:", 15);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 15);
 		n_errors++;
 	}
 	return n_errors;
@@ -589,7 +590,7 @@ GMT_LOCAL unsigned int parse_old_E (struct GMTAPI_CTRL *API, struct PSXY_CTRL *C
 		if (text[j] == '-') {Ctrl->E.mode = 1; j++;}
 		if (text[j] == '+') {Ctrl->E.mode = 2; j++;}
 		if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->E.pen)) {
-			gmt_pen_syntax (API->GMT, 'E', "sets error bar pen attributes", 0);
+			gmt_pen_syntax (API->GMT, 'E', NULL, "sets error bar pen attributes", 0);
 			n_errors++;
 		}
 	}
@@ -686,7 +687,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 								break;
 							case 'p':	/* Error bar pen */
 								if (p[1] && gmt_getpen (GMT, &p[1], &Ctrl->E.pen)) {
-									gmt_pen_syntax (GMT, 'E', "sets error bar pen attributes", 0);
+									gmt_pen_syntax (GMT, 'E', NULL, "sets error bar pen attributes", 0);
 									n_errors++;
 								}
 								break;
@@ -708,7 +709,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
 				if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " "); n_errors++;
+					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
@@ -746,7 +747,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
 					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
-						gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
 						n_errors++;
 					}
 					Ctrl->L.outline = true;
@@ -783,7 +784,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-						gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 11);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
 						n_errors++;
 					}
 				}
@@ -1063,6 +1064,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
 		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
+	if (S.symbol == PSL_RECT && S.diagonal) {	/* Getting lon1,lat1,lon2,lat2 of a diagonal and will draw the rectangle subject to -A */
+		/* Reading 2nd coordinate so must set column types */
+		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
@@ -1137,6 +1143,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
+		struct GMT_DATASET *Diag = NULL;
+		struct GMT_DATASEGMENT *S_Diag = NULL;
 
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
@@ -1173,6 +1181,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
 		
+		if (S.diagonal) {
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};	/* Put everything in one table */
+			if ((Diag = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_NO_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			S_Diag = Diag->table[0]->segment[0];
+		}
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
@@ -1362,7 +1375,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &current_pen);
 			}
 
-			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses and rectangles */
+			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT)) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
 					in[ex2] = in[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
@@ -1445,6 +1458,27 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						/* Fall through on purpose to pick up the other parameters */
 					case PSL_RECT:
+						if (S.diagonal) {	/* Special rectangle give by opposing corners on a diagonal */
+							if (gmt_M_is_dnan (in[pos2x])) {
+								GMT_Report (API, GMT_MSG_VERBOSE, "Diagonal longitude = NaN near line %d\n", n_total_read);
+								continue;
+							}
+							if (gmt_M_is_dnan (in[pos2y])) {
+								GMT_Report (API, GMT_MSG_VERBOSE, "Diagonal latitude = NaN near line %d\n", n_total_read);
+								continue;
+							}
+							S_Diag->data[GMT_X][0] = S_Diag->data[GMT_X][3] = S_Diag->data[GMT_X][4] = in[GMT_X];
+							S_Diag->data[GMT_X][1] = S_Diag->data[GMT_X][2] = in[pos2x];
+							S_Diag->data[GMT_Y][0] = S_Diag->data[GMT_Y][1] = S_Diag->data[GMT_Y][4] = in[GMT_Y];
+							S_Diag->data[GMT_Y][2] = S_Diag->data[GMT_Y][3] = in[pos2y];
+							S_Diag->n_rows = 5;
+							if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->A.active)	/* May need to resample */
+								S_Diag->n_rows = gmt_fix_up_path (GMT, &S_Diag->data[GMT_X], &S_Diag->data[GMT_Y], S_Diag->n_rows, Ctrl->A.step, Ctrl->A.mode);
+							/* Plot it */
+							gmt_setfill (GMT, &current_fill, outline_active);
+							gmt_geo_polygons (GMT, S_Diag);
+							break;
+						}
 						dim[0] = in[ex1];
 						if (gmt_M_is_dnan (dim[0])) {
 							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
@@ -1711,6 +1745,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &Diag) != GMT_NOERROR) {	/* Be gone with the diagonal */
 			Return (API->error);
 		}
 	}

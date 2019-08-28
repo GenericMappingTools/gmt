@@ -80,7 +80,7 @@ int main (int argc, char *argv[]) {
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
 	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
-	
+
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example by the MSYS shell when executing gmt via symlinks */
 	gmt_chop_ext (progname);
@@ -88,7 +88,7 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-	
+
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
@@ -223,14 +223,6 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
-			fprintf (stderr, "session management:\n");
-			fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
-			fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
-			fprintf (stderr, "  gmt docs          Display the HTML documentation for selected module.\n");
-			fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
-			fprintf (stderr, "  gmt inset         Manage figure inset setup and completion.\n");
-			fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
-			fprintf (stderr, "  gmt clear         Delete gmt.history, gmt.conf, current CPT, user cache or data, or all.\n\n");
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");

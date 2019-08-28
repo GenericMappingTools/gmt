@@ -320,7 +320,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 					error++;
 				}
 				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					gmt_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background fill attributes", 0);
 					error++;
 				}
 				break;
@@ -354,7 +354,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
 				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background outline pen attributes", 0);
 					error++;
 				}
 				break;
@@ -714,6 +714,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
 							gmt_chop_ext (Ctrl->F.file);
 					}
+					gmt_filename_get (Ctrl->F.file);
 				}
 				else
 					n_errors++;
@@ -1578,7 +1579,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		return_image = true;
 #ifndef HAVE_GDAL
-		GMT_Report (API, GMT_MSG_DEBUG, "Selecting ppmraw device since GDAL not available.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Selecting ppmraw device since GDAL not available.\n");
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
 	}
@@ -1715,9 +1716,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
 			error++;
 		}
-		if (!error && Ctrl->S.active)
-			GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd2);
-
+		if (!error && Ctrl->S.active) {
+			API->print_func (GMT->session.std[GMT_ERR], cmd2);
+			API->print_func (GMT->session.std[GMT_ERR], "\n");
+		}
 		gmt_M_free (GMT, all_names_in);
 		gmt_M_free (GMT, cmd2);
 		gmt_M_free (GMT, ps_names);
@@ -1869,8 +1871,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
 						GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
-						if (Ctrl->S.active)
-							GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
+						if (Ctrl->S.active) {
+							API->print_func (GMT->session.std[GMT_ERR], cmd);
+							API->print_func (GMT->session.std[GMT_ERR], "\n");
+						}
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							if (gmt_remove_file (GMT, tmp_file))	/* Remove the file */
@@ -2397,8 +2401,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 					device_options[Ctrl->T.device],
 					resolution, quote, out_file, quote, quote, pdf_file, quote);
-				if (Ctrl->S.active)	/* Print 2nd GhostScript command */
-					GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
+				if (Ctrl->S.active) {	/* Print 2nd GhostScript command */
+					API->print_func (GMT->session.std[GMT_ERR], cmd);
+					API->print_func (GMT->session.std[GMT_ERR], "\n");
+				}
 				/* Execute the 2nd GhostScript command */
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);

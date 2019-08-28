@@ -92,7 +92,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
-add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
+add_subdirectory (doc)        # doc must be processed *after* src
 if (EXISTS ${GMT_SOURCE_DIR}/test/)
 	add_subdirectory (test)
 endif (EXISTS ${GMT_SOURCE_DIR}/test/)
@@ -182,6 +182,10 @@ endif (EXTRA_BUILD_DIRS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
+if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
+	set (GMT_DATA_SERVER ${GMT_DATA_URL})
+endif (GMT_DATA_URL)
+
 # Configuration done
 message(
 	"*\n"
@@ -190,7 +194,7 @@ message(
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
-	"*  Found GMT data server      : ${GMT_DATA_URL}\n"
+	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  Curl library               : ${CURL_LIBRARY}\n"

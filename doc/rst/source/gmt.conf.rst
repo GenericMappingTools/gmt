@@ -374,17 +374,17 @@ fonts can be found in the :doc:`gmt` man page.
 
 **GMT_AUTO_DOWNLOAD**
     Determines if GMT is allowed to automatically download datasets and
-    files from the remote server selected via **GMT_DATA_URL**.  Default
+    files from the remote server selected via **GMT_DATA_SERVER**.  Default
     is *on* but you can turn this off by setting it to *off*.
 
-.. _GMT_DATA_URL:
+.. _GMT_DATA_SERVER:
 
-**GMT_DATA_URL**
+**GMT_DATA_SERVER**
     Address of the data directory on the remote server [The SOEST server].
 
-.. _GMT_DATA_URL_LIMIT:
+.. _GMT_DATA_SERVER_LIMIT:
 
-**GMT_DATA_URL_LIMIT**
+**GMT_DATA_SERVER_LIMIT**
     Upper limit on the size of remote file to download [unlimited].  Give
     the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
     or giga-bytes.
@@ -449,6 +449,11 @@ fonts can be found in the :doc:`gmt` man page.
     given size only, the one-time cost of the smart planner becomes
     significant. In that case, stick to the default planner, *estimate*,
     based on heuristics.
+
+.. _GMT_GRAPHICS_FORMAT:
+
+**GMT_GRAPHICS_FORMAT**
+    Default graphics format in modern mode [pdf].
 
 .. _GMT_HISTORY:
 
@@ -843,13 +848,13 @@ fonts can be found in the :doc:`gmt` man page.
 
 **MAP_ORIGIN_X**
     (**-X**) Sets the x-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0.
+    new plot [72p]. For an overlay, the default offset is 0.
 
 .. _MAP_ORIGIN_Y:
 
 **MAP_ORIGIN_Y**
     (**-Y**) Sets the y-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0.
+    new plot [72p]. For an overlay, the default offset is 0.
 
 .. _MAP_POLAR_CAP:
 

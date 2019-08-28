@@ -672,7 +672,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					break;
 				case 'p':
 					if (gmt_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
-						gmt_pen_syntax (GMT, option, " ", 0);
+						gmt_pen_syntax (GMT, option, NULL, " ", 0);
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;
@@ -681,7 +681,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'g':
 					if ((q = strchr (p, GMT_ASCII_US))) q[0] = '+';	/* Restore +r<dpi> */
 					if (gmt_getfill (GMT, &p[1], &(this_item->fill))) {
-						gmt_fill_syntax (GMT, option, " ");
+						gmt_fill_syntax (GMT, option, NULL, " ");
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_FILL;
