@@ -7671,7 +7671,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
 			sprintf (file, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
-		else	/* CPT for just this panel */
+		else	/* CPT for just this subplot */
 			sprintf (file, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 	}
 	else if (fig)	/* Limited to one figure only */
@@ -7703,7 +7703,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 			sprintf (path, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
-		if (!file && (subplot & GMT_PANEL_NOTSET)) {	/* No, try subplot master CPT instead? */
+		if (!file) {	/* No, try subplot master CPT instead? */
 			sprintf (path, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
