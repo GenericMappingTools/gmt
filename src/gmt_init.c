@@ -2480,6 +2480,92 @@ GMT_LOCAL void gmtinit_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used
 	gmt_M_free (GMT, GMT->session.shorthand);
 }
 
+GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
+	/* Return GMT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMT_PANEL_NOTSET if no panel set yet */
+	char file[PATH_MAX] = {""};
+	bool answer;
+	unsigned int mode = 0;
+	/* Now read subplot information file */
+	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
+	answer = (access (file, F_OK) == 0);	/* true if subplot information file is found */
+	if (answer) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subplot information file found\n");
+		mode |= GMT_SUBPLOT_ACTIVE;
+	}
+	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
+	answer = (access (file, F_OK) == 0);	/* true if current panel file is found */
+	if (answer)
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
+	else
+		mode |= GMT_PANEL_NOTSET;
+		
+	return (mode);
+}
+
+GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, struct GMT_INSET *inset) {
+	char file[PATH_MAX] = {""};
+	unsigned int k;
+	double margin[4] = {0.0, 0.0, 0.0, 0.0};
+	FILE *fp = NULL;
+	
+	if (inset) inset->active = false;	/* It is not an inset until we detect that it is */
+	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
+
+	if (access (file, F_OK)) return (GMT_NOERROR);	/* No inset active */
+
+	if (inset == NULL) return 1;	/* Just wanted to know if there is an inset active */
+	
+	/* Extract dimensions from the inset information file */
+	if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
+		return (GMT_ERROR_ON_FOPEN);
+	}
+	/* For now, skip the first 3 comments and get the 4th and 5th record which holds the dim and margin lines */
+	/* We recycle the char string file to hold the records */
+	for (k = 0; k < 4; k++) gmt_fgets (API->GMT, file, GMT_LEN128, fp);
+	if (sscanf (&file[13], "%lf %lf", &inset->w, &inset->h) != 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse dimensions %s\n", file);
+		return (GMT_DATA_READ_ERROR);
+	}
+	gmt_fgets (API->GMT, file, GMT_LEN128, fp);
+	if (sscanf (&file[11], "%lf %lf %lf %lf", &margin[XLO], &margin[XHI], &margin[YLO], &margin[YHI]) != 4) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse margins %s\n", file);
+		return (GMT_DATA_READ_ERROR);
+	}
+	fclose (fp);
+	
+	sprintf (file, "%s/gmt.inset+.%d", API->gwf_dir, fig);	/* Inset continuation file */
+	if (access (file, F_OK)) inset->first = true;	/* First time plotting in the inset */
+	if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
+		return (GMT_ERROR_ON_FOPEN);
+	}
+	fclose (fp);
+	
+	/* Compute dimensions of the plottable part of the inset canvas */
+	inset->w -= (margin[XLO] + margin[XHI]);
+	inset->h -= (margin[YLO] + margin[YHI]);
+
+	inset->active = true;	/* It is */
+
+	GMT_Report (API, GMT_MSG_DEBUG, "Inset plot with canvas dimensions %g by %g\n", inset->w, inset->h);
+	
+	return (GMT_NOERROR);
+}
+
+void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
+	/* tag should be of size 16 */
+	int fig = gmt_get_current_figure (API);
+	int inset = gmtinit_get_inset_dimensions (API, fig, NULL);	/* 1 if inset is active */
+	unsigned int subplot_status = gmtinit_subplot_status (API, fig); /* >0 if subplot is true */
+	if (inset)	/* Only one inset active at the time */
+		sprintf (tag, "%d.inset", fig);
+	else if (subplot_status & GMT_SUBPLOT_ACTIVE)	/* Subplot is active */
+		sprintf (tag, "%d.subplot", fig);
+	else
+		sprintf (tag, "%d", fig);
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	int id;
@@ -2505,8 +2591,9 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and one history per figure */
-		int fig = gmt_get_current_figure (GMT->parent);
-		sprintf (hfile, "%s/%s.%d", GMT->parent->gwf_dir, GMT_HISTORY_FILE, fig);
+		char tag[GMT_LEN16] = {""};
+		gmt_history_tag (GMT->parent, tag);
+		sprintf (hfile, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
@@ -2598,8 +2685,9 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
-		int fig = gmt_get_current_figure (GMT->parent);
-		sprintf (hfile, "%s/%s.%d", GMT->parent->gwf_dir, GMT_HISTORY_FILE, fig);
+		char tag[GMT_LEN16] = {""};
+		gmt_history_tag (GMT->parent, tag);
+		sprintf (hfile, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Classic isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
@@ -11715,28 +11803,6 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
-	/* Return GMT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMT_PANEL_NOTSET if no panel set yet */
-	char file[PATH_MAX] = {""};
-	bool answer;
-	unsigned int mode = 0;
-	/* Now read subplot information file */
-	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
-	answer = (access (file, F_OK) == 0);	/* true if subplot information file is found */
-	if (answer) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subplot information file found\n");
-		mode |= GMT_SUBPLOT_ACTIVE;
-	}
-	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
-	answer = (access (file, F_OK) == 0);	/* true if current panel file is found */
-	if (answer)
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
-	else
-		mode |= GMT_PANEL_NOTSET;
-		
-	return (mode);
-}
-
 void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap) {
 	/* Need to determine any subplot-wide gaps in gmt subplot set before we even start plotting */
 	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
@@ -12380,57 +12446,6 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 	}
 	fprintf (fp, "%lg %lg\n", API->GMT->current.map.width, API->GMT->current.map.height);
 	fclose (fp);
-	return (GMT_NOERROR);
-}
-
-GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, struct GMT_INSET *inset) {
-	char file[PATH_MAX] = {""};
-	unsigned int k;
-	double margin[4] = {0.0, 0.0, 0.0, 0.0};
-	FILE *fp = NULL;
-	
-	if (inset) inset->active = false;	/* It is not an inset until we detect that it is */
-	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
-
-	if (access (file, F_OK)) return (GMT_NOERROR);	/* No inset active */
-
-	if (inset == NULL) return 1;	/* Just wanted to know if there is an inset active */
-	
-	/* Extract dimensions from the inset information file */
-	if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
-		return (GMT_ERROR_ON_FOPEN);
-	}
-	/* For now, skip the first 3 comments and get the 4th and 5th record which holds the dim and margin lines */
-	/* We recycle the char string file to hold the records */
-	for (k = 0; k < 4; k++) gmt_fgets (API->GMT, file, GMT_LEN128, fp);
-	if (sscanf (&file[13], "%lf %lf", &inset->w, &inset->h) != 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse dimensions %s\n", file);
-		return (GMT_DATA_READ_ERROR);
-	}
-	gmt_fgets (API->GMT, file, GMT_LEN128, fp);
-	if (sscanf (&file[11], "%lf %lf %lf %lf", &margin[XLO], &margin[XHI], &margin[YLO], &margin[YHI]) != 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse margins %s\n", file);
-		return (GMT_DATA_READ_ERROR);
-	}
-	fclose (fp);
-	
-	sprintf (file, "%s/gmt.inset+.%d", API->gwf_dir, fig);	/* Inset continuation file */
-	if (access (file, F_OK)) inset->first = true;	/* First time plotting in the inset */
-	if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
-		return (GMT_ERROR_ON_FOPEN);
-	}
-	fclose (fp);
-	
-	/* Compute dimensions of the plottable part of the inset canvas */
-	inset->w -= (margin[XLO] + margin[XHI]);
-	inset->h -= (margin[YLO] + margin[YHI]);
-
-	inset->active = true;	/* It is */
-
-	GMT_Report (API, GMT_MSG_DEBUG, "Inset plot with canvas dimensions %g by %g\n", inset->w, inset->h);
-	
 	return (GMT_NOERROR);
 }
 
