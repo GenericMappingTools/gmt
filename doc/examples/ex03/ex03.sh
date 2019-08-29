@@ -18,7 +18,7 @@
 # and we use various GMT tools to facilitate their comparison.
 #
 
-gmt begin ex03 ps
+gmt begin ex03
   gmt set GMT_FFT kiss
   # First, we use "gmt fitcircle" to find the parameters of a great circle
   # most closely fitting the x,y points in "sat_03.txt":

@@ -5,7 +5,7 @@
 # GMT modules:	makecpt, gmtinfo, contour, text, plot, triangulate, subplot
 # Unix progs:	rm
 #
-gmt begin ex12 ps
+gmt begin ex12
   # Contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a
   # color palette (.cpt) file
   T=`gmt info -T25+c2 @Table_5_11.txt`

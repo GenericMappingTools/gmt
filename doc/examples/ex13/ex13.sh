@@ -5,7 +5,7 @@
 # GMT modules:	set, grdmath, grdcontour, grdvector, subplot
 # Unix progs:	rm
 #
-gmt begin ex13 ps
+gmt begin ex13
   gmt set FONT_HEADING 40p,Times-Italic
   gmt grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc
   gmt grdmath z.nc DDX = dzdx.nc

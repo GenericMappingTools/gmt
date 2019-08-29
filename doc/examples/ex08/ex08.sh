@@ -5,7 +5,7 @@
 # GMT modules:	grd2xyz, makecpt, text, plot3d
 # Unix progs:	echo
 #
-gmt begin ex08 ps
+gmt begin ex08
 	gmt makecpt -Ccubhelix -T-5000/0
 	gmt grd2xyz @guinea_bay.nc | gmt plot3d -B -Bz1000+l"Topography (m)" -BWSneZ+b+tETOPO5 \
 	-R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -Wthinnest -C -i0-2,2

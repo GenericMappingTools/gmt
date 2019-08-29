@@ -5,7 +5,7 @@
 # GMT modules:	grdmath, grdcontour, coast, plot, text, grdtrack
 # Unix progs:	echo, cat
 #
-gmt begin ex23 ps
+gmt begin ex23
 	# Position and name of central point:
 	lon=12.50
 	lat=41.99

@@ -5,7 +5,7 @@
 # GMT modules:  colorbar, text, makecpt, grdimage, sph2grd
 # Unix progs:   rm
 #
-gmt begin ex39 ps
+gmt begin ex39
 	# Evaluate the first 180, 90, and 30 order/degrees of Venus spherical
 	# harmonics topography model, skipping the L = 0 term (radial mean).
 	# File truncated from http://www.ipgp.fr/~wieczor/SH/VenusTopo180.txt.zip

@@ -4,7 +4,7 @@
 # Purpose:	Make 3-D bar graph on top of perspective map
 # GMT modules:	coast, text, plot3d, legend, makecpt, math
 #
-gmt begin ex10 ps
+gmt begin ex10
 	gmt coast -Rd -JQ0/37.5/8i -Sazure2 -Gwheat -Wfaint -A5000 -p200/40
 	gmt makecpt -Cpurple,blue,darkgreen,yellow,red -T0,1,2,3,4,5
 	gmt math -T @languages_10.txt -o0-2 -C2 3 COL ADD 4 COL ADD 5 COL ADD 6 COL ADD = \

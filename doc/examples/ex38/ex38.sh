@@ -5,8 +5,8 @@
 # GMT modules:  colorbar, text, makecpt, grdhisteq, grdimage
 # Unix progs:   rm
 #
-gmt begin ex38 ps
-  gmt set FONT_TAG 14p PS_MEDIA letter
+gmt begin ex38
+  gmt set FONT_TAG 14p
 
   gmt makecpt -Crainbow -T0/1700 -H > t.cpt
   gmt makecpt -Crainbow -T0/15/1 -H > c.cpt

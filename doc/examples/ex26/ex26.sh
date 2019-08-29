@@ -4,7 +4,7 @@
 # Purpose:	Demonstrate general vertical perspective projection
 # GMT modules:	coast
 #
-gmt begin ex26 ps
+gmt begin ex26
 
 	# first do an overhead of the east coast from 160 km altitude point straight down
 	latitude=41.5

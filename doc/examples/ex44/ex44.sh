@@ -5,7 +5,7 @@
 # GMT modules:  coast, basemap, mapproject
 #
 
-gmt begin ex44 ps
+gmt begin ex44
   gmt subplot begin 2x1 -Fs6i/4i -B -BWSne
     gmt coast -R10W/5E/35N/44N -JM6i -EES+gbisque -Gbrown -Wfaint -N1/1p -Sazure1 -Df --FORMAT_GEO_MAP=dddF -c0
     gmt inset begin -DjTR+w2i/0.93i+o0.15i/0.1i -F+gwhite+p1p+c0.1c+s

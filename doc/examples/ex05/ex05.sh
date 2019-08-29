@@ -5,7 +5,7 @@
 # GMT modules:	grdmath, grdview, text, makecpt
 # Unix progs:	echo, rm
 #
-gmt begin ex05 ps
+gmt begin ex05
 	gmt grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV \
 	EXP MUL = sombrero.nc
 	gmt makecpt -C128 -T-5,5 -N

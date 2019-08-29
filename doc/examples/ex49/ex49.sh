@@ -6,7 +6,7 @@
 #		basemap, legend, colorbar, plot, xyz2grd
 #
 
-gmt begin ex49 ps
+gmt begin ex49
 	# Convert coarser age grid to pixel registration to match bathymetry grid
 	gmt grdsample @age_gridline.nc -T -Gage_pixel.nc
 	# Image depths with color-coded age contours

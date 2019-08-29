@@ -5,7 +5,7 @@
 # GMT modules:	set, coast, plot, legend
 # Unix progs:	cat, sed, awk, wget|curl
 #
-gmt begin ex22 ps
+gmt begin ex22
 	gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 	# Get the data (-s silently) from USGS using the curl

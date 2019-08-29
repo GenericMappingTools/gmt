@@ -6,7 +6,7 @@
 # Unix progs:	echo, rm
 #
 # Draw generic x-y axes with arrows
-gmt begin ex30 ps
+gmt begin ex30
 	gmt basemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u@. -By1g10 -BWS+t"Two Trigonometric Functions" \
 		--MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5
 
