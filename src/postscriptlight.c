@@ -4347,7 +4347,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		}
 		if (PSL->current.complete) {	/* Execute the panel completion function, then disable again */
 			PSL_comment (PSL, "Run PSL completion function from last overlay, if defined\n");
-			PSL_command (PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */
+			PSL_command (PSL, "PSL_plot_completion /PSL_plot_completion {} def\n");	/* Run then make it a null function */
 			PSL->current.complete = 0;
 		}
 	}
@@ -4433,7 +4433,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
 		
-		PSL_command (PSL, "/PSL_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
 		PSL_command (PSL, "/PSL_movie_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
@@ -4512,7 +4512,7 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n) {
 }
 
 int PSL_setexec (struct PSL_CTRL *PSL, int action) {
-	/* Enables of disables the execution of a PSL_completion function at start of a PSL_plotinit overlay */
+	/* Enables of disables the execution of a PSL_plot_completion function at start of a PSL_plotinit overlay */
 	PSL->current.complete = (action) ? 1 : 0;
 	return (PSL_NO_ERROR);
 }

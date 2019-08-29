@@ -1217,8 +1217,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, wmode[k]);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		/* Must force PSL_completion procedure to run, if it was set */
-		PSL_command (GMT->PSL, "PSL_completion /PSL_completion {} def\n");	/* Run, then make it a null function */
+		/* Must force PSL_plot_completion procedure to run, if it was set */
+		PSL_command (GMT->PSL, "PSL_plot_completion /PSL_plot_completion {} def\n");	/* Run once, then make it a null function */
 		if (PSL_fclose (GMT->PSL)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
 			Return (GMT_RUNTIME_ERROR);
