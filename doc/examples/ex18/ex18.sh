@@ -7,7 +7,7 @@
 # GMT modules:	grdmath, grdvolume, makecpt, coast, colorbar, text, plot
 # Unix progs:	rm
 #
-gmt begin ex18 ps
+gmt begin ex18
   # Use spherical gmt projection since SS data define on sphere
   gmt set PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
   # Define location of Pratt seamount and the 400 km diameter

@@ -6,7 +6,7 @@
 # Unix progs:	echo, rm
 #
 gmt begin
-	gmt figure ex04 ps
+	gmt figure ex04
 	gmt makecpt -C255,100 -T-10/10/10 -N
 	gmt grdcontour @HI_geoid_04.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -X1.25i -Y1.25i
 	gmt coast -p -B2 -BNEsw -Gblack -TdjBR+o0.1i+w1i+l
@@ -15,7 +15,7 @@ gmt begin
 	echo '3.25 5.75 H@#awaiian@# R@#idge@#' | gmt text -R0/10/0/10 -Jx1i \
 	-F+f60p,ZapfChancery-MediumItalic+jCB
 
-	gmt figure ex04c ps
+	gmt figure ex04c
 	gmt grdimage @HI_geoid_04.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -C@geoid_04.cpt -X1.25i -Y1.25i
 	gmt coast -p -B2 -BNEsw -Gblack
 	gmt basemap -p -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND=red --FONT=red --MAP_TICK_PEN_PRIMARY=thinner,red

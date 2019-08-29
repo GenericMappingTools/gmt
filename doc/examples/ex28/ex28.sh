@@ -4,7 +4,7 @@
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
 # GMT modules:	makecpt, grdimage, coast, text, basemap
 #
-gmt begin ex28 ps
+gmt begin ex28
 	# Set up a color table
 	gmt makecpt -Ccopper -T0/1500
 	# Lay down the UTM topo grid using a 1:160,000 scale

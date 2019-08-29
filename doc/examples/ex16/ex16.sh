@@ -5,7 +5,7 @@
 # GMT modules:	gmtset, grdview, grdfilter, contour, colorbar, surface, triangulate
 # Unix progs:	rm
 #
-gmt begin ex16 ps
+gmt begin ex16
   gmt set FONT_ANNOT_PRIMARY 9p FONT_TITLE 18p,Times-Roman
   gmt subplot begin 2x2 -M0.05i -Fs3.25i/0 -R0/6.5/-0.2/6.5 -Jx1i -SCb -SRl+t -Bwesn -Y2i -T"Gridding of Data"
     gmt contour @Table_5_11.txt -C@ex_16.cpt -I -B+t"contour (triangulate)" -c0,0

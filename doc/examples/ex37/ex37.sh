@@ -6,7 +6,7 @@
 # Unix progs:   rm
 #
 
-gmt begin ex37 ps
+gmt begin ex37
     # Testing gmt grdfft coherence calculation with Karen Marks example data
     # Prefix of two .nc files
     G=@grav.V18.par.surf.1km.sq

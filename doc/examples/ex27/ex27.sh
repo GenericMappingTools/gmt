@@ -4,7 +4,7 @@
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT modules:	makecpt, grdimage, grdinfo, coast, colorbar
 #
-gmt begin ex27 ps
+gmt begin ex27
 	# Gravity in tasman_grav.nc is in 0.1 mGal increments and the grid
 	# is already in projected Mercator x/y units.
 

@@ -5,7 +5,7 @@
 # GMT modules:  makecpt, convert, grdimage, grdtrack, text, plot
 # Unix progs:   cat, rm
 #
-gmt begin ex33 ps
+gmt begin ex33
 
 	# Extract a subset of ETOPO1m for the East Pacific Rise
 	# gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac_33.nc

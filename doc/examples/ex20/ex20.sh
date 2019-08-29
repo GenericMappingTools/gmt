@@ -7,7 +7,7 @@
 #
 # Plot a world-map with volcano symbols of different sizes at hotspot locations
 # using table from Muller et al., 1993, Geology.
-gmt begin ex20 ps
+gmt begin ex20
 	gmt set PROJ_LENGTH_UNIT inch
 	gmt coast -Rg -JR9i -B -B+t"Hotspot Islands and Hot Cities" -Gdarkgreen -Slightblue -A5000
 	gmt plot @hotspots.txt -Skvolcano -Wthinnest -Gred
