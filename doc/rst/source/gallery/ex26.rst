@@ -20,10 +20,10 @@ projection is only implemented in
 further and extend the availability of the full projection to all of the
 GMT mapping programs.
 
-.. literalinclude:: /_verbatim/example_26.txt
+.. literalinclude:: /_verbatim/ex26.txt
    :language: bash
 
-.. figure:: /_images/example_26.*
+.. figure:: /_images/ex26.*
    :width: 500 px
    :align: center
 

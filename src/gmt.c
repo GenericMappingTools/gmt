@@ -159,11 +159,17 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Show share directory */
-			else if (!strncmp (argv[arg_n], "--show-datadir", 11U)) {
+			else if (!strncmp (argv[arg_n], "--show-datadir", 14U)) {
 				if (api_ctrl->GMT->session.DATADIR == NULL)
 					fprintf(stdout, "Not set\n");
 				else
 					fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
+				status = GMT_NOERROR;
+			}
+
+			/* Show URL of the remote GMT data server */
+			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
+				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
 				status = GMT_NOERROR;
 			}
 
@@ -228,6 +234,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
+			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
 			fprintf (stderr, "  --show-modules    Show all module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");

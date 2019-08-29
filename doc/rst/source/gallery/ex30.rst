@@ -12,10 +12,10 @@ plots them as lines, then indicates on a circle that these quantities
 are simply the projections of an unit vector on the x- and y-axis, at
 the given angle.
 
-.. literalinclude:: /_verbatim/example_30.txt
+.. literalinclude:: /_verbatim/ex30.txt
    :language: bash
 
-.. figure:: /_images/example_30.*
+.. figure:: /_images/ex30.*
    :width: 500 px
    :align: center
 

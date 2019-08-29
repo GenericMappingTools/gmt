@@ -29,10 +29,10 @@ that the horizontal distance from the dateline seems to increase as we
 go south; however that is just the projected distance (Mercator
 distortion) and not the actual distance which remains constant at 1000 km.
 
-.. literalinclude:: /_verbatim/example_24.txt
+.. literalinclude:: /_verbatim/ex24.txt
    :language: bash
 
-.. figure:: /_images/example_24.*
+.. figure:: /_images/ex24.*
    :width: 500 px
    :align: center
 

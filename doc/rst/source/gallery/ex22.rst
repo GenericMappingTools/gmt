@@ -21,10 +21,10 @@ Sun raster file, is used to spice up the legend.
 The script produces the plot in Figure,
 giving the URL where these and similar data can be obtained.
 
-.. literalinclude:: /_verbatim/example_22.txt
+.. literalinclude:: /_verbatim/ex22.txt
    :language: bash
 
-.. figure:: /_images/example_22.*
+.. figure:: /_images/ex22.*
    :width: 500 px
    :align: center
 

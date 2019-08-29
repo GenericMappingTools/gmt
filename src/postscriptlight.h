@@ -290,7 +290,7 @@ struct PSL_CTRL {
 		int nclip;			/* Clip depth 					*/
 		int font_no;			/* Current font number				*/
 		int outline;			/* Current outline				*/
-		int complete;			/* true for executing a custom PSL_completion procedure once */
+		int complete;			/* true for executing a custom PSL_plot_completion procedure once */
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with postscriptlight subdirectory */
