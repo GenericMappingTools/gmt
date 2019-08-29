@@ -42,12 +42,12 @@ GDAL support. You will also see the
 :doc:`grdcut </grdcut>` command commented out because we
 did not want to store the 58 MB DEM file, whose location is mentioned in the script.
 
-.. literalinclude:: /_verbatim/example_32.txt
+.. literalinclude:: /_verbatim/ex32.txt
    :language: bash
 
 .. _fig_ex32:
 
-.. figure:: /_images/example_32.*
+.. figure:: /_images/ex32.*
    :width: 500 px
    :align: center
 

@@ -9,10 +9,10 @@ the location of the sun with respect to Earth.  We also
 show how an EPS illustration can serve as a custom symbol
 to be plotted with :doc:`plot </plot>`.
 
-.. literalinclude:: /_verbatim/example_46.txt
+.. literalinclude:: /_verbatim/ex46.txt
    :language: bash
 
-.. figure:: /_images/example_46.*
+.. figure:: /_images/ex46.*
    :width: 500 px
    :align: center
 

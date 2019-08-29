@@ -13,14 +13,14 @@ second layer showing the 3-D mesh plot of the topography. We also add an
 arrow pointing north and some text. The first part of this script shows
 how to do it:
 
-.. literalinclude:: /_verbatim/example_04.txt
+.. literalinclude:: /_verbatim/ex04.txt
    :language: bash
 
 The purpose of the CPT ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 
-.. figure:: /_images/example_04.*
+.. figure:: /_images/ex04.*
    :width: 500 px
    :align: center
 

@@ -11,10 +11,10 @@ image and then place a transparent layer identifying the future
 Franco-Italian Union whose untimely breakup in 2045 the historians
 will continue to debate for some time.
 
-.. literalinclude:: /_verbatim/example_34.txt
+.. literalinclude:: /_verbatim/ex34.txt
    :language: bash
 
-.. figure:: /_images/example_34.*
+.. figure:: /_images/ex34.*
    :width: 500 px
    :align: center
 

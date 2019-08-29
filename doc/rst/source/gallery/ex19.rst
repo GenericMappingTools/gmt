@@ -20,10 +20,10 @@ that was overlaid using :doc:`image </image>`. The
 final panel repeats the top panel except that the land and sea images
 have changed places.
 
-.. literalinclude:: /_verbatim/example_19.txt
+.. literalinclude:: /_verbatim/ex19.txt
    :language: bash
 
-.. figure:: /_images/example_19.*
+.. figure:: /_images/ex19.*
    :width: 500 px
    :align: center
 
