@@ -5,7 +5,7 @@
 # GMT modules:  plot, makecpt, grdimage, sphinterpolate
 # Unix progs:   rm
 #
-gmt begin ex36 ps
+gmt begin ex36
   # Interpolate data of Mars radius from Mariner9 and Viking Orbiter spacecrafts
   gmt subplot begin 3x1 -Fs5.5i/0 -JH0/5.5i -Rg -M0
     gmt makecpt -Crainbow -T-7000/15000

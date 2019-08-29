@@ -6,7 +6,7 @@
 # Unix progs:	echo, cat, rm
 #
 # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline
-gmt begin ex24 ps
+gmt begin ex24
 	echo "147:13 -42:48 6000" > point.txt
 	cat <<- END > dateline.txt
 	> Our proxy for the dateline

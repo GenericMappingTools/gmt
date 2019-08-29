@@ -192,7 +192,7 @@ export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 # Font lookup path for Ghostscript (invoked from gm compare and psconvert)
 export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 # Start with proper GMT defaults
-gmt set -Du FORMAT_TIME_STAMP "Version 6"
+gmt set -Du FORMAT_TIME_STAMP "Version 6" GMT_GRAPHICS_FORMAT ps
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
 if [ ${modern} -gt 0 ]; then
 	export GMT_SESSION_NAME=\$\$

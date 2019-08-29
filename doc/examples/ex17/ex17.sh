@@ -5,7 +5,7 @@
 # GMT modules:	grd2cpt, grdimage, coast, text, makecpt
 # Unix progs:	rm
 #
-gmt begin ex17 ps
+gmt begin ex17
 
 	# First generate geoid image w/ shading
 	gmt grd2cpt @india_geoid.nc -Crainbow -H > geoid.cpt

@@ -5,7 +5,7 @@
 # GMT modules:	set, convert, info, basemap, plot
 # Unix progs:	echo, rm
 #
-gmt begin ex21 ps
+gmt begin ex21
 	# File has time stored as dd-Mon-yy so set input format to match it
 	gmt set FORMAT_DATE_IN dd-o-yy FORMAT_DATE_MAP o FONT_ANNOT_PRIMARY +10p
 	gmt set FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+

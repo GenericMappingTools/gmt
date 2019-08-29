@@ -5,7 +5,7 @@
 # GMT modules:  makecpt, grdcontour, grdimage, grdmath greenspline, colorbar, text
 # Unix progs:   echo, rm
 #
-gmt begin ex29 ps
+gmt begin ex29
   # This example uses 370 radio occultation data for Mars to grid the topography.
   # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
   # Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.

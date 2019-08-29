@@ -4,7 +4,7 @@
 # Purpose:      Illustrate coast with DCW country polygons
 # GMT modules:  set, coast, makecpt, grdimage
 #
-gmt begin ex34 ps
+gmt begin ex34
   gmt set FORMAT_GEO_MAP dddF FONT_HEADING 24p
   gmt makecpt -Cglobe -T-5000/5000
   gmt subplot begin 2x1 -Fs4.5i/0 -M0.05i -JM4.5i -R-6/20/35/52 -SRl -SCb -Bwesn -T"Franco-Italian Union, 2042-45"

@@ -16,7 +16,7 @@ function plot_one { # First 3-4 args are: -E -N -c [-Barg]
   gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt plot -W2p	
 }
 
-gmt begin ex47 ps
+gmt begin ex47
   file=`gmt which -G @hertzsprung-russell.txt`
   # Allow outliers (commented out by #) to be included in the analysis:
   sed -e s/#//g $file > data.txt

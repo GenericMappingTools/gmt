@@ -6,7 +6,7 @@
 # Unix progs:	cat
 #
 # Create D minutes global grid with -1 over oceans and +1 over land
-gmt begin ex25 ps
+gmt begin ex25
 	D=30
 	gmt grdlandmask -Rg -I${D}m -Dc -A500 -N-1/1/1/1/1 -r -Gwetdry.nc
 	# Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere
