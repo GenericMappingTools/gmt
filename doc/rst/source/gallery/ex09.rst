@@ -25,13 +25,13 @@ the output through :doc:`text </text>`. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
-.. literalinclude:: /_verbatim/example_09.txt
+.. literalinclude:: /_verbatim/ex09.txt
    :language: bash
 
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator projection.
 
-.. figure:: /_images/example_09.*
+.. figure:: /_images/ex09.*
    :width: 500 px
    :align: center
 

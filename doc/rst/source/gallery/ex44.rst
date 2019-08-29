@@ -13,10 +13,10 @@ is simplest since we know the inset will be a square map, the Spain
 example requires us to compute the dimensions of the inset first, via
 :doc:`mapproject </mapproject>`, so that we can determine exact inset dimensions.
 
-.. literalinclude:: /_verbatim/example_44.txt
+.. literalinclude:: /_verbatim/ex44.txt
    :language: bash
 
-.. figure:: /_images/example_44.*
+.. figure:: /_images/ex44.*
    :width: 500 px
    :align: center
 

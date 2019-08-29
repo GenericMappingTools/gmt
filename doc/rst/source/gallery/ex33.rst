@@ -12,10 +12,10 @@ profile, showed above the map, with the gray area representing the
 variations about the stacked median profile.
 
 
-.. literalinclude:: /_verbatim/example_33.txt
+.. literalinclude:: /_verbatim/ex33.txt
    :language: bash
 
-.. figure:: /_images/example_33.*
+.. figure:: /_images/ex33.*
    :width: 500 px
    :align: center
 

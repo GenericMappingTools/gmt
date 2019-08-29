@@ -10,10 +10,10 @@ This data set forms the basis for the main sequence
 in a Hertzsprung-Russell diagram of the star cluster CYG OB1, which includes
 four red giants that are outlying with respect to the main trend.
 
-.. literalinclude:: /_verbatim/example_47.txt
+.. literalinclude:: /_verbatim/ex47.txt
    :language: bash
 
-.. figure:: /_images/example_47.*
+.. figure:: /_images/ex47.*
    :width: 500 px
    :align: center
 

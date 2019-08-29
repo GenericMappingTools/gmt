@@ -25,10 +25,10 @@ tension using the *Wessel and Becker* [2008] method. The grids are then
 imaged with :doc:`grdimage </grdimage>` and
 :doc:`grdcontour </grdcontour>` and a color scale is placed between them.
 
-.. literalinclude:: /_verbatim/example_29.txt
+.. literalinclude:: /_verbatim/ex29.txt
    :language: bash
 
-.. figure:: /_images/example_29.*
+.. figure:: /_images/ex29.*
    :width: 500 px
    :align: center
 

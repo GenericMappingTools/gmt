@@ -8,10 +8,10 @@ implemented in the tool :doc:`gmtsimplify </gmtsimplify>`.  We show the full
 resolution coastline of Australia and two much simplified versions using two
 different thresholds.
 
-.. literalinclude:: /_verbatim/example_40.txt
+.. literalinclude:: /_verbatim/ex40.txt
    :language: bash
 
-.. figure:: /_images/example_40.*
+.. figure:: /_images/ex40.*
    :width: 500 px
    :align: center
 
