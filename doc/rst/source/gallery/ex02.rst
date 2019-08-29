@@ -17,7 +17,7 @@ the lower left and upper right corner of region. In our case we choose
 (160, 20) and (220, 30) as the corners. We use
 :doc:`grdimage </grdimage>` to make the illustration:
 
-.. literalinclude:: /_verbatim/example_02.txt
+.. literalinclude:: /_verbatim/ex02.txt
    :language: bash
 
 The first step extracts the 2-D data sets from the global data grids using
@@ -45,7 +45,7 @@ image with :doc:`colorbar </colorbar>`. Similarly, we run
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration.
 
-.. figure:: /_images/example_02.*
+.. figure:: /_images/ex02.*
    :width: 500 px
    :align: center
 

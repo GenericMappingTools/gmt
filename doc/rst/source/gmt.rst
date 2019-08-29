@@ -86,6 +86,9 @@ several other options are available:
 **--show-datadir**
     Show data directory/ies and exit.
 
+**--show-dataserver**
+    Show URL of the remote GMT data server.
+
 **--show-modules**
     List module names on stdout and exit.
 

@@ -8,10 +8,10 @@ Antarctica (here the BEDMAP data already projected via a stereographic projectio
 with geographic data, all using the same map scale. It also shows how one would set up
 minor legends and map scales.
 
-.. literalinclude:: /_verbatim/example_42.txt
+.. literalinclude:: /_verbatim/ex42.txt
    :language: bash
 
-.. figure:: /_images/example_42.*
+.. figure:: /_images/ex42.*
    :width: 500 px
    :align: center
 

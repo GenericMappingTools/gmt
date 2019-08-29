@@ -1859,7 +1859,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					x0 -= Ctrl->A.margin[XLO];	x1 += Ctrl->A.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s (maybe no non-white features were plotted?)\n", BB_file);
 						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);

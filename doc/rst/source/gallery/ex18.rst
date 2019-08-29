@@ -18,10 +18,10 @@ this radius and use :doc:`grdvolume </grdvolume>` to
 determine the combined area and (gravimetric) volumes of the chosen seamounts. Our
 illustration is presented in Figure.
 
-.. literalinclude:: /_verbatim/example_18.txt
+.. literalinclude:: /_verbatim/ex18.txt
    :language: bash
 
-.. figure:: /_images/example_18.*
+.. figure:: /_images/ex18.*
    :width: 500 px
    :align: center
 

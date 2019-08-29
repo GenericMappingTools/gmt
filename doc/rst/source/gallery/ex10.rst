@@ -16,10 +16,10 @@ The script also shows how to effectively use transparency of the boxes around th
 and in the shade surrounding the legend.
 Our script that produces Figure ex_10 reads:
 
-.. literalinclude:: /_verbatim/example_10.txt
+.. literalinclude:: /_verbatim/ex10.txt
    :language: bash
 
-.. figure:: /_images/example_10.*
+.. figure:: /_images/ex10.*
    :width: 500 px
    :align: center
 

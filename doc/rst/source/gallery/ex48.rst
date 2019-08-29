@@ -15,10 +15,10 @@ texture beneath.  Finally,
 we add six local spiderweb azimuth/distance gridlines and
 set a curved plot title.
 
-.. literalinclude:: /_verbatim/example_48.txt
+.. literalinclude:: /_verbatim/ex48.txt
    :language: bash
 
-.. figure:: /_images/example_48.*
+.. figure:: /_images/ex48.*
    :width: 500 px
    :align: center
 

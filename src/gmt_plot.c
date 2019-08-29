@@ -6939,7 +6939,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
 			plot_x -= (P->dx);
 			plot_y -= (P->dy);
-			PSL_command (PSL, "/PSL_completion {\nV\n");
+			PSL_command (PSL, "/PSL_plot_completion {\nV\n");
 			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_comment (PSL, "Will not execute until end of panel\n");
 			PSL_setorigin (PSL, GMT->current.setting.map_origin[GMT_X] - P->gap[XLO], GMT->current.setting.map_origin[GMT_Y] - P->gap[YLO], 0.0, PSL_FWD);
@@ -6972,7 +6972,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			else	
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
-			/* Because PSL_completion is called at the end of the module, we must forget we used fonts here */
+			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
