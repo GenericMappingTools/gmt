@@ -16,9 +16,9 @@ for compiling GMT source package (either stable release or development version).
 - [Windows](#windows)
 - [macOS](#macos)
   * [Standalone Installer](#standalone-installer)
+  * [Install via Homebrew](#install-via-homebrew)
   * [Install via macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
-  * [Install via Homebrew](#install-via-homebrew)
 - [Linux](#linux)
   * [Ubuntu/Debian](#ubuntudebian)
   * [RHEL/CentOS/Fedora](#rhelcentosfedora)
@@ -70,6 +70,26 @@ or brew command:
     port install gdal ghostscript graphicsmagick ffmpeg
     brew install gdal ghostscript graphicsmagick ffmpeg
 
+### Install via Homebrew
+
+Installation of GMT through [Homebrew](https://brew.sh/) is extremely simple.
+Installing Homebrew itself is a one line command only (see [the Homebrew page](https://brew.sh/)).
+You may need to update the formulas so for that you will do:
+
+    brew update && brew upgrade
+
+For the latest GMT 5 version use:
+
+    brew install gmt
+
+If you want to install GMT 4 and GMT 5 alongside, do:
+
+    brew unlink gmt && brew install gmt4
+
+and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc about gmtswitch):
+
+    brew unlink gmt && brew link gmt4
+
 ### Install via macports
 
 Install [macports](https://www.macports.org/) and then the required ports in this order:
@@ -95,26 +115,6 @@ For the legacy GMT 4 version use:
     sudo fink install gmt
 
 The two versions cannot live side by side.
-
-### Install via Homebrew
-
-Installation of GMT through [Homebrew](https://brew.sh/) is extremely simple.
-Installing Homebrew itself is a one line command only (see [the Homebrew page](https://brew.sh/)).
-You may need to update the formulas so for that you will do:
-
-    brew update && brew upgrade
-
-For the latest GMT 5 version use:
-
-    brew install gmt
-
-If you want to install GMT 4 and GMT 5 alongside, do:
-
-    brew unlink gmt && brew install gmt4
-
-and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc about gmtswitch):
-
-    brew unlink gmt && brew link gmt4
 
 ## Linux
 
