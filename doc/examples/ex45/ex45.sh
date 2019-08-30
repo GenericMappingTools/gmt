@@ -6,8 +6,8 @@
 # Unix progs:   rm
 #
 
-gmt begin ex45 ps
-  gmt set FONT_HEADING 24p PS_MEDIA letter
+gmt begin ex45
+  gmt set FONT_HEADING 24p
   gmt subplot begin 4x1 -Fs6i/1.9i -R1958/2016/310/410 -Bxaf -Byaf+u" ppm" -BWSne+gazure1 -T"The Keeling Curve [CO@-2@- at Mauna Loa]"
 
     # Basic LS line y = a + bx

@@ -5,7 +5,7 @@
 # GMT modules:  math, set, plot, text
 #
 
-gmt begin ex50 ps
+gmt begin ex50
 	# Left column have all the PDFs
 	gmt set FONT_ANNOT_PRIMARY 10p,Helvetica,black
 	# Binomial distribution

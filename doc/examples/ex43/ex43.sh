@@ -7,7 +7,7 @@
 #
 
 # Data from Table 7 in Rousseeuw and Leroy, 1987.
-gmt begin ex43 ps
+gmt begin ex43
 
 	file=`gmt which -G @bb_weights.txt`
 	gmt regress -Ey -Nw -i0:1+l $file > model.txt

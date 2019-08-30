@@ -5,7 +5,7 @@
 # GMT modules:  makecpt, coast, plot, sphtriangulate, grdimate, gmtmath, text
 #
 
-gmt begin ex48 ps
+gmt begin ex48
 	cat <<- EOF > airports.txt
 	157.8583W	21.3069N	61	300	HNL	BC	0.6i
 	149.5585W	17.5516S	-120	120	PPT	TC	0.6i

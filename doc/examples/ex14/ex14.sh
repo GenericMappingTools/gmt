@@ -6,7 +6,7 @@
 # GMT modules:	set, plot, surface, subplot
 # Unix progs:	rm
 #
-gmt begin ex14 ps
+gmt begin ex14
   gmt set MAP_GRID_PEN_PRIMARY thinnest,-
   # calculate mean data and grids
   gmt blockmean @Table_5_11.txt -R0/7/0/7 -I1 > mean.xyz

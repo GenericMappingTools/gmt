@@ -7,7 +7,7 @@
 # Unix progs:	cat, rm
 # Credits:	Original by Stephan Eickschen
 #
-gmt begin ex32 ps
+gmt begin ex32
 	# Here we get and convert the flag of Europe directly from the web through grdconvert using
 	# GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 	# for a ratio of 3x2.

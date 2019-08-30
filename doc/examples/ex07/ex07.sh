@@ -4,7 +4,7 @@
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT modules:	coast, legend, text, plot
 #
-gmt begin ex07 ps
+gmt begin ex07
 	gmt coast -R-50/0/-10/20 -JM9i -Slightblue -GP26+r300+ftan+bdarkbrown -Dl -Wthinnest -B --FORMAT_GEO_MAP=dddF
 	gmt plot @fz_07.txt -Wthinner,-
 	gmt plot @quakes_07.txt -h1 -Sci -i0,1,2+s0.01 -Gred -Wthinnest
