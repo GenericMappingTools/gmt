@@ -31,7 +31,7 @@ We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
 on the [GMT main site](https://www.generic-mapping-tools.org).
 The installers come with GDAL and FFmpeg pre-installed.
 
-In addition to the GMT installer, you also need to download and install Ghostscript (e.g. gs927w64.exe)
+In addition to the GMT installer, you also need to download and install Ghostscript (e.g. gs926w64.exe)
 from [the Ghostscript official webiste](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases).
 
 ## macOS
