@@ -90,6 +90,10 @@ and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc a
 
     brew unlink gmt && brew link gmt4
 
+You also need to install other GMT run-time dependencies seperately:
+
+    brew install ghostscript graphicsmagick ffmpeg
+
 ### Install via macports
 
 Install [macports](https://www.macports.org/) and then the required ports in this order:
@@ -100,6 +104,10 @@ Install [macports](https://www.macports.org/) and then the required ports in thi
 A legacy GMT 4 port, gmt4, is available too and a side by side installation is possible.
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the +fftw3 and +openmp flags.
+
+You also need to install other GMT run-time dependencies seperately:
+
+    port install ghostscript graphicsmagick ffmpeg
 
 ### Install via fink
 
@@ -115,6 +123,10 @@ For the legacy GMT 4 version use:
     sudo fink install gmt
 
 The two versions cannot live side by side.
+
+You also need to install other GMT run-time dependencies seperately:
+
+    fink install ghostscript graphicsmagick ffmpeg
 
 ## Linux
 
