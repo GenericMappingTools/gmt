@@ -1828,7 +1828,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				fclose (fp);	fclose (fp2);
+				fclose (fp);
+				if (fp2) fclose (fp2);
 				fp = fp2 = NULL;
 				gmt_M_free (GMT, PS);
 				if (gmt_remove_file (GMT, BB_file))
