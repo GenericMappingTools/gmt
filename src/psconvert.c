@@ -2709,6 +2709,12 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	bool bits64 = true;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
+	/* Before of all rest, check if we have a ghost in GMT/bin */
+	sprintf (data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
+	if (!access (data, R_OK)) goto FOUNDGS;
+	sprintf (data, "%s/gswin32c.exe", API->GMT->init.runtime_bindir);
+	if (!access (data, R_OK)) goto FOUNDGS;
+
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
 	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
@@ -2790,6 +2796,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	}
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
+FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
 	C->G.file = malloc (strlen (data) + 3);	/* strlen + 2 * " + \0 */
 	sprintf (C->G.file, "\"%s\"", data);
 
