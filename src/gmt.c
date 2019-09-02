@@ -206,8 +206,8 @@ int main (int argc, char *argv[]) {
 				if (((txt = getenv ("shell")) || (txt = getenv ("SHELL"))) && (txt && strstr (txt, "csh")))	/* Got csh or tcsh */
 					type = 1;
 				printf ("#!/usr/bin/env %s\n", shell[type]);
-				printf ("# GMT standard %s template\n", shell[type]);
-				printf ("# Date: %s\n# Purpose:\n", stamp);
+				printf ("# GMT modern mode %s template\n", shell[type]);
+				printf ("# Date: %s\n# User: %s\n# Purpose:\n", stamp, gmt_putusername(NULL));
 				if (type)
 					printf ("setenv GMT_SESSION_NAME $$    # Set a unique session name\n");
 				else
