@@ -197,6 +197,23 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* print new shell template */
+			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
+				unsigned int type = 0;
+				char *txt = getenv ("shell"), *shell[2] = {"bash", "csh"};
+				if (((txt = getenv ("shell")) || (txt = getenv ("SHELL"))) && (txt && strstr (txt, "csh")))	/* Got csh or tcsh */
+					type = 1;
+				printf ("#/usr/bin/env %s\n", shell[type]);
+				printf ("# GMT standard %s template\n", shell[type]);
+				printf ("# Date:\n# Purpose:\n");
+				if (type)
+					printf ("setenv GMT_SESSION_NAME $$    # Set a unique session name\n");
+				else
+					printf ("export GMT_SESSION_NAME=$$    # Set a unique session name\n");
+				printf ("gmt begin\n\t#<place modern session commands here>\ngmt end show\n");
+				status = GMT_NOERROR;
+			}
+
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 	} /* status == GMT_NOERROR */
 
@@ -231,6 +248,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
+			fprintf (stderr, "  --new-script      Write GMT modern mode script template to stdout.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
