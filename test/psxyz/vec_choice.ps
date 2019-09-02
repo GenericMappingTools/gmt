@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxyz
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psxyz
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:25 2018
+%%CreationDate: Sun Sep  1 18:15:13 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -834,11 +829,14 @@ V
 {1 0.746 0 C} FS
 O1
 1 0.746 0 C
+/PSL_vecheadpen {36 W 1 0.746 0 C [] 0 B} def
 36 W
 V 1588 3307 T -67.7349 R
 N 0 0 M 2160 0 D S
 U
 V 2497 1086 T -67.7349 R
+PSL_vecheadpen
+72 W
 0 0 M
 -240 64 D
 0 -128 D
@@ -847,11 +845,14 @@ U
 {0.246 1 0.754 C} FS
 36 W
 0.246 1 0.754 C
+/PSL_vecheadpen {36 W 0.246 1 0.754 C [] 0 B} def
 36 W
 V 1864 3254 T -84.0593 R
 N 0 0 M 2160 0 D S
 U
 V 2113 867 T -84.0593 R
+PSL_vecheadpen
+72 W
 0 0 M
 -240 64 D
 0 -128 D
@@ -860,11 +861,14 @@ U
 {0.753 0 0 C} FS
 36 W
 0.753 0 0 C
+/PSL_vecheadpen {36 W 0.753 0 0 C [] 0 B} def
 36 W
 V 1800 2155 T 15.8151 R
 N 0 0 M 960 0 D S
 U
 V 2955 2482 T 15.8151 R
+PSL_vecheadpen
+72 W
 0 0 M
 -240 64 D
 0 -128 D
@@ -879,7 +883,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f12p+cBL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K '-F+f12p+cBL+t-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt' -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -894,7 +898,7 @@ P
 PSL_clip N
 120 120 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(”SV0.12i+e+a90 -W2.16p+cf -Ct.cpt) bl Z
+(-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt) bl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -903,7 +907,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL+tGMT5-6 -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1088,25 +1092,34 @@ V
 {1 0.746 0 C} FS
 O1
 1 0.746 0 C
+/PSL_vecheadpen {36 W 1 0.746 0 C [] 0 B} def
 36 W
 V 1588 3307 T -67.7349 R
 N 0 0 M 2400 0 D S
+PSL_vecheadpen
+72 W
 N 0 0 70 0 360 arc
 P clip fs P S U
 {0.246 1 0.754 C} FS
 36 W
 0.246 1 0.754 C
+/PSL_vecheadpen {36 W 0.246 1 0.754 C [] 0 B} def
 36 W
 V 1864 3254 T -84.0593 R
 N 0 0 M 2400 0 D S
+PSL_vecheadpen
+72 W
 N 0 0 70 0 360 arc
 P clip fs P S U
 {0.753 0 0 C} FS
 36 W
 0.753 0 0 C
+/PSL_vecheadpen {36 W 0.753 0 0 C [] 0 B} def
 36 W
 V 1800 2155 T 15.8151 R
 N 0 0 M 1200 0 D S
+PSL_vecheadpen
+72 W
 N 0 0 70 0 360 arc
 P clip fs P S U
 U
@@ -1118,7 +1131,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f12p+cBL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K '-F+f12p+cBL+t-SV0.2i+bc -W2.16p+c -Ct.cpt' -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1133,7 +1146,7 @@ P
 PSL_clip N
 120 120 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(”SV0.2i+bc -W2.16p+c -Ct.cpt) bl Z
+(-SV0.2i+bc -W2.16p+c -Ct.cpt) bl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1142,7 +1155,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL+tGMT5-6 -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1340,7 +1353,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f12p+cBL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K '-F+f12p+cBL+t-SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt' -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_11
 0 setlinecap
@@ -1355,7 +1368,7 @@ P
 PSL_clip N
 120 120 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(”SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt) bl Z
+(-SV0.03i/0.12i/0.1i -W0.25p -Ct.cpt) bl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1364,7 +1377,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f16p+cTL+tGMT2-6 -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_12
 0 setlinecap
@@ -1548,35 +1561,42 @@ PSL_clip N
 V
 {1 0.746 0 C} FS
 O1
+/PSL_vecheadpen {18 W 0 A [] 0 B} def
 36 W
 V 1588 3307 T -67.7349 R
 N 0 0 M 2256 0 D S
 U
 V 2497 1086 T -67.7349 R
+PSL_vecheadpen
+36 W
 0 0 M
 -144 144 D
 0 -288 D
 P clip fs P S 
 U
 {0.246 1 0.754 C} FS
-36 W
+/PSL_vecheadpen {18 W 0 A [] 0 B} def
 36 W
 V 1864 3254 T -84.0593 R
 N 0 0 M 2256 0 D S
 U
 V 2113 867 T -84.0593 R
+PSL_vecheadpen
+36 W
 0 0 M
 -144 144 D
 0 -288 D
 P clip fs P S 
 U
 {0.753 0 0 C} FS
-36 W
+/PSL_vecheadpen {18 W 0 A [] 0 B} def
 36 W
 V 1800 2155 T 15.8151 R
 N 0 0 M 1056 0 D S
 U
 V 2955 2482 T 15.8151 R
+PSL_vecheadpen
+36 W
 0 0 M
 -144 144 D
 0 -288 D
@@ -1591,7 +1611,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K -F+f12p+cBL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -K '-F+f12p+cBL+t-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt' -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_15
 0 setlinecap
@@ -1606,7 +1626,7 @@ P
 PSL_clip N
 120 120 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(”SV0.12i+e+a90 -W2.16p+cf -Ct.cpt) bl Z
+(-SV0.12i+e+a90 -W2.16p+cf -Ct.cpt) bl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1615,7 +1635,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -F+f16p+cTL -Dj0.1i
+%@GMT: gmt pstext -R-107:30/-106:30/33:30/34:30 -JM3i -O -F+f16p+cTL+tGMT5-6 -Dj0.1i
 %@PROJ: merc -107.50000000 -106.50000000 33.50000000 34.50000000 -55659.745 55659.745 3938277.753 4071937.477 +proj=merc +lon_0=-107 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_16
 0 setlinecap

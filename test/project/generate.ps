@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:17 2018
+%%CreationDate: Sun Sep  1 18:13:29 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -681,9 +676,17 @@ O0
 3.32551 setmiterlimit
 33 W
 1 0 0 C
+clipsave
+0 0 M
+4800 0 D
+0 4800 D
+-4800 0 D
+P
+PSL_clip N
 192 1920 M
 3840 0 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -730,6 +733,7 @@ clipsave
 -4800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {12 W 1 0 0 C [] 0 B} def
 12 W
 1 0 0 C
 V
@@ -738,6 +742,8 @@ O1
 V 1920 1920 T
 13 W
 N 0 0 480 21.4859 90 arc S
+PSL_vecheadpen
+12 W
 V
 N 16 125 480 -15.0561 8.23947 arc
 -45 -18 D
@@ -811,9 +817,17 @@ O0
 3.32551 setmiterlimit
 33 W
 0 1 0 C
+clipsave
+0 0 M
+4800 0 D
+0 4800 D
+-4800 0 D
+P
+PSL_clip N
 672 461 M
 1440 2494 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -860,6 +874,7 @@ clipsave
 -4800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {12 W 0 1 0 C [] 0 B} def
 12 W
 0 1 0 C
 V
@@ -868,6 +883,8 @@ O1
 V 960 960 T
 13 W
 N 0 0 480 81.4859 90 arc S
+PSL_vecheadpen
+12 W
 V
 N -100 77 480 44.9439 68.2395 arc
 -7 -48 D
@@ -899,7 +916,7 @@ PSL_clip N
 PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 0 1 0 C
 576 384 M 200 F1
-(”A30) tr Z
+(-A30) tr Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -939,16 +956,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-33 W
-0 0 1 C
-2880 960 M
--629 725 D
--251 291 D
--1258 1451 D
--358 413 D
-S
 25 W
-0 A
 4 W
 0 0 M
 0 4800 D
@@ -1087,6 +1095,22 @@ N 4800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -4800 T
 0 setlinecap
+33 W
+0 0 1 C
+clipsave
+0 0 M
+4800 0 D
+0 4800 D
+-4800 0 D
+P
+PSL_clip N
+2880 960 M
+-629 725 D
+-251 291 D
+-1258 1451 D
+-358 413 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1129,6 +1153,236 @@ O0
 3.32551 setmiterlimit
 33 W
 1 0 0 C
+clipsave
+6000 3000 M
+-3 137 D
+-6 98 D
+-9 97 D
+-19 136 D
+-24 135 D
+-26 115 D
+-36 132 D
+-29 94 D
+-46 129 D
+-37 91 D
+-39 90 D
+-61 123 D
+-46 86 D
+-59 102 D
+-85 131 D
+-69 96 D
+-47 62 D
+-75 91 D
+-65 74 D
+-80 85 D
+-70 69 D
+-87 79 D
+-75 64 D
+-76 61 D
+-79 58 D
+-113 78 D
+-83 52 D
+-101 59 D
+-122 64 D
+-124 58 D
+-109 45 D
+-110 41 D
+-112 37 D
+-132 37 D
+-152 35 D
+-155 27 D
+-155 19 D
+-98 7 D
+-137 6 D
+-20 0 D
+-19 0 D
+-20 0 D
+-19 0 D
+-20 0 D
+-20 -1 D
+-19 0 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-20 -1 D
+-19 -1 D
+-20 -2 D
+-19 -2 D
+-20 -1 D
+-19 -2 D
+-20 -2 D
+-19 -3 D
+-20 -2 D
+-19 -2 D
+-19 -3 D
+-20 -3 D
+-19 -2 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-19 -4 D
+-20 -3 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-18 -5 D
+-19 -6 D
+-19 -6 D
+-19 -6 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-18 -7 D
+-19 -7 D
+-18 -7 D
+-18 -7 D
+-19 -7 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-35 -17 D
+-18 -8 D
+-18 -9 D
+-35 -17 D
+-34 -18 D
+-35 -18 D
+-35 -19 D
+-34 -19 D
+-34 -20 D
+-33 -20 D
+-34 -21 D
+-33 -21 D
+-49 -32 D
+-48 -33 D
+-48 -34 D
+-63 -47 D
+-76 -61 D
+-104 -90 D
+-72 -67 D
+-56 -55 D
+-107 -115 D
+-76 -89 D
+-61 -77 D
+-69 -95 D
+-34 -48 D
+-53 -82 D
+-51 -84 D
+-48 -85 D
+-71 -140 D
+-41 -89 D
+-30 -72 D
+-29 -73 D
+-51 -148 D
+-38 -132 D
+-24 -95 D
+-21 -96 D
+-23 -135 D
+-18 -136 D
+-11 -137 D
+-4 -98 D
+-1 -117 D
+5 -137 D
+13 -156 D
+19 -136 D
+24 -135 D
+26 -115 D
+36 -132 D
+29 -94 D
+46 -129 D
+37 -91 D
+39 -90 D
+61 -123 D
+46 -86 D
+59 -102 D
+85 -131 D
+69 -96 D
+47 -62 D
+75 -91 D
+65 -74 D
+80 -85 D
+70 -69 D
+87 -79 D
+75 -64 D
+76 -61 D
+79 -58 D
+113 -78 D
+83 -52 D
+101 -59 D
+122 -64 D
+124 -58 D
+109 -45 D
+110 -41 D
+112 -37 D
+132 -37 D
+152 -35 D
+155 -27 D
+155 -19 D
+98 -7 D
+137 -6 D
+137 1 D
+157 9 D
+78 7 D
+155 21 D
+154 29 D
+152 37 D
+132 39 D
+129 45 D
+110 43 D
+90 39 D
+123 60 D
+87 46 D
+118 69 D
+99 64 D
+112 79 D
+62 47 D
+92 75 D
+88 77 D
+57 54 D
+56 55 D
+107 115 D
+76 89 D
+61 77 D
+69 95 D
+34 48 D
+53 82 D
+51 84 D
+48 85 D
+71 140 D
+41 89 D
+30 72 D
+29 73 D
+51 148 D
+38 132 D
+24 95 D
+21 96 D
+23 135 D
+18 136 D
+11 137 D
+4 98 D
+P
+PSL_clip N
 1539 3251 M
 164 20 D
 178 19 D
@@ -1144,6 +1398,7 @@ O0
 226 -11 D
 153 -9 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1407,6 +1662,33 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
+0 0 M
+6000 0 D
+0 6000 D
+-6000 0 D
+P
+PSL_clip N
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1 0 0 C
+4329 3426 M 200 F1
+(E-W) bl Z
+PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psxy -Rg -JA0/0/5i -O -K tt.xy -W2p,green
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_16
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+33 W
+0 1 0 C
+clipsave
 6000 3000 M
 -3 137 D
 -6 98 D
@@ -1636,26 +1918,6 @@ clipsave
 4 98 D
 P
 PSL_clip N
-PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-1 0 0 C
-4329 3426 M 200 F1
-(E-W) bl Z
-PSL_cliprestore
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy -Rg -JA0/0/5i -O -K tt.xy -W2p,green
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_16
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-33 W
-0 1 0 C
 2447 1925 M
 54 92 D
 37 61 D
@@ -1683,6 +1945,7 @@ O0
 11 19 D
 84 155 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1946,6 +2209,33 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
+0 0 M
+6000 0 D
+0 6000 D
+-6000 0 D
+P
+PSL_clip N
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+0 1 0 C
+2339 1891 M 200 F1
+(-A30) tr Z
+PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%@GMT: gmt psxy -Rg -JA0/0/5i -O -K tt.xy -W2p,blue
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_19
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+33 W
+0 0 1 C
+clipsave
 6000 3000 M
 -3 137 D
 -6 98 D
@@ -2175,26 +2465,6 @@ clipsave
 4 98 D
 P
 PSL_clip N
-PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-0 1 0 C
-2339 1891 M 200 F1
-(”A30) tr Z
-PSL_cliprestore
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy -Rg -JA0/0/5i -O -K tt.xy -W2p,blue
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_19
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-33 W
-0 0 1 C
 3553 3186 M
 -102 -211 D
 -117 -231 D
@@ -2208,6 +2478,7 @@ O0
 -33 -50 D
 -13 -21 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2473,6 +2744,236 @@ O0
 3.32551 setmiterlimit
 4 W
 [33 17] 0 B
+clipsave
+6000 3000 M
+-3 137 D
+-6 98 D
+-9 97 D
+-19 136 D
+-24 135 D
+-26 115 D
+-36 132 D
+-29 94 D
+-46 129 D
+-37 91 D
+-39 90 D
+-61 123 D
+-46 86 D
+-59 102 D
+-85 131 D
+-69 96 D
+-47 62 D
+-75 91 D
+-65 74 D
+-80 85 D
+-70 69 D
+-87 79 D
+-75 64 D
+-76 61 D
+-79 58 D
+-113 78 D
+-83 52 D
+-101 59 D
+-122 64 D
+-124 58 D
+-109 45 D
+-110 41 D
+-112 37 D
+-132 37 D
+-152 35 D
+-155 27 D
+-155 19 D
+-98 7 D
+-137 6 D
+-20 0 D
+-19 0 D
+-20 0 D
+-19 0 D
+-20 0 D
+-20 -1 D
+-19 0 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-20 -1 D
+-19 -1 D
+-20 -2 D
+-19 -2 D
+-20 -1 D
+-19 -2 D
+-20 -2 D
+-19 -3 D
+-20 -2 D
+-19 -2 D
+-19 -3 D
+-20 -3 D
+-19 -2 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-19 -4 D
+-20 -3 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-18 -5 D
+-19 -6 D
+-19 -6 D
+-19 -6 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-18 -7 D
+-19 -7 D
+-18 -7 D
+-18 -7 D
+-19 -7 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-35 -17 D
+-18 -8 D
+-18 -9 D
+-35 -17 D
+-34 -18 D
+-35 -18 D
+-35 -19 D
+-34 -19 D
+-34 -20 D
+-33 -20 D
+-34 -21 D
+-33 -21 D
+-49 -32 D
+-48 -33 D
+-48 -34 D
+-63 -47 D
+-76 -61 D
+-104 -90 D
+-72 -67 D
+-56 -55 D
+-107 -115 D
+-76 -89 D
+-61 -77 D
+-69 -95 D
+-34 -48 D
+-53 -82 D
+-51 -84 D
+-48 -85 D
+-71 -140 D
+-41 -89 D
+-30 -72 D
+-29 -73 D
+-51 -148 D
+-38 -132 D
+-24 -95 D
+-21 -96 D
+-23 -135 D
+-18 -136 D
+-11 -137 D
+-4 -98 D
+-1 -117 D
+5 -137 D
+13 -156 D
+19 -136 D
+24 -135 D
+26 -115 D
+36 -132 D
+29 -94 D
+46 -129 D
+37 -91 D
+39 -90 D
+61 -123 D
+46 -86 D
+59 -102 D
+85 -131 D
+69 -96 D
+47 -62 D
+75 -91 D
+65 -74 D
+80 -85 D
+70 -69 D
+87 -79 D
+75 -64 D
+76 -61 D
+79 -58 D
+113 -78 D
+83 -52 D
+101 -59 D
+122 -64 D
+124 -58 D
+109 -45 D
+110 -41 D
+112 -37 D
+132 -37 D
+152 -35 D
+155 -27 D
+155 -19 D
+98 -7 D
+137 -6 D
+137 1 D
+157 9 D
+78 7 D
+155 21 D
+154 29 D
+152 37 D
+132 39 D
+129 45 D
+110 43 D
+90 39 D
+123 60 D
+87 46 D
+118 69 D
+99 64 D
+112 79 D
+62 47 D
+92 75 D
+88 77 D
+57 54 D
+56 55 D
+107 115 D
+76 89 D
+61 77 D
+69 95 D
+34 48 D
+53 82 D
+51 84 D
+48 85 D
+71 140 D
+41 89 D
+30 72 D
+29 73 D
+51 148 D
+38 132 D
+24 95 D
+21 96 D
+23 135 D
+18 136 D
+11 137 D
+4 98 D
+P
+PSL_clip N
 693 1081 M
 6 5 D
 6 7 D
@@ -2530,6 +3031,7 @@ O0
 125 89 D
 1 0 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 0 A
@@ -2545,6 +3047,236 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 33 W
+clipsave
+6000 3000 M
+-3 137 D
+-6 98 D
+-9 97 D
+-19 136 D
+-24 135 D
+-26 115 D
+-36 132 D
+-29 94 D
+-46 129 D
+-37 91 D
+-39 90 D
+-61 123 D
+-46 86 D
+-59 102 D
+-85 131 D
+-69 96 D
+-47 62 D
+-75 91 D
+-65 74 D
+-80 85 D
+-70 69 D
+-87 79 D
+-75 64 D
+-76 61 D
+-79 58 D
+-113 78 D
+-83 52 D
+-101 59 D
+-122 64 D
+-124 58 D
+-109 45 D
+-110 41 D
+-112 37 D
+-132 37 D
+-152 35 D
+-155 27 D
+-155 19 D
+-98 7 D
+-137 6 D
+-20 0 D
+-19 0 D
+-20 0 D
+-19 0 D
+-20 0 D
+-20 -1 D
+-19 0 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-19 -1 D
+-20 -1 D
+-20 -1 D
+-19 -1 D
+-20 -2 D
+-19 -2 D
+-20 -1 D
+-19 -2 D
+-20 -2 D
+-19 -3 D
+-20 -2 D
+-19 -2 D
+-19 -3 D
+-20 -3 D
+-19 -2 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-20 -3 D
+-19 -3 D
+-19 -4 D
+-19 -4 D
+-20 -3 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -4 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -4 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-19 -5 D
+-19 -5 D
+-19 -6 D
+-18 -5 D
+-19 -6 D
+-19 -6 D
+-19 -6 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-19 -7 D
+-18 -6 D
+-18 -7 D
+-19 -7 D
+-18 -7 D
+-18 -7 D
+-19 -7 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-18 -7 D
+-18 -8 D
+-18 -8 D
+-35 -17 D
+-18 -8 D
+-18 -9 D
+-35 -17 D
+-34 -18 D
+-35 -18 D
+-35 -19 D
+-34 -19 D
+-34 -20 D
+-33 -20 D
+-34 -21 D
+-33 -21 D
+-49 -32 D
+-48 -33 D
+-48 -34 D
+-63 -47 D
+-76 -61 D
+-104 -90 D
+-72 -67 D
+-56 -55 D
+-107 -115 D
+-76 -89 D
+-61 -77 D
+-69 -95 D
+-34 -48 D
+-53 -82 D
+-51 -84 D
+-48 -85 D
+-71 -140 D
+-41 -89 D
+-30 -72 D
+-29 -73 D
+-51 -148 D
+-38 -132 D
+-24 -95 D
+-21 -96 D
+-23 -135 D
+-18 -136 D
+-11 -137 D
+-4 -98 D
+-1 -117 D
+5 -137 D
+13 -156 D
+19 -136 D
+24 -135 D
+26 -115 D
+36 -132 D
+29 -94 D
+46 -129 D
+37 -91 D
+39 -90 D
+61 -123 D
+46 -86 D
+59 -102 D
+85 -131 D
+69 -96 D
+47 -62 D
+75 -91 D
+65 -74 D
+80 -85 D
+70 -69 D
+87 -79 D
+75 -64 D
+76 -61 D
+79 -58 D
+113 -78 D
+83 -52 D
+101 -59 D
+122 -64 D
+124 -58 D
+109 -45 D
+110 -41 D
+112 -37 D
+132 -37 D
+152 -35 D
+155 -27 D
+155 -19 D
+98 -7 D
+137 -6 D
+137 1 D
+157 9 D
+78 7 D
+155 21 D
+154 29 D
+152 37 D
+132 39 D
+129 45 D
+110 43 D
+90 39 D
+123 60 D
+87 46 D
+118 69 D
+99 64 D
+112 79 D
+62 47 D
+92 75 D
+88 77 D
+57 54 D
+56 55 D
+107 115 D
+76 89 D
+61 77 D
+69 95 D
+34 48 D
+53 82 D
+51 84 D
+48 85 D
+71 140 D
+41 89 D
+30 72 D
+29 73 D
+51 148 D
+38 132 D
+24 95 D
+21 96 D
+23 135 D
+18 136 D
+11 137 D
+4 98 D
+P
+PSL_clip N
 2367 3540 M
 62 -75 D
 30 -38 D
@@ -2580,6 +3312,7 @@ O0
 8 -7 D
 22 -24 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -3092,233 +3825,10 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
-6000 3000 M
--3 137 D
--6 98 D
--9 97 D
--19 136 D
--24 135 D
--26 115 D
--36 132 D
--29 94 D
--46 129 D
--37 91 D
--39 90 D
--61 123 D
--46 86 D
--59 102 D
--85 131 D
--69 96 D
--47 62 D
--75 91 D
--65 74 D
--80 85 D
--70 69 D
--87 79 D
--75 64 D
--76 61 D
--79 58 D
--113 78 D
--83 52 D
--101 59 D
--122 64 D
--124 58 D
--109 45 D
--110 41 D
--112 37 D
--132 37 D
--152 35 D
--155 27 D
--155 19 D
--98 7 D
--137 6 D
--20 0 D
--19 0 D
--20 0 D
--19 0 D
--20 0 D
--20 -1 D
--19 0 D
--20 -1 D
--19 -1 D
--20 -1 D
--19 -1 D
--20 -1 D
--20 -1 D
--19 -1 D
--20 -2 D
--19 -2 D
--20 -1 D
--19 -2 D
--20 -2 D
--19 -3 D
--20 -2 D
--19 -2 D
--19 -3 D
--20 -3 D
--19 -2 D
--20 -3 D
--19 -3 D
--19 -4 D
--20 -3 D
--19 -3 D
--19 -4 D
--19 -4 D
--20 -3 D
--19 -4 D
--19 -4 D
--19 -5 D
--19 -4 D
--19 -4 D
--19 -5 D
--19 -5 D
--19 -4 D
--19 -5 D
--19 -5 D
--19 -6 D
--19 -5 D
--19 -5 D
--19 -6 D
--18 -5 D
--19 -6 D
--19 -6 D
--19 -6 D
--18 -6 D
--19 -7 D
--18 -6 D
--19 -7 D
--18 -6 D
--18 -7 D
--19 -7 D
--18 -7 D
--18 -7 D
--19 -7 D
--18 -8 D
--18 -7 D
--18 -8 D
--18 -8 D
--18 -7 D
--18 -8 D
--18 -8 D
--35 -17 D
--18 -8 D
--18 -9 D
--35 -17 D
--34 -18 D
--35 -18 D
--35 -19 D
--34 -19 D
--34 -20 D
--33 -20 D
--34 -21 D
--33 -21 D
--49 -32 D
--48 -33 D
--48 -34 D
--63 -47 D
--76 -61 D
--104 -90 D
--72 -67 D
--56 -55 D
--107 -115 D
--76 -89 D
--61 -77 D
--69 -95 D
--34 -48 D
--53 -82 D
--51 -84 D
--48 -85 D
--71 -140 D
--41 -89 D
--30 -72 D
--29 -73 D
--51 -148 D
--38 -132 D
--24 -95 D
--21 -96 D
--23 -135 D
--18 -136 D
--11 -137 D
--4 -98 D
--1 -117 D
-5 -137 D
-13 -156 D
-19 -136 D
-24 -135 D
-26 -115 D
-36 -132 D
-29 -94 D
-46 -129 D
-37 -91 D
-39 -90 D
-61 -123 D
-46 -86 D
-59 -102 D
-85 -131 D
-69 -96 D
-47 -62 D
-75 -91 D
-65 -74 D
-80 -85 D
-70 -69 D
-87 -79 D
-75 -64 D
-76 -61 D
-79 -58 D
-113 -78 D
-83 -52 D
-101 -59 D
-122 -64 D
-124 -58 D
-109 -45 D
-110 -41 D
-112 -37 D
-132 -37 D
-152 -35 D
-155 -27 D
-155 -19 D
-98 -7 D
-137 -6 D
-137 1 D
-157 9 D
-78 7 D
-155 21 D
-154 29 D
-152 37 D
-132 39 D
-129 45 D
-110 43 D
-90 39 D
-123 60 D
-87 46 D
-118 69 D
-99 64 D
-112 79 D
-62 47 D
-92 75 D
-88 77 D
-57 54 D
-56 55 D
-107 115 D
-76 89 D
-61 77 D
-69 95 D
-34 48 D
-53 82 D
-51 84 D
-48 85 D
-71 140 D
-41 89 D
-30 72 D
-29 73 D
-51 148 D
-38 132 D
-24 95 D
-21 96 D
-23 135 D
-18 136 D
-11 137 D
-4 98 D
+0 0 M
+6000 0 D
+0 6000 D
+-6000 0 D
 P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
@@ -4475,9 +4985,6 @@ S
 9 1 D
 S
 3000 3 M
-0 0 D
-P S
-3000 3 M
 2982 3 M
 -8 0 D
 2965 4 M
@@ -4556,9 +5063,6 @@ S
 3009 5997 M
 -9 0 D
 S
-3000 5997 M
-0 0 D
-P S
 2781 5989 M
 9 0 D
 2798 5990 M
@@ -4615,9 +5119,6 @@ S
 4 13 D
 1 7 D
 S
-3000 3 M
-0 0 D
-P S
 1493 408 M
 26 39 D
 32 40 D
@@ -4775,9 +5276,6 @@ S
 23 32 D
 12 19 D
 S
-3000 5997 M
-0 0 D
-P S
 8 W
 25 W
 N 3000 3000 3000 0 360 arc S
