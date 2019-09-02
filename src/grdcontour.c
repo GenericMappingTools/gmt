@@ -833,6 +833,8 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	 * One idea would be to add help points to include the pole and used this polygon to compute where to
 	 * plot the label but then skip those points when drawing the line. */
 
+	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
+
 	for (pol = 0; tick_label && pol < n; pol++) {	/* Finally, do labels */
 		if (!save[pol].do_it) continue;
 		if (abs (save[pol].kind) == 2 && gmt_M_is_azimuthal (GMT)) {	/* Only plot once at mean location */
@@ -859,6 +861,8 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			if (mode & 2) gmt_add_label_record (GMT, T, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high]);
 		}
 	}
+	
+	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 	PSL_comment (PSL, "End Embellishment of innermost contours\n");
 }
 
