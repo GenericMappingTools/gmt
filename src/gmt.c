@@ -201,18 +201,28 @@ int main (int argc, char *argv[]) {
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
 				unsigned int type = 0;
 				time_t right_now = time (NULL);
-				char *txt = getenv ("shell"), *shell[2] = {"bash", "csh"}, stamp[GMT_LEN32] = {""};
-				strftime (stamp, GMT_LEN32, "%FT%R", localtime (&right_now));
-				if (((txt = getenv ("shell")) || (txt = getenv ("SHELL"))) && (txt && strstr (txt, "csh")))	/* Got csh or tcsh */
+				char *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
+				char *comment[3] = {"#", "#", "REM"};
+				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
+				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+#ifdef WIN32
+				if (txt == NULL)	/* Assume batch then */
+					type = 2;
+#endif
+				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
 					type = 1;
-				printf ("#!/usr/bin/env %s\n", shell[type]);
-				printf ("# GMT modern mode %s template\n", shell[type]);
-				printf ("# Date: %s\n# User: %s\n# Purpose:\n", stamp, gmt_putusername(NULL));
-				if (type)
-					printf ("setenv GMT_SESSION_NAME $$    # Set a unique session name\n");
-				else
-					printf ("export GMT_SESSION_NAME=$$    # Set a unique session name\n");
-				printf ("gmt begin\n\t#<place modern session commands here>\ngmt end show\n");
+				if (type < 2)
+					printf ("#!/usr/bin/env %s\n", shell[type]);
+				printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
+				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
+				switch (type) {
+					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
+					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
+					case 2: printf ("REM Set a unique session name:\n");
+						printf ("set GMT_SESSION_NAME $$\n");
+						break;
+				}
+				printf ("gmt begin figurename\n\t%sPlace modern session commands here\ngmt end show\n", comment[type]);
 				status = GMT_NOERROR;
 			}
 
