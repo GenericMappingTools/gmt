@@ -200,12 +200,14 @@ int main (int argc, char *argv[]) {
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
 				unsigned int type = 0;
-				char *txt = getenv ("shell"), *shell[2] = {"bash", "csh"};
+				time_t right_now = time (NULL);
+				char *txt = getenv ("shell"), *shell[2] = {"bash", "csh"}, stamp[GMT_LEN32] = {""};
+				strftime (stamp, GMT_LEN32, "%FT%R", localtime (&right_now));
 				if (((txt = getenv ("shell")) || (txt = getenv ("SHELL"))) && (txt && strstr (txt, "csh")))	/* Got csh or tcsh */
 					type = 1;
-				printf ("#/usr/bin/env %s\n", shell[type]);
+				printf ("#!/usr/bin/env %s\n", shell[type]);
 				printf ("# GMT standard %s template\n", shell[type]);
-				printf ("# Date:\n# Purpose:\n");
+				printf ("# Date: %s\n# Purpose:\n", stamp);
 				if (type)
 					printf ("setenv GMT_SESSION_NAME $$    # Set a unique session name\n");
 				else
