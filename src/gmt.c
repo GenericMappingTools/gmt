@@ -222,7 +222,7 @@ int main (int argc, char *argv[]) {
 						printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);
 						break;
 				}
-				printf ("gmt begin figurename\n\t%sPlace modern session commands here\ngmt end show\n", comment[type]);
+				printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
 				status = GMT_NOERROR;
 			}
 
