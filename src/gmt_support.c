@@ -14592,7 +14592,7 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 		DWORD Size = _tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
 			return (name);
-		if ((U = getenv ("USERNAME"))	/* Got a name from the environment instead */
+		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
 			return (U);
 	}
 #endif
