@@ -85,6 +85,8 @@
 #include <locale.h>
 #ifndef WIN32
 #include <glob.h>
+#else
+#include <Windows.h>
 #endif
 
 /*! . */
