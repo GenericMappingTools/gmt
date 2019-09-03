@@ -83,6 +83,9 @@ several other options are available:
 **--show-bindir**
     Show directory of executables and exit.
 
+**--show-citation**
+    Show the citation for the latest GMT publication.
+
 **--show-cores**
     Show number of available cores.
 
@@ -91,6 +94,9 @@ several other options are available:
 
 **--show-dataserver**
     Show URL of the remote GMT data server.
+
+**--show-doi**
+    Show the DOI of the current release.
 
 **--show-modules**
     List module names on stdout and exit.
