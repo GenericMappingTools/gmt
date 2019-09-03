@@ -219,7 +219,7 @@ int main (int argc, char *argv[]) {
 					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
 					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
 					case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
-						printf ("set GMT_SESSION_NAME %s\n", api_ctrl->session_name);
+						printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);
 						break;
 				}
 				printf ("gmt begin figurename\n\t%sPlace modern session commands here\ngmt end show\n", comment[type]);
