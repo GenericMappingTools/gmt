@@ -64,6 +64,7 @@
 "tokyo       : Perceptually uniform colormap without black or white, by Fabio Crameri [C=RGB]",
 "topo        : Sandwell/Anderson colors for topography [R=-7000/+7000, H=0, C=HSV]",
 "turku       : Perceptually uniform colormap by Fabio Crameri [C=RGB]",
+"turbo       : Google's Improved Rainbow Colormap for Visualization [C=RGB]",
 "vik         : Perceptually uniform bimodal colormap, light, by Fabio Crameri [H=0,C=RGB]",
 "viridis     : New colormap Option D from matplotlib [C=RGB]",
 "world       : Colors for global bathymetry/topography relief [R=-7000/7000, H=0, C=RGB]",
