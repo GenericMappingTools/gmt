@@ -14584,6 +14584,14 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 	pw = getpwuid (getuid ());
 	if (pw) return (pw->pw_name);
 #endif
+#ifdef WIN32
+	{
+		char name[GMT_LEN256] = {""};
+		DWORD Size = _tcslen (name);
+		if (GetUserName (name, &Size))
+			return (name);
+	}
+#endif
 	return (unknown);
 }
 
