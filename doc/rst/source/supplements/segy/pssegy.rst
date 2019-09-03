@@ -6,14 +6,14 @@ pssegy
 
 .. only:: not man
 
-    pssegy - Plot a SEGY file on a map
+    Plot a SEGY file on a map
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pssegy** *SEGYfile* |-J|\ *parameters*
+**gmt pssegy** *SEGYfile* |-J|\ *parameters*
 |SYN_OPT-R|
 |-D|\ *deviation*
 |-F|\ [*color*] |-W|

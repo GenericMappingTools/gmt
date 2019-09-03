@@ -52,7 +52,7 @@ For movie-making capabilities these executables are needed:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
-For viewing plots and documentation under Linux via gmt docs, your need xdg-open:
+For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 - xdg-open (Unified open for a variety of files)
 
@@ -77,7 +77,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -104,7 +104,7 @@ You then can install the GMT dependencies with:
     sudo yum install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo yum install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -129,7 +129,7 @@ Install the GMT dependencies with:
     sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo dnf install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -327,7 +327,7 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAK
 cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x86
 ```
 
-For advanced users, you can append the option ``-G Ninja`` to use the
+For advanced users, you can append the option `-G Ninja` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
@@ -344,7 +344,7 @@ cmake --build .
 cmake --build . --config Release
 ```
 
-which will compile all the programs. You can also append ``--parallel [<jobs>]``
+which will compile all the programs. You can also append **--parallel** [*jobs*]
 to enable parallel build, in which *jobs* is the maximum number of concurrent
 processes to use when building. If *jobs* is omitted the native build tool's
 default number is used.
@@ -366,7 +366,7 @@ UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
-Using ``sudo`` will often do the trick.
+Using `sudo` will often do the trick.
 
 ## Setting path
 

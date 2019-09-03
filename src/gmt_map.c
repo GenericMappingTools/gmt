@@ -2169,7 +2169,11 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	/* Set x/y parameters */
 	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
-
+	unsigned int no_scaling = P->no_scaling;
+	bool update_parameters = false;
+	double fw, fh, fx, fy, w, h;
+	
+	/* Set up the original min/max values, the rectangular map dimensionsm and the projection offset */
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projected values in meters: %g %g %g %g\n", xmin, xmax, ymin, ymax);
@@ -2178,39 +2182,13 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P->active && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
-		double fw, fh, fx, fy, w, h;
-		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
-		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */
-		fw = w / P->w;	fh = h / P->h;
-		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
-			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
-				fx = fy = 1.0 / fw;	P->dx = 0.0;	P->dy = 0.5 * (P->h - h * fy);
-			}
-			else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
-				fx = fy = 1.0 / fh;	P->dy = 0.0;	P->dx = 0.5 * (P->w - w * fx);
-			}
-		}
-		else {	/* Cartesian is scaled independently to fit the panel */
-			fx = 1.0 / fw;	fy = 1.0 / fh;	P->dx = P->dy = 0.0;
-		}
-		GMT->current.proj.scale[GMT_X] *= fx;
-		GMT->current.proj.scale[GMT_Y] *= fy;
-		GMT->current.proj.w_r *= fx;	/* Only matter for geographic where fx = fy anyway */
-		GMT->current.proj.rect[XHI] = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
-		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
-		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
-		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for subplot panel by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
-		//GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
-		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
-			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
-			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
-		}
-	}
-	else if (I->active) {
-		double fw, fh, fx, fy, w, h;
-		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+	if (!strncmp (GMT->init.module_name, "inset", 5U))
+		no_scaling = 1;	/* Dont scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
+
+	w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+
+	/* Check inset first since an inset may be inside a subplot but there are no subplots inside an inset */
+	if (I->active && no_scaling == 0) {	/* Must rescale to fit inside the inset dimensions and set dx,dy for centering */
 		fw = w / I->w;	fh = h / I->h;
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
 			if (fw > fh) {	/* Wider than taller given inset dims; adjust width to fit exactly and set dy for centering */
@@ -2220,9 +2198,35 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 				fx = fy = 1.0 / fh;	I->dy = 0.0;	I->dx = 0.5 * (I->w - w * fx);
 			}
 		}
-		else {	/* Cartesian is scaled independently to fit the panel */
+		else {	/* Cartesian is scaled independently to fit the inset */
 			fx = 1.0 / fw;	fy = 1.0 / fh;	I->dx = I->dy = 0.0;
 		}
+		update_parameters = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for inset by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, I->dx, I->dy);
+	}
+	else if (P->active && no_scaling == 0)	{	/* Must rescale to fit inside subplot dimensions and set dx,dy for centering */
+		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps requested via subplot -C: shrink w/h and adjust origin */
+		fw = w / P->w;	fh = h / P->h;
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
+			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
+				fx = fy = 1.0 / fw;	P->dx = 0.0;	P->dy = 0.5 * (P->h - h * fy);
+			}
+			else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
+				fx = fy = 1.0 / fh;	P->dy = 0.0;	P->dx = 0.5 * (P->w - w * fx);
+			}
+		}
+		else {	/* Cartesian is scaled independently to fit the subplot fully */
+			fx = 1.0 / fw;	fy = 1.0 / fh;	P->dx = P->dy = 0.0;
+		}
+		update_parameters = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for subplot by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
+		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
+			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
+			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
+		}
+	}
+	if (update_parameters) {	/* Scale the parameters due to inset or subplot adjustments */
+		/* Update all projection parameters given the reduction factors fx, fy */
 		GMT->current.proj.scale[GMT_X] *= fx;
 		GMT->current.proj.scale[GMT_Y] *= fy;
 		GMT->current.proj.w_r *= fx;	/* Only matter for geographic where fx = fy anyway */
@@ -2230,7 +2234,6 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for inset by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, I->dx, I->dy);
 	}
 }
 
@@ -2246,7 +2249,7 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 	w = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
 	h = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 
-	if (GMT->current.proj.gave_map_width == 1)		/* Must rescale to given width */
+	if (GMT->current.proj.gave_map_width == 1)	/* Must rescale to given width */
 		factor = scl / w;
 	else if (GMT->current.proj.gave_map_width == 2)	/* Must rescale to given height */
 		factor = scl / h;

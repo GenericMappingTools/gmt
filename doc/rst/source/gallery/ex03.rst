@@ -35,7 +35,7 @@ and :doc:`plot </plot>` to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated script reads:
 
-.. literalinclude:: /_verbatim/example_03.txt
+.. literalinclude:: /_verbatim/ex03.txt
    :language: bash
 
 The final illustration shows that the
@@ -43,7 +43,7 @@ ship gravity anomalies have more power than altimetry derived gravity
 for short wavelengths and that the coherency between the two signals
 improves dramatically for wavelengths > 20 km.
 
-.. figure:: /_images/example_03.*
+.. figure:: /_images/ex03.*
    :width: 500 px
    :align: center
 

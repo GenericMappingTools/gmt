@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Due to hairline differences in many gridlines between Linux and macOS we need a
 # higher rms threshold for this test to pass
-# GRAPHICSMAGICK_RMS = 0.0052
+# GRAPHICSMAGICK_RMS = 0.0055
 
 ps=snyder_map.ps
 

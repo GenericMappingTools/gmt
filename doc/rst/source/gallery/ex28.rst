@@ -25,10 +25,10 @@ We do some trickery by converting the UTM domain to km so that we can
 add custom annotations to the map. Finally, we place a scale bar and
 label Kilauea crater to complete the figure.
 
-.. literalinclude:: /_verbatim/example_28.txt
+.. literalinclude:: /_verbatim/ex28.txt
    :language: bash
 
-.. figure:: /_images/example_28.*
+.. figure:: /_images/ex28.*
    :width: 500 px
    :align: center
 

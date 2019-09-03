@@ -80,7 +80,7 @@ int main (int argc, char *argv[]) {
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
 	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
-	
+
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example by the MSYS shell when executing gmt via symlinks */
 	gmt_chop_ext (progname);
@@ -88,7 +88,7 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-	
+
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
@@ -152,6 +152,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show citation of the current release */
+			else if (!strncmp (argv[arg_n], "--show-citation", 15U)) {
+				fprintf(stdout, "%s\n", GMT_VERSION_CITATION);
+				status = GMT_NOERROR;
+			}
+
 			/* Show number of cores */
 			else if (!strncmp (argv[arg_n], "--show-cores", 11U)) {
 				fprintf (stdout, "%u\n", api_ctrl->n_cores);
@@ -159,11 +165,23 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Show share directory */
-			else if (!strncmp (argv[arg_n], "--show-datadir", 11U)) {
+			else if (!strncmp (argv[arg_n], "--show-datadir", 14U)) {
 				if (api_ctrl->GMT->session.DATADIR == NULL)
 					fprintf(stdout, "Not set\n");
 				else
 					fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
+				status = GMT_NOERROR;
+			}
+
+			/* Show URL of the remote GMT data server */
+			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
+				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
+				status = GMT_NOERROR;
+			}
+
+			/* Show DOI of the current release */
+			else if (!strncmp (argv[arg_n], "--show-doi", 10U)) {
+				fprintf(stdout, "%s\n", GMT_VERSION_DOI);
 				status = GMT_NOERROR;
 			}
 
@@ -188,6 +206,35 @@ int main (int argc, char *argv[]) {
 			/* Show share directory */
 			else if (!strncmp (argv[arg_n], "--show-sharedir", 12U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
+				status = GMT_NOERROR;
+			}
+
+			/* print new shell template */
+			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
+				unsigned int type = 0;
+				time_t right_now = time (NULL);
+				char *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
+				char *comment[3] = {"#", "#", "REM"};
+				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
+				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+#ifdef WIN32
+				if (txt == NULL)	/* Assume batch if no shell setting exist udner Windows */
+					type = 2;
+#endif
+				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
+					type = 1;
+				if (type < 2)
+					printf ("#!/usr/bin/env %s\n", shell[type]);
+				printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
+				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
+				switch (type) {
+					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
+					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
+					case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
+						printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);
+						break;
+				}
+				printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
 				status = GMT_NOERROR;
 			}
 
@@ -223,19 +270,15 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
-			fprintf (stderr, "session management:\n");
-			fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
-			fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
-			fprintf (stderr, "  gmt docs          Display the HTML documentation for selected module.\n");
-			fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
-			fprintf (stderr, "  gmt inset         Manage figure inset setup and completion.\n");
-			fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
-			fprintf (stderr, "  gmt clear         Delete gmt.history, gmt.conf, current CPT, user cache or data, or all.\n\n");
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
+			fprintf (stderr, "  --new-script      Write GMT modern mode script template to stdout.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
+			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
+			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
 			fprintf (stderr, "  --show-modules    Show all module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");

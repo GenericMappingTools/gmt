@@ -15,12 +15,12 @@ zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as `
 digitized from available maps [1]_. We create the final location map
 with the following script:
 
-.. literalinclude:: /_verbatim/example_07.txt
+.. literalinclude:: /_verbatim/ex07.txt
    :language: bash
 
 Here a simple one-liner creates a simple legend in the upper-right corner.
 
-.. figure:: /_images/example_07.*
+.. figure:: /_images/ex07.*
    :width: 500 px
    :align: center
 

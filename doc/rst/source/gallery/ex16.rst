@@ -53,12 +53,12 @@ that contains color fills, predefined patterns for interval (900,925)
 and NaN, an image pattern for interval (875,900), and a "skip slice"
 request for interval (700,725).
 
-.. literalinclude:: /_verbatim/example_16.txt
+.. literalinclude:: /_verbatim/ex16.txt
    :language: bash
 
 .. _fig_ex16:
 
-.. figure:: /_images/example_16.*
+.. figure:: /_images/ex16.*
    :width: 500 px
    :align: center
 

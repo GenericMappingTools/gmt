@@ -6,14 +6,14 @@ psvelo
 
 .. only:: not man
 
-    psvelo - Plot velocity vectors, crosses, and wedges on maps
+    Plot velocity vectors, crosses, and wedges on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**psvelo** [ *table* ] |-J|\ *parameters*
+**gmt psvelo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]

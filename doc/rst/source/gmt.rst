@@ -33,12 +33,13 @@ are also available:
 
 **gmt clear** *items*
 
-Deletes the user's history.  Choose between **history** (deletes the
-gmt.history file in the current directory), **conf** (deletes the gmt.conf
-file in the current directory), **cache** (deletes the user's cache directory
+Deletes current defaults, or the cache, data or sessions directories.
+Choose between **defaults** (deletes the current gmt.conf file used for the
+current modern session), **cache** (deletes the user's cache directory
+and all of its content), **data** (deletes the user's data download directory
 and all of its content), or **all** (does all of the above).
 
-**gmt begin** [*session-prefix*] [*format*]
+**gmt begin** [*session-prefix*] [*format*] [*options*]
 
 Initializes a new GMT session under *modern* mode [Default is *classic* mode].
 All work is performed in a temporary work directory.
@@ -73,28 +74,43 @@ directory.  The figures are placed in the current directory.
 If no module is given then
 several other options are available:
 
-**-**\ **-help**
+**--help**
     List and description of GMT modules.
 
-**-**\ **-show-cores**
-    Show number of available cores.
+**--new-script**
+    Write a GMT modern mode script template to stdout.
 
-**-**\ **-show-bindir**
+**--show-bindir**
     Show directory of executables and exit.
 
-**-**\ **-show-datadir**
+**--show-citation**
+    Show the citation for the latest GMT publication.
+
+**--show-cores**
+    Show number of available cores.
+
+**--show-datadir**
     Show data directory/ies and exit.
 
-**-**\ **-show-modules**
+**--show-dataserver**
+    Show URL of the remote GMT data server.
+
+**--show-doi**
+    Show the DOI of the current release.
+
+**--show-modules**
     List module names on stdout and exit.
 
-**-**\ **-show-plugindir**
+**--show-library**
+    Show the path of the shared GMT library.
+
+**--show-plugindir**
     Show plugin directory and exit.
 
-**-**\ **-show-sharedir**
+**--show-sharedir**
     Show share directory and exit.
 
-**-**\ **-version**
+**--version**
     Print version and exit.
 
 **=**

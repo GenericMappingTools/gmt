@@ -3,7 +3,7 @@
 
 SET (PATO_GDAL_BIN  "C:/programs/compa_libs/gdal_GIT/compileds/${VC}_${BITAGE}/bin")
 SET (PATO_PROJ_BIN  "C:/programs/compa_libs/proj5_GIT/compileds/${VC}_${BITAGE}/bin")
-SET (PATO_FFMPEG_BIN  "C:/programs/compa_libs/ffmpeg/vcpkg_bin")
+SET (PATO_FFMPEG_BIN  "C:/programs/ImageMagick")
 
 install (PROGRAMS 
 	${PATO_GDAL_BIN}/gdaladdo.exe
@@ -46,14 +46,5 @@ install (PROGRAMS
 
 install (PROGRAMS 
 	${PATO_FFMPEG_BIN}/ffmpeg.exe
-	${PATO_FFMPEG_BIN}/atk-1.dll
-	${PATO_FFMPEG_BIN}/avcodec-58.dll
-	${PATO_FFMPEG_BIN}/avdevice-58.dll
-	${PATO_FFMPEG_BIN}/avfilter-7.dll
-	${PATO_FFMPEG_BIN}/avformat-58.dll
-	${PATO_FFMPEG_BIN}/avutil-56.dll
-	${PATO_FFMPEG_BIN}/swresample-3.dll
-	${PATO_FFMPEG_BIN}/swscale-5.dll
-	${PATO_FFMPEG_BIN}/lzma.dll
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)

@@ -939,6 +939,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			geometry = (Ctrl->F.mixed) ? GMT_IS_NONE : GMT_IS_POINT;
 			if (!Ctrl->F.mixed) cmode =  GMT_COL_FIX_NO_TEXT;
 			code = 1;
+			PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 		}
 		else if (Ctrl->F.get_text == GET_REC_NUMBER) {	/* Format record number into text */
 			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_DATA;
@@ -1315,6 +1316,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
+
+	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 
 	if (GMT->common.t.variable)	/* Reset the transparency */
 		PSL_settransparency (PSL, 0.0);

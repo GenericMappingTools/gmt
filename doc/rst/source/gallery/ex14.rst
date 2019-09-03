@@ -24,10 +24,10 @@ files along a diagonal transect using
 the gridded (solid line) and bicubic trend (dashed line) along the
 transect using :doc:`plot </plot>`
 
-.. literalinclude:: /_verbatim/example_14.txt
+.. literalinclude:: /_verbatim/ex14.txt
    :language: bash
 
-.. figure:: /_images/example_14.*
+.. figure:: /_images/ex14.*
    :width: 500 px
    :align: center
 

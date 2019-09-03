@@ -6,15 +6,15 @@ pslegend
 
 .. only:: not man
 
-    pslegend - Plot legends on maps
+    Plot legends on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pslegend** [ *specfile* ]
-|-D|\ *refpoint* ]
+**gmt pslegend** [ *specfile* ]
+|-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]

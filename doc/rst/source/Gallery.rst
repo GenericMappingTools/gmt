@@ -83,154 +83,154 @@ complex illustration.
 | |ex49|           |                    | |ex50|              |
 +------------------+--------------------+---------------------+
 
-.. |ex01| image:: /_images/example_01.*
+.. |ex01| image:: /_images/ex01.*
    :width: 150 px
 
-.. |ex02| image:: /_images/example_02.*
+.. |ex02| image:: /_images/ex02.*
    :width: 150 px
 
-.. |ex03| image:: /_images/example_03.*
+.. |ex03| image:: /_images/ex03.*
    :width: 150 px
 
-.. |ex04| image:: /_images/example_04.*
+.. |ex04| image:: /_images/ex04.*
    :width: 150 px
 
-.. |ex05| image:: /_images/example_05.*
+.. |ex05| image:: /_images/ex05.*
    :width: 150 px
 
-.. |ex06| image:: /_images/example_06.*
+.. |ex06| image:: /_images/ex06.*
    :width: 150 px
 
-.. |ex07| image:: /_images/example_07.*
+.. |ex07| image:: /_images/ex07.*
    :width: 150 px
 
-.. |ex08| image:: /_images/example_08.*
+.. |ex08| image:: /_images/ex08.*
    :width: 150 px
 
-.. |ex09| image:: /_images/example_09.*
+.. |ex09| image:: /_images/ex09.*
    :width: 150 px
 
-.. |ex10| image:: /_images/example_10.*
+.. |ex10| image:: /_images/ex10.*
    :width: 150 px
 
-.. |ex11| image:: /_images/example_11.*
+.. |ex11| image:: /_images/ex11.*
    :width: 150 px
 
-.. |ex12| image:: /_images/example_12.*
+.. |ex12| image:: /_images/ex12.*
    :width: 150 px
 
-.. |ex13| image:: /_images/example_13.*
+.. |ex13| image:: /_images/ex13.*
    :width: 150 px
 
-.. |ex14| image:: /_images/example_14.*
+.. |ex14| image:: /_images/ex14.*
    :width: 150 px
 
-.. |ex15| image:: /_images/example_15.*
+.. |ex15| image:: /_images/ex15.*
    :width: 150 px
 
-.. |ex16| image:: /_images/example_16.*
+.. |ex16| image:: /_images/ex16.*
    :width: 150 px
 
-.. |ex17| image:: /_images/example_17.*
+.. |ex17| image:: /_images/ex17.*
    :width: 150 px
 
-.. |ex18| image:: /_images/example_18.*
+.. |ex18| image:: /_images/ex18.*
    :width: 150 px
 
-.. |ex19| image:: /_images/example_19.*
+.. |ex19| image:: /_images/ex19.*
    :width: 150 px
 
-.. |ex20| image:: /_images/example_20.*
+.. |ex20| image:: /_images/ex20.*
    :width: 150 px
 
-.. |ex21| image:: /_images/example_21.*
+.. |ex21| image:: /_images/ex21.*
    :width: 150 px
 
-.. |ex22| image:: /_images/example_22.*
+.. |ex22| image:: /_images/ex22.*
    :width: 150 px
 
-.. |ex23| image:: /_images/example_23.*
+.. |ex23| image:: /_images/ex23.*
    :width: 150 px
 
-.. |ex24| image:: /_images/example_24.*
+.. |ex24| image:: /_images/ex24.*
    :width: 150 px
 
-.. |ex25| image:: /_images/example_25.*
+.. |ex25| image:: /_images/ex25.*
    :width: 150 px
 
-.. |ex26| image:: /_images/example_26.*
+.. |ex26| image:: /_images/ex26.*
    :width: 150 px
 
-.. |ex27| image:: /_images/example_27.*
+.. |ex27| image:: /_images/ex27.*
    :width: 150 px
 
-.. |ex28| image:: /_images/example_28.*
+.. |ex28| image:: /_images/ex28.*
    :width: 150 px
 
-.. |ex29| image:: /_images/example_29.*
+.. |ex29| image:: /_images/ex29.*
    :width: 150 px
 
-.. |ex30| image:: /_images/example_30.*
+.. |ex30| image:: /_images/ex30.*
    :width: 150 px
 
-.. |ex31| image:: /_images/example_31.*
+.. |ex31| image:: /_images/ex31.*
    :width: 150 px
 
-.. |ex32| image:: /_images/example_32.*
+.. |ex32| image:: /_images/ex32.*
    :width: 150 px
 
-.. |ex33| image:: /_images/example_33.*
+.. |ex33| image:: /_images/ex33.*
    :width: 150 px
 
-.. |ex34| image:: /_images/example_34.*
+.. |ex34| image:: /_images/ex34.*
    :width: 150 px
 
-.. |ex35| image:: /_images/example_35.*
+.. |ex35| image:: /_images/ex35.*
    :width: 150 px
 
-.. |ex36| image:: /_images/example_36.*
+.. |ex36| image:: /_images/ex36.*
    :width: 150 px
 
-.. |ex37| image:: /_images/example_37.*
+.. |ex37| image:: /_images/ex37.*
    :width: 150 px
 
-.. |ex38| image:: /_images/example_38.*
+.. |ex38| image:: /_images/ex38.*
    :width: 150 px
 
-.. |ex39| image:: /_images/example_39.*
+.. |ex39| image:: /_images/ex39.*
    :width: 150 px
 
-.. |ex40| image:: /_images/example_40.*
+.. |ex40| image:: /_images/ex40.*
    :width: 150 px
 
-.. |ex41| image:: /_images/example_41.*
+.. |ex41| image:: /_images/ex41.*
    :width: 150 px
 
-.. |ex42| image:: /_images/example_42.*
+.. |ex42| image:: /_images/ex42.*
    :width: 150 px
 
-.. |ex43| image:: /_images/example_43.*
+.. |ex43| image:: /_images/ex43.*
    :width: 150 px
 
-.. |ex44| image:: /_images/example_44.*
+.. |ex44| image:: /_images/ex44.*
    :width: 150 px
 
-.. |ex45| image:: /_images/example_45.*
+.. |ex45| image:: /_images/ex45.*
    :width: 150 px
 
-.. |ex46| image:: /_images/example_46.*
+.. |ex46| image:: /_images/ex46.*
    :width: 150 px
 
-.. |ex47| image:: /_images/example_47.*
+.. |ex47| image:: /_images/ex47.*
    :width: 150 px
 
-.. |ex48| image:: /_images/example_48.*
+.. |ex48| image:: /_images/ex48.*
    :width: 150 px
 
-.. |ex49| image:: /_images/example_49.*
+.. |ex49| image:: /_images/ex49.*
    :width: 150 px
 
-.. |ex50| image:: /_images/example_50.*
+.. |ex50| image:: /_images/ex50.*
    :width: 150 px
 
 .. toctree::

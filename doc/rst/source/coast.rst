@@ -72,7 +72,7 @@ gridded topography is only seen over land, using a Mercator map at scale
     gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -Gc
     gmt grdimage etopo5.nc -Ccolors.cpt
     gmt coast -Q
-    gmt end
+    gmt end show
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
@@ -87,7 +87,7 @@ in your analysis, try
 
    ::
 
-    gmt pscoast -RIS -Dh -W -M > iceland.txt
+    gmt coast -RIS -Dh -W -M > iceland.txt
 
 **coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look

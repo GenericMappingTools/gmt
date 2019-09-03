@@ -103,7 +103,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# Export git working tree
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
-	# Remove the test dir, so that it is not included in the final release tarball
+	# Remove some directories and files, so that they are not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
@@ -182,6 +182,10 @@ endif (EXTRA_BUILD_DIRS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
+if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
+	set (GMT_DATA_SERVER ${GMT_DATA_URL})
+endif (GMT_DATA_URL)
+
 # Configuration done
 message(
 	"*\n"
@@ -190,7 +194,7 @@ message(
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
-	"*  Found GMT data server      : ${GMT_DATA_URL}\n"
+	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  Curl library               : ${CURL_LIBRARY}\n"

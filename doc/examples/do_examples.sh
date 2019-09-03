@@ -16,7 +16,7 @@ fi
 for n in $(seq -w 1 50); do
     echo "Running example $n"
     cd ex$n
-    sh example_$n.sh
+    sh ex$n.sh
     cd ..
 done
 

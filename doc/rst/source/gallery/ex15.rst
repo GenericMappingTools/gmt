@@ -25,10 +25,10 @@ star at the deepest point on the map with
 :doc:`plot </plot>`. This point was extracted from the
 grid files using :doc:`grdinfo </grdinfo>`.
 
-.. literalinclude:: /_verbatim/example_15.txt
+.. literalinclude:: /_verbatim/ex15.txt
    :language: bash
 
-.. figure:: /_images/example_15.*
+.. figure:: /_images/ex15.*
    :width: 500 px
    :align: center
 

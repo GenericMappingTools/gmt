@@ -42,7 +42,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose on of these targets:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose one of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   defaults  Deletes a modern mode session\'s gmt.conf file.\n");
@@ -56,10 +56,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
-	 * Any GMT common options will override values set previously by other commands.
-	 * It also replaces any file names specified as input or output with the data ID
-	 * returned when registering these sources/destinations with the API.
+	/* This parses the options provided to clear.
 	 */
 
 	unsigned int n_errors = 0;

@@ -439,6 +439,14 @@ affect the current state of parameters such as line and fill attributes.
     are interpreted as the cutoff acute angle (in degrees) when mitering
     becomes active.
 
+**long PSL_settextmode** (**struct PSL_CTRL** *\*P*, **long** *mode*)
+
+    Changes between the two modes PSL_TXTMODE_MINUS and PSL_TXTMODE_HYPHEN.
+    When the minus mode is active we assume we are plotting annotation
+    strings with numbers and all hyphens are translated to minus codes
+    which differs based on char sets.  Likewise, in hyphen mode any
+    minus character is typeset as a hyphen in the current char set.
+
 **long PSL_settransparency** (**struct PSL_CTRL** *\*P*, **double**
 *\*transparency*)
 

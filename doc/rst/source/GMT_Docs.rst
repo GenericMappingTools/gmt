@@ -887,7 +887,7 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-s**   | Control output of records containing one or more NaNs              |
 +----------+--------------------------------------------------------------------+
-| **-t**   | Change layer PDF transparency                                      |
+| **-t**   | Change layer transparency                                          |
 +----------+--------------------------------------------------------------------+
 | **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
@@ -1447,7 +1447,7 @@ The next example shows two different ways to annotate an axis portraying 2 days 
      gmt begin B_time2
        gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS
        gmt basemap -Bpa6Hf1h -Bsa1D -BS -Y0.65i
-    gmt end
+    gmt end show
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -1517,7 +1517,7 @@ The upper uses Gregorian weeks (which start at the day chosen by
       gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS
       gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
       gmt basemap -Bpa3Kf1k -Bsa1r -BS -Y0.65i
-    gmt end
+    gmt end show
 
 .. _cartesian_axis5:
 
@@ -1613,7 +1613,7 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
     gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
     gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -Bsy0 -BWS \
         --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
-    gmt end
+    gmt end show
     rm -f [xy]annots.txt
 
 .. _Custom_annotations:
@@ -1962,7 +1962,7 @@ duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
 numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you 
+text, then append the word number (0 is the first word).  Note that if you
 wanted to scale or shift the output values you need to do so during reading,
 using the **-i** option. To output all numerical columns and ignoring
 trailing text, use **-on**.
@@ -2066,8 +2066,8 @@ or more fields (and not necessarily *z*) equal NaN. Finally, you can
 supply a comma-separated list of all columns or column ranges to
 consider (before the optional modifiers) for this NaN test.
 
-Layer PDF transparency: The **-t** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Layer transparency: The **-t** option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
@@ -2222,11 +2222,11 @@ Three classes of files are given special treatment in GMT.
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
-   can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
-   the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
-   parameter GMT_DATA_URL at compile time.
+   can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
+   the default setting for **GMT_DATA_SERVER**.  Alternatively, configure the CMake
+   parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via **GMT_DATA_URL_LIMIT** to be 0.
+   set the size of the largest datafile to download via **GMT_DATA_SERVER_LIMIT** to be 0.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -2693,7 +2693,7 @@ However, PostScript extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., the feature will be invisible). As
-noted in section `Layer PDF transparency: The -t option`_, we can control transparency on a
+noted in section `Layer transparency: The -t option`_, we can control transparency on a
 layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
@@ -4430,7 +4430,7 @@ The complete commands given to produce this plot were
     gmt begin GMT_linear
       gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- sqrt.txt
       gmt plot -St0.1i -N -Gred -Wfaint sqrt10.txt
-    gmt end
+    gmt end show
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4542,7 +4542,7 @@ transformation <GMT_log>`)
       gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque
           -Wthick,blue,- -h sqrt.txt
       gmt plot -Ss0.1i -N -Gred -W -h sqrt10.txt
-    gmt end
+    gmt end show
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -4576,7 +4576,7 @@ transformation <GMT_pow>`)
     gmt begin GMT_pow
       gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt
       gmt plot -Sc0.075i -Ggreen -W sqrt10.txt
-    gmt end
+    gmt end show
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
@@ -5903,7 +5903,7 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
        gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
        gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X1.96i
        gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X1.12i
-     gmt end
+     gmt end show
 
 .. figure:: /_images/GMT_sinus_int.*
    :width: 500 px
@@ -7679,8 +7679,8 @@ total file size of the coastlines, rivers, and borders database is only
       gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
       gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -Dc \
         -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne
-      echo 130.35 -0.2 | gmt psxy -SJ-4000 -Wthicker
-    gmt end
+      echo 130.35 -0.2 | gmt plot -SJ-4000 -Wthicker
+    gmt end show
 
 .. figure:: /_images/GMT_App_K_1.*
    :width: 500 px
@@ -7711,8 +7711,8 @@ resolution in GMT. The plot is generated by the script:
 
     gmt begin GMT_App_K_2
       gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -Dl -A100 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne
-      echo 130.35 -0.2 | gmt psxy -SJ-1000 -Wthicker
-    gmt end
+      echo 130.35 -0.2 | gmt plot -SJ-1000 -Wthicker
+    gmt end show
 
 .. figure:: /_images/GMT_App_K_2.*
    :width: 500 px
@@ -7743,8 +7743,8 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
       echo 133 2 | gmt plot -Sc1.4i -Gwhite
       gmt basemap -Tm133/2+w1i+t45/10/5+jCM --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
         --FONT_ANNOT_SECONDARY=8p
-      echo 130.35 -0.2 | gmt psxy -SJ-200 -Wthicker
-    gmt end
+      echo 130.35 -0.2 | gmt plot -SJ-200 -Wthicker
+    gmt end show
 
 .. figure:: /_images/GMT_App_K_3.*
    :width: 500 px
@@ -7772,8 +7772,8 @@ generated by these commands:
     gmt begin GMT_App_K_4
       gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -Dh -A1 \
         -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne
-      echo 130.35 -0.2 | gmt psxy -SJ-40 -Wthicker
-    gmt end
+      echo 130.35 -0.2 | gmt plot -SJ-40 -Wthicker
+    gmt end show
 
 .. figure:: /_images/GMT_App_K_4.*
    :width: 500 px
@@ -8633,7 +8633,7 @@ lines:
      gmt begin GMT_App_O_1
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH
-     gmt end
+     gmt end show
 
 As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
 placed rather arbitrary. The string of contours for -40 to
@@ -8661,7 +8661,7 @@ contour line should have:
      gmt begin GMT_App_O_2
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH
-     gmt end
+     gmt end show
 
 By selecting only one label per contour and requiring that labels only
 be placed on contour lines whose length exceed 1 inch, we achieve the
@@ -8696,7 +8696,7 @@ distance will host the label.
      gmt begin GMT_App_O_3
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH
-     gmt end
+     gmt end show
 
 The angle of the label is evaluated from the contour line geometry, and
 the final result is shown in Figure :ref:`Contour label 3 <Contour_label_3>`.
@@ -8725,7 +8725,7 @@ between the contour lines and a well-placed straight line segment. The
      gmt begin GMT_App_O_4
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH
-     gmt end
+     gmt end show
 
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
@@ -8758,7 +8758,7 @@ sense:
      gmt begin GMT_App_O_5
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GX@App_O_cross.txt -S10 -T+lLH
-     gmt end
+     gmt end show
 
 .. _Contour_label_5:
 
@@ -8798,7 +8798,7 @@ are placed normal to the line:
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l
        gmt plot -SqD1000k:+g+LD+an+p -Wthick @App_O_transect.txt
-     gmt end
+     gmt end show
 
 .. _Contour_label_6:
 
@@ -8829,7 +8829,7 @@ inverse-video the label:
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l
        gmt plot -SqD15d:+gblack+fwhite+Ld+o+u@. -Wthick @App_O_transect.txt
-     gmt end
+     gmt end show
 
 The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
 
@@ -8859,7 +8859,7 @@ labels. This is done with **awk**.
        gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
        gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 -T+l
      gmt plot -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick @App_O_transect.txt
-     gmt end
+     gmt end show
 
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
 
@@ -8909,7 +8909,7 @@ well as a few quoted lines. The final script is
        2.33E	48.87N	CT	Paris
        17W	28N	CT	Canaries
        EOF
-     gmt end
+     gmt end show
 
 with the complete illustration presented as Figure
 :ref:`Contour label 9 <Contour_label_9>`.

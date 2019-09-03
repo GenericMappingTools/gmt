@@ -85,6 +85,8 @@
 #include <locale.h>
 #ifndef WIN32
 #include <glob.h>
+#else
+#include <Windows.h>
 #endif
 
 /*! . */
@@ -7669,7 +7671,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
 			sprintf (file, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
-		else	/* CPT for just this panel */
+		else	/* CPT for just this subplot */
 			sprintf (file, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 	}
 	else if (fig)	/* Limited to one figure only */
@@ -7701,7 +7703,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 			sprintf (path, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
-		if (!file && (subplot & GMT_PANEL_NOTSET)) {	/* No, try subplot master CPT instead? */
+		if (!file) {	/* No, try subplot master CPT instead? */
 			sprintf (path, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
@@ -11821,7 +11823,10 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
-	 * Note: the [+s<file>] is only valid in classic mode (via psbasemap)
+	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
+	 *
+	 * For backwards compatibility we also check the deprecated form of (1):
+	 *    [<unit>]<xmin/xmax/ymin/ymax>
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -11841,7 +11846,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Determine if we got an reference point or a region */
 
 	if (strchr ("gjJnx", text[0])) {	/* Did the reference point thing. */
-		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>] */
+		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
@@ -11935,7 +11940,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			}
 			c[0] = '\0';	/* Chop off all modifiers so other items can be determined */
 		}
-		else if (strchr (GMT_LEN_UNITS2, text[0])) {	/* Got a rectangular region given in these units */
+		else if (strchr (GMT_LEN_UNITS2, text[0])) {	/* Deprecated args: Got a rectangular region given in these units */
 			/* -D<unit>]<xmin/xmax/ymin/ymax> */
 			B->unit = text[0];
 			k = 1;
@@ -14578,6 +14583,16 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 	struct passwd *pw = NULL;
 	pw = getpwuid (getuid ());
 	if (pw) return (pw->pw_name);
+#endif
+#ifdef WIN32
+	{
+		char name[GMT_LEN256] = {""}, *U = NULL;
+		DWORD Size = _tcslen (name);
+		if (GetUserName (name, &Size)) /* Got a user name, return it */
+			return (name);
+		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
+			return (U);
+	}
 #endif
 	return (unknown);
 }

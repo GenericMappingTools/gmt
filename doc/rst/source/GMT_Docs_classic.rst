@@ -899,7 +899,7 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-s**   | Control output of records containing one or more NaNs              |
 +----------+--------------------------------------------------------------------+
-| **-t**   | Change layer PDF transparency                                      |
+| **-t**   | Change layer transparency                                          |
 +----------+--------------------------------------------------------------------+
 | **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
@@ -2127,8 +2127,8 @@ or more fields (and not necessarily *z*) equal NaN. Finally, you can
 supply a comma-separated list of all columns or column ranges to
 consider (before the optional modifiers) for this NaN test.
 
-Layer PDF transparency: The **-t** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Layer transparency: The **-t** option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
@@ -2283,11 +2283,11 @@ Three classes of files are given special treatment in GMT.
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
-   can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
-   the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
-   parameter GMT_DATA_URL at compile time.
+   can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
+   the default setting for **GMT_DATA_SERVER**.  Alternatively, configure the CMake
+   parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via **GMT_DATA_URL_LIMIT** to be 0.
+   set the size of the largest datafile to download via **GMT_DATA_SERVER_LIMIT** to be 0.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -2754,7 +2754,7 @@ However, PostScript extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., the feature will be invisible). As
-noted in section `Layer PDF transparency: The -t option`_, we can control transparency on a
+noted in section `Layer transparency: The -t option`_, we can control transparency on a
 layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*

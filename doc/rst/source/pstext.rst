@@ -6,14 +6,14 @@ pstext
 
 .. only:: not man
 
-    pstext - Plot or typeset text on maps
+    Plot or typeset text on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pstext** [ *textfiles* ] |-J|\ *parameters*
+**gmt pstext** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|

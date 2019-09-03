@@ -6,14 +6,14 @@ pssac
 
 .. only:: not man
 
-    pssac - Plot seismograms in SAC format on maps
+    Plot seismograms in SAC format on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pssac** [ *saclist*\ \|\ *SACfiles* ] |-J|\ *parameters*
+**gmt pssac** [ *saclist*\ \|\ *SACfiles* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]

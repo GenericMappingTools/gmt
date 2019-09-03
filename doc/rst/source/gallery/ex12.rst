@@ -15,10 +15,10 @@ we do not actually make grid files but still are able to contour and
 image the data. We use the CPT ``topo.cpt`` (created via
 :doc:`gmtinfo </gmtinfo>` and :doc:`makecpt </makecpt>`). The script becomes:
 
-.. literalinclude:: /_verbatim/example_12.txt
+.. literalinclude:: /_verbatim/ex12.txt
    :language: bash
 
-.. figure:: /_images/example_12.*
+.. figure:: /_images/ex12.*
    :width: 500 px
    :align: center
 

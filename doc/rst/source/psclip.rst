@@ -6,14 +6,14 @@ psclip
 
 .. only:: not man
 
-    psclip - Initialize or terminate polygonal clip paths
+    Initialize or terminate polygonal clip paths
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
+**gmt psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]

@@ -272,15 +272,11 @@ Optional Arguments
     **psconvert** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
 
-    For example the command
-
-   ::
+    For example the command::
 
         gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
 
-    adds this comment line
-
-   ::
+    adds this comment line::
 
         %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
         4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
@@ -435,7 +431,7 @@ like local PNG images), you can consolidate these into a single KMZ file
 for saving space and for grouping related files together.  The bash function
 **gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
 do this.  You need to source gmt_shell_functions.sh first before you can
-use it. 
+use it.
 
 See Also
 --------
