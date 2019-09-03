@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_r20233 [64-bit] Document from grdimage
+%%Title: GMT v6.0.0_2c43c7c_2019.09.03 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Jun 15 10:53:23 2018
+%%CreationDate: Tue Sep  3 16:41:10 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -672,7 +667,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: grdimage @GMTAPI@-000000 -JX6i -P -Baf
+%@GMT: gmt grdimage @GMTAPI@-000000 -JX6i -P -Baf
 %@PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy
 %GMTBoundingBox: 72 72 432 432
 %%BeginObject PSL_Layer_1
@@ -687,9 +682,9 @@ clipsave
 P
 PSL_clip N
 V N -360 -360 T 7920 7920 scale [/Indexed /DeviceRGB 42 <
-FF00FF7F00FF0000FF0080FF00FFFF00FF8000FF007FFF00FFFF00FF8000FF00008C00FF1900FF0059FF00CCFF00FFBF
-00FF4D26FF0099FF00FFF2009900FF3300FF0033FF0099FF00FF9900FF3333FF00A600FF4C00FF000DFF0066FF00BFFF
-00FFE500FF8CB200FF6600FFBF00FF4000FF0040FFCC00FFD900FFE500FFF200FF>] setcolorspace
+30123B455BCD3E9BFE18D6CB46F884A2FC3DE1DD37FEA632F05B12C426037A04034454C3448FFE20C7DF27EEA578FE5A
+BDF434EFCE3AFE972BEC540F424CB74682F82EB5F218DFBE94FF46CAED34F2C93A4146AB4775ED3AA2FC1DCCD920EAAC
+59FB739CFE403F3F9E4668DF3E3790477BF228BBEC3B3081392971362160341A4E>] setcolorspace
 << /ImageType 1 /Decode [0 255] /Width 11 /Height 11 /BitsPerComponent 8
    /ImageMatrix [11 0 0 -11 0 11] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
