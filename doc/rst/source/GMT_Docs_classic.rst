@@ -7931,7 +7931,7 @@ Built-in color palette tables (CPT)
 -----------------------------------
 
 Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>` and
-:ref:`b <CPT_files_c>` show the 68 built-in
+:ref:`b <CPT_files_c>` show the built-in
 color palettes, stored in so-called CPTs [35]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
@@ -7948,7 +7948,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The first 22 of the standard CPTs supported by GMT.
+   The first 24 of the standard CPTs supported by GMT.
 
 .. _CPT_files_b:
 
