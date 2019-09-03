@@ -90,7 +90,7 @@ steps:
     mkdir build
     cd build
     call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-    cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release
+    cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=RelWithDebInfo
     cmake --build .
     cmake --build . --target install
   displayName: Compile GMT
