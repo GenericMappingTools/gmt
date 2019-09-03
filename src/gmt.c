@@ -206,7 +206,7 @@ int main (int argc, char *argv[]) {
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
 				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
 #ifdef WIN32
-				if (txt == NULL)	/* Assume batch then */
+				if (txt == NULL)	/* Assume batch if no shell setting exist udner Windows */
 					type = 2;
 #endif
 				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
@@ -218,8 +218,8 @@ int main (int argc, char *argv[]) {
 				switch (type) {
 					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
 					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
-					case 2: printf ("REM Set a unique session name:\n");
-						printf ("set GMT_SESSION_NAME $$\n");
+					case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
+						printf ("set GMT_SESSION_NAME %s\n", api_ctrl->session_name);
 						break;
 				}
 				printf ("gmt begin figurename\n\t%sPlace modern session commands here\ngmt end show\n", comment[type]);
