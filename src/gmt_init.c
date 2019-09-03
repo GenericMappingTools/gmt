@@ -15319,6 +15319,7 @@ void gmt_setmode (struct GMT_CTRL *GMT, int direction) {
 int gmt_message (struct GMT_CTRL *GMT, char *format, ...) {
 	char line[GMT_BUFSIZ];
 	va_list args;
+	if (GMT->current.setting.verbose == GMT_MSG_QUIET) return 0;	/* Nothing should be printed if -Vq is used */
 	va_start (args, format);
 	vsnprintf (line, GMT_BUFSIZ, format, args);
 	GMT->parent->print_func (GMT->session.std[GMT_ERR], line);

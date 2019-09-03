@@ -85,6 +85,8 @@
 #include <locale.h>
 #ifndef WIN32
 #include <glob.h>
+#else
+#include <Windows.h>
 #endif
 
 /*! . */
@@ -14581,6 +14583,16 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 	struct passwd *pw = NULL;
 	pw = getpwuid (getuid ());
 	if (pw) return (pw->pw_name);
+#endif
+#ifdef WIN32
+	{
+		char name[GMT_LEN256] = {""}, *U = NULL;
+		DWORD Size = _tcslen (name);
+		if (GetUserName (name, &Size)) /* Got a user name, return it */
+			return (name);
+		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
+			return (U);
+	}
 #endif
 	return (unknown);
 }

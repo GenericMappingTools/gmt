@@ -612,13 +612,12 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
  * This depends on which character set we have.  We will limit this to just
  * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
  * only work for some of the encoded letters while the three others should
- * all be fine. We also handle the differences between hyphens and minus symbol.
+ * all be fine.
+ *   We also handle the differences between hyphens and minus symbol.
  * In ISOLatin1 the hyphen key on the keyboard results in a minus sign while
  * in Standard it gives a hyphen.  In GMT we want minus signs in annotations
- * contours and other numerical negative values.  We assume that if a string
- * begins with a hyphen then a minus sign is implied.  Likewise, if a hyphen
- * is found later on in the string we assume it is a hyphen and under ISOLatin1
- * we must insert the octal code for the hyphen (0255). */
+ * contours and other numerical negative values. This behavior is controlled
+ * by the setting in PSL_settextmode. */
 
 
 static unsigned int psl_ut8_code_to_ISOLatin (char code) {
@@ -631,19 +630,27 @@ static unsigned int psl_ut8_code_to_ISOLatin (char code) {
 static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	/* Given in_string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
 	unsigned int k, kout, use, utf8_codes = 0;
+	bool do_minus = (PSL->current.use_minus == PSL_TXTMODE_MINUS);
 	char *out_string = NULL;
 
-	if (!strncmp (PSL->init.encoding, "Standard+", 9U)) {	/* For Standard+ encoding we need to swap leading minus values encoded as hyphen with the actual minus symbol */
-		if (in_string[0] == 0055)	/* Found leading hyphen which we interpret to be a minus sign */
-			in_string[0] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
+	if (!strncmp (PSL->init.encoding, "Standard+", 9U) && do_minus) {	/* For Standard+ encoding we may need to swap leading minus values encoded as hyphen with the actual minus symbol */
+		for (k = 0; in_string[k]; k++) {
+			if ((k == 0 || in_string[k-1] != '@') && in_string[k] == 0055)	/* Found a hyphen which we interpret to be a minus sign */
+				in_string[k] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
+		}
 	}
+	
 	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
 	for (k = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
 			utf8_codes++;	/* Count them up */
-		else if (in_string[k] == 0055 && k && !(in_string[k-1] == '@' || in_string[k-1] == ' '))	/* A hyphen needs a non-blank before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
-			in_string[k] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
+		else if (k == 0 || in_string[k-1] != '@') {
+			if ((unsigned char)in_string[k] == 0255 && do_minus)
+				in_string[k] = 0055;	/* Minus symbol is octal 0055 in ISOLatin1 */
+			else if ((unsigned char)in_string[k] == 0055 && !do_minus)
+				in_string[k] = 0255;	/* Hyphen symbol is octal 0255 in ISOLatin1 */
+		}
 	}
 	if (utf8_codes == 0) return;	/* Nothing to do */
 
@@ -4672,6 +4679,23 @@ char * PSL_makecolor (struct PSL_CTRL *PSL, double rgb[]) {
 	static char buffer[PSL_BUFSIZ];
 	sprintf (buffer, "%s", psl_putcolor (PSL, rgb));
 	return (buffer);
+}
+
+int PSL_settextmode (struct PSL_CTRL *PSL, int mode) {
+	/* Change from laissez-faire to replacing hyphens with minus sign char code */
+	switch (mode) {
+		case PSL_TXTMODE_HYPHEN:
+			PSL->current.use_minus = PSL_TXTMODE_HYPHEN;
+			break;
+		case PSL_TXTMODE_MINUS:
+			PSL->current.use_minus = PSL_TXTMODE_MINUS;
+			break;
+		default:	
+			PSL_message (PSL, PSL_MSG_NORMAL, "Error: bad argument passed to PSL_settextmode (%d)!\n", mode);
+			return (PSL_BAD_FLAG);
+			break;
+	}
+	return (PSL_NO_ERROR);
 }
 
 int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding) {

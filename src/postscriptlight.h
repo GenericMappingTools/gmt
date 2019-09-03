@@ -206,6 +206,11 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 	PSL_TXT_FILLBOX		= 128,
 	PSL_TXT_DRAWBOX		= 256};
 
+/* PSL codes for text hyphen substitution (PSL_settextmode) */
+
+enum PSL_enum_txtmode {PSL_TXTMODE_HYPHEN	= 0,
+	PSL_TXTMODE_MINUS			= 1};
+	
 /* Verbosity levels */
 
 enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
@@ -291,6 +296,7 @@ struct PSL_CTRL {
 		int font_no;			/* Current font number				*/
 		int outline;			/* Current outline				*/
 		int complete;			/* true for executing a custom PSL_plot_completion procedure once */
+		int use_minus;			/* true for replacing hyphen code with minus codes */
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with postscriptlight subdirectory */
@@ -419,6 +425,7 @@ EXTERN_MSC int PSL_setmiterlimit (struct PSL_CTRL *PSL, int limit);
 EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, int mode);
 EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, int par_just);
 EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
+EXTERN_MSC int PSL_settextmode (struct PSL_CTRL *PSL, int mode);
 EXTERN_MSC int PSL_settransparency (struct PSL_CTRL *PSL, double transparency);
 EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);

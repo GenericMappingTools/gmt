@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psvelo
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psvelo
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:58 2018
+%%CreationDate: Sun Sep  1 18:12:00 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -1081,6 +1076,13 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
+clipsave
+0 0 M
+5460 0 D
+0 5620 D
+-5460 0 D
+P
+PSL_clip N
 704 5620 M
 67 -76 D
 154 -23 D
@@ -1193,7 +1195,7 @@ P S
 -33 49 D
 184 -54 D
 139 -154 D
-S
+2 -1 D S
 2974 2766 M
 56 16 D
 56 72 D
@@ -1266,6 +1268,7 @@ P S
 -26 -10 D
 33 10 D
 P S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1281,6 +1284,7 @@ O0
 3.32551 setmiterlimit
 12 W
 1 0 0 C
+/PSL_vecheadpen {50 W 1 0 0 C [] 0 B} def
 {0 0 1 C} FS
 O1
 1853 3794 M
@@ -1394,7 +1398,9 @@ FO
 50 W
 V 0 2400 T N 0 0 M 822 0 D S
 U
-V 1200 2400 T 0 0 M
+V 1200 2400 T PSL_vecheadpen
+50 W
+0 0 M
 -472 127 D
 94 -127 D
 -94 -127 D
@@ -1518,6 +1524,8 @@ V 1200 2400 T 90 R
 N 0 0 M 822 0 D S
 U
 V 1200 3600 T 90 R
+PSL_vecheadpen
+50 W
 0 0 M
 -472 127 D
 94 -127 D
@@ -1640,6 +1648,8 @@ V 1200 3600 T 180 R
 N 0 0 M 822 0 D S
 U
 V 0 3600 T 180 R
+PSL_vecheadpen
+50 W
 0 0 M
 -472 127 D
 94 -127 D
@@ -1654,6 +1664,8 @@ V 0 3600 T -90 R
 N 0 0 M 822 0 D S
 U
 V 0 2400 T -90 R
+PSL_vecheadpen
+50 W
 0 0 M
 -472 127 D
 94 -127 D
@@ -1739,6 +1751,8 @@ V 2160 3600 T 45 R
 N 0 0 M 640 0 D S
 U
 V 2880 4320 T 45 R
+PSL_vecheadpen
+50 W
 0 0 M
 -472 127 D
 94 -127 D
@@ -2143,7 +2157,7 @@ V
 /PSL_g_h 180 def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(  2018 Dec 06 10:52:58  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
+(  2019 Sep 01 18:12:00  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
 {0 A} FS
 O1
 180 438 219 90 Sr
@@ -2162,7 +2176,7 @@ A_IXcBTI'a1DeVhHggg<&%:Ao`&On~>
 U
 {1 A} FS
 PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  2018 Dec 06 10:52:58  ) bl Z
+438 38 M (  2019 Sep 01 18:12:00  ) bl Z
 117 F0
 (   meca_4) bl Z
 U
@@ -2180,6 +2194,7 @@ clipsave
 -4800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {4 W 0 A [] 0 B} def
 2569 1907 M
 -66 5 D
 -17 0 D
@@ -2301,13 +2316,14 @@ V 480 3600 T 45 R
 N 0 0 M 924 0 D S
 U
 V 1200 4320 T 45 R
+PSL_vecheadpen
+4 W
 0 0 M
 -118 32 D
 24 -32 D
 -24 -32 D
 P clip fs P S 
 U
-4 W
 433 3600 M (3x3) mr Z
 3813 5246 M
 -59 15 D
@@ -2423,13 +2439,14 @@ V 2400 2400 T 56.3099 R
 N 0 0 M 1636 0 D S
 U
 V 3360 3840 T 56.3099 R
+PSL_vecheadpen
+4 W
 0 0 M
 -118 32 D
 24 -32 D
 -24 -32 D
 P clip fs P S 
 U
-4 W
 2353 2400 M () mr Z
 4038 2722 M
 -25 53 D
@@ -2571,13 +2588,14 @@ V 1200 1200 T 33.6901 R
 N 0 0 M 1636 0 D S
 U
 V 2640 2160 T 33.6901 R
+PSL_vecheadpen
+4 W
 0 0 M
 -118 32 D
 24 -32 D
 -24 -32 D
 P clip fs P S 
 U
-4 W
 1153 1200 M (6x4) mr Z
 3566 2907 M
 15 59 D
@@ -2704,14 +2722,15 @@ V 3600 2400 T 146.31 R
 N 0 0 M 1636 0 D S
 U
 V 2160 3360 T 146.31 R
+PSL_vecheadpen
+4 W
 0 0 M
 -118 32 D
 24 -32 D
 -24 -32 D
 P clip fs P S 
 U
-4 W
-3647 2400 M (”6x4) ml Z
+3647 2400 M (-6x4) ml Z
 5234 -413 M
 11 25 D
 16 51 D
@@ -2830,13 +2849,14 @@ V 2400 1200 T -33.6901 R
 N 0 0 M 1636 0 D S
 U
 V 3840 240 T -33.6901 R
+PSL_vecheadpen
+4 W
 0 0 M
 -118 32 D
 24 -32 D
 -24 -32 D
 P clip fs P S 
 U
-4 W
 2353 1200 M (6x-4) mr Z
 PSL_cliprestore
 %%EndObject

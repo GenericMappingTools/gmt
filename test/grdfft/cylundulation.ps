@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:52 2018
+%%CreationDate: Sun Sep  1 18:12:27 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -1134,6 +1129,7 @@ clipsave
 -5400 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {17 W 0 A [] 0 B} def
 17 W
 V
 {0 A} FS
@@ -1143,17 +1139,20 @@ V 2721 2721 T 18 R
 N 0 0 M 2148 0 D S
 U
 V 5004 3463 T 18 R
+PSL_vecheadpen
+17 W
 0 0 M
 -252 68 D
 0 -136 D
 P clip fs P S 
 U
 17 W
-17 W
 V 2721 2721 T -60 R
 N 0 0 M 2148 0 D S
 U
 V 3921 643 T -60 R
+PSL_vecheadpen
+17 W
 0 0 M
 -252 68 D
 0 -136 D
@@ -1317,37 +1316,37 @@ N 0 5400 M -83 0 D S
 /MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 0 PSL_A0_y MM
-V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (”1.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 1350 PSL_A0_y MM
 200 F0
-V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (”0.5 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 2700 PSL_A0_y MM
 200 F0
-V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (0.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 4050 PSL_A0_y MM
 200 F0
-V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (0.5 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 5400 PSL_A0_y MM
 200 F0
-V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (1.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G /PSL_A0_y PSL_A0_y PSL_AH0 add def
 N 0 270 M -42 0 D S
 N 0 540 M -42 0 D S
@@ -1408,37 +1407,37 @@ N 5400 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
 200 F0
-V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
-V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
-V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
-V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
-V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
+V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
+V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
+V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
+V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
+V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N 4 1 roll pop pop pop U mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
+V MU 0 0 M (”1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
 (”1.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 1350 PSL_A0_y MM
 200 F0
-V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
+V MU 0 0 M (”0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
 (”0.5 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 2700 PSL_A0_y MM
 200 F0
-V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
+V MU 0 0 M (0.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
 (0.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 4050 PSL_A0_y MM
 200 F0
-V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
+V MU 0 0 M (0.5 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
 (0.5 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G 5400 PSL_A0_y MM
 200 F0
-V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (-1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
+V MU 0 0 M (1.0 m) FP 0 70 G 140 F0 (”1) FP 0 -70 G pathbbox N pop exch pop add U -2 div 0 G
 (1.0 m) Z
-0 70 G 140 F0 (-1) Z
+0 70 G 140 F0 (”1) Z
 0 -70 G N 270 0 M 0 -42 D S
 N 540 0 M 0 -42 D S
 N 810 0 M 0 -42 D S
@@ -1504,12 +1503,20 @@ O0
 0 setlinejoin
 3.32551 setmiterlimit
 12 W
+clipsave
+0 0 M
+5400 0 D
+0 5400 D
+-5400 0 D
+P
+PSL_clip N
 0 1823 M
 5400 1754 D
 S
 1141 5400 M
 3118 -5400 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1530,6 +1537,7 @@ clipsave
 -5400 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {4 W 0 A [] 0 B} def
 4 W
 V
 {0 A} FS
@@ -1537,6 +1545,8 @@ O1
 V 2700 2700 T
 4 W
 N 0 0 1200 5.72958 12.2704 arc S
+PSL_vecheadpen
+4 W
 V
 N 41 309 1200 -14.9368 -8.93098 arc
 -32 -3 D
@@ -1548,10 +1558,11 @@ N 134 -282 1200 32.9368 26.931 arcn
 -57 310 1200 -2.97572 2.88164 arc
 P clip fs P S U
 U 
-4 W
 V 2700 2700 T
 4 W
 N 0 0 1800 -56.1803 -3.81972 arc S
+PSL_vecheadpen
+4 W
 V
 N 433 179 1800 -74.9517 -70.9643 arc
 -18 27 D

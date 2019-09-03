@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_0ef8a85_2019.03.19 [64-bit] Document from psbasemap
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Mar 22 16:06:07 2019
+%%CreationDate: Sun Sep  1 18:11:13 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -660,9 +655,9 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 9917 def
-/PSL_page_ysize 14033 def
-/PSL_completion {} def
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -775,22 +770,22 @@ N 0 2700 M -56 0 D S
 /PSL_AH0 0
 /MM {neg exch M} def
 133 F0
-V MU 0 0 M (10) FP 0 47 G 93 F0 (­2) FP 0 -47 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (10) FP 0 47 G 93 F0 (­1) FP 0 -47 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (10) FP 0 47 G 93 F0 (-2) FP 0 -47 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (10) FP 0 47 G 93 F0 (-1) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (0) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (1) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (2) FP 0 -47 G pathbbox N pop exch pop add U mx
 def
 /PSL_A0_y PSL_A0_y 56 add def
 0 PSL_A0_y MM
-V MU 0 0 M (10) FP 0 47 G 93 F0 (­2) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (10) FP 0 47 G 93 F0 (-2) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (10) Z
-0 47 G 93 F0 (­2) Z
+0 47 G 93 F0 (-2) Z
 0 -47 G 675 PSL_A0_y MM
 133 F0
-V MU 0 0 M (10) FP 0 47 G 93 F0 (­1) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (10) FP 0 47 G 93 F0 (-1) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (10) Z
-0 47 G 93 F0 (­1) Z
+0 47 G 93 F0 (-1) Z
 0 -47 G 1350 PSL_A0_y MM
 133 F0
 V MU 0 0 M (10) FP 0 47 G 93 F0 (0) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
