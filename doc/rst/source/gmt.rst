@@ -77,11 +77,14 @@ several other options are available:
 **--help**
     List and description of GMT modules.
 
-**--show-cores**
-    Show number of available cores.
+**--new-script**
+    Write a GMT modern mode script template to stdout.
 
 **--show-bindir**
     Show directory of executables and exit.
+
+**--show-cores**
+    Show number of available cores.
 
 **--show-datadir**
     Show data directory/ies and exit.
@@ -91,6 +94,9 @@ several other options are available:
 
 **--show-modules**
     List module names on stdout and exit.
+
+**--show-library**
+    Show the path of the shared GMT library.
 
 **--show-plugindir**
     Show plugin directory and exit.
