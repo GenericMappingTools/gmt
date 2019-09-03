@@ -152,6 +152,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show citation of the current release */
+			else if (!strncmp (argv[arg_n], "--show-citation", 15U)) {
+				fprintf(stdout, "%s\n", GMT_VERSION_CITATION);
+				status = GMT_NOERROR;
+			}
+
 			/* Show number of cores */
 			else if (!strncmp (argv[arg_n], "--show-cores", 11U)) {
 				fprintf (stdout, "%u\n", api_ctrl->n_cores);
@@ -170,6 +176,12 @@ int main (int argc, char *argv[]) {
 			/* Show URL of the remote GMT data server */
 			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
 				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
+				status = GMT_NOERROR;
+			}
+
+			/* Show DOI of the current release */
+			else if (!strncmp (argv[arg_n], "--show-doi", 10U)) {
+				fprintf(stdout, "%s\n", GMT_VERSION_DOI);
 				status = GMT_NOERROR;
 			}
 
@@ -262,9 +274,11 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --new-script      Write GMT modern mode script template to stdout.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
+			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
 			fprintf (stderr, "  --show-modules    Show all module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");

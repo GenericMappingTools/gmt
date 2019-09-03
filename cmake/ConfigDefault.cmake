@@ -37,6 +37,12 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 # Year of the current GMT release.
 set (GMT_VERSION_YEAR "2019")
 
+# The GMT release DOI
+set (GMT_VERSION_DOI "TBD")
+
+# The GMT release citation
+set (GMT_VERSION_CITATION "P. Wessel, J. Luis, L. Uieda, R. Scharroo, F. Wobbe, W.H.F. Smith and D. Tian (2019), The Generic Mapping Tools Version 6, Geochem. Geophys. Geosyst., in press.")
+
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
 set (GMT_PACKAGE_VERSION_MINOR 0)
