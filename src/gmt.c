@@ -218,8 +218,10 @@ int main (int argc, char *argv[]) {
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
 				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
 #ifdef WIN32
-				if (txt == NULL)	/* Assume batch if no shell setting exist udner Windows */
+				if (txt == NULL) {	/* Assume batch if no shell setting exist udner Windows */
 					type = 2;
+					printf ("@echo off\n");
+				}
 #endif
 				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
 					type = 1;
