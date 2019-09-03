@@ -40,9 +40,10 @@ sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis
 
 n=`cat tt.lis | wc -l`
 let n2=n/2
+let n2=22
 # dy is line spacing and y0 is total box height
 dy=0.75
-y0=`gmt math -Q $n2 $dy MUL 0.5 MUL =`
+y0=`gmt math -Q $n2 2 ADD $dy MUL 0.5 MUL =`
 
 gmt begin GMT_App_M_1a ps
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
