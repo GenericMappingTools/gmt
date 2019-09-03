@@ -11,22 +11,6 @@ trigger:
     - 5.4
     - refs/tags/*
 
-# Scheduled build
-schedules:
-- cron: "0 0 * * *"
-  displayName: Scheduled daily build
-  branches:
-    include:
-    - master
-    - 6.0
-  always: true
-- cron: "0 0 1 * *"
-  displayName: Scheduled monthly build
-  branches:
-    include:
-    - 5.4
-  always: true
-
 jobs:
 
 # Linux - Compile only
