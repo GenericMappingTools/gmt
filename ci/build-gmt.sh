@@ -5,7 +5,7 @@
 set -e
 
 cat > cmake/ConfigUser.cmake << 'EOF'
-set (CMAKE_BUILD_TYPE relwithdebinfo)
+set (CMAKE_BUILD_TYPE Release)
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
