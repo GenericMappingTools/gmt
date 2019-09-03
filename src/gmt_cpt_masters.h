@@ -38,6 +38,7 @@
 "lajolla     : Perceptually uniform colormap, without black or white, by Fabio Crameri [C=RGB]",
 "lapaz       : Perceptually uniform \'rainbow\' colormap, by Fabio Crameri [C=RGB]",
 "lisbon      : Perceptually uniform bimodal colormap, dark, by Fabio Crameri [H=0,C=RGB]",
+"mag         : Colors for magnetic anomaly maps [C=RGB]",
 "magma       : New colormap Option A from matplotlib [C=RGB]",
 "nighttime   : Colors for DMSP-OLS Nighttime Lights Time Series [C=HSV]",
 "no_green    : For those who hate green [H=0, C=RGB]",
