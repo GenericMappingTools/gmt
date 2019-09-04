@@ -23,17 +23,25 @@ The Generic Mapping Tools
 
 **Universidade do Algarve, Faro, Portugal**
 
+**Leonardo Uieda**
+
+**University of Liverpool, UK**
+
 **Florian Wobbe**
 
 **Alfred Wegener Institute, Germany**
 
-.. figure:: /_images/GMT5_Summit_2016.jpg
+**Dongdong Tian**
+
+**Michigan State University**
+
+.. figure:: /_images/GMT6_Summit_2019.jpg
    :width: 1200 px
    :align: center
 
-   The five horsemen of the GMT apocalypse:
-   Joaquim Luis, Walter H.F. Smith, Remko Scharroo, Florian Wobbe, and Paul Wessel
-   at the GMT Developer Summit in La Jolla, California, during August 15–19, 2016.
+   Dongdong Tian, David Sandwell (Steering Committee Chair), Walter H.F. Smith, Paul Wessel,
+   Joaquim Luis, Leo Uieda, and Dave Caress (Steering Committee Member)
+   at the GMT Developer Summit in La Jolla, California, during July 29–August 2, 2019.
 
 
 Acknowledgments
@@ -75,7 +83,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI; College Park, MD; Faro, Portugal; Darmstadt and
-Bremerhaven, Germany; September 2016
+Trappenkamp, Germany; Liverpool, UK; Lansing, MI; September 2019
 
 
 A Reminder
