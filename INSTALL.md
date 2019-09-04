@@ -186,7 +186,7 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc3 -c conda-forge/label/dev -c conda-forge
+   conda install gmt=6.0.0rc4 -c conda-forge/label/dev -c conda-forge
    ```
 
 3. Install ffmpeg using conda by running the following in a terminal:
