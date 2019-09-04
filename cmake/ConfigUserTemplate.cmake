@@ -126,6 +126,10 @@
 #set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
 
 # FOR WINDOWS ONLY
+# Set path to location of Ghostscript binaries (optional install)
+#set (GHOST_DATA_PATH C:/programs/compa_libs/ghostscript/bin)
+
+# FOR WINDOWS ONLY
 # Set path to location where the gmtmex is located.
 #set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
 

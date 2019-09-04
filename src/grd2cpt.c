@@ -471,7 +471,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {
 		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt")) != NULL) *l = 0;	/* Strip off .cpt if used */
 	}
-	else {	/* No table specified; set default rainbow table */
+	else {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup (GMT->init.cpt[0]);
 	}
