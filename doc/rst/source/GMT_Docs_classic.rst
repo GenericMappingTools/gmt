@@ -29,7 +29,7 @@ The Generic Mapping Tools
 
 **Florian Wobbe**
 
-**Alfred Wegener Institute, Germany**
+**Sea and Sun Technology, Germany**
 
 **Dongdong Tian**
 
