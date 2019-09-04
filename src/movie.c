@@ -1089,6 +1089,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (strstr (line, "gmt begin")) continue;	/* Skip gmt begin */
 			if (strstr (line, "gmt end")) continue;		/* Skip gmt end */
 			if (strstr (line, "#!/")) continue;		/* Skip any leading shell incantation */
+			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);			/* Just copy the line as is */
 		}
 		fclose (Ctrl->I.fp);	/* Done reading the include script */
@@ -1127,8 +1128,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
-			else if (!strstr (line, "#!/"))	/* Skip any leading shell incantation since already placed by set_script */
+			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by set_script */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			}
 			rec++;
 		}
 		fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
@@ -1233,8 +1236,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
-			else if (!strstr (line, "#!/"))	/* Skip any leading shell incantation since already placed */
+			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			}
 		}
 		fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
 		fclose (fp);	/* Done writing the postflight script */
@@ -1466,8 +1471,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 			}
-			else if (!strstr (line, "#!/"))		/* Skip any leading shell incantation since already placed */
+			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			}
 		}
 		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
 		set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
@@ -1569,8 +1576,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
-		else if (!strstr (line, "#!/"))		/* Skip any leading shell incantation since already placed */
+		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
+			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
+		}
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
