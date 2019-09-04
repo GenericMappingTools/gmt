@@ -15101,7 +15101,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		}
 	}
 	if (local_count) {		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
-		OSRSetPROJSearchPaths(paths);
+		OSRSetPROJSearchPaths ((const char* const *)paths);
 		if (local_count < 0)  free (paths[0]);		/* This case was strdup allocated, so it can be freed */
 	}
 #endif
