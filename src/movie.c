@@ -960,7 +960,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 		if (Ctrl->A.active) {	/* Ensure we have the GraphicsMagick executable "gm" installed in the path */
 			sprintf (cmd, "gm version");
-			if ((fp = popen (cmd, "r")) == NULL || (gmt_fgets (GMT, line, PATH_MAX, fp) && !strstr (line, "www.GraphicsMagick.org"))) {
+			if ((fp = popen (cmd, "r"))) gmt_fgets (GMT, line, PATH_MAX, fp);
+			if (fp == NULL || line[0] == '\0' || strstr (line, "www.GraphicsMagick.org") == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GraphicsMagick is not installed or not in your executable path - cannot build animated GIF.\n");
 				close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
