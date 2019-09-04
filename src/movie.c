@@ -1130,7 +1130,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by set_script */
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+				if (strstr (line, "gmt end show"))
+					fprintf (fp, "gmt end\n");	/* Dont write the show word */
+				else
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 			rec++;
 		}
@@ -1238,7 +1241,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+				if (strstr (line, "gmt end show"))
+					fprintf (fp, "gmt end\n");	/* Dont write the show word */
+				else
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
 		fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
@@ -1473,7 +1479,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+				if (strstr (line, "gmt end show"))
+					fprintf (fp, "gmt end\n");	/* Dont write the show word */
+				else
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
 		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
@@ -1578,7 +1587,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-			fprintf (fp, "%s", line);	/* Just copy the line as is */
+			if (strstr (line, "gmt end show"))
+				fprintf (fp, "gmt end\n");	/* Dont write the show word */
+			else
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
