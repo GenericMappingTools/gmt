@@ -4,7 +4,7 @@
 # your environment and pointing to the latest releases.
 #
 #-------------------------------------------------------------
-set (CMAKE_BUILD_TYPE relwithdebinfo)
+set (CMAKE_BUILD_TYPE Release)
 set (CMAKE_INSTALL_PREFIX "gmt-${GMT_PACKAGE_VERSION}")
 set (GSHHG_ROOT "$ENV{GMT_GSHHG_SOURCE}")
 set (DCW_ROOT "$ENV{GMT_DCW_SOURCE}")

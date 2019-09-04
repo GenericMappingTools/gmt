@@ -23,7 +23,7 @@
  * Brief synopsis: Reads an existing CPT and desired output grid
  * and produces a GMT CPT.  Can be inverted [-I] or made to be
  * continuous [-Z].  Discrete color jumps in CPTs are handled
- * correctly.  Default color table is rainbow.
+ * correctly.  Default color table is GMT_DEFAULT_CPT_NAME.
  *
  */
 

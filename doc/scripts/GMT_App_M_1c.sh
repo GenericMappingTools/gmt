@@ -2,8 +2,9 @@
 #
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
+#
 # Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 18 scientific colormaps
+# 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
 cat << EOF > tt.lis

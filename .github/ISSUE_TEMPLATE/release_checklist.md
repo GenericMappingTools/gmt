@@ -21,6 +21,7 @@ assignees: ''
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
     - [ ] `GMT_LIB_SOVERSION` is correctly set
     - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+    - [ ] update `GMT_VERSION_DOI`
 - [ ] freeze codes and commit all changes to GitHub
 
 **Release**:

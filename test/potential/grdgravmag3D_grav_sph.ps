@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_2c43c7c_2019.09.03 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:23 2018
+%%CreationDate: Tue Sep  3 16:41:18 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -679,88 +674,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-17 W
-0.784 0 0 C
-0 89 M
-265 23 D
-198 22 D
-132 18 D
-199 34 D
-66 13 D
-132 31 D
-66 17 D
-133 40 D
-66 23 D
-66 26 D
-66 28 D
-66 32 D
-66 34 D
-66 39 D
-67 43 D
-66 47 D
-66 53 D
-66 60 D
-66 66 D
-66 73 D
-66 83 D
-67 92 D
-66 102 D
-66 114 D
-66 126 D
-66 140 D
-66 153 D
-66 168 D
-67 181 D
-66 194 D
-66 205 D
-198 638 D
-66 201 D
-67 181 D
-66 153 D
-66 117 D
-66 73 D
-66 25 D
-66 -25 D
-66 -73 D
-67 -117 D
-66 -153 D
-66 -181 D
-66 -201 D
-198 -638 D
-67 -205 D
-66 -194 D
-66 -181 D
-66 -168 D
-66 -153 D
-66 -140 D
-66 -126 D
-66 -114 D
-67 -102 D
-66 -92 D
-66 -83 D
-66 -73 D
-66 -66 D
-66 -60 D
-66 -53 D
-67 -47 D
-66 -43 D
-66 -39 D
-66 -34 D
-66 -32 D
-66 -28 D
-66 -26 D
-133 -44 D
-66 -19 D
-132 -33 D
-66 -15 D
-133 -25 D
-132 -22 D
-198 -26 D
-265 -26 D
-132 -11 D
-S
 25 W
-0 A
 2 setlinecap
 N 0 3780 M 0 -3780 D S
 /PSL_A0_y 83 def
@@ -945,6 +859,94 @@ N 6283 0 M 0 42 D S
 3307 3780 PSL_H_y add M
 400 F0
 (Anomaly \(mGal\)) bc Z
+17 W
+0.784 0 0 C
+clipsave
+0 0 M
+6614 0 D
+0 3780 D
+-6614 0 D
+P
+PSL_clip N
+0 89 M
+265 23 D
+198 22 D
+132 18 D
+199 34 D
+66 13 D
+132 31 D
+66 17 D
+133 40 D
+66 23 D
+66 26 D
+66 28 D
+66 32 D
+66 34 D
+66 39 D
+67 43 D
+66 47 D
+66 53 D
+66 60 D
+66 66 D
+66 73 D
+66 83 D
+67 92 D
+66 102 D
+66 114 D
+66 126 D
+66 140 D
+66 153 D
+66 168 D
+67 181 D
+66 194 D
+66 205 D
+198 638 D
+66 201 D
+67 181 D
+66 153 D
+66 117 D
+66 73 D
+66 25 D
+66 -25 D
+66 -73 D
+67 -117 D
+66 -153 D
+66 -181 D
+66 -201 D
+198 -638 D
+67 -205 D
+66 -194 D
+66 -181 D
+66 -168 D
+66 -153 D
+66 -140 D
+66 -126 D
+66 -114 D
+67 -102 D
+66 -92 D
+66 -83 D
+66 -73 D
+66 -66 D
+66 -60 D
+66 -53 D
+67 -47 D
+66 -43 D
+66 -39 D
+66 -34 D
+66 -32 D
+66 -28 D
+66 -26 D
+133 -44 D
+66 -19 D
+132 -33 D
+66 -15 D
+133 -25 D
+132 -22 D
+198 -26 D
+265 -26 D
+132 -11 D
+S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -1117,11 +1119,11 @@ clipsave
 P
 PSL_clip N
 V N -71 -71 T 5811 5811 scale [/Indexed /DeviceRGB 75 <
-F700FFD600FFB500FFA500FF8400FF6400FF5300FF3300FF1200FF0200FF000FFF002FFF0040FF0050FF0060FF0071FF
-0081FF0091FF9500FF4300FF2200FF00A2FF00B2FF00C3FF7400FF001FFF00D3FF00E3FF00F4FF00FFFA00FFEA00FFD9
-00FFC900FFB900FFA800FF9800FF8800FF7700FF6700FF5700FF4600FF3600FF2600FF1500FF050BFF001CFF003CFF00
-4DFF005DFF006EFF007EFF008EFF002CFF009FFF00AFFF00BFFF00D0FF00E0FF00F0FF00FFFD00FFED00FFDD00FFCC00
-FFBC00FFAC00FF9B00FF8B00FF7B00FF6A00FF5A00FF4A00FF3900FF2900FF1900FF0800>] setcolorspace
+331747392B743F3D9B4146AC4558C94669E04772EA4682F84392FE3F9AFE3AA3FC2FB3F328BBEC23C3E41FCADC1AD1D3
+18D7CB18DDC2434FBB477AF1458AFC19E2BA1DE7B322EBAA4660D535ABF82AEFA033F2963EF68B4AF88056FA7563FD6A
+70FE607DFF5689FF4D94FE459FFD3FA7FC3AB0FA37B8F635C1F334C9EF34D1EA34D8E436DFDF37E6D838ECD23AF5C53A
+F8BD39FBB737FDAE35FEA632FE9D2EF1CB3AFE942AFD8A26FB8022F9761DF66D19F36315F05A12EB510EE7490CE2430A
+DD3C08D73606D02F05CA2A04C22403BA1E02B21A01A815019F1101960D018B0902800602>] setcolorspace
 << /ImageType 1 /Decode [0 255] /Width 41 /Height 41 /BitsPerComponent 8
    /ImageMatrix [41 0 0 -41 0 41] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
