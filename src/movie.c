@@ -358,15 +358,15 @@ GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 	char line[PATH_MAX] = {""};
 	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
 		if (strstr (line, "gmt ") == NULL) continue;	/* Does not start with gmt */
-		if (strstr (line, "begin"))		/* A modern mode script */
+		if (strstr (line, " begin"))		/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "figure"))	/* A modern mode script */
+		else if (strstr (line, " figure"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "subplot"))	/* A modern mode script */
+		else if (strstr (line, " subplot"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "inset"))	/* A modern mode script */
+		else if (strstr (line, " inset"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "end"))		/* A modern mode script */
+		else if (strstr (line, " end"))		/* A modern mode script */
 			modern = true;
 	}
 	rewind (fp);	/* Go back to beginning of file */
@@ -1494,7 +1494,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
-				if (strstr(Ctrl->M.format,"pdf") || strstr(Ctrl->M.format,"eps") || strstr(Ctrl->M.format,"ps"))
+				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 					fprintf (fp, "\n");	/* No dpu needed */
 				else
 					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
