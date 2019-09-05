@@ -166,7 +166,7 @@ rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
 shopt -s extglob
-GLOBIGNORE="!(*.bat|*.ps|*.sh)"
+GLOBIGNORE="!(*.bat|*.sh)"
 for file in "$src"/* ; do
   test -f "$file" && ln -s "$file" .
 done
