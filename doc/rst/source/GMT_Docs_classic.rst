@@ -90,9 +90,13 @@ A Reminder
 ==========
 
 If you feel it is appropriate, you may consider paying us back by citing
-our EOS articles on GMT and technical papers on algorithms when you
+our articles on GMT and technical papers on algorithms when you
 publish papers containing results or illustrations obtained using GMT.
-The EOS articles on GMT are
+The articles on GMT are
+
+-  Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+   The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+   https://doi.org/10.1029/2019GC008515
 
 -  Wessel, P., W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe,
    Generic Mapping Tools: Improved Version Released, *EOS Trans. AGU*, 94(45),
@@ -2031,7 +2035,7 @@ duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
 numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you 
+text, then append the word number (0 is the first word).  Note that if you
 wanted to scale or shift the output values you need to do so during reading,
 using the **-i** option. To output all numerical columns and ignoring
 trailing text, use **-on**.
