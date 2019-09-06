@@ -380,7 +380,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _GMT_DATA_SERVER:
 
 **GMT_DATA_SERVER**
-    Address of the data directory on the remote server [The SOEST server].
+    URL address of the data directory on the remote server [The SOEST data server].
 
 .. _GMT_DATA_SERVER_LIMIT:
 
