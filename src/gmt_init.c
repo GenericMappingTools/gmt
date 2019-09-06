@@ -15094,14 +15094,14 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	if ((path2 = getenv ("LOCAL_PROJ_LIB")) != NULL)  paths[local_count++] = path2;
 	if (!local_count) {			/* If none of the above was provided, default to share/GDAL_DATA */
 		char dir[GMT_LEN256];
-		sprintf (dir, "%s/GDAL_DATA", API->GMT->session.SHAREDIR);
+		sprintf (dir, "%s/GDAL_DATA/n%s/proj", API->GMT->session.SHAREDIR, API->GMT->session.SHAREDIR);
 		if (access (dir, F_OK) == 0) {		/* ... if it exists */
 			paths[0] = strdup(dir);
 			local_count = -1;
 		}
 	}
 	if (local_count) {		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
-		OSRSetPROJSearchPaths(paths);
+		OSRSetPROJSearchPaths ((const char* const *)paths);
 		if (local_count < 0)  free (paths[0]);		/* This case was strdup allocated, so it can be freed */
 	}
 #endif

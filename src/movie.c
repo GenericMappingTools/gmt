@@ -358,15 +358,15 @@ GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 	char line[PATH_MAX] = {""};
 	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
 		if (strstr (line, "gmt ") == NULL) continue;	/* Does not start with gmt */
-		if (strstr (line, "begin"))		/* A modern mode script */
+		if (strstr (line, " begin"))		/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "figure"))	/* A modern mode script */
+		else if (strstr (line, " figure"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "subplot"))	/* A modern mode script */
+		else if (strstr (line, " subplot"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "inset"))	/* A modern mode script */
+		else if (strstr (line, " inset"))	/* A modern mode script */
 			modern = true;
-		else if (strstr (line, "end"))		/* A modern mode script */
+		else if (strstr (line, " end"))		/* A modern mode script */
 			modern = true;
 	}
 	rewind (fp);	/* Go back to beginning of file */
@@ -1494,7 +1494,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
-				if (strstr(Ctrl->M.format,"pdf") || strstr(Ctrl->M.format,"eps") || strstr(Ctrl->M.format,"ps"))
+				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 					fprintf (fp, "\n");	/* No dpu needed */
 				else
 					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
@@ -1774,15 +1774,20 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], Ctrl->N.prefix);	/* Delete the entire directory with PNG frames and tmp files */
 	}
 	else {	/* Just delete the remaining scripts and PS files */
+#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		char dir_sep_ = '\\';
+#else
+		char dir_sep_ = '/';
+#endif
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files saved in directory: %s\n", n_frames, Ctrl->N.prefix);
 		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep, pre_file);
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep_, pre_file);
 		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep, main_file);	/* Delete the main script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep_, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep_, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep_, main_file);	/* Delete the main script */
 		if (layers) 
-			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep);	/* Delete any PostScript layers */
+			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep_);	/* Delete any PostScript layers */
 	}
 	fclose (fp);
 #ifndef _WIN32

@@ -112,3 +112,13 @@ steps:
     md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
+
+# Publish the macOS bundle
+- bash: |
+    cp build/gmt-*.dmg ${BUILD_ARTIFACTSTAGINGDIRECTORY}/gmt-${BUILD_SOURCEBRANCHNAME}-$(date +%Y%m%d)-nightly.dmg
+  displayName: Copy macOS bundle
+  condition: eq(variables['PACKAGE'], true)
+- publish: $(Build.ArtifactStagingDirectory)/
+  artifact: GMT-macOS-bundle
+  displayName: Publish macOS Bundle
+  condition: eq(variables['PACKAGE'], true)

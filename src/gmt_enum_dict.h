@@ -20,7 +20,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        15-July-2019
+ * Date:        04-September-2019
  * Version:     6 API
  */
 

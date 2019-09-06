@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
 GMT is available on Windows, macOS and Linux.
-Source and binary packages are provided for the latest release version,
+Source and binary packages are provided for the latest release,
 and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
 and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 
@@ -15,7 +15,7 @@ for compiling GMT source package (either stable release or development version).
 
 - [Windows](#windows)
 - [macOS](#macos)
-  * [Standalone Installer](#standalone-installer)
+  * [Application Bundle](#application-bundle)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
@@ -29,32 +29,31 @@ for compiling GMT source package (either stable release or development version).
 
 We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
 on the [GMT main site](https://www.generic-mapping-tools.org).
-The installers come with GDAL and FFmpeg pre-installed.
+The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
-In addition to the GMT installer, you also need to download and install Ghostscript (e.g. gs926w64.exe)
-from [the Ghostscript official webiste](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases).
+In addition to the GMT installer, you also need to donwload and install
+[GraphicsMagick](http://www.graphicsmagick.org/) if you want to making movies in
+GIF format.
 
 ## macOS
 
-### Standalone Installer
+### Application Bundle
 
 Application bundle is available from the [GMT main site](https://www.generic-mapping-tools.org).
-Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double click to open it
-and drag GMT-6.x.x.app to any folder.
+Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
+and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
+
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and type:
 
-    dirname `which gmt`
-
-or:
-
     echo ${BUNDLE_RESOURCES}/bin
 
-in the terminal. Then prepend this directory to your PATH environment variable,
-e.g., in `~/.bashrc`. Note: The installer is always built for the latest macOS version only.
+in the terminal. Then prepend this directory (e.g. `/Applications/GMT-6.x.x.app/Contents/Resources/bin`)
+to your PATH environment variable, e.g., in `~/.bashrc`.
+Note: The installer is always built for the latest macOS version only.
 
-Note: While the installer comes with all GMT executables and needed libraries, there are some
+While the installer comes with all GMT executables and needed libraries, there are some
 run-time dependencies on executables that you will need to install separately:
 
 - [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
@@ -186,7 +185,7 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc3 -c conda-forge/label/dev -c conda-forge
+   conda install gmt=6.0.0rc4 -c conda-forge/label/dev -c conda-forge
    ```
 
 3. Install ffmpeg using conda by running the following in a terminal:

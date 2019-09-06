@@ -16,7 +16,7 @@
 #-------------------------------------------------------------------------------
 
 # Figure files
-set (_fig_fig GMT4_mode.png GMT5_Summit_2016.jpg GMT5_mode.png GMT5_external.png
+set (_fig_fig GMT4_mode.png GMT6_Summit_2019.jpg GMT5_mode.png GMT5_external.png
 	GMT_Environment.png GMT_record.png gimp-sliders+panel.png hsv-cone.png
 	formatpicture.png rendering.png)
 

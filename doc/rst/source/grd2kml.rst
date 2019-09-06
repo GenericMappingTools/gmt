@@ -57,7 +57,7 @@ Optional Arguments
 
 **-C**\ *cpt*
     Name of the color palette table (CPT). Alternatively,
-    supply the name of a GMT color master dynamic CPT [rainbow] to
+    supply the name of a GMT color master dynamic CPT [turbo] to
     automatically determine a continuous CPT from
     the grid's z-range.  If the dynamic CPT has a default range then
     that range will be imposed instead.

@@ -36,7 +36,7 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
@@ -58,7 +58,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 
 int GMT_docs (void *V_API, int mode, void *args) {
-	bool other_file = false, print_url = false, got_file = false, called = false;
+	bool other_file = false, print_url = false, got_file = false, called = false, remote = false;
 	int error = 0;
 	size_t vlen = 0;
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
@@ -97,6 +97,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	
 	while (opt) {	/* For all possible arguments */
 		if (opt->option == 'Q') { print_url = true, opt = opt->next; continue; }	/* Process optional -Q option */
+		else if (opt->option == 'S') { remote = true, opt = opt->next; continue; }	/* Process optional -S option */
 		else if (opt->option == 'V') { opt = opt->next; continue; }	/* Skip the optional -V common option */
 		
 		if (opt->option != GMT_OPT_INFILE) {	/* This is not good */
@@ -202,7 +203,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			}
 			else {	/* One of the fixed doc files */
 				snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-				if (access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
+				if (remote || access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
 					snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
 			}
 
