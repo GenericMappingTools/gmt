@@ -984,34 +984,28 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		run_script = system;	/* The standard system function will be used */
 	
 		if (Ctrl->A.active) {	/* Ensure we have the GraphicsMagick executable "gm" installed in the path */
-			sprintf (cmd, "gm version");
-			if ((fp = popen (cmd, "r"))) gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
-			if (fp == NULL || line[0] == '\0' || strstr (line, "www.GraphicsMagick.org") == NULL) {
+			if (gmt_check_executable (GMT, "gm version", "www.GraphicsMagick.org", line)) {
+				sscanf (line, "%*s %s %*s", version);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GraphicsMagick %s found.\n", version);
+			}
+			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "GraphicsMagick is not installed or not in your executable path - cannot build animated GIF.\n");
 				close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			else {	/* Get here if we read a line that has www.GraphicsMagick.org in it - get version */
-				sscanf (line, "%*s %s %*s", version);
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GraphicsMagick %s found.\n", version);
-			}
-			pclose (fp);
 		}
 		else if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
-			sprintf (cmd, "ffmpeg -version");
-			if ((fp = popen (cmd, "r"))) gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
-			if (fp == NULL || line[0] == '\0' || strstr (line, "FFmpeg developers") == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "ffmpeg is not installed - cannot build MP4 or WEbM movies.\n");
-				close_files (Ctrl);
-				Return (GMT_RUNTIME_ERROR);
-			}
-			else {	/* OK, but check if width is odd or even */
+			if (gmt_check_executable (GMT, "ffmpeg -version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "FFmpeg %s found.\n", version);
 				if (p_width % 2)	/* Don't like odd pixel widths */
 					GMT_Report (API, GMT_MSG_NORMAL, "Your frame width is an odd number of pixels (%u). This may not work with ffmpeg...\n", p_width);
 			}
-			pclose (fp);
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "ffmpeg is not installed - cannot build MP4 or WEbM movies.\n");
+				close_files (Ctrl);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 	

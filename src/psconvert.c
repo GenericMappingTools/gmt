@@ -1505,7 +1505,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 #endif
 
-	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL, *fpp = NULL;
+	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
 
 	struct GMT_OPTION *opt = NULL;
 	struct PS2RASTER_CTRL *Ctrl = NULL;
@@ -1538,12 +1538,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if GhostScript can be executed (version query) */
-	sprintf(cmd, "%s --version", Ctrl->G.file);
-	if ((fpp = popen(cmd, "r")) != NULL) {
-		int n;
-		n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
-		if (pclose(fpp) == -1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
+	sprintf (cmd, "%s --version", Ctrl->G.file);
+	if (gmt_check_executable (GMT, cmd, NULL, cmd)) {	/* Found GhostScript */
+		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n",
@@ -1551,7 +1548,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	else { /* failed to open pipe */
+	else {	/* Failure to open GhostScript */
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript (%s).\n", Ctrl->G.file);
 		Return (GMT_RUNTIME_ERROR);
 	}

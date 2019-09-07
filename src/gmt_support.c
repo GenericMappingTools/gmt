@@ -16006,6 +16006,40 @@ void gmt_filename_get (char *name) {
 	gmt_strrepc (name, GMT_ASCII_RS, ' ');
 }
 
+bool gmt_check_executable (struct GMT_CTRL *GMT, char *in_cmd, char *pattern, char *text) {
+	/* Determine if a program exists by calling in_cmd via popen.  If popen is successful
+	 * and pattern != NULL we check that the first line read from popen contains the pattern.
+	 * If text != NULL then we return what popen read as first line. If successful test then
+	 * we return true, else false */
+	char cmd[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	bool answer = false;
+	
+	/* Turn off any stderr messages coming to the terminal */
+	strncpy (cmd, in_cmd, PATH_MAX);
+#ifdef WIN32
+	strcat (cmd, " > NUL");
+#else
+	strcat (cmd, " 2> /dev/null");
+#endif
+
+	if ((fp = popen (cmd, "r"))) {	/* There was such a command */
+		line[0] = '\0';
+		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+	}
+	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
+	}
+	else {	/* Get here if we passed the test */
+		if (text) strcpy (text, line);	/* Want to return the first line */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s was successful\n", cmd);
+		answer = true;
+	}
+	if (fp) pclose (fp);
+	
+	return (answer);
+}
+
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */
