@@ -21,10 +21,11 @@
  *
  * Brief synopsis: gmt docs 
  *	Opens GMT HTML docs in the default viewer (browser); when called from
- *	gmt end show it also opens illustrations. 
+ *	gmt end show it also opens illustrations via default viewer. 
  */
 
 #include "gmt_dev.h"
+#include "gmt_gsformats.h"
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
@@ -59,10 +60,11 @@ EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false, got_file = false, called = false, remote = false;
-	int error = 0;
+	int error = 0, id;
 	size_t vlen = 0;
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
+	char *ps_viewer = NULL;
 	static const char *known_group[2] = {"core", "other"}, *known_doc[5] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
@@ -73,12 +75,15 @@ int GMT_docs (void *V_API, int mode, void *args) {
 #ifdef WIN32
 	static const char *file_viewer = "cmd /c start";
 	bool together = false;	/* Must call file_viewer separately on each file */
+	ps_viewer = "gsview64c";
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
 	bool together = true;	/* Can call file_viewer once with all files */
+	ps_viewer = "gv";
 #else
 	static const char *file_viewer = "xdg-open";
 	bool together = false;	/* Must call file_viewer separately on each file */
+	ps_viewer = (char *)file_viewer;
 #endif
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -93,11 +98,11 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the docs main code ----------------------------*/
 
-	opt = options;	/* Start at first option */
+	opt = options;	/* Start at first option to gmt docs */
 	
 	while (opt) {	/* For all possible arguments */
-		if (opt->option == 'Q') { print_url = true, opt = opt->next; continue; }	/* Process optional -Q option */
-		else if (opt->option == 'S') { remote = true, opt = opt->next; continue; }	/* Process optional -S option */
+		if (opt->option == 'Q') { print_url = true, opt = opt->next; continue; }	/* Process optional -Q option which must be first (or maybe second if -S also) */
+		else if (opt->option == 'S') { remote = true, opt = opt->next; continue; }	/* Process optional -S option which is either first or second (if -Q) */
 		else if (opt->option == 'V') { opt = opt->next; continue; }	/* Skip the optional -V common option */
 		
 		if (opt->option != GMT_OPT_INFILE) {	/* This is not good */
@@ -105,14 +110,14 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		
-		if ((ext = gmt_get_ext (opt->arg)) && gmt_get_graphics_id (GMT, ext) != GMT_NOTSET) {	/* Got a graphics file */
-			if (strchr (opt->arg, GMT_ASCII_RS)) {
+		if ((ext = gmt_get_ext (opt->arg)) && (id = gmt_get_graphics_id (GMT, ext)) != GMT_NOTSET) {	/* Got a graphics file */
+			if (strchr (opt->arg, GMT_ASCII_RS)) {	/* Got a file with spaces there are temporarily represented by RS */
 				sprintf (name, "\'%s\'", opt->arg);
-				gmt_filename_get (name);
+				gmt_filename_get (name);	/* Reinstate the spaces since we added quotes */
 			}
 			else
 				strcpy (name, opt->arg);
-			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called via gmt end show */
+			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called indirectly via gmt end show */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument %s is not a known module or documentation short-hand\n",
 					name);
 				Return (GMT_RUNTIME_ERROR);
@@ -121,11 +126,34 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", name);
 				printf ("%s\n", opt->arg);
 			}
-			else {	/* Open in viewer */
+			else {	/* Open in suitable viewer */
+#ifdef __APPLE__
+				/* Under macOS a PostScript file will be opened by open via conversion to PDF.  If the user has gv installed
+				 * then we rather open the PostScript file in gv */
+				if (gmt_session_code[id] == 'p') {	/* PostScript file, check if a PostScript viewer "gv" is available */
+					char line[GMT_LEN64] = {""};
+					FILE *fp = NULL;
+					sprintf (cmd, "gv --version 2> /dev/null");
+					if ((fp = popen (cmd, "r"))) gmt_fgets (GMT, line, GMT_LEN64, fp);	/* Read first line */
+					if (fp == NULL || line[0] == '\0') {
+						GMT_Report (API, GMT_MSG_DEBUG, "gv is not installed or not in your executable path, use %s instead.\n", file_viewer);
+						ps_viewer = (char *)file_viewer;
+					}
+					else {	/* Get here if found gv */
+						ps_viewer = "gv";
+						together = false;	/* gv takes one file at the time */
+						GMT_Report (API, GMT_MSG_DEBUG, "Found gv and will open PostScript files with it.\n");
+					}
+					pclose (fp);
+				}
+#endif
 				if (!together || !got_file) {	/* Either Windows|Linux, or first time under macOS */
-					snprintf (view, PATH_MAX, "%s %s", file_viewer, name);
+					snprintf (view, PATH_MAX, "%s %s", (gmt_session_code[id] == 'p') ? ps_viewer : file_viewer, name);
 					got_file = true;
 					vlen = PATH_MAX - strlen (view);
+#ifdef __APPLE__
+					if (!strncmp (ps_viewer, "gv", 2U)) strcat (view, " &");	/* Need to put gv in the background */
+#endif
 				}
 				else {	/* Append more arguments to the same open command */
 					strncat (view, " ", vlen--);
