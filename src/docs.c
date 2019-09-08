@@ -26,6 +26,9 @@
 
 #include "gmt_dev.h"
 #include "gmt_gsformats.h"
+#ifdef WIN32
+#	include <windows.h>
+#endif
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
@@ -56,7 +59,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
+EXTERN_MSC const char *api_get_module_group (void *V_API, char *module);
 
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false, got_file = false, called = false, remote = false;
@@ -73,9 +76,14 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 #ifdef WIN32
+	HKEY hkey;              	/* Handle to registry key */
 	static const char *file_viewer = "cmd /c start";
-	bool together = false;	/* Must call file_viewer separately on each file */
-	ps_viewer = "cmd /c start gsview64c";
+	bool together = false;		/* Must call file_viewer separately on each file */
+	long RegO = RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.ps\\UserChoice", 0, KEY_READ, &hkey);
+	if (RegO == ERROR_SUCCESS)		/* User has postscript viewer installed */
+		ps_viewer = (char *)file_viewer;
+	else
+		ps_viewer = "cmd /c start gsview64c";	/* No previewer. Resort to this. */
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
 	bool together = true;	/* Can call file_viewer once with all files */
