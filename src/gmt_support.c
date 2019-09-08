@@ -16032,7 +16032,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	}
 	/* Finally, append redirection of errors */
 #ifdef WIN32
-	strcat (cmd, " > NUL");
+	strcat (cmd, " 2> NUL");
 #else
 	strcat (cmd, " 2> /dev/null");
 #endif
