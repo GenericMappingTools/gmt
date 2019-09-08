@@ -16017,14 +16017,14 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	
 	/* Turn off any stderr messages coming to the terminal */
 	if (strchr (program, ' ')) {	/* Command has spaces [most likely under Windows] */
-		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place single quotes */
-			sprintf (cmd, "'%s'", program);
-		else
+		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
+			sprintf (cmd, "\"%s\"", program);
+		else	/* Already has quotes, but these might be double or single */
 			strncpy (cmd, program, PATH_MAX);
-		if (program[0] == '\"')	/* Replace double quotes with single quotes*/
-			gmt_strrepc (cmd, '\"', '\'');
+		if (program[0] == '\'')	/* Replace single quotes with double quotes*/
+			gmt_strrepc (cmd, '\'', '\"');
 	}
-	else
+	else	/* No spaces, just copy */
 		strncpy (cmd, program, PATH_MAX);
 	if (arg) {	/* Append the command argument */
 		strcat (cmd, " ");
