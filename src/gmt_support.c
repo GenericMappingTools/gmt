@@ -16016,7 +16016,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	bool answer = false;
 	
 	/* Turn off any stderr messages coming to the terminal */
-	if (strchr (program, ' '))	/* Command has spaces, place in quotes */
+	if (strchr (program, ' ') && !(program[0] == '\'' || program[0] == '\"'))	/* Command has spaces and not already in quotes, place in quotes */
 		sprintf (cmd, "'%s'", program);
 	else
 		strncpy (cmd, program, PATH_MAX);
