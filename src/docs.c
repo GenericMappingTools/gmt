@@ -75,11 +75,11 @@ int GMT_docs (void *V_API, int mode, void *args) {
 #ifdef WIN32
 	static const char *file_viewer = "cmd /c start";
 	bool together = false;	/* Must call file_viewer separately on each file */
-	ps_viewer = "gsview64c";
+	ps_viewer = "cmd /c start gsview64c";
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
 	bool together = true;	/* Can call file_viewer once with all files */
-	ps_viewer = "gv";
+	ps_viewer = (char *)file_viewer;
 #else
 	static const char *file_viewer = "xdg-open";
 	bool together = false;	/* Must call file_viewer separately on each file */
@@ -128,23 +128,16 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			}
 			else {	/* Open in suitable viewer */
 #ifdef __APPLE__
-				/* Under macOS a PostScript file will be opened by open via conversion to PDF.  If the user has gv installed
-				 * then we rather open the PostScript file in gv */
+				/* Under macOS a PostScript file will be opened by open via conversion to PDF.
+				 * If the user has gv installed then we rather open the PostScript file in gv */
 				if (gmt_session_code[id] == 'p') {	/* PostScript file, check if a PostScript viewer "gv" is available */
-					char line[GMT_LEN64] = {""};
-					FILE *fp = NULL;
-					sprintf (cmd, "gv --version 2> /dev/null");
-					if ((fp = popen (cmd, "r"))) gmt_fgets (GMT, line, GMT_LEN64, fp);	/* Read first line */
-					if (fp == NULL || line[0] == '\0') {
-						GMT_Report (API, GMT_MSG_DEBUG, "gv is not installed or not in your executable path, use %s instead.\n", file_viewer);
-						ps_viewer = (char *)file_viewer;
-					}
-					else {	/* Get here if found gv */
+					if (gmt_check_executable (GMT, "gv", "--version", NULL, NULL)) {
 						ps_viewer = "gv";
 						together = false;	/* gv takes one file at the time */
 						GMT_Report (API, GMT_MSG_DEBUG, "Found gv and will open PostScript files with it.\n");
 					}
-					pclose (fp);
+					else
+						GMT_Report (API, GMT_MSG_DEBUG, "gv is not installed or not in your executable path, use %s instead.\n", file_viewer);
 				}
 #endif
 				if (!together || !got_file) {	/* Either Windows|Linux, or first time under macOS */
