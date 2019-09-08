@@ -16036,7 +16036,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 #else
 	strcat (cmd, " 2> /dev/null");
 #endif
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
 
 	if ((fp = popen (cmd, "r")))	/* There was such a command */
 		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
