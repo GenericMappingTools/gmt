@@ -16006,8 +16006,8 @@ void gmt_filename_get (char *name) {
 	gmt_strrepc (name, GMT_ASCII_RS, ' ');
 }
 
-bool gmt_check_executable (struct GMT_CTRL *GMT, char *in_cmd, char *pattern, char *text) {
-	/* Determine if a program exists by calling in_cmd via popen.  If popen is successful
+bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text) {
+	/* Determine if a program exists by calling program with arg via popen.  If popen is successful
 	 * and pattern != NULL we check that the first line read from popen contains the pattern.
 	 * If text != NULL then we return what popen read as first line. If successful test then
 	 * we return true, else false */
@@ -16016,17 +16016,23 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *in_cmd, char *pattern, ch
 	bool answer = false;
 	
 	/* Turn off any stderr messages coming to the terminal */
-	strncpy (cmd, in_cmd, PATH_MAX);
+	if (strchr (program, ' '))	/* Command has spaces, place in quotes */
+		sprintf (cmd, "'%s'", program);
+	else
+		strncpy (cmd, program, PATH_MAX);
+	if (arg) {	/* Append the command argument */
+		strcat (cmd, " ");
+		strcat (cmd, arg);
+	}
+	/* Finally, append redirection of errors */
 #ifdef WIN32
 	strcat (cmd, " > NUL");
 #else
 	strcat (cmd, " 2> /dev/null");
 #endif
 
-	if ((fp = popen (cmd, "r"))) {	/* There was such a command */
-		line[0] = '\0';
+	if ((fp = popen (cmd, "r")))	/* There was such a command */
 		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
-	}
 	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
 	}

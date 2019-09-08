@@ -984,7 +984,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		run_script = system;	/* The standard system function will be used */
 	
 		if (Ctrl->A.active) {	/* Ensure we have the GraphicsMagick executable "gm" installed in the path */
-			if (gmt_check_executable (GMT, "gm version", "www.GraphicsMagick.org", line)) {
+			if (gmt_check_executable (GMT, "gm", "version", "www.GraphicsMagick.org", line)) {
 				sscanf (line, "%*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GraphicsMagick %s found.\n", version);
 			}
@@ -995,7 +995,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
-			if (gmt_check_executable (GMT, "ffmpeg -version", "FFmpeg developers", line)) {
+			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "FFmpeg %s found.\n", version);
 				if (p_width % 2)	/* Don't like odd pixel widths */

@@ -1538,8 +1538,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if GhostScript can be executed (version query) */
-	sprintf (cmd, "%s --version", Ctrl->G.file);
-	if (gmt_check_executable (GMT, cmd, NULL, cmd)) {	/* Found GhostScript */
+	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found GhostScript */
 		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
