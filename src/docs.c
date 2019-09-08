@@ -213,6 +213,8 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!other_file)		/* A supplemental module */
 				snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
 
+			if (opt->next && opt->next->option != GMT_OPT_INFILE) remote = true;	/* Can only use anchors on actual URLs not local files */
+			
 			/* Get the local URL (which may not exist) */
 			if (other_file) {	/* A local or Web file */
 				if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */
