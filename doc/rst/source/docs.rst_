@@ -31,7 +31,7 @@ Optional Arguments
 
 **-S**
     Normally, **docs** will open documentation files from the local computer if the document can
-    be found there; otherwise it will use the GMT server.  The **-S** option forces **docs* to
+    be found there; otherwise it will use the GMT server.  The **-S** option forces **docs** to
     read the file from the web server first.
 
 .. _-V:
