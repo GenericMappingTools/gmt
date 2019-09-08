@@ -16016,8 +16016,14 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	bool answer = false;
 	
 	/* Turn off any stderr messages coming to the terminal */
-	if (strchr (program, ' ') && !(program[0] == '\'' || program[0] == '\"'))	/* Command has spaces and not already in quotes, place in quotes */
-		sprintf (cmd, "'%s'", program);
+	if (strchr (program, ' ')) {	/* Command has spaces [most likely under Windows] */
+		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place single quotes */
+			sprintf (cmd, "'%s'", program);
+		else
+			strncpy (cmd, program, PATH_MAX);
+		if (program[0] == '\"')	/* Replace double quotes with single quotes*/
+			gmt_strrepc (cmd, '\"', '\'');
+	}
 	else
 		strncpy (cmd, program, PATH_MAX);
 	if (arg) {	/* Append the command argument */
