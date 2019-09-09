@@ -785,7 +785,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	struct GMT_CTRL *GMT = API->GMT;
 	unsigned int n_custom_libs = 0, k, e, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_LEN256] = {""}, plugindir[GMT_LEN256] = {""}, path[GMT_LEN256] = {""};
+	char text[PATH_MAX] = {""}, plugindir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	char *libname = NULL, **list = NULL;
 #ifdef WIN32
 	char *extension[1] = {".dll"};
@@ -832,7 +832,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 ) {
 			/* Running in build dir: search plugins in build-dir/src/plugins */
-			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_LEN256-1);
+			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", PATH_MAX-1);
 #ifdef XCODER
 			strcat (plugindir, "/Debug");	/* The Xcode plugin path for Debug */
 #endif
@@ -841,13 +841,13 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #endif
 		{
 		/* Set full path to the core library */
-		snprintf (plugindir, GMT_LEN256, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
+		snprintf (plugindir, PATH_MAX, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
 		if (!GMT->init.runtime_library) GMT->init.runtime_library = strdup (plugindir);
 
 #ifdef WIN32
-			snprintf (plugindir, GMT_LEN256, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
+			snprintf (plugindir, PATH_MAX, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
 #else
-			snprintf (plugindir, GMT_LEN256, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+			snprintf (plugindir, PATH_MAX, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
 #endif
 		}
 		if (!GMT->init.runtime_plugindir) GMT->init.runtime_plugindir = strdup (plugindir);
@@ -858,7 +858,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put supplements first if not first already */
 				k = 0;
 				while (list[k]) {
-					snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
+					snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
 					if (access (path, R_OK))
 						GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 					else {
@@ -891,7 +891,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these to the libs */
 					k = 0;
 					while (list[k]) {
-						snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
+						snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
 						if (access (path, R_OK)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 							GMT_Report (API, GMT_MSG_NORMAL, "Check that your GMT_CUSTOM_LIBS (in gmt.conf, perhaps) is correct\n");

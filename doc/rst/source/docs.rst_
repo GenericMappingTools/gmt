@@ -31,7 +31,7 @@ Optional Arguments
 
 **-S**
     Normally, **docs** will open documentation files from the local computer if the document can
-    be found there; otherwise it will use the GMT server.  The **-S** option forces **docs* to
+    be found there; otherwise it will use the GMT server.  The **-S** option forces **docs** to
     read the file from the web server first.
 
 .. _-V:
@@ -46,7 +46,9 @@ Optional Module Arguments
 
 *-option*
     Where *-option* is the one-letter option of the module in question (e.g, **-R**).
-    We then display the *module* documentation positioned at that specific option.
+    We then display the *module* documentation positioned at that specific option.  Note
+    that this operation is only valid for an actual URL, hence we implicitly set
+    **-S** when an option anchor is specified.
 
 Examples
 --------
