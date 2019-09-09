@@ -31,7 +31,7 @@ We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
 on the [GMT main site](https://www.generic-mapping-tools.org).
 The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
-In addition to the GMT installer, you also need to donwload and install
+In addition to the GMT installer, you also need to download and install
 [GraphicsMagick](http://www.graphicsmagick.org/) if you want to making movies in
 GIF format.
 
@@ -89,7 +89,7 @@ and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc a
 
     brew unlink gmt && brew link gmt4
 
-You also need to install other GMT run-time dependencies seperately:
+You also need to install other GMT run-time dependencies separately:
 
     brew install ghostscript graphicsmagick ffmpeg
 
@@ -104,7 +104,7 @@ A legacy GMT 4 port, gmt4, is available too and a side by side installation is p
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the +fftw3 and +openmp flags.
 
-You also need to install other GMT run-time dependencies seperately:
+You also need to install other GMT run-time dependencies separately:
 
     port install ghostscript graphicsmagick ffmpeg
 
@@ -123,7 +123,7 @@ For the legacy GMT 4 version use:
 
 The two versions cannot live side by side.
 
-You also need to install other GMT run-time dependencies seperately:
+You also need to install other GMT run-time dependencies separately:
 
     fink install ghostscript graphicsmagick ffmpeg
 
