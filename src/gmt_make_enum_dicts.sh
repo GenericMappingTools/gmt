@@ -13,7 +13,7 @@ grep GMT_OPT_ /tmp/junk1.txt | awk '{print $1, substr($2,1,2)} '> /tmp/junk3.txt
 while read key value; do
 	printf "%s %d\n" $key "$value" >> /tmp/junk2.txt
 done < /tmp/junk3.txt
-n=`gmt info -Fd -o2 /tmp/junk2.txt`
+n=`wc -l < /tmp/junk2.txt | awk '{printf "%d\n", $1}'`
 COPY_YEAR=$(date +%Y)
 NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h

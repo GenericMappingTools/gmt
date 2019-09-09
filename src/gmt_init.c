@@ -15219,15 +15219,15 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	if ((path1 = getenv ("LOCAL_GDAL_DATA")) != NULL) paths[local_count++] = path1;
 	if ((path2 = getenv ("LOCAL_PROJ_LIB")) != NULL)  paths[local_count++] = path2;
 	if (!local_count) {			/* If none of the above was provided, default to share/GDAL_DATA */
-		char dir[GMT_LEN256];
-		sprintf (dir, "%s/GDAL_DATA", API->GMT->session.SHAREDIR);
+		char dir[PATH_MAX];
+		sprintf (dir, "%s/GDAL_DATA/n%s/proj", API->GMT->session.SHAREDIR, API->GMT->session.SHAREDIR);
 		if (access (dir, F_OK) == 0) {		/* ... if it exists */
 			paths[0] = strdup(dir);
 			local_count = -1;
 		}
 	}
 	if (local_count) {		/* Means we have a request to use custom GDAL/PROJ4 data dirs */
-		OSRSetPROJSearchPaths(paths);
+		OSRSetPROJSearchPaths ((const char* const *)paths);
 		if (local_count < 0)  free (paths[0]);		/* This case was strdup allocated, so it can be freed */
 	}
 #endif
@@ -15650,6 +15650,7 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	bool restore = false;
 	
 	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
+	if (arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
 	GMT_Report (API, GMT_MSG_DEBUG, "Set session name to be %s\n", arg);
 	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if ((fp = fopen (file, "w")) == NULL) {

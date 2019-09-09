@@ -39,12 +39,12 @@ hobbyists.
 ## A reminder
 
 If you think it is appropriate, you may consider paying us back by including
-our latest EOS article in the reference list of your future publications that
+our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
-> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013),
-> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45),
-> 409-410, doi:[10.1002/2013EO450001](https://doi.org/10.1002/2013EO450001)
+> Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+> The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+> https://doi.org/10.1029/2019GC008515
 
 ## Install GMT
 

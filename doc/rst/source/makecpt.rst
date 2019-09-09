@@ -88,7 +88,7 @@ Optional Arguments
 **-C**\ *cpt*
     Selects the master color table CPT to use in the interpolation.
     Choose among the built-in tables (type **makecpt** to see the list)
-    or give the name of an existing CPT [Default gives a rainbow CPT].
+    or give the name of an existing CPT [Default gives the turbo CPT].
     Yet another option is to specify -Ccolor1,color2[,color3,...]
     to build a linear continuous cpt from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
@@ -267,11 +267,11 @@ changes every 25, and using a polar blue-white-red colortable:
     gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant CPT from z = -2 to 6 using the
-continuous default rainbow of colors:
+continuous default turbo rainbow of colors:
 
    ::
 
-    gmt makecpt -T-2/6 -Z > rainbow.cpt
+    gmt makecpt -T-2/6 -Z > colors.cpt
 
 To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
@@ -280,7 +280,7 @@ To use the GEBCO look-alike CPT with its default range for bathymetry, run
     gmt makecpt -Cgebco > my_gebco.cpt
 
 or simply use -Cgebco directly in the application that needs the color table.
-To create a 24-level rainbow color table suitable for plotting the depths in
+To create a 24-level color table suitable for plotting the depths in
 the data table depths.txt (with lon, lat, depths), run
 
    ::
@@ -293,9 +293,6 @@ positive depth values, try
    ::
 
     gmt makecpt -Cgebco -Iz > my_positive_gebco.cpt
-
-To create a 24-level rainbow color table suitable for plotting the depths in
-the data table depths.txt (with lon, lat, depths), run
 
 To make a custom discrete color table for depth of seismicity, using red color for
 hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1000 km)

@@ -481,7 +481,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 				Ctrl->G.active = true;
 				for (n_slash = k = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
-				if (n_slash == 2 || !(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+u") || strstr (opt->arg, "+v")))
+				if (opt->arg[0] && (n_slash == 2 || !(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+u") || strstr (opt->arg, "+v"))))
 					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
 					/* Note [+|-] is now deprecated in GMT 6; use -je instead */
@@ -490,9 +490,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					 * to avoid parsing problems. */
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
 					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
-					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* This cannot happen given the strstr checks, but Coverity prefers it */
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: No modifiers?\n");
-						n_errors++;
+					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* If just -G given then we get here; default to cumulate distances in meters */
+						Ctrl->G.mode |= GMT_MP_VAR_POINT;
+						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
+						Ctrl->used[MP_COL_DS] = true;	/* Output incremental distances */
 						break;
 					}
 					pos = 0;	txt_a[0] = 0;

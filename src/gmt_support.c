@@ -16004,6 +16004,53 @@ void gmt_filename_get (char *name) {
 	gmt_strrepc (name, GMT_ASCII_RS, ' ');
 }
 
+bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text) {
+	/* Determine if a program exists by calling program with arg via popen.  If popen is successful
+	 * and pattern != NULL we check that the first line read from popen contains the pattern.
+	 * If text != NULL then we return what popen read as first line. If successful test then
+	 * we return true, else false */
+	char cmd[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	bool answer = false;
+	
+	/* Turn off any stderr messages coming to the terminal */
+	if (strchr (program, ' ')) {	/* Command has spaces [most likely under Windows] */
+		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
+			sprintf (cmd, "\"%s\"", program);
+		else	/* Already has quotes, but these might be double or single */
+			strncpy (cmd, program, PATH_MAX);
+		if (program[0] == '\'')	/* Replace single quotes with double quotes*/
+			gmt_strrepc (cmd, '\'', '\"');
+	}
+	else	/* No spaces, just copy */
+		strncpy (cmd, program, PATH_MAX);
+	if (arg) {	/* Append the command argument */
+		strcat (cmd, " ");
+		strcat (cmd, arg);
+	}
+	/* Finally, append redirection of errors */
+#ifdef WIN32
+	strcat (cmd, " 2> NUL");
+#else
+	strcat (cmd, " 2> /dev/null");
+#endif
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
+
+	if ((fp = popen (cmd, "r")))	/* There was such a command */
+		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
+	}
+	else {	/* Get here if we passed the test */
+		if (text) strcpy (text, line);	/* Want to return the first line */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s was successful\n", cmd);
+		answer = true;
+	}
+	if (fp) pclose (fp);
+	
+	return (answer);
+}
+
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

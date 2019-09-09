@@ -23,17 +23,25 @@ The Generic Mapping Tools
 
 **Universidade do Algarve, Faro, Portugal**
 
+**Leonardo Uieda**
+
+**University of Liverpool, UK**
+
 **Florian Wobbe**
 
-**Alfred Wegener Institute, Germany**
+**Sea and Sun Technology, Germany**
 
-.. figure:: /_images/GMT5_Summit_2016.jpg
+**Dongdong Tian**
+
+**Michigan State University**
+
+.. figure:: /_images/GMT6_Summit_2019.jpg
    :width: 1200 px
    :align: center
 
-   The five horsemen of the GMT apocalypse:
-   Joaquim Luis, Walter H.F. Smith, Remko Scharroo, Florian Wobbe, and Paul Wessel
-   at the GMT Developer Summit in La Jolla, California, during August 15–19, 2016.
+   Dongdong Tian, David Sandwell (Steering Committee Chair), Walter H.F. Smith, Paul Wessel,
+   Joaquim Luis, Leo Uieda, and Dave Caress (Steering Committee Member)
+   at the GMT Developer Summit in La Jolla, California, during July 29–August 2, 2019.
 
 
 Acknowledgments
@@ -75,16 +83,20 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI; College Park, MD; Faro, Portugal; Darmstadt and
-Bremerhaven, Germany; September 2016
+Trappenkamp, Germany; Liverpool, UK; Lansing, MI; September 2019
 
 
 A Reminder
 ==========
 
 If you feel it is appropriate, you may consider paying us back by citing
-our EOS articles on GMT and technical papers on algorithms when you
+our articles on GMT and technical papers on algorithms when you
 publish papers containing results or illustrations obtained using GMT.
-The EOS articles on GMT are
+The articles on GMT are
+
+-  Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+   The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+   https://doi.org/10.1029/2019GC008515
 
 -  Wessel, P., W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe,
    Generic Mapping Tools: Improved Version Released, *EOS Trans. AGU*, 94(45),
@@ -3045,7 +3057,7 @@ Automatic CPTs
 
 A few modules (:doc:`grdimage`, :doc:`grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
-"rainbow" color table, but this is overridden if the user uses the @eart_relief
+"turbo" color table, but this is overridden if the user uses the @eart_relief
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values.
 

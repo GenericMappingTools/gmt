@@ -42,7 +42,7 @@ set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
 # Add the last git commit hash and date to the package version if this is a non-public release.
 # A non-public release has a FALSE 'GMT_PUBLIC_RELEASE' variable in 'ConfigDefault.cmake'.
 #set (HAVE_GIT_VERSION)
-if (GIT_FOUND)
+if (GIT_FOUND AND NOT GMT_PUBLIC_RELEASE)
 	# Get the last git commit hash
 	execute_process (
 		COMMAND ${GIT_EXECUTABLE} describe --abbrev=7 --always --dirty
@@ -57,19 +57,17 @@ if (GIT_FOUND)
 		if (GIT_COMMIT_HASH)
 			set (HAVE_GIT_VERSION TRUE)
 			# For non-public release, add the last git commit hash and date
-			if (NOT GMT_PUBLIC_RELEASE)
-				execute_process (
-					COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
-					WORKING_DIRECTORY ${GMT_SOURCE_DIR}
-					RESULT_VARIABLE GIT_DATE_RETURN_CODE
-					OUTPUT_VARIABLE GIT_COMMIT_DATE
-					OUTPUT_STRIP_TRAILING_WHITESPACE)
-				string(REPLACE "-" "." GIT_COMMIT_DATE "${GIT_COMMIT_DATE}")
-				set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION "${GMT_PACKAGE_VERSION}_${GIT_COMMIT_HASH}_${GIT_COMMIT_DATE}")
-			endif (NOT GMT_PUBLIC_RELEASE)
+			execute_process (
+				COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
+				WORKING_DIRECTORY ${GMT_SOURCE_DIR}
+				RESULT_VARIABLE GIT_DATE_RETURN_CODE
+				OUTPUT_VARIABLE GIT_COMMIT_DATE
+				OUTPUT_STRIP_TRAILING_WHITESPACE)
+			string(REPLACE "-" "." GIT_COMMIT_DATE "${GIT_COMMIT_DATE}")
+			set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION "${GMT_PACKAGE_VERSION}_${GIT_COMMIT_HASH}_${GIT_COMMIT_DATE}")
 		endif (GIT_COMMIT_HASH)
 	endif (GIT_RETURN_CODE)
-endif (GIT_FOUND)
+endif (GIT_FOUND AND NOT GMT_PUBLIC_RELEASE)
 
 # The current GMT version.
 set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")

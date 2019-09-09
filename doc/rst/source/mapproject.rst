@@ -149,7 +149,7 @@ Optional Arguments
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
     requires **-R** and **-J** to be set. When no fixed point is given
-    we calculate accumulative distances [or by adding **+a**] along the
+    we calculate accumulated distances [or by adding **+a**] along the
     track defined by the input points. Append **+i** to obtain *incremental*
     distances between successive points, or append both modifiers to get
     both distance measurements. Alternatively, append **+v** to obtain a
