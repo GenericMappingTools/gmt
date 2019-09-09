@@ -99,15 +99,17 @@ corner to which the *x* and *y* coordinates of the subroutine call
 apply. Nine different values are possible, as shown schematically in
 this diagram:
 
-    9------------10----------- 11
+  ::
 
-    \|                         \|
-
-    5             6             7
-
-    \|                          \|
-
-    1------------ 2------------ 3
+    9 ------------ 10 ----------- 11
+    
+    |                             |
+    
+    5              6              7
+    
+    |                             |
+    
+    1 ------------ 2 ------------ 3
 
 The box represents the text or image. E.g., to plot a text string with
 its center at (*x*, *y*), you must use *justify* == 6. *justify* == 0
