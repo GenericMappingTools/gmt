@@ -97,7 +97,8 @@ degrees and *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*
 will be in km.
 
 Calculations of specific great-circle and geodesic distances or for
-back-azimuths or azimuths are better done using :doc:`mapproject`.
+back-azimuths or azimuths are better done using :doc:`mapproject` as
+**project** is strictly spherical.
 
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
