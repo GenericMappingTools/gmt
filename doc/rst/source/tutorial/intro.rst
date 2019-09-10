@@ -1,15 +1,6 @@
 Introduction
 ============
 
-The purpose of this tutorial is to introduce new users to GMT,
-outline the GMT environment, and enable you to make several
-forms of graphics without having to know too much about UNIX
-and UNIX tools.  We will not be able to cover all aspects of
-GMT nor will we necessarily cover the selected topics in
-sufficient detail.  Nevertheless, it is hoped that the exposure
-will prompt the users to improve their GMT and UNIX skills
-after completion of this short tutorial.
-
 GMT overview: History, philosophy, and usage
 --------------------------------------------
 

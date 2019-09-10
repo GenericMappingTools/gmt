@@ -6,35 +6,30 @@ The GMT Tutorial
 
 .. highlight:: bash
 
-**A Map-Making Tutoriali for the Generic Mapping Tools**
+**Pål (Paul) Wessel**:sup:`1`,
+**Walter H. F. Smith**:sup:`2`,
+**Remko Scharroo**:sup:`3`,
+**Joaquim F. Luis**:sup:`4`, \
+**Leonardo Uieda**:sup:`5`,
+**Florian Wobbe**:sup:`6`,
+**Dongdong Tian**:sup:`7`
 
-**Pål (Paul) Wessel**
+#. SOEST, University of Hawai'i at Manoa
+#. Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR
+#. EUMETSAT, Darmstadt, Germany
+#. Universidade do Algarve, Faro, Portugal
+#. University of Liverpool, UK
+#. Sea and Sun Technology, Germany
+#. Michigan State University
 
-**SOEST, University of Hawai'i at Manoa**
-
-**Walter H. F. Smith**
-
-**Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR**
-
-**Remko Scharroo**
-
-**EUMETSAT, Darmstadt, Germany**
-
-**Joaquim F. Luis**
-
-**Universidade do Algarve, Faro, Portugal**
-
-**Leonardo Uieda**
-
-**University of Liverpool, UK**
-
-**Florian Wobbe**
-
-**Sea and Sun Technology, Germany**
-
-**Dongdong Tian**
-
-**Michigan State University**
+The purpose of this tutorial is to introduce new users to GMT,
+outline the GMT environment, and enable you to make several
+forms of graphics without having to know too much about UNIX
+and UNIX tools.  We will not be able to cover all aspects of
+GMT nor will we necessarily cover the selected topics in
+sufficient detail.  Nevertheless, it is hoped that the exposure
+will prompt the users to improve their GMT and UNIX skills
+after completion of this short tutorial.
 
 .. toctree::
     :maxdepth: 1
