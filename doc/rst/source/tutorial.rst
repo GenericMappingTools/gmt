@@ -40,7 +40,7 @@ The GMT Tutorial
     :maxdepth: 1
 
     tutorial/intro
-    session-1
-    session-2
-    session-3
-    session-4
+    tutorial/session-1
+    tutorial/session-2
+    tutorial/session-3
+    tutorial/session-4
