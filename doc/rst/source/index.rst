@@ -18,6 +18,8 @@ it can do.
 
    modules
    supplements
+   std_opts
+   GMT Defaults <gmt.conf>
    datasets
    api
 
