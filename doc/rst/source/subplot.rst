@@ -258,6 +258,11 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try
     gmt end show
 
 
+Restriction
+-----------
+
+Currently, nesting of subplots is not implemented.
+
 See Also
 --------
 

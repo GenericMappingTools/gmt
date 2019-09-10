@@ -29,12 +29,12 @@ For this image it is appropriate to use the **-I** option in
 similar to the geoid grid. See Appendix [app:M] to learn more about
 CPTs and ways to draw color legends.
 
-.. literalinclude:: /_verbatim/example_17.txt
+.. literalinclude:: /_verbatim/ex17.txt
    :language: bash
 
 .. _fig_ex17:
 
-.. figure:: /_images/example_17.*
+.. figure:: /_images/ex17.*
    :width: 500 px
    :align: center
 

@@ -14,10 +14,10 @@ with large volumes of data we recommend :doc:`sphinterpolate </sphinterpolate>`
 while for small data sets (such as this one, actually) you have more flexibility
 with :doc:`greenspline </greenspline>`.
 
-.. literalinclude:: /_verbatim/example_36.txt
+.. literalinclude:: /_verbatim/ex36.txt
    :language: bash
 
-.. figure:: /_images/example_36.*
+.. figure:: /_images/ex36.*
    :width: 500 px
    :align: center
 

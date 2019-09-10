@@ -16,10 +16,10 @@ We superpose the gradient vector field and the surface *z* and also plot
 the components of the gradient in separate windows. A
 :doc:`text </text>` call to place a header finishes the plot
 
-.. literalinclude:: /_verbatim/example_13.txt
+.. literalinclude:: /_verbatim/ex13.txt
    :language: bash
 
-.. figure:: /_images/example_13.*
+.. figure:: /_images/ex13.*
    :width: 500 px
    :align: center
 

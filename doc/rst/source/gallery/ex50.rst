@@ -13,10 +13,10 @@ In addition to the distributions you can also use :doc:`gmtmath </gmtmath>`
 to evaluate critical values for the distributions for chosen
 confidence levels.
 
-.. literalinclude:: /_verbatim/example_50.txt
+.. literalinclude:: /_verbatim/ex50.txt
    :language: bash
 
-.. figure:: /_images/example_50.*
+.. figure:: /_images/ex50.*
    :width: 500 px
    :align: center
 

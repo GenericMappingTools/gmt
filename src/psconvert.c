@@ -527,7 +527,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\nn", GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s]\n", GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -1495,17 +1495,17 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 #endif
 	/* Define the 4 different sets of GS parameters for PDF or rasters, before and after SCANCONVERTERTYPE=2 added in 9.21 */
 	/* 2018=09-18 [PW]: Removed -DSAFER since it now prevents using the Adobe transparency extensions.  All our test pass with no -DSAFER so I have removed it */
-	static char *gs_params_pdfnew = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
-	static char *gs_params_pdfold = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
-	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
-	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH";
+	static char *gs_params_pdfnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+	static char *gs_params_pdfold = "-q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dSCANCONVERTERTYPE=2";
+	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH -dNOSAFER";
 	static char *gs_params = NULL;
 #ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 #endif
 
-	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL, *fpp = NULL;
+	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
 
 	struct GMT_OPTION *opt = NULL;
 	struct PS2RASTER_CTRL *Ctrl = NULL;
@@ -1538,12 +1538,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if GhostScript can be executed (version query) */
-	sprintf(cmd, "%s --version", Ctrl->G.file);
-	if ((fpp = popen(cmd, "r")) != NULL) {
-		int n;
-		n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
-		if (pclose(fpp) == -1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
+	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found GhostScript */
+		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n",
@@ -1551,7 +1547,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	else { /* failed to open pipe */
+	else {	/* Failure to open GhostScript */
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript (%s).\n", Ctrl->G.file);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -1707,7 +1703,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_M_str_free (ps_names[k]);
 		}
 		cmd2 = gmt_M_memory (GMT, NULL, n_alloc + PATH_MAX, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%g -sOutputFile=%c%s.pdf%c %s",
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -dNOSAFER -sDEVICE=pdfwrite %s%s -r%g -sOutputFile=%c%s.pdf%c %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, all_names_in);
 
 		GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd2);
@@ -1828,7 +1824,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				fclose (fp);	fclose (fp2);
+				fclose (fp);
+				if (fp2) fclose (fp2);
 				fp = fp2 = NULL;
 				gmt_M_free (GMT, PS);
 				if (gmt_remove_file (GMT, BB_file))
@@ -1859,7 +1856,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					x0 -= Ctrl->A.margin[XLO];	x1 += Ctrl->A.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s (maybe no non-white features were plotted?)\n", BB_file);
 						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
@@ -2708,6 +2705,12 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	bool bits64 = true;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
+	/* Before of all rest, check if we have a ghost in GMT/bin */
+	sprintf (data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
+	if (!access (data, R_OK)) goto FOUNDGS;
+	sprintf (data, "%s/gswin32c.exe", API->GMT->init.runtime_bindir);
+	if (!access (data, R_OK)) goto FOUNDGS;
+
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
 	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
@@ -2789,6 +2792,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	}
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
+FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
 	C->G.file = malloc (strlen (data) + 3);	/* strlen + 2 * " + \0 */
 	sprintf (C->G.file, "\"%s\"", data);
 

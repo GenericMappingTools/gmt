@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt legend** [ *specfile* ]
-|-D|\ *refpoint* ]
+|-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]

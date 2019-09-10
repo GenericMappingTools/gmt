@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Startup script for GMT.app in MacOSX.
+# Startup script for GMT.app in macOS.
 # Setup environment and start Terminal.
 
 if [ "$1" = "GMT_PROMPT" ]; then
@@ -15,11 +15,13 @@ if [ "$1" = "GMT_PROMPT" ]; then
   source "${BUNDLE_RESOURCES}/share/tools/gmt_functions.sh"
   unset DYLD_LIBRARY_PATH
   gmt
+  echo -e "Note: Remember to add ${BUNDLE_RESOURCES}/bin to your PATH\nif you want to use GMT outside of the terminal or in scripts.\n"
+
   _usershell=$(dscl . -read "/Users/$USER" UserShell)
   _usershell=${_usershell##* }
   if [ ${_usershell} = ${_usershell%bash} ]; then
     # not using bash as default shell
-    echo -e "Warning: your default shell is ${_usershell}.  GMT module commands are only available in BASH.  Change your default shell or make sure ${BUNDLE_RESOURCES}/@GMT_BINDIR@ is in your PATH and use ${BUNDLE_RESOURCES}/share/tools/gmt5syntax to convert your old GMT scripts.\n"
+    echo -e "Warning: your default shell is ${_usershell}. GMT commands completions are only available in BASH.\n"
     exec ${_usershell}
   fi
   # bash: start interactive shell and source gmt completions

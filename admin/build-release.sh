@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script that builds a GMT release and makes the compressed tarballs.
 # If run under macOS it also builds the macOS Bundle
 if [ $# -gt 0 ]; then
@@ -34,14 +34,14 @@ cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
 rm -rf build
 mkdir build
 cd build
-echo "build-release.sh: Configure and build tar balls"
+echo "build-release.sh: Configure and build tarballs"
 cmake -G Ninja ..
-# 3. Build the release and the tar balls
+# 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
 # 4. get the version string
 Version=`src/gmt --version`
-# 5. Remove the uncompressed tar ball
+# 5. Remove the uncompressed tarball
 rm -f gmt-${Version}-src.tar
 # 6. Install executables before building macOS Bundle
 cmake --build . --target install
@@ -51,8 +51,8 @@ if [ `uname` = "Darwin" ]; then
 	cpack -G Bundle
 fi
 # 8. Report m5d hash
-echo "build-release.sh: Report md5 hash per file"
-md5 gmt-${Version}-*
+echo "build-release.sh: Report sha256sum per file"
+shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 rm -f ../cmake/ConfigUser.cmake
 if [ -f ../cmake/ConfigUser.cmake.orig ]; then

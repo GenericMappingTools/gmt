@@ -18,10 +18,10 @@ for the expected depths as a function of age (see legend).  Note we
 place most of the legend twice to achieve the thin-on-thick pen
 effect in the legend.
 
-.. literalinclude:: /_verbatim/example_49.txt
+.. literalinclude:: /_verbatim/ex49.txt
    :language: bash
 
-.. figure:: /_images/example_49.*
+.. figure:: /_images/ex49.*
    :width: 500 px
    :align: center
 

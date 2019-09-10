@@ -157,6 +157,12 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 		curl_easy_setopt (curl, CURLOPT_URL, URL);
 		/* Do not download the file */
 		curl_easy_setopt (curl, CURLOPT_NOBODY, 1L);
+		/* Tell libcurl to not verify the peer */
+		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
+		curl_easy_setopt (curl, CURLOPT_FAILONERROR, 1L);
+		/* Tell libcurl to follow 30x redirects */
+		curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1L);
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
@@ -165,7 +171,7 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 
 		if ((res = curl_easy_perform (curl)) == CURLE_OK) {
       			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
-			if ((CURLE_OK == res) && (filesize > 0.0)) {	/* Got the size */
+			if ((res == CURLE_OK) && (filesize > 0.0)) {	/* Got the size */
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Remote file %s: Size is %0.0f bytes\n", URL, filesize);
 				action = (filesize < (double)limit) ? 0 : (size_t)filesize;
 			}

@@ -314,6 +314,8 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
+	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
+
 	for (pol = 0; pol < n; pol++) {
 		if (!save[pol].do_it) continue;
 		np = save[pol].n;
@@ -381,6 +383,8 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			}
 		}
 	}
+	
+	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

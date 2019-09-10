@@ -24,9 +24,17 @@ The GMT Tutorial
 
 **Universidade do Algarve, Faro, Portugal**
 
+**Leonardo Uieda**
+
+**University of Liverpool, UK**
+
 **Florian Wobbe**
 
-**Alfred Wegener Institute, Germany**
+**Sea and Sun Technology, Germany**
+
+**Dongdong Tian**
+
+**Michigan State University**
 
 .. toctree::
     :maxdepth: 1

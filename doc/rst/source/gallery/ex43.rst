@@ -10,10 +10,10 @@ main trend.  The result shows dinosaurs were large and dumb,
 humans and some monkeys pretty smart, and the rest of the
 mammals doing alright.
 
-.. literalinclude:: /_verbatim/example_43.txt
+.. literalinclude:: /_verbatim/ex43.txt
    :language: bash
 
-.. figure:: /_images/example_43.*
+.. figure:: /_images/ex43.*
    :width: 500 px
    :align: center
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pstext
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from pstext
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:58 2018
+%%CreationDate: Sun Sep  1 18:13:37 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -689,8 +684,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(1\)) mc Z
-600 600 M (”Xa1i) mc Z
-600 240 M (”Ya2i) mc Z
+600 600 M (-Xa1i) mc Z
+600 240 M (-Ya2i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -739,8 +734,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(2\)) mc Z
-600 600 M (”X2i) mc Z
-600 240 M (”Y2i) mc Z
+600 600 M (-X2i) mc Z
+600 240 M (-Y2i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -788,8 +783,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(3\)) mc Z
-600 600 M (”Xc) mc Z
-600 240 M (”Yc) mc Z
+600 600 M (-Xc) mc Z
+600 240 M (-Yc) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -837,7 +832,7 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(4\)) mc Z
-600 600 M (”X-2i) mc Z
+600 600 M (-X-2i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -885,7 +880,7 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(5\)) mc Z
-600 600 M (”Ya-2i) mc Z
+600 600 M (-Ya-2i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -934,7 +929,7 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(6\)) mc Z
-600 600 M (”X1i) mc Z
+600 600 M (-X1i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -982,8 +977,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(7\)) mc Z
-600 600 M (”Xc1i) mc Z
-600 240 M (”Y-1i) mc Z
+600 600 M (-Xc1i) mc Z
+600 240 M (-Y-1i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -1031,8 +1026,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(8\)) mc Z
-600 600 M (”X) mc Z
-600 240 M (”Y) mc Z
+600 600 M (-X) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -1080,8 +1075,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(9\)) mc Z
-600 600 M (”Xf6i) mc Z
-600 240 M (”Y) mc Z
+600 600 M (-Xf6i) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -1129,8 +1124,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(10\)) mc Z
-600 600 M (”X) mc Z
-600 240 M (”Y) mc Z
+600 600 M (-X) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -1178,8 +1173,8 @@ PSL_clip N
 600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (\(11\)) mc Z
-600 600 M (”Xf4.75i) mc Z
-600 240 M (”Yf5i) mc Z
+600 600 M (-Xf4.75i) mc Z
+600 240 M (-Yf5i) mc Z
 PSL_cliprestore
 25 W
 2 setlinecap
@@ -1219,12 +1214,20 @@ O0
 3.32551 setmiterlimit
 4 W
 1 0 0 C
+clipsave
+0 0 M
+10200 0 D
+0 13200 D
+-10200 0 D
+P
+PSL_clip N
 0 0 M
 10200 13200 D
 S
 0 13200 M
 10200 -13200 D
 S
+PSL_cliprestore
 %%EndObject
 
 grestore

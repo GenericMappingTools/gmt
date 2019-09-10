@@ -28,14 +28,14 @@ we must change the default input/output formats used by GMT. Finally,
 we want to prefix prices with the $ symbol to indicate the currency.
 Here is how it all comes out:
 
-.. literalinclude:: /_verbatim/example_21.txt
+.. literalinclude:: /_verbatim/ex21.txt
    :language: bash
 
 which produces the plot in Figure, suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
 
-.. figure:: /_images/example_21.*
+.. figure:: /_images/ex21.*
    :width: 500 px
    :align: center
 

@@ -85,6 +85,8 @@
 #include <locale.h>
 #ifndef WIN32
 #include <glob.h>
+#else
+#include <Windows.h>
 #endif
 
 /*! . */
@@ -7138,7 +7140,7 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	gmt_message (GMT, "\t-%c Specify a colortable [Default is rainbow]:\n", option);
+	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT_DEFAULT_CPT_NAME);
 	gmt_message (GMT, "\t   [Notes: R=Default z-range, H=Hinge, C=colormodel]\n");
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
@@ -7650,7 +7652,7 @@ unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL;
-	if (cpt == NULL) return true;	/* No cpt given means use rainbow master */
+	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
 	if ((c = gmt_first_modifier (GMT, cpt, "uUw")))
 		c[0] = '\0';	/* Must chop off modifiers for access to work */
@@ -7671,7 +7673,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
 			sprintf (file, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
-		else	/* CPT for just this panel */
+		else	/* CPT for just this subplot */
 			sprintf (file, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 	}
 	else if (fig)	/* Limited to one figure only */
@@ -7703,7 +7705,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 			sprintf (path, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
-		if (!file && (subplot & GMT_PANEL_NOTSET)) {	/* No, try subplot master CPT instead? */
+		if (!file) {	/* No, try subplot master CPT instead? */
 			sprintf (path, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		}
@@ -14584,6 +14586,16 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 	pw = getpwuid (getuid ());
 	if (pw) return (pw->pw_name);
 #endif
+#ifdef WIN32
+	{
+		char name[GMT_LEN256] = {""}, *U = NULL;
+		DWORD Size = _tcslen (name);
+		if (GetUserName (name, &Size)) /* Got a user name, return it */
+			return (name);
+		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
+			return (U);
+	}
+#endif
 	return (unknown);
 }
 
@@ -15992,6 +16004,53 @@ void gmt_filename_set (char *name) {
 void gmt_filename_get (char *name) {
 	/* Replace GMT_ASCII_RS with spaces */
 	gmt_strrepc (name, GMT_ASCII_RS, ' ');
+}
+
+bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text) {
+	/* Determine if a program exists by calling program with arg via popen.  If popen is successful
+	 * and pattern != NULL we check that the first line read from popen contains the pattern.
+	 * If text != NULL then we return what popen read as first line. If successful test then
+	 * we return true, else false */
+	char cmd[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	bool answer = false;
+	
+	/* Turn off any stderr messages coming to the terminal */
+	if (strchr (program, ' ')) {	/* Command has spaces [most likely under Windows] */
+		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
+			sprintf (cmd, "\"%s\"", program);
+		else	/* Already has quotes, but these might be double or single */
+			strncpy (cmd, program, PATH_MAX);
+		if (program[0] == '\'')	/* Replace single quotes with double quotes*/
+			gmt_strrepc (cmd, '\'', '\"');
+	}
+	else	/* No spaces, just copy */
+		strncpy (cmd, program, PATH_MAX);
+	if (arg) {	/* Append the command argument */
+		strcat (cmd, " ");
+		strcat (cmd, arg);
+	}
+	/* Finally, append redirection of errors */
+#ifdef WIN32
+	strcat (cmd, " 2> NUL");
+#else
+	strcat (cmd, " 2> /dev/null");
+#endif
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
+
+	if ((fp = popen (cmd, "r")))	/* There was such a command */
+		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
+	}
+	else {	/* Get here if we passed the test */
+		if (text) strcpy (text, line);	/* Want to return the first line */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s was successful\n", cmd);
+		answer = true;
+	}
+	if (fp) pclose (fp);
+	
+	return (answer);
 }
 
 #if 0	/* Probably not needed after all */

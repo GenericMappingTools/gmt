@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:50 2018
+%%CreationDate: Sun Sep  1 18:15:02 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -2515,20 +2510,20 @@ PSL_font_encode 29 get 0 eq {Standard+_Encoding /Palatino-Roman /Palatino-Roman 
 /PSL_UL 0 def
 /PSL_show {ashow} def
 /PSL_word
-(1) (”) (Strike) (and) (dip) (of) (beds.) (2) (”) (Horizontal) (beds.) (3) (”) (Strike)
-(of) (vertical) (beds.) (4) (”) (Strike) (and) (dip) (of) (overturned) (beds.) (5) (”)
-(Strike) (and) (dip) (of) (bed) (with) (rake) (of) (lineation.) (6) (”) (Strike) (and)
-(dip) (direction) (of) (gently) (dipping) (beds.) (7) (”) (Strike) (and) (dip) (direction)
-(of) (moderatly) (dipping) (beds.) (8) (”) (Strike) (and) (dip) (direction) (of) (steeply)
-(dipping) (beds.) (9) (”) (Strike) (and) (dip) (of) (crenulated) (or) (undulated)
-(beds.) (10) (”) (Strike) (and) (dip) (of) (foliation.) (11) (”) (Horizontal) (foliation.)
-(12) (”) (Strike) (of) (vertical) (foliation.) (13.) (Strike) (and) (dip) (of) (cleavage.)
-(14) (”) (Horizontal) (cleavage.) (15) (”) (Strike) (of) (vertical) (cleavage.)
-(16) (”) (Strike) (and) (dip) (of) (foliation) (2.) (17) (”) (Strike) (and) (dip) (of) (foliation)
-(3.) (18) (”) (Strike) (and) (dip) (of) (joints.) (19) (”) (Horizontal) (joints.) (20)
-(”) (Strike) (of) (vertical) (joints.) (21) (”) (Trend) (and) (plunge) (of) (lineation.)
-(22) (”) (Vertical) (lineation.) (23) (”) (Horizontal) (lineation.) (24) (”) (Trend)
-(and) (plunge) (of) (lineation) (2.) (25) (”) (Trend) (and) (plunge) (of) (lineation)
+(1) (-) (Strike) (and) (dip) (of) (beds.) (2) (-) (Horizontal) (beds.) (3) (-) (Strike)
+(of) (vertical) (beds.) (4) (-) (Strike) (and) (dip) (of) (overturned) (beds.) (5) (-)
+(Strike) (and) (dip) (of) (bed) (with) (rake) (of) (lineation.) (6) (-) (Strike) (and)
+(dip) (direction) (of) (gently) (dipping) (beds.) (7) (-) (Strike) (and) (dip) (direction)
+(of) (moderatly) (dipping) (beds.) (8) (-) (Strike) (and) (dip) (direction) (of) (steeply)
+(dipping) (beds.) (9) (-) (Strike) (and) (dip) (of) (crenulated) (or) (undulated)
+(beds.) (10) (-) (Strike) (and) (dip) (of) (foliation.) (11) (-) (Horizontal) (foliation.)
+(12) (-) (Strike) (of) (vertical) (foliation.) (13.) (Strike) (and) (dip) (of) (cleavage.)
+(14) (-) (Horizontal) (cleavage.) (15) (-) (Strike) (of) (vertical) (cleavage.)
+(16) (-) (Strike) (and) (dip) (of) (foliation) (2.) (17) (-) (Strike) (and) (dip) (of) (foliation)
+(3.) (18) (-) (Strike) (and) (dip) (of) (joints.) (19) (-) (Horizontal) (joints.) (20)
+(-) (Strike) (of) (vertical) (joints.) (21) (-) (Trend) (and) (plunge) (of) (lineation.)
+(22) (-) (Vertical) (lineation.) (23) (-) (Horizontal) (lineation.) (24) (-) (Trend)
+(and) (plunge) (of) (lineation) (2.) (25) (-) (Trend) (and) (plunge) (of) (lineation)
 (3.)
 173 array astore def
 /PSL_fnt

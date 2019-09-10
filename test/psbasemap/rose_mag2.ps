@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psbasemap
+%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:08 2018
+%%CreationDate: Sun Sep  1 18:13:39 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -662,7 +657,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -1264,6 +1259,7 @@ N 4067 1096 M 100 -229 D S
 0 A
 4214 760 M V 23.7 R (S) tc Z U
 1 0 0 C
+/PSL_vecheadpen {4 W 0 A [] 0 B} def
 4 W
 0 A
 {0 A} FS
@@ -1272,6 +1268,8 @@ V 3891 2041 T 128.202 R
 N 0 0 M 1581 0 D S
 U
 V 2809 3416 T 128.202 R
+PSL_vecheadpen
+4 W
 0 0 M
 -225 38 D
 56 -38 D
@@ -1279,9 +1277,9 @@ V 2809 3416 T 128.202 R
 P clip fs N 
 U
 3373 2747 M 233 F0
-V -51.8 R V MU 0 0 M 233 F12 (d) FP 233 F0 ( = -14è30©) FP pathbbox N pop exch pop add U -2 div 0 G
+V -51.8 R V MU 0 0 M 233 F12 (d) FP 233 F0 ( = î14è30©) FP pathbbox N pop exch pop add U -2 div 0 G
 233 F12 (d) Z
-233 F0 ( = -14è30©) Z
+233 F0 ( = î14è30©) Z
 U
 3.32551 setmiterlimit
 %%EndObject
@@ -1499,13 +1497,17 @@ N 4067 1096 M 161 -366 D S
 0 A
 4274 623 M V 23.7 R (S) tc Z U
 1 0 0 C
+/PSL_vecheadpen {4 W 0 A [] 0 B} def
 {0 A} FS
 O1
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 30 W
 V 3792 1721 T 113.702 R
 N 0 0 M 1862 0 D S
 U
 V 2908 3736 T 113.702 R
+PSL_vecheadpen
+4 W
 0 0 M
 -450 75 D
 112 -75 D
