@@ -17,6 +17,7 @@ it can do.
    :caption: Reference documentation
 
    modules
+   supplements
    datasets
    api
 

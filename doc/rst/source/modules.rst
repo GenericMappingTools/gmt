@@ -1,9 +1,9 @@
 .. _modules:
 
-GMT Modules
-===========
+GMT Core Modules
+================
 
-This is a list of all GMT modules and their uses.
+This is a list of all GMT core modules and their uses.
 
 .. note::
 
