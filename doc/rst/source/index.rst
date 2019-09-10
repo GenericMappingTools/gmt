@@ -27,7 +27,7 @@ it can do.
    :maxdepth: 1
    :caption: Tutorial
 
-   tutorial
+   tutorial/index
    cookbook
 
 .. toctree::
