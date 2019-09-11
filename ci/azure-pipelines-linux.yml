@@ -109,7 +109,7 @@ steps:
     HTML_BUILDDIR: "build/doc/rst/html"
     GITHUB_TOKEN: $(github.token)
   # only deploy if on master, 6.0 and 5.4 branches
-  #condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
+  condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
 
 - bash: |
     cd build
