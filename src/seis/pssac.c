@@ -564,6 +564,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 			}
 
 			if (n_files == n_alloc) L = gmt_M_malloc (GMT, L, n_files, &n_alloc, struct SAC_LIST);
+			gmt_M_memset (&L[n_files], n_alloc - n_files, struct SAC_LIST); /* Set content of new space to NULL */
 
 			if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
