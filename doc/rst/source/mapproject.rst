@@ -145,7 +145,7 @@ Optional Arguments
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
     with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see :ref:`Unit_attributes` for available
-    units and how distances are computed), including
+    units and how distances are computed [great circle using authalic radius]), including
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
     requires **-R** and **-J** to be set. When no fixed point is given
@@ -168,7 +168,7 @@ Optional Arguments
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
     output as three new columns. Append the distance unit (see :ref:`Unit_attributes`
-    for available units and how distances are computed),
+    for available units and how distances are computed [great circle using authalic radius]),
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). The **C**
     unit requires **-R** and **-J** to be set. Finally, append **+p** to
