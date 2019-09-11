@@ -67,7 +67,7 @@ set (GMT_LIB_SOVERSION 6)
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 # The GMT documentation URL
-set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}")
+set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/dev")
 
 # Use SI units per default
 if (NOT UNITS)
