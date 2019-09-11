@@ -113,8 +113,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	add_custom_target (git_prune_files
 		COMMAND ${CMAKE_COMMAND} -E remove
 			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore
-			${GMT_RELEASE_PREFIX}/.travis.yml)
+			${GMT_RELEASE_PREFIX}/.gitignore)
 	add_depend_to_target (git_prune_dirs git_export_release)
 	add_depend_to_target (gmt_release git_prune_dirs)
 	add_depend_to_target (git_prune_files git_export_release)
