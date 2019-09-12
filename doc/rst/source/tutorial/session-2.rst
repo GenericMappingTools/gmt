@@ -345,9 +345,9 @@ We may now complete our example using the Mercator projection:
    ::
 
     gmt begin GMT_tut_9 pdf
-      gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
+      gmt makecpt -Cred,green,blue -T0,70,300,10000
       gmt coast -R130/150/35/50 -JM6i -B -Ggray
-      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt
+      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -C
     gmt end show
 
 where the **c** appended to the **-Sc** option ensures that symbols
