@@ -11,6 +11,7 @@ it can do.
    :caption: Getting started
 
    gallery/index.rst
+   tutorial
 
 .. toctree::
    :maxdepth: 1
@@ -18,17 +19,11 @@ it can do.
 
    modules
    supplements
+   cookbook
    std_opts
    GMT Defaults <gmt.conf>
    datasets
    api
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Tutorial
-
-   tutorial
-   cookbook
 
 .. toctree::
    :maxdepth: 1
