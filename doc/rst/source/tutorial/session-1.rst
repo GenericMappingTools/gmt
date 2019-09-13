@@ -50,7 +50,7 @@ Tutorial setup
    under OS X (which first converts your PostScript to PDF).  In this text we will use
    gv; please substitute the relevant PostScript previewer
    on your system.  Very often it is more productive to convert these PS
-   files to PDF using the :doc:`psconvert` module.  Turning the file map.ps to map.pdf
+   files to PDF using the :doc:`/psconvert` module.  Turning the file map.ps to map.pdf
    is done with
 
    ::
@@ -122,7 +122,7 @@ GMT modules may get operational parameters from several places:
    (stored in gmt.history).
 
 #. Implicitly using GMT defaults for a variety of parameters
-   (stored in :doc:`gmt.conf`).
+   (stored in :doc:`/gmt.conf`).
 
 #. May use hidden support data like coastlines or PostScript patterns.
 
@@ -243,7 +243,7 @@ We will begin our adventure by making some simple plot axes and
 coastline basemaps.  We will do this in order to introduce the
 all-important common options **-B**, **-J**, and **-R** and to familiarize
 ourselves with a few selected GMT projections.  The GMT modules
-we will utilize are :doc:`basemap` and :doc:`coast`.  Please
+we will utilize are :doc:`/basemap` and :doc:`/coast`.  Please
 consult their manual pages for reference.
 
 Linear projection
@@ -260,7 +260,7 @@ we let the canvas be painted light red and have dimensions of
     gmt basemap -R10/70/-3/8 -JX4i/3i -B -B+glightred+t"My first plot" -pdf GMT_tut_1
 
 You can view the result GMT_tut_1.pdf in a PDF viewer and it should look like :ref:`our example 1 below <gmt_tut_1>`.
-Examine the :doc:`basemap` documentation so you understand what each option means.
+Examine the :doc:`/basemap` documentation so you understand what each option means.
 
 .. _gmt_tut_1:
 
@@ -323,7 +323,7 @@ complete syntax is simply
 
 **-JM**\ *width*
 
-To make coastline maps we use :doc:`coast` which automatically will
+To make coastline maps we use :doc:`/coast` which automatically will
 access the GMT coastline, river and border data base derived from the GSHHG
 database [See *Wessel and Smith*, 1996].  In addition
 to the common switches we may need to use some of several coast-specific options:
@@ -374,7 +374,7 @@ Exercises:
 #. Try **-R**\ 270/290/0/20 instead.  What happens to the annotations?
 
 #. Edit your gmt.conf file, change :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`
-   to another setting (see the :doc:`gmt.conf` documentation), and plot again.
+   to another setting (see the :doc:`/gmt.conf` documentation), and plot again.
 
 #. Pick another region and change land color.
 

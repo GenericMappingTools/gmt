@@ -23,13 +23,13 @@ two mechanisms:
 
 #. Create simple, linear color tables given a master color table
    (several are built-in) and the desired *z*-values at color boundaries
-   (:doc:`makecpt`)
+   (:doc:`/makecpt`)
 
 #. Create color tables based on a master CPT color table and the
-   histogram-equalized distribution of *z*-values in a gridded data file (:doc:`grd2cpt`)
+   histogram-equalized distribution of *z*-values in a gridded data file (:doc:`/grd2cpt`)
 
 One can also make these files manually or with awk
-or other tools.  Here we will limit our discussion to :doc:`makecpt`.
+or other tools.  Here we will limit our discussion to :doc:`/makecpt`.
 Its main argument is the name of the master color table (a list is
 shown if you run the module with no arguments) and the equidistant
 *z*-values to go with it.  The main options are given below.
@@ -54,7 +54,7 @@ from -20 to 60, with color changes at every 10, try these two variants:
     gmt makecpt -Crainbow -T-20/60/10 > disc.cpt
     gmt makecpt -Crainbow -T-20/60/10 -Z > cont.cpt
 
-We can plot these color tables with :doc:`colorbar`; the options
+We can plot these color tables with :doc:`/colorbar`; the options
 worth mentioning here are listed below.  The placement of the
 color bar is particularly important and we refer you to the
 :ref:`Plot embellishments <GMT_Embellishments>` section for all
@@ -62,7 +62,7 @@ the details.
 In addition, the **-B** option can be used to set the title
 and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.).  Note that the makecpt commands
-above are done in classic mode.  If you run :doc:`makecpt` in modern mode
+above are done in classic mode.  If you run :doc:`/makecpt` in modern mode
 then you usually do not specify an output file via stdout since
 modern mode maintains what is known as the current CPT.  However,
 if you must explicitly name an output CPT then you will need to
@@ -104,7 +104,7 @@ Your plot should look like :ref:`our example 14 below <gmt_tut_14>`
 
 Exercises:
 
-#. Redo the :doc:`makecpt` exercise using the master table
+#. Redo the :doc:`/makecpt` exercise using the master table
    *hot* and redo the bar plot.
 
 #. Try specifying **-B**\ 10g5.
@@ -166,14 +166,14 @@ global 30" DEM called SRTM30+:
 
     gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
 
-Using :doc:`grdinfo` we find that the data ranges from about 1000m to
+Using :doc:`/grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we make a CPT accordingly:
 
    ::
 
     gmt makecpt -Crainbow -T1000/5000/500 -Z > topo.cpt
 
-Color images are made with :doc:`grdimage` which takes the usual
+Color images are made with :doc:`/grdimage` which takes the usual
 common command options (by default the **-R** is taken from the data set)
 and a CPT; the main other options are:
 
@@ -211,7 +211,7 @@ The plain color map lacks detail and fails to reveal the topographic
 complexity of this Rocky Mountain region.  What it needs is artificial
 illumination.  We want to simulate shading by a sun source in the east,
 hence we derive the required intensities from the gradients of the
-topography in the N90ºE direction using :doc:`grdgradient`.  Other than the
+topography in the N90ºE direction using :doc:`/grdgradient`.  Other than the
 required input and output filenames, the available options are
 
   +------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -280,7 +280,7 @@ Exercises:
 
 #. Force a gray-shade image.
 
-#. Rerun :doc:`grdgradient` with **-N**\ 1.
+#. Rerun :doc:`/grdgradient` with **-N**\ 1.
 
 Multi-dimensional maps
 ----------------------
@@ -347,7 +347,7 @@ Perspective views
 Our final undertaking in this tutorial is to examine three-dimensional
 perspective views.  The
 GMT module that produces perspective views of gridded data files is
-:doc:`grdview`.  It can make two kinds of plots:
+:doc:`/grdview`.  It can make two kinds of plots:
 
 #. Mesh or wire-frame plot (with or without superimposed contours)
 
@@ -445,6 +445,6 @@ Exercises:
 
 #. Choose another vantage point and scaling.
 
-#. Redo :doc:`grdgradient` with another illumination direction and plot again.
+#. Redo :doc:`/grdgradient` with another illumination direction and plot again.
 
 #. Select a higher *dpi*, e.g., 200.

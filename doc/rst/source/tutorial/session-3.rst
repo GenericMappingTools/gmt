@@ -7,7 +7,7 @@ Contouring gridded data sets
 GMT comes with several utilities that can create gridded data
 sets; we will discuss two such modules later this session.  The
 data sets needed for this tutorial are obtained via the Internet
-as they are needed.  Here, we will use :doc:`grdcut` to obtain
+as they are needed.  Here, we will use :doc:`/grdcut` to obtain
 and extract a GMT-ready grid that we will next use for contouring:
 
    ::
@@ -24,7 +24,7 @@ netCDF website (http://www.unidata.ucar.edu/software/netcdf/)
 You can also obtain tut_bathy.nc from the GMT cache server as we are doing below.
 Feel free to open it in any other program and compare results with GMT.
 
-We first use the GMT module :doc:`grdinfo` to see what's in this file:
+We first use the GMT module :doc:`/grdinfo` to see what's in this file:
 
    ::
 
@@ -32,12 +32,12 @@ We first use the GMT module :doc:`grdinfo` to see what's in this file:
 
 The file contains bathymetry for the Bermuda region and has depth
 values from -5475 to -89 meters.  We want to make a contour map of
-this data; this is a job for :doc:`grdcontour`.  As with previous
+this data; this is a job for :doc:`/grdcontour`.  As with previous
 plot commands we need to set up the map projection with **-J**.
 Here, however, we do not have to specify the region since that is by
 default assumed to be the extent of the grid file.
 To generate any plot we will in addition need to supply information
-about which contours to draw.  Unfortunately, :doc:`grdcontour`
+about which contours to draw.  Unfortunately, :doc:`/grdcontour`
 is a complicated module with too many options.  We put a positive
 spin on this situation by touting its flexibility.  Here are the most
 useful options:
@@ -113,7 +113,7 @@ two scenarios:
 #. The (*x, y, z*) data are distributed unevenly in the plane.
 
 The former situation may require a simple reformatting (using
-:doc:`xyz2grd`), while the latter must be interpolated onto a
+:doc:`/xyz2grd`), while the latter must be interpolated onto a
 regular lattice; this process is known as gridding.
 GMT supports three different approaches to gridding; here, we
 will briefly discuss the two most common techniques.
@@ -143,9 +143,9 @@ Nearest neighbor gridding
 
    Search geometry for nearneighbor.
 
-The GMT module :doc:`nearneighbor` implements a simple
+The GMT module :doc:`/nearneighbor` implements a simple
 "nearest neighbor" averaging operation.  It is the preferred
-way to grid data when the data density is high.  :doc:`nearneighbor`
+way to grid data when the data density is high.  :doc:`/nearneighbor`
 is a local procedure which means it will only consider the control
 data that is close to the desired output grid node.
 Only data points inside a specified search radius will
@@ -207,7 +207,7 @@ Gridding with Splines in Tension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As an alternative, we may use a global procedure to grid our data.
-This approach, implemented in the module :doc:`surface`, represents
+This approach, implemented in the module :doc:`/surface`, represents
 an improvement over standard minimum curvature algorithms by allowing
 users to introduce some tension into the surface.
 Physically, we are trying to force a thin elastic plate to go through
@@ -240,11 +240,11 @@ switches for this module are indicated below.
 Preprocessing
 -------------
 
-The :doc:`surface` module assumes that the data have been
+The :doc:`/surface` module assumes that the data have been
 preprocessed to eliminate aliasing, hence we must ensure that
 this step is completed prior to gridding.  GMT comes with
-three preprocessors, called :doc:`blockmean`, :doc:`blockmedian`,
-and :doc:`blockmode`.  The first averages values inside the
+three preprocessors, called :doc:`/blockmean`, :doc:`/blockmedian`,
+and :doc:`/blockmode`.  The first averages values inside the
 grid-spacing boxes, the second returns median values, wile the
 latter returns modal values.  As a rule of thumb, we use means for
 most smooth data (such as potential fields) and medians (or modes)
@@ -272,9 +272,9 @@ The output data can now be used with surface:
 
     gmt surface ship_5m.xyz -R245/255/20/30 -I5m -Gship.nc -V
 
-If you rerun :doc:`grdcontour` on the new grid file (try it!)
+If you rerun :doc:`/grdcontour` on the new grid file (try it!)
 you will notice a big difference compared to the grid made by
-:doc:`nearneighbor`: since surface is a global method
+:doc:`/nearneighbor`: since surface is a global method
 it will evaluate the solution at all nodes, even if there are no
 data constraints.  There are numerous options available to us at
 this point:
@@ -287,11 +287,11 @@ this point:
 
 #. We can set up a clip path so that only the contours in the constrained region will show.
 
-Here we have only time to explore the latter approach.  The :doc:`mask`
+Here we have only time to explore the latter approach.  The :doc:`/mask`
 module can read the same preprocessed data and set up a contour mask
 based on the data distribution.  Once the clip path is activated we can
 contour the final grid; we finally deactivate the clipping with a second
-call to :doc:`mask`.  Here's the recipe:
+call to :doc:`/mask`.  Here's the recipe:
 
    ::
 
@@ -315,4 +315,4 @@ Exercises:
 
 #. Add the continents using any color you want.
 
-#. Color the clip path light gray (use **-G** in the first :doc:`mask` call).
+#. Color the clip path light gray (use **-G** in the first :doc:`/mask` call).
