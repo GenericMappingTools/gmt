@@ -120,6 +120,12 @@ html_context = {
             "https://github.com/GenericMappingTools/gmt",
         ),
     ],
+    # Show the "Edit on Github" link
+    "display_github": True,
+    "github_user": "GenericMappingTools",
+    "github_repo": "gmt",
+    "github_version": version,
+    "conf_py_path": "/doc/rst/source/"
 }
 
 
