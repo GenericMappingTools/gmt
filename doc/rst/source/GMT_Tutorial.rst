@@ -930,9 +930,9 @@ We may now complete our example using the Mercator projection:
    ::
 
     gmt begin GMT_tut_9 pdf
-      gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
+      gmt makecpt -Cred,green,blue -T0,70,300,10000
       gmt coast -R130/150/35/50 -JM6i -B -Ggray
-      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt
+      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -C
     gmt end show
 
 where the **c** appended to the **-Sc** option ensures that symbols
@@ -1464,7 +1464,12 @@ color bar is particularly important and we refer you to the
 the details.
 In addition, the **-B** option can be used to set the title
 and unit label (and optionally to set the annotation-, tick-,
-and grid-line intervals for the color bars.)
+and grid-line intervals for the color bars.).  Note that the makecpt commands
+above are done in classic mode.  If you run :doc:`makecpt` in modern mode
+then you usually do not specify an output file via stdout since
+modern mode maintains what is known as the current CPT.  However,
+if you must explicitly name an output CPT then you will need to
+add the -H option for modern mode to allow output to stdout.
 
   +--------------------------------------------------------+------------------------------------------------+
   | Option                                                 | Purpose                                        |

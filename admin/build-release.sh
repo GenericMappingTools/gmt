@@ -50,7 +50,7 @@ if [ `uname` = "Darwin" ]; then
 	# 7. Build the macOS Bundle
 	cpack -G Bundle
 fi
-# 8. Report m5d hash
+# 8. Report sha256 hash
 echo "build-release.sh: Report sha256sum per file"
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
@@ -58,7 +58,7 @@ rm -f ../cmake/ConfigUser.cmake
 if [ -f ../cmake/ConfigUser.cmake.orig ]; then
 	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
 fi
-# 10. Put the products on my ftp site
+# 10. Put the candidate products on my ftp site
 echo "Place gmt-${Version}-src.tar.* on the ftp site"
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
 	echo "Place gmt-${Version}-darwin-x86_64.dmg on the ftp site"
