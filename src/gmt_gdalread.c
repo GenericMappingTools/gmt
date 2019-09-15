@@ -678,9 +678,13 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 
 int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
+	GDALDriverH	hDriver;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	GDALAllRegister();
+	if (strstr(HH->name, ".jp2") || strstr(HH->name, ".JP2"))
+		if ((hDriver = GDALGetDriverByName("JP2OpenJPEG")) != NULL && (hDriver = GDALGetDriverByName("JP2ECW")) != NULL)
+			GDALDeregisterDriver(hDriver);		/* Deregister the JP2ECW driver. That is, prefer the OpenJPEG one */
 	hDataset = gdal_open (GMT, HH->name);
 
 	if (hDataset == NULL)
@@ -835,7 +839,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (prhs->W.active) {
 		OGRSpatialReferenceH  hSRS;
-
 		hSRS = OSRNewSpatialReference(NULL);
 
 		if (OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {
@@ -859,6 +862,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		CPLSetConfigOption ("GDAL_HTTP_UNSAFESSL", getenv("GDAL_HTTP_UNSAFESSL"));
 	if (getenv("CURL_CA_BUNDLE"))		/* And the same for this one. */
 		CPLSetConfigOption ("CURL_CA_BUNDLE", getenv("CURL_CA_BUNDLE"));
+
+	if (strstr(gdal_filename, ".jp2") || strstr(gdal_filename, ".JP2"))
+		if ((hDriver = GDALGetDriverByName("JP2OpenJPEG")) != NULL && (hDriver = GDALGetDriverByName("JP2ECW")) != NULL)
+			GDALDeregisterDriver(hDriver);		/* Deregister the JP2ECW driver. That is, prefer the OpenJPEG one */
 
 	if (metadata_only) {
 		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max))
