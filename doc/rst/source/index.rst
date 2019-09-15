@@ -12,6 +12,7 @@ it can do.
 
    gallery
    tutorial
+   Modern Mode Primer <https://doi.org/10.1029/2019GC008515>
 
 .. toctree::
    :maxdepth: 1
