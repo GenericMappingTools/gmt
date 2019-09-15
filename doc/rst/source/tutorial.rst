@@ -1,6 +1,6 @@
-##############################
-The GMT Tutorial (Modern mode)
-##############################
+################
+The GMT Tutorial
+################
 
 .. set default highlighting language for this document:
 
