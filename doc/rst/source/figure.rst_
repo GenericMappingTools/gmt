@@ -26,8 +26,8 @@ different figures but the optional arguments (*formats* and *options*) can only
 be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` *options* that will override the default settings provided via
-:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
-and default parameter settings.  Each figure maintains its own history and settings, so
+:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control the verbosity.
+Each figure maintains its own history and settings, so
 memory of region and projection settings only apply on a per figure basis.
 
 Required Arguments
@@ -70,7 +70,7 @@ Examples
 --------
 
 To start a new figure in your current modern mode session by the name Regional and
-request we make both a PDF and an EPS file, try:
+request we make both a PDF and an EPS file, try::
 
     gmt begin
     gmt figure Regional pdf,eps
@@ -78,7 +78,7 @@ request we make both a PDF and an EPS file, try:
     gmt end show
 
 To start a new figure GlobalMap that should be returned as a JPEG file with a 1 cm padding
-around the image, try:
+around the image, try::
 
     gmt begin
     gmt figure GlobalMap jpg A1c
@@ -122,5 +122,6 @@ See Also
 :doc:`clear`,
 :doc:`docs`,
 :doc:`end`,
+:doc:`inset`,
 :doc:`subplot`,
 :doc:`gmt`
