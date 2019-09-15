@@ -143,4 +143,4 @@ See Also
 :doc:`end`,
 :doc:`figure`,
 :doc:`gmt`,
-:doc:`inset`
+:doc:`subplot`

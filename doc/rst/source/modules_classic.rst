@@ -221,7 +221,7 @@ Miscellaneous
 -------------
 
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmt2kml`        | Like :doc:`plot` but plots KML for use in Google Earth              |
+| :doc:`gmt2kml`        | Like :doc:`plot` but writes KML for use in Google Earth             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
 +-----------------------+---------------------------------------------------------------------+
