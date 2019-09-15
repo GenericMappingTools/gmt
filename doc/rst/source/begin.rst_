@@ -20,15 +20,14 @@ Description
 The **begin** module instructs GMT to begin a new modern session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
 and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
-you will instead use :doc:`figure` for the figure(s) you wish to make.  The session
+you will instead use :doc:`figure` to name the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session
-that may run concurrently.  Thus unlike in classic mode you can run multiple modern sessions
+that may run concurrently.  Thus, unlike classic mode, you can run multiple modern sessions
 simultaneously without having destructive interference in updating the history of common
 options.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` *options* that will override the default settings provided via
-:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
-and default parameter settings.
+:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control the verbosity.
 
 Optional Arguments
 ------------------
@@ -136,6 +135,8 @@ then you can add this command to the top of your script to make the issue go awa
 or in cshell:
 
     setenv GMT_SESSION_NAME $$
+
+This setting is prescribed if you create a new script with **gmt** --new-script.
 
 See Also
 --------
