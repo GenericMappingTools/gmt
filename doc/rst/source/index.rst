@@ -10,7 +10,7 @@ it can do.
    :maxdepth: 1
    :caption: Getting started
 
-   gallery/index.rst
+   gallery
    tutorial
 
 .. toctree::
@@ -23,7 +23,6 @@ it can do.
    std_opts
    GMT Defaults <gmt.conf>
    datasets
-   api
 
 .. toctree::
    :maxdepth: 1
@@ -44,3 +43,10 @@ it can do.
    supplements_classic
    The GMT Tutorial (Classic Mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>
    The GMT Cookbook (Classic mode) <https://docs.generic-mapping-tools.org/5.4/GMT_Docs.html>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Developer Resources
+
+   api
+   postscriptlight
