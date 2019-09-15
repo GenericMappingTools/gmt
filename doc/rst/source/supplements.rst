@@ -5,6 +5,11 @@ GMT Supplemental Modules
 
 This is a list of GMT supplemental modules and their uses.
 
+.. note::
+
+   Looking for the *classic mode* modules like ``psmeca`` and ``psvelo``? See the
+   :ref:`equivalent page for classic mode <supplements_classic>`.
+
 geodesy
 -------
 
@@ -57,13 +62,13 @@ potential
 ---------
 
 +--------------------------------------------+----------------------------------------------------------------------------------------+
-| :doc:`/supplements/potential/gmtflexure`   | Compute flexural deformation of 2-D loads, forces, and bending moments                 | 
+| :doc:`/supplements/potential/gmtflexure`   | Compute flexural deformation of 2-D loads, forces, and bending moments                 |
 +--------------------------------------------+----------------------------------------------------------------------------------------+
-| :doc:`/supplements/potential/gmtgravmag3d` | Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe              | 
+| :doc:`/supplements/potential/gmtgravmag3d` | Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe              |
 +--------------------------------------------+----------------------------------------------------------------------------------------+
 | :doc:`/supplements/potential/gravfft`      | Spectral calculations of gravity, isostasy, admittance, and coherence for grids        |
 +--------------------------------------------+----------------------------------------------------------------------------------------+
-| :doc:`/supplements/potential/grdflexure`   | Compute flexural deformation of 3-D surfaces for various rheologies                    | 
+| :doc:`/supplements/potential/grdflexure`   | Compute flexural deformation of 3-D surfaces for various rheologies                    |
 +--------------------------------------------+----------------------------------------------------------------------------------------+
 | :doc:`/supplements/potential/grdgravmag3d` | Computes the gravity effect of one (or two) grids by the method of Okabe               |
 +--------------------------------------------+----------------------------------------------------------------------------------------+
@@ -91,34 +96,34 @@ seis
 ----
 
 +--------------------------------+-----------------------------------------------------------+
-| :doc:`/supplements/seis/coupe` | Plot cross-sections of focal mechanisms                   | 
+| :doc:`/supplements/seis/coupe` | Plot cross-sections of focal mechanisms                   |
 +--------------------------------+-----------------------------------------------------------+
 | :doc:`/supplements/seis/meca`  | Plot focal mechanisms on maps                             |
 +--------------------------------+-----------------------------------------------------------+
 | :doc:`/supplements/seis/polar` | Plot polarities on the inferior focal half-sphere on maps |
 +--------------------------------+-----------------------------------------------------------+
-| :doc:`/supplements/seis/sac`   | Plot seismograms in SAC format on maps                    |   
+| :doc:`/supplements/seis/sac`   | Plot seismograms in SAC format on maps                    |
 +--------------------------------+-----------------------------------------------------------+
 
 spotter
 -------
 
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/backtracker`  | Generate forward and backward flowlines and hotspot tracks              | 
+| :doc:`/supplements/spotter/backtracker`  | Generate forward and backward flowlines and hotspot tracks              |
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/gmtpmodeler`  | Evaluate a plate motion model at given locations                        |   
+| :doc:`/supplements/spotter/gmtpmodeler`  | Evaluate a plate motion model at given locations                        |
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/grdpmodeler`  | Evaluate a plate motion model on a geographic grid                      |  
+| :doc:`/supplements/spotter/grdpmodeler`  | Evaluate a plate motion model on a geographic grid                      |
 +------------------------------------------+-------------------------------------------------------------------------+
 | :doc:`/supplements/spotter/grdrotater`   | Finite rotation reconstruction of geographic grid                       |
 +------------------------------------------+-------------------------------------------------------------------------+
 | :doc:`/supplements/spotter/grdspotter`   | Create CVA image from a gravity or topography grid                      |
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/hotspotter`   | Create CVA image from seamount locations                                | 
+| :doc:`/supplements/spotter/hotspotter`   | Create CVA image from seamount locations                                |
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/originater`   | Associate seamounts with nearest hotspot point sources                  |   
+| :doc:`/supplements/spotter/originater`   | Associate seamounts with nearest hotspot point sources                  |
 +------------------------------------------+-------------------------------------------------------------------------+
-| :doc:`/supplements/spotter/polespotter`  | Find stage poles given fracture zones and abyssal hills                 | 
+| :doc:`/supplements/spotter/polespotter`  | Find stage poles given fracture zones and abyssal hills                 |
 +------------------------------------------+-------------------------------------------------------------------------+
 | :doc:`/supplements/spotter/rotconverter` | Manipulate total reconstruction and stage rotations                     |
 +------------------------------------------+-------------------------------------------------------------------------+
@@ -129,7 +134,7 @@ x2sys
 -----
 
 +------------------------------------------+--------------------------------------------------------------------+
-| :doc:`/supplements/x2sys/x2sys_binlist`  | Create bin index listing from track data files                     | 
+| :doc:`/supplements/x2sys/x2sys_binlist`  | Create bin index listing from track data files                     |
 +------------------------------------------+--------------------------------------------------------------------+
 | :doc:`/supplements/x2sys/x2sys_cross`    | Calculate crossovers between track data files                      |
 +------------------------------------------+--------------------------------------------------------------------+
@@ -145,7 +150,7 @@ x2sys
 +------------------------------------------+--------------------------------------------------------------------+
 | :doc:`/supplements/x2sys/x2sys_put`      | Update track index database from track bin file                    |
 +------------------------------------------+--------------------------------------------------------------------+
-| :doc:`/supplements/x2sys/x2sys_report`   | Report statistics from crossover data base                         | 
+| :doc:`/supplements/x2sys/x2sys_report`   | Report statistics from crossover data base                         |
 +------------------------------------------+--------------------------------------------------------------------+
 | :doc:`/supplements/x2sys/x2sys_solve`    | Determine least-squares systematic correction from crossovers      |
 +------------------------------------------+--------------------------------------------------------------------+
