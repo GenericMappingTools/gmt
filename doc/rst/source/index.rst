@@ -22,6 +22,7 @@ it can do.
    supplements
    cookbook
    std_opts
+   proj_codes
    GMT Defaults <gmt.conf>
    datasets
 
