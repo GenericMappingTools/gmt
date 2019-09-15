@@ -2064,7 +2064,9 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	}
 	sscanf (HH->pocket, "%[^/]/%s", driver, type);
 	to_GDALW->driver = strdup(driver);
-	to_GDALW->P.ProjRefPROJ4 = NULL;
+	if (header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = header->ProjRefPROJ4;	to_GDALW->P.active = true;}
+	if (header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = header->ProjRefWKT;	to_GDALW->P.active = true;}
+	if (header->ProjRefEPSG)  to_GDALW->P.ProjRefEPSG  = header->ProjRefEPSG;	// Not yet used
 	to_GDALW->flipud = 0;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		to_GDALW->geog = 1;
