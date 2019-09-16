@@ -1,7 +1,7 @@
 .. _modules:
 
-GMT Core Modules
-================
+GMT Core Modules — thematic
+===========================
 
 This is a list of all GMT core modules and their uses.
 
