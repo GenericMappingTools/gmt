@@ -98,15 +98,22 @@ You also need to install other GMT run-time dependencies separately:
 Install [macports](https://www.macports.org/) and then the required ports in this order:
 
     sudo port install gdal +curl +geos +hdf5 +netcdf
-    sudo port install gmt5
+    sudo port install gmt6
 
-A legacy GMT 4 port, gmt4, is available too and a side by side installation is possible.
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
-enabled with the +fftw3 and +openmp flags.
+enabled with the `+fftw3` and `+openmp` flags.
 
 You also need to install other GMT run-time dependencies separately:
 
     port install ghostscript graphicsmagick ffmpeg
+
+For the legacy GMT 4 or GMT 5 versions, use:
+
+    sudo port install gmt4
+
+or:
+
+    sudo port install gmt5
 
 ### Install via fink
 
