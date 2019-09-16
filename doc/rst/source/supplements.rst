@@ -8,7 +8,7 @@ This is a list of GMT supplemental modules and their uses.
 .. note::
 
    Looking for the *classic mode* modules like ``psmeca`` and ``psvelo``? See the
-   :ref:`equivalent page for classic mode <supplements_modules_classic>`.
+   :ref:`equivalent page for classic mode <supplemental_modules_classic>`.
 
 geodesy
 -------
