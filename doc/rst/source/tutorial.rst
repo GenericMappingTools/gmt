@@ -31,8 +31,15 @@ sufficient detail.  Nevertheless, it is hoped that the exposure
 will prompt the users to improve their GMT and UNIX skills
 after completion of this short tutorial.
 
+.. note::
+
+   This tutorial is for GMT 6 modern moden only. Looking for the classic mode tutorial?
+   Since classic mode commands haven't changed since GMT 5, please visit
+   the `GMT 5 tutorial page <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>`_ instead.
+
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
     tutorial/intro
     tutorial/session-1
