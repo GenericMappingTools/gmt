@@ -19,7 +19,6 @@ it can do.
    :caption: Reference documentation
 
    modules
-   modules_alphabetic
    supplements
    cookbook
    std_opts
