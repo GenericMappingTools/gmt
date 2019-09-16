@@ -111,10 +111,10 @@ steps:
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
     # run all jobs and rerun if failed
-    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
+    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
   env:
-    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
+    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose
