@@ -37,6 +37,12 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/_themes)
 	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_themes)
 	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_themes)
+	copy_dir_if_different (_docs_copy_rst_tree_static
+		${CMAKE_CURRENT_SOURCE_DIR}/_static/
+		${CMAKE_CURRENT_BINARY_DIR}/_static)
+	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_static)
+	add_depend_to_target (docs_pdf_depends _docs_copy_rst_tree_static)
+	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_static)
 	add_custom_target (_docs_rst_mkdir_verbatim
 		COMMAND ${CMAKE_COMMAND} -E make_directory
 		${CMAKE_CURRENT_BINARY_DIR}/_source/_verbatim
