@@ -537,7 +537,7 @@ summary of the standard command line options and a breakdown of the
 GMT offers 31 map projections. These are specified using the **-J**
 common option. There are two conventions you may use: (a) GMT-style
 syntax and (b) **Proj4**\ -style syntax. The projection codes for the
-GMT-style are tabulated below.
+GMT-style and the **Proj4**-style are tabulated below.
 
 .. Substitution definitions:
 .. |lon0| replace:: lon\ :sub:`0`
@@ -548,12 +548,7 @@ GMT-style are tabulated below.
 .. |lonp| replace:: lon\ :sub:`p`
 .. |latp| replace:: lat\ :sub:`p`
 
-.. include:: proj_codes_GMT.rst_
-
-The projection codes for the **Proj4**-style are tabulated below;
-these all accept a map *scale*.
-
-.. include:: proj_codes_PROJ4.rst_
+.. include:: proj_codes.rst_
 
 Finally, the rest of the GMT common options are given below:
 
