@@ -269,7 +269,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 			fprintf (stderr, "and volunteers from around the world.\n\n");
 
-			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n\n");
+			fprintf (stderr, "GMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
