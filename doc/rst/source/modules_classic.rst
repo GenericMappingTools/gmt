@@ -11,6 +11,92 @@ These modules are fully compatible with GMT 4 and 5.
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
    :ref:`equivalent page for modern mode <modules>`.
 
+.. hlist::
+    :columns: 6
+
+    - :doc:`blockmean`
+    - :doc:`blockmedian`
+    - :doc:`blockmode`
+    - :doc:`filter1d`
+    - :doc:`fitcircle`
+    - :doc:`gmt2kml`
+    - :doc:`gmtconnect`
+    - :doc:`gmtconvert`
+    - :doc:`gmtdefaults`
+    - :doc:`gmtget`
+    - :doc:`gmtinfo`
+    - :doc:`gmtlogo`
+    - :doc:`gmtmath`
+    - :doc:`gmtregress`
+    - :doc:`gmtselect`
+    - :doc:`gmtset`
+    - :doc:`gmtsimplify`
+    - :doc:`gmtspatial`
+    - :doc:`gmtvector`
+    - :doc:`gmtwhich`
+    - :doc:`grd2cpt`
+    - :doc:`grd2kml`
+    - :doc:`grd2xyz`
+    - :doc:`grdblend`
+    - :doc:`grdclip`
+    - :doc:`grdcontour_classic`
+    - :doc:`grdconvert`
+    - :doc:`grdcut`
+    - :doc:`grdedit`
+    - :doc:`grdfft`
+    - :doc:`grdfilter`
+    - :doc:`grdgradient`
+    - :doc:`grdhisteq`
+    - :doc:`grdimage_classic`
+    - :doc:`grdinfo`
+    - :doc:`grdlandmask`
+    - :doc:`grdmask`
+    - :doc:`grdmath`
+    - :doc:`grdpaste`
+    - :doc:`grdproject`
+    - :doc:`grdsample`
+    - :doc:`grdtrack`
+    - :doc:`grdtrend`
+    - :doc:`grdvector_classic`
+    - :doc:`grdview_classic`
+    - :doc:`grdvolume`
+    - :doc:`greenspline`
+    - :doc:`kml2gmt`
+    - :doc:`makecpt`
+    - :doc:`mapproject`
+    - :doc:`movie`
+    - :doc:`nearneighbor`
+    - :doc:`project`
+    - :doc:`psbasemap`
+    - :doc:`psclip`
+    - :doc:`pscoast`
+    - :doc:`pscontour`
+    - :doc:`psconvert`
+    - :doc:`psevents`
+    - :doc:`pshistogram`
+    - :doc:`psimage`
+    - :doc:`pslegend`
+    - :doc:`psmask`
+    - :doc:`psrose`
+    - :doc:`psscale`
+    - :doc:`pssolar`
+    - :doc:`pstext`
+    - :doc:`pswiggle`
+    - :doc:`psxy`
+    - :doc:`psxyz`
+    - :doc:`sample1d`
+    - :doc:`spectrum1d`
+    - :doc:`sph2grd`
+    - :doc:`sphdistance`
+    - :doc:`sphinterpolate`
+    - :doc:`sphtriangulate`
+    - :doc:`splitxyz`
+    - :doc:`surface`
+    - :doc:`trend1d`
+    - :doc:`trend2d`
+    - :doc:`triangulate`
+    - :doc:`xyz2grd`
+
 Plotting
 --------
 
@@ -46,6 +132,8 @@ Plotting
 | :doc:`psrose`                 | Plot sector or rose diagrams                                        |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psscale`                | Plot gray scale or color scale on maps                              |
++-------------------------------+---------------------------------------------------------------------+
+| :doc:`pssolar`                | Plot day-light terminators and other sunlight parameters            |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psternary`              | Plot data on ternary diagrams                                       |
 +-------------------------------+---------------------------------------------------------------------+

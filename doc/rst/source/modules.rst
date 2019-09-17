@@ -1,7 +1,7 @@
 .. _modules:
 
-GMT Core Modules — thematic
-===========================
+GMT Core Modules
+================
 
 This is a list of all GMT core modules and their uses.
 
@@ -10,6 +10,97 @@ This is a list of all GMT core modules and their uses.
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
    :ref:`equivalent page for classic mode <modules_classic>`.
 
+.. hlist::
+    :columns: 6
+
+    - :doc:`basemap`
+    - :doc:`begin`
+    - :doc:`blockmean`
+    - :doc:`blockmedian`
+    - :doc:`blockmode`
+    - :doc:`clear`
+    - :doc:`clip`
+    - :doc:`coast`
+    - :doc:`colorbar`
+    - :doc:`contour`
+    - :doc:`end`
+    - :doc:`events`
+    - :doc:`figure`
+    - :doc:`filter1d`
+    - :doc:`fitcircle`
+    - :doc:`gmt2kml`
+    - :doc:`gmtconnect`
+    - :doc:`gmtconvert`
+    - :doc:`gmtdefaults`
+    - :doc:`gmtget`
+    - :doc:`gmtinfo`
+    - :doc:`gmtlogo`
+    - :doc:`gmtmath`
+    - :doc:`gmtregress`
+    - :doc:`gmtselect`
+    - :doc:`gmtset`
+    - :doc:`gmtsimplify`
+    - :doc:`gmtspatial`
+    - :doc:`gmtvector`
+    - :doc:`gmtwhich`
+    - :doc:`grd2cpt`
+    - :doc:`grd2kml`
+    - :doc:`grd2xyz`
+    - :doc:`grdblend`
+    - :doc:`grdclip`
+    - :doc:`grdcontour`
+    - :doc:`grdconvert`
+    - :doc:`grdcut`
+    - :doc:`grdedit`
+    - :doc:`grdfft`
+    - :doc:`grdfilter`
+    - :doc:`grdgradient`
+    - :doc:`grdhisteq`
+    - :doc:`grdimage`
+    - :doc:`grdinfo`
+    - :doc:`grdlandmask`
+    - :doc:`grdmask`
+    - :doc:`grdmath`
+    - :doc:`grdpaste`
+    - :doc:`grdproject`
+    - :doc:`grdsample`
+    - :doc:`grdtrack`
+    - :doc:`grdtrend`
+    - :doc:`grdvector`
+    - :doc:`grdview`
+    - :doc:`grdvolume`
+    - :doc:`greenspline`
+    - :doc:`histogram`
+    - :doc:`image`
+    - :doc:`inset`
+    - :doc:`kml2gmt`
+    - :doc:`legend`
+    - :doc:`makecpt`
+    - :doc:`mapproject`
+    - :doc:`mask`
+    - :doc:`movie`
+    - :doc:`nearneighbor`
+    - :doc:`plot`
+    - :doc:`plot3d`
+    - :doc:`project`
+    - :doc:`psconvert`
+    - :doc:`rose`
+    - :doc:`sample1d`
+    - :doc:`solar`
+    - :doc:`spectrum1d`
+    - :doc:`sph2grd`
+    - :doc:`sphdistance`
+    - :doc:`sphinterpolate`
+    - :doc:`sphtriangulate`
+    - :doc:`splitxyz`
+    - :doc:`subplot`
+    - :doc:`surface`
+    - :doc:`text`
+    - :doc:`trend1d`
+    - :doc:`trend2d`
+    - :doc:`triangulate`
+    - :doc:`wiggle`
+    - :doc:`xyz2grd`
 
 Session management
 ------------------
@@ -34,7 +125,17 @@ Plotting
 --------
 
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmtlogo`        | Plot the GMT logo on maps                                           |
+| :doc:`basemap`        | Create a basemap plot                                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`clip`           | Use polygon files to define clipping paths                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`coast`          | Plot (and fill) coastlines, borders, and rivers on maps             |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`colorbar`       | Plot gray scale or color scale on maps                              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`contour`        | Contour or image raw table data by triangulation                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`events`         | Plot event symbols and labels for a moment in time                  |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdcontour`     | Contouring of 2-D gridded data sets                                 |
 +-----------------------+---------------------------------------------------------------------+
@@ -44,37 +145,29 @@ Plotting
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdview`        | 3-D perspective imaging of 2-D gridded data sets                    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`basemap`        | Create a basemap plot                                               |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`clip`           | Use polygon files to define clipping paths                          |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`coast`          | Plot (and fill) coastlines, borders, and rivers on maps             |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`contour`        | Contour or image raw table data by triangulation                    |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`events`         | Plot event symbols and labels for a moment in time                  |
-+-----------------------+---------------------------------------------------------------------+
 | :doc:`histogram`      | Plot a histogram                                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`image`          | Plot Sun raster files on a map                                      |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`legend`         | Plot a legend on a map                                              |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`logo`           | Plot the GMT logo on maps                                           |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`mask`           | Create overlay to mask out regions on maps                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`plot`           | Plot symbols, polygons, and lines on maps                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`plot3d`         | Plot symbols, polygons, and lines in 3-D                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`rose`           | Plot sector or rose diagrams                                        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`colorbar`       | Plot gray scale or color scale on maps                              |
+| :doc:`solar`          | Plot day-light terminators and other sunlight parameters            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`ternary`        | Plot data on ternary diagrams                                       |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`text`           | Plot text strings on maps                                           |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`wiggle`         | Draw table data time-series along track on maps                     |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`plot`           | Plot symbols, polygons, and lines on maps                           |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`plot3d`         | Plot symbols, polygons, and lines in 3-D                            |
 +-----------------------+---------------------------------------------------------------------+
 
 Filtering

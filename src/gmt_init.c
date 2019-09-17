@@ -7731,7 +7731,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 	}
 	else {	/* Plain old -Rw/e/s/n */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got rgular w/e/s/n for region (%s)\n", item);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got regular w/e/s/n for region (%s)\n", item);
 		strncpy (string, item, GMT_BUFSIZ-1);
 	}
 
@@ -7833,6 +7833,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/nr for non mapping */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
+		}
+		else if (p[0] > p[1] && strchr (string, 'W') && strchr (string, 'E')) {	/* Used -R<lon>E/<lon>W so we must add 360 to east */
+			p[1] += 360.0;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+				"Warning -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
 		}
 #if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
@@ -12618,6 +12623,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
 
+	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
+		if (!strncmp (opt->arg, "@earth_relief_", 14U) || !strncmp (opt->arg, "earth_relief_", 13U))
+			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
+	}
+			
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0, subplot_status = 0, inset_status = 0;
 		int id, fig;
