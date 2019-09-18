@@ -5948,10 +5948,6 @@ Centered on the Dateline, the example below was created by this command:
 
    World map using the Van der Grinten projection.
 
-
-.. include:: examples_chapter.rst_
-
-
 GMT Supplemental Packages
 =========================
 
