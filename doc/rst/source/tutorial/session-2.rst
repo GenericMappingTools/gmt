@@ -241,7 +241,9 @@ To simply plot the data as a line we choose no symbol and specify a pen thicknes
 
    ::
 
-    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner -pdf GMT_tut_7
+    gmt begin GMT_tut_7
+      gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
+    gmt end show
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
@@ -272,7 +274,7 @@ symbols with a line we must use the overlay approach:
 
     gmt begin GMT_tut_8 pdf
       gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
-      gmt plot tut_data.txt -Wthin -Si0.2
+      gmt plot tut_data.txt -Wthin -Si0.2i
     gmt end show
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
@@ -450,12 +452,14 @@ We will demonstrate :doc:`/text` with the following script:
 
    ::
 
-    gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL << EOF -pdf GMT_tut_10
+    gmt begin GMT_tut_10
+      gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL << EOF
     1  1  It's P@al, not Pal!
     1  2  Try @%33%ZapfChancery@%% today
     1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.
     1  4  University of Hawaii at M@!a\225noa
     EOF
+    gmt end show
 
 
 Here we have used the "here document" notation in UNIX: The << EOF
