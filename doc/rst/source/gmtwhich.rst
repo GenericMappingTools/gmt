@@ -1,8 +1,8 @@
 .. index:: ! gmtwhich
 
-*****
-which
-*****
+********
+gmtwhich
+********
 
 .. only:: not man
 
@@ -29,7 +29,7 @@ found we print the full path name to the file, just the directory (see
 $GMT_DATADIR environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
-be searched recursively.) 
+be searched recursively.)
 
 Required Arguments
 ------------------
@@ -56,7 +56,7 @@ Optional Arguments
 
 **-D**
     Instead of reporting the paths, print the directories that contains
-    the files. 
+    the files.
 
 .. _-G:
 

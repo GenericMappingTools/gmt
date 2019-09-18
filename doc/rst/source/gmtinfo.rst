@@ -1,8 +1,8 @@
 .. index:: ! gmtinfo
 
-****
-info
-****
+*******
+gmtinfo
+*******
 
 .. only:: not man
 
@@ -51,7 +51,7 @@ supplied increments given by **-I**. Such output will be in the text form
 modules (hence only *dx* and *dy* are needed).  If **-C** is combined with
 **-I** then the output will be in column form and rounded up/down for as many
 columns as there are increments provided in **-I**. A similar option (**-T**)
-will provide a **-T**\ *zmin/zmax/dz* string for makecpt. 
+will provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 
 Required Arguments
 ------------------
@@ -150,14 +150,14 @@ Optional Arguments
 
 **-T**\ *dz*\ [\ **+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
-    string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**. 
+    string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

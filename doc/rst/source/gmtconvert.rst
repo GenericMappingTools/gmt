@@ -1,8 +1,8 @@
 .. index:: ! gmtconvert
 
-*******
-convert
-*******
+**********
+gmtconvert
+**********
 
 .. only:: not man
 
@@ -53,7 +53,7 @@ list segment headers and no data records, (6) extract first and/or last
 data record for each segment, (7) reverse the order of items on output,
 (8) output only ranges of segment numbers, and (9) output only segments
 whose record count matches criteria.  Input (and hence output) may have multiple
-sub-headers, and ASCII tables may have regular headers as well. 
+sub-headers, and ASCII tables may have regular headers as well.
 
 Required Arguments
 ------------------
@@ -196,7 +196,7 @@ Optional Arguments
 **-T**\ [**h**\ \|\ **d**\ ]
     Suppress the writing of certain records on output.  Append **h** to
     suppress segment headers [Default] or **d** to suppress duplicate
-    data records.  Use **-Thd** to suppress both types of records. 
+    data records.  Use **-Thd** to suppress both types of records.
 
 .. _-V:
 
