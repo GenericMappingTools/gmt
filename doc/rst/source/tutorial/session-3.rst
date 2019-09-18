@@ -74,7 +74,9 @@ Mercator plot and annotate the borders every 2º:
 
    ::
 
-    gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -B -pdf GMT_tut_11
+    gmt begin GMT_tut_11
+      gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -B
+    gmt end show
 
 Your plot should look like :ref:`our example 11 below <gmt_tut_11>`
 
@@ -181,8 +183,10 @@ so we choose the region accordingly, and get a view of the contour map using
 
    ::
 
-    gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @tut_ship.xyz
-    gmt grdcontour ship.nc -JM6i -B -C250 -A1000 -pdf GMT_tut_12
+    gmt begin GMT_tut_12
+      gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @tut_ship.xyz
+      gmt grdcontour ship.nc -JM6i -B -C250 -A1000
+    gmt end show
 
 
 Your plot should look like :ref:`our example 12 below <gmt_tut_12>`
@@ -296,7 +300,7 @@ call to :doc:`/mask`.  Here's the recipe:
    ::
 
     gmt begin GMT_tut_13 pdf
-      gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B -V
+      gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B
       gmt grdcontour ship.nc -C250 -A1000
       gmt mask -C
     gmt end show
