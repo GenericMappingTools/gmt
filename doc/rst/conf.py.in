@@ -32,14 +32,6 @@ html_theme_path = ["_themes"]
 html_context = {
     "menu_links": [
         (
-            '<i class="fa fa-users fa-fw"></i> Contributing',
-            "https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md",
-        ),
-        (
-            '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
-            "https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md",
-        ),
-        (
             '<i class="fa fa-book fa-fw"></i> License',
             "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
         ),
