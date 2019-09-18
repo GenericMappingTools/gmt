@@ -1,11 +1,8 @@
 Introduction
 ============
 
-GMT overview: History, philosophy, and usage
---------------------------------------------
-
 Historical highlights
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 The GMT system was initiated in late 1987 at Lamont-Doherty
 Earth Observatory, Columbia University by graduate students Paul
@@ -23,9 +20,8 @@ to reflect the changes in style and syntax.  However, GMT 5 is generally
 backwards compatible with GMT 4 syntax.
 GMT is used by tens of thousands of users worldwide in a broad range of disciplines.
 
-
 Philosophy
-~~~~~~~~~~
+----------
 
 GMT follows the UNIX philosophy in which complex tasks are broken
 down into smaller and more manageable components.  Individual GMT
@@ -40,9 +36,13 @@ coastlines, GMT completely decouples data retrieval from the main
 GMT modules.  GMT uses architecture-independent file formats.
 
 GMT installation considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------
 
-See the GMT wiki for how to install GMT.  In addition, we recommend
-access to a PostScript previewer (e.g., gv (or ghostview or plain ghostscript)),
-and any flavor of the UNIX operating system (UNIX, Linux, OS X, Cygwin, MinGW, etc.).
+See the `install guide <https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md>`_
+for instructions and to make sure you have all required dependencies installed.
+Alternatively, you can build GMT from source by following the
+`building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
+
+In addition, we recommend access to any flavor of the UNIX operating system
+(UNIX, Linux, macOS, Cygwin, MinGW, etc.).
 We do not recommend using the DOS command window under Windows.

@@ -241,7 +241,7 @@ To simply plot the data as a line we choose no symbol and specify a pen thicknes
 
    ::
 
-    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner > GMT_tut_7.ps
+    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner -pdf GMT_tut_7
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
