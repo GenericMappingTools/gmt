@@ -47,5 +47,8 @@ it can do.
    :maxdepth: 1
    :caption: Developer Resources
 
-   api
-   postscriptlight
+   Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
+   Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+   GMT C API <api>
+   PostScriptLight Library <postscriptlight>
+
