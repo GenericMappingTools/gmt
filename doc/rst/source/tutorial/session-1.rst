@@ -5,22 +5,22 @@ Tutorial setup
 --------------
 
 #. We assume that GMT has been properly and fully
-   installed and that the GMT executables are in your executable path
-   described on the GMT wiki.  You should be able to type gmt in your
-   terminal and it will display the GMT splash screen with version number
+   installed and that the GMT executables are in your executable path.
+   You should be able to type ``gmt`` in your terminal and it will display
+   the GMT splash screen with version number
    and the top-level options.  If not then you need to work on your user
    environment, adding the path to the gmt executable to your search path.
 
 #. All GMT man pages, documentation, and gallery example scripts
    are available from the GMT documentation web page.  It is
    assumed these pages have been installed locally at your site;
-   if not they are always available from the main GMT site.
+   if not they are always available from https://docs.generic-mapping-tools.org.
 
 #. We recommend you create a sub-directory called *tutorial*,
    cd into that directory, and run the commands there to keep things tidy.
 
 #. As we discuss GMT principles it may be a good idea to
-   consult the GMT Technical Reference and Cookbook for more
+   consult :doc:`the GMT Cookbook </cookbook>` for more
    detailed explanations.
 
 #. The tutorial data sets are distributed via the GMT cache server.
@@ -34,7 +34,8 @@ Tutorial setup
    you place all the GMT (and UNIX) commands in a shell script
    file and make it executable.  To ensure that UNIX recognizes
    your script as a shell script it is a good habit always to start
-   the script with the line #!/usr/bin/env bash or #!/usr/bin/env csh, depending on the shell you prefer to use.
+   the script with the line ``#!/usr/bin/env bash`` or ``#!/usr/bin/env csh``,
+   depending on the shell you prefer to use.
    All the examples in this tutorial assumes you are running the Bourne Again shell, bash,
    and you will need to modify some of the constructs, such as i/o redirection, to run
    these examples under csh.
@@ -43,19 +44,6 @@ Tutorial setup
 #. Making a script executable is accomplished using the chmod
    command, e.g., the script figure\_1.sh is made executable
    with "chmod +x figure\_1.sh".
-
-#. To view a PostScript file (e.g., map.ps) on a UNIX workstation
-   we use gv map.ps.  On some systems there
-   will be similar commands, like ghostview or gs and even open
-   under OS X (which first converts your PostScript to PDF).  In this text we will use
-   gv; please substitute the relevant PostScript previewer
-   on your system.  Very often it is more productive to convert these PS
-   files to PDF using the :doc:`/psconvert` module.  Turning the file map.ps to map.pdf
-   is done with
-
-   ::
-
-    gmt psconvert -Tf map.ps
 
 #. Please cd into the directory *tutorial*.  We are
    now ready to start.
@@ -276,8 +264,6 @@ Exercises:
 
 #. Try change the **-B** values.
 
-#. Omit the **-P**.
-
 #. Change title and canvas color.
 
 
@@ -287,7 +273,7 @@ Logarithmic projection
 We next will show how to do a basemap for a log–log plot.  We have
 no data set yet but we will
 imagine that the raw *x* data range from 3 to 9613 and that *y*
-ranges from 3.2 10^20 to 6.8 10^24.  One possibility is
+ranges from 10^20 to 10^24.  One possibility is
 
    ::
 
