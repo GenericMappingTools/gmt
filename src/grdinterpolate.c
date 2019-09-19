@@ -264,6 +264,11 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file[0], &n_layers, &level))) Return (error);
 	}
 	
+	if (n_layers == 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Only one layer given - need at least 2 to interpolate\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	
 	/* Create output level array */
 	if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to set up output level array\n");
@@ -290,12 +295,20 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (stop_k < (n_layers-1) && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 		stop_k++;	/* One more to define the spline coefficients */
 	n_use = stop_k - start_k + 1;	/* Total number of input layers needed */
+	if (n_use == 1) {	/* Might have landed exactly on one of the grid levels, but GMT_intpol needs at least 2 inputs */
+		if (start_k) start_k--;
+		else stop_k++;	/* We know there are at least 2 input grids */
+		n_use = 2;
+	}
+	
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
 	
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if ((G[GMT_IN] = gmt_M_memory (GMT, NULL, n_layers, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);	/* Allocate one grid per input layer */
 	
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3-rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
+
 	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
 		if (Ctrl->Z.active[GMT_IN])	/* Get the k'th file */
 			sprintf (file, "%s", Ctrl->In.file[k]);
