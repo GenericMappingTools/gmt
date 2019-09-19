@@ -1,8 +1,8 @@
 .. index:: ! gmtmath
 
-****
-math
-****
+*******
+gmtmath
+*******
 
 .. only:: not man
 
@@ -52,7 +52,7 @@ be read and placed on the stack as if a file with that content had been
 given on the command line. By default, all columns except the "time"
 column are operated on, but this can be changed (see **-C**).
 Complicated or frequently occurring expressions may be coded as a macro
-for future use or stored and recalled via named memory locations. 
+for future use or stored and recalled via named memory locations.
 
 Required Arguments
 ------------------
@@ -139,10 +139,10 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
-    Required when no input files are given. Builds an array for 
+    Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
     (i.e., your input has only data columns), give **-T** with
-    no arguments; this also implies **-Ca**. 
+    no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
 
 .. _-V:
@@ -153,7 +153,7 @@ Optional Arguments
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is same as input, but see **-o**] 
+.. |Add_-bo| replace:: [Default is same as input, but see **-o**]
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -609,7 +609,7 @@ etc.) are passed the absolute value of their argument.
 6. All derivatives are based on central finite differences, with
 natural boundary conditions.
 
-7. **ROOTS** must be the last operator on the stack, only followed by **=**. 
+7. **ROOTS** must be the last operator on the stack, only followed by **=**.
 
 .. include:: explain_sto_rcl_clr.rst_
 
@@ -667,9 +667,9 @@ Examples
 To add two plot dimensions of different units, we can run
 
    ::
-   
+
     length=`gmt math -Q 15c 2i SUB =`
-   
+
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 

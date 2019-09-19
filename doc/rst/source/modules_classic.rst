@@ -25,7 +25,7 @@ These modules are fully compatible with GMT 4 and 5.
     - :doc:`gmtdefaults`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
-    - :doc:`gmtlogo`
+    - :doc:`gmtlogo_classic`
     - :doc:`gmtmath`
     - :doc:`gmtregress`
     - :doc:`gmtselect`
@@ -101,7 +101,7 @@ Plotting
 --------
 
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`gmtlogo`                | Plot the GMT logo on maps                                           |
+| :doc:`gmtlogo_classic`        | Plot the GMT logo on maps                                           |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`grdcontour_classic`     | Contouring of 2-D gridded data sets                                 |
 +-------------------------------+---------------------------------------------------------------------+
