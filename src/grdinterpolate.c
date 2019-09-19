@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Interpolate new layers from a 3-D netCDF data cube"
 #define THIS_MODULE_KEYS	"<G{+,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"->RV"
+#define THIS_MODULE_OPTIONS	"->RVf"
 
 struct GRDINTERPOLATE_CTRL {
 	struct In {
