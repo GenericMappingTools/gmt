@@ -85,6 +85,8 @@ Here is an example of four different ways of presenting the color bar:
    ::
 
     gmt begin GMT_tut_14 pdf
+      gmt makecpt -H -Crainbow -T-20/60/10 > disc.cpt
+      gmt makecpt -H -Crainbow -T-20/60 > cont.cpt
       gmt basemap -R0/6/0/9 -Jx1i -B0 -Xc
       gmt colorbar -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete
       gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous
@@ -167,11 +169,7 @@ global 30" DEM called SRTM30+:
     gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
 
 Using :doc:`/grdinfo` we find that the data ranges from about 1000m to
-about 4300m so we make a CPT accordingly:
-
-   ::
-
-    gmt makecpt -Crainbow -T1000/5000/500 -Z > topo.cpt
+about 4300m so we need to make a CPT with that range.
 
 Color images are made with :doc:`/grdimage` which takes the usual
 common command options (by default the **-R** is taken from the data set)
@@ -193,8 +191,9 @@ the plot.  We try
    ::
 
     gmt begin GMT_tut_15 pdf
-      gmt grdimage @tut_relief.nc -JM6i -B -Ctopo.cpt -V
-      gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
+      gmt makecpt -Crainbow -T1000/5000/500 -Z
+      gmt grdimage @tut_relief.nc -JM6i -B
+      gmt colorbar -DjTC -I0.4 -Bxa -By+lm
     gmt end show
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
@@ -261,8 +260,9 @@ create the shaded relief image:
    ::
 
     gmt begin GMT_tut_16 pdf
-      gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -B -Ctopo.cpt
-      gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
+      gmt makecpt -Crainbow -T1000/5000/500 -Z
+      gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -B
+      gmt colorbar -DjTC -I0.4 -Bxa -By+lm
     gmt end show
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
@@ -304,19 +304,17 @@ level (i.e., depth), latitude and longitude.
     ncdump -h otemp.anal1deg.nc
 
 We will need to make an appropriate color scale, running from -2ºC (freezing temperature of salt
-water) to 30ºC (highest likely ocean temperature). We do this as follows:
-
-   ::
-
-    gmt makecpt -Cno_green -T-2/30/2 > otemp.cpt
-
+water) to 30ºC (highest likely ocean temperature).
 Let us focus on the temperatures in Summer (that is the third season, July through
 September) at sea level (that is the first level). To plot these in a Mollweide projection we
 use:
 
    ::
 
-    gmt grdimage -Rg -JW180/9i "@otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bag -pdf GMT_tut_17
+    gmt begin GMT_tut_17
+      gmt makecpt -Cno_green -T-2/30/2
+      gmt grdimage -Rg -JW180/9i "@otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bag
+    gmt end show
 
 The addition "?otemp[2,0]" indicates which variable to retrieve from the netCDF
 file (otemp) and that we need the third time step and first level. The numbering of the
@@ -388,18 +386,15 @@ Mesh-plot
 ~~~~~~~~~
 
 Mesh plots work best on smaller data sets.  We again use the small
-subset of the ETOPO5 data over Bermuda and make a quick-and-dirty
-CPT:
-
-   ::
-
-    gmt grd2cpt @tut_bathy.nc -Cocean > bermuda.cpt
-
+subset of the ETOPO5 data over Bermuda and will use the ocean CPT.
 A simple mesh plot can therefore be obtained with
 
    ::
 
-    gmt grdview @tut_bathy.nc -JM5i -JZ2i -p135/30 -B -Cbermuda.cpt -pdf GMT_tut_18
+    gmt begin GMT_tut_18
+      gmt grd2cpt @tut_bathy.nc -Cocean
+      gmt grdview @tut_bathy.nc -JM5i -JZ2i -p135/30 -B
+    gmt end show
 
 Your plot should look like :ref:`our example 18 below <gmt_tut_18>`
 
@@ -423,7 +418,10 @@ from the southeast.  This is done using
 
    ::
 
-    gmt grdview @tut_relief.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -B -JZ0.5i -pdf GMT_tut_19
+    gmt begin GMT_tut_19
+      gmt makecpt -Crainbow -T1000/5000/500 -Z
+      gmt grdview @tut_relief.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -B -JZ0.5i
+    gmt end show
 
 
 Your plot should look like :ref:`our example 19 below <gmt_tut_19>`

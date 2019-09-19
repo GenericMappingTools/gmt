@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 
 int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
-	bool wrap_180, replicate_x, replicate_y;
+	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
 	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
@@ -428,6 +428,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 
 	if (Ctrl->S.mode == GRDMASK_N_CART_MASK) radius = 1;	/* radius not used in this case and this avoids another if test */
+	worry_about_jumps = (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_grd_is_global (GMT, Grid->header));
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
@@ -550,6 +551,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				}
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
+
+				if (worry_about_jumps) gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);	/* Since many segments may have been read we cannot be sure there are no junps */
 
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);

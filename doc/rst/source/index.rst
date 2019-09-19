@@ -12,7 +12,6 @@ it can do.
 
    gallery
    tutorial
-   Modern Mode Primer <https://doi.org/10.1029/2019GC008515>
 
 .. toctree::
    :maxdepth: 1
@@ -48,5 +47,8 @@ it can do.
    :maxdepth: 1
    :caption: Developer Resources
 
-   api
-   postscriptlight
+   Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
+   Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+   GMT C API <api>
+   PostScriptLight Library <postscriptlight>
+

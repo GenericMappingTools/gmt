@@ -1,0 +1,17 @@
+{# Import the theme's layout. #}
+{% extends "!layout.html" %}
+
+{% block menu %}
+    {{ super() }}
+
+    {% if menu_links %}
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            {% for text, link in menu_links %}
+                <li class="toctree-l1"><a href="{{ link }}">{{ text }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
