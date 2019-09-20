@@ -1,8 +1,8 @@
 .. index:: ! gmtgravmag3d
 
-*********
+************
 gmtgravmag3d
-*********
+************
 
 .. only:: not man
 
