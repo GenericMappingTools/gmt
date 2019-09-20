@@ -1,8 +1,8 @@
 .. index:: ! gmtget
 
-***
-get
-***
+******
+gmtget
+******
 
 .. only:: not man
 

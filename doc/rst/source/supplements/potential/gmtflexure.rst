@@ -1,8 +1,8 @@
-.. index:: ! flexure
+.. index:: ! gmtflexure
 
-*******
-flexure
-*******
+**********
+gmtflexure
+**********
 
 .. only:: not man
 
@@ -86,12 +86,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *force*]
-    Set a constant horizontal in-plane force, in Pa m [0] 
+    Set a constant horizontal in-plane force, in Pa m [0]
 
 .. _-L:
 
 **-L**
-    Use a variable restoring force that depends on sign of the flexure [constant]. 
+    Use a variable restoring force that depends on sign of the flexure [constant].
 
 .. _-Q:
 

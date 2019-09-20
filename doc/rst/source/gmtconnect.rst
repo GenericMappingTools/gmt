@@ -1,8 +1,8 @@
-.. index:: ! gmt connect
+.. index:: ! gmtconnect
 
-*******
-connect
-*******
+**********
+gmtconnect
+**********
 
 .. only:: not man
 
@@ -42,7 +42,7 @@ the remaining endpoints no longer pass the tolerance test; the resulting
 segments are then written out to standard output or specified output
 file. If it is not clear what the separation tolerance should be then
 use **-L** to get a list of all separation distances and analyze them to
-determine a suitable cutoff. 
+determine a suitable cutoff.
 
 Required Arguments
 ------------------
@@ -116,7 +116,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

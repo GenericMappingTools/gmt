@@ -1,12 +1,12 @@
-.. index:: ! gravmag3d
+.. index:: ! gmtgravmag3d
 
-*********
-gravmag3d
-*********
+************
+gmtgravmag3d
+************
 
 .. only:: not man
 
-    gravmag3d - Compute the gravity/magnetic effect of a 3-D body by the method of Okabe
+    gmtgravmag3d - Compute the gravity/magnetic effect of a 3-D body by the method of Okabe
 
 Synopsis
 --------

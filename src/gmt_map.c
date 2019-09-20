@@ -2392,8 +2392,8 @@ GMT_LOCAL double map_az_backaz_cartesian (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	dx = lonE - lonS;
-	dy = latE - latS;
+	dx = lonS - lonE;
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2414,8 +2414,8 @@ GMT_LOCAL double map_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE
 	}
 	gmt_geo_to_xy (GMT, lonE, latE, &xE, &yE);
 	gmt_geo_to_xy (GMT, lonS, latS, &xS, &yS);
-	dx = xE - xS;
-	dy = yE - yS;
+	dx = xS - xE;
+	dy = yS - yE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2434,9 +2434,9 @@ GMT_LOCAL double map_az_backaz_flatearth (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	gmt_M_set_delta_lon (lonS, lonE, dlon);
-	dx = dlon * cosd (0.5 * (latE + latS));
-	dy = latE - latS;
+	gmt_M_set_delta_lon (lonE, lonS, dlon);
+	dx = dlon * cosd (0.5 * (latS + latE));
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);

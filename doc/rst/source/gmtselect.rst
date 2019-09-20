@@ -1,8 +1,8 @@
 .. index:: ! gmtselect
 
-******
-select
-******
+*********
+gmtselect
+*********
 
 .. only:: not man
 
@@ -139,7 +139,7 @@ Optional Arguments
     **z** select records NOT within the range specified by **-Z**.
 
 .. _-J:
- 
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
@@ -171,11 +171,11 @@ Optional Arguments
 
     **-N**\ *ocean/land/lake/island/pond*.
 
-    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land]. 
+    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 
 .. _-R:
 
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. 
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
 .. include:: explain_-R.rst_
 
 .. _-V:
@@ -201,7 +201,7 @@ Optional Arguments
     record with *z* value NOT in the given range.  Finally, if **+c** is not used
     then it is automatically incremented for each new **-Z** option, starting with 2.
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

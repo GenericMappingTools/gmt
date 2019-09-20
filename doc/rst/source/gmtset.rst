@@ -1,8 +1,8 @@
 .. index:: ! gmtset
 
-***
-set
-***
+******
+gmtset
+******
 
 .. only:: not man
 
@@ -66,7 +66,7 @@ Optional Arguments
     ~/.gmt and finally in the system defaults].
 
 **-**\ [**BJRXxYycp**]\ *value*
-    Set the expansion of any of these shorthand options. 
+    Set the expansion of any of these shorthand options.
 
 .. include:: explain_help.rst_
 
