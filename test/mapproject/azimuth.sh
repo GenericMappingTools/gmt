@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 #
 # Tests mapproject for azimuth calculation
-# This is failing since the vectors are not parallel to the oblique
-# meridians and parallels.  Yet the reported azimuth match calculations
-# in MATLAB with the same equations as well as some online azimuth calculator
-# Maybe the plotting of arrows are wrong?
+# Important to use backazimuth in this example!
 
 gmt begin azimuth ps
   plon=186.3
   plat=-60.1
-  omega=1.08
   lon=156.293957716
   lat=-8.06651671195
   # Get az from point to pole
