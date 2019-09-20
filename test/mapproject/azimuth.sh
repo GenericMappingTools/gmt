@@ -16,7 +16,7 @@ gmt begin azimuth ps
   az=`echo $lon $lat | gmt mapproject -Af${plon}/${plat} -o2 -fg`
   # Add 90 to aziumth:
   az2=`gmt math -Q $az 90 ADD 360 FMOD =`
-  gmt basemap -R140/210/-65/15 -JM6i -Bafg2 -BWEsn+o${plon}/${plat}+t"Parallel az = $az2 -Xc"
+  gmt basemap -R140/210/-65/15 -JM6i -Bafg2 -BWEsn+o${plon}/${plat}+t"Parallel az = $az2"
   echo ${plon} ${plat} | gmt plot -Sc0.1i -Gred
   echo ${lon} ${lat}   | gmt plot -Sc0.1i -Ggreen
   cat << EOF | gmt plot -W1p
