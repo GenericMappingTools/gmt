@@ -30,5 +30,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C4.5ix5.0ix100 -Nanim_05 -T@Table_5_11.txt -Sbpre.sh -D10 -Q -Z $opt
+gmt movie main.sh -C4.5ix5.0ix100 -Nanim_05 -T@Table_5_11.txt -Sbpre.sh -D10 -Z $opt
 rm -rf main.sh pre.sh
