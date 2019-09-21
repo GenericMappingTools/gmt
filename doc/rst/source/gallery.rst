@@ -117,153 +117,203 @@ complex illustration.
 
 .. |ex01| image:: /_images/ex01.*
    :width: 150 px
+   :target: ./gallery/ex01.html
 
 .. |ex02| image:: /_images/ex02.*
    :width: 150 px
+   :target: ./gallery/ex02.html
 
 .. |ex03| image:: /_images/ex03.*
    :width: 150 px
+   :target: ./gallery/ex03.html
 
 .. |ex04| image:: /_images/ex04.*
    :width: 150 px
+   :target: ./gallery/ex04.html
 
 .. |ex05| image:: /_images/ex05.*
    :width: 150 px
+   :target: ./gallery/ex05.html
 
 .. |ex06| image:: /_images/ex06.*
    :width: 150 px
+   :target: ./gallery/ex06.html
 
 .. |ex07| image:: /_images/ex07.*
    :width: 150 px
+   :target: ./gallery/ex07.html
 
 .. |ex08| image:: /_images/ex08.*
    :width: 150 px
+   :target: ./gallery/ex08.html
 
 .. |ex09| image:: /_images/ex09.*
    :width: 150 px
+   :target: ./gallery/ex09.html
 
 .. |ex10| image:: /_images/ex10.*
    :width: 150 px
+   :target: ./gallery/ex10.html
 
 .. |ex11| image:: /_images/ex11.*
    :width: 150 px
+   :target: ./gallery/ex11.html
 
 .. |ex12| image:: /_images/ex12.*
    :width: 150 px
+   :target: ./gallery/ex12.html
 
 .. |ex13| image:: /_images/ex13.*
    :width: 150 px
+   :target: ./gallery/ex13.html
 
 .. |ex14| image:: /_images/ex14.*
    :width: 150 px
+   :target: ./gallery/ex14.html
 
 .. |ex15| image:: /_images/ex15.*
    :width: 150 px
+   :target: ./gallery/ex15.html
 
 .. |ex16| image:: /_images/ex16.*
    :width: 150 px
+   :target: ./gallery/ex16.html
 
 .. |ex17| image:: /_images/ex17.*
    :width: 150 px
+   :target: ./gallery/ex17.html
 
 .. |ex18| image:: /_images/ex18.*
    :width: 150 px
+   :target: ./gallery/ex18.html
 
 .. |ex19| image:: /_images/ex19.*
    :width: 150 px
+   :target: ./gallery/ex19.html
 
 .. |ex20| image:: /_images/ex20.*
    :width: 150 px
+   :target: ./gallery/ex20.html
 
 .. |ex21| image:: /_images/ex21.*
    :width: 150 px
+   :target: ./gallery/ex21.html
 
 .. |ex22| image:: /_images/ex22.*
    :width: 150 px
+   :target: ./gallery/ex22.html
 
 .. |ex23| image:: /_images/ex23.*
    :width: 150 px
+   :target: ./gallery/ex23.html
 
 .. |ex24| image:: /_images/ex24.*
    :width: 150 px
+   :target: ./gallery/ex24.html
 
 .. |ex25| image:: /_images/ex25.*
    :width: 150 px
+   :target: ./gallery/ex25.html
 
 .. |ex26| image:: /_images/ex26.*
    :width: 150 px
+   :target: ./gallery/ex26.html
 
 .. |ex27| image:: /_images/ex27.*
    :width: 150 px
+   :target: ./gallery/ex27.html
 
 .. |ex28| image:: /_images/ex28.*
    :width: 150 px
+   :target: ./gallery/ex28.html
 
 .. |ex29| image:: /_images/ex29.*
    :width: 150 px
+   :target: ./gallery/ex29.html
 
 .. |ex30| image:: /_images/ex30.*
    :width: 150 px
+   :target: ./gallery/ex30.html
 
 .. |ex31| image:: /_images/ex31.*
    :width: 150 px
+   :target: ./gallery/ex31.html
 
 .. |ex32| image:: /_images/ex32.*
    :width: 150 px
+   :target: ./gallery/ex32.html
 
 .. |ex33| image:: /_images/ex33.*
    :width: 150 px
+   :target: ./gallery/ex33.html
 
 .. |ex34| image:: /_images/ex34.*
    :width: 150 px
+   :target: ./gallery/ex34.html
 
 .. |ex35| image:: /_images/ex35.*
    :width: 150 px
+   :target: ./gallery/ex35.html
 
 .. |ex36| image:: /_images/ex36.*
    :width: 150 px
+   :target: ./gallery/ex36.html
 
 .. |ex37| image:: /_images/ex37.*
    :width: 150 px
+   :target: ./gallery/ex37.html
 
 .. |ex38| image:: /_images/ex38.*
    :width: 150 px
+   :target: ./gallery/ex38.html
 
 .. |ex39| image:: /_images/ex39.*
    :width: 150 px
+   :target: ./gallery/ex39.html
 
 .. |ex40| image:: /_images/ex40.*
    :width: 150 px
+   :target: ./gallery/ex40.html
 
 .. |ex41| image:: /_images/ex41.*
    :width: 150 px
+   :target: ./gallery/ex41.html
 
 .. |ex42| image:: /_images/ex42.*
    :width: 150 px
+   :target: ./gallery/ex42.html
 
 .. |ex43| image:: /_images/ex43.*
    :width: 150 px
+   :target: ./gallery/ex43.html
 
 .. |ex44| image:: /_images/ex44.*
    :width: 150 px
+   :target: ./gallery/ex44.html
 
 .. |ex45| image:: /_images/ex45.*
    :width: 150 px
+   :target: ./gallery/ex45.html
 
 .. |ex46| image:: /_images/ex46.*
    :width: 150 px
+   :target: ./gallery/ex46.html
 
 .. |ex47| image:: /_images/ex47.*
    :width: 150 px
+   :target: ./gallery/ex47.html
 
 .. |ex48| image:: /_images/ex48.*
    :width: 150 px
+   :target: ./gallery/ex48.html
 
 .. |ex49| image:: /_images/ex49.*
    :width: 150 px
+   :target: ./gallery/ex49.html
 
 .. |ex50| image:: /_images/ex50.*
    :width: 150 px
+   :target: ./gallery/ex50.html
 
 .. toctree::
    :hidden:
@@ -343,27 +393,35 @@ Animations
 
 .. |anim01| image:: /_images/anim_01.*
    :width: 150 px
+   :target: ./gallery/anim01.html
 
 .. |anim02| image:: /_images/anim_02.*
    :width: 150 px
+   :target: ./gallery/anim02.html
 
 .. |anim03| image:: /_images/anim_03.*
    :width: 150 px
+   :target: ./gallery/anim03.html
 
 .. |anim04| image:: /_images/anim_04.*
    :width: 150 px
+   :target: ./gallery/anim04.html
 
 .. |anim05| image:: /_images/anim_05.*
    :width: 150 px
+   :target: ./gallery/anim05.html
 
 .. |anim06| image:: /_images/anim_06.*
    :width: 150 px
+   :target: ./gallery/anim06.html
 
 .. |anim07| image:: /_images/anim_07.*
    :width: 150 px
+   :target: ./gallery/anim07.html
 
 .. |anim08| image:: /_images/anim_08.*
    :width: 150 px
+   :target: ./gallery/anim08.html
 
 .. toctree::
    :hidden:

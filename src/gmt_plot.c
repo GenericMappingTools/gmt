@@ -7215,6 +7215,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
 	}
 	GMT->current.ps.title[0] = '\0';	/* Reset title */
+	if (GMT->current.ps.oneliner) GMT->current.ps.active = true;	/* Since we are plotting we reset this here in case other modules have turned it off */
 }
 
 void gmt_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
