@@ -64,7 +64,6 @@ These modules are fully compatible with GMT 4 and 5.
     - :doc:`kml2gmt`
     - :doc:`makecpt`
     - :doc:`mapproject`
-    - :doc:`movie`
     - :doc:`nearneighbor`
     - :doc:`project`
     - :doc:`psbasemap`
@@ -312,8 +311,6 @@ Miscellaneous
 | :doc:`gmt2kml`        | Like :doc:`plot` but writes KML for use in Google Earth             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`movie`          | Create animation sequences and movies                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
