@@ -781,7 +781,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
-			if (ID == GSHHS_ANTARCTICA_ICE_ID && c->ns == 0 && c->min_area > 5000.0) may_shrink = false;
+			if ((ID == GSHHS_ANTARCTICA_ICE_ID || ID == GSHHS_ANTARCTICA_GROUND_ID) && c->ns == 0 && c->min_area > 5000.0) may_shrink = false;
 		}
 	}
 	
