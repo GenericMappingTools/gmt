@@ -55,7 +55,7 @@ The GMT Cookbook
    cookbook/data_filtering
    cookbook/coastline
    cookbook/non_unix_platforms
-   cookbook/colorbars
+   cookbook/cpts
    cookbook/custom_symbols
    cookbook/contour_annotations
    cookbook/ogrgmt_format.rst
