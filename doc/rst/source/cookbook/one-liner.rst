@@ -7,8 +7,9 @@ Background
 Modern mode simplifies GMT by placing all commands between gmt :doc:`/begin` and gmt :doc:`/end`.
 However, for very simply plots, such as a simple coastline map that only requires a call to
 a single module, having to place that command between **begin** and **end** makes the documentation
-longer and more tedious to maintain.  Because of this, we have implemented a special way
-to begin and end GMT modern mode within a single call to a plotting module.
+longer and more tedious to maintain.  Because of this, we have implemented a special and quick way
+to begin and end GMT modern mode within a single call to a plotting module. When the plot finishes
+we automatically call gmt :doc:`/end` with the show command to display the plot(s).
 
 One-liner Syntax
 ----------------
