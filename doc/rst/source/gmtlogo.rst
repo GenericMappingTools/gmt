@@ -30,6 +30,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot the GMT logo of a 2 inch width as a stand-alone pdf plot, use
 
    ::

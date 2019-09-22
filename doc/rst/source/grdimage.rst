@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 For a quick-and-dirty illuminated color map of the data in the file stuff.nc, with
 the maximum map dimension limited to be 6 inches, try
 

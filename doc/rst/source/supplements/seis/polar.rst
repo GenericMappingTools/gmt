@@ -43,6 +43,8 @@ Synopsis
 Examples
 --------
 
+.. include:: ../../oneliner_info.rst_
+
    ::
 
     gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 -pdf test << END

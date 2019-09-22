@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: ../../oneliner_info.rst_
+
 The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig.

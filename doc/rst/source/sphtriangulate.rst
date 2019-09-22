@@ -141,6 +141,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via :doc:`plot`, use
 

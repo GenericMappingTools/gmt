@@ -42,6 +42,8 @@ Synopsis
 Examples
 --------
 
+.. include:: ../../oneliner_info.rst_
+
 The following file should give a normal-faulting CMT mechanism:
 
    ::
