@@ -48,13 +48,15 @@ For a quick-and-dirty illuminated color map of the data in the remote file
 
     gmt grdimage @AK_gulf_grav.nc -I+d -B -pdf quick
 
-To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
-on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
-24, and using 1 degree tickmarks:
+To gray-shade the file AK_gulf_grav.nc on a Lambert map at 1.5 cm/degree
+along the standard parallels 18 and 24, centered on (142W, 55N), try:
 
    ::
 
-    gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 -pdf hawaii_grav_image
+    gmt begin alaska_gray
+      gmt grd2cpt -Cgray @AK_gulf_grav.nc
+      grdimage @AK_gulf_grav.nc -Jl142W/55N/18/24/1.5c -B
+    gmt end show
 
 To create an illuminated color PostScript plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
