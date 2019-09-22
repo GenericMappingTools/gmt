@@ -4725,8 +4725,10 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	j = n - 1;	/* j is now last point after initial skip test */
 	while (n > 1 && these_are_duplicates (x[j], y[j], x[n-2], y[n-2])) n--;	/* Skip duplicate points at end */
 	if ((n-i) < 2) return;	/* Less than 2 points is not a line */
-	if (n <= j) pen[n-1] = pen[j];	/* Skipped trailing duplicates but must maintain initial pen code of last valid point */
-
+	if (n <= j) {	/* Got a duplicate at the end */
+		if ((pen[n-1] & PSL_CLIP) == 0) pen[n-1] = pen[j];	/* Skipped trailing duplicates but must maintain initial pen code of last valid point unless has clip information */
+		while (n > 1 && (pen[n-1] & PSL_MOVE)) n--;	/* Cut off repeating pen & PSL_MOVE at end that might result after removing that duplicate */
+	}
 	for (j = i + 1; j < n && !(pen[j] & PSL_MOVE); j++);	/* j == n means no PSL_MOVEs present */
 	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_CONV4_LIMIT) : false;
 
