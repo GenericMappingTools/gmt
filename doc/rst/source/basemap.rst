@@ -36,13 +36,12 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
 in several different ways depending on the projection. Also note the use
-of upper case letters to specify map width instead of map scale. Finally,
-since so many examples are given we present them using the modern mode
-[REF] "one-liner" syntax, which can be used to simplify modern mode scripts
-with a *single* plot command.
+of upper case letters to specify map width instead of map scale.
 
 Non-geographical Projections
 ----------------------------
