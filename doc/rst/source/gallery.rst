@@ -1,6 +1,6 @@
 .. _example_gallery:
 
-Example gallery
+Example Gallery
 ===============
 
 The 50 Examples
