@@ -48,48 +48,56 @@ Synopsis
 Examples
 --------
 
-To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at
-0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
-degree tickmarks, and draw 30 minute gridlines:
+.. include:: oneliner_info.rst_
+
+To contour the remote file AK_gulf_grav.nc every 25 mGal on a Mercator map at
+0.5 inch/degree, annotate every 50 mGal (using font size = 10p), using 1
+degree tick marks, and draw 30 minute gridlines:
 
    ::
 
-    gmt grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m -pdf hawaii_grav
+    gmt grdcontour @AK_gulf_grav.nc -JM16c -C25 -A50+f10p -B -pdf alaska_grav1
 
 To do the same map but only draw the 50 and 150 and annotate the 100 contour:
 
    ::
 
-    gmt grdcontour hawaii_grav.nc -Jm0.5i -C50.150 -A100,+f10p -B1g30m -pdf hawaii_grav
+    gmt grdcontour @AK_gulf_grav.nc -JM16c -C50,150 -A100,+f10p -B -pdf alaska_grav2
 
-To contour the file image.nc using the levels in the file cont.txt on a
-linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
-0.1 (y) tickmarks, smooth the contours a bit, use "RMS Misfit" as
-plot-title, use a thick red pen for annotated contours, and a thin,
-dashed, blue pen for the rest, and send the output to the default printer:
+To contour the Alaska gravity data every 10 mGal with labels every 50 mGal, smooth
+the contours a bit, use "Gravity Anomalies" as plot-title, use a thick red pen for
+the annotated contours and a thin, dashed, blue pen for the rest, try
 
    ::
 
-    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.txt -S4 -Bx20 -By0.1
-               -B+t"RMS Misfit" -Wathick,red -Wcthinnest,blue,- | lp
+    gmt grdcontour @AK_gulf_grav.nc -C10 -A50 -S4 -B -B+t"Gravity Anomalies" -Wathick,red -Wcthinnest,blue,- -pdf alaska_grav3
 
-The labeling of local highs and lows may plot outside the innermost
-contour since only the mean value of the contour coordinates is used to
-position the label.
+Same, but this time we want all negative contours to be blue and positive to be red, with
+the zero-contour black:
 
-To save the smoothed 100-m contour lines in topo.nc and separate them
+   ::
+
+    gmt begin alaska_grav4
+      grdcontour @AK_gulf_grav.nc -C10 -A50 -S4 -B -B+t"Gravity Anomalies" -Ln -Wathick,blue -Wcthinnest,blue,-
+      grdcontour @AK_gulf_grav.nc -C10 -A50 -S4 -Lp -Wathick,red -Wcthinnest,red,-
+      grdcontour @AK_gulf_grav.nc -A0, -S4
+    gmt end show
+
+To save the smoothed 50-mGal contour lines in AK_gulf_grav.nc and separate them
 into two multisegment files: contours_C.txt for closed and
 contours_O.txt for open contours, try
 
    ::
 
-    gmt grdcontour topo.nc -C100 -S4 -Dcontours_%c.txt
+    gmt grdcontour @AK_gulf_grav.nc -C150 -S4 -DAK_contours_%c.txt
 
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmt`,
+:doc:`gmt.conf`,
 :doc:`gmtcolors`,
 :doc:`basemap`,
-:doc:`grdimage`, :doc:`grdview`,
+:doc:`grdimage`,
+:doc:`grdview`,
 :doc:`contour`
