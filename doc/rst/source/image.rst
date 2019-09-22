@@ -36,6 +36,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 

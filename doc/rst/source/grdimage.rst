@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 For a quick-and-dirty illuminated color map of the data in the remote file
 @AK_gulf_grav.nc, try
 

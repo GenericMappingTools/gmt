@@ -50,6 +50,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot solid red circles (diameter = 0.2 cm) at the positions listed
 in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
 160E, 20S to 30N, with automatic tick-marks and gridlines, use
