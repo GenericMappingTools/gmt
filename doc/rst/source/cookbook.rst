@@ -59,3 +59,4 @@ The GMT Cookbook
    cookbook/custom_symbols
    cookbook/contour_annotations
    cookbook/ogrgmt_format.rst
+   cookbook/one-liner
