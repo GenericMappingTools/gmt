@@ -741,6 +741,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	size_t start[1], count[1];
 	int *seg_info = NULL, *seg_start = NULL, *seg_ID = NULL;
 	int s, i, k, ny, err, level, inc[4], ll_node, node, ID, *seg_skip = NULL;
+	bool may_shrink = false;
 	unsigned short corner[4], bitshift[4] = {9, 6, 3, 0};
 	signed char *seg_info_ANT = NULL;
 	double w, e, dx;
@@ -769,7 +770,22 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	ll_node = ((c->bins[b] / c->bin_nx) + 1) * (c->bin_nx + 1) + (c->bins[b] % c->bin_nx);		/* lower-left node in current bin */
 	inc[0] = 0;	inc[1] = 1;	inc[2] = 1 - (c->bin_nx + 1);	inc[3] = -(c->bin_nx + 1);	/* Relative incs to other nodes */
 
+	/* Trying to address issue https://github.com/GenericMappingTools/gmt/issues/1295.
+	 * It only happens for very large -A values, such as -A8000.  I am trying a fix where
+	 * we check if Antarctica with no polygons (i.e., just a tile) and large -A.
+	 * It may have side effects to we keep that issue open for now.
+	 */
+	
 	if (c->min_area > 0.0) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
+		may_shrink = true;	/* Most likely, but check for Antarctica */
+		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
+			node = ll_node + inc[k];	/* Current node index */
+			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
+			if ((ID == GSHHS_ANTARCTICA_ICE_ID || ID == GSHHS_ANTARCTICA_GROUND_ID) && c->ns == 0 && c->min_area > 5000.0) may_shrink = false;
+		}
+	}
+	
+	if (c->min_area > 0.0 && may_shrink) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
@@ -821,7 +837,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	for (i = 0; i < c->bin_nseg[b]; i++) {
 		seg_skip[i] = true;	/* Reset later to false if we pass all the tests to follow next */
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
-		if (fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;	/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
+		if (may_shrink && fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;	/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
 		level = get_level (seg_info[i]);
 		if (c->two_Antarcticas) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
 			if (seg_info_ANT[i]) level = ANT_LEVEL_ICE;	/* Replace the 1 with 5 so Ant polygons now have levels 5 (ice) or 6 (ground) */
