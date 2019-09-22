@@ -41,12 +41,12 @@ Synopsis
 Examples
 --------
 
-For a quick-and-dirty illuminated color map of the data in the file stuff.nc, with
-the maximum map dimension limited to be 6 inches, try
+For a quick-and-dirty illuminated color map of the data in the remote file
+@AK_gulf_grav.nc, try
 
    ::
 
-    gmt grdimage stuff.nc -JX6i+ -I+d -pdf quick
+    gmt grdimage @AK_gulf_grav.nc -I+d -B -pdf quick
 
 To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
