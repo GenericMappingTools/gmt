@@ -39,7 +39,10 @@ Examples
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
 in several different ways depending on the projection. Also note the use
-of upper case letters to specify map width instead of map scale.
+of upper case letters to specify map width instead of map scale. Finally,
+since so many examples are given we present them using the modern mode
+[REF] "one-liner" syntax, which can be used to simplify modern mode scripts
+with a *single* plot command.
 
 Non-geographical Projections
 ----------------------------
@@ -50,6 +53,16 @@ Linear x-y plot
 To make a linear x/y frame with all axes, but with only left and bottom
 axes annotated, using xscale = yscale = 1.0, ticking every 1 unit and
 annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", use
+
+   ::
+
+    gmt begin linear
+      gmt basemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn
+    gmt end
+
+As mentioned above, such simple modern mode script can take advantage of the one-liner
+format.  We repeat the same example using the one-liner format and then only show this
+format for the remaining examples:
 
    ::
 
