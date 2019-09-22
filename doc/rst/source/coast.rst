@@ -71,8 +71,8 @@ gridded topography is only seen over land, using a Mercator map at scale
    ::
 
     gmt begin
-      gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -Gc
-      gmt grdimage etopo5.nc -Ccolors.cpt
+      gmt coast -R-30/30/-40/40 -Jm0.1i -B -Gc
+      gmt grdimage @earth_relief_05m
       gmt coast -Q
     gmt end show
 
