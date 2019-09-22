@@ -49,10 +49,10 @@ being partly visible or missing altogether, try
 
     gmt begin clip
       gmt clip -R0/6/0/6 -Jx2.5c -W1p,blue << EOF
-0 0
-5 1
-5 5
-EOF
+    0 0
+    5 1
+    5 5
+    EOF
       gmt plot @tut_data.txt -Gred -Sc2c 
       gmt psclip -C -B
     gmt end show

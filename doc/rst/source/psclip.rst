@@ -49,10 +49,10 @@ being partly visible or missing altogether, try
    ::
 
     gmt psclip -R0/6/0/6 -Jx2.5c -W1p,blue -P -K << EOF > clip.ps
-0 0
-5 1
-5 5
-EOF
+    0 0
+    5 1
+    5 5
+    EOF
     gmt psxy @tut_data.txt -Gred -Sc2c -R -J -O -K >> clip.ps
     gmt psclip -C -O -R -J -Baf >> clip.ps
 
