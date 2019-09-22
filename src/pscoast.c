@@ -709,7 +709,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
 	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
-	bool rect = false;
+	bool clip_to_extend_lines = false;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border = 0.0, east_border = 0.0, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
@@ -796,8 +796,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
 	world_map_save = GMT->current.map.is_world;
-	rect = (Ctrl->W.active && (gmt_M_is_rect_graticule (GMT) || GMT->common.R.oblique));	/* We have a rectangular map boundary to clip against */
 
+	if (!Ctrl->M.active && (Ctrl->W.active || Ctrl->I.active || Ctrl->N.active))
+		clip_to_extend_lines = (!(gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) || GMT->common.R.oblique);
+		
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
@@ -981,8 +983,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->M.active && Ctrl->W.active) {
 		gmt_setpen (GMT, &Ctrl->W.pen[0]);
-		if (rect) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
+	if (clip_to_extend_lines) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	last_pen_level = -1;
 
@@ -1148,6 +1150,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		for (ind = 0; ind < r.nb; ind++) {	/* Loop over necessary bins only */
 
 			bin = r.bins[ind];
+
+#ifdef DEBUG
+			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+#endif
 			gmt_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
 
 			if (r.ns == 0) continue;
@@ -1215,6 +1221,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		for (ind = 0; ind < b.nb; ind++) {	/* Loop over necessary bins only */
 
 			bin = b.bins[ind];
+#ifdef DEBUG
+			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+#endif
 			gmt_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
 
 			if (b.ns == 0) continue;
@@ -1269,7 +1278,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->M.active) {
-		if (rect) gmt_map_clip_off (GMT);
+		if (clip_to_extend_lines) gmt_map_clip_off (GMT);
 		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;
 			gmt_map_basemap (GMT);
