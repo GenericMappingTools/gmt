@@ -40,3 +40,6 @@ grid, making a JPG plot called France2, try
    ::
 
     gmt grdimage @earth_relief_01m -RFR -JM6i -B -jpg France2
+
+The automatic display of the plot can be deactivated by setting an environmental parameter
+named GMT_END_SHOW to off.
