@@ -85,7 +85,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *sho
 int GMT_end (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool show = false;
-	char *display = NULL, *task = "show";
+	char *display = NULL, *task = "show", *setting = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -113,7 +113,8 @@ int GMT_end (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the end main code ----------------------------*/
 
-	display = (show) ? task : NULL;
+	if (!((setting = getenv ("GMT_END_SHOW")) && !strcmp (setting, "off")))
+		display = (show) ? task : NULL;
 	
 	if (gmt_manage_workflow (API, GMT_END_WORKFLOW, display))
 		error = GMT_RUNTIME_ERROR;
