@@ -55,5 +55,5 @@ gmt begin ex03
     gmt subplot set 1,0 -A"Coherency@+2@+"
     gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
   gmt subplot end
-gmt end
+gmt end show
 rm -f samp* *.pg spectrum.*

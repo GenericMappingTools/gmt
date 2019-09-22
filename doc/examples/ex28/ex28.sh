@@ -17,4 +17,4 @@ gmt begin ex28
 	# Annotate in km but append ,000m to annotations to get customized meter labels
 	gmt basemap -R@Kilauea.utm.nc+Uk -Jx1:160 -B5g5+u"@:8:000m@::" -BWSne --FONT_ANNOT_PRIMARY=10p \
 		--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p
-gmt end
+gmt end show

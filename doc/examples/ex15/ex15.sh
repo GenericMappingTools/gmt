@@ -28,5 +28,5 @@ gmt begin ex15
     gmt coast -Ggray -Wthinnest
     gmt grdinfo -Cn -M ship.nc | gmt plot -Sa0.15i -Wthick -i10,11
   gmt subplot end
-gmt end
+gmt end show
 rm -f ship.b ship_10m.b ship.nc ship_clipped.nc

@@ -24,6 +24,6 @@ gmt begin ex12
   # Finally color the topography
   gmt contour @Table_5_11.txt -C -I -c1,1
   gmt subplot end
-gmt end
+gmt end show
 #
 rm -f net.xy

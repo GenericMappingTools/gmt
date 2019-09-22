@@ -34,5 +34,5 @@ gmt begin ex19
     echo "0 -10 GMT CONFERENCE" | gmt text -F+f32p,Helvetica-Bold,red=thinner
     echo "0 -30 Honolulu, Hawaii, April 1, 2018" | gmt text -F+f18p,Helvetica-Bold,green=thinnest
   gmt subplot end
-gmt end
+gmt end show
 rm -f lat.nc lon.nc lat.cpt lon.cpt

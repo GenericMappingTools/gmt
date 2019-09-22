@@ -21,5 +21,5 @@ gmt begin ex16
     gmt grdview filtered.nc -C@ex_16.cpt -Qs -B+t"triangulate @~\256@~ grdfilter" -c1,1
   gmt subplot end
   gmt colorbar -DJBC+w5i/0.25i+h -C@ex_16.cpt
-gmt end
+gmt end show
 rm -f raws0.nc raws5.nc rawt.nc filtered.nc

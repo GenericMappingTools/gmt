@@ -18,4 +18,4 @@ gmt begin ex07
 	-43 -8 AMERICA
 	 -7 11 AFRICA
 	END
-gmt end
+gmt end show

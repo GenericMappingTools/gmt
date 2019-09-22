@@ -24,4 +24,4 @@ gmt begin
 		-N-6+glightgray -Qc100 -B2 -Bz2+l"Topo (km)" -BneswZ -Y2.2i
 	echo '3.25 5.75 H@#awaiian@# R@#idge@#' | gmt text -R0/10/0/10 -Jx1i \
 	-F+f60p,ZapfChancery-MediumItalic+jCB
-gmt end
+gmt end show

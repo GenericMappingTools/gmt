@@ -11,5 +11,5 @@ gmt begin ex09
 	gmt plot @fz_09.txt -Wthinner,-
 	# Take label from segment header and plot near coordinates of last record of each track
 	gmt convert -El @tracks_09.txt | gmt text -F+f10p,Helvetica-Bold+a50+jRM+h -D-0.05i/-0.05i
-gmt end
+gmt end show
 

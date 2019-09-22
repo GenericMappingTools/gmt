@@ -15,4 +15,4 @@ gmt begin ex01
     gmt grdcontour @osu91a1f_16.nc -C10 -A50+f7p -Gd4i -Ln -Wcthinnest,- -Wathin,- -T+d0.1i/0.02i
     gmt grdcontour @osu91a1f_16.nc -C10 -A50+f7p -Gd4i -LP -T+d0.1i/0.02i
   gmt subplot end
-gmt end
+gmt end show

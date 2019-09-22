@@ -36,4 +36,4 @@ gmt begin ex25
 	S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]
 	END
 	rm -f *.nc key.*
-gmt end
+gmt end show

@@ -43,5 +43,5 @@ gmt begin ex47
   plot_one -Ey -Nr -c3,2
   gmt text -F+cRM+jTC+a90+t"REDUCED MAJOR AXIS" -N -Dj0.2i
   gmt subplot end
-gmt end
+gmt end show
 rm -f data.txt giants.txt

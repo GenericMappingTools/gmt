@@ -43,4 +43,4 @@ gmt begin ex23
 
 	# Clean up after ourselves:
 	rm -f cities.txt dist.nc
-gmt end
+gmt end show

@@ -34,4 +34,4 @@ gmt begin ex17
 
 	# Clean up
 	rm -f geoid.cpt
-gmt end
+gmt end show

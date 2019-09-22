@@ -35,4 +35,4 @@ gmt begin ex48
 	# Move up 3.5 inches so origin is at the map center
 	gmt plot -R-3.5/3.5/0/6 -Jx1i -Y3.5i path.txt -Sqn1:+l"IMPORTANT PACIFIC AIRPORTS"+v+f32p -Wfaint,white -N
 	rm -f airports.txt near_area.txt path.txt
-gmt end
+gmt end show

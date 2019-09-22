@@ -23,4 +23,4 @@ gmt begin ex24
 	gmt plot point.txt -Wfat,white -S+0.2i
 	gmt plot dateline.txt -Wfat,white -A
 	rm -f point.txt dateline.txt
-gmt end
+gmt end show

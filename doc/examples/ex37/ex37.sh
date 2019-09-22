@@ -41,4 +41,4 @@ gmt begin ex37
         -BWsNe+t"Coherency between gravity and bathymetry" -X-3.25i -Y3.3i cross.txt -i0,15 -W0.5p
     gmt plot cross.txt -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey
     rm -f cross.txt *_tmp.nc ?.cpt bbox
-gmt end
+gmt end show

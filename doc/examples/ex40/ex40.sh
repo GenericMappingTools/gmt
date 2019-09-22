@@ -35,4 +35,4 @@ gmt begin ex40
 	gmt text area_T500k.txt -F+f14p+cLB -Dj0.2i
   gmt subplot end
   rm -f centroid.txt area*.txt T*.txt
-gmt end
+gmt end show

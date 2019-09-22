@@ -38,4 +38,4 @@ gmt begin ex45
 
   gmt subplot end
   rm -f model.txt
-gmt end
+gmt end show
