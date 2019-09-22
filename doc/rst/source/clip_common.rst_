@@ -90,6 +90,11 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
+**-W**\ *pen*
+    Draw outline of clip path using given pen attributes [Default is no outline].
+
 .. _-X:
 
 .. include:: explain_-XY.rst_
