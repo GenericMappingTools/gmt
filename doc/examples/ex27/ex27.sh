@@ -22,4 +22,4 @@ gmt begin ex27
 
 	# Put a color legend in top-left corner of the land mask
 	gmt colorbar -DjTL+o1c+w2i/0.15i -Bx50f10 -By+lmGal -I -F+gwhite+p1p
-gmt end
+gmt end show

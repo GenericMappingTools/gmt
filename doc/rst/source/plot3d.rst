@@ -49,6 +49,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot blue columns (width = 1.25 cm) at the positions listed in the
 file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the

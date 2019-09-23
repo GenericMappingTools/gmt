@@ -48,6 +48,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot a half circle rose diagram of the data in the file
 fault_segments.az_r (containing pairs of (azimuth, length in meters),
 using a 10 degree bin sector width, on a circle of diameter = 6 inch, grid

@@ -52,5 +52,5 @@ Volumes: $volume mGal\264km@+2@+
 Areas: $area km@+2@+
 END
   gmt subplot end
-gmt end
+gmt end show
 rm -f sm_*.txt tmp.nc mask.nc pratt.txt center*

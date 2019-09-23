@@ -29,4 +29,4 @@ gmt begin ex26
 
 	PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/5i
 	gmt coast $PROJ -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -X1i -Y-4i
-gmt end
+gmt end show

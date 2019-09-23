@@ -17,4 +17,4 @@ gmt begin ex02
     gmt grdimage @HI_geoid_02.nc
     gmt colorbar -DJRM+o0.6i/0+e+mc -Bx2+lGEOID -By+lm
   gmt subplot end
-gmt end
+gmt end show

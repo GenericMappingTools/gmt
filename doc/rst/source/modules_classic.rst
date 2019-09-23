@@ -17,6 +17,7 @@ These modules are fully compatible with GMT 4 and 5.
     - :doc:`blockmean`
     - :doc:`blockmedian`
     - :doc:`blockmode`
+    - :doc:`dimfilter`
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
@@ -44,6 +45,7 @@ These modules are fully compatible with GMT 4 and 5.
     - :doc:`grdcut`
     - :doc:`grdedit`
     - :doc:`grdfft`
+    - :doc:`grdfill`
     - :doc:`grdfilter`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
@@ -79,6 +81,7 @@ These modules are fully compatible with GMT 4 and 5.
     - :doc:`psrose`
     - :doc:`psscale`
     - :doc:`pssolar`
+    - :doc:`psternary`
     - :doc:`pstext`
     - :doc:`pswiggle`
     - :doc:`psxy`
@@ -154,6 +157,8 @@ Filtering
 | :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`dimfilter`      | Directional filtering of 2-D gridded files in the space/time domain |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`filter1d`       | Time domain filtering of 1-D data tables                            |
 +-----------------------+---------------------------------------------------------------------+
@@ -272,7 +277,7 @@ Trends in 1-D and 2-D data
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtregress`     | Linear regression of 1-D data sets                                  |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (*x*,\ *y*) locations     |
+| :doc:`grdtrend`       | Fit trend surface to grids and compute residuals                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`trend1d`        | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
 +-----------------------+---------------------------------------------------------------------+
@@ -311,6 +316,8 @@ Miscellaneous
 
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmt2kml`        | Like :doc:`plot` but writes KML for use in Google Earth             |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtwhich`       | Find full path to specified files                                   |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
 +-----------------------+---------------------------------------------------------------------+

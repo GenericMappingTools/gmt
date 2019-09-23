@@ -25,4 +25,4 @@ ${plon} ${plat}
 EOF
   echo ${lon} ${lat} $az 1000 | gmt plot -S=0.15i+e -W1p,blue -Ggreen
   echo ${lon} ${lat} $az2 1000 | gmt plot -S=0.15i+e -W1p,blue -Ggreen
-gmt end
+gmt end show

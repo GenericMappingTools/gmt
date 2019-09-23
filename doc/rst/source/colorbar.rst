@@ -43,13 +43,17 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)
 (paper coordinates) with justification at top center and automatic annotation interval, do
 
    ::
 
-    gmt makecpt -T-200/1000/100 -Crainbow > t.cpt
-    gmt colorbar -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm -pdf map
+    gmt begin map
+      gmt makecpt -T-200/1000/100 -Crainbow
+      gmt colorbar -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm
+    gmt end show
 
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the

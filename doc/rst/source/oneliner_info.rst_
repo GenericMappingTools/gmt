@@ -1,0 +1,4 @@
+Note: Since many GMT plot examples are very short (i.e., one module call between the
+**gmt begin** and **gmt end** commands), we will often present them using the quick
+modern mode :doc:`/cookbook/one-liner` syntax, which simplifies such short scripts.
+

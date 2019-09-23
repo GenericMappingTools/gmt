@@ -32,9 +32,9 @@ struct GMT_DATA_INFO {
 	char remark[GMT_LEN128];	/* What it is */
 };
 
-struct GMT_MD5 {
+struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
 	char name[GMT_LEN64];	/* File name */
-	char md5[GMT_LEN64];	/* The MD5 hash */
+	char hash[GMT_LEN64];	/* The file hash */
 	size_t size;		/* File size in bytes */
 };
 

@@ -17,5 +17,5 @@ gmt begin ex13
     gmt grdcontour dzdx.nc -C0.1  -A0.5 -Gd2i -S4 -T+d0.1i/0.03i -c1,0
     gmt grdcontour dzdy.nc -C0.05 -A0.2 -Gd2i -S4 -T+d0.1i/0.03i -c1,1
   gmt subplot end
-gmt end
+gmt end show
 rm -f z.nc dzdx.nc dzdy.nc

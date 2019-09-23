@@ -58,4 +58,4 @@ gmt begin ex31
 	gmt legend -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite legend.txt
 
 	rm -f PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps
-gmt end
+gmt end show

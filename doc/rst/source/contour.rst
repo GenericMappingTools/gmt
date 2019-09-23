@@ -46,6 +46,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the CPT topo.cpt on a Lambert
 map at 0.5 inch/degree along the standard parallels 18 and 24, use

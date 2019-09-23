@@ -59,4 +59,4 @@ gmt begin ex30
 	EOF
 
 	echo 0 0 0.5 0 120 | gmt plot -Sm0.15i+e -W1p -Gblack --PROJ_LENGTH_UNIT=inch
-gmt end
+gmt end show

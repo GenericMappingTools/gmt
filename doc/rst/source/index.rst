@@ -6,6 +6,19 @@ The Generic Mapping Tools Documentation
 Welcome to the GMT Docs! Here you'll find resources for using GMT and examples of what
 it can do.
 
+Quick links
+-----------
+
+- :doc:`std_opts`
+- :doc:`proj_codes`
+- :doc:`GMT Defaults <gmt.conf>`
+- :doc:`GMT Colors <gmtcolors>`
+- :doc:`35 Postscript Fonts </cookbook/postscript_fonts>`
+- :doc:`Built-in CPTs </cookbook/cpts>`
+- :doc:`Octal Codes of Characters </cookbook/octal_codes>`
+- :ref:`Pen Syntax <-Wpen_attrib>`
+- :ref:`Grid File Format Specifications <tbl-grdformats>`
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting started
@@ -20,9 +33,6 @@ it can do.
    modules
    supplements
    cookbook
-   std_opts
-   proj_codes
-   GMT Defaults <gmt.conf>
    datasets
 
 .. toctree::
