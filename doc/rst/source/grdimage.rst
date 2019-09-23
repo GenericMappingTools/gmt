@@ -44,16 +44,12 @@ Examples
 .. include:: oneliner_info.rst_
 
 For a quick-and-dirty illuminated color map of the data in the remote file
-@AK_gulf_grav.nc, try
-
-   ::
+@AK_gulf_grav.nc, try::
 
     gmt grdimage @AK_gulf_grav.nc -I+d -B -pdf quick
 
 To gray-shade the file AK_gulf_grav.nc on a Lambert map at 1.5 cm/degree
-along the standard parallels 18 and 24, centered on (142W, 55N), try:
-
-   ::
+along the standard parallels 18 and 24, centered on (142W, 55N), try::
 
     gmt begin alaska_gray
       gmt grd2cpt -Cgray @AK_gulf_grav.nc
@@ -63,24 +59,18 @@ along the standard parallels 18 and 24, centered on (142W, 55N), try:
 To create an illuminated color PostScript plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
-inch/x-unit, tickmarks every 5 units:
-
-   ::
+inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
 
 To create an false color PostScript plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
-tickmarks every 5 units:
-
-   ::
+tickmarks every 5 units::
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
 When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit
-
-   ::
+remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd
         http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg
