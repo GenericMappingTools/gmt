@@ -14,5 +14,5 @@ gmt begin ex10
 		-B -Bza500+lLanguages -BWSneZ+t"World Languages By Continent"
 	gmt legend -JZ -DjLB+o0.2i+w1.35i/0+jBL --FONT=Helvetica-Bold \
 		-F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p @legend_10.txt
-gmt end
+gmt end show
 

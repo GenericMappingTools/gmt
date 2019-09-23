@@ -21,4 +21,4 @@ gmt begin ex36
   gmt subplot end
   # cleanup
   rm -f tt.nc
-gmt end
+gmt end show

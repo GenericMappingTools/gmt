@@ -87,4 +87,4 @@ gmt begin ex11
 	END
 
 	rm -f *.nc
-gmt end
+gmt end show

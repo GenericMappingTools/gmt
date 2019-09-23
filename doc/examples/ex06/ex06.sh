@@ -10,4 +10,4 @@ gmt begin ex06
 	-R-6000/0/0/30 -Gorange -L1p -Z1 -W250 -c0
     gmt rose @fractures_06.txt -: -A10r -S -Gorange -R0/1/0/360 -Bx0.2g0.2 -By30g30 -B+glightblue -W1p -c1
   gmt subplot end
-gmt end
+gmt end show

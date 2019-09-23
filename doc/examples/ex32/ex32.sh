@@ -53,4 +53,4 @@ gmt begin ex32
 
 	# cleanup
 	rm -f cities.txt
-gmt end
+gmt end show

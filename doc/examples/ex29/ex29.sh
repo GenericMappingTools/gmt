@@ -39,4 +39,4 @@ gmt begin ex29
     gmt plot -Sc0.045i -Gblack @mars370.txt
   gmt subplot end
   rm -f mars.nc mars2.nc PROJ_ELLIPSOID.nc
-gmt end
+gmt end show

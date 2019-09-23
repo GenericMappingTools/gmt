@@ -12,4 +12,4 @@ gmt begin ex46
 	gmt solar -Tn+d2016-02-09T16:00:00 -Gnavy@80
 	gmt solar -Ta+d2016-02-09T16:00:00 -Gnavy@80
 	gmt solar -I+d2016-02-09T16:00:00 -C | gmt plot -Sk@sunglasses/1.5c
-gmt end
+gmt end show

@@ -32,5 +32,5 @@ gmt begin ex14
     gmt grdcontour trend.nc -C25 -A50 -Glct/cb -S4 -c1,1
     gmt plot track -Wthick,.
   gmt subplot end
-gmt end
+gmt end show
 rm -f mean.xyz track trend.nc data.nc data.d trend.d

@@ -34,4 +34,4 @@ gmt begin ex38
   gmt colorbar -DJBC+w5i/0.15i+h+e+n -Cn.cpt -Bx1 -By+l"z@-n@-"
   gmt colorbar -DJBC+w5i/0.15i+h+e+n+o0c/2.5c -Cq.cpt -Bx1 -By+l"z@-q@-"
   rm -f out.nc ?.cpt
-gmt end
+gmt end show

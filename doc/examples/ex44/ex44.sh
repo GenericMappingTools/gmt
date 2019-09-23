@@ -17,4 +17,4 @@ gmt begin ex44
       gmt coast -Rg -JG120/30S/? -Da -Gbrown -A5000 -Bg -Wfaint -EAU+gbisque
     gmt inset end
   gmt subplot end
-gmt end
+gmt end show

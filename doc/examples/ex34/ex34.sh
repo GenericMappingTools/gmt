@@ -14,4 +14,4 @@ gmt begin ex34
     gmt grdimage @FR+IT.nc -I+a15+ne0.75 -c0,0
     gmt coast -EFR,IT+gred@60
   gmt subplot end
-gmt end
+gmt end show

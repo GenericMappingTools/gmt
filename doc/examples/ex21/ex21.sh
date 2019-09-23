@@ -69,4 +69,4 @@ gmt begin ex21
 
 	# Clean up after ourselves:
 	rm -f RHAT.*
-gmt end
+gmt end show

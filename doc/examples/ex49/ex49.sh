@@ -53,4 +53,4 @@ gmt begin ex49
 	S 0.2i s 0.1c white - 0.3i
 	EOF
 	rm -f age_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt
-gmt end
+gmt end show
