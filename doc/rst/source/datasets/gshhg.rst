@@ -22,7 +22,7 @@ data is far superior to the WDB data as far as data quality goes, but as
 noted it lacks lakes, not to mention rivers and borders. We decided to
 use the WVS whenever possible and supplement it with WDB data. We got
 these data over the Internet; they are also available on CD-ROM from the
-National Geophysical Data Center in Boulder, Colorado [31]_.
+National Geophysical Data Center in Boulder, Colorado [1]_.
 
 Format required by GMT
 ----------------------
@@ -121,13 +121,13 @@ becomes a complicated processing step.
    operation would take a very long time to complete. We chose to make 5
    versions on the database, corresponding to different resolutions. The
    decimation was carried out using the Douglas-Peucker (DP)
-   line-reduction algorithm [32]_. We chose the cutoffs so that each
+   line-reduction algorithm [2]_. We chose the cutoffs so that each
    subset was approximately 20% the size of the next higher resolution.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
    :doc:`/coast`, :doc:`/gmtselect`, and
    :doc:`/grdlandmask` with the **-D**
-   option [33]_. For each of these 5 data sets (**f**, **h**, **i**,
+   option [3]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
    split all polygons into line-segments that each fit inside one of the
    many boxes defined by these grid lines. Thus, to paint the entire
@@ -138,7 +138,7 @@ becomes a complicated processing step.
    feature is smaller than the cutoff specified by the user. The
    resulting segment coordinates were then scaled to fit in short
    integer format to preserve precision and written in netCDF format for
-   ultimate portability across hardware platforms [34]_.
+   ultimate portability across hardware platforms [4]_.
 
 *  While we are now back to a file of line-segments we are in a much
    better position to create smaller polygons for painting. Two problems
@@ -173,7 +173,7 @@ The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We begin with an azimuthal equidistant map of the hemisphere centered on
-130\ |degree|\ 21'E, 0\ |degree|\ 12'S, which is slightly west of New Guinea, near the Strait of
+130°21'E, 0°12'S, which is slightly west of New Guinea, near the Strait of
 Dampier. The edges of the map are all 9000 km true distance from the
 projection center. At this scale (and for global maps) the crude
 resolution data will usually be adequate to capture the main geographic
@@ -321,23 +321,21 @@ reproduced by the single command:
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
-.. [31]
+.. [1]
    `National Geophysical Data Center, Boulder, Colorado <http://www.ngdc.noaa.gov/>`_
 
-.. [32]
+.. [2]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
    of the number of points required to represent a digitized line or its
    caricature, *Canadian Cartographer*, 10, 112–122.
 
-.. [33]
+.. [3]
    The full and high resolution files are in separate archives because
    of their size. Not all users may need these files as the intermediate
    data set is better than the data provided with version 2.2.4.
 
-.. [34]
+.. [4]
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
    *J. Geophys. Res. 101*, 8741–8743).
-
-.. |degree| unicode:: U+00B0 .. degree sign
