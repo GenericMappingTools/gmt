@@ -7,4 +7,4 @@ gmt begin powlog ps
     gmt basemap -R0/100/1/100 -JX?p0.5/?l -c
     gmt basemap -c
   gmt subplot end
-gmt end
+gmt end show

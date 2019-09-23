@@ -8,4 +8,4 @@ gmt begin clip ps
 EOF
   gmt plot @tut_data.txt -Gred -Sc2c 
   gmt psclip -C -B
-gmt end
+gmt end show

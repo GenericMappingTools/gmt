@@ -7,4 +7,4 @@ gmt begin panels ps
     gmt basemap -c
     gmt basemap -c
   gmt subplot end
-gmt end
+gmt end show

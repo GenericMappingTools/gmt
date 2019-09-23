@@ -7,4 +7,4 @@ gmt begin shrinkvec1 ps
 	gmt plot data.txt -Sv0.5i+ea+h0.4+jb+n2i -W3p -Gred -B -Blstr -X2.25i
 	gmt plot data.txt -Sv0.5i+ea+h0.4+jb+n2i+p- -W3p -Gred -B -Blstr -X2.25i
 	rm -f data.txt
-gmt end
+gmt end show

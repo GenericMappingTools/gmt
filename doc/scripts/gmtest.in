@@ -24,9 +24,6 @@ fi
 
 shift
 
-# Disable gmt end show from displaying plots
-
-export GMT_END_SHOW=off
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
@@ -182,6 +179,8 @@ export DCW_DIR="@DCW_PATH@"
 export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@"
+# Disable gmt end show from displaying plots
+export GMT_END_SHOW=off
 # Start with proper GMT defaults
 gmt set -Du PS_CHAR_ENCODING ISOLatin1+
 # Tentative PS file name

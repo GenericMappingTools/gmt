@@ -10,4 +10,4 @@ gmt begin varfracs ps
     gmt basemap -R0/5/10/15 -B+glightgray -c
     gmt basemap -R10/15/10/15 -B+gorange -c
   gmt subplot end
-gmt end
+gmt end show
