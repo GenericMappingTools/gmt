@@ -249,19 +249,19 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	int k;
 	FILE *fp = NULL;
 	struct GMT_DATA_HASH *L = NULL;
-	char line[GMT_LEN128] = {""};
+	char line[GMT_LEN256] = {""};
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
-	if (fgets (line, GMT_LEN128, fp) == NULL) {	/* Try to get first record */
+	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of records to follow */
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
 	for (k = 0; k < *n; k++) {
-		if (fgets (line, GMT_LEN128, fp) == NULL) break;	/* Next record */
+		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].hash, &L[k].size);
 	}
 	fclose (fp);
