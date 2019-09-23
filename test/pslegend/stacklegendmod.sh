@@ -10,5 +10,5 @@ gmt begin stacklegendmod ps
   gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker legend.txt -Xa1i -Ya1i
   gmt psbasemap -R2/6/6/10 -Bafg1 -Xa2i -Ya6i
   gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker legend.txt -Xa2i -Ya6i
-gmt end
+gmt end show
 rm -f legend.txt

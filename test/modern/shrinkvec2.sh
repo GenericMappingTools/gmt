@@ -11,4 +11,4 @@ gmt begin shrinkvec2 ps
 	# Use z and CPT for painting the head and stem
 	gmt plot data.txt -Sv0.5i+ea+h0.4+jb+n2i -W3p+c -C -B -Blstr -X2.25i
 	rm -f data.txt t.cpt
-gmt end
+gmt end show

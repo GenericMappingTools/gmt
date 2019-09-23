@@ -6,4 +6,4 @@ gmt begin polarpanels ps
     gmt basemap -JPa?/45 -R0/90/0/1 -Bxa45f -c
     gmt basemap -JPa?/45 -R0/90/0/1 -Bxa45f -c
   gmt subplot end
-gmt end
+gmt end show

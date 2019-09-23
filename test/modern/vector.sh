@@ -15,4 +15,4 @@ echo 1 1 4 1 | gmt plot -Sv0.2i+s+b+e+gred -Gblack -Y1c
 
 echo 1 1 4 1 | gmt plot -Sv0.2i+s+b+e -W1p -Gblack -Y1c
 echo 1 1 4 1 | gmt plot -Sv0.2i+s+b+e+p-+gred -W1p -Gblack -Y1c
-gmt end
+gmt end show

@@ -6,4 +6,4 @@ gmt begin box ps
     gmt basemap -c -Bafg
     gmt basemap -c
   gmt subplot end
-gmt end
+gmt end show
