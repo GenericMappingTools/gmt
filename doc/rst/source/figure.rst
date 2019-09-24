@@ -118,6 +118,12 @@ To make two figures in one session and go back and forth between different figur
 
     gmt end show
 
+Technical Note
+--------------
+
+If you are calling **figure** from an external environment and you do not want the plot to
+be converted automatically when the session ends, perhaps because you wish to do this yourself,
+you can specify the file name or figure format as - (i.e., just a hyphen).
 
 See Also
 --------
