@@ -455,6 +455,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	hash_refresh (GMT);	/* Watch out for changes on the server once a day */
 
+	/* Any old files have now been replaced.  Now we can check if the file exists already */
+	
+	if (kind != GMT_URL_QUERY && !gmt_access (GMT, &file[pos], F_OK)) {	/* File found, we are done here */
+		gmt_M_free (GMT, file);
+		return (pos);
+	}
+	
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
