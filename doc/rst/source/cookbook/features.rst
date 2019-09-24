@@ -1078,10 +1078,14 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **-U** option draws UNIX System time stamp. Optionally, append an
-arbitrary text string (surrounded by double quotes), or the code **c**,
-which will plot the current command string (Figure
-:ref:`Time stamp <U_option>`).
+The **-U** option draws the GMT UNIX System time stamp on the plot.
+By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
+specify the justification of the stamp and where the stamp should fall
+on the page relative to lower left corner of the plot.
+For example, +jBL+o0/0 will align the lower left corner of the time stamp
+with the bottom left corner of the plot [BL]. Optionally, append  an
+arbitrary text string (surrounded by double quotes), or give **+c**,
+which will plot the current command string (Figure :ref:`Time stamp <U_option>`).
 
 .. _U_option:
 
