@@ -12379,7 +12379,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 	/* No -O -K present, so go ahead and check */
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 		if (strlen (opt->arg) < 1) continue;	/* ps is the shortest format extension */
-		sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
+		snprintf (figure, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
 		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other format for the initial id test */
 		if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
 		/* Make sure all formats are valid */
@@ -15215,8 +15215,21 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 }
 
 GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
+	/* Returns false if file already present unless if it is a remote file */
+	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
+	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
+	else if (kind == GMT_URL_QUERY)
+		return true;	/* A query can never exist locally */
+	else if (!gmt_access (GMT, &file[pos], F_OK))
+		return false;	/* File exists already so no need to download */
+	return true;	/* File not found */
+}
+
+#if 0
+GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
 	/* Returns false if file already present */
 	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
+    if (pos == 1) return true;  /* Must always check since file on server might have changed */
 	if (kind == GMT_URL_QUERY)
 		return true;	/* A query can never exist locally */
 	else if (kind == GMT_REGULAR_FILE)
@@ -15238,6 +15251,7 @@ GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file
 		return false;	/* File exists already so no need to download */
 	return true;
 }
+#endif
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
