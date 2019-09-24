@@ -15219,39 +15219,11 @@ GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file
 	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
 	else if (kind == GMT_URL_QUERY)
-		return true;	/* A query can never exist locally */
+		return true;	/* A query can never exist locally so must follow the URL */
 	else if (!gmt_access (GMT, &file[pos], F_OK))
-		return false;	/* File exists already so no need to download */
+		return false;	/* Regular file exists already so no need to download */
 	return true;	/* File not found */
 }
-
-#if 0
-GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
-	/* Returns false if file already present */
-	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-    if (pos == 1) return true;  /* Must always check since file on server might have changed */
-	if (kind == GMT_URL_QUERY)
-		return true;	/* A query can never exist locally */
-	else if (kind == GMT_REGULAR_FILE)
-		return false;	/* A query must exist locally */
-	else if (kind == GMT_DATA_FILE) {	/* Special remote data set @earth_relief_xxm|s grid request */
-		bool found;
-		if (strstr (file, ".grd")) {	/* User already gave the extension */
-			found = (!gmt_access (GMT, &file[1], F_OK));    /* Not found so need to download */
-		}
-		else {	/* Must append the extension .grd */
-			char *tmpfile = malloc (strlen(file)+5);
-			sprintf (tmpfile, "%s.grd", &file[1]);
-			found = (!gmt_access (GMT, tmpfile, F_OK));	/* Not found so need to download */
-			gmt_M_str_free (tmpfile);
-		}
-		return !found;
-	}
-	else if (!gmt_access (GMT, &file[pos], F_OK))
-		return false;	/* File exists already so no need to download */
-	return true;
-}
-#endif
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
