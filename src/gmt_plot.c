@@ -2901,7 +2901,7 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 					char *F = PSL_makecolor (PSL, L->L[k].rgb);
 					char *P = PSL_makepen (PSL, G->font_label.pen.width, G->font_label.pen.rgb, G->font_label.pen.style, G->font_label.pen.offset);
 					font = PSL_makefontsize (PSL, G->font_label.size);
-					sprintf (string, "{%s} FS %s %s", F, P, font);	/* E.g., "{1 0 0 C} FS 4 W 0 A [] 0 B 667 F5" */
+					snprintf (string, GMT_LEN128, "{%s} FS %s %s", F, P, font);	/* E.g., "{1 0 0 C} FS 4 W 0 A [] 0 B 667 F5" */
 					fonts[m] = strdup (string);
 				}
 				else {	/* Regular font fill */
@@ -5195,7 +5195,7 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
 	if (B->refpoint == NULL) {	/* Need to set the BL refpoint since needed in inset to set the temporary origin */
 		char fake[GMT_LEN64] = {""};
-		sprintf (fake, "x%.16lgi/%.16lgi+jBL", rect[XLO], rect[YLO]);
+		snprintf (fake, GMT_LEN64, "x%.16lgi/%.16lgi+jBL", rect[XLO], rect[YLO]);
 		if ((B->refpoint = gmt_get_refpoint (GMT, fake, 'D')) == NULL)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse arg %s\n", fake);
 	}
@@ -5427,9 +5427,9 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	int form, just = PSL_ML;
 
 	if (ms->label[0]) /* Append data unit to the scale length */
-		sprintf (txt, "%g %s", ms->length, ms->label);
+		snprintf (txt, GMT_LEN256, "%g %s", ms->length, ms->label);
 	else
-		sprintf (txt, "%g", ms->length);
+		snprintf (txt, GMT_LEN256, "%g", ms->length);
 
 	if (ms->zdata) /* Append data unit to the scale length */
 		scale = ms->z_scale;
@@ -5481,9 +5481,9 @@ void gmt_draw_vertical_scale_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	}
 
 	if (units) /* Append data unit to the scale length */
-		sprintf (txt, "%g %s", length, units);
+		snprintf (txt, GMT_LEN256, "%g %s", length, units);
 	else
-		sprintf (txt, "%g", length);
+		snprintf (txt, GMT_LEN256, "%g", length);
 	dy = 0.5 * length * zscale;
 	/* Compute the 4 coordinates on the scale line */
 	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 - dy, 0.0, &xx[0], &yy[0]);
@@ -5963,7 +5963,7 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
 	/* Write lon, lat, angle, label record */
-	sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind],
+	snprintf (record, GMT_BUFSIZ, "# %s%s%s%sangle%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind],
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, record, G->Out);
 	G->Out->table[0]->segment[0]->n_rows = 0;
@@ -6134,7 +6134,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	}
 
 	if (gmt_strtok(szProj4, " \t+", &pos, token)) {
-		sprintf(prjcode, "%s",(token[0] == '+' ? &token[6] : &token[5]));	/* PROJ4 projection code. */
+		snprintf(prjcode, 16, "%s",(token[0] == '+' ? &token[6] : &token[5]));	/* PROJ4 projection code. */
 		//wipe_substr(szProj4, token);	/* Consumed, clear it from list */
 	}
 
@@ -6755,7 +6755,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
 			FILE *fpl = NULL;
-			sprintf (file, "%s/gmt.movie", GMT->parent->gwf_dir);
+			snprintf (file, PATH_MAX, "%s/gmt.movie", GMT->parent->gwf_dir);
 			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
 				while (fgets (record, GMT_LEN128, fpl)) {
 					if (record[0] == '#') continue;	/* Skip header */
@@ -6851,7 +6851,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	
 	/* Get title */
 
-	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
+	snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem|switch_charset, O_active, GMT->current.setting.ps_color_mode,
 		GMT->current.ps.origin, GMT->current.setting.map_origin, media_size, GMT->current.ps.title, fno);
@@ -7081,11 +7081,11 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	
 	fig = gmt_get_current_figure (API);
 	/* Get the name of the corresponding gmt.layers.<fig> file */
-	sprintf (file, "%s/gmt.layers.%d", API->gwf_dir, fig);
+	snprintf (file, PATH_MAX, "%s/gmt.layers.%d", API->gwf_dir, fig);
 	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
 		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
-		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
+		snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 		if (gmt_remove_file (API->GMT, file))	/* Wipe the PS file */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
 		return GMT_NOERROR;
@@ -7117,14 +7117,14 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		return GMT_RUNTIME_ERROR;
 	}
 	
-	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
+	snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not truncate file %s!\n", file);
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
-	sprintf (file, "%s/gmt.layers.%d", API->gwf_dir, fig);
+	snprintf (file, PATH_MAX, "%s/gmt.layers.%d", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create new file %s\n", file);
 		gmt_M_free (API->GMT, layer);
@@ -7191,7 +7191,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT->current.ps.fp = NULL;
 		GMT->current.ps.filename[0] = '\0';
 		/* Write layer size to gmt.layers.<fig> in case of revert calls */
-		sprintf (file, "%s/gmt.layers.%d", GMT->parent->gwf_dir, GMT->current.ps.figure);
+		snprintf (file, PATH_MAX, "%s/gmt.layers.%d", GMT->parent->gwf_dir, GMT->current.ps.figure);
 		if ((fp = fopen (file, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open/create file %s\n", file);
 			return;
@@ -8083,7 +8083,7 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 		return GMT_NOTSET;
 	}
 	else
-		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, GMT->current.ps.figure);
+		snprintf (GMT->current.ps.filename, GMT_LEN256, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, GMT->current.ps.figure);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Use PS filename %s\n", GMT->current.ps.filename);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
 	GMT->current.ps.initialize = (k == 0);	/* False means it is an overlay and -R -J may come from history */
@@ -8236,7 +8236,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 
 	P = gmt_get_postscript (GMT);
 	P->header = gmt_M_memory (GMT, NULL, 1, char *);
-	sprintf (buffer, "PostScript read from file: %s", ps_file);
+	snprintf (buffer, GMT_LEN256, "PostScript read from file: %s", ps_file);
 	P->header[0] = strdup (buffer);
 	P->n_headers = 1;
 	if (n_alloc) P->data = gmt_M_memory (GMT, NULL, n_alloc, char);

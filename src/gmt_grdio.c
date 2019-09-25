@@ -1225,7 +1225,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 						strcpy (unit, "seconds"); break;
 				}
 				gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
-				sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
+				snprintf (string[i], GMT_GRID_UNIT_LEN80, "time [%s since %s %s]", unit, date, clock);
 				/* Warning for non-double grids */
 				if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Use double precision output grid to avoid loss of significance of time coordinate.\n");
@@ -1984,12 +1984,12 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			if (gmtlib_file_is_srtmlist (API, argv[i])) {	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				sprintf (file, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
+				snprintf (file, GMT_LEN64, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
 				txt = file;
 			}
 			else if (gmt_M_file_is_remotedata (argv[i]) && (c = strstr (argv[i], ".grd"))) {
 				c[0] = '\0';
-				sprintf (file, "%s", argv[i]);
+				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';
 				txt = file;
 			}

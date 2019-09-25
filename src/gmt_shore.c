@@ -335,7 +335,7 @@ L1:
 		if ( access (path, R_OK) == 0) {	/* File can be read */
 			if ( gshhg_require_min_version (path, version) ) {
 				/* update invalid GMT->session.GSHHGDIR */
-				sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");
+				snprintf (dir, PATH_MAX, "%s/%s", GMT->session.SHAREDIR, "coast");
 				gmt_M_str_free (GMT->session.GSHHGDIR);
 				GMT->session.GSHHGDIR = strdup (dir);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: OK, could access %s\n", path);
