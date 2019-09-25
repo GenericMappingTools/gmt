@@ -228,7 +228,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc< is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc> is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <inc>[<unit>] and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);

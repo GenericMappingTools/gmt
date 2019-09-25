@@ -27,8 +27,8 @@ printer or converted to a high-resolution PNG image for online usage.
 GMT software is written as a set of UNIX tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the Internet
-[*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*].  The
-PostScript plots are easily converted to other formats, such as PDF
+[*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*; *Wessel et al., 2019*].
+The PostScript plots are easily converted to other formats, such as PDF
 or any raster image [4]_.
 
 The original version 1.0 of GMT was released in the summer of 1988
@@ -248,7 +248,7 @@ before gmt begin starts the script.
    The tools can also be installed on other platforms (see Chapter :doc:`non_unix_platforms`).
 
 .. [4]
-   One public-domain RIP is ghostscript, available from `<http://www.gnu.org/>`_.
+   One public-domain RIP is ghostscript, available from `<https://www.ghostscript.com/>`_.
 
 .. [5]
    Programs now also allow for fast, binary multicolumn file i/o.
