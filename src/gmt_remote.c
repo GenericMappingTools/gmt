@@ -249,19 +249,19 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	int k;
 	FILE *fp = NULL;
 	struct GMT_DATA_HASH *L = NULL;
-	char line[GMT_LEN128] = {""};
+	char line[GMT_LEN256] = {""};
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
-	if (fgets (line, GMT_LEN128, fp) == NULL) {	/* Try to get first record */
+	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of records to follow */
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
 	for (k = 0; k < *n; k++) {
-		if (fgets (line, GMT_LEN128, fp) == NULL) break;	/* Next record */
+		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].hash, &L[k].size);
 	}
 	fclose (fp);
@@ -455,6 +455,28 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	hash_refresh (GMT);	/* Watch out for changes on the server once a day */
 
+	/* Any old files have now been replaced.  Now we can check if the file exists already */
+	
+	if (kind != GMT_URL_QUERY) {	/* Regular file, see if we have it already */
+		bool found;
+		if (kind == GMT_DATA_FILE) {	/* Special remote data est @earth_relief_xxm|s request */
+			if (strstr (file, ".grd"))	/* User specified the extension */
+				found = (!gmt_access (GMT, &file[pos], F_OK));
+			else {	/* Must append the extension .grd */
+				char *tmpfile = malloc (strlen (file) + 5);
+				sprintf (tmpfile, "%s.grd", &file[pos]);
+				found = (!gmt_access (GMT, tmpfile, F_OK));
+				gmt_M_str_free (tmpfile);
+			}
+		}
+		else 
+			found = (!gmt_access (GMT, &file[pos], F_OK));
+		if (found) {	/* Got it already */
+			gmt_M_free (GMT, file);
+			return (pos);
+		}
+	}
+	
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);

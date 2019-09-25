@@ -34,7 +34,7 @@ struct GMT_DATA_INFO {
 
 struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
 	char name[GMT_LEN64];	/* File name */
-	char hash[GMT_LEN64];	/* The file hash */
+	char hash[GMT_LEN128];	/* The file hash */
 	size_t size;		/* File size in bytes */
 };
 

@@ -12379,7 +12379,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 	/* No -O -K present, so go ahead and check */
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 		if (strlen (opt->arg) < 1) continue;	/* ps is the shortest format extension */
-		sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
+		snprintf (figure, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
 		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other format for the initial id test */
 		if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
 		/* Make sure all formats are valid */
@@ -15215,28 +15215,11 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 }
 
 GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
-	/* Returns false if file already present */
+	/* Returns false if file already present unless if it is a remote file */
 	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (kind == GMT_URL_QUERY)
-		return true;	/* A query can never exist locally */
-	else if (kind == GMT_REGULAR_FILE)
-		return false;	/* A query must exist locally */
-	else if (kind == GMT_DATA_FILE) {	/* Special remote data set @earth_relief_xxm|s grid request */
-		bool found;
-		if (strstr (file, ".grd")) {	/* User already gave the extension */
-			found = (!gmt_access (GMT, &file[1], F_OK));    /* Not found so need to download */
-		}
-		else {	/* Must append the extension .grd */
-			char *tmpfile = malloc (strlen(file)+5);
-			sprintf (tmpfile, "%s.grd", &file[1]);
-			found = (!gmt_access (GMT, tmpfile, F_OK));	/* Not found so need to download */
-			gmt_M_str_free (tmpfile);
-		}
-		return !found;
-	}
-	else if (!gmt_access (GMT, &file[pos], F_OK))
-		return false;	/* File exists already so no need to download */
-	return true;
+	gmt_M_unused (GMT);
+	if (kind == GMT_URL_QUERY) return true;  /* Queries must be run */
+	return (pos == 1) ? true : false;  /* Remote @files must be checked for download update, local files not */
 }
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
@@ -15285,7 +15268,9 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
 	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
 	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
-	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) pos = 1;	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
+	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) {
+		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
+	}
 	else if (kind == GMT_URL_FILE) pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
 		not_url = !gmtlib_check_url_name (&file[pos]);
@@ -15578,9 +15563,10 @@ GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fm
 	unsigned int pos = 0;
 	char p[GMT_LEN32] = {""};
 	while ((gmt_strtok (formats, ",", &pos, p))) {
-		k = gmt_get_graphics_id (GMT, p);
-		gcode[n] = k;
-		fmt[n++] = gmt_session_code[k];
+		if ((k = gmt_get_graphics_id (GMT, p)) != GMT_NOTSET) {	/* Valid code */
+			gcode[n] = k;
+			fmt[n++] = gmt_session_code[k];
+		}
 	}
 	return (n);
 }
