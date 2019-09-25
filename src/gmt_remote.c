@@ -457,9 +457,24 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	/* Any old files have now been replaced.  Now we can check if the file exists already */
 	
-	if (kind != GMT_URL_QUERY && !gmt_access (GMT, &file[pos], F_OK)) {	/* File found, we are done here */
-		gmt_M_free (GMT, file);
-		return (pos);
+	if (kind != GMT_URL_QUERY) {	/* Regular file, see if we have it already */
+		bool found;
+		if (kind == GMT_DATA_FILE) {	/* Special remote data est @earth_relief_xxm|s request */
+			if (strstr (file, ".grd"))	/* User specified the extension */
+				found = (!gmt_access (GMT, &file[pos], F_OK));
+			else {	/* Must append the extension .grd */
+				char *tmpfile = malloc (strlen (file) + 5);
+				sprintf (tmpfile, "%s.grd", &file[pos]);
+				found = (!gmt_access (GMT, tmpfile, F_OK));
+				gmt_M_str_free (tmpfile);
+			}
+		}
+		else 
+			found = (!gmt_access (GMT, &file[pos], F_OK));
+		if (found) {	/* Got it already */
+			gmt_M_free (GMT, file);
+			return (pos);
+		}
 	}
 	
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
