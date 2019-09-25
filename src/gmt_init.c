@@ -15217,9 +15217,12 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
 	/* Returns false if file already present unless if it is a remote file */
 	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	gmt_M_unused (GMT);
-	if (kind == GMT_URL_QUERY) return true;  /* Queries must be run */
-	return (pos == 1) ? true : false;  /* Remote @files must be checked for download update, local files not */
+	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
+	else if (kind == GMT_URL_QUERY)
+		return true;	/* A query can never exist locally so must follow the URL */
+	else if (!gmt_access (GMT, &file[pos], F_OK))
+		return false;	/* Regular file exists already so no need to download */
+	return true;	/* File not found */
 }
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
