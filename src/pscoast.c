@@ -473,11 +473,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':
 				Ctrl->W.active = true;	/* Want to draw shorelines */
-				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: usage is -W<feature>[/<pen>]\n");
-					n_errors++;
-					continue;
-				}
 				if ((opt->arg[0] >= '1' && opt->arg[0] <= '4') && opt->arg[1] == '/') {	/* Specific pen for this feature */
 					k = (int)(opt->arg[0] - '1');
 					if (opt->arg[2] && gmt_getpen (GMT, &opt->arg[2], &Ctrl->W.pen[k])) {
