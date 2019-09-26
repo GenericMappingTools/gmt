@@ -2,7 +2,7 @@
 # Testing various ways of extracting and plotting IMG grids
 
 ps=imgmap.ps
-IMG=@topo.8.2.img
+IMG=@topo.8.4.img
 # Get subset of original merc grid and plot as Cartesian
 # This requires a spherical Mercator projection overlay
 gmt img2grd $IMG -R180/200/-5/5 -T1 -S1 -Gimg_m.nc -M

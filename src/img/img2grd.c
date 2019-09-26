@@ -478,6 +478,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
 				min = 2;
 				break;
+			case GMT_IMG_NLON_4M*GMT_IMG_NLAT_4M_72*GMT_IMG_ITEMSIZE:	/* Test grid only */
+				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
+				min = 4;
+				break;
 			default:
 				if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 				min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
