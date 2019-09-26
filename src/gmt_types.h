@@ -154,9 +154,9 @@ struct GMT_SUBPLOT {
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
-	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
-	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
-	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
+	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
+	char fill[GMT_LEN64];		/* Panel fill color */
+	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
