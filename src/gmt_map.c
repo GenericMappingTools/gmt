@@ -6611,7 +6611,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item];
 	if (T->active && T->interval == 0.0) {
 		T->interval = d, T->generated = set_a = true;
-		sprintf (tmp, "a%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "a%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 		if (interval) T->type = 'i', T->flavor = 1;
 	}
@@ -6620,7 +6620,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+2];
 	if (T->active && T->interval == 0.0) {
 		T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
-		sprintf (tmp, "f%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "f%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 
@@ -6628,7 +6628,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
 		T->interval = set_a ? d : f, T->generated = true;
-		sprintf (tmp, "g%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
@@ -9600,7 +9600,7 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	sprintf (header, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
+	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }

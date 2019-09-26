@@ -50,11 +50,11 @@ void gmt_mbsystem_module_show_all (void *V_API) {
 	while (g_mbsystem_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_mbsystem_module[module_id-1].component, g_mbsystem_module[module_id].component)) {
 			/* Start of new supplemental group */
-			sprintf (message, "\nModule name:     Purpose of %s module:\n", g_mbsystem_module[module_id].component);
+			snprintf (message, 256, "\nModule name:     Purpose of %s module:\n", g_mbsystem_module[module_id].component);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-	sprintf (message, "%-16s %s\n",
+	snprintf (message, 256, "%-16s %s\n",
 		g_mbsystem_module[module_id].name, g_mbsystem_module[module_id].purpose);
 		GMT_Message (V_API, GMT_TIME_NONE, message);
 		++module_id;

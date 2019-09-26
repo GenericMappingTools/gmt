@@ -36,37 +36,37 @@ GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_H
 	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
 	char record[GMT_BUFSIZ] = {""}, item[GMT_LEN64] = {""};
 
-	sprintf (record, "ncols %d\nnrows %d\n", header->n_columns, header->n_rows);
+	snprintf (record, GMT_BUFSIZ, "ncols %d\nnrows %d\n", header->n_columns, header->n_rows);
 	gmt_M_fputs (record, fp);		/* Write a text record */
 	if (header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 		sprintf (record, "xllcorner ");
-		sprintf (item, GMT->current.setting.format_float_out, header->wesn[XLO]);
+		snprintf (item, GMT_LEN64, GMT->current.setting.format_float_out, header->wesn[XLO]);
 		strcat  (record, item);	strcat  (record, "\n");
 		gmt_M_fputs (record, fp);		/* Write a text record */
 		sprintf (record, "yllcorner ");
-		sprintf (item, GMT->current.setting.format_float_out, header->wesn[YLO]);
+		snprintf (item, GMT_LEN64, GMT->current.setting.format_float_out, header->wesn[YLO]);
 		strcat  (record, item);	strcat  (record, "\n");
 		gmt_M_fputs (record, fp);		/* Write a text record */
 	}
 	else {	/* Gridline format */
 		sprintf (record, "xllcenter ");
-		sprintf (item, GMT->current.setting.format_float_out, header->wesn[XLO]);
+		snprintf (item, GMT_LEN64, GMT->current.setting.format_float_out, header->wesn[XLO]);
 		strcat  (record, item);	strcat  (record, "\n");
 		gmt_M_fputs (record, fp);		/* Write a text record */
 		sprintf (record, "yllcenter ");
-		sprintf (item, GMT->current.setting.format_float_out, header->wesn[YLO]);
+		snprintf (item, GMT_LEN64, GMT->current.setting.format_float_out, header->wesn[YLO]);
 		strcat  (record, item);	strcat  (record, "\n");
 		gmt_M_fputs (record, fp);		/* Write a text record */
 	}
 	sprintf (record, "cellsize ");
-	sprintf (item, GMT->current.setting.format_float_out, header->inc[GMT_X]);
+	snprintf (item, GMT_LEN64, GMT->current.setting.format_float_out, header->inc[GMT_X]);
 	strcat  (record, item);	strcat  (record, "\n");
 	gmt_M_fputs (record, fp);		/* Write a text record */
 	if (isnan (header->nan_value)) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0f;
 	}
-	sprintf (record, "nodata_value %ld\n", lrintf (header->nan_value));
+	snprintf (record, GMT_BUFSIZ, "nodata_value %ld\n", lrintf (header->nan_value));
 	gmt_M_fputs (record, fp);		/* Write a text record */
 
 	return (GMT_NOERROR);
@@ -699,13 +699,13 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 			if (i == last) c[0] = '\n';
 			kk = ij+actual_col[i];
 			if (gmt_M_is_fnan (grid[kk]))
-				sprintf (item, "%ld%c", lrintf (header->nan_value), c[0]);
+				snprintf (item, GMT_LEN64, "%ld%c", lrintf (header->nan_value), c[0]);
 			else if (floating) {
-				sprintf (item, GMT->current.setting.format_float_out, grid[kk]);
+				snprintf (item, GMT_LEN64-1, GMT->current.setting.format_float_out, grid[kk]);
 				strcat (item, c);
 			}
 			else
-				sprintf (item, "%ld%c", lrint ((double)grid[kk]), c[0]);
+				snprintf (item, GMT_LEN64, "%ld%c", lrint ((double)grid[kk]), c[0]);
 			gmt_M_fputs (item, fp);
 		}
 	}
