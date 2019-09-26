@@ -15222,7 +15222,10 @@ GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file
 		return true;	/* A query can never exist locally so must follow the URL */
 	else if (!gmt_access (GMT, &file[pos], F_OK))
 		return false;	/* Regular file exists already so no need to download */
-	return true;	/* File not found */
+	else if (kind == GMT_URL_FILE)	/* And not found in previous line so need to download */
+		return true;	/* File not found */
+	else
+		return false;	/* Just a local file that is not found */
 }
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
