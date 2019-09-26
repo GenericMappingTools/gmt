@@ -76,7 +76,7 @@ struct SUBPLOT_CTRL {
 	} In;
 	struct A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
 		bool active;			/* Want to plot subplot tags */
-		char format[GMT_LEN16];		/* Format for plotting tag (or constant string when done via subplot set) */
+		char format[GMT_LEN128];	/* Format for plotting tag (or constant string when done via subplot set) */
 		char fill[GMT_LEN64];		/* Color fill for optional rectangle behind the tag [none] */
 		char pen[GMT_LEN64];		/* Outline pen for optional rectangle behind the tag [none] */
 		unsigned int mode;		/* Either letter (0) of number (1) tag */
@@ -308,7 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			case 'A':	/* Enable subplot tags and get attributes */
 				Ctrl->A.active = true;
 				if (Ctrl->In.mode == SUBPLOT_SET) {	/* Override the auto-annotation for this subplot only */
-					strncpy (Ctrl->A.format, opt->arg, GMT_LEN16);
+					strncpy (Ctrl->A.format, opt->arg, GMT_LEN128);
 				}
 				else {	/* The full enchilada for begin */
 					if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */

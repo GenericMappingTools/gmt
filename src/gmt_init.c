@@ -11853,7 +11853,7 @@ void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap) {
 /*! Return information about current panel */
 struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
-	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmp[GMT_LEN128] = {""}, *c = NULL;
 	bool found = false;
 	int row, col;
 	unsigned int first, k;
@@ -11919,7 +11919,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			if (P->pen[0] == '-') P->pen[0] = '\0';		/* - means no pen */
 			P->first = first;
 			gmt_M_memcpy (P->gap, gap, 4, double);
-			if (strcmp (tmp, "@")) strncpy (P->tag, tmp, GMT_LEN16-1);	/* Replace auto-tag with manually added tag */
+			if (strcmp (tmp, "@")) strncpy (P->tag, tmp, GMT_LEN128-1);	/* Replace auto-tag with manually added tag */
 			if ((c = strchr (line, GMT_ASCII_GS)) == NULL) {	/* Get the position before frame setting */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
