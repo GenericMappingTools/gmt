@@ -251,7 +251,7 @@ vcpkg's bin path (i.e. `C:\vcpkg\installed\x64-windows\bin`) and
 GDAL's bin path (i.e. `C:\vcpkg\installed\x64-windows\tools\gdal`),
 to the system environmental variable `PATH`,
 so that GMT executables can find the DLL shared libraries and
-tools (`gdal_translate` and `ogr2ogr`) provided by GDAL.
+the GDAL tools (`gdal_translate` and `ogr2ogr`).
 
 ## Getting GMT source codes
 
