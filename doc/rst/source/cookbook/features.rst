@@ -532,7 +532,7 @@ The projections available in GMT are presented in Figure
 :ref:`gmt_projections`. For details on all GMT projections and the required
 parameters, see the :doc:`/basemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
-syntax was given in Chapter :ref:`GMT Overview and Quick Reference`.
+syntax is listed in :doc:`/proj_codes`.
 
 .. _gmt_projections:
 
