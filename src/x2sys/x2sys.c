@@ -655,7 +655,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	strcpy (file, fname);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
-		start = gmt_download_file_if_not_found (GMT, file, 2);
+		start = gmt_download_file_if_not_found (GMT, file, 0);
 	}
 	if (x2sys_get_data_path (GMT, path, &file[start], s->suffix)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_file : Cannot find track %s\n", &file[start]);
@@ -726,7 +726,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	strcpy (file, fname);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
-		first = gmt_download_file_if_not_found (GMT, file, 2);
+		first = gmt_download_file_if_not_found (GMT, file, 9);
 	}
  	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (GMT, path, &file[first], s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -831,7 +831,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	strcpy (file, fname);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
-		first = gmt_download_file_if_not_found (GMT, file, 2);
+		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (GMT, path, &file[first], s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -906,7 +906,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	strcpy (file, fname);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
-		first = gmt_download_file_if_not_found (GMT, file, 2);
+		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (GMT, path, &file[first], s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -959,7 +959,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	strcpy (file, fname);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
-		first = gmt_download_file_if_not_found (GMT, file, 2);
+		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}
   	if (x2sys_get_data_path (GMT, path, &file[first], s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	strcat (path, "?");	/* Set all the required fields */
@@ -1559,6 +1559,15 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
 	}
 	fclose (fp);
+
+	/* Add cache dir, if set */
+	
+	if (GMT->session.CACHEDIR) {
+		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
+		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
+		n_x2sys_paths++;
+		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Reached maximum directory (%d) count by adding cache dir!\n", MAX_DATA_PATHS);
+	}
 }
 
 /* x2sys_get_data_path takes a track name as argument and returns the full path
@@ -1622,6 +1631,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 		else
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Failed path for %s: %s\n", track, track_path);
 	}
+	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: No successful path for %s found\n", track);
 	
 	return(1);	/* Schwinehund! */

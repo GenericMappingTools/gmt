@@ -656,7 +656,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
-		sprintf (format, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
+		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
 			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
@@ -728,7 +728,7 @@ GMT_LOCAL char * api_get_ppid (struct GMTAPI_CTRL *API) {
 	int ppid = -1;
 	unsigned int k = 0;
 	static char *source[4] = {"GMT_SESSION_NAME", "parent", "app", "hardwired choice"};
-	char *str = NULL, string[8];
+	char *str = NULL, string[GMT_LEN8];
 	if ((str = getenv ("GMT_SESSION_NAME")) != NULL) {	/* GMT_SESSION_NAME was set in the environment */
 		char *tmp = strdup (str);	/* Duplicate the given string */
 		GMT_Report (API, GMT_MSG_DEBUG, "Obtained GMT_SESSION_NAME from the environment: %s\n", str);
@@ -761,7 +761,7 @@ GMT_LOCAL char * api_get_ppid (struct GMTAPI_CTRL *API) {
 		ppid = getppid(), k = 1; /* parent process id */
 #endif
 	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
-	sprintf (string, "%d", ppid);
+	snprintf (string, GMT_LEN8, "%d", ppid);
 	return (strdup (string));
 }
 
@@ -4470,7 +4470,7 @@ GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAG
 		return -1;
 	}
 	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and another linefeed */
-	sprintf (dim, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
+	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
 	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
 	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
 	if (strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
@@ -5628,7 +5628,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		for (k = 0; gray && k < s_length; k++)
 			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
 		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
-			sprintf (tmp_file, "%s.cpt", *str);	/* Try this as a filename */
+			snprintf (tmp_file, GMT_LEN64, "%s.cpt", *str);	/* Try this as a filename */
 			if (!gmt_access (API->GMT, tmp_file, F_OK))
 				return 0;	/* Probably a process id temp file like 13223.cpt */
 		}
@@ -6057,7 +6057,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 			GMT_Report (API, GMT_MSG_DEBUG, "Must pass a session tag to be used for error log file name\n");
 			return_null (API, GMT_ARG_IS_NULL);
 		}
-		sprintf (file, "%s.log", API->session_tag);
+		snprintf (file, PATH_MAX, "%s.log", API->session_tag);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Unable to open error log file %s\n", file);
 			return_null (API, GMT_ERROR_ON_FOPEN);
@@ -7104,11 +7104,12 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	}
 	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
 		unsigned int first = 0;
-		first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[PATH_MAX] = {""}, *file = strdup (&input[first]);
+			char CPT_file[PATH_MAX] = {""}, *file = NULL;
+			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			file = strdup (&input[first]);
 			if ((c_err = api_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				gmt_M_str_free (file);
@@ -7137,6 +7138,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		else {	/* Not a CPT file but could be remote */
 			char file[PATH_MAX] = {""};
+			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
 			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 				strcat (file, ".grd");	/* Must supply the .grd */
@@ -10014,7 +10016,7 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	API = api_get_api_ptr (V_API);
 	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
-	sprintf (full_name, "gmt %s", mode_name);
+	snprintf (full_name, GMT_LEN32, "gmt %s", mode_name);
 	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", full_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
 	gmtlib_set_KOP_strings (API);
@@ -10578,7 +10580,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		char txt[4] = {""};
 		for (k = 0; k < GMT_N_FAMILIES; k++) if (n_per_family[k] != GMT_NOTSET) {
-			(n_per_family[k] == GMTAPI_UNLIMITED) ? sprintf (txt, ">1") : sprintf (txt, "%d", n_per_family[k]);
+			(n_per_family[k] == GMTAPI_UNLIMITED) ? snprintf (txt, 4, ">1") : snprintf (txt, 4, "%d", n_per_family[k]);
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: For %s we expect %s input objects\n", GMT_family[k], txt);
 		}
 	}

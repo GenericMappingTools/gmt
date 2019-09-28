@@ -154,3 +154,58 @@ x2sys
 +------------------------------------------+--------------------------------------------------------------------+
 | :doc:`/supplements/x2sys/x2sys_solve`    | Determine least-squares systematic correction from crossovers      |
 +------------------------------------------+--------------------------------------------------------------------+
+
+.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
+.. toctree::
+   :hidden:
+
+   supplements/geodesy/earthtide
+   supplements/geodesy/gpsgridder
+   supplements/geodesy/velo
+   supplements/gshhg/gshhg
+   supplements/img/img2grd
+   supplements/mgd77/mgd77convert
+   supplements/mgd77/mgd77header
+   supplements/mgd77/mgd77info
+   supplements/mgd77/mgd77list
+   supplements/mgd77/mgd77magref
+   supplements/mgd77/mgd77manage
+   supplements/mgd77/mgd77path
+   supplements/mgd77/mgd77sniffer
+   supplements/mgd77/mgd77track
+   supplements/potential/gmtflexure
+   supplements/potential/gmtgravmag3d
+   supplements/potential/gravfft
+   supplements/potential/grdflexure
+   supplements/potential/grdgravmag3d
+   supplements/potential/grdredpol
+   supplements/potential/grdseamount
+   supplements/potential/talwani2d
+   supplements/potential/talwani3d
+   supplements/segy/segyz
+   supplements/segy/segy
+   supplements/segy/segy2grd
+   supplements/seis/coupe
+   supplements/seis/meca
+   supplements/seis/polar
+   supplements/seis/sac
+   supplements/spotter/backtracker
+   supplements/spotter/gmtpmodeler
+   supplements/spotter/grdpmodeler
+   supplements/spotter/grdrotater
+   supplements/spotter/grdspotter
+   supplements/spotter/hotspotter
+   supplements/spotter/originater
+   supplements/spotter/polespotter
+   supplements/spotter/rotconverter
+   supplements/spotter/rotsmoother
+   supplements/x2sys/x2sys_binlist
+   supplements/x2sys/x2sys_cross
+   supplements/x2sys/x2sys_datalist
+   supplements/x2sys/x2sys_get
+   supplements/x2sys/x2sys_init
+   supplements/x2sys/x2sys_list
+   supplements/x2sys/x2sys_merge
+   supplements/x2sys/x2sys_put
+   supplements/x2sys/x2sys_report
+   supplements/x2sys/x2sys_solve

@@ -41,7 +41,6 @@ The GMT Cookbook
    cookbook/copyright
    cookbook/preface
    cookbook/introduction
-   cookbook/overview
    cookbook/features
    cookbook/coordinate_transformations
    cookbook/map_projections

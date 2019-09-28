@@ -246,15 +246,18 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
 
-After installing these dependency libraries, you need to add the bin path
-(i.e. `C:\vcpkg\installed\x64-windows\bin`) to the system PATH,
-to allow executables find the DLL shared libraries.
+After installing these dependency libraries, you also need to add
+vcpkg's bin path (i.e. `C:\vcpkg\installed\x64-windows\bin`) and
+GDAL's bin path (i.e. `C:\vcpkg\installed\x64-windows\tools\gdal`),
+to the system environmental variable `PATH`,
+so that GMT executables can find the DLL shared libraries and
+the GDAL tools (`gdal_translate` and `ogr2ogr`).
 
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
 are available from the [GMT website](https://www.generic-mapping-tools.org) and
-[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
+[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases).
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
@@ -370,9 +373,17 @@ Using `sudo` will often do the trick.
 
 ## Setting path
 
-Make sure you set the PATH to include the directory containing the GMT executables
-if this is not a standard directory like `/usr/local/bin`. Then, you should now be able to
-run GMT programs.
+Make sure you set the `PATH` to include the directory containing the GMT executables
+if this is not a standard directory like `/usr/local/bin`.
+
+For Linux/macOS users, open your SHELL configuration file (usually `~/.bashrc`)
+and add the line below to it.
+
+```
+export PATH=${PATH}:/path/to/gmt/bin
+```
+
+Then, you should now be able to run GMT programs.
 
 ---
 

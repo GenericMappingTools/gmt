@@ -84,7 +84,7 @@ GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, d
 		return (0);
 
 	/* Try again, but try "a.tif.wld" instead. */
-	sprintf (generic_buffer, "%s.xxx", gdal_filename);
+	snprintf (generic_buffer, 5000, "%s.xxx", gdal_filename);
 	status = GDALReadWorldFile (generic_buffer, "wld", adfGeoTransform);
 	if (status == 1)
 		return (0);

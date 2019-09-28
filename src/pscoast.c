@@ -363,6 +363,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					n_errors++;
 					continue;
 				}
+				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: usage is -I<feature>[/<pen>]\n");
+					n_errors++;
+					continue;
+				}
 				pen = GMT->current.setting.map_default_pen;	/* Set default pen */
 				if ((string = strchr (opt->arg, '/')) != NULL) {	/* Get specified pen */
 					if (gmt_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
@@ -420,6 +425,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
+					n_errors++;
+					continue;
+				}
+				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: usage is -N<feature>[/<pen>]\n");
 					n_errors++;
 					continue;
 				}

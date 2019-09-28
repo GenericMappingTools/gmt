@@ -439,7 +439,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0;
+	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
 	struct imageinfo header;
@@ -753,6 +753,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);
 
+	if (GMT->current.setting.run_mode == GMT_MODERN) {
+		struct GMT_SUBPLOT *SP = &(GMT->current.plot.panel);
+		if (SP->active)	/* Subplot panel mode is in effect; we must undo any of these gaps here */
+			gmt_M_memcpy (shrink, SP->gap, 4U, double);
+	}
+
 	/* Set new origin */
 
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
@@ -761,12 +767,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	current_pen = GMT->current.setting.map_default_pen;
 
+	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
+
 	if (Ctrl->F.active) {	/* First place legend frame fill */
 		Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];
 		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
 	}
-
-	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
 
 	col_left_x = Ctrl->D.refpoint->x + Ctrl->C.off[GMT_X];			/* Left justification edge of items inside legend box accounting for clearance */
 	row_base_y = Ctrl->D.refpoint->y + Ctrl->D.dim[GMT_Y] - Ctrl->C.off[GMT_Y];	/* Top justification edge of items inside legend box accounting for clearance  */
@@ -1551,6 +1557,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active)	/* Draw legend frame box */
 		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 2U, Ctrl->F.panel);
 
+	PSL_setorigin (PSL, -shrink[XLO], -shrink[YLO], 0.0, PSL_FWD);	/* Adjustments due to subplot set -C */
+
 	/* Time to plot any symbols, text, fronts, quoted lines, and paragraphs we collected in the loop */
 
 	if (D[FRONT]) {
@@ -1672,6 +1680,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 #endif
 	}
+	PSL_setorigin (PSL, shrink[XLO], shrink[YLO], 0.0, PSL_FWD);	/* Undo any damage for adjustments due to subplot set -C */
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 	Ctrl->D.refpoint->x = x_orig;	Ctrl->D.refpoint->y = y_orig;
