@@ -40,7 +40,6 @@ Quick links
    :caption: Reference documentation
 
    modules
-   supplements
    cookbook
    datasets
 
