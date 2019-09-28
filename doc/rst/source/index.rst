@@ -19,6 +19,15 @@ Quick links
 - :ref:`Pen Syntax <-Wpen_attrib>`
 - :ref:`Grid File Format Specifications <tbl-grdformats>`
 
+.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
+.. toctree::
+   :hidden:
+
+   std_opts
+   proj_codes
+   gmt.conf
+   gmtcolors
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting started

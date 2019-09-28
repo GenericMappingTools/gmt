@@ -5,7 +5,7 @@
 #
 
 # -- General configuration -----------------------------------------------------
-needs_sphinx = '1.6'
+needs_sphinx = '1.8'
 extensions = ['sphinx.ext.mathjax']
 source_encoding = 'utf-8-sig'
 source_suffix = '.rst'
@@ -29,6 +29,10 @@ release = '@GMT_PACKAGE_VERSION@'
 # -- Options for HTML output ---------------------------------------------------
 html_theme = 'rtd'
 html_theme_path = ["_themes"]
+html_theme_options = {
+    'sticky_navigation': False,
+    'includehidden': False,
+}
 html_context = {
     "menu_links": [
         (
@@ -45,6 +49,7 @@ html_context = {
         ),
     ],
     # Show the "Edit on Github" link
+    # https://docs.readthedocs.io/en/latest/guides/vcs.html
     "display_github": True,
     "github_user": "GenericMappingTools",
     "github_repo": "gmt",
@@ -57,10 +62,8 @@ html_static_path = ['_static', '_source/_static']
 html_last_updated_fmt = '%b %d, %Y'
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = True
-
-# Load the custom CSS files (needs sphinx >= 1.6 for this to work)
-def setup(app):
-    app.add_stylesheet("style.css")
+# List of custom CSS files (needs sphinx>=1.8)
+html_css_files = ["style.css"]
 
 # Redefine supported_image_types for the HTML builder
 from sphinx.builders.html import StandaloneHTMLBuilder
