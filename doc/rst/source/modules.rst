@@ -1,14 +1,170 @@
 .. _modules:
 
-GMT Core Modules
-================
+GMT Modules
+===========
 
-This is a list of all GMT core modules and their uses.
+This is a list of all GMT core and supplemental modules and their uses.
 
 .. note::
 
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
    :ref:`equivalent page for classic mode <modules_classic>`.
+
+.. Add core and supplemental modules to hidden toctrees to
+.. suppress "document isn't included in any toctree" warnings
+
+.. toctree::
+   :hidden:
+
+   basemap
+   begin
+   blockmean
+   blockmedian
+   blockmode
+   clear
+   clip
+   coast
+   colorbar
+   contour
+   dimfilter
+   docs
+   end
+   events
+   figure
+   filter1d
+   fitcircle
+   gmt2kml
+   gmtconnect
+   gmtconvert
+   gmtdefaults
+   gmtget
+   gmtinfo
+   gmtlogo
+   gmtmath
+   gmtregress
+   gmtselect
+   gmtset
+   gmtsimplify
+   gmtspatial
+   gmtvector
+   gmtwhich
+   grd2cpt
+   grd2kml
+   grd2xyz
+   grdblend
+   grdclip
+   grdcontour
+   grdconvert
+   grdcut
+   grdedit
+   grdfft
+   grdfill
+   grdfilter
+   grdgradient
+   grdhisteq
+   grdimage
+   grdinfo
+   grdlandmask
+   grdmask
+   grdmath
+   grdpaste
+   grdproject
+   grdsample
+   grdtrack
+   grdtrend
+   grdvector
+   grdview
+   grdvolume
+   greenspline
+   histogram
+   image
+   inset
+   kml2gmt
+   legend
+   makecpt
+   mapproject
+   mask
+   movie
+   nearneighbor
+   plot
+   plot3d
+   project
+   psconvert
+   rose
+   sample1d
+   solar
+   spectrum1d
+   sph2grd
+   sphdistance
+   sphinterpolate
+   sphtriangulate
+   splitxyz
+   subplot
+   surface
+   ternary
+   text
+   trend1d
+   trend2d
+   triangulate
+   wiggle
+   xyz2grd
+
+.. toctree::
+   :hidden:
+
+   supplements/geodesy/earthtide
+   supplements/geodesy/gpsgridder
+   supplements/geodesy/velo
+   supplements/gshhg/gshhg
+   supplements/img/img2grd
+   supplements/mgd77/mgd77convert
+   supplements/mgd77/mgd77header
+   supplements/mgd77/mgd77info
+   supplements/mgd77/mgd77list
+   supplements/mgd77/mgd77magref
+   supplements/mgd77/mgd77manage
+   supplements/mgd77/mgd77path
+   supplements/mgd77/mgd77sniffer
+   supplements/mgd77/mgd77track
+   supplements/potential/gmtflexure
+   supplements/potential/gmtgravmag3d
+   supplements/potential/gravfft
+   supplements/potential/grdflexure
+   supplements/potential/grdgravmag3d
+   supplements/potential/grdredpol
+   supplements/potential/grdseamount
+   supplements/potential/talwani2d
+   supplements/potential/talwani3d
+   supplements/segy/segyz
+   supplements/segy/segy
+   supplements/segy/segy2grd
+   supplements/seis/coupe
+   supplements/seis/meca
+   supplements/seis/polar
+   supplements/seis/sac
+   supplements/spotter/backtracker
+   supplements/spotter/gmtpmodeler
+   supplements/spotter/grdpmodeler
+   supplements/spotter/grdrotater
+   supplements/spotter/grdspotter
+   supplements/spotter/hotspotter
+   supplements/spotter/originater
+   supplements/spotter/polespotter
+   supplements/spotter/rotconverter
+   supplements/spotter/rotsmoother
+   supplements/x2sys/x2sys_binlist
+   supplements/x2sys/x2sys_cross
+   supplements/x2sys/x2sys_datalist
+   supplements/x2sys/x2sys_get
+   supplements/x2sys/x2sys_init
+   supplements/x2sys/x2sys_list
+   supplements/x2sys/x2sys_merge
+   supplements/x2sys/x2sys_put
+   supplements/x2sys/x2sys_report
+   supplements/x2sys/x2sys_solve
+
+Core Modules
+------------
 
 .. hlist::
     :columns: 6
@@ -105,6 +261,64 @@ This is a list of all GMT core modules and their uses.
     - :doc:`triangulate`
     - :doc:`wiggle`
     - :doc:`xyz2grd`
+
+Supplemental Modules
+--------------------
+
+
+.. hlist::
+    :columns: 6
+
+    - :doc:`/supplements/geodesy/earthtide`
+    - :doc:`/supplements/geodesy/gpsgridder`
+    - :doc:`/supplements/geodesy/velo`
+    - :doc:`/supplements/gshhg/gshhg`
+    - :doc:`/supplements/img/img2grd`
+    - :doc:`/supplements/mgd77/mgd77convert`
+    - :doc:`/supplements/mgd77/mgd77header`
+    - :doc:`/supplements/mgd77/mgd77info`
+    - :doc:`/supplements/mgd77/mgd77list`
+    - :doc:`/supplements/mgd77/mgd77magref`
+    - :doc:`/supplements/mgd77/mgd77manage`
+    - :doc:`/supplements/mgd77/mgd77path`
+    - :doc:`/supplements/mgd77/mgd77sniffer`
+    - :doc:`/supplements/mgd77/mgd77track`
+    - :doc:`/supplements/potential/gmtflexure`
+    - :doc:`/supplements/potential/gmtgravmag3d`
+    - :doc:`/supplements/potential/gravfft`
+    - :doc:`/supplements/potential/grdflexure`
+    - :doc:`/supplements/potential/grdgravmag3d`
+    - :doc:`/supplements/potential/grdredpol`
+    - :doc:`/supplements/potential/grdseamount`
+    - :doc:`/supplements/potential/talwani2d`
+    - :doc:`/supplements/potential/talwani3d`
+    - :doc:`/supplements/segy/segy2grd`
+    - :doc:`/supplements/segy/segy`
+    - :doc:`/supplements/segy/segyz`
+    - :doc:`/supplements/seis/coupe`
+    - :doc:`/supplements/seis/meca`
+    - :doc:`/supplements/seis/polar`
+    - :doc:`/supplements/seis/sac`
+    - :doc:`/supplements/spotter/backtracker`
+    - :doc:`/supplements/spotter/gmtpmodeler`
+    - :doc:`/supplements/spotter/grdpmodeler`
+    - :doc:`/supplements/spotter/grdrotater`
+    - :doc:`/supplements/spotter/grdspotter`
+    - :doc:`/supplements/spotter/hotspotter`
+    - :doc:`/supplements/spotter/originater`
+    - :doc:`/supplements/spotter/polespotter`
+    - :doc:`/supplements/spotter/rotconverter`
+    - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/x2sys/x2sys_binlist`
+    - :doc:`/supplements/x2sys/x2sys_cross`
+    - :doc:`/supplements/x2sys/x2sys_datalist`
+    - :doc:`/supplements/x2sys/x2sys_get`
+    - :doc:`/supplements/x2sys/x2sys_init`
+    - :doc:`/supplements/x2sys/x2sys_list`
+    - :doc:`/supplements/x2sys/x2sys_merge`
+    - :doc:`/supplements/x2sys/x2sys_put`
+    - :doc:`/supplements/x2sys/x2sys_report`
+    - :doc:`/supplements/x2sys/x2sys_solve`
 
 Session management
 ------------------
@@ -352,100 +566,148 @@ Miscellaneous
 | :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 
-.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
-.. toctree::
-   :hidden:
 
-   basemap
-   begin
-   blockmean
-   blockmedian
-   blockmode
-   clear
-   clip
-   coast
-   colorbar
-   contour
-   dimfilter
-   docs
-   end
-   events
-   figure
-   filter1d
-   fitcircle
-   gmt2kml
-   gmtconnect
-   gmtconvert
-   gmtdefaults
-   gmtget
-   gmtinfo
-   gmtlogo
-   gmtmath
-   gmtregress
-   gmtselect
-   gmtset
-   gmtsimplify
-   gmtspatial
-   gmtvector
-   gmtwhich
-   grd2cpt
-   grd2kml
-   grd2xyz
-   grdblend
-   grdclip
-   grdcontour
-   grdconvert
-   grdcut
-   grdedit
-   grdfft
-   grdfill
-   grdfilter
-   grdgradient
-   grdhisteq
-   grdimage
-   grdinfo
-   grdlandmask
-   grdmask
-   grdmath
-   grdpaste
-   grdproject
-   grdsample
-   grdtrack
-   grdtrend
-   grdvector
-   grdview
-   grdvolume
-   greenspline
-   histogram
-   image
-   inset
-   kml2gmt
-   legend
-   makecpt
-   mapproject
-   mask
-   movie
-   nearneighbor
-   plot
-   plot3d
-   project
-   psconvert
-   rose
-   sample1d
-   solar
-   spectrum1d
-   sph2grd
-   sphdistance
-   sphinterpolate
-   sphtriangulate
-   splitxyz
-   subplot
-   surface
-   ternary
-   text
-   trend1d
-   trend2d
-   triangulate
-   wiggle
-   xyz2grd
+geodesy
+-------
 
++--------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/earthtide`      | Compute grids or time-series of solid Earth tides                                 |
++--------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/gpsgridder`     | Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet |
++--------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/velo`           | Plot velocity vectors, crosses, and wedges on maps                                |
++--------------------------------------------+-----------------------------------------------------------------------------------+
+
+GSHHG
+-----
+
++---------------------------------+-----------------------------------------------------------+
+| :doc:`/supplements/gshhg/gshhg` | Extract data tables from binary GSHHS or WDBII data files |
++---------------------------------+-----------------------------------------------------------+
+
+IMG
+---
+
++----------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/img/img2grd`        | Extract a subset from an img file in Mercator or Geographic format                |
++----------------------------------------+-----------------------------------------------------------------------------------+
+
+MGD77
+-----
+
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77convert`   | Convert MGD77 data to other file formats                                          |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77header`    | Create MGD77 headers from A77 files                                               |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77info`      | Extract information about MGD77 files                                             |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77list`      | Extract data from MGD77 files                                                     |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77magref`    | Evaluate the IGRF or CM4 magnetic field models                                    |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77manage`    | Manage the content of MGD77+ files                                                |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77path`      | Return paths to MGD77 cruises and directories                                     |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77sniffer`   | Along-track quality control of MGD77 cruises                                      |
++------------------------------------------+-----------------------------------------------------------------------------------+
+| :doc:`/supplements/mgd77/mgd77track`     | Plot track-line map of MGD77 cruises                                              |
++------------------------------------------+-----------------------------------------------------------------------------------+
+
+potential
+---------
+
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/gmtflexure`   | Compute flexural deformation of 2-D loads, forces, and bending moments                 |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/gmtgravmag3d` | Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe              |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/gravfft`      | Spectral calculations of gravity, isostasy, admittance, and coherence for grids        |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/grdflexure`   | Compute flexural deformation of 3-D surfaces for various rheologies                    |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/grdgravmag3d` | Computes the gravity effect of one (or two) grids by the method of Okabe               |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/grdredpol`    | Compute the Continuous Reduction To the Pole, AKA differential RTP                     |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/grdseamount`  | Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical) |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/talwani2d`    | Compute geopotential anomalies over 2-D bodies by the method of Talwani                |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+| :doc:`/supplements/potential/talwani3d`    | Compute geopotential anomalies over 3-D bodies by the method of Talwani                |
++--------------------------------------------+----------------------------------------------------------------------------------------+
+
+SEGY
+----
+
++-----------------------------------+------------------------------------+
+| :doc:`/supplements/segy/segyz`    | Plot a SEGY file on a map in 3-D   |
++-----------------------------------+------------------------------------+
+| :doc:`/supplements/segy/segy`     | Plot a SEGY file on a map          |
++-----------------------------------+------------------------------------+
+| :doc:`/supplements/segy/segy2grd` | Converting SEGY data to a GMT grid |
++-----------------------------------+------------------------------------+
+
+seis
+----
+
++--------------------------------+-----------------------------------------------------------+
+| :doc:`/supplements/seis/coupe` | Plot cross-sections of focal mechanisms                   |
++--------------------------------+-----------------------------------------------------------+
+| :doc:`/supplements/seis/meca`  | Plot focal mechanisms on maps                             |
++--------------------------------+-----------------------------------------------------------+
+| :doc:`/supplements/seis/polar` | Plot polarities on the inferior focal half-sphere on maps |
++--------------------------------+-----------------------------------------------------------+
+| :doc:`/supplements/seis/sac`   | Plot seismograms in SAC format on maps                    |
++--------------------------------+-----------------------------------------------------------+
+
+spotter
+-------
+
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/backtracker`  | Generate forward and backward flowlines and hotspot tracks              |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/gmtpmodeler`  | Evaluate a plate motion model at given locations                        |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/grdpmodeler`  | Evaluate a plate motion model on a geographic grid                      |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/grdrotater`   | Finite rotation reconstruction of geographic grid                       |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/grdspotter`   | Create CVA image from a gravity or topography grid                      |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/hotspotter`   | Create CVA image from seamount locations                                |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/originater`   | Associate seamounts with nearest hotspot point sources                  |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/polespotter`  | Find stage poles given fracture zones and abyssal hills                 |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/rotconverter` | Manipulate total reconstruction and stage rotations                     |
++------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/spotter/rotsmoother`  | Get mean rotations and covariance matrices from set of finite rotations |
++------------------------------------------+-------------------------------------------------------------------------+
+
+x2sys
+-----
+
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_binlist`  | Create bin index listing from track data files                     |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_cross`    | Calculate crossovers between track data files                      |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_datalist` | Extract content of track data files                                |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_get`      | Get track listing from track index database                        |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_init`     | Initialize a new x2sys track database                              |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_list`     | Extract subset from crossover data base                            |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_merge`    | Merge an updated COEs table (smaller) into the main table (bigger) |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_put`      | Update track index database from track bin file                    |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_report`   | Report statistics from crossover data base                         |
++------------------------------------------+--------------------------------------------------------------------+
+| :doc:`/supplements/x2sys/x2sys_solve`    | Determine least-squares systematic correction from crossovers      |
++------------------------------------------+--------------------------------------------------------------------+
