@@ -45,7 +45,7 @@ Examples
 
 .. include:: ../../oneliner_info.rst_
 
-   ::
+::
 
     gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 -pdf test << END
     #stat azim ih pol
@@ -58,7 +58,7 @@ Examples
 
 or
 
-   ::
+::
 
     gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 -pdf test <<END
     #Date Or. time stat azim ih
