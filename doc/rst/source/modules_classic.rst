@@ -1,7 +1,7 @@
 .. _modules_classic:
 
-GMT Core Modules (Classic Mode)
-===============================
+GMT Modules (Classic Mode)
+==========================
 
 This is a list of all GMT "classic mode" core and supplemental modules and their respective documentation.
 These modules are fully compatible with GMT 4 and 5.
