@@ -59,7 +59,6 @@ Quick links
 
    std_opts_classic
    modules_classic
-   supplements_classic
 
 .. toctree::
    :maxdepth: 1
