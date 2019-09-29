@@ -1,15 +1,26 @@
 GMT Modules
 ===========
 
-This is a list of all GMT core and supplemental modules and their uses.
-
 .. note::
 
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
    :doc:`equivalent page for classic mode <modules_classic>`.
 
+This is a list of all GMT core and supplemental modules and their uses,
+as well as some utility scripts.
+All modules are requested via a call to the :doc:`gmt` program.
+
 .. Add core and supplemental modules to hidden toctrees to
 .. suppress "document isn't included in any toctree" warnings
+
+.. toctree::
+   :hidden:
+
+   gmt
+   gmt5syntax
+   gmt_shell_functions.sh
+   gmtswitch
+   supplements/img/img2google
 
 .. toctree::
    :hidden:
@@ -160,6 +171,11 @@ This is a list of all GMT core and supplemental modules and their uses.
    supplements/x2sys/x2sys_put
    supplements/x2sys/x2sys_report
    supplements/x2sys/x2sys_solve
+
+Program
+-------
+
+- :doc:`gmt`
 
 Core Modules
 ------------
@@ -316,6 +332,17 @@ Supplemental Modules
     - :doc:`/supplements/x2sys/x2sys_put`
     - :doc:`/supplements/x2sys/x2sys_report`
     - :doc:`/supplements/x2sys/x2sys_solve`
+
+Utility Scripts
+---------------
+
+.. hlist::
+    :columns: 6
+
+    - :doc:`gmt5syntax`
+    - :doc:`gmt_shell_functions.sh`
+    - :doc:`gmtswitch`
+    - :doc:`supplements/img/img2google`
 
 Session management
 ------------------
