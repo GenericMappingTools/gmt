@@ -256,15 +256,14 @@ the GDAL tools (`gdal_translate` and `ogr2ogr`).
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from the [GMT website](https://www.generic-mapping-tools.org) and
-[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases).
+are available from the [GMT main site](https://www.generic-mapping-tools.org).
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
     git clone https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
-from any of the [GMT FTP sites](MIRRORS.md).
+from the [GMT main site](https://www.generic-mapping-tools.org).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
 
