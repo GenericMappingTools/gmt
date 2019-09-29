@@ -54,6 +54,7 @@ These modules are fully compatible with GMT 4 and 5.
     grdhisteq
     grdimage_classic
     grdinfo
+    grdinterpolate
     grdlandmask
     grdmask
     grdmath
@@ -199,6 +200,7 @@ Core Modules
     - :doc:`grdhisteq`
     - :doc:`grdimage_classic`
     - :doc:`grdinfo`
+    - :doc:`grdinterpolate`
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
