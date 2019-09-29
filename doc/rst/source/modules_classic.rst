@@ -1,5 +1,3 @@
-.. _modules_classic:
-
 GMT Modules (Classic Mode)
 ==========================
 
@@ -9,7 +7,7 @@ These modules are fully compatible with GMT 4 and 5.
 .. note::
 
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
-   :ref:`equivalent page for modern mode <modules>`.
+   :doc:`equivalent page for modern mode <modules>`.
 
 .. Add core and supplemental modules to hidden toctrees to
 .. suppress "document isn't included in any toctree" warnings
@@ -21,6 +19,7 @@ These modules are fully compatible with GMT 4 and 5.
     blockmedian
     blockmode
     dimfilter
+    docs
     filter1d
     fitcircle
     gmt2kml
@@ -166,6 +165,7 @@ Core Modules
     - :doc:`blockmedian`
     - :doc:`blockmode`
     - :doc:`dimfilter`
+    - :doc:`docs`
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
@@ -518,6 +518,8 @@ Miscellaneous
 -------------
 
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`docs`           | Show HTML documentation of specified module                         |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmt2kml`        | Like :doc:`plot` but writes KML for use in Google Earth             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtwhich`       | Find full path to specified files                                   |
@@ -525,8 +527,6 @@ Miscellaneous
 | :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`docs`           | Show HTML documentation of specified module                         |
 +-----------------------+---------------------------------------------------------------------+
 
 geodesy

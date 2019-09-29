@@ -1,5 +1,3 @@
-.. _modules:
-
 GMT Modules
 ===========
 
@@ -8,7 +6,7 @@ This is a list of all GMT core and supplemental modules and their uses.
 .. note::
 
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
-   :ref:`equivalent page for classic mode <modules_classic>`.
+   :doc:`equivalent page for classic mode <modules_classic>`.
 
 .. Add core and supplemental modules to hidden toctrees to
 .. suppress "document isn't included in any toctree" warnings
@@ -264,7 +262,6 @@ Core Modules
 
 Supplemental Modules
 --------------------
-
 
 .. hlist::
     :columns: 6
