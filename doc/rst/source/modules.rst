@@ -64,6 +64,7 @@ This is a list of all GMT core and supplemental modules and their uses.
    grdhisteq
    grdimage
    grdinfo
+   grdinterpolate
    grdlandmask
    grdmask
    grdmath
@@ -217,6 +218,7 @@ Core Modules
     - :doc:`grdhisteq`
     - :doc:`grdimage`
     - :doc:`grdinfo`
+    - :doc:`grdinterpolate`
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
