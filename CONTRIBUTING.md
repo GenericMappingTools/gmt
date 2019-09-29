@@ -77,7 +77,7 @@ problem.
 
 If you're browsing the documentation and notice a typo or something that could be
 improved, please consider letting us know. You can either
-[creating an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
+[create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
 at the top right corner of the documentation, and submit a fix (even better :star2:).
 
 
