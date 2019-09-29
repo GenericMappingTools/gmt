@@ -54,6 +54,7 @@ html_context = {
     "github_user": "GenericMappingTools",
     "github_repo": "gmt",
     "github_version": version,
+    "theme_vcs_pageview_mode": "edit",
     "conf_py_path": "/doc/rst/source/"
 }
 # favicon of the docs
