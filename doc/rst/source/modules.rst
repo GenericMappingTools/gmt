@@ -20,7 +20,6 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmt5syntax
    gmt_shell_functions.sh
    gmtswitch
-   isogmt
    supplements/img/img2google
 
 .. toctree::
@@ -343,7 +342,6 @@ Utility Scripts
     - :doc:`gmt5syntax`
     - :doc:`gmt_shell_functions.sh`
     - :doc:`gmtswitch`
-    - :doc:`isogmt`
     - :doc:`supplements/img/img2google`
 
 Session management
