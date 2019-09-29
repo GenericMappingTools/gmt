@@ -26,53 +26,45 @@ Synopsis
 **gmt** is the main program that can start any of the modules:
 
 **gmt** *module* *module-options*
-
-Starts a given GMT *module* with the *module-options*
-that pertain to that particular module.  A few special commands
-are also available:
+    Starts a given GMT *module* with the *module-options*
+    that pertain to that particular module.  A few special commands
+    are also available:
 
 **gmt clear** *items*
-
-Deletes current defaults, or the cache, data or sessions directories.
-Choose between **defaults** (deletes the current gmt.conf file used for the
-current modern session), **cache** (deletes the user's cache directory
-and all of its content), **data** (deletes the user's data download directory
-and all of its content), or **all** (does all of the above).
+    Deletes current defaults, or the cache, data or sessions directories.
+    Choose between **defaults** (deletes the current gmt.conf file used for the
+    current modern session), **cache** (deletes the user's cache directory
+    and all of its content), **data** (deletes the user's data download directory
+    and all of its content), or **all** (does all of the above).
 
 **gmt begin** [*session-prefix*] [*format*] [*options*]
-
-Initializes a new GMT session under *modern* mode [Default is *classic* mode].
-All work is performed in a temporary work directory.
-The optional *session-prefix* assigns a name to the session, and this may be used
-as figure name for single-figure sessions [gmtsession].  Likewise, the optional
-*format* can be used to override the default graphics format [PDF].
+    Initializes a new GMT session under *modern* mode [Default is *classic* mode].
+    All work is performed in a temporary work directory.
+    The optional *session-prefix* assigns a name to the session, and this may be used
+    as figure name for single-figure sessions [gmtsession].  Likewise, the optional
+    *format* can be used to override the default graphics format [PDF].
 
 **gmt figure** [*prefix*] [*format(s)*] [*options*]
-
-Specifies the desired name, output format(s) and any custom arguments that should
-be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
-will be directed to this current figure until another **gmt figure** command is issued
-or the session ends.  The *prefix* is used to build final figure names when extensions
-are automatically appended. The *format* setting is a comma-separated list of desired
-extensions (e.g., pdf,png).
+    Specifies the desired name, output format(s) and any custom arguments that should
+    be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
+    will be directed to this current figure until another **gmt figure** command is issued
+    or the session ends.  The *prefix* is used to build final figure names when extensions
+    are automatically appended. The *format* setting is a comma-separated list of desired
+    extensions (e.g., pdf,png).
 
 **gmt inset** [*arguments*]
-
-Allows users to place a map inset by temporarily changing where plotting takes place
-as well as the region and projection, then resets to previous stage.
+    Allows users to place a map inset by temporarily changing where plotting takes place
+    as well as the region and projection, then resets to previous stage.
 
 **gmt subplot** [*arguments*]
-
-Allows users to create a matrix of panels with automatic labeling and advancement.
+    Allows users to create a matrix of panels with automatic labeling and advancement.
 
 **gmt end** [**show**]
+    Terminates a GMT modern mode session and automatically converts the registered
+    illustration(s) to the specified formats, then eliminates the temporary work
+    directory.  The figures are placed in the current directory.
 
-Terminates a GMT modern mode session and automatically converts the registered
-illustration(s) to the specified formats, then eliminates the temporary work
-directory.  The figures are placed in the current directory.
-
-If no module is given then
-several other options are available:
+If no module is given then several other options are available:
 
 **--help**
     List and description of GMT modules.
@@ -128,14 +120,12 @@ distribution, you may still need to source the gmt completion file from
 ``~/.bash_completion`` or ``~/.bashrc``.  For more information see Section
 :ref:`command-line-completion` in the CookBook.
 
-GMT Overview
-------------
+GMT Modules
+-----------
 
-The following is a summary of all the programs supplied with GMT and
-a very short description of their purpose. Detailed information about
-each program can be found in the separate manual pages.
-
-.. include:: explain_gmt_modules.rst_
+Run **gmt --help** to print the list of all core and supplementals modules
+within GMT, and a very short description of their purpose.
+Detailed information about each program can be found in the separate manual pages.
 
 Custom Modules
 --------------
