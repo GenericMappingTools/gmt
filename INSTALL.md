@@ -77,17 +77,17 @@ You may need to update the formulas so for that you will do:
 
     brew update && brew upgrade
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
     brew install gmt
 
-If you want to install GMT 4 and GMT 5 alongside, do:
+If you want to install GMT 5 and GMT 6 alongside, do:
 
-    brew unlink gmt && brew install gmt4
+    brew unlink gmt && brew install gmt5
 
-and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc about gmtswitch):
+and to go from GMT 6 to GMT 5 (and vice-versa for 5 to 6, but see also the doc about gmtswitch):
 
-    brew unlink gmt && brew link gmt4
+    brew unlink gmt && brew link gmt5
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -105,7 +105,7 @@ enabled with the `+fftw3` and `+openmp` flags.
 
 You also need to install other GMT run-time dependencies separately:
 
-    port install ghostscript graphicsmagick ffmpeg
+    sudo port install ghostscript graphicsmagick ffmpeg
 
 For the legacy GMT 4 or GMT 5 versions, use:
 
