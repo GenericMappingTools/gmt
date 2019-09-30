@@ -193,8 +193,10 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
    ```
    conda install gmt -c conda-forge
-   conda install ffmpeg graphicsmagick -c conda-forge
    ```
+
+   NOTE: Currently conda-forge doesn't provide graphicsmagick on win-64 platform.
+   Windows users need to download and install graphicsmagick separately.
 
 3. If you want to install GMT 5, use:
 
