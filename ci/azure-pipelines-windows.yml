@@ -148,6 +148,9 @@ steps:
     cmake --build . --target gmt_release_tar
     # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
+    # get sha256 hash value
+    CertUtil -hashfile gmt-*.tar.gz sha256
+    CertUtil -hashfile gmt-*.tar.xz sha256
+    CertUtil -hashfile gmt-*.exe    sha256
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

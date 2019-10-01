@@ -116,6 +116,6 @@ steps:
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
-    md5sum gmt-*.tar.gz gmt-*.tar.xz
+    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

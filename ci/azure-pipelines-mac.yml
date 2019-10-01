@@ -24,7 +24,7 @@ steps:
 - bash: |
     set -x -e
     # we need the GNU tar
-    brew install gnu-tar md5sha1sum
+    brew install gnu-tar
   displayName: Install dependencies for packaging
   condition: eq(variables['PACKAGE'], true)
 
@@ -110,7 +110,7 @@ steps:
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
     cpack -G Bundle
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
+    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
 
