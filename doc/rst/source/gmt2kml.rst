@@ -294,6 +294,12 @@ Optional Arguments
 Examples
 --------
 
+To plot colored symbols based on a CPT of the remote file @kml_pointsets.txt,
+first make the CPT and then create the KML file thus::
+
+    gmt makecpt -Ccategorical > categories.cpt
+    gmt 2kml @kml_pointsets.txt -Ccategories.cpt > points.kml
+
 To convert a file with point locations (lon, lat) into a KML file with
 red circle symbols, try
 
