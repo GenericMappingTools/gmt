@@ -106,6 +106,8 @@ using the reported coefficients.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:
 
    ::

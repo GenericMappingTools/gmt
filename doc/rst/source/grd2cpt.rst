@@ -242,6 +242,8 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points

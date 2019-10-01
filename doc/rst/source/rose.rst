@@ -48,6 +48,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot a half circle rose diagram of the data in the file

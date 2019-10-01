@@ -130,6 +130,8 @@ such as
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:
 
    ::

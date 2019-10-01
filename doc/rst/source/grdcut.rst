@@ -112,6 +112,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Suppose you have used :doc:`surface` to grid ship gravity in the region
 between 148E - 162E and 8N - 32N, and you do not trust the gridding near
 the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:

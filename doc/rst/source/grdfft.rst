@@ -203,6 +203,8 @@ white radial spectrum as well.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To upward continue the sea-level magnetic anomalies in the file
 mag_0.nc to a level 800 m above sealevel:
 

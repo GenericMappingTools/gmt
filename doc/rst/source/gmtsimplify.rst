@@ -95,6 +95,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To reduce the geographic line segment.txt using a tolerance of 2 km, run
 
    ::

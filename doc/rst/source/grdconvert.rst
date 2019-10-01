@@ -233,6 +233,8 @@ ints or unsigned bytes). For header and grid details, see :ref:`GMT File Formats
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To extract the second layer from a 3-dimensional grid named temp from a
 COARDS-compliant netCDF file climate.nc:
 

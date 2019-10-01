@@ -37,6 +37,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 

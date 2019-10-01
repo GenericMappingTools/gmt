@@ -350,6 +350,8 @@ the **-Qp** option to activate, since most users are unaware of GeoPDFs anyway.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To convert the file psfile.ps to PNG using a tight BoundingBox:
 
    ::

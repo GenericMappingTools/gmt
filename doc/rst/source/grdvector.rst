@@ -37,6 +37,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To draw the vector field given by the files r.nc and theta.nc on a

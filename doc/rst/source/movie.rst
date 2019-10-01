@@ -332,6 +332,8 @@ to named files.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
 frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
 and place a frame counter in the top left corner, try

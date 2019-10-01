@@ -105,6 +105,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To determine the volume in km^3 under the surface hawaii_topo.nc (height in km), use
 
    ::

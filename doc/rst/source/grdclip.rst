@@ -82,6 +82,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 
    ::

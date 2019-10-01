@@ -148,6 +148,8 @@ for x, y, or z coordinate, respectively.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To edit individual values in the 5' by 5' hawaii_grv.nc file, dump the .nc to ASCII:
 
    ::

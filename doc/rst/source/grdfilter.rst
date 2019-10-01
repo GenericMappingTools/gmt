@@ -187,6 +187,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry
 from 140E to 260E and 0N to 50N, and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,

@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Print current Sun position and Sunrise, Sunset times at:
 
    ::

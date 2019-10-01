@@ -184,6 +184,8 @@ kept low.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To remove a planar trend from data.xyz by ordinary least squares, use
 
    ::
