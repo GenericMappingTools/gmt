@@ -398,7 +398,7 @@ int GMT_image (void *V_API, int mode, void *args) {
 }
 
 int GMT_psimage (void *V_API, int mode, void *args) {
-	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0;
+	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
 	unsigned int row, col;
 	size_t n;
 	bool free_GMT = false, did_gray = false;
@@ -442,7 +442,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
 	file = strdup (Ctrl->In.file);
-	if ((c = strstr (file, "=gd"))) c[0] = '\0';	/* Chop off unnecessary =gd mandate */
+	if ((c = strstr (file, "=gd"))) {
+		is_gdal = true;
+		c[0] = '\0';	/* Chop off unnecessary =gd mandate */
+	}
 	is_eps = file_is_eps (GMT, &file);	/* Determine if this is an EPS file or other */
 	if (is_eps < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
@@ -467,6 +470,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input raster via GDAL\n");
+		if (is_gdal) {	/* Need full name since there may be band requests */
+			gmt_M_str_free (file);
+			file = strdup (Ctrl->In.file);
+		}
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, NULL)) == NULL) {
 			gmt_M_str_free (file);
