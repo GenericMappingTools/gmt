@@ -727,7 +727,7 @@ cos (60)) and store the result in the shell variable z:
 
    ::
 
-    set z = `gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+    z=`gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 
 To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
