@@ -1,4 +1,4 @@
-.. index:: ! grdconvert
+. index:: ! grdconvert
 
 ***********
 grdconvert
@@ -243,11 +243,11 @@ COARDS-compliant netCDF file climate.nc:
     gmt grdconvert climate.nc?temp[1] -Gtemp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
-netCDF file data.nc:
+remote netCDF file AFR.nc:
 
    ::
 
-    gmt grdconvert data.nc -Gras_data.b4=bf -V
+    gmt grdconvert @AFR.nc -GAFR_bin.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do

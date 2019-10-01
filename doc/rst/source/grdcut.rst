@@ -114,6 +114,15 @@ Examples
 
 .. include:: explain_example.rst_
 
+To obtain data for an oblique Mercator projection map we need to extract
+more data that is actually used. This is necessary because the output of
+**grdcut** has edges defined by parallels and meridians, while the
+oblique map in general does not. Hence, to get all the data from the
+ETOPO2 data needed to make a contour map for the region defined by its
+lower left and upper right corners and the desired projection, use::
+
+    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
+
 Suppose you have used :doc:`surface` to grid ship gravity in the region
 between 148E - 162E and 8N - 32N, and you do not trust the gridding near
 the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:
@@ -142,17 +151,6 @@ distance of 500 km from the point 45,30 try
    ::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
-
-To obtain data for an oblique Mercator projection map we need to extract
-more data that is actually used. This is necessary because the output of
-**grdcut** has edges defined by parallels and meridians, while the
-oblique map in general does not. Hence, to get all the data from the
-ETOPO2 data needed to make a contour map for the region defined by its
-lower left and upper right corners and the desired projection, use
-
-   ::
-
-    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
 
 See Also
 --------
