@@ -60,8 +60,6 @@ Note there are three GMT tar archives available (#3 is optional):
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
-Alternatively you may get GMT from any of the [FTP sites](MIRRORS.md).
-Try the site that is closest to you to minimize transmission times:
 
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.

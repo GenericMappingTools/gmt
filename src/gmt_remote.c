@@ -229,7 +229,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (file);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to down file %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to download file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {
 			fclose (urlfile.fp);

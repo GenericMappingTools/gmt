@@ -1,18 +1,28 @@
-.. _modules_classic:
-
 GMT Modules (Classic Mode)
 ==========================
-
-This is a list of all GMT "classic mode" core and supplemental modules and their respective documentation.
-These modules are fully compatible with GMT 4 and 5.
 
 .. note::
 
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
-   :ref:`equivalent page for modern mode <modules>`.
+   :doc:`equivalent page for modern mode <modules>`.
+
+This is a list of all GMT "classic mode" core and supplemental modules and their uses,
+as well as some utility scripts.
+These modules are fully compatible with GMT 4 and 5.
+All modules are requested via a call to the :doc:`gmt` program.
 
 .. Add core and supplemental modules to hidden toctrees to
 .. suppress "document isn't included in any toctree" warnings
+
+.. toctree::
+   :hidden:
+
+   gmt
+   gmt5syntax
+   gmt_shell_functions.sh
+   gmtswitch
+   isogmt
+   supplements/img/img2google
 
 .. toctree::
     :hidden:
@@ -21,6 +31,7 @@ These modules are fully compatible with GMT 4 and 5.
     blockmedian
     blockmode
     dimfilter
+    docs
     filter1d
     fitcircle
     gmt2kml
@@ -157,6 +168,11 @@ These modules are fully compatible with GMT 4 and 5.
     supplements/x2sys/x2sys_report
     supplements/x2sys/x2sys_solve
 
+Program
+-------
+
+- :doc:`gmt`
+
 Core Modules
 ------------
 
@@ -167,6 +183,7 @@ Core Modules
     - :doc:`blockmedian`
     - :doc:`blockmode`
     - :doc:`dimfilter`
+    - :doc:`docs`
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
@@ -305,6 +322,18 @@ Supplemental Modules
     - :doc:`/supplements/x2sys/x2sys_put`
     - :doc:`/supplements/x2sys/x2sys_report`
     - :doc:`/supplements/x2sys/x2sys_solve`
+
+Utility Scripts
+---------------
+
+.. hlist::
+    :columns: 6
+
+    - :doc:`gmt5syntax`
+    - :doc:`gmt_shell_functions.sh`
+    - :doc:`gmtswitch`
+    - :doc:`isogmt`
+    - :doc:`supplements/img/img2google`
 
 Plotting
 --------
@@ -522,6 +551,8 @@ Miscellaneous
 -------------
 
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`docs`           | Show HTML documentation of specified module                         |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmt2kml`        | Like :doc:`plot` but writes KML for use in Google Earth             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtwhich`       | Find full path to specified files                                   |
@@ -529,8 +560,6 @@ Miscellaneous
 | :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`docs`           | Show HTML documentation of specified module                         |
 +-----------------------+---------------------------------------------------------------------+
 
 geodesy
