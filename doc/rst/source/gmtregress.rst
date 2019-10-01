@@ -184,6 +184,11 @@ coefficient of determination (R).
 Examples
 --------
 
+To return the coordinates on the best-fit orthogonal regression line through the data in the
+remote file hertzsprung-russell.txt, try::
+
+    gmt regress @hertzsprung-russell.txt -Eo -Fxm
+
 To do a standard least-squares regression on the *x-y* data in points.txt and return
 x, y, and model prediction with 99% confidence intervals, try
 
