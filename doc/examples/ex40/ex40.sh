@@ -5,6 +5,10 @@
 # GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial, subplot
 # Unix progs:   awk, rm
 #
+
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 gmt begin ex40
   gmt spatial @GSHHS_h_Australia.txt -fg -Qk > centroid.txt
   gmt spatial @GSHHS_h_Australia.txt -fg -Qk | $AWK '{printf "Full area = %.0f km@+2@+\n", $3}' > area.txt
