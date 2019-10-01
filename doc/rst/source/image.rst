@@ -40,12 +40,18 @@ Examples
 
 .. include:: oneliner_info.rst_
 
-To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
-accordingly), and outline with a thin, blue pen, use
+To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+accordingly), use:
 
-   ::
+    gmt image @needle.jpg -Dx0/0+w7c -pdf plot
 
-    gmt image logo.jpg -Dx0/0+w1i -F+pthin,blue -pdf image
+To plot the same file but reversing the bands, use:
+
+    gmt image @needle.jpg+b2,1,0 -Dx0/0+w7c -pdf plot
+
+To only plot its red band as gray shade, use:
+
+    gmt image @needle.jpg+b0 -Dx0/0+w7c -pdf plot
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current

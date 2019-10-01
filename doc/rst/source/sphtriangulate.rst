@@ -145,6 +145,11 @@ Examples
 
 .. include:: oneliner_info.rst_
 
+To create a spherical triangulation from the remote data set hotspots.txt and
+then plot it on a sphere, try::
+
+    gmt sphtriangulate @hotspots.txt -Qd -T | gmt plot -Rg -JG-120/-30/7i -Bafg -W3p -pdf map
+
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via :doc:`plot`, use
 
