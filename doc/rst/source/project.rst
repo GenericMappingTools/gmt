@@ -248,6 +248,12 @@ Examples
 
 .. include:: explain_example.rst_
 
+To project the remote data sets ship_03.txt (lon,lat,depth) onto a great circle specified by
+the two points (330,-18) and (53,21) and sort the records on the projected distances along
+that circle and only output the distance and the depths, try::
+
+    gmt project @ship_03.txt -C330/-18 -T53/21 -S -Fpz -Q > ship_proj.txt
+
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
    ::
