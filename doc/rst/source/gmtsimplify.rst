@@ -95,6 +95,11 @@ Optional Arguments
 Examples
 --------
 
+To reduce the remote high-resolution GSHHG polygon for Australia down to
+a tolerance of 500 km, use::
+
+    gmt simplify @GSHHS_h_Australia.txt -T500k
+
 To reduce the geographic line segment.txt using a tolerance of 2 km, run
 
    ::
