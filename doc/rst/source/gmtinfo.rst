@@ -191,33 +191,29 @@ Optional Arguments
 Examples
 --------
 
-To find the extreme values in the file ship\_gravity.xygd:
+To find the extreme values in the remote file @ship_15.txt::
 
-  ::
+    gmt info @ship_15.tx
 
-    gmt info ship_gravity.xygd
+Output should look like::
 
-Output should look like
+    ship_15.txt: N = 82651	<245/254.705>	<20/29.99131>	<-4504/-9>
 
-  ::
-
-    ship_gravity.xygd: N = 6992 <326.125/334.684> <-28.0711/-8.6837> <-47.7/177.6> <0.6/3544.9>
-
-To find the extreme values in the file track.xy to the nearest 5 units
+To find the extreme values in @ship_15.txt to the nearest 5 units
 but shifted to within 1 unit of the data center, and use this region to
-draw a line using :doc:`plot`, run
+plot all the points as small black circles using :doc:`plot`, run
 
   ::
 
-    gmt plot `gmt info -I5 -D1 track.xy` track.xy -Jx1 -B5 -P > track.ps
+    gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
 
-To find the min and max values for each of the first 4 columns, but
+To find the min and max values for each of the first 3 columns, but
 rounded to integers, and return the result individually for each data
 file, use
 
   ::
 
-    gmt info profile_*.txt -C -I1/1/1/1
+    gmt info @ship_15.txt -C -I1/1/1
 
 Given seven profiles with different start and stop positions, we
 want to find a range of positions, with increment of 5, that are
