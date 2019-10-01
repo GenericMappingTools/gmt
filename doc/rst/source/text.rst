@@ -42,6 +42,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot just the red outlines of the (lon lat text strings) stored in the

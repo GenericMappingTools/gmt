@@ -148,6 +148,8 @@ for x, y, or z coordinate, respectively.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
 
    ::

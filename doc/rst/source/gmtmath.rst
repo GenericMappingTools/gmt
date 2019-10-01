@@ -664,6 +664,8 @@ columns will have been loaded but are then ignored until you undo the effect of 
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To add two plot dimensions of different units, we can run
 
    ::

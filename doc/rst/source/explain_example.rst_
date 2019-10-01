@@ -1,0 +1,5 @@
+**Note**: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with ``@``)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.

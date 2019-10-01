@@ -36,6 +36,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled

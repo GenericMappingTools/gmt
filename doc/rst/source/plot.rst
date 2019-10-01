@@ -50,6 +50,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot solid red circles (diameter = 0.2 cm) at the positions listed

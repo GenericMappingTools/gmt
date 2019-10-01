@@ -185,6 +185,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To find 5 by 5 minute block medians from the ASCII data in ship_15.txt
 and output a binary table with double precision triplets, run
 

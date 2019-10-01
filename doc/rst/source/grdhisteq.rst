@@ -112,6 +112,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To find the height intervals that divide the file heights.nc into 16
 divisions of equal area:
 

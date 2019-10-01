@@ -294,6 +294,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To plot colored symbols based on a CPT of the remote file @kml_pointsets.txt,
 first make the CPT and then create the KML file thus::
 

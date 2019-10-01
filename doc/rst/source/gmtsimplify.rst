@@ -95,6 +95,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To reduce the remote high-resolution GSHHG polygon for Australia down to
 a tolerance of 500 km, use::
 

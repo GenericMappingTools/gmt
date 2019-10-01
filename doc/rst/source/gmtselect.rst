@@ -278,6 +278,8 @@ and include the new boundary points at the segment ends you must use
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To extract the subset of data set that is within 300 km of any of the
 points in pts.txt but more than 100 km away from the lines in lines.txt, run
 

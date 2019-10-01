@@ -188,6 +188,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To filter the remote CO2 data set in the file MaunaLoa_CO2.txt (year, CO2)
 with a 5 year Gaussian filter, try
 

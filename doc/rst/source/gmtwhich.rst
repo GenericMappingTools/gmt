@@ -77,6 +77,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To see the full path to the file myjunk.txt, use
 
    ::

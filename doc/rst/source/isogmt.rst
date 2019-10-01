@@ -27,6 +27,8 @@ variable GMT_TMPDIR.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Run the shell script *script.gmt* in isolation mode
 
   ::

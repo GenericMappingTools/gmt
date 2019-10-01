@@ -203,6 +203,8 @@ white radial spectrum as well.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To obtain the normalized radial spectrum from the remote data grid @white_noise.nc,
 after removing the mean, let us try::
 

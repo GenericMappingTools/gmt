@@ -112,6 +112,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To obtain data for an oblique Mercator projection map we need to extract
 more data that is actually used. This is necessary because the output of
 **grdcut** has edges defined by parallels and meridians, while the

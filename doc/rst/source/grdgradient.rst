@@ -206,6 +206,8 @@ If you use **-QR** for the final tile then the statistics file is removed after 
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a file for illuminating the data in geoid.nc using exp-
 normalized gradients in the range [-0.6,0.6] imitating light sources in
 the north and west directions:

@@ -184,6 +184,8 @@ kept low.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To remove a linear trend from data.xy by ordinary least squares, use:
 
    ::

@@ -46,6 +46,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot circles (diameter = 0.1 cm) on a 6-inch-wide ternary diagram at the positions listed

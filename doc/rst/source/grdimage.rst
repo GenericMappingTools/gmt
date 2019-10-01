@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 For a quick-and-dirty illuminated color map of the data in the remote file

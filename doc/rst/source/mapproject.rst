@@ -294,6 +294,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To convert UTM coordinates in meters to geographic locations, given
 a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 

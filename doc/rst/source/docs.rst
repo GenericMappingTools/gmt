@@ -68,6 +68,8 @@ Optional Module Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To see the documentation of *grdimage*::
 
     gmt docs grdimage

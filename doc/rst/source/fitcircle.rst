@@ -133,6 +133,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To find the parameters of a great circle that most closely fits the (lon,lat)
 points in the remote file @sat_03.txt in a least-squares sense, try::
 

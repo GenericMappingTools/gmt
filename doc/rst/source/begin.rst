@@ -99,6 +99,8 @@ Supported Graphic Formats
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To initiate a new modern session that will produce a single
 map called Figure_2 saved as both a PDF vector graphics file
 and an opaque PNG raster image, we would run::

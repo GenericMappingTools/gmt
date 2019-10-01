@@ -259,6 +259,8 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a CPT with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 

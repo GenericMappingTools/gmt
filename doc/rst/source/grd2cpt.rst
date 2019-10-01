@@ -242,6 +242,8 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To get a reasonable and symmetrical color table for the data in the region 0/60/0/60
 from the remote 5m relief file, using the geo color table, try::
 

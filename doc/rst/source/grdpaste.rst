@@ -62,6 +62,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
 180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
 -30S - 30N by:

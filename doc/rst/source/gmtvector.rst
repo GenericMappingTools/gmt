@@ -156,6 +156,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To determine the mean location of all points in the remote geographic file @ship_15.txt
 as well as the 95% confidence ellipse around that point, try::
 
