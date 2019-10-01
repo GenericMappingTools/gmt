@@ -157,15 +157,13 @@ Optional Arguments
 Examples
 --------
 
-To obtain all the information about the remote data set in file earth_relief_10m:
+.. include:: explain_example.rst_
 
-   ::
+To obtain all the information about the remote data set in file earth_relief_10m::
 
     gmt grdinfo -L1 -L2 -M @earth_relief_10m
 
-Get the grid spacing in earth_relief_10m:
-
-   ::
+Get the grid spacing in earth_relief_10m::
 
     dx=`gmt grdinfo -Cn -o7 @earth_relief_10m`
 

@@ -47,6 +47,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To make an overlay that will mask out the regions of a

@@ -184,6 +184,8 @@ coefficient of determination (R).
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To return the coordinates on the best-fit orthogonal regression line through the data in the
 remote file hertzsprung-russell.txt, try::
 

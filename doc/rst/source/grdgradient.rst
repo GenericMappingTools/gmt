@@ -206,11 +206,11 @@ If you use **-QR** for the final tile then the statistics file is removed after 
 Examples
 --------
 
-To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using exp-
-normalized gradients in the range [-0.6,0.6] imitating light sources in
-the north and west directions:
+.. include:: explain_example.rst_
 
-   ::
+To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using 
+exponentially  normalized gradients in the range [-0.6,0.6] imitating light sources in
+the north and west directions::
 
     gmt grdgradient @earth_relief_05m -R0/20/0/20 -A0/270 -Ggradients.nc -Ne0.6 -V
 

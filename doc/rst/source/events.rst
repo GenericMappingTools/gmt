@@ -45,6 +45,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To show the display of events visible for May 1, 2018 given the catalog of
 large (>5) magnitude earthquakes that year, using a 2-day rise time during
 which we boost symbol size by a factor of 5 and wash out the color, followed

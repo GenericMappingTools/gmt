@@ -171,6 +171,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
 its power spectrum, in mGal\*\*2-km, to the file data.xpower, use
 

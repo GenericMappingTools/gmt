@@ -191,6 +191,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To find the extreme values in the remote file @ship_15.txt::
 
     gmt info @ship_15.tx

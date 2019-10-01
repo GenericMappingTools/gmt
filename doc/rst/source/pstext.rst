@@ -45,6 +45,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To plot just the red outlines of the (lon lat text strings) stored in the
 file text.txt on a Mercator plot with the given specifications, use
 

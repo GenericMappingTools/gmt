@@ -62,6 +62,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To remove the current default settings in a modern mode session, use::
 
     gmt clear defaults

@@ -148,18 +148,20 @@ for x, y, or z coordinate, respectively.
 Examples
 --------
 
-To edit individual values in the 5' by 5' hawaii_grv.nc file, dump the .nc to ASCII:
+.. include:: explain_example.rst_
+
+To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
 
    ::
 
-    gmt grd2xyz hawaii_grv.nc > hawaii_grv.xyz
+    gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
-the file raw_data.nc file, using scanline orientation, run
+the remote file @AFR.nc file, using scanline orientation, run
 
    ::
 
-    gmt grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
+    gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 
 See Also
 --------
