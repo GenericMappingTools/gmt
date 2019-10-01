@@ -187,8 +187,8 @@ Optional Arguments
 Examples
 --------
 
-Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry
-from 140E to 260E and 0N to 50N, and you want to find the medians of
+The @earth_relief_05m.nc is a remote file of 5 minute bathymetry
+and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. Using spherical distance
@@ -196,7 +196,7 @@ calculations, you need:
 
    ::
 
-    gmt grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 \
+    gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 \
                   -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
@@ -206,7 +206,7 @@ can compute the residuals, e.g.,
 
    ::
 
-    gmt grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm600+h \
+    gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h \
                   -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual_pacific.nc grid will have the same 5 minute

@@ -82,11 +82,11 @@ Optional Arguments
 Examples
 --------
 
-To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
+To set all values > 0 to NaN and all values < 0 to 0 in the remote file AFR.nc:
 
    ::
 
-    gmt grdclip data.nc -Gnew_data.nc -Sa70/NaN -Sb0/0 -V
+    gmt grdclip @AFR.nc -Gnew_AFR.nc -Sa0/NaN -Sb0/0 -V
 
 To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
 exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try

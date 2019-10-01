@@ -156,6 +156,11 @@ Optional Arguments
 Examples
 --------
 
+To determine the mean location of all points in the remote geographic file @ship_15.txt
+as well as the 95% confidence ellipse around that point, try::
+
+    gmt vector @ship_15.txt -Am -fg
+
 Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the
 location 133/34. Try

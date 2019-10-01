@@ -242,6 +242,11 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+To get a reasonable and symmetrical color table for the data in the region 0/60/0/60
+from the remote 5m relief file, using the geo color table, try::
+
+    gmt grd2cpt @earth_relief_05m -R0/60/0/60 -Cgeo -Su
+
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
