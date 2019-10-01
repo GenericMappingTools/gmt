@@ -17,3 +17,10 @@
 .hlist {
     width: 100%;
 }
+
+#example-gallery ul li {
+    list-style: none;
+    width: 180px;
+    display: inline-grid;
+    margin-right: 15px;
+}
