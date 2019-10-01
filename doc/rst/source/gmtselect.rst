@@ -278,6 +278,8 @@ and include the new boundary points at the segment ends you must use
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To only return the data points from the remote file @ship_15.txt that lie
 within the region between longitudes 246 and 247 and latitudes 20 and 21, try::
 

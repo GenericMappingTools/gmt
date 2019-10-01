@@ -133,6 +133,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To transform the geographical grid dbdb5.nc onto a pixel Mercator grid at 300 dpi, run
 
    ::

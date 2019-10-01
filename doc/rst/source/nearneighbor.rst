@@ -146,6 +146,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
 using a 0.5 min grid, a 5 km search radius, using an octant search with
 100% sector coverage, and set empty nodes to -9999:

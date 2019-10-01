@@ -48,6 +48,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To plot the magnetic anomaly stored in the file track.xym along track @
 500 nTesla/cm (after removing a mean value of 32000 nTesla), using a
 15-cm-wide Polar Stereographic map ticked every 5 degrees in Portrait

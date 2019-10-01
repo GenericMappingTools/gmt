@@ -148,6 +148,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid, use
 

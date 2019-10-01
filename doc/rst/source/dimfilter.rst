@@ -179,6 +179,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 We have the remote file @earth_relief_05m which is a file of 5 minute bathymetry,
 and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,

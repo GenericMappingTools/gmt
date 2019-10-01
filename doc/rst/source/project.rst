@@ -246,6 +246,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
    ::

@@ -46,6 +46,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To make a raw contour plot from the remote file Table_5.11.txt and draw the

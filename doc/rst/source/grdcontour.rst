@@ -48,6 +48,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To contour the remote file AK_gulf_grav.nc every 25 mGal on a Mercator map at

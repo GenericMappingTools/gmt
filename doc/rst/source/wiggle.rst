@@ -44,6 +44,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot the magnetic anomaly stored in the file track.xym along track @

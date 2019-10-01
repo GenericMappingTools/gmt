@@ -41,6 +41,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a mesh plot from the file hawaii_grav.nc and drawing the
 contours given in the CPT hawaii.cpt on a Lambert map at
 1.5 cm/degree along the standard parallels 18 and 24, with vertical

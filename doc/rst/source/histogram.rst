@@ -48,6 +48,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To draw a histogram of the data v3206.t containing seafloor depths,

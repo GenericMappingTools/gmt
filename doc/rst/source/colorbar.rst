@@ -43,6 +43,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)

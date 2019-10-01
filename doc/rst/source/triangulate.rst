@@ -199,6 +199,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and spacing, use
 

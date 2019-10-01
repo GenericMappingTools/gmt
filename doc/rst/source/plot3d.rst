@@ -49,6 +49,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To plot blue columns (width = 1.25 cm) at the positions listed in the

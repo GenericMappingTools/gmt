@@ -67,6 +67,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
 in several different ways depending on the projection. Also note the use

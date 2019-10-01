@@ -157,6 +157,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To obtain all the information about the data set in file hawaii\_topo.nc:
 
    ::
