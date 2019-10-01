@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** [ **-Q** ] [ **-S** ] [ |SYN_OPT-V| ] *module-name* [*-option*]
+**gmt docs** [ |-Q| ] [ |-S| ] [ |SYN_OPT-V| ] *module-name* [*-option*]
 
 |No-spaces|
 
@@ -24,14 +24,25 @@ Description
 Besides the modules names, the special targets *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
 are also accepted.
 
+Required Arguments
+------------------
+
+*module-name*
+    One of teh core or supplemental modules,
+    or one of api, cookbook, gallery, defaults, and tutorial.
+
 Optional Arguments
 ------------------
+
+.. _-Q:
 
 **-Q**
     This option means we are doing a "dry-run" and simply want the final URL to be
     printed to standard output.  No file open command will take place. This is useful
     if you are working remotely on a server and do not wish to launch a GUI browser.
     If used, **-Q** must be the first option to **docs**.
+
+.. _-S:
 
 **-S**
     Normally, **docs** will open documentation files from the local computer if the document can
@@ -57,42 +68,29 @@ Optional Module Arguments
 Examples
 --------
 
-To see the documentation of *grdimage*
-
-   ::
+To see the documentation of *grdimage*::
 
     gmt docs grdimage
 
-To see the link to the documentation of *grdimage*
-
-   ::
+To see the link to the documentation of *grdimage*::
 
     gmt docs -Q grdimage
 
-To see the link to the documentation of *grdimage* on the GMT server
-
-   ::
+To see the link to the documentation of *grdimage* on the GMT server::
 
     gmt docs -Q -S grdimage
 
-To see the documentation of the **-B** option in *pscoast*
-
-   ::
+To see the documentation of the **-B** option in *pscoast*::
 
     gmt docs pscoast -B
 
-To examine the list of GMT defaults, try
-
-   ::
+To examine the list of GMT defaults, try::
 
     gmt docs defaults
 
-To see the Gallery
-
-   ::
+To see the Gallery::
 
     gmt docs gallery
-
 
 See Also
 --------
