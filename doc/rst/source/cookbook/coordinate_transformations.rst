@@ -135,11 +135,7 @@ appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
 125ºE. Our command will be
 
-  ::
-
-    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
-    gmt coast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest \
-        -Slightblue -pdf GMT_linear_d
+.. literalinclude:: /_verbatim/GMT_linear_d.txt
 
 with the result reproduced in
 Figure :ref:`Linear transformation of map coordinates <GMT_Linear_d>`.
@@ -179,12 +175,8 @@ projection type given by **-JX** (including the optional **d**, **g**,
 **t** or **T**) conflict, GMT will warn the users about it. In
 general, the options provided with **-JX** will prevail.
 
-   ::
+.. literalinclude:: /_verbatim/GMT_linear_cal.txt
 
-    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham
-            FORMAT_TIME_PRIMARY_MAP full
-    gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d
-            -Bya1Hg1h -BWsNe+glightyellow -pdf GMT_linear_cal
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -288,10 +280,7 @@ polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using
 :doc:`/grdmath`, a RPN calculator that
 operates on or creates grid files.
 
-   ::
-
-    gmt grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = tt.nc
-    gmt grdcontour tt.nc -JP3i -B30 -BNs+ghoneydew -C2 -S4 --FORMAT_GEO_MAP=+ddd -pdf GMT_polar
+.. literalinclude:: /_verbatim/GMT_polar.txt
 
 We used :doc:`/grdcontour` to make a
 contour map of this data. Because the data file only contains values
