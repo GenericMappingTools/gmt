@@ -39,6 +39,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 To make a mesh plot from the file hawaii_grav.nc and drawing the

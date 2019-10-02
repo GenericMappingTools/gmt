@@ -2,6 +2,10 @@
 #
 #	Bash script to run all GMT examples
 #
+
+# Set GMT_END_SHOW to off to disable automatic display of the plots
+#export GMT_END_SHOW=off
+
 echo "Loop over all examples and run each job"
 
 # choose awk
@@ -13,10 +17,10 @@ else
   export AWK=awk
 fi
 
-for n in $(seq -w 1 50); do
-    echo "Running example $n"
-    cd ex$n
-    sh ex$n.sh
+for i in ex*; do
+    echo "Running example ${i}"
+    cd $i
+    bash $i.sh
     cd ..
 done
 

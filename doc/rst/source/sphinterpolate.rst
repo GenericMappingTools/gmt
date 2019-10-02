@@ -129,6 +129,16 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To interpolate data from the remote file mars370d.txt using the piecewise
+method for a 1x1 global grid, then plot it, try::
+
+    gmt begin mars
+      gmt sphinterpolate @mars370d.txt -Rg -I1 -Qp -Gmars.nc
+      gmt grdimage mars.nc -JH0/4.5i -B30g30
+    gmt end
+
 To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use
 

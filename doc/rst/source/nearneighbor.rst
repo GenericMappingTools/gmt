@@ -146,6 +146,17 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To grid the data in the remote file @ship_15.txt at 5x5 arc minutes using
+a search radius of 15 arch minutes, and plot the resulting grid using
+default projection and colors, try:
+
+    gmt begin map
+      gmt nearneighbor @ship_15.txt -R245/255/20/30 -I5m -Ggrid.nc -S15m
+      gmt grdimage grid.nc -B
+    gmt end show
+
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
 using a 0.5 min grid, a 5 km search radius, using an octant search with
 100% sector coverage, and set empty nodes to -9999:

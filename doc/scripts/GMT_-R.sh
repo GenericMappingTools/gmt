@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_-R ps
+gmt begin GMT_-R
 gmt set MAP_FRAME_TYPE PLAIN FONT_ANNOT_PRIMARY 8p,Helvetica MAP_TICK_LENGTH_PRIMARY 0.05i \
 	PS_CHAR_ENCODING ISOLatin1+
 gmt coast -R-90/-70/18/35.819 -JM2i -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN 
@@ -49,4 +49,4 @@ gmt plot -N -Wthinner << EOF
 2	2
 1.63	-0.35
 EOF
-gmt end
+gmt end show

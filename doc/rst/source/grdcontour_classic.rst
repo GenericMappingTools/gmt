@@ -53,6 +53,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at
 0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
 degree tickmarks, and draw 30 minute gridlines:

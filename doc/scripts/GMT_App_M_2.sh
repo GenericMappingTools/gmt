@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_App_M_2 ps
+gmt begin GMT_App_M_2
 gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm PS_MEDIA 11ix8.5i
 
 # Set up color palette with named annotations
@@ -38,4 +38,4 @@ gmt colorbar -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0
 gmt colorbar -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1  
 gmt colorbar -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li    
 gmt colorbar -Cyears.cpt -D20/04+w-8/0.5+jML+ef -Li0.1
-gmt end
+gmt end show

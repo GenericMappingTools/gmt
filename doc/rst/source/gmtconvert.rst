@@ -256,6 +256,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
    ::

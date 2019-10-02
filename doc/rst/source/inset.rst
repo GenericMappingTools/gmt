@@ -121,6 +121,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a simple basemap plot called inset.pdf that demonstrates the inset module, try
 
    ::

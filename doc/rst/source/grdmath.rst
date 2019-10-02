@@ -756,6 +756,8 @@ is required that the optional comment flag (:) must be followed by a space.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To compute all distances to north pole:
 
     ::

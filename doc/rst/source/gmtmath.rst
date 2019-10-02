@@ -698,6 +698,8 @@ columns will have been loaded but are then ignored until you undo the effect of 
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To add two plot dimensions of different units, we can run
 
    ::
@@ -761,7 +763,7 @@ cos (60)) and store the result in the shell variable z:
 
    ::
 
-    set z = `gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+    z=`gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 
 To convert the r,g,b value for yellow to h,s,v and save the hue, try
 

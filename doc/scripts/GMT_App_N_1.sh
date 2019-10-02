@@ -67,11 +67,11 @@ EOF
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	gmt begin GMT_App_N_$p ps
+	gmt begin GMT_App_N_$p
 	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
 	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
 	gmt plot -Sri -Gblack tt.bars
 	# Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure
 	sed -e 's/TRANSPARENT/TRANSP/' < tt.text | gmt text -F+f${fs}p,white
-	gmt end
+	gmt end show
 done

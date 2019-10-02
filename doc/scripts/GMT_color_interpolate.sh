@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_color_interpolate ps
+gmt begin GMT_color_interpolate
 gmt basemap -Jx1i -R0/6.8/0/2.0 -B0 
 
 # Plot polar color map in the left; right (top) and wrong (bottom)
@@ -31,4 +31,4 @@ gmt text -F+f14p,Helvetica-Bold+jBC << END
 5.1 1.7 rainbow (HSV)
 5.1 0.8 rainbow (RGB)
 END
-gmt end
+gmt end show

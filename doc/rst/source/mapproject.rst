@@ -294,6 +294,15 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To transform a remote file with (latitude,longitude) into (x,y) positions in cm
+on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run
+
+   ::
+
+    gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
+
 To convert UTM coordinates in meters to geographic locations, given
 a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 
@@ -301,13 +310,6 @@ a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 
     gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
 
-
-To transform a file with (longitude,latitude) into (x,y) positions in cm
-on a Mercator grid for a given scale of 0.5 cm per degree, run
-
-   ::
-
-    gmt mapproject lonlatfile -R20/50/12/25 -Jm0.5c > xyfile
 
 To transform several 2-column, binary, double precision files with
 (latitude,longitude) into (x,y) positions in inch on a Transverse

@@ -162,6 +162,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 Let us assume the file data.nc covers the area 300/310/10/30. We want to
 change the boundaries from geodetic longitudes to geographic and put a
 new title in the header. We accomplish this by

@@ -125,12 +125,14 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_360.txt, use
 
    ::
 
-    gmt sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
 
 Reference
 ---------

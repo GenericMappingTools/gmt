@@ -13,7 +13,7 @@ function plot_one { # First 3-4 args are: -E -N -c [-Barg]
   gmt plot -B+ghoneydew${4} data.txt -Sc0.05i -Gblue $3
   gmt plot giants.txt -Sc0.05i -Gred   -N
   gmt plot giants.txt -Sc0.1i  -W0.25p -N
-  gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt plot -W2p	
+  gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt plot -W2p
 }
 
 gmt begin ex47
@@ -29,7 +29,7 @@ gmt begin ex47
   plot_one -Eo -N1 -c2,0
   plot_one -Ex -N1 -c3,0
   #L2 regressions
-  plot_one -Er -N2 -c0,1 +tL@-2@- 
+  plot_one -Er -N2 -c0,1 +tL@-2@-
   plot_one -Eo -N2 -c1,1
   plot_one -Ex -N2 -c2,1
   plot_one -Ey -N2 -c3,1
@@ -44,4 +44,4 @@ gmt begin ex47
   gmt text -F+cRM+jTC+a90+t"REDUCED MAJOR AXIS" -N -Dj0.2i
   gmt subplot end
 gmt end show
-rm -f data.txt giants.txt
+rm -f data.txt giants.txt hertzsprung-russell.txt

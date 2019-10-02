@@ -240,6 +240,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a minimalistic 2x2 basemap layout called panels.pdf, try
 
    ::

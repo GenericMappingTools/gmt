@@ -181,6 +181,8 @@ in same units as x,y and angles are counter-clockwise from horizontal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 .. include:: oneliner_info.rst_
 
 Suppose you want to make a wiggle plot of magnetic anomalies on segments

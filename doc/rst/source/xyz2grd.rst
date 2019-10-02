@@ -207,6 +207,8 @@ the double type's 53-bit mantissa.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
    ::

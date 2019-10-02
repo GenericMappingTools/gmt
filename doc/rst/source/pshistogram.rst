@@ -51,6 +51,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To draw a histogram of the data v3206.t containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 

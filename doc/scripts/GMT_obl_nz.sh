@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Oblique Mercator map for NZ using complementary poles
-gmt begin GMT_obl_nz ps
+gmt begin GMT_obl_nz
 lon=173:17:02E
 lat=41:16:15S
 az=35
@@ -53,4 +53,4 @@ gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite << EOF
 1.5	1.5	TR	y
 EOF
 echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
-gmt end
+gmt end show

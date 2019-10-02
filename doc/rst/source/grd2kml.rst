@@ -155,6 +155,8 @@ illumination angle the automatic illumination can be used instead.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
 the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,
 supplying a suitable title, and using color masking for unmapped area, try

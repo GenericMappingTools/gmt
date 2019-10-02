@@ -34,6 +34,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To plot the GMT logo of a 2 inch width as a stand-alone plot, use
 
    ::

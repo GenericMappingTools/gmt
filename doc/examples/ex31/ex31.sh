@@ -5,6 +5,10 @@
 # GMT modules:	set, coast, plot, text, legend
 # Unix progs:	awk, cat, rm
 #
+
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 gmt begin ex31
 	# create file PSL_custom_fonts.txt in current working directory
 	# and add PostScript font names of Linux Biolinum and Libertine
@@ -57,5 +61,5 @@ gmt begin ex31
 	# plot legend
 	gmt legend -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite legend.txt
 
-	rm -f PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps
+	rm -f PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps europe-capitals-ru.csv
 gmt end show
