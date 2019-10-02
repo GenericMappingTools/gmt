@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_-J ps
+gmt begin GMT_-J
 gmt text -R0/5/0/3 -Jx1i -F+f+j << EOF
 2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS
 2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS

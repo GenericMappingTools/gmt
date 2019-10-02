@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_App_K_3 ps
+gmt begin GMT_App_K_3
 	gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -Di -A20 \
 	  -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne
 	echo 133 2 | gmt plot -Sc1.4i -Gwhite 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_registration ps
+gmt begin GMT_registration
 # Gridline registration
 gmt plot -R0/3/0/3 -JX2.5i/1.25i -B1g1 -Bwesn -Wthinner -L -Glightred << EOF 
 0.5	1.5

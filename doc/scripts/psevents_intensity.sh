@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Make a figure illustration intensity curve for an event across time in psevents
-gmt begin psevents_intensity ps
+gmt begin psevents_intensity
 	cat <<- EOF > B.txt
 	-0.5	afg	t@-r@-
 	0	afg	t@-b@-

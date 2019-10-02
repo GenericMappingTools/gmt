@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Demonstrate how arrows heads can look like (just doing Cartesian arrows here)
-gmt begin GMT_arrows_types ps
+gmt begin GMT_arrows_types
 # Cartesian straight arrows
 gmt plot -R0/10/0/7 -JX5.75i/1.75i -S -W1.5p -Gred -B0 --MAP_VECTOR_SHAPE=0 << EOF 
 0.5	0.5	4.5	0.5	v0.25i+s+e+a40

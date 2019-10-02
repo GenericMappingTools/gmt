@@ -2,7 +2,7 @@
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
-gmt begin GMT_App_O_9 ps
+gmt begin GMT_App_O_9
 R=-R-85/5/10/55
 gmt grdgradient @App_O_topo5.nc -Nt1 -A45 -Gtopo5_int.nc
 gmt set FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p

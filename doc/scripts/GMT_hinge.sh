@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_hinge ps
+gmt begin GMT_hinge
 	gmt makecpt -Cglobe -T-8000/3000
 	gmt colorbar -Baf -Dx0/0+w4.5i/0.1i+h -W0.001 
 	gmt colorbar -Cglobe  -Baf -Dx0/0+w4.5i/0.1i+h -W0.001 -Y0.5i 

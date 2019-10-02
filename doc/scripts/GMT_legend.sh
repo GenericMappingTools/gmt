@@ -2,7 +2,7 @@
 #
 # Testing gmt legend capabilities for tables with colors
 
-gmt begin GMT_legend ps
+gmt begin GMT_legend
 gmt set FONT_ANNOT_PRIMARY 12p  FONT_LABEL 12p
 
 cat <<EOF > table.txt

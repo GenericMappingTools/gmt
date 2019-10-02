@@ -67,7 +67,7 @@ EOF
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	gmt begin GMT_App_N_$p ps
+	gmt begin GMT_App_N_$p
 	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
 	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
 	gmt plot -Sri -Gblack tt.bars
