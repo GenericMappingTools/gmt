@@ -58,14 +58,14 @@ along the standard parallels 18 and 24, centered on (142W, 55N), try::
       grdimage @AK_gulf_grav.nc -Jl142W/55N/18/24/1.5c -B
     gmt end show
 
-To create an illuminated color PostScript plot of the gridded data set
+To create an illuminated color plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
 
-To create an false color PostScript plot from the three grid files
+To create an false color plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
 tickmarks every 5 units::
 
