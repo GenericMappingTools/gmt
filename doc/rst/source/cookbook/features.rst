@@ -891,13 +891,7 @@ removes leading zeros from calendar items (e.g., 02 becomes 2).
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
-   ::
-
-     gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     gmt begin B_time2
-       gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS
-       gmt basemap -Bpa6Hf1h -Bsa1D -BS -Y0.65i
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_-B_time2.txt
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -959,15 +953,7 @@ shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
 :ref:`TIME_WEEK_START <TIME_WEEK_START>`); they do not have numbers.
 
-   ::
-
-    gmt begin GMT_-B_time5
-      gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
-           FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
-      gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS
-      gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
-      gmt basemap -Bpa3Kf1k -Bsa1r -BS -Y0.65i
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_-B_time5.txt
 
 .. _cartesian_axis5:
 
@@ -1039,32 +1025,7 @@ value. Our last example (Figure :ref:`Custom and irregular annotations
 <Custom_annotations>`) shows such a custom basemap with an interval
 annotations on the *x*-axis and irregular annotations on the *y*-axis.
 
-   ::
-
-    cat << EOF > xannots.txt
-    416.0 ig Devonian
-    443.7 ig Silurian
-    488.3 ig Ordovician
-    542 ig Cambrian
-    EOF
-    cat << EOF > yannots.txt
-    0 a
-    1 a
-    2 f
-    2.71828 ag e
-    3 f
-    3.1415926 ag @~p@~
-    4 f
-    5 f
-    6 f
-    6.2831852 ag 2@~p@~
-    EOF
-    gmt begin GMT_-B_custom
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -Bsy0 -BWS \
-        --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
-    gmt end show
-    rm -f [xy]annots.txt
+.. literalinclude:: /_verbatim/GMT_-B_custom.txt
 
 .. _Custom_annotations:
 

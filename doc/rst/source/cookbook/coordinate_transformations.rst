@@ -99,12 +99,7 @@ Figure :ref:`Linear transformation of Cartesian coordinates <GMT_linear>`.
 
 The complete commands given to produce this plot were
 
-   ::
-
-    gmt begin GMT_linear
-      gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- sqrt.txt
-      gmt plot -St0.1i -N -Gred -Wfaint sqrt10.txt
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_linear.txt
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -210,13 +205,7 @@ Hence, to produce a plot in which the *x*-axis is logarithmic (the
 *y*-axis remains linear, i.e., a semi-log plot), try (Figure :ref:`Logarithmic
 transformation <GMT_log>`)
 
-   ::
-
-    gmt begin GMT_log
-      gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque
-          -Wthick,blue,- -h sqrt.txt
-      gmt plot -Ss0.1i -N -Gred -W -h sqrt10.txt
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_log.txt
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -245,12 +234,7 @@ case P) followed by the desired exponent, in our case 0.5. Since
 to the linear transformation. Thus our command becomes (Figure :ref:`Power
 transformation <GMT_pow>`)
 
-   ::
-
-    gmt begin GMT_pow
-      gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt
-      gmt plot -Sc0.075i -Ggreen -W sqrt10.txt
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_pow.txt
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
