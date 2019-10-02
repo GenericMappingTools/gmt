@@ -54,7 +54,7 @@ BEGIN {
 }
 EOF
 
-gmt begin GMT_encoding ps
+gmt begin GMT_encoding
 gmt set PS_CHAR_ENCODING $1
 gmt plot -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -Ggray -X3i -Sri tt.empty
 $AWK -f tt.awk tt.chart | gmt text -F+f10p,Times-Roman
@@ -66,4 +66,4 @@ gmt plot -Wthick << EOF
 1	0
 1	32
 EOF
-gmt end
+gmt end show

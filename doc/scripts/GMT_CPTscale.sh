@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_CPTscale ps
+gmt begin GMT_CPTscale
 gmt plot -R0/6/0/6 -Jx1i -W0.25p << EOF
 > Normal scaling of whole CPT
 3	2.9
@@ -32,4 +32,4 @@ gmt text -N -F+f14p+j << EOF
 1	3.1	CB	New CPT v1
 5	3.1	CB	New CPT v2
 EOF
-gmt end
+gmt end show

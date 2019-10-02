@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_API_flow ps
+gmt begin GMT_API_flow
 gmt text -R-2/3/-1/1 -Jx1i -F+f14p,Helvetica-Bold -Gwhite -W0.5p -N -C50% -X2i << EOF
 -2	0	EXTERNAL INTERFACE
 0	0	gmt
@@ -21,4 +21,4 @@ gmt text -F+f48p,Helvetica,gray -N << EOF
 0.60	0.06	[
 1.97	0.06	]
 EOF
-gmt end
+gmt end show

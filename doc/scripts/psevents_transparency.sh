@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Make a figure illustrating transparency curve for an event across time in psevents
-gmt begin psevents_transparency ps
+gmt begin psevents_transparency
 	cat <<- EOF > B.txt
 	-0.5	afg	t@-r@-
 	0	afg	t@-b@-
@@ -44,5 +44,5 @@ gmt begin psevents_transparency ps
 	1.5 120 DURATION OF EVENT
 	EOF
 	rm -f B.txt t.txt
-gmt end
+gmt end show
 	

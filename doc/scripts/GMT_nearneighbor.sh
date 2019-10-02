@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_nearneighbor ps
+gmt begin GMT_nearneighbor
 gmt plot -R0/2/0/2 -Jx1i -Sc1i -Wthick -Glightgreen@70 -Bg0.25 << EOF 
 0.75	1.25
 EOF
@@ -56,4 +56,4 @@ gmt text -F+f8p,Helvetica-Oblique+jBL << EOF
 1	1.4	R
 1.0	1	r@-i@-
 EOF
-gmt end
+gmt end show

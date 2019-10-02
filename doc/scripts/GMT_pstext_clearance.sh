@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_pstext_clearance ps
+gmt begin GMT_pstext_clearance
 gmt text -R0/3/-0.1/1.5 -Jx1i -C0.2i+tO -Wthick -F+f36p,Helvetica-Bold << EOF 
 1.5	0.5	My Text
 EOF
@@ -22,4 +22,4 @@ gmt plot << EOF
 0.59	0.69
 0.46	0.82
 EOF
-gmt end
+gmt end show
