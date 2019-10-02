@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+p**\ \|\ **n** ]
+**-E**\ **+p**\ \|\ **n**
     Reset the handedness of all polygons to match the given **+p**
     (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
