@@ -22,7 +22,7 @@ Synopsis
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
-[ |-K| ] [ |-L| ] [ |-N| ]
+[ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
