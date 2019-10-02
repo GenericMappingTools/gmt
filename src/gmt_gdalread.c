@@ -248,8 +248,9 @@ int get_attrib_from_string(struct GMT_GDALREAD_OUT_CTRL *Ctrl, GDALRasterBandH h
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize,
-                                 int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
+GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl, char *gdal_filename, int got_R,
+                                 int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY,
+								 double z_min, double z_max, int first_layer) {
 /* =============================================================================================== */
 /*
  * This routine queries the GDAL raster file for some metadata
@@ -502,7 +503,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Interpretation Name */
 	/* ------------------------------------------------------------------------- */
-	hBand = GDALGetRasterBand(hDataset, 1);
+	hBand = GDALGetRasterBand(hDataset, first_layer);
 	if (raster_count > 0)
 		Ctrl->color_interp = GDALGetColorInterpretationName(GDALGetRasterColorInterpretation(hBand));
 	else
@@ -706,7 +707,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
 	int k, pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
-	int error = 0, gdal_code = 0;
+	int error = 0, gdal_code = 0, first_layer;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
@@ -742,6 +743,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		whichBands[0] = 1;
 		Ctrl->Float.active = true;		/* Signals that output will be in the float array, no matter input type */
 	}
+	first_layer = (nReqBands) ? whichBands[0] : 1;		/* The one used to get data type and header info */
 
 	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_LONG_VERBOSE) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Read band(s):");
@@ -859,7 +861,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GDALDeregisterDriver(hDriver);		/* Deregister the JP2ECW driver. That is, prefer the OpenJPEG one */
 
 	if (metadata_only) {
-		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max))
+		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
 			return(-1);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
@@ -945,11 +947,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		nYSize = GDALGetRasterYSize(hDataset);
 	}
 
-	/* The following assumes that all bands have the same PixelSize. Otherwise ... */
-	if (whichBands)
-		hBand = GDALGetRasterBand(hDataset, whichBands[0]);
-	else
-		hBand = GDALGetRasterBand(hDataset,1);
+	/* The following assumes that all bands have the same PixelSize, data type. Otherwise ... */
+	hBand = GDALGetRasterBand(hDataset, first_layer);
 	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
 
 	if (jump) {
@@ -1287,7 +1286,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	GDALClose(hDataset);
 
-	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
 	GDALDestroyDriverManager();
 
