@@ -1,6 +1,3 @@
-Compatibility
-
-
 Incompatibilities between GMT 5 and GMT 4
 =========================================
 
