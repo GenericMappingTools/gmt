@@ -221,4 +221,4 @@ gmt plot -Bg1 -Wthick << EOF
 1	20
 1	32
 EOF
-gmt end
+gmt end show
