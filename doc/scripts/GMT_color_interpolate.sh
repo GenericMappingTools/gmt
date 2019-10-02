@@ -31,4 +31,4 @@ gmt text -F+f14p,Helvetica-Bold+jBC << END
 5.1 1.7 rainbow (HSV)
 5.1 0.8 rainbow (RGB)
 END
-gmt end
+gmt end show

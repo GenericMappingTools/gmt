@@ -7,4 +7,4 @@ gmt begin GMT_hinge
 	gmt text -F+f12p+jCB <<- EOF 
 	2.25	0.35	HINGE
 	EOF
-gmt end
+gmt end show

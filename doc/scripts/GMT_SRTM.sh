@@ -7,4 +7,4 @@ echo "1	red" > t.cpt
 gmt grdmath @srtm_tiles.nc 0 NAN = t.nc
 gmt grdimage t.nc -Ct.cpt
 gmt coast -Dc -A5000 -W0.25p
-gmt end
+gmt end show

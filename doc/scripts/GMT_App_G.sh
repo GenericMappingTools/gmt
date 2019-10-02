@@ -61,4 +61,4 @@ gmt text -Y${dy}i -F+f+j <<EOF
 3.1	0.03	10p,ZapfDingbats	BL	ZapfDingbats @%0%(ZapfDingbats)@%%
 EOF
 
-gmt end
+gmt end show

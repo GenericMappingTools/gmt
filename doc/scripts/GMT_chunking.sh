@@ -34,4 +34,4 @@ for ((x=0;x<12;++x)); do
 done
 
 rm -f chunk.tmp
-gmt end
+gmt end show

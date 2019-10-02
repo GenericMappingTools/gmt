@@ -29,4 +29,4 @@ gmt text -F+f9p+jLB << EOF
 -0.7	4.3	tan@+-1@+ 
 -0.7	3.7	transformed
 EOF
-gmt end
+gmt end show

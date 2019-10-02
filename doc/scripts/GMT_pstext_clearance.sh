@@ -22,4 +22,4 @@ gmt plot << EOF
 0.59	0.69
 0.46	0.82
 EOF
-gmt end
+gmt end show

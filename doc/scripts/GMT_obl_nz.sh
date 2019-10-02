@@ -53,4 +53,4 @@ gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite << EOF
 1.5	1.5	TR	y
 EOF
 echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
-gmt end
+gmt end show

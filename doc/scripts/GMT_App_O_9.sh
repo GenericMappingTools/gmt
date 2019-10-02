@@ -26,4 +26,4 @@ cat << EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j
 2.33E	48.87N	CT	Paris
 17W	28N	CT	Canaries
 EOF
-gmt end
+gmt end show

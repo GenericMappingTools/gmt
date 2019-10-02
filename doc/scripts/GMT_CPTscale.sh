@@ -32,4 +32,4 @@ gmt text -N -F+f14p+j << EOF
 1	3.1	CB	New CPT v1
 5	3.1	CB	New CPT v2
 EOF
-gmt end
+gmt end show

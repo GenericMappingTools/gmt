@@ -8,4 +8,4 @@ gmt coast -R110E/170E/44S/9S -JM6i -Baf -BWSne -Wfaint -N2/1p  -EAU+gbisque -Gbr
 gmt inset begin -DjTR+w1.5i+o0.15i -F+gwhite+p1p+s -M0.05i
   gmt coast -Rg -JG120/30S/1.4i -Da -Gbrown -A5000 -Bg -Wfaint -EAU+gbisque 
 gmt inset end 
-gmt end
+gmt end show

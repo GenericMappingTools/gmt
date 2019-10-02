@@ -49,4 +49,4 @@ gmt plot -N -Wthinner << EOF
 2	2
 1.63	-0.35
 EOF
-gmt end
+gmt end show

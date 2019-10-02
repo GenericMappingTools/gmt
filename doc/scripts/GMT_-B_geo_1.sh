@@ -15,4 +15,4 @@ gmt text -F+f9p+jCB << EOF
 0.375 0.05 frame
 1.29166666 0.05 grid
 EOF
-gmt end
+gmt end show

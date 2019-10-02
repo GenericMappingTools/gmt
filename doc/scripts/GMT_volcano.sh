@@ -15,4 +15,4 @@ cat <<END > bullseye.def
 0	0	0.1	c	-Gwhite -W0.25p
 END
 echo "0 0" | gmt plot -N -Ba0.25g0.05 -BwSnE -Wthick -Skbullseye/2i -X2.5i
-gmt end
+gmt end show

@@ -44,4 +44,4 @@ gmt text -F+f12p+jCM -Glightorange -W0.25p -C50% << EOF
 -2.8 -0.75 GMT CONTAINERS
 +2.8 -0.75 GMT CONTAINERS
 EOF
-gmt end
+gmt end show

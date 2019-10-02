@@ -14,4 +14,4 @@ gmt text -Gwhite -C0.01i/0.01i -F+f9p+jCB << EOF
 7 0.2 frame
 9.5 0.2 grid
 EOF
-gmt end
+gmt end show

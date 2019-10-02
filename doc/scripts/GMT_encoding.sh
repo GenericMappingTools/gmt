@@ -66,4 +66,4 @@ gmt plot -Wthick << EOF
 1	0
 1	32
 EOF
-gmt end
+gmt end show

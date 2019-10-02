@@ -6,4 +6,4 @@ gmt begin GMT_tut_10
 1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.
 1  4  University of Hawaii at M@!a\225noa
 EOF
-gmt end
+gmt end show

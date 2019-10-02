@@ -72,4 +72,4 @@ do
 	y=`gmt math -Q $y $dy ADD =`
 	y2=`gmt math -Q $y2 $dy ADD =`
 done
-gmt end
+gmt end show

@@ -7,4 +7,4 @@ gmt begin GMT_tut_14
   gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -Ba -B+tcontinuous 
   gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -Ba -B+tdiscrete -I0.5 
   gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -Ba -B+tcontinuous -I0.5 
-gmt end
+gmt end show

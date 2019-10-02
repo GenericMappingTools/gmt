@@ -7,4 +7,4 @@ gmt inset begin -DjBR+o0.3i+w1.75i/0.75i -F+p1p+i+s+gwhite+c0.1i
 gmt inset end
 gmt inset begin -DjBR+o0.3i+w1.75i/0.75i -F+p0.25p,-+c0 
 gmt inset end
-gmt end
+gmt end show

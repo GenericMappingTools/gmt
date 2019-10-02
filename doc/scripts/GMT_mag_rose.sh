@@ -25,4 +25,4 @@ gmt text -F+f11.5p+jLM << EOF
 4.1 0.50 @;darkgreen;MAP_DEFAULT_PEN@;;
 4.1 0.25 @;darkgreen;COLOR_BACKGROUND@;;
 EOF
-gmt end
+gmt end show

@@ -38,4 +38,4 @@ gmt colorbar -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0
 gmt colorbar -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1  
 gmt colorbar -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li    
 gmt colorbar -Cyears.cpt -D20/04+w-8/0.5+jML+ef -Li0.1
-gmt end
+gmt end show

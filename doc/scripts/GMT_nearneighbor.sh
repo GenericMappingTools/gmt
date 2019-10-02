@@ -56,4 +56,4 @@ gmt text -F+f8p,Helvetica-Oblique+jBL << EOF
 1	1.4	R
 1.0	1	r@-i@-
 EOF
-gmt end
+gmt end show

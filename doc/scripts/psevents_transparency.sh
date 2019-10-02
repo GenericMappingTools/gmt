@@ -44,5 +44,5 @@ gmt begin psevents_transparency
 	1.5 120 DURATION OF EVENT
 	EOF
 	rm -f B.txt t.txt
-gmt end
+gmt end show
 	

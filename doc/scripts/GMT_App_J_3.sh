@@ -597,4 +597,4 @@ gmt text -F+f9p,Times-Roman+j << END
 3.8	0.5	RM	Gaussian
 3.8	0.4	RM	Cosine
 END
-gmt end
+gmt end show

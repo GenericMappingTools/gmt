@@ -19,4 +19,4 @@ gmt text -N --FONT=Helvetica-Bold -F+f+j << EOF
 1.3	0.25	9p	BL	x
 0.25	1.6	9p	ML	y
 EOF
-gmt end
+gmt end show

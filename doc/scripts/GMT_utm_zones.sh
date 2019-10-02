@@ -103,4 +103,4 @@ EOF
 $AWK '{if ($1 < 0) printf "-180 %s %s\\232S\n", $1, -$1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM 
 $AWK '{if ($1 > 0) printf "-180 %s %s\\232N\n", $1,  $1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM
 echo "-180 0 0\\232" | gmt text -N -D-0.05i/0 -F+f10p+jRM
-gmt end
+gmt end show

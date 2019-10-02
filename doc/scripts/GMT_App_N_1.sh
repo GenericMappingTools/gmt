@@ -73,5 +73,5 @@ EOF
 	gmt plot -Sri -Gblack tt.bars
 	# Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure
 	sed -e 's/TRANSPARENT/TRANSP/' < tt.text | gmt text -F+f${fs}p,white
-	gmt end
+	gmt end show
 done

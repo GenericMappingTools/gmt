@@ -58,4 +58,4 @@ $R	$B
 $R	$M
 $R	$T
 EOF
-gmt end
+gmt end show

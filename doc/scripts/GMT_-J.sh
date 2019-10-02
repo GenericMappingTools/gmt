@@ -92,4 +92,4 @@ gmt plot -Wthinner << EOF
 0.025	2.87
 0.025	2.55
 EOF
-gmt end
+gmt end show

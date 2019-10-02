@@ -38,4 +38,4 @@ do
 	y=$dy
 	x=$back
 done
-gmt end
+gmt end show

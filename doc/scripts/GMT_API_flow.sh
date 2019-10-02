@@ -21,4 +21,4 @@ gmt text -F+f48p,Helvetica,gray -N << EOF
 0.60	0.06	[
 1.97	0.06	]
 EOF
-gmt end
+gmt end show

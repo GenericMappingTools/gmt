@@ -90,4 +90,4 @@ gmt text -F+f9p,Times-Roman+j << END
 0.2	0.2	RM	Gaussian
 0.2	0.1	RM	Cosine
 END
-gmt end
+gmt end show

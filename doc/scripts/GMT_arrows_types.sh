@@ -27,4 +27,4 @@ gmt plot -S -W1.5p -Gred --MAP_VECTOR_SHAPE=0.5 << EOF
 0.5	5.5	4.5	5.5	v0.25i+s+b+ei
 0.5	6.5	4.5	6.5	v0.25i+s+bA+eA
 EOF
-gmt end
+gmt end show

@@ -13,4 +13,4 @@ gmt plot -Wfaint -A -N << EOF
 0	50
 40	50
 EOF
-gmt end
+gmt end show

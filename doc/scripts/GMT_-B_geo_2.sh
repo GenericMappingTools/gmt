@@ -26,4 +26,4 @@ gmt text -N -F+f+j << EOF
 -0.25 0.05 9p CB frame
 0.625 0.05 9p CB grid
 EOF
-gmt end
+gmt end show

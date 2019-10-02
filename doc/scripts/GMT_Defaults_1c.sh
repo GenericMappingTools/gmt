@@ -28,4 +28,4 @@ gmt plot -Sv0.06i+s+e -N -W0.5p,blue -Gblue << EOF
 2.3 0.3 1.8 -0.2
 2.35 -0.27 2.1 -0.27
 EOF
-gmt end
+gmt end show

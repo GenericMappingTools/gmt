@@ -48,5 +48,5 @@ gmt begin psevents_size
 	1.5 6 DURATION OF EVENT
 	EOF
 	rm -f B.txt t.txt
-gmt end
+gmt end show
 	

@@ -9,4 +9,4 @@ gmt basemap -R-5/5/-5/5 -Jm0.15i -Ba5f -BWSne+gazure1 -Tdg0/0+w1i+jCM -X1i
 gmt basemap -Ba5f -BwSne+gazure1 -Tdg0/0+w1i+f1+jCM+l,,,N -X1.75i
 # right: Plain kind
 gmt basemap -R-7/7/-5/5 -Ba5f -BwSnE+gazure1 -Tdg0/0+w1i+f3+l+jCM -X1.75i
-gmt end
+gmt end show

@@ -39,4 +39,4 @@ gmt plot -Wthinnest,- -X-0.5i -Y-0.5i << EOF
 0.1	0.1
 0.75	0.1
 EOF
-gmt end
+gmt end show

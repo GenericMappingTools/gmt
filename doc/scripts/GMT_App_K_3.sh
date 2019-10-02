@@ -6,4 +6,4 @@ gmt begin GMT_App_K_3
 	gmt basemap -Tm133/2+w1i+t45/10/5+jCM --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
 	  --FONT_ANNOT_SECONDARY=8p 
 	echo 130.35 -0.2 | gmt psxy -SJ-200 -Wthicker
-gmt end
+gmt end show

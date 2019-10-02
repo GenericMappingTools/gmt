@@ -11,4 +11,4 @@ gmt begin GMT_fatline
 	gmt psxy -W1p,red gc.d
 	gmt psxy -X3.25i -W30p gc.d --PS_LINE_CAP=round --PS_LINE_JOIN=round
 	gmt psxy -W1p,red gc.d
-gmt end
+gmt end show

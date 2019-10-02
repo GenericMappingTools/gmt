@@ -8,4 +8,4 @@ gmt text -F+f10p+jCM+a << EOF
 11.0 42.6 -11.5 1 cm
 27.1 42.3 +9.5 500 km
 EOF
-gmt end
+gmt end show
