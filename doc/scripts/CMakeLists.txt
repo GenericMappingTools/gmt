@@ -39,7 +39,7 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 # do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_-B_pow.sh GMT_-B_slanted.sh GMT_-J.sh GMT_-R.sh GMT_-XY.sh
-	GMT_App_E.sh GMT_App_F_dingbats.sh GMT_App_F_iso+.sh GMT_App_F_stand+.sh
+	GMT_App_E.sh GMT_App_F_dingbats.sh
 	GMT_App_F_stand+_iso+.sh GMT_App_F_symbol.sh GMT_App_F_symbol_dingbats.sh
 	GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh GMT_App_M_1a.sh GMT_App_M_1b.sh GMT_App_M_1c.sh
 	GMT_App_N_1.sh GMT_arrows.sh GMT_arrows_types.sh GMT_atan.sh GMT_color_interpolate.sh
@@ -57,7 +57,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
-# This is no test: GMT_encoding.sh func_F_iso+.sh func_F_stand+.sh
+# This is no test: GMT_encoding.sh
 
 set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 
