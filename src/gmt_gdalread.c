@@ -44,24 +44,21 @@ GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
 	return (GDALOpen (path, GA_ReadOnly));
 }
 
-GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col) {
+GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands) {
 	unsigned int n = 0, i, start, stop, pos = 0;
-	char p[GMT_BUFSIZ];
+	char p[GMT_LEN256];
 	gmt_M_unused(GMT);
 
 	while ((gmt_strtok (txt, ",", &pos, p))) {
-		if (strchr (p, '-'))
+		if (strchr (p, '-')) {
 			sscanf (p, "%d-%d", &start, &stop);
-		else {
-			sscanf (p, "%d", &start);
-			stop = start;
+			for (i = start; i <= stop; i++)
+				whichBands[n++] = i;
 		}
-		stop = MIN (stop, n_col);
-		for (i = start; i <= stop; i++) {
-			whichBands[n] = i + 1;			/* Band numbering in GMT is 0 based */
-			n++;
-		}
+		else
+			sscanf (p, "%d", &whichBands[n++]);
 	}
+	for (i = 0; i < n; i++) whichBands[i] += 1;	/* Band numbering in GMT is 0 based */
 	return ((int)n);
 }
 
@@ -733,21 +730,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	gmt_M_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
-		int nc_ind, n_commas = 0, n_dash = 0;
-		for (nc_ind = 0; prhs->B.bands[nc_ind]; nc_ind++)
-			if (prhs->B.bands[nc_ind] == ',') n_commas++;
-		for (n = 0; prhs->B.bands[n]; n++)
-			if (prhs->B.bands[n] == '-') n_dash = (int)n;
-		if ((n_commas + n_dash) == 0)
-			nn = 1;
-		else {
-			/* This part of the algorithm only works well for three bands. When more, it's very wrong MUST FIX */
-			nn = MAX(n_commas+1, n_dash);
-			nn = MAX(nn, (unsigned int)atoi(&prhs->B.bands[nc_ind-1])+1);	/* +1 because band numbering in GMT is zero based */
-			if (n_dash)	nn = MAX(nn, (unsigned int)atoi(&prhs->B.bands[nn+1])+1);
-		}
-		whichBands = gmt_M_memory (GMT, NULL, nn, int);
-		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands, (unsigned int)nn);
+		whichBands = gmt_M_memory (GMT, NULL, 128, int);		/* 128 is huge enough */
+		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands);
 	}
 	else if (prhs->f_ptr.active) {
 		/* Here we are going to read to a grid so if no band info was provided, default to read only the
@@ -757,6 +741,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		whichBands = gmt_M_memory (GMT, NULL, 1, int);
 		whichBands[0] = 1;
 		Ctrl->Float.active = true;		/* Signals that output will be in the float array, no matter input type */
+	}
+
+	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_LONG_VERBOSE) {
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Read band(s):");
+		for (k = 0; k < nReqBands; k++)
+			GMT_Message (GMT->parent, GMT_TIME_NONE, "\t%d", whichBands[k]);
+		GMT_Message (GMT->parent, GMT_TIME_NONE, "\n");
 	}
 
 	do_BIP = prhs->I.active;
@@ -955,7 +946,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	/* The following assumes that all bands have the same PixelSize. Otherwise ... */
-	hBand = GDALGetRasterBand(hDataset,1);
+	if (whichBands)
+		hBand = GDALGetRasterBand(hDataset, whichBands[0]);
+	else
+		hBand = GDALGetRasterBand(hDataset,1);
 	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
 
 	if (jump) {
@@ -994,8 +988,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
 			break;
 		case GDT_UInt16:
-			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
+			if (prhs->f_ptr.active) {	/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+				Ctrl->Float.active = true;		/* In case it was not set yet */
+			}
 			else
 				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
 			break;
