@@ -53,7 +53,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
 #define THIS_MODULE_KEYS	"<G{,FG(=1,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVf" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-RVfr" GMT_ADD_x_OPT
 
 struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
@@ -531,7 +531,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width>[/<width2>][<modifiers>] -G<outgrid>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]%s [%s]\n\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s] [%s]%s[%s]\n\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -595,7 +595,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Option (API, "V,f,x");
+	GMT_Option (API, "V,f,r,x");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -800,6 +800,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 				"Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && GMT->common.R.active[ISET] && Ctrl->F.highpass,
 				"Syntax error -F option: Highpass filtering requires original -R -I\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active,
+						"Syntax error -T option: Cannot give both -T and -r\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -862,9 +864,12 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
 		Return (API->error);
 	}
-	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
+	if (GMT->common.R.active[GSET])	/* Explicitly set the output registration */
+		one_or_zero = (GMT->common.R.registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
+	
+	else if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
-	else
+	else				/* Same as input grid registration */
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
 	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && gmt_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
