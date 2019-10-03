@@ -872,10 +872,7 @@ annotations are supported for all axes.
 Our first example shows a time period of almost two months in Spring
 2000. We want to annotate the month intervals as well as the date at the start of each week:
 
-   ::
-
-     gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -pdf GMT_-B_time1
+.. literalinclude:: /_verbatim/GMT_-B_time1.txt
 
 These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
 Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
@@ -910,10 +907,7 @@ followed by one space and a two-digit day-of-month number.
 The third example (Figure :ref:`cartesian_axis3`) presents two years, annotating
 both the years and every 3rd month.
 
-   ::
-
-     gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -pdf GMT_-B_time3
+.. literalinclude:: /_verbatim/GMT_-B_time3.txt
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -935,10 +929,7 @@ relative time by specifying **t** in the **-R** option while the
 :ref:`TIME_UNIT <TIME_UNIT>` is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:
 
-   ::
-
-     gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p TIME_UNIT d
-     gmt basemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -pdf GMT_-B_time4
+.. literalinclude:: /_verbatim/GMT_-B_time4.txt
 
 .. _cartesian_axis4:
 
@@ -967,10 +958,7 @@ Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
 1996, and we have annotated each month with an abbreviated, upper case name and
 2-digit year. Only the primary axes information is specified.
 
-   ::
-
-    gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    gmt basemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -pdf GMT_-B_time6
+.. literalinclude:: /_verbatim/GMT_-B_time6.txt
 
 .. _cartesian_axis6:
 
@@ -987,10 +975,7 @@ in order to have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
 
-   ::
-
-    gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    gmt basemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -pdf GMT_-B_time7
+.. literalinclude:: /_verbatim/GMT_-B_time7.txt
 
 .. _cartesian_axis7:
 
