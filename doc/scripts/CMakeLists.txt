@@ -33,7 +33,12 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_perspective.sh GMT_polar.sh GMT_polyconic.sh GMT_pow.sh GMT_robinson.sh
 	GMT_sinus_int.sh GMT_sinusoidal.sh GMT_stereographic_general.sh
 	GMT_stereographic_polar.sh GMT_stereographic_rect.sh GMT_stereonets.sh
-	GMT_TM.sh GMT_transverse_merc.sh GMT_winkel.sh)
+	GMT_TM.sh GMT_transverse_merc.sh GMT_winkel.sh
+	GMT_tut_1.sh GMT_tut_2.sh GMT_tut_3.sh GMT_tut_4.sh GMT_tut_5.sh
+	GMT_tut_6.sh GMT_tut_7.sh GMT_tut_8.sh GMT_tut_9.sh GMT_tut_10.sh
+	GMT_tut_11.sh GMT_tut_12.sh GMT_tut_13.sh GMT_tut_14.sh GMT_tut_15.sh
+	GMT_tut_16.sh GMT_tut_17.sh GMT_tut_18.sh GMT_tut_19.sh)
+
 
 # Scripts that are not used in the documentation (but the figures are)
 # do not include GMT_-U.sh as this would always fail
@@ -48,10 +53,6 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh GMT_inset.sh GMT_linearrow.sh
 	GMT_dir_rose.sh GMT_images.sh GMT_colorbar.sh GMT_cyclic.sh GMT_legend.sh GMT_mag_rose.sh
 	GMT_hinge.sh GMT_CPTscale.sh GMT_SRTM.sh GMT_vertscale.sh GMT_fatline.sh
-	GMT_tut_1.sh GMT_tut_2.sh GMT_tut_3.sh GMT_tut_4.sh GMT_tut_5.sh
-	GMT_tut_6.sh GMT_tut_7.sh GMT_tut_8.sh GMT_tut_9.sh GMT_tut_10.sh
-	GMT_tut_11.sh GMT_tut_12.sh GMT_tut_13.sh GMT_tut_14.sh GMT_tut_15.sh
-	GMT_tut_16.sh GMT_tut_17.sh GMT_tut_18.sh GMT_tut_19.sh
 	psevents_intensity.sh psevents_size.sh psevents_transparency.sh)
 
 # Scripts that are only used for testing, figures are not in the documentation

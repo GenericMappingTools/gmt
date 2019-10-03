@@ -239,11 +239,7 @@ try the following:
 
 To simply plot the data as a line we choose no symbol and specify a pen thickness instead:
 
-   ::
-
-    gmt begin GMT_tut_7
-      gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_tut_7.txt
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
@@ -270,12 +266,7 @@ Symbols, on the other hand, can be plotted one at the time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:
 
-   ::
-
-    gmt begin GMT_tut_8 pdf
-      gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
-      gmt plot tut_data.txt -Wthin -Si0.2i
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_tut_8.txt
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
 two-step procedure also makes it easy to plot the line over the symbols
@@ -344,13 +335,7 @@ This color table was generated as part of the script (below).
 
 We may now complete our example using the Mercator projection:
 
-   ::
-
-    gmt begin GMT_tut_9 pdf
-      gmt makecpt -Cred,green,blue -T0,70,300,10000
-      gmt coast -R130/150/35/50 -JM6i -B -Ggray
-      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -C
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_tut_9.txt
 
 where the **c** appended to the **-Sc** option ensures that symbols
 sizes are interpreted to be in cm.  Your plot should look like :ref:`our example 9 below <gmt_tut_9>`
@@ -450,17 +435,7 @@ set :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to ISOLatin1 in your :doc:`/gmt.c
 
 We will demonstrate :doc:`/text` with the following script:
 
-   ::
-
-    gmt begin GMT_tut_10
-      gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL << EOF
-    1  1  It's P@al, not Pal!
-    1  2  Try @%33%ZapfChancery@%% today
-    1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.
-    1  4  University of Hawaii at M@!a\225noa
-    EOF
-    gmt end show
-
+.. literalinclude:: /_verbatim/GMT_tut_10.txt
 
 Here we have used the "here document" notation in UNIX: The << EOF
 will treat the following lines as the input file until it detects the
