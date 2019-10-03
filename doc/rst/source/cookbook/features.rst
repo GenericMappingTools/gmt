@@ -872,10 +872,7 @@ annotations are supported for all axes.
 Our first example shows a time period of almost two months in Spring
 2000. We want to annotate the month intervals as well as the date at the start of each week:
 
-   ::
-
-     gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -pdf GMT_-B_time1
+.. literalinclude:: /_verbatim/GMT_-B_time1.txt
 
 These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
 Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
@@ -891,13 +888,7 @@ removes leading zeros from calendar items (e.g., 02 becomes 2).
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
-   ::
-
-     gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     gmt begin B_time2
-       gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS
-       gmt basemap -Bpa6Hf1h -Bsa1D -BS -Y0.65i
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_-B_time2.txt
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -916,10 +907,7 @@ followed by one space and a two-digit day-of-month number.
 The third example (Figure :ref:`cartesian_axis3`) presents two years, annotating
 both the years and every 3rd month.
 
-   ::
-
-     gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     gmt basemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -pdf GMT_-B_time3
+.. literalinclude:: /_verbatim/GMT_-B_time3.txt
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -941,10 +929,7 @@ relative time by specifying **t** in the **-R** option while the
 :ref:`TIME_UNIT <TIME_UNIT>` is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:
 
-   ::
-
-     gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p TIME_UNIT d
-     gmt basemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -pdf GMT_-B_time4
+.. literalinclude:: /_verbatim/GMT_-B_time4.txt
 
 .. _cartesian_axis4:
 
@@ -959,15 +944,7 @@ shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
 :ref:`TIME_WEEK_START <TIME_WEEK_START>`); they do not have numbers.
 
-   ::
-
-    gmt begin GMT_-B_time5
-      gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
-           FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
-      gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS
-      gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
-      gmt basemap -Bpa3Kf1k -Bsa1r -BS -Y0.65i
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_-B_time5.txt
 
 .. _cartesian_axis5:
 
@@ -981,10 +958,7 @@ Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
 1996, and we have annotated each month with an abbreviated, upper case name and
 2-digit year. Only the primary axes information is specified.
 
-   ::
-
-    gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    gmt basemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -pdf GMT_-B_time6
+.. literalinclude:: /_verbatim/GMT_-B_time6.txt
 
 .. _cartesian_axis6:
 
@@ -1001,10 +975,7 @@ in order to have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
 
-   ::
-
-    gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    gmt basemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -pdf GMT_-B_time7
+.. literalinclude:: /_verbatim/GMT_-B_time7.txt
 
 .. _cartesian_axis7:
 
@@ -1039,32 +1010,7 @@ value. Our last example (Figure :ref:`Custom and irregular annotations
 <Custom_annotations>`) shows such a custom basemap with an interval
 annotations on the *x*-axis and irregular annotations on the *y*-axis.
 
-   ::
-
-    cat << EOF > xannots.txt
-    416.0 ig Devonian
-    443.7 ig Silurian
-    488.3 ig Ordovician
-    542 ig Cambrian
-    EOF
-    cat << EOF > yannots.txt
-    0 a
-    1 a
-    2 f
-    2.71828 ag e
-    3 f
-    3.1415926 ag @~p@~
-    4 f
-    5 f
-    6 f
-    6.2831852 ag 2@~p@~
-    EOF
-    gmt begin GMT_-B_custom
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
-    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -Bsy0 -BWS \
-        --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
-    gmt end show
-    rm -f [xy]annots.txt
+.. literalinclude:: /_verbatim/GMT_-B_custom.txt
 
 .. _Custom_annotations:
 
