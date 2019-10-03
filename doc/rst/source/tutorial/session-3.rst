@@ -72,11 +72,7 @@ We will first make a plain contour map using 1 km as annotation
 interval and 250 m as contour interval.  We choose a 7-inch-wide
 Mercator plot and annotate the borders every 2º:
 
-   ::
-
-    gmt begin GMT_tut_11
-      gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -B
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_tut_11.txt
 
 Your plot should look like :ref:`our example 11 below <gmt_tut_11>`
 
@@ -181,13 +177,7 @@ We desire to make a 5' by 5' grid.  Running gmt info on @tut_ship.xyz yields
 
 so we choose the region accordingly, and get a view of the contour map using
 
-   ::
-
-    gmt begin GMT_tut_12
-      gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @tut_ship.xyz
-      gmt grdcontour ship.nc -JM6i -B -C250 -A1000
-    gmt end show
-
+.. literalinclude:: /_verbatim/GMT_tut_12.txt
 
 Your plot should look like :ref:`our example 12 below <gmt_tut_12>`
 
@@ -297,13 +287,7 @@ based on the data distribution.  Once the clip path is activated we can
 contour the final grid; we finally deactivate the clipping with a second
 call to :doc:`/mask`.  Here's the recipe:
 
-   ::
-
-    gmt begin GMT_tut_13 pdf
-      gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B
-      gmt grdcontour ship.nc -C250 -A1000
-      gmt mask -C
-    gmt end show
+.. literalinclude:: /_verbatim/GMT_tut_13.txt
 
 Your plot should look like :ref:`our example 13 below <gmt_tut_13>`
 
