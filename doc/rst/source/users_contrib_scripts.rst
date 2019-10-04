@@ -20,4 +20,4 @@ Users Script Contributions
    :hidden:
    :glob:
 
-   users_contrib_script/*
+   users_contrib_scripts/*
