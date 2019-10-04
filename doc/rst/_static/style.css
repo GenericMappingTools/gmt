@@ -19,7 +19,7 @@
 }
 
 /* style for example gallery */
-#example-gallery ul li {
+.gmtgallary li {
     list-style: none;
     width: 180px;
     display: inline-grid;
