@@ -36,8 +36,6 @@ GMT Cookbook
    :maxdepth: 1
    :numbered:
 
-   cookbook/acknowledgments
-   cookbook/citation
    cookbook/copyright
    cookbook/preface
    cookbook/introduction
