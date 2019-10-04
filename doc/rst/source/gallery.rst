@@ -3,9 +3,6 @@
 Example Gallery
 ===============
 
-.. Don't change anything before this line unless you know what you're doing.
-.. The title is used as a CSS ID in style.css
-
 The 50 Examples
 ----------------
 
@@ -15,6 +12,8 @@ manipulate the numbers in various ways, then display the results in
 diagram or map view. The resulting plots will have in common that they
 are all made up of simpler plots that have been overlaid to create a
 complex illustration.
+
+.. cssclass:: gmtgallary
 
 .. jinja::
 
@@ -34,6 +33,8 @@ complex illustration.
 
 Animations
 ----------
+
+.. cssclass:: gmtgallary
 
 .. jinja::
 
