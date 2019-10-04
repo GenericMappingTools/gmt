@@ -40,6 +40,7 @@ GMT Cookbook
    cookbook/preface
    cookbook/introduction
    cookbook/features
+   cookbook/options
    cookbook/coordinate_transformations
    cookbook/map_projections
    cookbook/supplemental_packages
