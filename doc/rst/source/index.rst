@@ -50,7 +50,7 @@ Quick links
    users_contrib_scripts
    users_contrib_symbols
    changes
-   compatibility
+   deprecated_defaults
    switching
 
 .. toctree::
