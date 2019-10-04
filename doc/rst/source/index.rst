@@ -47,8 +47,8 @@ Quick links
    :maxdepth: 1
    :caption: Resources
 
-   Users_contrib_script
-   Users_contrib_symbols
+   users_contrib_scripts
+   users_contrib_symbols
    changes
    compatibility
    switching
