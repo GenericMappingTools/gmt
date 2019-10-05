@@ -3,10 +3,12 @@
 # GMT documentation build configuration file.
 # Refer to http://www.sphinx-doc.org/en/master/usage/configuration.html for details.
 #
+import sys, os
+sys.path.append(os.path.abspath('_extensions'))
 
 # -- General configuration -----------------------------------------------------
 needs_sphinx = '1.8'
-extensions = ['sphinx.ext.mathjax']
+extensions = ['sphinx.ext.mathjax', 'jinja']
 source_encoding = 'utf-8-sig'
 source_suffix = '.rst'
 master_doc = 'index'

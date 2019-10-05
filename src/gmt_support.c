@@ -12624,6 +12624,10 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 		if (string[i] == '\"' || string[i] == '\'') in_quote = !in_quote;	/* Check when we get past the quoted section */
 	}
 	token[j] = 0;	/* Add terminating \0 */
+	if (j > 2 && token[1] == '\"' && token[j-1] == '\"') { /* The whole thing was given in quotes */
+		memmove (&token[1], &token[2], strlen(token)-3);
+		token[j-2] = 0;
+	}
 
 	*pos = i;
 

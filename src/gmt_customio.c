@@ -1764,6 +1764,10 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	to_gdalread->M.active = true;		/* Metadata only */
+	if (HH->pocket) {	/* Have a band request. */
+		to_gdalread->B.active = true;
+		to_gdalread->B.bands = HH->pocket;		/* Band parsing and error testing is done in gmt_gdalread */
+	}
 
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file (metadata) with gdalread.\n");

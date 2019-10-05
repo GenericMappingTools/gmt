@@ -121,7 +121,7 @@ Optional Arguments
     **-Qt**\ *pen*
         Set pen color to write station code. Default uses the default pen (see |-W|).
 
-.. _-Y:
+.. _-T:
 
 **-T**\ *angle*/*form*/*justify*/*fontsize*
     To write station code; *fontsize* must be given in points [Default is 0.0/0/5/12].
