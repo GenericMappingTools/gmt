@@ -248,7 +248,7 @@ convert from one format to the other;
 :doc:`/grdedit` can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
 versa*. The grid registration is determined by the common GMT **-r**
-option (see Section :ref:`grid-registration`).
+option (see Section :ref:`option_nodereg`).
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -259,7 +259,7 @@ that operate on grids (e.g.,
 :doc:`/grdtrack`, :doc:`/nearneighbor`, and
 :doc:`/grdview`, to name a few. The desired
 condition can be set with the common GMT option **-n**; see Section
-:ref:`grid_interpolation`. The boundary conditions come into play when
+:ref:`option_-n`. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
 covered by the grid. The *default* boundary conditions used are those
 which are "natural" for the boundary of a minimum curvature

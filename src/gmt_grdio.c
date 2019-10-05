@@ -1821,10 +1821,14 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
 	size_t k, n_slash = 0;
 	unsigned int uerr = 0;
+	bool old = false;
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
-	if (n_slash > 4)	/* Pretty sure this is the old syntax */
-		/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+	if (!(input[0] == '+' && (strstr (input, "+x") || strstr (input, "+y") || strstr (input, "+z") || strstr (input, "+s") || \
+	    strstr (input, "+o") || strstr (input, "+n") || strstr (input, "+t") || strstr (input, "+r")))) {	/* Cannot be new syntax */
+		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
+	}
+	if (old)	/* Old syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmt_decode_grd_h_info_old (GMT, input, h);
 	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		char word[GMT_LEN256] = {""};
