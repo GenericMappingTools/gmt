@@ -8064,16 +8064,6 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 	return (err);
 }
 
-int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Not in modern mode */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-l is only allowed in modern mode\n");
-		return GMT_PARSE_ERROR;
-	}
-	if (arg == NULL || arg[0] == '\0') return GMT_PARSE_ERROR;	/* Must supply the label arg */
-	strncpy (GMT->common.l.label, arg, GMT_LEN128-1);
-	return (GMT_NOERROR);
-}
-
 /*! Routine will decode the -[<col>|<colrange>|t,... arguments or just -on */
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -14778,11 +14768,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			GMT->common.j.active = true;
 			break;
 
-		case 'l':
-			error += (GMT_more_than_once (GMT, GMT->common.l.active) || gmt_parse_l_option (GMT, item));
-			GMT->common.l.active = true;
-			break;
-
 		case 'M':	/* Backwards compatibility */
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) {
@@ -15877,41 +15862,61 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 	return GMT_NOERROR;
 }
 
-int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
-	/* Under modern mode, determines the name for the legend file for the current plot,
-	 * then returns 0 if file does not already exist and 1 if it does.
-	 * Returns -1 if under classic mode. */
-	unsigned int fig;
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOTSET;	/* This is a modern mode only feature */
-	/* Get figure number */
-	fig = gmt_get_current_figure (API);
-	sprintf (file, "%s/gmt_%d.legend", API->gwf_dir, fig);
-	if (access (file, R_OK)) return 0;	/* No such file yet */
-	return 1;	/* Found it */
+GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
+	char panel[GMT_LEN16] = {""};
+	int fig, subplot, inset;
+
+	file[0] = '\0';	/* Initialize the path */
+	gmtlib_get_cpt_level (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
+	/* Set the correct output file name given the CPT level */
+	if (inset)	/* Only one inset may be active at any given time */
+		snprintf (file, PATH_MAX, "%s/gmt.inset.legend", API->gwf_dir);
+	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific legend */
+		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
+			snprintf (file, PATH_MAX, "%s/gmt.%d.subplot.legend", API->gwf_dir, fig);
+		else	/* CPT for just this subplot */
+			snprintf (file, PATH_MAX, "%s/gmt.%d.panel.%s.legend", API->gwf_dir, fig, panel);
+	}
+	else if (fig)	/* Limited to one figure only */
+		snprintf (file, PATH_MAX, "%s/gmt.%d.legend", API->gwf_dir, fig);
+	else
+		snprintf (file, PATH_MAX, "%s/gmt.legend", API->gwf_dir);
 }
 
-int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, struct GMT_FILL *fill, struct GMT_PEN *pen, char *label) {
-	/* Add another entry to the legends file for automatic legend building */
+
+int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return 0;	/* Only available in modern mode */
+	set_legend_filename (API, file);
+	return (access (file, R_OK) == 0);
+}
+
+void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, char *label) {
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 
-	if (gmt_legend_file (API, file) == GMT_NOTSET) return GMT_NOERROR;	/* This is a modern mode only feature */
-	if ((fp = fopen (file, "r")) == NULL) {	/* Does not exist yet, create */
-		if ((fp = fopen (file, "w")) == NULL) {	/* Could not create, WTF */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create file %s\n", file);
-			return GMT_ERROR_ON_FOPEN;
-		}
-		fprintf (fp, "# Automatically created entries for input to legend\n");
-		fprintf (fp, "# S <dx1> <symbol> <size> <fill> <pen> <dx2> <label>\n");
-	}
-	/* Add the new entry */
-	fprintf (fp, "S - %s %s ", symbol, size);
-	(fill) ? fprintf (fp, "%s ", gmtlib_putfill (API->GMT, fill)) : fprintf (fp, "- ");
-	(pen)  ? fprintf (fp, "%s ", gmt_putpen (API->GMT, pen))      : fprintf (fp, "- ");
-	fprintf (fp, "- %s\n", label);
-	fclose (fp);
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
+
+	set_legend_filename (API, file);
+
+	/* OK, do we append or create? */
 	
-	return GMT_NOERROR;
+	if (access (file, R_OK)) {	/* Must create this legend file */
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create current legend file %s !\n", file);
+			return;
+		}
+		fprintf (fp, "# Auto-generated legend information file\n");
+	}
+	else if ((fp = fopen (file, "a")) == NULL) {	/* Append to existing file */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to append to current legend file %s !\n", file);
+		return;
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
+	if (S->symbol == GMT_SYMBOL_LINE)	/* Line for legend entry */
+		fprintf (fp, "S - - 1c - %s - %s\n", gmt_putpen (API->GMT, pen), label);
+	else
+		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, S->size_x, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+	fclose (fp);
 }
 
 /*! . */

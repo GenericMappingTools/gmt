@@ -185,10 +185,6 @@ struct GMT_COMMON {
 		enum GMT_enum_mdist mode;	/* Defaults to GMT_GREATCIRCLE */
 		char string[GMT_LEN8];
 	} j;
-	struct l {	/* -l<label> */
-		bool active;
-		char label[GMT_LEN128];
-	} l;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
 		bool antialias;		/* Defaults to true, if supported */

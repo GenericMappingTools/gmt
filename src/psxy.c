@@ -98,6 +98,10 @@ struct PSXY_CTRL {
 		unsigned int mode;	/* 1 for line, 2 for fill, 3 for both */
 		double value;
 	} Z;
+	struct PSXY_l {	/* -l[<label>] */
+		bool active;
+		char *label;
+	} l;
 };
 
 #define EBAR_CAP_WIDTH		7.0	/* Error bar cap width */
@@ -143,6 +147,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallo
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->S.arg);
 	gmt_freepen (GMT, &C->W.pen);
+	gmt_M_str_free (C->l.label);
 	gmt_M_free (GMT, C);
 }
 
@@ -802,6 +807,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, &opt->arg[j], ztype, false, &Ctrl->Z.value), &opt->arg[j]);
 				break;
 
+			case 'l':	/* Set legend label for this plot item */
+				Ctrl->l.active = true;
+				if (Ctrl->l.label) gmt_M_str_free (Ctrl->l.label);	/* In case given more than once by mistake */
+				if (opt->arg[0]) Ctrl->l.label = strdup (opt->arg);
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -1148,8 +1159,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
-		else
+		else { /* Fixed symbol type throughout */
 			GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
+			if (Ctrl->l.active && !S.read_size && !get_rgb) {
+				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), Ctrl->l.label);
+			}
+		}
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
@@ -1814,6 +1830,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
+
+		if (Ctrl->l.active && S.symbol == GMT_SYMBOL_LINE && !polygon) {
+			/* For specified line, width, color we can do an auto-legend entry under modern mode */
+			gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), Ctrl->l.label);
+		}
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
