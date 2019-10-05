@@ -15913,7 +15913,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
 	if (S->symbol == GMT_SYMBOL_LINE)	/* Line for legend entry */
-		fprintf (fp, "S - - 1c - %s - %s\n", gmt_putpen (API->GMT, pen), label);
+		fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
 	else
 		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, S->size_x, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	fclose (fp);

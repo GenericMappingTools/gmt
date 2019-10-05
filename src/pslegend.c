@@ -789,6 +789,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	flush_paragraph = false;
 	gap = Ctrl->C.off[GMT_Y];	/* This gets reset to 0 once we finish the first printable row */
 
+	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
+		def_size = 0.196850393701;	/* In inches */
+
 	/* Tech, note: Using GMT->current.setting.io_seg_marker[GMT_IN] instead of GMT_OUT when writing data records as segment records
 	 * since these will become input to psxy and psxy will use the GMT_IN marker to identify these as header records. */
 
@@ -1226,6 +1229,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							off_tt = gmt_M_to_inch (GMT, txt_b);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 						row_base_y += half_line_spacing;	/* Move to center of box */
+						if (symbol[0] == '-' && !strcmp (size, "-")) sprintf (size, "%gi", def_size);	/* If no size given then we must pick what we learned above */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 							double length, tlen, gap;
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
