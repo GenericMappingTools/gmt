@@ -1150,7 +1150,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
 		else { /* Fixed symbol type throughout */
 			GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
-			if (GMT->common.l.active && !S.read_size && !get_rgb) {
+			if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.size > 0.0)) {
 				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 			}
