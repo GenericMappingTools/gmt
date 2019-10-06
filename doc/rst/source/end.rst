@@ -48,6 +48,12 @@ To close the current modern session and finalize any plots requested, we use::
 
     gmt end
 
+Disable display
+---------------
+
+If you wish to run scripts that end with **gmt end show** but sometimes prefer to not display the results,
+you can set the environmental parameter **GMT_END_SHOW** to off.
+
 See Also
 --------
 
