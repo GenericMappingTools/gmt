@@ -1,0 +1,12 @@
+.. _-l_full:
+
+**-l**\ [*label*]\ [**+n**\ *ncols*][**+s**\ *size*\ ][**+t**\ *title*\ ]
+    Add a map legend entry to the session legend information file for the
+    current plot.  Optionally append a text *label* to describe the entry.
+    Several modifiers allow further changes to the legend (to be built
+    when :doc:`legend` is called): Use **+n** to change the number of columns
+    used to set the following legend items [1], use **+s** to override the size of the
+    current symbol for the legend or set a length if plotting a line or contour [same as plotted],
+    and use **+t** to add a legend title with a horizontal line separating
+    the title from the rest of the legend [no title and line].  The line will
+    use the pen specified by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`.

@@ -6529,7 +6529,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-di Replace any <nodata> in input data with NaN.\n");
 			break;
 
-		case 'l':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
+		case 'l':	/* -l option to set up auto-legend items*/
+
+			gmt_message (GMT, "\t-l Add symbol or line to the legend; append label string.\n");
+			gmt_message (GMT, "\t   Optionally, append +n<cols>, +s<size>, +t<title>.\n");
+			break;
+
+		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
 
 			gmt_message (GMT, "\t-do Replace any NaNs in output data with <nodata>.\n");
 			break;
@@ -7491,6 +7497,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'h': error += GMT->common.h.active == false; break;
 		case 'i': error += GMT->common.i.active == false; break;
 		case 'j': error += GMT->common.j.active == false; break;
+		case 'l': error += GMT->common.l.active == false; break;
 		case 'n': error += GMT->common.n.active == false; break;
 		case 'o': error += GMT->common.o.active == false; break;
 		case 'Z':
@@ -8062,6 +8069,33 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	strncpy (GMT->common.j.string, arg, GMT_LEN8-1);
 	return (err);
+}
+
+/*! Parse the legend-building option -l */
+int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
+	char *c = NULL;
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {     /* Not in modern mode */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-l is only allowed in modern mode\n");
+		return GMT_PARSE_ERROR;
+	}
+	if (arg == NULL || arg[0] == '\0') return GMT_PARSE_ERROR;      /* Must supply the label arg */
+
+	if ((c = gmt_first_modifier (GMT, arg, "dnst"))) {	/* Got modifiers */
+		unsigned int pos = 0, n_errors = 0;
+		char txt[GMT_LEN128] = {""};
+		while (gmt_getmodopt (GMT, 'l', c, "dnst", &pos, txt, &n_errors) && n_errors == 0) {
+			switch (txt[0]) {
+				case 't': strncpy (GMT->common.l.item.title, &txt[1], GMT_LEN128-1);	break;	/* Legend title */
+				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);	break;	/* Number of columns */
+				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Symbol size or line length */
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop'em off */
+	}
+	if (arg[0]) strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+	if (c) c[0] = '+';	/* Restore */
+	return (GMT_NOERROR);
 }
 
 /*! Routine will decode the -[<col>|<colrange>|t,... arguments or just -on */
@@ -14502,7 +14536,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 #endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -n, -o, -p, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -l, -n, -o, -p, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -14766,6 +14800,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'j':
 			error += (GMT_more_than_once (GMT, GMT->common.j.active) || gmt_parse_j_option (GMT, item));
 			GMT->common.j.active = true;
+			break;
+
+		case 'l':
+			error += (GMT_more_than_once (GMT, GMT->common.l.active) || gmt_parse_l_option (GMT, item));
+			GMT->common.l.active = true;
 			break;
 
 		case 'M':	/* Backwards compatibility */
@@ -15890,11 +15929,13 @@ int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
 	return (access (file, R_OK) == 0);
 }
 
-void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, char *label) {
+void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	char file[PATH_MAX] = {""};
+	double size;
 	FILE *fp = NULL;
 
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
+	if (item == NULL) return;	/* Nothing given */
 
 	set_legend_filename (API, file);
 
@@ -15906,16 +15947,27 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			return;
 		}
 		fprintf (fp, "# Auto-generated legend information file\n");
+		if (item->title[0]) {	/* Want to place a legend title */
+			fprintf (fp, "H %s %s\n", gmt_putfont (API->GMT, &API->GMT->current.setting.font_label), item->title);
+			fprintf (fp, "D 0 %s\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+		}
 	}
 	else if ((fp = fopen (file, "a")) == NULL) {	/* Append to existing file */
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to append to current legend file %s !\n", file);
 		return;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
-	if (S->symbol == GMT_SYMBOL_LINE)	/* Line for legend entry */
-		fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
+	if (item->ncols > 0)	/* Specified a different number of columns */
+		fprintf (fp, "N %d\n", item->ncols);
+	size = (item->size > 0.0) ? item->size : S->size_x;
+	if (S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
+		if (size > 0.0)	/* Got a line length in inches */
+			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);
+		else	/* Punt to the legend module */
+			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), item->label);
+	}
 	else
-		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, S->size_x, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
 	fclose (fp);
 }
 
