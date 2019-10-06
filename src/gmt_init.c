@@ -6532,7 +6532,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'l':	/* -l option to set up auto-legend items*/
 
 			gmt_message (GMT, "\t-l Add symbol or line to the legend; append label string.  Optionally, append any\n");
-			gmt_message (GMT, "\t   of +d<pen>, +f<font>, +g<gap, +n<cols>, +s<size>, +t<title>, and +v[<pen>].\n");
+			gmt_message (GMT, "\t   of +d<pen>, +f<font>, +g<gap>, +h<header>, +n<cols>, +s<size>, and +v[<pen>].\n");
 			break;
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
@@ -8081,20 +8081,20 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 	if (arg == NULL) return GMT_PARSE_ERROR;		/* Must supply the label arg */
 	gmt_M_memset (&(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Initialize */
 
-	if ((c = gmt_first_modifier (GMT, arg, "dfgnstv"))) {	/* Got modifiers */
+	if ((c = gmt_first_modifier (GMT, arg, "dfghnsv"))) {	/* Got modifiers */
 		unsigned int pos = 0, n_errors = 0;
 		char txt[GMT_LEN128] = {""};
-		while (gmt_getmodopt (GMT, 'l', c, "dfgnstv", &pos, txt, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'l', c, "dfghnsv", &pos, txt, &n_errors) && n_errors == 0) {
 			switch (txt[0]) {
 				case 'd': /* Draw horizontal line */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_D;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_D], &txt[1], GMT_LEN32-1);
 					break;
-				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);	break;	/* Font to use for this -l setting */
+				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);	break;	/* Font to use for this -l entry */
 				case 'g': GMT->common.l.item.gap = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Gap before next item */
+				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1);	break;	/* Legend header */
 				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);			break;	/* Number of columns */
 				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Symbol size or line length */
-				case 't': strncpy (GMT->common.l.item.title, &txt[1], GMT_LEN128-1);	break;	/* Legend title */
 				case 'v': /* Draw vertical line(s) */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_V;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_V], &txt[1], GMT_LEN32-1);
@@ -15958,7 +15958,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	double size;
 	FILE *fp = NULL;
 
-	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+n<cols>][+s<size>][+t<title>] */
+	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+n<cols>][+s<size>][+v[<pen>]] */
 	
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
 	if (item == NULL) return;	/* Nothing given */
@@ -15977,11 +15977,11 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "G %gi\n", item->gap);
 			gap_done = true;	/* So we dont do it again below */
 		}
-		if (item->title[0]) {	/* Want to place a centered legend title */
+		if (item->header[0]) {	/* Want to place a centered legend header */
 			if (item->font[0])	/* Use given font */
-				fprintf (fp, "H %s %s\n", item->font, item->title);
+				fprintf (fp, "H %s %s\n", item->font, item->header);
 			else	/* Default to FONT_TITLE setting */
-				fprintf (fp, "H - %s\n", item->title);
+				fprintf (fp, "H - %s\n", item->header);
 		}
 	}
 	else if ((fp = fopen (file, "a")) == NULL) {	/* Append to an existing file */

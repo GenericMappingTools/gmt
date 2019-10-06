@@ -1,2 +1,2 @@
-**-l**\ [*label*]\ [**+n**\ *ncols*][**+s**\ *size*\ ][**+t**\ *title*\ ] :ref:`(more ...) <-l_full>`
-    Add a legend entry for the plotted feature. |Add_-l|
+**-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*\ ][**+n**\ *cols*][**+s**\ *size*\ ][**+v**\ [*pen*]] :ref:`(more ...) <-l_full>`
+    Add a legend entry for the symbol or line being plotted. |Add_-l|

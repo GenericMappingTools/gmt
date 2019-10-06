@@ -77,6 +77,16 @@ specifications, use
      T so we may have to adjust the box height to get the right size box.
      EOF
 
+Auto-legends
+------------
+
+In modern mode, some modules can access the **-l** option and build the legend
+*specfile* from individual entries per command.  The **-l** option takes a
+label and allows optional modifiers **+d**, **+g**, **+n**, **+h**, and **+v**
+that follows the corresponding uppercase legend codes discussed above.  In addition,
+there is **+f** to set current font and **+s** to set the symbol size (or line length)
+to use for the current entry.
+
 See Also
 --------
 

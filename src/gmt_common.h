@@ -55,14 +55,14 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 #define FSET	3	/* Index into R.active[] for "got -R -I -r from a grid file" */
 
 struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
-	char label[GMT_LEN128];	/* The label to go with the symbol */
-	char title[GMT_LEN128];	/* Title for the whole legend */
-	char font[GMT_LEN32];	/* Fontsize to use */
-	char pen[2][GMT_LEN32];	/* Pens to use with +d and +v */
-	int draw;		/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
-	double size;		/* Override symbol size or set length of a line */
-	double gap;		/* Move this much down before placing symbol entry */
-	unsigned int ncols;	/* How many columns to use for symbols */
+	char label[GMT_LEN128];		/* The label to go with the symbol */
+	char header[GMT_LEN128];	/* Header for the whole legend */
+	char font[GMT_LEN32];		/* Fontsize to use */
+	char pen[2][GMT_LEN32];		/* Pens to use with +d and +v */
+	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
+	double size;			/* Override symbol size or set length of a line */
+	double gap;			/* Move this much down before placing symbol entry */
+	unsigned int ncols;		/* How many columns to use for symbols */
 };
 
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
