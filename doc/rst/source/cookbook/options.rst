@@ -1040,7 +1040,8 @@ the various layers that will make up our illustration.  Apart from setting
 the label string that goes with the current symbol or line, you can select
 from a series of modifiers that mirror the effect of control codes normally
 added to the *specfile* by hand.  For instance, a simple plot with two
-symbols can obtain a legend by using this option and modifiers::
+symbols can obtain a legend by using this option and modifiers and is shown
+in Figure :ref:`Auto Legend <auto_legend>`::
 
    gmt begin fruit
      gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
@@ -1050,6 +1051,15 @@ symbols can obtain a legend by using this option and modifiers::
 
 As the script shows, when no *specfile* is given to :doc:`legend` then we
 look for the automatically generated on in the session directory.
+
+.. _auto_legend:
+
+.. figure:: /_images/GMT_autolegend.*
+   :width: 500 px
+   :align: center
+
+   Each of the two :doc:`plot` commands use **-l** to add a symbol to the
+   auto legend; the first also sets a legend header of given size and draws a horizontal line.
 
 .. _option_-i:
 
