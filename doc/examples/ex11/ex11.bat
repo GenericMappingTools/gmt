@@ -79,5 +79,4 @@ echo 26 204 0.8 | gmt pstext -J -R -F+a180 -K -O >> %ps%
 echo 200 200 GMT 4 | gmt pstext -J -F+f16p+a225 -R -O >> %ps%
 
 del *.nc
-del .gmt*
 del gmt.conf

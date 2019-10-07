@@ -22,8 +22,8 @@ gmt begin ex31
 	capitals=`gmt which -G @europe-capitals-ru.csv`
 	# common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p \
-	MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \
-	FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
 
 	# map of countries
 	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \

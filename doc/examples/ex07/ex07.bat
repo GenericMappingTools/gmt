@@ -18,5 +18,4 @@ echo -43 -5 SOUTH > tmp
 echo -43 -8 AMERICA >> tmp
 echo -7 11 AFRICA >> tmp
 gmt pstext -R -J -O -F+f30,Helvetica-Bold,white=thin tmp >> %ps%
-del .gmt*
 del tmp

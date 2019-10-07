@@ -71,5 +71,4 @@ del tmp.nc
 del mask.nc
 del pratt.txt
 del center*.*
-del .gmt*
 del gmt.conf

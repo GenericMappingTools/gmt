@@ -12,4 +12,3 @@ gmt psxy -R -J -O -K @ridge_09.txt -Wthicker >> %ps%
 gmt psxy -R -J -O -K @fz_09.txt -Wthinner,- >> %ps%
 REM Take label from segment header and plot near coordinates of last record of each track
 gmt convert -El @tracks_09.txt | gmt pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM+h -D-0.05i -O >> %ps%
-del .gmt*
