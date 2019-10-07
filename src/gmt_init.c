@@ -12603,6 +12603,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'M', *options))) /* No need for RJ */
 		required = "";
+	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options)) && strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
+		required = "JR";
 
 	if (options && gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
@@ -12755,8 +12757,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
-				double gap[4];
+				double gap[4], legend_width = 0.0;
+				char legend_justification[4] = {""};
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
+					if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+						char cmd[GMT_LEN64] = {""};
+						int error;
+						/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+						snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+						if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
+							return NULL;
+						}
+					}
 					gmt_subplot_gaps (API, fig, gap);	/* First see if there were subplot-wide -Cgaps settings in effect */
 					if (opt->arg[0] && strchr (opt->arg,',')) {	/* Gave a comma-separate argument so presumably this is our row,col */
 						sscanf (opt->arg, "%d,%d", &row, &col);
@@ -15617,15 +15630,21 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * convert the hidden PostScript figures to selected graphics.
 	 * If show is not NULL then we display them via gmt docs */
 
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, mark;
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, legend_justification[4] = {""}, mark;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS;
-	int error, k, f, nf, n_figs, gcode[GMT_LEN16];
+	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
 	unsigned int pos = 0;
+	double legend_width = 0.0;
 
  	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	
+	if ((n_orig = gmtlib_read_figures (API->GMT, 0, NULL)) == GMT_NOTSET) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
+		return GMT_ERROR_ON_FOPEN;
 	}
 	if ((n_figs = gmtlib_read_figures (API->GMT, 2, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
@@ -15650,6 +15669,24 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 					continue;
 				}
 			}
+			if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+				if (n_orig) {	/* Specified figs via gmt figure so must switch to the current figure and update the history */
+					if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Failed to switch to figure%s\n", fig[k].prefix);
+						gmt_M_free (API->GMT, fig);
+						return error;
+					}
+					gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
+				}
+				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
+					gmt_M_free (API->GMT, fig);
+					return error;
+				}
+			}
+
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
 			gmt_filename_set (fig[k].prefix);
 			snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
@@ -15973,6 +16010,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			return;
 		}
 		fprintf (fp, "# Auto-generated legend information file\n");
+		fprintf (fp, "# LEGEND_JUSTIFICATION: TR\n");
 		if (!gmt_M_is_zero (item->gap)) {	/* Want to place a gap first, even before any title */
 			fprintf (fp, "G %gi\n", item->gap);
 			gap_done = true;	/* So we dont do it again below */
@@ -16015,6 +16053,34 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	}
 	fclose (fp);
+}
+
+bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, char justification[]) {
+	/* Determine if there is a hidden legend file that has not been placed */
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""};
+	size_t L, N_max = 0;
+	double W, W_max = 0.0;
+	FILE *fp = NULL;
+
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* This is a modern mode only feature */
+	if (!gmt_legend_file (API, file)) return false;			/* There is no legend file in the scope */
+	if ((fp = fopen (file, "r")) == NULL) {	/* Unable to open for reading */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open file %s for reading\n", file);
+		return false;
+	}
+	strcpy (justification, "TR");	/* Default legend placement */
+	while (fgets (file, PATH_MAX, fp)) {	/* Recycle the array file to read the records here */
+		if (strstr (file, "# LEGEND_JUSTIFICATION:"))	/* Need to override the default justification */
+			sscanf (&file[2], "%*s %s\n", justification);
+		if (file[0] != 'S') continue;	/* Only examine symbol requests */
+		sscanf (file, "%*s %*s %*s %s %*s %*s %*s %[^\n]\n", size, label);
+		if ((L = strlen (label)) > N_max) N_max = L;
+		if (size[0] != '-' && (W = gmt_M_to_inch (API->GMT, size)) > W_max) W_max = W;
+	}
+	fclose (fp);
+	/* Best estimate of legend box width from longest string in the labels */
+	*width = 3.0 * W_max + N_max * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+	return true;
 }
 
 /*! . */

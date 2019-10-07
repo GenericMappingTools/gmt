@@ -297,8 +297,19 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
-		char tag[GMT_LEN16] = {""};
-			
+		char tag[GMT_LEN16] = {""}, legend_justification[4] = {""};
+		double legend_width = 0.0;
+
+		if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+			char cmd[GMT_LEN64] = {""};
+			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current inset figure\n");
+				Return (error);
+			}
+		}
+
 		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
 
 		/* Remove the inset history file */

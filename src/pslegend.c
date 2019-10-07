@@ -1713,5 +1713,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (legend_file[0] && gmt_remove_file (GMT, legend_file)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to delete current legend file %s\n", legend_file);
+		Return (API->error);
+	}
+	
 	Return (GMT_NOERROR);
 }
