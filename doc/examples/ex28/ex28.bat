@@ -25,4 +25,3 @@ gmt psbasemap -R@Kilauea.utm.nc+Uk -Jx1:160 -B5g5+u"@:8:000m@::" -BWSne -O --FON
 REM Clean up
 
 del Kilauea.cpt
-del .gmt*

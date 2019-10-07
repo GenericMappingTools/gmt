@@ -1,7 +1,7 @@
 .. index:: ! postscriptlight
 
 ***************
-postscriptlight
+PostScriptLight
 ***************
 
 .. only:: not man

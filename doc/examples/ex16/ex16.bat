@@ -32,5 +32,4 @@ echo 3.25 7 triangulate @~\256@~ gmt grdfilter | gmt pstext -R -J -O -K -N -F+f1
 echo 3.2125 7.5 Gridding of Data | gmt pstext -R0/10/0/10 -Jx1i -O -K -N -F+f32p,Times-Roman+jCB -X-3.5i >> %ps%
 gmt psscale -Dx3.25i/-0.4i+jTC+w5i/0.25i+h -C@ex_16.cpt -O >> %ps%
 del *.nc
-del .gmt*
 del gmt.conf

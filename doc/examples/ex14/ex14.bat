@@ -38,5 +38,4 @@ del mean.xyz
 del track
 del *.nc
 del *.d
-del .gmt*
 del gmt.conf
