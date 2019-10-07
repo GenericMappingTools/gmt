@@ -29,4 +29,3 @@ gmt grdinfo -C -M ship.nc | gmt psxy -R -J -O -K -Sa0.15i -Wthick -i11,12 >> %ps
 echo -0.3 3.6 Gridding with missing data | gmt pstext -R0/3/0/4 -Jx1i -F+f24p,Helvetica-Bold+jCB -O -N >> %ps%
 del ship*.nc
 del ship*.b
-del .gmt*

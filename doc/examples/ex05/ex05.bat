@@ -13,4 +13,3 @@ gmt grdview sombrero.nc -JX6i -JZ2i -B5 -Bz0.5 -BSEwnZ -N-1+gwhite -Qs -I+a225+n
 echo 4.1 5.5 z(r) = cos (2@~p@~r/8) @~\327@~e@+-r/10@+ | gmt pstext -R0/11/0/8.5 -Jx1i -F+f50p,ZapfChancery-MediumItalic+jBC -O >> %ps%
 del g.cpt
 del sombrero.nc
-del .gmt*

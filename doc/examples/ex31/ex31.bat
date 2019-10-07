@@ -81,7 +81,6 @@ REM gmt psconvert -P -A -Tf %ps%
 REM gmt psconvert -P -A -Tg -E110 %ps%
 
 REM clean up
-del .gmt*
 del PSL_custom_fonts.txt
 del legend.txt
 rem del ex31CropNoLogo.eps

@@ -43,4 +43,3 @@ REM Clean up
 
 del *.cpt
 del tmp
-del .gmt*
