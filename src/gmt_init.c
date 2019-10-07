@@ -6638,7 +6638,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'F':	/* -r Pixel registration option  */
 
-			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration.\n");
+			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration [Just -r sets pixel registration].\n");
 			gmt_message (GMT, "\t   If not given we default to gridline registration.\n");
 			break;
 
