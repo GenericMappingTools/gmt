@@ -70,6 +70,8 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"psmeca", "seis", "Plot focal mechanisms on maps", "<D{,>X}"},
 	{"pspolar", "seis", "Plot polarities on the inferior focal half-sphere on maps", "<D{,>X}"},
 	{"pssac", "seis", "Plot seismograms in SAC format on maps", ">X},RG-"},
+	{"shake", "seis", "Compute Peak Ground Acceleration/Velocity and Intensity", "<G{,LD(=,>GG)"},
+	{"vs30", "seis", "Compute VS30 velocities", "<G{,CD(=,GG}"},
 	{"backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},FD("},
 	{"gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,FD(,>D}"},
 	{"grdpmodeler", "spotter", "Evaluate a plate motion model on a geographic grid", "<G{,FD(,GG),>DG"},
