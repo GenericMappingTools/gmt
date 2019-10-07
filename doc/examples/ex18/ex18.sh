@@ -45,12 +45,12 @@ gmt begin ex18
 		gmt grdmath @AK_gulf_grav.nc mask.nc MUL = tmp.nc
 		area=`gmt grdvolume tmp.nc -C50 -Sk -o1`
 		volume=`gmt grdvolume tmp.nc -C50 -Sk -o2`
-		gmt text -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i << END
-> -149 52.5 14p 2.6i j
-Volumes: $volume mGal\264km@+2@+
+		gmt text -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i <<- END
+		> -149 52.5 14p 2.6i j
+		Volumes: $volume mGal\264km@+2@+
 
-Areas: $area km@+2@+
-END
+		Areas: $area km@+2@+
+		END
 	gmt subplot end
 gmt end show
 rm -f sm_*.txt tmp.nc mask.nc pratt.txt center*

@@ -6,7 +6,7 @@
 #
 gmt begin ex09
 	gmt wiggle @tracks_09.txt -R185/250/-68/-42 -Jm0.13i -B -BWSne+g240/255/240 -Gred+p \
-	-Gblue+n -Z2000 -Wthinnest -DjBR+w500+l@~m@~rad+o0.2i --FORMAT_GEO_MAP=dddF
+		-Gblue+n -Z2000 -Wthinnest -DjBR+w500+l@~m@~rad+o0.2i --FORMAT_GEO_MAP=dddF
 	gmt plot @ridge_09.txt -Wthicker
 	gmt plot @fz_09.txt -Wthinner,-
 	# Take label from segment header and plot near coordinates of last record of each track
