@@ -37,4 +37,3 @@ echo 0 90 a) | gmt pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >
 REM Clean up
 del *.nc
 del mars.cpt
-del .gmt*

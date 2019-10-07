@@ -52,4 +52,3 @@ del tmp
 del *.pg
 del spectrum.*
 del samp.x
-del .gmt*

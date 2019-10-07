@@ -49,4 +49,3 @@ REM Clean up after ourselves:
 
 del cities.txt
 del dist.nc
-del .gmt*

@@ -33,4 +33,3 @@ echo 3.16 8 Delaunay Triangulation | gmt pstext -R0/8/0/11 -Jx1i -F+f30p,Helveti
 REM
 del net.xy
 del topo.cpt
-del .gmt*
