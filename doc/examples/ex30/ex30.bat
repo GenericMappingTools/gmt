@@ -59,5 +59,4 @@ gmt pstext -R -J -O -K -Dj0.05i tmp -F+f+a+j >> %ps%
 echo 0 0 0.5i 0 120 | gmt psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> %ps%
 
 REM Clean up
-del .gmt*
 del gmt.conf

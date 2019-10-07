@@ -23,4 +23,3 @@ gmt psscale -R -J -p -DjBC+o0/0.5i+jTC+w5i/0.3i+h -C@geoid_04.cpt -I -O -K -Bx2+
 gmt psbasemap -R -J -p -O -K -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND=red --MAP_TICK_PEN_PRIMARY=thinner,red --FONT=red >> %ps%
 gmt grdview @HI_topo_04.nc -I+a0+nt0.75 -R195/210/18/25/-6/4 -J -JZ3.4i -p -C@topo_04.cpt -N-6+glightgray -Qc100 -O -K -Y2.2i -B2 -Bz2+l"Topo (km)" -BneswZ >> %ps%
 echo 3.25 5.75 H@#awaiian@# R@#idge@# | gmt pstext -R0/10/0/10 -Jx1i -F+f60p,ZapfChancery-MediumItalic+jCB -O >> %ps%
-del .gmt*

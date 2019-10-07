@@ -42,4 +42,3 @@ echo 0 -30 Honolulu, Hawaii, April 1, 2019 | gmt pstext -R -J -O -F+f18p,Helveti
 
 del l*.nc
 del l*.cpt
-del .gmt*

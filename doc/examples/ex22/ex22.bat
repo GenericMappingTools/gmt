@@ -94,5 +94,4 @@ gmt pslegend -DjCB+o0/0.4i+w7i/1.7i+jTC -R -J -O -F+p+glightyellow neis.legend >
 REM Clean up after ourselves:
 
 del neis.*
-del .gmt*
 del gmt.conf

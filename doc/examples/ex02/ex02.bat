@@ -17,7 +17,6 @@ gmt psscale -Ct.cpt -DJRM+o0.6i/0+mc -J -R -O -K -I0.3 -Bx2+lTOPO -By+lkm >> %ps
 echo -0.4 7.5 a) > tmp
 echo -0.4 3.0 b) >> tmp
 gmt pstext tmp -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> %ps%
-del .gmt*
 del ?.cpt
 del tmp
 del gmt.conf

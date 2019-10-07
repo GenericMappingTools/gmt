@@ -32,4 +32,3 @@ gmt psscale -DjTL+o1c+w2i/0.15i -R -J -Cgrav.cpt -Bx50f10 -By+lmGal  -F+gwhite+p
 REM Clean up
 
 del grav.cpt
-del .gmt*

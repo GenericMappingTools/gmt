@@ -16,5 +16,4 @@ gmt grdcontour @osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T+d0.1i/0
 gmt pscoast -Rg -JH6i -Y3.4i -O -K -B+t"Low Order Geoid" -Bg30 -Dc -Glightbrown -Slightblue >> %ps%
 gmt grdcontour @osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T+d0.1i/0.02i+l >> %ps%
 gmt grdcontour @osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T+d0.1i/0.02i+l >> %ps%
-del .gmt*
 del gmt.conf
