@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #
-# Copyright (c) 2012-2018
-# by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script just makes the include snippet gmt_enum_dict.h
@@ -20,7 +19,7 @@ NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-$COPY_YEAR by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *      Copyright (c) 1991-$COPY_YEAR by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -32,7 +31,7 @@ cat << EOF > gmt_enum_dict.h
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: gmt.soest.hawaii.edu
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*

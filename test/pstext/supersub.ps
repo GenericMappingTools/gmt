@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14361 [64-bit] Document from pstext
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pstext
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Jun 20 12:25:46 2015
+%%CreationDate: Thu Dec  6 10:52:54 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-3/3/-4/4 -Jx1i -P -Bxafg2 -Byaf -F+f24p t.txt -Xc
-%%PROJ: xy -3.00000000 3.00000000 -4.00000000 4.00000000 -3.000 3.000 -4.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext -R-3/3/-4/4 -Jx1i -P -Bxafg2 -Byaf -F+f24p t.txt -Xc
+%@PROJ: xy -3.00000000 3.00000000 -4.00000000 4.00000000 -3.000 3.000 -4.000 4.000 +xy
+%GMTBoundingBox: -216 72 432 576
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -677,27 +684,28 @@ clipsave
 7200 0 D
 0 9600 D
 -7200 0 D
+P
 PSL_clip N
 3600 1200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
-V MU 0 0 M (The depth to Z) FP /PSL_last_width 280 F0 (300\312) sw def
-0 140 G 280 F0 (300\312) FP 0 -140 G PSL_last_width neg 0 G 0 -100 G 280 F0 (  p) FP 0 100 G /PSL_last_width PSL_last_width (  p) sw sub dup 0 lt {pop 0} if def
+V MU 0 0 M (The depth to Z) FP /PSL_last_width 280 F0 (300\217) sw def
+0 140 G 280 F0 (300\217) FP 0 -140 G PSL_last_width neg 0 G 0 -100 G 280 F0 (  p) FP 0 100 G /PSL_last_width PSL_last_width (  p) sw sub dup 0 lt {pop 0} if def
 PSL_last_width 0 G 400 F0 ( is used) FP pathbbox N 4 1 roll exch pop add exch U -2 div exch -2 div exch G
 (The depth to Z) Z
-/PSL_last_width 280 F0 (300\312) sw def
-0 140 G 280 F0 (300\312) Z
+/PSL_last_width 280 F0 (300\217) sw def
+0 140 G 280 F0 (300\217) Z
 0 -140 G PSL_last_width neg 0 G 0 -100 G 280 F0 (  p) Z
 0 100 G /PSL_last_width PSL_last_width (  p) sw sub dup 0 lt {pop 0} if def
 PSL_last_width 0 G 400 F0 ( is used) Z
 3600 2400 M 400 F0
 V MU 0 0 M (The depth to Z) FP /PSL_last_width 280 F0 (p) sw def
-0 -100 G 280 F0 (p) FP 0 100 G PSL_last_width neg 0 G 0 140 G 280 F0 (300\312) FP 0 -140 G /PSL_last_width PSL_last_width (300\312) sw sub dup 0 lt {pop 0} if def
+0 -100 G 280 F0 (p) FP 0 100 G PSL_last_width neg 0 G 0 140 G 280 F0 (300\217) FP 0 -140 G /PSL_last_width PSL_last_width (300\217) sw sub dup 0 lt {pop 0} if def
 PSL_last_width 0 G 400 F0 ( is used) FP pathbbox N 4 1 roll exch pop add exch U -2 div exch -2 div exch G
 (The depth to Z) Z
 /PSL_last_width 280 F0 (p) sw def
 0 -100 G 280 F0 (p) Z
-0 100 G PSL_last_width neg 0 G 0 140 G 280 F0 (300\312) Z
-0 -140 G /PSL_last_width PSL_last_width (300\312) sw sub dup 0 lt {pop 0} if def
+0 100 G PSL_last_width neg 0 G 0 140 G 280 F0 (300\217) Z
+0 -140 G /PSL_last_width PSL_last_width (300\217) sw sub dup 0 lt {pop 0} if def
 PSL_last_width 0 G 400 F0 ( is used) Z
 3600 3600 M 400 F0
 V MU 0 0 M (The range is W \234 ) FP /PSL_last_width 280 F0 (75) sw def
@@ -767,9 +775,7 @@ PSL_last_width 0 G 400 F0 ( = 50 MPa and x) Z
 0 100 G 400 F0 (.) Z
 PSL_cliprestore
 25 W
-[] 0 B
 4 W
-[] 0 B
 1200 0 M
 0 9600 D
 S
@@ -781,12 +787,10 @@ S
 S
 2 setlinecap
 25 W
-[] 0 B
 N 0 9600 M 0 -9600 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-[] 0 B
 N 0 0 M -83 0 D S
 N 0 1200 M -83 0 D S
 N 0 2400 M -83 0 D S
@@ -799,10 +803,10 @@ N 0 9600 M -83 0 D S
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
-(-4) sw mx
-(-3) sw mx
-(-2) sw mx
-(-1) sw mx
+(”4) sw mx
+(”3) sw mx
+(”2) sw mx
+(”1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
@@ -811,13 +815,13 @@ N 0 9600 M -83 0 D S
 def
 /PSL_A0_y PSL_A0_y 83 add def
 0 PSL_A0_y MM
-(-4) mr Z
+(”4) mr Z
 1200 PSL_A0_y MM
-(-3) mr Z
+(”3) mr Z
 2400 PSL_A0_y MM
-(-2) mr Z
+(”2) mr Z
 3600 PSL_A0_y MM
-(-1) mr Z
+(”1) mr Z
 4800 PSL_A0_y MM
 (0) mr Z
 6000 PSL_A0_y MM
@@ -829,7 +833,6 @@ def
 9600 PSL_A0_y MM
 (4) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
-[] 0 B
 N 0 240 M -42 0 D S
 N 0 480 M -42 0 D S
 N 0 720 M -42 0 D S
@@ -865,12 +868,10 @@ N 0 9360 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7200 0 T
 25 W
-[] 0 B
 N 0 9600 M 0 -9600 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-[] 0 B
 N 0 0 M 83 0 D S
 N 0 1200 M 83 0 D S
 N 0 2400 M 83 0 D S
@@ -882,10 +883,10 @@ N 0 8400 M 83 0 D S
 N 0 9600 M 83 0 D S
 /PSL_AH0 0
 /MM {exch M} def
-(-4) sw mx
-(-3) sw mx
-(-2) sw mx
-(-1) sw mx
+(”4) sw mx
+(”3) sw mx
+(”2) sw mx
+(”1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
@@ -894,13 +895,13 @@ N 0 9600 M 83 0 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-4) mr Z
+(”4) mr Z
 1200 PSL_A0_y MM
-(-3) mr Z
+(”3) mr Z
 2400 PSL_A0_y MM
-(-2) mr Z
+(”2) mr Z
 3600 PSL_A0_y MM
-(-1) mr Z
+(”1) mr Z
 4800 PSL_A0_y MM
 (0) mr Z
 6000 PSL_A0_y MM
@@ -911,7 +912,6 @@ def
 (3) mr Z
 9600 PSL_A0_y MM
 (4) mr Z
-[] 0 B
 N 0 240 M 42 0 D S
 N 0 480 M 42 0 D S
 N 0 720 M 42 0 D S
@@ -947,12 +947,10 @@ N 0 9360 M 42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -7200 0 T
 25 W
-[] 0 B
 N 0 0 M 7200 0 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-[] 0 B
 N 0 0 M 0 -83 D S
 N 1200 0 M 0 -83 D S
 N 2400 0 M 0 -83 D S
@@ -962,9 +960,9 @@ N 6000 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-3) sh mx
-(-2) sh mx
-(-1) sh mx
+(”3) sh mx
+(”2) sh mx
+(”1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
@@ -972,11 +970,11 @@ N 7200 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-3) bc Z
+(”3) bc Z
 1200 PSL_A0_y MM
-(-2) bc Z
+(”2) bc Z
 2400 PSL_A0_y MM
-(-1) bc Z
+(”1) bc Z
 3600 PSL_A0_y MM
 (0) bc Z
 4800 PSL_A0_y MM
@@ -985,7 +983,6 @@ def
 (2) bc Z
 7200 PSL_A0_y MM
 (3) bc Z
-[] 0 B
 N 240 0 M 0 -42 D S
 N 480 0 M 0 -42 D S
 N 720 0 M 0 -42 D S
@@ -1013,12 +1010,10 @@ N 6960 0 M 0 -42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 9600 T
 25 W
-[] 0 B
 N 0 0 M 7200 0 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-[] 0 B
 N 0 0 M 0 83 D S
 N 1200 0 M 0 83 D S
 N 2400 0 M 0 83 D S
@@ -1028,9 +1023,9 @@ N 6000 0 M 0 83 D S
 N 7200 0 M 0 83 D S
 /PSL_AH0 0
 /MM {M} def
-(-3) sh mx
-(-2) sh mx
-(-1) sh mx
+(”3) sh mx
+(”2) sh mx
+(”1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
@@ -1038,11 +1033,11 @@ N 7200 0 M 0 83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add def
 0 PSL_A0_y MM
-(-3) bc Z
+(”3) bc Z
 1200 PSL_A0_y MM
-(-2) bc Z
+(”2) bc Z
 2400 PSL_A0_y MM
-(-1) bc Z
+(”1) bc Z
 3600 PSL_A0_y MM
 (0) bc Z
 4800 PSL_A0_y MM
@@ -1052,7 +1047,6 @@ def
 7200 PSL_A0_y MM
 (3) bc Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
-[] 0 B
 N 240 0 M 0 42 D S
 N 480 0 M 0 42 D S
 N 720 0 M 0 42 D S
@@ -1081,6 +1075,10 @@ N 6960 0 M 0 42 D S
 0 -9600 T
 0 setlinecap
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

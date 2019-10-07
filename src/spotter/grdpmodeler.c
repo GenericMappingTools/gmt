@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2018 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * grdpmodeler will read an age grid file and a plate motion model and
@@ -316,7 +316,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		pol = D->table[0];	/* Since it is a single file */
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
@@ -513,7 +513,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		/* Now write model prediction grid(s) */
-		char file[GMT_BUFSIZ] = {""};
+		char file[PATH_MAX] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			sprintf (file, Ctrl->G.file, tag[Ctrl->S.mode[k]]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);

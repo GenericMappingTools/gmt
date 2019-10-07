@@ -6,6 +6,15 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version June 15, 2017
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.7 which replaced all of Northern Mariana Islands
+with CUSP data from NOAA after simplifying down to ~50 meter
+resolution to match GSHHS full level, added two missing islands in
+Norway: Sula and Ellingsøya with the new data from Statens Kartverk
+via Birgitte R. Furevik [birgitterf@met.no], and added Kosovo border with Serbia.
+
 Version August 17, 2016
 
 No source code changes but expected to work with the latest GSHHG

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
 *
-*	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+*	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 *	See LICENSE.TXT file for copying and redistribution conditions.
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
 *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *	GNU Lesser General Public License for more details.
 *
-*	Contact info: gmt.soest.hawaii.edu
+*	Contact info: www.generic-mapping-tools.org
 *--------------------------------------------------------------------*/
 /* 
  * Brief synopsis: gmtvector performs basic vector operations such as dot and
@@ -211,6 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 						break;
 					case 'D':	/* Angle between vectors */
 						Ctrl->T.degree = true;
+						/* Fall through on purpose to 'd' */
 					case 'd':	/* dot-product of two vectors */
 						Ctrl->T.mode = DO_DOT;
 						break;

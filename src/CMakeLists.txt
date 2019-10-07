@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
@@ -38,6 +38,66 @@ endif (WIN32)
 
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
+
+# Find executable needed by gmt
+find_program (OGR2OGR ogr2ogr)
+if (NOT OGR2OGR)
+	message (WARNING "Cannot find program ogr2ogr - gmt will be unable to convert Shapefiles to GMT/OGR format")
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "no" CACHE INTERNAL "OGR2OGR config message")
+else (NOT OGR2OGR)
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "yes" CACHE INTERNAL "OGR2OGR config message")
+endif (NOT OGR2OGR)
+# Find executable needed by psconvert
+find_program (GDAL_TRANSLATE gdal_translate)
+if (NOT GDAL_TRANSLATE)
+	message (WARNING "Cannot find program gdal_translate - psconvert will be unable to convert TIFF to GeoTIFF")
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "no" CACHE INTERNAL "GDAL_TRANSLATE config message")
+else (NOT GDAL_TRANSLATE)
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "yes" CACHE INTERNAL "GDAL_TRANSLATE config message")
+endif (NOT GDAL_TRANSLATE)
+# Find executables needed by movie
+find_program (GM gm)
+if (NOT GM)
+	message (WARNING "Cannot find GraphicsMagick program gm - gmt movie will be unable to make animated GIFs")
+	set (GMT_CONFIG_GM_MESSAGE "no" CACHE INTERNAL "GM config message")
+else (NOT GM)
+	set (GMT_CONFIG_GM_MESSAGE "yes" CACHE INTERNAL "GM config message")
+endif (NOT GM)
+find_program (FFMPEG ffmpeg)
+if (NOT FFMPEG)
+	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")
+	set (GMT_CONFIG_FFMPEG_MESSAGE "no" CACHE INTERNAL "FFMPEG config message")
+else (NOT FFMPEG)
+	set (GMT_CONFIG_FFMPEG_MESSAGE "yes" CACHE INTERNAL "FFMPEG config message")
+endif (NOT FFMPEG)
+if (LINUX)
+	# Find executable needed by docs
+	find_program (XDGOPEN xdg-open)
+	if (NOT XDGOPEN)
+		message (WARNING "Cannot find program xdg-open - gmt docs will be unable to open the documentation")
+		set (GMT_CONFIG_OPEN_MESSAGE "no" CACHE INTERNAL "OPEN config message")
+	else (NOT XDGOPEN)
+		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+	endif (NOT XDGOPEN)
+	# Find executable needed by psconvert
+	find_program (GS gs)
+	if (NOT GS)
+		message (WARNING "Cannot find ghostscript program gs - gmt psconvert will be unable to convert PostScript to other formats")
+		set (GMT_CONFIG_GS_MESSAGE "no" CACHE INTERNAL "GS config message")
+	else (NOT GS)
+		execute_process(COMMAND gs --version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set (GMT_CONFIG_GS_MESSAGE "yes (${answer})" CACHE INTERNAL "GS config message")
+	endif (NOT GS)
+else (LINUX)
+	if (WIN32)
+		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+		set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
+	else ()
+		execute_process(COMMAND gs --version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set (GMT_CONFIG_GS_MESSAGE "yes (${answer})" CACHE INTERNAL "GS config message")
+		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+	endif ()
+endif (LINUX)
 
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
@@ -171,7 +231,7 @@ if (OPENMP_FOUND AND GMT_OPENMP)
 		CACHE INTERNAL "OPENMP config message")
 	if (WIN32 AND OMP_DLL_LOC)
 		# UGLY AND RISKY PATCH FOR THE CPACK BUG OF NOT COPYING THE OMP DLL. THIS PATCH RELIES
-		# ON THE SETING OF THE OMP_DLL_LOC VARIABLE IN ConfigUser.cmake. MINE HAS:
+		# ON THE SETTING OF THE OMP_DLL_LOC VARIABLE IN ConfigUser.cmake. MINE HAS:
 		# set (OMP_DLL_LOC "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/redist/x64/Microsoft.VC120.OPENMP/vcomp120.dll")
 		install(FILES ${OMP_DLL_LOC} DESTINATION bin COMPONENT Libraries)
 	endif (WIN32 AND OMP_DLL_LOC)
@@ -277,25 +337,26 @@ if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
 	set (GMT_TRIANGULATE "Shewchuk" PARENT_SCOPE)
 	set (GMT_TRIANGLE_SRCS triangle.c triangle.h)
-	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_DIR}/README.TRIANGLE)
+	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.TRIANGLE)
+	set (GMT_EXTRA_LICENSE_FILES ${GMT_EXTRA_LICENSE_FILES} PARENT_SCOPE)
 else (NOT LICENSE_RESTRICTED) # on
 	# disable Shewchuk's triangle routine
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
 endif (NOT LICENSE_RESTRICTED)
 
 # Note: Developers can set EXTRA_MODULES in ConfigUser.cmake to test new modules
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c filter1d.c grd2kml.c
+set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
 	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
-	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
+	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
 	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
 	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
 	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
-	pscoast.c pscontour.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
+	pscoast.c pscontour.c psevents.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
 	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c pslegend.c ${EXTRA_MODULES})
 
 # Legacy modules for which to install compatibility links via
@@ -315,17 +376,18 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h clear.c begin.c
+	gmt_color_rgb.h gmt_colornames.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
-	figure.c getopt.h gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
-	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
-	gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
+	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
+	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
+	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
 	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h gmt_mb.h
 	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
-	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h subplot.c revert.c
+	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h subplot.c
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
@@ -343,38 +405,12 @@ if (BUILD_SUPPLEMENTS)
 endif (BUILD_SUPPLEMENTS)
 
 # dependencies on generated files
-set (GMT_GEN_HDRS gmt_color_rgb.h gmt_colornames.h gmt_datums.h
-	gmt_ellipsoids.h gmt_keycases.h
+set (GMT_GEN_HDRS gmt_keycases.h
 	gmt_keywords.h gmt_config.h
-	gmtmath.h gmtmath_op.h gmtmath_explain.h
-	grdmath.h grdmath_op.h grdmath_explain.h
 	gmt_dimensions.h
 	CACHE INTERNAL "Autogenerated GMT headers")
 
 # Add commands to create header files
-add_custom_command (OUTPUT gmt_datums.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmt_datums_h
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS Datums.txt)
-
-add_custom_command (OUTPUT gmt_colornames.h gmt_color_rgb.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmt_colors_h
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS Colors.txt)
-
-add_custom_command (OUTPUT gmt_ellipsoids.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmt_ellipsoids
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS Ellipsoids.txt)
 
 add_custom_command (OUTPUT gmt_keycases.h gmt_keywords.h
 	COMMAND ${CMAKE_COMMAND}
@@ -391,29 +427,8 @@ add_custom_command (OUTPUT gmt_dimensions.h
 	-D GMT_SRC=${GMT_SOURCE_DIR}
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	DEPENDS gmt_media_name.h gmt_pennames.h gmt_unique.h gmt_cpt_masters.h
-	gmt_datums.h gmt_colornames.h gmt_ellipsoids.h
 	gmt_keycases.h)
 	# depends on cached line numbers from these generated files:
-
-add_custom_command (OUTPUT gmtmath.h gmtmath_op.h gmtmath_explain.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmt_math_h
-	-D GMT=GMT
-	-D gmt=gmt
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS gmtmath.c)
-
-add_custom_command (OUTPUT grdmath.h grdmath_op.h grdmath_explain.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_grd_math_h
-	-D GMT=GRD
-	-D gmt=grd
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS grdmath.c)
 
 # autogenerated files target
 add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS})
@@ -469,7 +484,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
 	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in
 	# subversion. See cmake/ConfigUserTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis
 		spotter x2sys ${EXTRA_BUILD_DIRS})
 endif (BUILD_SUPPLEMENTS)
 
@@ -695,32 +710,6 @@ if (BUILD_DEVELOPER)
 	install (FILES compat/qsort.h
 		DESTINATION ${GMT_INCLUDEDIR}/compat
 		COMPONENT Runtime)
-	# Install gshhg supplement headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
-		DESTINATION ${GMT_INCLUDEDIR}/gshhg
-		COMPONENT Runtime)
-	# Install meca supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES meca/meca.h meca/utilmeca.h
-		DESTINATION ${GMT_INCLUDEDIR}/meca
-		COMPONENT Runtime)
-	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES mgd77/cm4_functions.h mgd77/mgd77_e77.h mgd77/mgd77_rls_coeffs.h mgd77/mgd77snifferdefaults.h
-		mgd77/mgd77.h mgd77/mgd77_functions.h mgd77/mgd77defaults.h mgd77/mgd77_IGF_coeffs.h mgd77/mgd77_init.h
-		mgd77/mgd77magref.h mgd77/mgd77_codes.h mgd77/mgd77_recalc.h mgd77/mgd77sniffer.h
-		DESTINATION ${GMT_INCLUDEDIR}/mgd77
-		COMPONENT Runtime)
-	# Install potential supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES potential/okbfuns.h
-		DESTINATION ${GMT_INCLUDEDIR}/potential
-		COMPONENT Runtime)
-	# Install spotter supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES spotter/spotter.h
-		DESTINATION ${GMT_INCLUDEDIR}/spotter
-		COMPONENT Runtime)
-	# Install x2sys supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES x2sys/x2sys.h
-		DESTINATION ${GMT_INCLUDEDIR}/x2sys
-		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
 		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
@@ -768,5 +757,3 @@ string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
 string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS} " "
 	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}})
 message (STATUS "Using CFLAGS = '${_using_cflags}'")
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

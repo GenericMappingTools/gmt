@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------
  *
  * Author:	Paul Wessel
@@ -25,8 +25,8 @@
  * \brief Definitions of constants used through GMT for modern mode.
  */
 
-#ifndef _GMT_MODERN_H
-#define _GMT_MODERN_H
+#ifndef GMT_MODERN_H
+#define GMT_MODERN_H
 
 #define GMT_HISTORY_FILE	"gmt.history"
 #define GMT_SESSION_FILE	"gmt.session"
@@ -38,7 +38,7 @@
 #define GMT_SESSION_CONVERT	"A"		/* Default psconvert options in gmt figure */
 
 /* Declarations of modern mode module names.  These functions will
- * call the classicly-named modules (e.g., plot will call psxy) but
+ * call the classically-named modules (e.g., plot will call psxy) but
  * only if modern mode is in effect. */
 
 /* Modern names: core */
@@ -47,6 +47,7 @@ EXTERN_MSC int GMT_basemap (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
+EXTERN_MSC int GMT_events (void *API, int mode, void *args);
 EXTERN_MSC int GMT_histogram (void *API, int mode, void *args);
 EXTERN_MSC int GMT_image (void *API, int mode, void *args);
 EXTERN_MSC int GMT_legend (void *API, int mode, void *args);
@@ -72,4 +73,4 @@ EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
 
 EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
-#endif  /* _GMT_MODERN_H */
+#endif  /* GMT_MODERN_H */

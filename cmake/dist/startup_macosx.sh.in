@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Startup script for GMT.app in MacOSX.
 # Setup environment and start Terminal.

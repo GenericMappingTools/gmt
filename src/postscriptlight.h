@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2018 by P. Wessel and R. Scharroo
+ *	Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -149,7 +149,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_LINEAR		= 0,
 	PSL_BEZIER		= 1,
 	PSL_MAX_EPS_FONTS	= 6,
-	PSL_MAX_DIMS		= 12,		/* Max number of dim arguments to PSL_plot_symbol */
+	PSL_MAX_DIMS		= 13,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
 	PSL_NAME_LEN		= 32,		/* Max length of font names */
 	PSL_BUFSIZ		= 4096U};
@@ -160,7 +160,8 @@ enum PSL_enum_move {PSL_DRAW	= 0,
 	PSL_MOVE		= 1,
 	PSL_STROKE		= 2,
 	PSL_REL			= 4,
-	PSL_CLOSE		= 8};
+	PSL_CLOSE		= 8,
+	PSL_CLIP		= 16};
 
 /* PSL codes for text and paragraph justification */
 
@@ -279,6 +280,7 @@ struct PSL_CTRL {
 		double linewidth;		/* Current pen thickness			*/
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
+		double transparency;		/* Current transparency				*/
 		double fontsize;		/* Current font size				*/
 		double subsupsize;		/* Fractional size of super/sub-scripts		*/
 		double scapssize;		/* Fractional size of small caps		*/
@@ -417,6 +419,7 @@ EXTERN_MSC int PSL_setmiterlimit (struct PSL_CTRL *PSL, int limit);
 EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, int mode);
 EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, int par_just);
 EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
+EXTERN_MSC int PSL_settransparency (struct PSL_CTRL *PSL, double transparency);
 EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);
 EXTERN_MSC int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double width, char *style, double offset, double rgb[]);
@@ -428,6 +431,7 @@ EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double val
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+EXTERN_MSC char *psl_prepare_text (struct PSL_CTRL *PSL, char *text);
 
 /* Used indirectly by FORTRAN wrapper PSL_free_ . */
 EXTERN_MSC int PSL_free_nonmacro (void *addr);

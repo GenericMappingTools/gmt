@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -63,8 +63,9 @@ struct PSXY_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct PSXY_I {	/* -I<intensity> */
+	struct PSXY_I {	/* -I[<intensity>] */
 		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file (symbols only) */
 		double value;
 	} I;
 	struct PSXY_L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
@@ -276,7 +277,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	size_t len;
-	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
+	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
@@ -344,6 +345,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
 	PSL_command (GMT->PSL, "V\n");
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
@@ -358,8 +360,15 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		dim[6] = (double)P->end[k].V->v.status;
 		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
 		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
+		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+			PSL_defpen (GMT->PSL, "PSL_vecheadpen", P->end[k].V->v.pen.width, P->end[k].V->v.pen.style, P->end[k].V->v.pen.offset, P->end[k].V->v.pen.rgb);
+			dim[11] = P->end[k].V->v.pen.width;
+		}
+		else {	/* Set default based on line pen */
+			PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * P->width, P->style, P->offset, P->rgb);
+			dim[11] = 0.5 * P->width;
+		}
 		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & PSL_VEC_OUTLINE2) == PSL_VEC_OUTLINE2);
-		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
@@ -373,13 +382,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A[m|p|x|y]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, \
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -411,6 +420,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 3.\n");
@@ -453,14 +463,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only its diameter given\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed diameter to -SE- instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the axes [k].\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the axes [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     For linear projection we scale the axes by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions [in km] and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with one dimension given\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed dimension to -SJ- instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the dimensions [k].\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the dimensions [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     For linear projection we scale dimensions by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+p[<pen>]].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
@@ -498,8 +508,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_vector_syntax (API->GMT, 19);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For geo-wedges, specify <size><unit> with units from %s.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <size><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <size><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
@@ -509,7 +521,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
-	GMT_Option (API, "di,e,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "c,di,e,f,g,h,i,p,t");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, give no value.\n");
+	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -610,15 +624,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'C':	/* Vary symbol color with z */
-				if (opt->arg[0]) {
-					gmt_M_str_free (Ctrl->C.file);
-					Ctrl->C.file = strdup (opt->arg);
-					Ctrl->C.active = true;
-				}
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No CPT given\n");
-					n_errors++;
-				}
+				Ctrl->C.active = true;
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {
@@ -696,8 +704,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
-				Ctrl->I.value = atof (opt->arg);
 				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
 				break;
 			case 'L':		/* Close line segments */
 				Ctrl->L.active = true;
@@ -777,8 +788,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	/* Check that the options selected are mutually consistent */
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file[0] == '\0', "Syntax error -C option: No CPT given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Syntax error -S option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == PSL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == PSL_MARC \
 		|| S->symbol == PSL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_DECORATED_LINE || S->symbol == PSL_ROTRECT),
@@ -790,6 +804,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode == 1 && !Ctrl->S.active, "Syntax error: -I with no argument is only applicable for symbols\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -800,7 +815,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 int GMT_plot (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: plot\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -811,10 +826,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false;
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
-	bool error_x = false, error_y = false, def_err_xy = false;
-	bool default_outline, outline_active, geovector = false;
+	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
+	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int n_total_read = 0, j, geometry;
+	unsigned int n_total_read = 0, j, geometry, icol, tcol;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
@@ -822,10 +837,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, d, *in = NULL;
-	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
 
-	struct GMT_PEN current_pen, default_pen;
-	struct GMT_FILL current_fill, default_fill, black, no_fill;
+	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
+	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
@@ -853,6 +868,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Initialize GMT_SYMBOL structure */
 
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
+	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);
+	gmt_M_memset (&last_spiderpen, 1, struct GMT_PEN);
+        
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -891,7 +909,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	current_pen = default_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
-	if (Ctrl->I.active) {
+	if (Ctrl->I.active && Ctrl->I.mode == 0) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
@@ -945,6 +963,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	n_needed = n_cols_start + S.n_required;
+	if (Ctrl->I.mode) {
+		n_needed++;	/* Read intensity from data file */
+		icol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
+	if (GMT->common.t.variable) {
+		n_needed++;	/* Read transparency from data file */
+		tcol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
+	}
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
@@ -968,11 +996,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
+	
+	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we don't do it here in psxy */
-		if (S.G.delay) gmt_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
 		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
@@ -1004,7 +1033,30 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
-		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
+		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
+			current_fill = S.v.fill;	/* Override any -G<fill> with specified head fill */
+			if (S.v.status & PSL_VEC_FILL) Ctrl->G.active = true;
+		}
+		else if (S.v.status & PSL_VEC_FILL) {
+			current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
+		}
+		if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
+			PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+			headpen_width = S.v.pen.width;
+			last_headpen = S.v.pen;
+		}
+		else {	/* Reset to default pen */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+				headpen_width = 0.5 * current_pen.width;
+				last_headpen = current_pen;
+			}
+		}
+		if (Ctrl->C.active) {	/* Head fill and/or pen will be set via CPT lookup */
+			if (!Ctrl->W.cpt_effect || (Ctrl->W.cpt_effect && (Ctrl->W.pen.cptmode & 2)))
+				Ctrl->G.active = false;	/* Must turn off -G so that color is not reset to Ctrl->G.fill after the -C effect */
+		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
@@ -1019,12 +1071,25 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 		}
 	}
-
+	if (S.symbol == PSL_WEDGE) {
+		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
+			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+			last_spiderpen = S.v.pen;
+		}
+		else if (Ctrl->W.active || S.w_type || !(Ctrl->G.active || Ctrl->C.active)) {	/* Use -W as wedge pen as well as outline, and default to this pen if neither -C, -W or -G given */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+				last_spiderpen = current_pen;
+			}
+		}
+	}
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
+	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
-	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, Ctrl->D.dx, Ctrl->D.dy, 0.0, PSL_FWD);	/* Shift plot a bit */
 
@@ -1055,11 +1120,22 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		PSL_command (GMT->PSL, "V\n");
+		PSL_command (GMT->PSL, "V\n");	/* Place all symbols under a gsave/grestore clause */
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
-			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
+			if (S.u_set)	/* Specified a particular unit, so scale values unless we chose inches */
+				delayed_unit_scaling = (S.u != GMT_INCH);
+			else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Gave no unit but default unit is not inch so we must scale */
+				delayed_unit_scaling = true;
+				S.u = GMT->current.setting.proj_length_unit;
+			}
+		}
+		if (QR_symbol) {
+			if (!Ctrl->G.active)	/* Default to black */
+				PSL_command (PSL, "/QR_fill {0 A} def\n");
+			if (!Ctrl->W.active)	/* No outline of QR code */
+				PSL_command (PSL, "/QR_outline false def\n");
 		}
 		
 		do {	/* Keep returning records until we reach EOF */
@@ -1072,7 +1148,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					(void)gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, NULL);
-					if (Ctrl->I.active) {
+					if (Ctrl->I.active && Ctrl->I.mode == 0) {
 						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 						gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
@@ -1095,19 +1171,36 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (S.read_symbol_cmd) {	/* Must do special processing depending on variable symbol */
 				/* First establish the symbol type given at the end of the record */
+				if (!In->text) {
+					GMT_Report (API, GMT_MSG_NORMAL, "ERROR: no symbol code was provided in the -S option.\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
 				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 0, false);
+				QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
 				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
 					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+rgb_from_z] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 				}
-				
+
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
-					if (S.v.status & PSL_VEC_OUTLINE2) {
-						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
+					save_pen = current_pen; save_fill = current_fill; save_W = Ctrl->W.active; save_G = Ctrl->G.active;	/* Save status before change */
+					can_update_headpen = true;
+					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head ouline pen specified separately */
+						if (!gmt_M_same_pen (S.v.pen, last_headpen)) {
+							PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+							headpen_width = S.v.pen.width;
+							last_headpen = S.v.pen;
+						}
+						can_update_headpen = false;
 					}
-					else {	/* Reset to default pen */
+					else {	/* Reset to default pen (or possibly not used) */
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+						if (Ctrl->W.active && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Vector head outline pen default is half that of stem pen */
+							PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							headpen_width = 0.5 * current_pen.width;
+							last_headpen = current_pen;
+						}
 					}
 					if (S.v.status & PSL_VEC_FILL2) {
 						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
@@ -1121,6 +1214,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 					}
 				}
+				else if (S.symbol == PSL_WEDGE) {
+					if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
+						PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+						last_spiderpen = S.v.pen;
+					}
+					else if (outline_active && !gmt_M_same_pen (current_pen, last_spiderpen)) {	/* Reset to new pen */
+							PSL_defpen (PSL, "PSL_spiderpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							last_spiderpen = current_pen;
+					}
+				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
 					current_fill = black;
 			}
@@ -1131,7 +1234,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else
 					gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this z */
-				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+				if (Ctrl->I.active) {
+					if (Ctrl->I.mode == 0)
+						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+					else
+						gmt_illuminate (GMT, in[icol], current_fill.rgb);
+				}
+			}
+			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */ 
+				current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
+				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
@@ -1144,6 +1256,17 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					else
 						continue;
 				}
+			}
+				
+			if (QR_symbol) {
+				if (Ctrl->G.active)	/* Change color of QR code */
+					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, current_fill.rgb));
+				if (outline_active) {	/* Draw outline of QR code */
+					PSL_command (PSL, "/QR_outline true def\n");
+					PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, (1.0/6.0) * Ctrl->W.pen.width, Ctrl->W.pen.rgb, Ctrl->W.pen.style, Ctrl->W.pen.offset));
+				}
+				else
+					PSL_command (PSL, "/QR_outline false def\n");
 			}
 			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
 				in[GMT_X] += S.base;
@@ -1160,6 +1283,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
+			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
+				PSL_settransparency (PSL, 0.01 * in[tcol]);
 
 			if (Ctrl->E.active) {
 				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
@@ -1183,6 +1308,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
+					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Since color may have changed */
+						PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+						last_headpen = current_pen;
+					}
 				}
 				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
@@ -1213,6 +1342,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				S.size_x = in[ex1] * S.factor;	/* Got size from input column; scale by factor if area unifier is on */
 				if (delayed_unit_scaling) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
 			}
+			gmt_M_memset (dim, PSL_MAX_DIMS, double);
 			dim[0] = S.size_x;
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
@@ -1228,308 +1358,317 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			for (item = 0; item < n_times; item++) {	/* Plot symbols once or twice, depending on periodic (see above) */
 				switch (S.symbol) {
-				case GMT_SYMBOL_NONE:
-					break;
-				case GMT_SYMBOL_BARX:
-					if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (in[GMT_X], GMT->common.R.wesn[XHI]));
-					if (S.user_unit[GMT_X]) {	/* Width measured in y units */
-						gmt_geo_to_xy (GMT, S.base, in[GMT_Y] - 0.5 * dim[0], &x_1, &y_1);
-						gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y] + 0.5 * dim[0], &x_2, &y_2);
-					}
-					else {
-						gmt_geo_to_xy (GMT, S.base, GMT->common.R.wesn[YLO], &x_1, &y_1);	/* Zero x level for horizontal bars */
-						x_2 = plot_x;
-						y_1 = plot_y - 0.5 * dim[0]; y_2 = plot_y + 0.5 * dim[0];
-					}
-					PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
-					break;
-				case GMT_SYMBOL_BARY:
-					if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
-					if (S.user_unit[GMT_X]) {	/* Width measured in x units */
-						gmt_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
-						gmt_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
-					}
-					else {
-						gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
-						x_1 = plot_x - 0.5 * dim[0]; x_2 = plot_x + 0.5 * dim[0];
-						y_2 = plot_y;
-					}
-					PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
-					break;
-				case PSL_CROSS:
-				case  PSL_PLUS:
-				case PSL_DOT:
-				case PSL_XDASH:
-				case PSL_YDASH:
-				case PSL_STAR:
-				case PSL_CIRCLE:
-				case PSL_SQUARE:
-				case PSL_HEXAGON:
-				case PSL_PENTAGON:
-				case PSL_OCTAGON:
-				case PSL_TRIANGLE:
-				case PSL_INVTRIANGLE:
-				case PSL_DIAMOND:
-					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
-					break;
-				case PSL_RNDRECT:
-					dim[2] = in[ex3];
-					if (gmt_M_is_dnan (dim[2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
-						continue;
-					}
-				case PSL_RECT:
-					dim[0] = in[ex1];
-					if (gmt_M_is_dnan (dim[0])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					dim[1] = in[ex2];
-					if (gmt_M_is_dnan (dim[1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle height = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
-					break;
-				case PSL_ROTRECT:
-				case PSL_ELLIPSE:
-					if (gmt_M_is_dnan (in[ex1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (in[ex2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (in[ex3])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
-						dim[0] = in[ex1];
-						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = in[ex2];
+					case GMT_SYMBOL_NONE:
+						break;
+					case GMT_SYMBOL_BARX:
+						if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (in[GMT_X], GMT->common.R.wesn[XHI]));
+						if (S.user_unit[GMT_X]) {	/* Width measured in y units */
+							gmt_geo_to_xy (GMT, S.base, in[GMT_Y] - 0.5 * dim[0], &x_1, &y_1);
+							gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y] + 0.5 * dim[0], &x_2, &y_2);
+						}
+						else {
+							gmt_geo_to_xy (GMT, S.base, GMT->common.R.wesn[YLO], &x_1, &y_1);	/* Zero x level for horizontal bars */
+							x_2 = plot_x;
+							y_1 = plot_y - 0.5 * dim[0]; y_2 = plot_y + 0.5 * dim[0];
+						}
+						PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
+						break;
+					case GMT_SYMBOL_BARY:
+						if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
+						if (S.user_unit[GMT_X]) {	/* Width measured in x units */
+							gmt_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
+							gmt_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
+						}
+						else {
+							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
+							x_1 = plot_x - 0.5 * dim[0]; x_2 = plot_x + 0.5 * dim[0];
+							y_2 = plot_y;
+						}
+						PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
+						break;
+					case PSL_CROSS:
+					case  PSL_PLUS:
+					case PSL_DOT:
+					case PSL_XDASH:
+					case PSL_YDASH:
+					case PSL_STAR:
+					case PSL_CIRCLE:
+					case PSL_SQUARE:
+					case PSL_HEXAGON:
+					case PSL_PENTAGON:
+					case PSL_OCTAGON:
+					case PSL_TRIANGLE:
+					case PSL_INVTRIANGLE:
+					case PSL_DIAMOND:
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+						break;
+					case PSL_RNDRECT:
 						dim[2] = in[ex3];
-						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
-					}
-					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
-						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
-						dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
-						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
-					}
-					else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
-						if (may_intrude_inside) {	/* Must plot fill and outline separately */
-							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-							gmt_setpen (GMT, &current_pen);
-							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-						}
-						else
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-					}
-					else {
-						if (may_intrude_inside) {	/* Must plot fill and outline separately */
-							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-							gmt_setpen (GMT, &current_pen);
-							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-						}
-						else
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
-					}
-					break;
-				case GMT_SYMBOL_TEXT:
-					if (Ctrl->G.active && !outline_active)
-						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-					else if (!Ctrl->G.active)
-						PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-					(void) gmt_setfont (GMT, &S.font);
-					PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
-					break;
-				case PSL_VECTOR:
-					gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						length = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
-					else
-						length = in[ex2+S.read_size];
-					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector length = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
-					else
-						d = in[ex1+S.read_size];
-						
-					if (!S.convert_angles)	/* Use direction as given */
-						direction = d;
-					else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
-						direction = 90.0 - d;
-					else	/* Convert geo azimuth to map direction */
-						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
-
-					if (gmt_M_is_dnan (direction)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector direction = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
-						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
-						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
+						if (gmt_M_is_dnan (dim[2])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
 							continue;
 						}
-						if (item == 1) {    /* Deal with periodicity */
-							if (x_2 < GMT->current.map.half_width)     /* Might reappear at right edge */
-								x_2 += width;	/* Outside the right edge */
-							else      /* Might reappear at left edge */
-					              		x_2 -= width;         /* Outside the left edge */
+						/* Fall through on purpose to pick up the other parameters */
+					case PSL_RECT:
+						dim[0] = in[ex1];
+						if (gmt_M_is_dnan (dim[0])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
+							continue;
 						}
-						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
-					}
-					else {	/* Compute tip coordinates from tail and length */
-						gmt_flip_angle_d (GMT, &direction);
-						sincosd (direction, &s, &c);
-						x_2 = xpos[item] + length * c;
-						y_2 = plot_y + length * s;
-						justify = PSL_vec_justify (S.v.status);	/* Return justification as 0-2 */
-						if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
-							dx = justify * 0.5 * (x_2 - xpos[item]);	dy = justify * 0.5 * (y_2 - plot_y);
-							xpos[item] -= dx;		plot_y -= dy;
-							x_2 -= dx;		y_2 -= dy;
+						dim[1] = in[ex2];
+						if (gmt_M_is_dnan (dim[1])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle height = NaN near line %d\n", n_total_read);
+							continue;
 						}
-					}
-					if (S.v.parsed_v4) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
-						/* Now plot the old GMT V4 vector instead */
-						/* But have to improvise as far as outline|fill goes... */
-						if (outline_active) S.v.status |= PSL_VEC_OUTLINE;	/* Choosing to draw head outline */
-						if (fill_active) S.v.status |= PSL_VEC_FILL;		/* Choosing to fill head */
-						if (!(S.v.status & PSL_VEC_OUTLINE) && !(S.v.status & PSL_VEC_FILL)) S.v.status |= PSL_VEC_OUTLINE;	/* Gotta do something */
-					}
-					else
-						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					if (length > S.v.h_length && S.v.v_norm < 0.0)	/* No shrink requested by head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
-					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-					dim[0] = x_2, dim[1] = y_2;
-					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
-					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
-						double *v4_rgb = NULL;
-						int v4_outline = Ctrl->W.active;
-						if (Ctrl->G.active)
-							v4_rgb = Ctrl->G.fill.rgb;
-						else if (Ctrl->C.active)
-							v4_rgb = current_fill.rgb;
+						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+						break;
+					case PSL_ROTRECT:
+					case PSL_ELLIPSE:
+						if (gmt_M_is_dnan (in[ex1])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (in[ex2])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (in[ex3])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
+							dim[0] = in[ex1];
+							gmt_flip_angle_d (GMT, &dim[0]);
+							dim[1] = in[ex2];
+							dim[2] = in[ex3];
+							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+						}
+						else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
+							dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
+							gmt_flip_angle_d (GMT, &dim[0]);
+							dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
+							dim[2] = in[ex3] * GMT->current.proj.scale[GMT_Y];
+							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+						}
+						else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
+							if (may_intrude_inside) {	/* Must plot fill and outline separately */
+								gmt_setfill (GMT, &current_fill, 0);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_setpen (GMT, &current_pen);
+								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+							}
+							else
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						}
+						else {
+							if (may_intrude_inside) {	/* Must plot fill and outline separately */
+								gmt_setfill (GMT, &current_fill, 0);
+								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_setpen (GMT, &current_pen);
+								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+							}
+							else
+								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						}
+						break;
+					case GMT_SYMBOL_TEXT:
+						if (Ctrl->G.active && !outline_active)
+							PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
+						else if (!Ctrl->G.active)
+							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+						(void) gmt_setfont (GMT, &S.font);
+						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
+						break;
+					case PSL_VECTOR:
+						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
+						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
+							length = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
 						else
-							v4_rgb = GMT->session.no_rgb;
-						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
-						if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
-						dim[5] = GMT->current.setting.map_vector_shape;
-						dim[4] *= 0.5;	/* Since it was double in the parsing */
-						psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
-					}
-					else {
-						dim[5] = S.v.v_shape;
-						dim[6] = (double)S.v.status;
-						dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
-						dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
-						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
-					}
-					break;
-				case GMT_SYMBOL_GEOVECTOR:
-					gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
-					if (S.v.status & PSL_VEC_OUTLINE2)
-						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					else
-						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector azimuth = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector length = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
-					n_warn[warn]++;
-					break;
-				case PSL_MARC:
-					gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					dim[0] = in[ex1+S.read_size];
-					dim[1] = in[ex2+S.read_size];
-					dim[2] = in[ex3+S.read_size];
-					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
-					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Math angle arc length = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-					dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
-					dim[6] = S.v.v_shape;
-					dim[7] = (double)S.v.status;
-					dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
-					dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];
-					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
-					break;
-				case PSL_WEDGE:
-					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge start angle = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge stop angle = NaN near line %d\n", n_total_read);
-						continue;
-					}
-					if (!S.convert_angles) {
-						dim[1] = in[ex1+S.read_size];
-						dim[2] = in[ex2+S.read_size];
-					}
-					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {
-						/* Note that the direction of the arc gets swapped when converting from azimuth */
-						dim[2] = 90.0 - in[ex1+S.read_size];
-						dim[1] = 90.0 - in[ex2+S.read_size];
-					}
-					else {
-						dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
-						dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
-					}
-					if (S.w_active) {	/* Geo-wedge */
-						if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
-						gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius, S.w_unit, dim[1], dim[2], S.w_type);
-						if (Ctrl->G.active) gmt_setfill (GMT, &current_fill, outline_active);
-					}
-					else {
-						dim[0] *= 0.5;
-						dim[3] = S.w_type;
-						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
-					}
-					break;
-				case GMT_SYMBOL_CUSTOM:
-#if 0
-					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Convert any azimuths to plot angles first */
-						if (S.custom->type[j] == GMT_IS_AZIMUTH) {	/* Make sure plot angles are 0-360 for macro conditionals */
-							dim[j+1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size+j]);
-							if (dim[j+1] < 0.0) dim[j+1] += 360.0;
+							length = in[ex2+S.read_size];
+						if (gmt_M_is_dnan (length)) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Vector length = NaN near line %d\n", n_total_read);
+							continue;
 						}
-						else {	/* Angles (enforce 0-360), dimensions or other quantities */
+						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
+							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
+						else
+							d = in[ex1+S.read_size];
+						
+						if (!S.convert_angles)	/* Use direction as given */
+							direction = d;
+						else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
+							direction = 90.0 - d;
+						else	/* Convert geo azimuth to map direction */
+							direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
+
+						if (gmt_M_is_dnan (direction)) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Vector direction = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
+							gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
+							if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
+								GMT_Report (API, GMT_MSG_VERBOSE, "Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
+								continue;
+							}
+							if (item == 1) {    /* Deal with periodicity */
+								if (x_2 < GMT->current.map.half_width)     /* Might reappear at right edge */
+									x_2 += width;	/* Outside the right edge */
+								else      /* Might reappear at left edge */
+						              		x_2 -= width;         /* Outside the left edge */
+							}
+							length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
+						}
+						else {	/* Compute tip coordinates from tail and length */
+							gmt_flip_angle_d (GMT, &direction);
+							sincosd (direction, &s, &c);
+							x_2 = xpos[item] + length * c;
+							y_2 = plot_y + length * s;
+							justify = PSL_vec_justify (S.v.status);	/* Return justification as 0-2 */
+							if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
+								dx = justify * 0.5 * (x_2 - xpos[item]);	dy = justify * 0.5 * (y_2 - plot_y);
+								xpos[item] -= dx;		plot_y -= dy;
+								x_2 -= dx;		y_2 -= dy;
+							}
+						}
+						if (S.v.parsed_v4) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
+							/* Now plot the old GMT V4 vector instead */
+							/* But have to improvise as far as outline|fill goes... */
+							if (outline_active) S.v.status |= PSL_VEC_OUTLINE;	/* Choosing to draw head outline */
+							if (fill_active) S.v.status |= PSL_VEC_FILL;		/* Choosing to fill head */
+							if (!(S.v.status & PSL_VEC_OUTLINE) && !(S.v.status & PSL_VEC_FILL)) S.v.status |= PSL_VEC_OUTLINE;	/* Gotta do something */
+						}
+						else
+							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						if (length > S.v.h_length && S.v.v_norm < 0.0)	/* No shrink requested by head length exceeds total vector length */
+							GMT_Report (API, GMT_MSG_VERBOSE, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
+						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						dim[0] = x_2, dim[1] = y_2;
+						dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
+						if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
+							double *v4_rgb = NULL;
+							int v4_outline = Ctrl->W.active;
+							if (Ctrl->G.active)
+								v4_rgb = Ctrl->G.fill.rgb;
+							else if (Ctrl->C.active)
+								v4_rgb = current_fill.rgb;
+							else
+								v4_rgb = GMT->session.no_rgb;
+							if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
+							if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+							dim[5] = GMT->current.setting.map_vector_shape;
+							dim[4] *= 0.5;	/* Since it was double in the parsing */
+							psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
+						}
+						else {
+							dim[5] = S.v.v_shape;
+							dim[6] = (double)S.v.status;
+							dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
+							dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
+							dim[11] = s * headpen_width;	/* Possibly shrunk head pen width */
+							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
+						}
+						break;
+					case GMT_SYMBOL_GEOVECTOR:
+						gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
+						if (S.v.status & PSL_VEC_OUTLINE2)
+							S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						else
+							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						if (gmt_M_is_dnan (in[ex1+S.read_size])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Geovector azimuth = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (in[ex2+S.read_size])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Geovector length = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
+						n_warn[warn]++;
+						break;
+					case PSL_MARC:
+						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
+						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						dim[0] = in[ex1+S.read_size];
+						dim[1] = in[ex2+S.read_size];
+						dim[2] = in[ex3+S.read_size];
+						length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
+						if (gmt_M_is_dnan (length)) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Math angle arc length = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
+						dim[6] = S.v.v_shape;
+						dim[7] = (double)S.v.status;
+						dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
+						dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];
+						dim[12] = s * headpen_width;	/* Possibly shrunk head pen width */
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+						break;
+					case PSL_WEDGE:
+						if (gmt_M_is_dnan (in[ex1+S.read_size])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Wedge start angle = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (in[ex2+S.read_size])) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Wedge stop angle = NaN near line %d\n", n_total_read);
+							continue;
+						}
+						if (!S.convert_angles) {
+							dim[1] = in[ex1+S.read_size];
+							dim[2] = in[ex2+S.read_size];
+						}
+						else if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+							/* Note that the direction of the arc gets swapped when converting from azimuth */
+							dim[2] = 90.0 - in[ex1+S.read_size];
+							dim[1] = 90.0 - in[ex2+S.read_size];
+						}
+						else {
+							dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+							dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
+						}
+						if (S.w_active)	/* Geo-wedge */
+							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
+						else {	/* Cartesian wedge */
+							dim[0] *= 0.5;	/* Change from diameter to radius */
+							dim[3] = S.w_type;
+							dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
+							dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
+							dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+							dim[7] = 0.0;	/* Reset */
+							if (fill_active || get_rgb) dim[7] = 1;	/* Lay down filled wedge */
+							if (outline_active) dim[7] += 2;	/* Draw wedge outline */
+							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+						}
+						break;
+					case GMT_SYMBOL_CUSTOM:
+#if 0
+						for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Convert any azimuths to plot angles first */
+							if (S.custom->type[j] == GMT_IS_AZIMUTH) {	/* Make sure plot angles are 0-360 for macro conditionals */
+								dim[j+1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size+j]);
+								if (dim[j+1] < 0.0) dim[j+1] += 360.0;
+							}
+							else {	/* Angles (enforce 0-360), dimensions or other quantities */
+								dim[j+1] = in[ex1+S.read_size+j];
+								if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
+							}
+						}
+#endif
+						for (j = 0; S.custom->type && j < S.n_required; j++) {
+							/* Angles (enforce 0-360), dimensions or other quantities */
 							dim[j+1] = in[ex1+S.read_size+j];
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
-					}
-#endif
-					for (j = 0; S.custom->type && j < S.n_required; j++) {
-						/* Angles (enforce 0-360), dimensions or other quantities */
-						dim[j+1] = in[ex1+S.read_size+j];
-						if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
-					}
-					if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-					gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
-					break;
+						if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
+						gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_active);
+						break;
+				}
 			}
+			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
+				current_pen = save_pen; current_fill = save_fill; Ctrl->W.active = save_W; Ctrl->G.active = save_G;
 			}
 		} while (true);
 		PSL_command (GMT->PSL, "U\n");
@@ -1547,6 +1686,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
+		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
 
@@ -1554,7 +1695,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			/* We dont want trailing text because we may need to resample lines below */
+			/* We don't want trailing text because we may need to resample lines below */
 			Return (API->error);
 		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */
@@ -1734,7 +1875,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
-					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
+					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;
@@ -1769,7 +1910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
-					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
+					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;
@@ -1843,7 +1984,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry */
+								case XHI:	off = 1;	/* To select the x max entry then fall through */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -1851,7 +1992,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry */
+								case YHI:	off = 1;	/* To select the y max entry then fall through */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
@@ -1894,6 +2035,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		gmt_map_clip_off (GMT);
 	}
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
@@ -1914,7 +2056,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
-	if (!S.G.delay) gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */

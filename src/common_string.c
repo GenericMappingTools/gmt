@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * common_string.c contains code shared between GMT and PSL
@@ -198,7 +198,7 @@ unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *pos,
 void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
 	/* A Matlab style strtok. Note that 'token' and 'remain' must be virgin pointers,
 	   otherwise the memory they point to will be leaked because they are allocated here
-	   with strdup. For that reason the caller is responsable to free them after being consumed.
+	   with strdup. For that reason the caller is responsible to free them after being consumed.
 	 */
 	unsigned int pos = 0;
 	char *p, *s;

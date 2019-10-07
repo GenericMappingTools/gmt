@@ -191,6 +191,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 
 	/* coverity[tainted_data_argument] */	/* Try to shut up Coverity about Tainted variables */
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
+	while (line[0] == '#')	/* Skip comments */
+		c_unused = fgets(line, GMT_BUFSIZ, fp);
+
 	if ((n = sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf)) != 3) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to parse line in MGD77_cm4field\n");
 		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
@@ -331,6 +334,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			/* One improvement would be to compute year_min/year_max and retain only the needed data in dstx */
 
 			while (fgets (line, GMT_BUFSIZ, fp)) {
+				if (line[0] == '#') continue;	/* Comment line only */
 				sscanf (&line[3], "%2d %2d", &jyr, &jmon);
 				sscanf (&line[8], "%2d", &jdom);
 				for (i = 0; i < 24; ++i)
@@ -393,6 +397,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			}
 			jaft = 0;
 			while (fgets (line, GMT_BUFSIZ, fp)) {
+				if (line[0] == '#') continue;	/* Comment line only */
 				if (line[9] != '-') {
 					sscanf (line, "%d %d %d", &jyr, &jmon, &jf107);
 					if (jaft == 0) {

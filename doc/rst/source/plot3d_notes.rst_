@@ -1,0 +1,54 @@
+Segment Header Parsing
+----------------------
+
+Segment header records may contain one of more of the following options:
+
+**-G**\ *fill* 
+    Use the new *fill* and turn filling on
+**-G-** 
+    Turn filling off
+**-G** 
+    Revert to default fill (none if not set on command line)
+**-W**\ *pen* 
+    Use the new *pen* and turn outline on
+**-W** 
+    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    (if not set on command line)
+**-W-** 
+    Turn outline off
+**-Z**\ *zval* 
+    Obtain fill via cpt lookup using z-value *zval*
+**-Z**\ *NaN* 
+    Get the NaN color from the CPT
+
+Custom Symbols
+--------------
+
+We allow users to define and plot their own custom symbols. This
+is done by encoding the symbol using our custom symbol macro code
+described in Appendix N. Put all the macro codes for your new symbol in
+a file whose extension must be .def; you may then address the symbol
+without giving the extension (e.g., the symbol file tsunami.def is used
+by specifying **-Sk**\ *tsunami/size*. The definition file can contain
+any number of plot code records, as well as blank lines and comment
+lines (starting with #). The module will look for the definition files
+in (1) the current directory, (2) the ~/.gmt directory,
+and (3) the **$GMT_SHAREDIR**/custom directory, in that
+order. Freeform polygons (made up of straight line segments and arcs of
+circles) can be designed - these polygons can be painted and filled with
+a pattern. Other standard geometric symbols can also be used. See Appendix
+:ref:`App-custom_symbols` for macro definitions.
+
+Bugs
+----
+
+No hidden line removal is employed for polygons and lines. Symbols,
+however, are first sorted according to their distance from the viewpoint
+so that nearby symbols will overprint more distant ones should they
+project to the same x,y position.
+
+The module cannot handle filling of polygons that contain the south or
+north pole. For such a polygon, make a copy and split it into two and
+make each explicitly contain the polar point. The two polygons will
+combine to give the desired effect when filled; to draw outline use the
+original polygon.

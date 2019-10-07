@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,14 +12,19 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # To modify the cmake process: Edit your cmake/ConfigUser.cmake file
 #
 
+set (SUPPL_NAME img)
+
 # source files
 set (SUPPL_PROGS_SRCS img2grd.c)
+
+# example files
+set (SUPPL_EXAMPLE_FILES README.img)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})
@@ -28,9 +33,12 @@ set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
+# install example data
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
+	COMPONENT Documentation)
+
 # install shell script
 install (PROGRAMS img2google
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

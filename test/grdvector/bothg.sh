@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test to deal with issue http://gmt.soest.hawaii.edu/boards/1/topics/6311?r=6315#message-6315
 #
 ps=bothg.ps

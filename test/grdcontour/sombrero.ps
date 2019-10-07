@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19274M [64-bit] Document from grdimage
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Nov  4 15:34:39 2017
+%%CreationDate: Thu Dec  6 10:52:33 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -2700 PSL_xorig sub PSL_page_xsize 2 div add 900 TM
 
 % PostScript produced by:
-%@GMT: grdimage sombrero.nc -P -JX4.5i -K -Xc -Y0.75i
+%@GMT: gmt grdimage sombrero.nc -P -JX4.5i -K -Xc -Y0.75i
 %@PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy
+%GMTBoundingBox: -162 54 324 324
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -789,7 +798,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour sombrero.nc -C1 -Bafg -O -K -JX4.5i -T -Wthick
+%@GMT: gmt grdcontour sombrero.nc -C1 -Bafg -O -K -JX4.5i -T -Wthick
 %@PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -858,10 +867,11 @@ S
 -47 32 D
 S
 911 5400 M
--101 -70 D
--54 -40 D
--68 -52 D
--94 -77 D
+-79 -54 D
+-74 -54 D
+-56 -43 D
+-80 -65 D
+-28 -23 D
 -108 -97 D
 -54 -52 D
 -54 -54 D
@@ -935,26 +945,40 @@ S
 -47 -54 D
 -49 -54 D
 -54 -55 D
--55 -53 D
--59 -54 D
+-54 -53 D
+-60 -54 D
 -63 -54 D
 -39 -32 D
--108 -81 D
--72 -49 D
--90 -56 D
--90 -52 D
+-102 -76 D
+-60 -42 D
+-104 -66 D
+-58 -34 D
+-36 -20 D
 -72 -38 D
--108 -51 D
--108 -45 D
--108 -40 D
--139 -42 D
--131 -33 D
--110 -21 D
--52 -9 D
--108 -14 D
--108 -9 D
--108 -5 D
--108 0 D
+-34 -16 D
+-74 -35 D
+-45 -19 D
+-63 -26 D
+-54 -20 D
+-22 -8 D
+-32 -12 D
+-54 -17 D
+-54 -16 D
+-31 -9 D
+-23 -6 D
+-54 -14 D
+-54 -13 D
+-54 -11 D
+-54 -10 D
+-54 -9 D
+-54 -7 D
+-54 -7 D
+-54 -5 D
+-54 -4 D
+-54 -3 D
+-54 -2 D
+-54 0 D
+-54 0 D
 -108 5 D
 -108 9 D
 -108 14 D
@@ -1089,22 +1113,28 @@ P S
 -47 -56 D
 -54 -58 D
 -54 -54 D
--54 -49 D
--63 -53 D
--70 -54 D
--83 -56 D
--54 -34 D
--54 -31 D
--81 -41 D
+-52 -48 D
+-56 -47 D
+-79 -61 D
+-79 -54 D
+-58 -36 D
+-32 -18 D
+-22 -13 D
+-54 -28 D
+-27 -13 D
 -81 -37 D
--54 -22 D
--54 -20 D
+-42 -17 D
+-66 -25 D
 -54 -18 D
--54 -16 D
--108 -27 D
--130 -22 D
+-39 -11 D
+-69 -19 D
+-54 -13 D
+-54 -10 D
+-54 -9 D
+-22 -3 D
 -32 -5 D
--108 -9 D
+-54 -5 D
+-54 -4 D
 -54 -3 D
 -54 -1 D
 -54 1 D
@@ -1219,19 +1249,21 @@ P S
 -54 -66 D
 -54 -57 D
 -54 -49 D
--54 -44 D
--54 -38 D
+-53 -43 D
+-55 -39 D
 -54 -33 D
--69 -36 D
--39 -19 D
--94 -35 D
+-54 -29 D
+-54 -26 D
+-54 -21 D
+-40 -14 D
 -68 -21 D
 -54 -12 D
 -54 -9 D
 -54 -7 D
 -54 -4 D
--71 -1 D
--37 1 D
+-37 -1 D
+-17 0 D
+-54 1 D
 -54 4 D
 -54 7 D
 -54 9 D
@@ -1362,13 +1394,13 @@ N 0 4500 M -83 0 D S
 /MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-10) sw mx
+(”10) sw mx
 (0) sw mx
 (10) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 900 PSL_A0_y MM
-(-10) mr Z
+(”10) mr Z
 2700 PSL_A0_y MM
 (0) mr Z
 4500 PSL_A0_y MM
@@ -1398,13 +1430,13 @@ N 0 2700 M 83 0 D S
 N 0 4500 M 83 0 D S
 /PSL_AH0 0
 /MM {exch M} def
-(-10) sw mx
+(”10) sw mx
 (0) sw mx
 (10) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 900 PSL_A0_y MM
-(-10) mr Z
+(”10) mr Z
 2700 PSL_A0_y MM
 (0) mr Z
 4500 PSL_A0_y MM
@@ -1433,13 +1465,13 @@ N 2700 0 M 0 -83 D S
 N 4500 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-10) sh mx
+(”10) sh mx
 (0) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 900 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 2700 PSL_A0_y MM
 (0) bc Z
 4500 PSL_A0_y MM
@@ -1468,13 +1500,13 @@ N 2700 0 M 0 83 D S
 N 4500 0 M 0 83 D S
 /PSL_AH0 0
 /MM {M} def
-(-10) sh mx
+(”10) sh mx
 (0) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 900 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 2700 PSL_A0_y MM
 (0) bc Z
 4500 PSL_A0_y MM
@@ -1502,7 +1534,7 @@ O0
 0 6000 TM
 
 % PostScript produced by:
-%@GMT: grdimage sombrero.nc -O -JX4.5i -K -Y5i -BWsNE -Bafg
+%@GMT: gmt grdimage sombrero.nc -O -JX4.5i -K -Y5i -BWsNE -Bafg
 %@PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1653,13 +1685,13 @@ N 0 4500 M -83 0 D S
 /MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-10) sw mx
+(”10) sw mx
 (0) sw mx
 (10) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 900 PSL_A0_y MM
-(-10) mr Z
+(”10) mr Z
 2700 PSL_A0_y MM
 (0) mr Z
 4500 PSL_A0_y MM
@@ -1689,13 +1721,13 @@ N 0 2700 M 83 0 D S
 N 0 4500 M 83 0 D S
 /PSL_AH0 0
 /MM {exch M} def
-(-10) sw mx
+(”10) sw mx
 (0) sw mx
 (10) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 900 PSL_A0_y MM
-(-10) mr Z
+(”10) mr Z
 2700 PSL_A0_y MM
 (0) mr Z
 4500 PSL_A0_y MM
@@ -1746,13 +1778,13 @@ N 2700 0 M 0 83 D S
 N 4500 0 M 0 83 D S
 /PSL_AH0 0
 /MM {M} def
-(-10) sh mx
+(”10) sh mx
 (0) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 900 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 2700 PSL_A0_y MM
 (0) bc Z
 4500 PSL_A0_y MM
@@ -1780,7 +1812,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour sombrero.nc -C1 -O -JX4.5i -T+a -Wthick
+%@GMT: gmt grdcontour sombrero.nc -C1 -O -JX4.5i -T+a -Wthick
 %@PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1984,10 +2016,11 @@ S
 -47 32 D
 S
 911 5400 M
--101 -70 D
--54 -40 D
--68 -52 D
--94 -77 D
+-79 -54 D
+-74 -54 D
+-56 -43 D
+-80 -65 D
+-28 -23 D
 -108 -97 D
 -54 -52 D
 -54 -54 D
@@ -2061,26 +2094,40 @@ S
 -47 -54 D
 -49 -54 D
 -54 -55 D
--55 -53 D
--59 -54 D
+-54 -53 D
+-60 -54 D
 -63 -54 D
 -39 -32 D
--108 -81 D
--72 -49 D
--90 -56 D
--90 -52 D
+-102 -76 D
+-60 -42 D
+-104 -66 D
+-58 -34 D
+-36 -20 D
 -72 -38 D
--108 -51 D
--108 -45 D
--108 -40 D
--139 -42 D
--131 -33 D
--110 -21 D
--52 -9 D
--108 -14 D
--108 -9 D
--108 -5 D
--108 0 D
+-34 -16 D
+-74 -35 D
+-45 -19 D
+-63 -26 D
+-54 -20 D
+-22 -8 D
+-32 -12 D
+-54 -17 D
+-54 -16 D
+-31 -9 D
+-23 -6 D
+-54 -14 D
+-54 -13 D
+-54 -11 D
+-54 -10 D
+-54 -9 D
+-54 -7 D
+-54 -7 D
+-54 -5 D
+-54 -4 D
+-54 -3 D
+-54 -2 D
+-54 0 D
+-54 0 D
 -108 5 D
 -108 9 D
 -108 14 D
@@ -2215,22 +2262,28 @@ P S
 -47 -56 D
 -54 -58 D
 -54 -54 D
--54 -49 D
--63 -53 D
--70 -54 D
--83 -56 D
--54 -34 D
--54 -31 D
--81 -41 D
+-52 -48 D
+-56 -47 D
+-79 -61 D
+-79 -54 D
+-58 -36 D
+-32 -18 D
+-22 -13 D
+-54 -28 D
+-27 -13 D
 -81 -37 D
--54 -22 D
--54 -20 D
+-42 -17 D
+-66 -25 D
 -54 -18 D
--54 -16 D
--108 -27 D
--130 -22 D
+-39 -11 D
+-69 -19 D
+-54 -13 D
+-54 -10 D
+-54 -9 D
+-22 -3 D
 -32 -5 D
--108 -9 D
+-54 -5 D
+-54 -4 D
 -54 -3 D
 -54 -1 D
 -54 1 D
@@ -2345,19 +2398,21 @@ P S
 -54 -66 D
 -54 -57 D
 -54 -49 D
--54 -44 D
--54 -38 D
+-53 -43 D
+-55 -39 D
 -54 -33 D
--69 -36 D
--39 -19 D
--94 -35 D
+-54 -29 D
+-54 -26 D
+-54 -21 D
+-40 -14 D
 -68 -21 D
 -54 -12 D
 -54 -9 D
 -54 -7 D
 -54 -4 D
--71 -1 D
--37 1 D
+-37 -1 D
+-17 0 D
+-54 1 D
 -54 4 D
 -54 7 D
 -54 9 D
@@ -2456,6 +2511,10 @@ P S
 P S
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

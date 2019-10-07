@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: grdfilter.c reads a grid file and creates filtered grid file.
@@ -301,7 +301,7 @@ GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, stru
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
 				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
-			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the highest mode */
 			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}
@@ -351,7 +351,7 @@ GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVA
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
 				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
-			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the highest mode */
 			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}

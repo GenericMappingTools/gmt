@@ -1,4 +1,4 @@
-#/bin/bash
+#!/usr/bin/env bash
 # Isolated part of issue submitted by Nicky Wright on May 25, 2017 at GSA meeting
 ps=line_wraps.ps
 gmt set MAP_ANNOT_OBLIQUE 2 MAP_FRAME_TYPE plain FORMAT_GEO_MAP dddF

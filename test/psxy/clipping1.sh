@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check clipping of lines crossing over the horizon AND dateline (N pole)
 

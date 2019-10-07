@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=oldcvecs.ps
 
 gmt grdmath -R0/60/0/60 -I10 -r 0.5 Y COSD ADD = r.nc

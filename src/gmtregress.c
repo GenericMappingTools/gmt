@@ -1,6 +1,6 @@
 /*
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: gmtregress fits y = a + bx linear regression to x,y[,w] data
@@ -573,7 +573,7 @@ GMT_LOCAL void get_coeffR (struct GMT_CTRL *GMT, double *X, double *Y, double *w
 		if (w[GMT_Y]) ww = w[GMT_Y][k];	/* Was given weights */
 		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
 		SSR += ww * pow (Y[k] - y_hat, 2.0);
-		SST += ww * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
+		SST += ww * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
 	}
 	par[GMTREGRESS_R] = 1.0 - f * SSR / SST;
 }
@@ -930,7 +930,7 @@ GMT_LOCAL double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y
 }
 
 GMT_LOCAL double LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
-	/* Front to calling LSxy_regress1D_york or LSxy_regress1D_basic, depening on weights */
+	/* Front to calling LSxy_regress1D_york or LSxy_regress1D_basic, depending on weights */
 	double scale;
 	if (w && w[GMT_X] && w[GMT_Y])	/* Have weights in x and y [and possibly correlation coefficients as well] */
 		scale = LSxy_regress1D_york (GMT, x, y, w, n, par);
@@ -1147,7 +1147,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.active) {	/* Evaluate solution for equidistant spacing instead of at the input locations */
-		unsigned int bad = 0;	/* Must chech for conflict between -T and -F settings */
+		unsigned int bad = 0;	/* Must check for conflict between -T and -F settings */
 		for (col = 0; col < n_columns; col++) if (!Ctrl->T.no_eval && strchr ("yrzw", (int)Ctrl->F.col[col])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Cannot include %c when -T is in effect\n", (int)Ctrl->F.col[col]);
 			bad++;

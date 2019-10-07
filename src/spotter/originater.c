@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2000-2018 by P. Wessel
+ *   Copyright (c) 2000-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * originater reads file of seamount locations and tries to match each
@@ -137,12 +137,12 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 		bool active;
 		double value;	
 	} D;
-	struct E {	/* -E[+]rotfile */
+	struct E {	/* -Erotfile[+i] */
 		bool active;
 		bool mode;
 		char *file;
 	} E;
-	struct F {	/* -F[+]hotspotfile */
+	struct F {	/* -Fhotspotfile[+d] */
 		bool active;
 		bool mode;
 		char *file;
@@ -208,7 +208,7 @@ GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E<rottable>[+i] -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[<flag>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -216,7 +216,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify file name for hotspot locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if we should look for hotspot drift tables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d if we should look for hotspot drift tables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
@@ -249,6 +249,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_input;
 	int k;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -273,10 +274,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			case 'E':
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
+				else if ((c = strstr (opt->arg, "+i"))) {Ctrl->E.mode = true; c[0] = '\0';}
 				if (gmt_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN, GMT_IS_DATASET))
 					Ctrl->E.file  = strdup (&opt->arg[k]);
 				else
 					n_errors++;
+				if (c) c[0] = '+';
 				break;
 			case 'F':
 				Ctrl->F.active = true;	k = 0;
@@ -291,6 +294,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->L.degree = true;
+						/* Fall through on purpose to 'l' */
 					case 'l':
 						Ctrl->L.mode = 3;
 						break;
@@ -300,6 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 						break;
 					case 'T':
 						Ctrl->L.degree = true;
+						/* Fall through on purpose to 't' */
 					case 't':
 						Ctrl->L.mode = 1;
 						break;
@@ -411,13 +416,13 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
 		if (Ctrl->F.mode) {	/* See if there is a drift file for this hotspot */
-			char path[GMT_BUFSIZ] = {""}, file[GMT_LEN64] = {""};
+			char path[PATH_MAX] = {""}, file[GMT_LEN64] = {""};
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
-			strncpy (path, file, GMT_BUFSIZ);
+			strncpy (path, file, PATH_MAX);
 			if (gmt_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
 				if (strchr (Ctrl->F.file, '/')) {	/* Filename has leading path so we will use that path */
-					strncpy (path, Ctrl->F.file, GMT_BUFSIZ);
+					strncpy (path, Ctrl->F.file, PATH_MAX);
 					k = strlen (path);
 					while (k && path[k] != '/') k--;	/* Look for last slash  */
 					k++; path[k] = 0;	/* Truncate anything after last slash */

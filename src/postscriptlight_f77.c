@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2018 by P. Wessel and R. Scharroo
+ *	Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -64,7 +64,7 @@
  * PSL_setdefaults	: Change several PSL session default values
  * PSL_setdash		: Specify pattern for dashed line
  * PSL_setfill		: Sets the fill color or pattern
- * PSL_setfont		: Changes current font and possibly reencodes it to current encoding
+ * PSL_setfont		: Changes current font and possibly re-encodes it to current encoding
  * PSL_setformat	: Changes # of decimals used in color and gray specs [3]
  * PSL_setlinecap	: Changes the line cap setting
  * PSL_setlinejoin	: Changes the line join setting

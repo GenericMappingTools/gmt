@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot the NASA Blue Marble 1x1 degree geotiff in different projections
 ps=marbles.ps
 gmt grdimage -JG0/0/3i @BlueMarble_60m.tiff -P -Y7i -K > $ps

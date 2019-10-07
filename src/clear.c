@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -75,7 +75,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 }
 
 GMT_LOCAL int clear_cache (struct GMTAPI_CTRL *API) {
-	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, false))
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
@@ -109,7 +109,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 	unsigned int n_dirs, k;
 	char **dirlist = NULL, *here = NULL;
 	if (access (API->session_dir, F_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No directory named %s\n", API->session_dir);
+		GMT_Report (API, GMT_MSG_VERBOSE, "No directory named %s\n", API->session_dir);
 		return GMT_FILE_NOT_FOUND;
 	}
 	if ((here = getcwd (NULL, 0)) == NULL) {	/* Get the current directory */
@@ -120,7 +120,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 		perror (API->session_dir);
 		return GMT_RUNTIME_ERROR;
 	}
-	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<PPID> directories */
+	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<session_name> directories */
 		for (k = 0; k < n_dirs; k++) {
 			if (gmt_remove_dir (API, dirlist[k], false))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove directory %s [permissions?]\n", dirlist[k]);

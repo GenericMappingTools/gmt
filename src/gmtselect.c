@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the gmtselect application.
@@ -91,10 +91,10 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
-	struct GMTSELECT_D {	/* -D<resolution> */
+	struct GMTSELECT_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
-		char set;	/* One of f, h, i, l, c */
+		char set;	/* One of f, h, i, l, c, or a for auto */
 	} D;
 	struct GMTSELECT_E {	/* -E<operators> , <op> = combination or f,n */
 		bool active;
@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [%s]\n", name, GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+f] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
 	             GMT_DIST_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] "
 	             "[%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
@@ -319,6 +319,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, pos, j, col, n_z_alloc = 0, z_col = GMT_Z;
 	bool invert = false;
 	char buffer[GMT_BUFSIZ] = {""}, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL;
+	enum gmt_col_enum ctype;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -353,7 +354,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
-				if (opt->arg[1] == '+') Ctrl->D.force = true;
+				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary selection */
 				Ctrl->E.active = true;
@@ -473,13 +474,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].invert = invert;
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
-					gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				if (!(za[0] == '-' && za[1] == '\0')) {
+					ctype = (strchr (za, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, col);
+					n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, za, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				}
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
-						gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+					if (!(zb[0] == '-' && zb[1] == '\0')) {
+						ctype = (strchr (zb, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, col);
+						n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, zb, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+					}
 				}
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;

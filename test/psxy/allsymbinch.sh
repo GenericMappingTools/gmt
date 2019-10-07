@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Plot gmt psxy symbols under INCH default unit
 

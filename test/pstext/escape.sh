@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Check postscriptlight escape functions
 
 ps=escape.ps

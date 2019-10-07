@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=twovtypes.ps
 # Plot two vectors of length 500 km pointing East and North at lats 0, 40 and 60
 # Geovectors will plot with true length 500 km while Cartesian will have fixed length,

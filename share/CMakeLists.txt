@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,28 +12,21 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs cpt custom dbase localization mgd77 mgg
+set (_gmt_share_dirs cpt custom localization mgd77 mgg
 	spotter x2sys)
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}
 	DESTINATION ${GMT_DATADIR}
 	COMPONENT Runtime
-	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
-
-# install version file (used during runtime to check for correct share dir)
-configure_file (VERSION.in VERSION @ONLY NEWLINE_STYLE LF)
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
-	DESTINATION ${GMT_DATADIR}
-	COMPONENT Runtime)
 
 # only attempt to install shorelines when requested and path is known
 if (GSHHG_PATH AND COPY_GSHHG)
@@ -61,7 +54,18 @@ else (DCW_PATH AND COPY_DCW)
 	set (DCW_INSTALL_PATH ${DCW_PATH})
 endif (DCW_PATH AND COPY_DCW)
 
+
+if (GDAL_DATA_PATH)
+	install (DIRECTORY ${GDAL_DATA_PATH}/
+		DESTINATION ${GMT_DATADIR}/GDAL_DATA
+		COMPONENT GDALDATA)
+endif ()
+if (PROJ_DATA_PATH)
+	install (DIRECTORY ${PROJ_DATA_PATH}/
+		DESTINATION ${GMT_DATADIR}/GDAL_DATA
+		COMPONENT GDALDATA)
+endif ()
+
+
 # add subtrees
 add_subdirectory (tools)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

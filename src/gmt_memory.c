@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *  Management of internal temporary memory.
@@ -143,8 +143,8 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	else
 	{
 		int pid = getpid();
-		char logfile[32];
-		snprintf (logfile, 32, "gmt_memtrack_%d.log", pid);
+		char logfile[GMT_LEN32];
+		snprintf (logfile, GMT_LEN32, "gmt_memtrack_%d.log", pid);
 		if ((M->fp = fopen (logfile, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create log file gmt_memtrack_%d.log\n", pid);
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
@@ -571,7 +571,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	}
 
 #ifdef MEMDEBUG
-	if (GMT->hidden.mem_keeper->active) {
+	if (GMT->hidden.mem_keeper && GMT->hidden.mem_keeper->active) {
 		bool is_safe_to_free = gmt_memtrack_sub (GMT, where, addr);
 		if (is_safe_to_free == false)
 			return; /* Address addr was not allocated by gmt_memory_func before */

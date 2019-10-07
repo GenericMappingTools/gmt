@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing issue #1125.  Should be fixed and this is the test.
 ps=fontcolor.ps
 gmt xyz2grd -R0/2/0/2 -I1/1 -Gtest.grd << EOF

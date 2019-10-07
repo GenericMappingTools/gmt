@@ -1,2 +1,0 @@
-**-x**\ [[-]\ *n*] :ref:`(more ...) <core_full>`
-    Limit number of cores used in multi-threaded algorithms (OpenMP required).

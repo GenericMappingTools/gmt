@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Compute approximate flexure over disc, compare to results from Matlab
 # using results flex_analytical.txt produced by flex_analytical.m

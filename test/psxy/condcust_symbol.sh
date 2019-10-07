@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test custom symbol with conditional statements.  From Kristof
 # http://gmt.soest.hawaii.edu/boards/1/topics/7399
 

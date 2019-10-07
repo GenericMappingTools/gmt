@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test the C API for i/o involving images
 # Note the -W option is not used but must be present.

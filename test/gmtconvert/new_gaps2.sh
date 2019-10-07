@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt convert with -g
 # Same plotting as gmt psxy/new_gaps.sh but using gmt convert to make the gaps.
 

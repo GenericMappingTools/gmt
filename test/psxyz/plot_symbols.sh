@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -37,7 +37,7 @@ gmt psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EO
 > Dual-colored pattern # 12 -Gp12+fred+bgreen+r100 -W3p,orange
 3.5	1.5	0	a
 EOF
-gmt psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -Bxyzg1 -G0 -W0.25p -p155/35 -S1i -Y4i << EOF >> $ps
+gmt psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -Bg1 -G0 -W0.25p -p155/35 -S1i -Y4i << EOF >> $ps
 > Red cube -Gred
 2.5	2.5	3	u
 > Blue column -Gblue

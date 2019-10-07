@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Compute the gravity anomaly of the whater layer above the Gorringe bank
 

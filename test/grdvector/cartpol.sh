@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdvector for Cartesian and polar projections
 # Added to address issue #767
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt pstext paragraph with outline vs outline/fill
 # Making sure issue # 893 is dealt with.
 ps=caption.ps

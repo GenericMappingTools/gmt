@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_dev.h is the main include file for the main development of gmt.
@@ -43,8 +43,8 @@
  */
 
 #pragma once
-#ifndef _GMT_DEV_H
-#define _GMT_DEV_H
+#ifndef GMT_DEV_H
+#define GMT_DEV_H
 
 #ifdef __cplusplus	/* Basic C++ support */
 extern "C" {
@@ -77,6 +77,7 @@ extern "C" {
 #endif
 #endif
 
+/* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
 #	pragma warning( disable : 4091 )	/* 'static ': ignored on left of 'XXX' when no variable is declared */
 #	pragma warning( disable : 4244 )	/* conversion from 'uint64_t' to '::size_t', possible loss of data */
@@ -176,4 +177,4 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 }
 #endif
 
-#endif  /* !_GMT_DEV_H */
+#endif  /* !GMT_DEV_H */

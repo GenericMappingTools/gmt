@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* gmt_decorate.h - structures and variables needed for decorating lines.
 
@@ -28,8 +28,8 @@
  * \brief Structures and variables needed for decorating lines.
  */
 
-#ifndef _GMT_DECORATE_H
-#define _GMT_DECORATE_H
+#ifndef GMT_DECORATE_H
+#define GMT_DECORATE_H
 
 /*! Various settings for symbol placements along lines */
 enum GMT_enum_decorate {
@@ -63,8 +63,8 @@ struct GMT_DECORATE {
 	bool do_interpolate;		/* true if we must resample the crossing lines */
 	bool fixed;			/* true if we chose fixed positions */
 	bool debug;			/* true of we want to draw helper lines/points */
-	char line_name[16];		/* Name of line: contour or line */
-	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
+	char line_name[16];		/* Name of line: "contour" or "line" */
+	char file[PATH_MAX];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char size[GMT_LEN64];		/* The symbol size */
 	char fill[GMT_LEN64];		/* The symbol fill */
@@ -77,4 +77,4 @@ struct GMT_DECORATE {
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 };
 
-#endif /* _GMT_DECORATE_H */
+#endif /* GMT_DECORATE_H */

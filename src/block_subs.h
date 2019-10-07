@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /**
@@ -39,7 +39,7 @@ struct BLOCK_CTRL {
 	struct A {	/* -A<fields> */
 		bool active;
 		unsigned int n_selected;
-		bool selected[8];
+		bool selected[BLK_N_FIELDS];
 	} A;
 	struct C {	/* -C */
 		bool active;
@@ -65,7 +65,7 @@ struct BLOCK_CTRL {
 		bool active;
 		double no_data;
 	} N;
-#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
+#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
 	struct Q {	/* -Q */
 		bool active;
 	} Q;
@@ -164,10 +164,10 @@ enum GMT_enum_blks {BLK_Z	= 2,
 		BLK_W		= 3};
 
 struct BLK_DATA {
-	double a[4];		/*!< a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	uint64_t ij;	/*!< Grid index for data value */
+	double a[4];		/* < a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+	uint64_t ij;		/* < Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
-	uint64_t src_id;	/*!< Source id [Data record] on input */
+	uint64_t src_id;	/* < Source id [Data record] on input */
 #endif
 };
 #endif

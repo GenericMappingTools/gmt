@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Demonstrates that the inside annotations gets clipped by boundary; what should we do here?
 ps=annotations4.ps

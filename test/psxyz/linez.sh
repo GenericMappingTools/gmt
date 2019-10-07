@@ -1,5 +1,4 @@
-#!/bin/bash
-#       $Id
+#!/usr/bin/env bash
 # Test line and circle with -Jz and no z-range in psxyz
 ps=linez.ps
 cat << EOF > t.txt

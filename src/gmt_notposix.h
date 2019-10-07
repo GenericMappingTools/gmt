@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
- * Contact info: gmt.soest.hawaii.edu
+ * Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------
  *
  * This include file contains ifdefs that tell us if this system has
@@ -31,8 +31,8 @@
  * \brief Contains ifdefs to tell us if this system has functions not in POSIX but part of ANSI C
  */
 
-#ifndef _GMT_NOTPOSIX_H
-#define _GMT_NOTPOSIX_H
+#ifndef GMT_NOTPOSIX_H
+#define GMT_NOTPOSIX_H
 
 /* HAVE_<func> is undefined or defined as 1 depending on
  * whether or not <func> is available on this system.
@@ -178,6 +178,7 @@
 #		pragma warning( disable : 4127 )	/* conditional expression is constant */
 #		pragma warning( disable : 4706 )	/* assignment within conditional expression */
 #		pragma warning( disable : 4204 )	/* nonstandard extension used : non-constant aggregate initializer */
+#		pragma warning( disable : 6334 )	/* sizeof operator applied to an expression with an operator might ... */
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
 /*#		pragma warning( once : 4244 4267 ) */
 #	 	if (_MSC_VER <= 1600)
@@ -593,4 +594,4 @@
 /* define custom function */
 #endif
 
-#endif /* _GMT_NOTPOSIX_H */
+#endif /* GMT_NOTPOSIX_H */

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Computes the gravity anomaly of a sphere both analytical and descrete triangles
 

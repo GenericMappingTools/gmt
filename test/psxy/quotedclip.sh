@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths

@@ -1,0 +1,23 @@
+.. _example_44:
+
+(44) Map insets
+---------------
+
+In this example show how the two modules :doc:`basemap </basemap>`
+and :doc:`mapproject </mapproject>` can be used
+to place map insets on top of your map.  The map inset is usually
+intended for placing a smaller-scale version of the larger geographical
+context of your main plot, so that reader unfamiliar with the detailed
+map can see what region we are looking at.  While the Australia example
+is simplest since we know the inset will be a square map, the Spain
+example requires us to compute the dimensions of the inset first, via
+:doc:`mapproject </mapproject>`, so that we can determine exact inset dimensions.
+
+.. literalinclude:: /_verbatim/example_44.txt
+   :language: bash
+
+.. figure:: /_images/example_44.*
+   :width: 500 px
+   :align: center
+
+   Map Insets.

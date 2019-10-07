@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test grdmath stacking mode -S for available operators
 ps=reduce.ps
 gmt set PS_MEDIA letter MAP_TITLE_OFFSET 4p FONT_TITLE 12p

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check clipping of ellipses that should wrap in a global gmt projection
 

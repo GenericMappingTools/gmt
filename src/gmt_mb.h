@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *      Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,11 +12,11 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: gmt.soest.hawaii.edu
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
- * File with definitions that allows compatibility between GMT 6 and
+ * File with definitions that allow compatibility between GMT 6 and
  * the MB-system programs mbcontour.c, mbgrdtiff.c, and mbswath.c.
  *
  * Author:      Paul Wessel
@@ -29,7 +29,7 @@
 #define GMT_MB_H
 
 #if GMT_MAJOR_VERSION == 6
-#define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0)
+#define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0,0)
 #define gmt_M_grd_is_global gmt_grd_is_global
 #define GMT_c_OPT	"-c<ncopies>"	/* OBSOLETE */
 #endif

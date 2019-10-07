@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 
 # We are testing a few examples from Cox and Hart, Plate Tectonics - How it works.

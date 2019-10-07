@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.2_r18303M [64-bit] Document from grdimage
-%%Creator: GMT5
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_0ef8a85_2019.03.19 [64-bit] Document from grdimage
+%%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun  1 18:41:31 2017
+%%CreationDate: Tue Mar 19 09:13:58 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3300 PSL_xorig sub PSL_page_xsize 2 div add 900 TM
 
 % PostScript produced by:
-%@GMT: grdimage mask_c.grd -R-180/180/-90/90 -JX5.5id/2.75id -Ct.cpt -Baf -BWSnE -P -K -Xc -Y0.75i --MAP_FRAME_TYPE=plain
+%@GMT: gmt grdimage mask_c.grd -R-180/180/-90/90 -JX5.5id/2.75id -Ct.cpt -Baf -BWSnE -P -K -Xc -Y0.75i --MAP_FRAME_TYPE=plain
 %@PROJ: latlong -180.00000000 180.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -198 54 396 198
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -674,6 +684,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
+P
 PSL_clip N
 V N -9 -9 T 6618 3318 scale [/Indexed /DeviceRGB 1 <
 0000E5808080>] setcolorspace
@@ -819,24 +830,27 @@ N 0 3300 M -42 0 D S
 0 0 M
 6600 0 D
 0 3300 D
--6600 0 D
+-1650 0 D
+-1650 0 D
+-1650 0 D
+-1650 0 D
 0 -3300 D
 P S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-180 ) tc Z
-1100 -167 M (-120 ) tc Z
-2200 -167 M (-60 ) tc Z
-3300 -167 M (0 ) tc Z
-4400 -167 M (60 ) tc Z
-5500 -167 M (120 ) tc Z
-6600 -167 M (180 ) tc Z
--167 550 M (-60 ) mr Z
-6767 550 M (-60 ) ml Z
--167 1650 M (0 ) mr Z
-6767 1650 M (0 ) ml Z
--167 2750 M (60 ) mr Z
-6767 2750 M (60 ) ml Z
+(î180è) tc Z
+1100 -167 M (î120è) tc Z
+2200 -167 M (î60è) tc Z
+3300 -167 M (0è) tc Z
+4400 -167 M (60è) tc Z
+5500 -167 M (120è) tc Z
+6600 -167 M (180è) tc Z
+-167 550 M (î60è) mr Z
+6767 550 M (î60è) ml Z
+-167 1650 M (0è) mr Z
+6767 1650 M (0è) ml Z
+-167 2750 M (60è) mr Z
+6767 2750 M (60è) ml Z
 %%EndObject
 0 A
 FQ
@@ -844,7 +858,7 @@ O0
 -900 3900 TM
 
 % PostScript produced by:
-%@GMT: grdimage mask_c.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X-0.75i -Y3.25i
+%@GMT: gmt grdimage mask_c.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X-0.75i -Y3.25i
 %@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -898,16 +912,28 @@ clipsave
 -97 -67 D
 -67 -41 D
 -69 -38 D
--106 -50 D
--73 -29 D
--75 -26 D
--75 -22 D
--115 -26 D
--77 -13 D
--78 -10 D
--118 -7 D
--78 0 D
--118 7 D
+-35 -17 D
+-36 -17 D
+-35 -16 D
+-37 -15 D
+-36 -14 D
+-37 -13 D
+-38 -13 D
+-37 -11 D
+-38 -11 D
+-38 -9 D
+-38 -9 D
+-39 -8 D
+-38 -7 D
+-39 -6 D
+-39 -5 D
+-39 -5 D
+-39 -3 D
+-39 -2 D
+-40 -2 D
+-39 0 D
+-79 2 D
+-78 5 D
 -117 16 D
 -77 15 D
 -76 18 D
@@ -962,19 +988,19 @@ clipsave
 118 7 D
 39 0 D
 0 -1650 D
+P
 PSL_clip N
-V N -46 -61 T 3392 3423 scale [/Indexed /DeviceRGB 1 <
+V N -5 -20 T 3309 3339 scale [/Indexed /DeviceRGB 1 <
 8080800000E5>] setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 361 /Height 85 /BitsPerComponent 1
    /ImageMatrix [361 0 0 -85 0 85] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-G[AWr_2ZAU$tQc,^#,,@.?np#5\ES9P`TORNP]Nj!GjM$n2T[p3?Fm12GU=f_A?_`*\h)<8_#t%KPRiL*:&kLT&Cs^%>\Nd
-Jf9NCdk-Us3>1WlHl^.L,*oRFUtI%D1Zu]/&3/Tuc4NCs`)U,9nn,a&1[CI_A3LR5ZiR3Vkmg5Z6IS;DTrFEDJ2eo&kA=a%
-^h9t.7TPl1gCAA787-nK%L8oDeENQjE3'P^iHL;H79LWp*6Ca9.UOBSERZt*6k3;J+Mr!EN^+1oN`n/;A2CA=%_T.N>K1MS
-VPdH9=opZ,GD&*_*#_Z4,HgM1L;*aE$:i-U5J,[NO+uZdW"Z[L"mObq5;ciX,U.Q^#14)Th]"(HYL#gFNCC4-s.d"S!Q0t8
-.4E3+r1t=`;LhSh!A!S(!=S74#r?rj&gmB+,m<2)"N-.I,mXuU!XT4X5nViklqcT!-^]F7#-S<1KW0X/Ig14YcdM$2fEZP;
-`clE8`m].GccT[ldn16sAYjeSHb.d@FiQZ0he)bWJZ,'gk<DcpkFSXlc;4K+QYKU&YN?0oWjF/YHc&;NOa(j&);M(.p,"Y:
-!tOacC2A)W+RR._<S(pP~>
+G[Bc=4-mc,%!5g5/U[b^ihPJ%XcL=2>c-GI%E*e2I(CmbSOX>^66OX\&?I&87841j4.m)u]<6Q;E<pGOXNG+Z,(ER=qR5MW
+&Ce[Fh8G%tNF98ur8(@l%JhX2:Z39j(I)!_e6$GlX)$o=(U_V'!PgJXJ6le*3.]@*$c@^M""uMq&g6tqRZAIcQXt^e6s%!i
+1ILG4:^]6?b8^lCW=?7.P^sOOZ%Wt>.BPWCOTFR'J8+!IO>[7j9n^.a'4QM$VI1gj&d,UrF%+<520T%\Q(b)R_>D)hMb3b`
+\0jj'eD2HR<l;G;-T?:VERMrh^/oNb!h%OW2ZtXMagot;3P;_H3d)rB'ed.lg0jg:M_G&7IVhj]+e<lnQdef1GbJ4'3/'Pp
+_bD0>SbMRWVV6tF)m=upD!Dqe2.1d2N7</J:NaQjD-b*C&f;)>,9@7>hi)'=gjolgP/Tcl!cQGW1n_lUs5$#EZ^r!uM0dIh
+i+(MV/FKUM,O/l,g"ar5Ko6nJiXjU\Zde'+2E:jlF7\KK3P-KKT`"roq"%;~>
 U
 PSL_cliprestore
 25 W
@@ -1018,15 +1044,33 @@ P S
 -28 -40 D
 -18 -23 D
 -42 -41 D
--40 -29 D
--33 -20 D
--63 -27 D
--47 -12 D
--39 -6 D
--39 -2 D
--39 1 D
--39 5 D
--47 11 D
+-24 -18 D
+-24 -16 D
+-17 -10 D
+-17 -9 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -3 D
+-9 -4 D
+-10 -3 D
+-9 -2 D
+-9 -3 D
+-10 -2 D
+-9 -2 D
+-10 -2 D
+-10 -2 D
+-9 -1 D
+-10 -1 D
+-10 -1 D
+-10 -1 D
+-9 0 D
+-10 0 D
+-10 0 D
+-10 0 D
+-48 4 D
+-57 13 D
 -46 18 D
 -27 12 D
 -49 31 D
@@ -1090,17 +1134,53 @@ P S
 -34 -35 D
 -15 -13 D
 -37 -32 D
--47 -35 D
--49 -31 D
--43 -24 D
--62 -29 D
--65 -23 D
--47 -14 D
--86 -17 D
--78 -7 D
--59 -1 D
--48 3 D
--68 8 D
+-31 -23 D
+-24 -17 D
+-25 -16 D
+-16 -10 D
+-17 -10 D
+-18 -9 D
+-17 -9 D
+-18 -9 D
+-17 -8 D
+-9 -4 D
+-9 -4 D
+-9 -3 D
+-10 -4 D
+-9 -3 D
+-9 -4 D
+-9 -3 D
+-9 -3 D
+-10 -3 D
+-9 -3 D
+-9 -3 D
+-10 -3 D
+-9 -2 D
+-10 -3 D
+-9 -2 D
+-10 -2 D
+-9 -2 D
+-10 -2 D
+-9 -2 D
+-10 -2 D
+-10 -2 D
+-9 -1 D
+-10 -2 D
+-10 -1 D
+-9 -1 D
+-10 -1 D
+-10 -1 D
+-10 -1 D
+-9 -1 D
+-10 -1 D
+-10 0 D
+-10 0 D
+-9 -1 D
+-10 0 D
+-10 0 D
+-10 0 D
+-49 2 D
+-77 9 D
 -86 19 D
 -74 25 D
 -46 19 D
@@ -1189,19 +1269,96 @@ P S
 -57 -67 D
 -51 -53 D
 -54 -50 D
--62 -51 D
--78 -55 D
--63 -38 D
--58 -31 D
--40 -18 D
--6 -4 D
--82 -33 D
--91 -29 D
--64 -16 D
--57 -11 D
--73 -11 D
--80 -6 D
--59 -2 D
+-39 -33 D
+-23 -18 D
+-18 -13 D
+-18 -13 D
+-18 -12 D
+-18 -13 D
+-12 -7 D
+-13 -8 D
+-18 -12 D
+-13 -7 D
+-13 -8 D
+-13 -7 D
+-12 -7 D
+-13 -7 D
+-7 -3 D
+-13 -7 D
+-7 -3 D
+-13 -6 D
+-13 -6 D
+-13 -7 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-13 -6 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -1 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-7 -1 D
+-7 -2 D
+-7 -1 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-7 -1 D
+-7 -1 D
+-8 -1 D
+-7 -2 D
+-7 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 -1 D
 -81 3 D
 -80 8 D
 -65 10 D
@@ -1319,22 +1476,101 @@ P S
 -65 -59 D
 -45 -37 D
 -31 -25 D
--55 -40 D
--32 -22 D
--83 -52 D
--78 -42 D
--61 -30 D
--81 -35 D
--83 -30 D
--93 -29 D
--66 -16 D
--48 -11 D
--106 -17 D
--68 -7 D
--88 -6 D
--98 -1 D
--88 5 D
--58 5 D
+-31 -23 D
+-24 -17 D
+-24 -17 D
+-17 -10 D
+-24 -16 D
+-17 -11 D
+-17 -10 D
+-16 -10 D
+-17 -9 D
+-17 -10 D
+-18 -9 D
+-17 -9 D
+-17 -9 D
+-18 -9 D
+-17 -9 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -4 D
+-9 -3 D
+-9 -4 D
+-9 -4 D
+-9 -3 D
+-9 -4 D
+-9 -3 D
+-9 -4 D
+-10 -3 D
+-9 -3 D
+-9 -4 D
+-9 -3 D
+-10 -3 D
+-9 -3 D
+-9 -3 D
+-9 -3 D
+-10 -3 D
+-9 -3 D
+-9 -3 D
+-10 -3 D
+-9 -2 D
+-10 -3 D
+-9 -3 D
+-10 -2 D
+-9 -3 D
+-9 -2 D
+-10 -3 D
+-9 -2 D
+-10 -2 D
+-9 -2 D
+-10 -2 D
+-10 -3 D
+-9 -2 D
+-10 -2 D
+-9 -2 D
+-10 -1 D
+-10 -2 D
+-9 -2 D
+-10 -2 D
+-9 -1 D
+-10 -2 D
+-10 -1 D
+-9 -2 D
+-10 -1 D
+-10 -2 D
+-9 -1 D
+-10 -1 D
+-10 -1 D
+-10 -2 D
+-9 -1 D
+-10 -1 D
+-10 -1 D
+-9 0 D
+-10 -1 D
+-10 -1 D
+-10 -1 D
+-9 0 D
+-10 -1 D
+-10 -1 D
+-10 0 D
+-10 -1 D
+-9 0 D
+-10 0 D
+-10 -1 D
+-10 0 D
+-9 0 D
+-10 0 D
+-10 0 D
+-10 0 D
+-10 0 D
+-9 0 D
+-88 4 D
+-68 6 D
 -107 16 D
 -57 11 D
 -67 16 D
@@ -1476,14 +1712,25 @@ N 1650 3300 M 0 42 D S
 -96 -68 D
 -67 -42 D
 -69 -39 D
--106 -52 D
--110 -44 D
--75 -25 D
--114 -31 D
--77 -16 D
--78 -12 D
--118 -11 D
--78 -3 D
+-70 -35 D
+-36 -17 D
+-36 -15 D
+-37 -15 D
+-37 -14 D
+-37 -13 D
+-38 -12 D
+-37 -11 D
+-38 -10 D
+-39 -10 D
+-38 -8 D
+-39 -8 D
+-39 -6 D
+-39 -6 D
+-39 -4 D
+-39 -4 D
+-40 -3 D
+-39 -2 D
+-39 -1 D
 -79 1 D
 -79 5 D
 -78 8 D
@@ -1545,10 +1792,10 @@ N 1650 3300 M 0 42 D S
 P S
 1650 3467 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(0 ) bc Z
-3467 1650 M V 90 R (90 ) tc Z U
-1650 -167 M (180 ) tc Z
--167 1650 M V 90 R (-90 ) bc Z U
+(0è) bc Z
+3467 1650 M V 90 R (90è) tc Z U
+1650 -167 M (180è) tc Z
+-167 1650 M V 90 R (î90è) bc Z U
 %%EndObject
 0 A
 FQ
@@ -1556,7 +1803,7 @@ O0
 4500 0 TM
 
 % PostScript produced by:
-%@GMT: grdimage mask_g.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X3.75i
+%@GMT: gmt grdimage mask_g.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X3.75i
 %@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1610,16 +1857,28 @@ clipsave
 -97 -67 D
 -67 -41 D
 -69 -38 D
--106 -50 D
--73 -29 D
--75 -26 D
--75 -22 D
--115 -26 D
--77 -13 D
--78 -10 D
--118 -7 D
--78 0 D
--118 7 D
+-35 -17 D
+-36 -17 D
+-35 -16 D
+-37 -15 D
+-36 -14 D
+-37 -13 D
+-38 -13 D
+-37 -11 D
+-38 -11 D
+-38 -9 D
+-38 -9 D
+-39 -8 D
+-38 -7 D
+-39 -6 D
+-39 -5 D
+-39 -5 D
+-39 -3 D
+-39 -2 D
+-40 -2 D
+-39 0 D
+-79 2 D
+-78 5 D
 -117 16 D
 -77 15 D
 -76 18 D
@@ -1674,19 +1933,19 @@ clipsave
 118 7 D
 39 0 D
 0 -1650 D
+P
 PSL_clip N
-V N -5 -61 T 3309 3423 scale [/Indexed /DeviceRGB 1 <
+V N -5 -20 T 3309 3339 scale [/Indexed /DeviceRGB 1 <
 8080800000E5>] setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 361 /Height 85 /BitsPerComponent 1
    /ImageMatrix [361 0 0 -85 0 85] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-G[Bd(0lFrQ%#1aQeCUP^fJ1G1aAI8JE27]1a"]VEl3/qB<JEF(-,G,:_'!lJrtb4F3!L@t'W3>0b36fq((!^f#2\GsAbJN"
-kGAl>Amjfa*k6_b_!%s\]S"$U1j'N[1Bc9f,FEAn@IQ&r.jQPS^#0'+1rq^3EGU5/IQ/QH(.;gL)n7eZL(G$]+k79-,B424
-%n5Xbe&Lb\Y.6D:9,%e7)?t<tm?]#E,C<DL@C#[ql;tjH3]pL7m3%Ygbj=C-k2@gRN+?_$'CYf3eHDAXWTu\Rl.a/t)[7>2
-(P6#aTYY^*F@kE2Cs8LA]!.Vo?aI$5N!nN;hZ82LLR(6h-MQKXB/6dXOkL3ca%[d9q9;>p/BKA1E`L]!$sJ7WCkq=nUCS!#
-l;IcP]'I+Q*@2mEF6:YLBg&G/+gn>I\a'6!VG/SaoTXs8V^CdgN,&K?9j>GtTV/ueC5MLBr^j405Q8X()7N+=f+PP#IZA9=
-KQ]`bG8[&X(+Al//`17Eh,)kT7RqWn\<`[u4d82N9\4>\>!H;DB`h@n`DF.9(JE`4qbH<[Wq2gZqX/m6o6uO@RIr&cMuNdd
-YW^n~>
+G[Bd(4*&7^%#40*ae[]IV2sW2a[b$R`(.lX_FuT?,"2jZA8NPV%ph%@p[=2-KFCsJf.l)4lA*!)!aEKFXsqV%"`1;TJWmSR
+-h&1j^\=LOq*`-%d,9;P[g\'c(gV2n_r3o^-VTuS0[@C@2!BSWAdgFN)KVT>WlA<]Al<HOTXE_'UeI'"I.ETTA0PI77J+pR
+IU'WR6N8/Jf?a9.%C(:/>YqAVD-:ef+1c,n2f`SM$9b[si7lsm(n=)GI:t*eLU>BmNn\S/J]/O:g+\olX"3Kf1+,79$oAcn
+^8^:<+oY=/8Iq4>\(J<J0ANtj#&Xc@1ih2/#a>41n=/o`,7#76Mf`&tCn%"d8fnT=V$)'\/YVq;'CW>l[[,:kI[,G]T)(+R
+6]$Vqr:=W>ZCYU6b$((X,3iQ27P-AE9qpq8e?Q>'X8Qk5s3/0`f@QF9098r(:e*5\8sIeM(>$jA3QjIJ\5Ob[R0m7Sl;DVY
+<2P7deH/1;D@*`3!^L*:R`OTo"OjtO.6+q@6Ct&n@Eo=WZO<eg'-U(C3:g4q$JkEAC4)p:^&bjSpLVtOFsXf<rW,FZG/+~>
 U
 PSL_cliprestore
 25 W
@@ -1777,14 +2036,25 @@ N 1650 3300 M 0 42 D S
 -96 -68 D
 -67 -42 D
 -69 -39 D
--106 -52 D
--110 -44 D
--75 -25 D
--114 -31 D
--77 -16 D
--78 -12 D
--118 -11 D
--78 -3 D
+-70 -35 D
+-36 -17 D
+-36 -15 D
+-37 -15 D
+-37 -14 D
+-37 -13 D
+-38 -12 D
+-37 -11 D
+-38 -10 D
+-39 -10 D
+-38 -8 D
+-39 -8 D
+-39 -6 D
+-39 -6 D
+-39 -4 D
+-39 -4 D
+-40 -3 D
+-39 -2 D
+-39 -1 D
 -79 1 D
 -79 5 D
 -78 8 D
@@ -1846,10 +2116,10 @@ N 1650 3300 M 0 42 D S
 P S
 1650 3467 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(0 ) bc Z
-3467 1650 M V 90 R (90 ) tc Z U
-1650 -167 M (180 ) tc Z
--167 1650 M V 90 R (-90 ) bc Z U
+(0è) bc Z
+3467 1650 M V 90 R (90è) tc Z U
+1650 -167 M (180è) tc Z
+-167 1650 M V 90 R (î90è) bc Z U
 %%EndObject
 0 A
 FQ
@@ -1857,8 +2127,8 @@ O0
 -3600 4200 TM
 
 % PostScript produced by:
-%@GMT: grdimage mask_g.grd -JQ0/5.5i -Ct.cpt -Baf -O -X-3i -Y3.5i
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt grdimage mask_g.grd -JQ0/5.5i -Ct.cpt -Baf -O -X-3i -Y3.5i
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1868,6 +2138,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
+P
 PSL_clip N
 V N -9 -9 T 6618 3318 scale [/Indexed /DeviceRGB 1 <
 0000E5808080>] setcolorspace
@@ -2028,27 +2299,31 @@ N 0 3383 M 0 -3466 D S
 N -83 3383 M 0 -3466 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-180 ) tc Z
-0 3467 M (-180 ) bc Z
-1100 -167 M (-120 ) tc Z
-1100 3467 M (-120 ) bc Z
-2200 -167 M (-60 ) tc Z
-2200 3467 M (-60 ) bc Z
-3300 -167 M (0 ) tc Z
-3300 3467 M (0 ) bc Z
-4400 -167 M (60 ) tc Z
-4400 3467 M (60 ) bc Z
-5500 -167 M (120 ) tc Z
-5500 3467 M (120 ) bc Z
-6600 -167 M (180 ) tc Z
-6600 3467 M (180 ) bc Z
--167 550 M (-60 ) mr Z
-6767 550 M (-60 ) ml Z
--167 1650 M (0 ) mr Z
-6767 1650 M (0 ) ml Z
--167 2750 M (60 ) mr Z
-6767 2750 M (60 ) ml Z
+(î180è) tc Z
+0 3467 M (î180è) bc Z
+1100 -167 M (î120è) tc Z
+1100 3467 M (î120è) bc Z
+2200 -167 M (î60è) tc Z
+2200 3467 M (î60è) bc Z
+3300 -167 M (0è) tc Z
+3300 3467 M (0è) bc Z
+4400 -167 M (60è) tc Z
+4400 3467 M (60è) bc Z
+5500 -167 M (120è) tc Z
+5500 3467 M (120è) bc Z
+6600 -167 M (180è) tc Z
+6600 3467 M (180è) bc Z
+-167 550 M (î60è) mr Z
+6767 550 M (î60è) ml Z
+-167 1650 M (0è) mr Z
+6767 1650 M (0è) ml Z
+-167 2750 M (60è) mr Z
+6767 2750 M (60è) ml Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

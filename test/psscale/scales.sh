@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test psscale when pen and font changes are applied simultaneously
 ps=scales.ps
 cat << EOF >t.cpt

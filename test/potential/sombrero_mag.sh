@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
 

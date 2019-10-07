@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test radian annotations in basemap and psscale
 ps=radians.ps
 gmt makecpt -T-pi/pi -Crainbow -Ww > t.cpt

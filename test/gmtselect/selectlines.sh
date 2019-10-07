@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Deal with gmtselect action on lines
 ps=selectlines.ps
 cat << EOF > lines.txt

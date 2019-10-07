@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test grdmask with search radius around some points
 # Made because of http://gmt.soest.hawaii.edu/boards/1/topics/5379
 ps=polarhole.ps

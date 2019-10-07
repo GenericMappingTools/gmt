@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Reweighted L-2 measure using Reduced Major Axis area misfit
 # Make sure the Reweighted path (-Nw) yields the same regression as
 # regression just the good points after removing the outliers.

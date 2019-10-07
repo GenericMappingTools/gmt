@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -31,7 +31,7 @@
 #ifndef GMT_GRDIO_H
 #define GMT_GRDIO_H
 
-/* Constants for *.img grids */
+/* Constants for Sandwell/Smith *.img grids */
 
 #define GMT_IMG_MINLON		0.0
 #define GMT_IMG_MAXLON		360.0
@@ -64,7 +64,7 @@ enum GMT_enum_img {
 enum Gmt_grid_id {
 	/* DO NOT change the order because id values have grown historically.
 	 * Append newly introduced id's at the end. */
-	k_grd_unknown_fmt = 0, /* if grid format cannot be auto-detected */
+	k_grd_unknown_fmt = 0,	/* if grid format cannot be auto-detected */
 	GMT_GRID_IS_BF,         /* GMT native, C-binary format (32-bit float) */
 	GMT_GRID_IS_BS,         /* GMT native, C-binary format (16-bit integer) */
 	GMT_GRID_IS_RB,         /* SUN rasterfile format (8-bit standard) */
@@ -100,7 +100,7 @@ enum Gmt_grid_id {
 /*! Holds any -R -I -F settings passed indirectly via -R<grdfile> */
 struct GMT_GRID_INFO {
 	struct GMT_GRID_HEADER grd;	/* Header of grid file passed via -R */
-	bool active;		/* true if initialized via -R */
+	bool active;			/* true if initialized via -R */
 };
 
 /*! Holds book-keeping information needed for row-by-row actions */
@@ -126,7 +126,7 @@ struct GMT_GRID_ROWBYROW {
 
 #ifdef __APPLE__ /* Accelerate framework */
 #include <Accelerate/Accelerate.h>
-#undef I /* because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
+#undef I /* Because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
 #endif
 
 /*! Routine that scales and offsets the data in a vector */

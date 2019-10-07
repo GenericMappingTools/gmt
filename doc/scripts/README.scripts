@@ -1,0 +1,16 @@
+#
+# This is README for the doc/scripts directory
+#
+# Each bash script should make a PostScript plot.
+# The script should report a PASS/FAIL grade so
+# that it is easy to tell which test failed.
+# There needs to be an original PS file
+# with the same file prefix as the script (stuff.sh -> stuff.ps).
+# In addition, each script that fails should add a single line
+# to the file ../fail_count.txt so we may report a total.
+# Scripts that are known to fail can be excluded from the test
+# by adding the comment
+#	# GMT_KNOWN_FAILURE
+# to the script anywhere.
+#
+# P. Wessel, June 2019

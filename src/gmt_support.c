@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *
@@ -41,7 +41,6 @@
  *  support_csplint             Natural cubic 1-D spline evaluator
  *  gmt_delaunay            Performs a Delaunay triangulation
  *  gmtlib_get_annot_label     Construct degree/minute label
- *  gmtlib_get_annot_offset    Return offset in inches for text annotation
  *  gmt_get_index           Return color table entry for given z
  *  gmt_get_fill_from_z     Return fill type for given z
  *  gmt_get_format          Find # of decimals and create format string
@@ -51,20 +50,20 @@
  *  gmt_getinc              Decipher and check increment argument
  *  gmt_getpen              Decipher and check pen argument
  *  gmt_getrgb              Decipher and check color argument
- *  support_hsv_to_rgb          Convert HSV to RGB
+ *  gmt_hsv_to_rgb          Convert HSV to RGB
  *  gmt_init_fill           Initialize fill attributes
  *  gmt_init_pen            Initialize pen attributes
  *  gmt_illuminate          Add illumination effects to rgb
  *  gmt_intpol              1-D interpolation
- *  support_lab_to_rgb          Corvert CIELAB LAB to RGB
- *  support_lab_to_xyz          Convert CIELAB LAB to XYZ
+ *  gmt_lab_to_rgb          Corvert CIELAB LAB to RGB
+ *  gmt_lab_to_xyz          Convert CIELAB LAB to XYZ
  *  gmt_non_zero_winding    Finds if a point is inside/outside a polygon
  *  gmt_putpen              Encode pen argument into textstring
  *  gmtlib_read_cpt            Read color palette file
  *  support_rgb_to_cmyk         Convert RGB to CMYK
- *  support_rgb_to_hsv          Convert RGB to HSV
- *  support_rgb_to_lab          Convert RGB to CMYK
- *  support_rgb_to_xyz          Convert RGB to CIELAB XYZ
+ *  gmt_rgb_to_hsv          Convert RGB to HSV
+ *  gmt_rgb_to_lab          Convert RGB to CMYK
+ *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  gmt_sample_cpt          Resamples the current CPT based on new z-array
  *  gmt_invert_cpt          Flips the current CPT upside down
  *  support_smooth_contour      Use Akima's spline to smooth contour
@@ -72,8 +71,8 @@
  *  gmt_sprintf_float       Make formatted string from float, while checking for %-apostrophe
  *  support_trace_contour       Function that trace the contours in gmt_contours
  *  support_polar_adjust        Adjust label justification for polar projection
- *  support_xyz_to_rgb          Convert CIELAB XYZ to RGB
- *  support_xyz_to_lab          Convert CIELAB XYZ to LAB
+ *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
+ *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
 /*!
@@ -220,13 +219,13 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 		}
 		if (uerr) return (GMT_PARSE_ERROR);
 	}
-	
+
 	/* Copy name (or number) of pattern */
 	if (c) c[0] = '\0';	/* Chop off the modifiers */
 	if (!gmt_M_file_is_memory (&line[1]) && line[1] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, &line[1], 0) + 1;	/* Add one since we started at 1 */
 	}
-	strncpy (fill->pattern, &line[first], GMT_BUFSIZ-1);
+	strncpy (fill->pattern, &line[first], PATH_MAX-1);
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
@@ -322,7 +321,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	if (pos > 0 && line[pos]) {	/* Gave colors */
 		while (line[pos]) {
 			f = line[pos++];
-			if (line[pos] == '-')	/* Signal for transpacency masking */
+			if (line[pos] == '-')	/* Signal for transparency masking */
 				fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1,	fb_rgb[3] = 0;
 			else {
 				end = pos;
@@ -379,7 +378,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	 */
 
 	int j, err;
-	char *name = NULL, path[PATH_MAX] = {""};
+	char *name = NULL, path[PATH_MAX+GMT_LEN256] = {""};
 	struct GMT_FILL fill;
 	if (!gmt_M_is_pattern (line)) return NULL;	/* Not an image specification */
 	err = gmtsupport_parse_pattern (GMT, line, &fill);	/* See if this returns an error or not */
@@ -412,7 +411,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 }
 
 /*! . */
-GMT_LOCAL void support_rgb_to_hsv (double rgb[], double hsv[]) {
+void gmt_rgb_to_hsv (double rgb[], double hsv[]) {
 	double diff;
 	unsigned int i, imax = 0, imin = 0;
 
@@ -435,7 +434,7 @@ GMT_LOCAL void support_rgb_to_hsv (double rgb[], double hsv[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_hsv_to_rgb (double rgb[], double hsv[]) {
+void gmt_hsv_to_rgb (double rgb[], double hsv[]) {
 	int i;
 	double h, f, p, q, t, rr, gg, bb;
 
@@ -520,10 +519,9 @@ GMT_LOCAL void support_cmyk_to_hsv (double hsv[], double cmyk[]) {
 	double rgb[4];
 
 	support_cmyk_to_rgb (rgb, cmyk);
-	support_rgb_to_hsv (rgb, hsv);
+	gmt_rgb_to_hsv (rgb, hsv);
 }
 
-#if 0	/* Unused */
 /*!
  * Transform sRGB to CIE XYZ with the D65 white point
  *
@@ -531,7 +529,7 @@ GMT_LOCAL void support_cmyk_to_hsv (double hsv[], double cmyk[]) {
  * Wikipedia: http://en.wikipedia.org/wiki/SRGB
  * Wikipedia: http://en.wikipedia.org/wiki/CIE_1931_color_space
  */
-GMT_LOCAL void support_rgb_to_xyz (double rgb[], double xyz[]) {
+void gmt_rgb_to_xyz (double rgb[], double xyz[]) {
 	double R, G, B;
 	R = INVGAMMACORRECTION(rgb[0]);
 	G = INVGAMMACORRECTION(rgb[1]);
@@ -542,7 +540,7 @@ GMT_LOCAL void support_rgb_to_xyz (double rgb[], double xyz[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_xyz_to_rgb (double rgb[], double xyz[]) {
+void gmt_xyz_to_rgb (double rgb[], double xyz[]) {
 	double R, G, B, min;
 	R = ( 3.2406 * xyz[0] - 1.5372 * xyz[1] - 0.4986 * xyz[2]);
 	G = (-0.9689 * xyz[0] + 1.8758 * xyz[1] + 0.0415 * xyz[2]);
@@ -569,7 +567,7 @@ GMT_LOCAL void support_xyz_to_rgb (double rgb[], double xyz[]) {
  * Wikipedia: http://en.wikipedia.org/wiki/Lab_color_space
  */
 
-GMT_LOCAL void support_xyz_to_lab (double xyz[], double lab[]) {
+void gmt_xyz_to_lab (double xyz[], double lab[]) {
 	double X, Y, Z;
 	X = LABF( xyz[0] / WHITEPOINT_X );
 	Y = LABF( xyz[1] / WHITEPOINT_Y );
@@ -580,29 +578,28 @@ GMT_LOCAL void support_xyz_to_lab (double xyz[], double lab[]) {
 }
 
 /*! . */
-GMT_LOCAL void support_lab_to_xyz (double xyz[], double lab[]) {
-	xyz[0] = WHITEPOINT_X * LABINVF( lab[0] + lab[1]/500 );
+void gmt_lab_to_xyz (double xyz[], double lab[]) {
+	xyz[0] = WHITEPOINT_X * LABINVF( (lab[0] + 16)/116 + lab[1]/500 );
 	xyz[1] = WHITEPOINT_Y * LABINVF( (lab[0] + 16)/116 );
-	xyz[2] = WHITEPOINT_Z * LABINVF( lab[0] - lab[2]/200 );
+	xyz[2] = WHITEPOINT_Z * LABINVF( (lab[0] + 16)/116 - lab[2]/200 );
 }
 
 /*! . */
-GMT_LOCAL void support_rgb_to_lab (double rgb[], double lab[]) {
+void gmt_rgb_to_lab (double rgb[], double lab[]) {
 	/* RGB is in 0-1, LAB will be in ??? range */
 
 	double xyz[3];
 
-	support_rgb_to_xyz (rgb, xyz);
-	support_xyz_to_lab (xyz, lab);
+	gmt_rgb_to_xyz (rgb, xyz);
+	gmt_xyz_to_lab (xyz, lab);
 }
 
 /*! . */
-GMT_LOCAL void support_lab_to_rgb (double rgb[], double lab[]) {
+void gmt_lab_to_rgb (double rgb[], double lab[]) {
 	double xyz[3];
-	support_lab_to_xyz (xyz, lab);
-	support_xyz_to_rgb (rgb, xyz);
+	gmt_lab_to_xyz (xyz, lab);
+	gmt_xyz_to_rgb (rgb, xyz);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int support_comp_double_asc (const void *p_1, const void *p_2) {
@@ -802,7 +799,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 	if (buffer[0] == '#') {	/* #rrggbb */
 		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
 		if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -814,7 +811,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 			return (true);
 		}
 		for (i = 0; i < 3; i++) rgb[i] = gmt_M_is255 (gmt_M_color_rgb[n][i]);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -841,7 +838,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		else {		/* r/g/b */
 			n = sscanf (buffer, "%d/%d/%d", &irgb[0], &irgb[1], &irgb[2]);
 			if (n != 3 || support_check_irgb (irgb, rgb)) return (true);
-			support_rgb_to_hsv (rgb, hsv);
+			gmt_rgb_to_hsv (rgb, hsv);
 			return (false);
 		}
 	}
@@ -855,7 +852,7 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		n = sscanf (buffer, "%d", &irgb[0]);
 		irgb[1] = irgb[2] = irgb[0];
 		if (n != 1 || support_check_irgb (irgb, rgb)) return (true);
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 		return (false);
 	}
 
@@ -944,7 +941,7 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 }
 
 /*! . */
-GMT_LOCAL int support_getfonttype (struct GMT_CTRL *GMT, char *name) {
+int gmt_getfonttype (struct GMT_CTRL *GMT, char *name) {
 	unsigned int i;
 
 	if (!name[0]) return (-1);
@@ -1027,10 +1024,10 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 		P->style[0] = '\0';
 		 return (GMT_NOERROR);
 	}
-	if (!strcmp (line, "dashed")) strcpy (line, "-");	/* Accept "dashed" to mean - */
-	if (!strcmp (line, "dotted")) strcpy (line, ".");	/* Accept "dotted" to mean . */
-	if (!strcmp (line, "dashdot")) strcpy (line, "-.");	/* Accept "dashdot" to mean -. */
-	if (!strcmp (line, "dotdash")) strcpy (line, ".-");	/* Accept "dotdash" to mean .- */
+	if (!strncmp (line, "dashdot", 7U)) strcpy (line, "-.");	/* Accept "dashdot*" to mean -. */
+	if (!strncmp (line, "dotdash", 7U)) strcpy (line, ".-");	/* Accept "dotdash*" to mean .- */
+	if (!strncmp (line, "dash", 4U)) strcpy (line, "-");		/* Accept "dash*" to mean - */
+	if (!strncmp (line, "dot", 3U)) strcpy (line, ".");		/* Accept "dot*" to mean . */
 	if (!strcmp (line, "a")) {	/* Old GMT4 "a" style */
 		if (gmt_M_compat_check (GMT, 4))
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Pen-style \"a\" is deprecated, use \"dashed\" or \"-\" instead\n");
@@ -1059,8 +1056,9 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 
 		for (i = 1, c_pos = 0; line[i] && c_pos == 0; i++) if (line[i] == ':') c_pos = i;
 		if (c_pos == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Pen style %s do not follow format <pattern>:<phase>. <phase> set to 0\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Pen style %s does not contain :<phase>. <phase> set to 0\n", line);
 			P->offset = 0.0;
+			sscanf (line, "%s", P->style);
 		}
 		else {
 			line[c_pos] = ' ';
@@ -1118,14 +1116,15 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	int n;
 
 	/* Returns true if we are sure the word is a style string - else false.
-	 * style syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>]
+	 * style syntax is a|o|<pattern>[:<phase>]|<string made up of -|. only>[<unit>]
 	 * Also recognized "dashed" for -, "dotted" for . as well as "solid" */
 
 	n = (int)strlen (word);
 	if (n == 0) return (false);
 
-	if (!strncmp (word, "dashed", 6U) || !strncmp (word, "dotted", 6U) || !strncmp (word, "solid", 5U) \
-			|| !strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 57)) return (true);
+	if (!strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 7U) \
+	    || !strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) \
+	    || !strncmp (word, "solid", 5U)) return (true);
 
 	n--;
 	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
@@ -1136,6 +1135,10 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	}
 	if (strchr(word,'t')) return (false);	/* Got a t somewhere */
 	if (strchr(word,':')) return (true);	/* Got <pattern>:<phase> */
+	if (strchr(word,'_')) {	/* Got <pattern> without optional :<phase>, add :0 */
+		strcat (word, ":0");
+		return (true);
+	}
 	while (n >= 0 && (word[n] == '-' || word[n] == '.')) n--;	/* Wind down as long as we find - or . */
 	return ((n == -1));	/* true if we only found -/., false otherwise */
 }
@@ -1295,11 +1298,11 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	unsigned int k;
 	if (do_hsv) {	/* Interpolation in HSV space */
 		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + S->hsv_diff[k] * f;
-		support_hsv_to_rgb (rgb, hsv);
+		gmt_hsv_to_rgb (rgb, hsv);
 	}
 	else {	/* Interpolation in RGB space */
 		for (k = 0; k < 4; k++) rgb[k] = S->rgb_low[k] + S->rgb_diff[k] * f;
-		support_rgb_to_hsv (rgb, hsv);
+		gmt_rgb_to_hsv (rgb, hsv);
 	}
 	if (side == -1) {
 		gmt_M_memcpy (S->hsv_low, hsv, 4, double);
@@ -1316,6 +1319,35 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	for (k = 0; k < 4; k++) S->hsv_diff[k] = S->hsv_high[k] - S->hsv_low[k];
 	/* Recompute inverse stepsize */
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
+}
+
+bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
+	/* Modern mode only: Detect if no CPT is given but -C was set.
+	 * If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean
+	 * we want to use the current CPT.  If no current CPT exist then we do nothing
+	 * and the module with fail or create a CPT as needed. */
+	char *cpt = NULL;
+	bool ret = true;
+	
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* No such thing in classic mode */
+	if (!(*active)) return false;		/* Did not give that option so nothing to do */
+	if (arg == NULL) return false;	/* No text pointer to work with */
+	
+	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
+		char string[PATH_MAX] = {""};
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		sprintf (string, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
+		gmt_M_str_free (cpt);
+		gmt_M_str_free (*arg);
+		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
+	}
+	else if (*arg == NULL) {	/* Noting given */
+		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		*arg = cpt;		/* Pass back the name of the current CPT */
+	}
+	else /* Got something already */
+		ret = false;
+	return ret;
 }
 
 /*! . */
@@ -2679,7 +2711,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
 					if (support_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
-						size_t extra = (G->crossect) ? strlen (G->crossect_tag[i]) + 1 : 0;	/* Need to increase alloced space */
+						size_t extra = (G->crossect) ? strlen (G->crossect_tag[i]) + 1 : 0;	/* Need to increase allocated space */
 						support_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE), extra);
 						if (G->crossect) {	/* Special crossection mode */
 							if (!strcmp (new_label->label, "N/A"))	/* Override the N/A lack of label identifier */
@@ -3098,7 +3130,7 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 			return (1);	/* P is on segment boundary; we are done*/
 		}
 		/* Calculate latitude at intersection */
-		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */ 
+		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */
 			if (GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (1);	/* P is on S boundary */
 			x_lat = P->data[GMT_Y][i];
 		}
@@ -3305,7 +3337,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
 	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, change, n_edges_2;
 	unsigned int geometry, side, corner;
-	char header[GMT_LEN32] = {""};
+	char header[GMT_LEN64] = {""};
 	unsigned char *point_type = NULL;
 	struct triangulateio In, Out, vorOut;
 	struct GMT_DATASET *P = NULL;
@@ -3726,7 +3758,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 	gmt_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
 
-	/* Free the triangulate arrays that were all allocated internaly */
+	/* Free the triangulate arrays that were all allocated internally */
 	gmt_M_str_free (Out.pointlist);
 	gmt_M_str_free (Out.trianglelist);
 	gmt_M_str_free (vorOut.pointattributelist);
@@ -3759,6 +3791,22 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
  *   Computers & Geosciences, 8, 97-101, 1982.
  */
 
+struct GMT_PAIR {
+	double x, y;
+	uint64_t rec;
+};
+
+/*! . */
+GMT_LOCAL int support_sort_pair (const void *p_1, const void *p_2) {
+	const struct GMT_PAIR *point_1 = (const struct GMT_PAIR *)p_1, *point_2 = (const struct GMT_PAIR *)p_2;
+
+	if (point_1->x < point_2->x) return -1;
+	if (point_1->x > point_2->x) return +1;
+	if (point_1->y < point_2->y) return -1;
+	if (point_1->y > point_2->y) return +1;
+	return 0;
+}
+
 /* Leave link as int**, not int** */
 /*! . */
 GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link) {
@@ -3777,9 +3825,37 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Delaunay triangulation calculated by Dave Watson's ACORD [Computers & Geosciences, 8, 97-101, 1982]\n");
+
+	{
+		/* Note 2019/01/07: We were notified via https://github.com/GenericMappingTools/gmt/issues/279
+		 * that the Watson algorithm may give junk if there are duplicate entries in the input, and if so we issue
+		 * a stern warning to users so they can clean up the file first before calling support_delaunay_watson */
+
+		struct GMT_PAIR *P = gmt_M_memory (GMT, NULL, n, struct GMT_PAIR);
+		uint64_t n_duplicates = 0;
+		for (i = 0; i < n; i++) {
+			P[i].x = x_in[i];
+			P[i].y = y_in[i];
+			P[i].rec = i + 1;
+		}
+		qsort (P, n, sizeof (struct GMT_PAIR), support_sort_pair);
+		for (i = 1; i < n; i++) {
+			if (doubleAlmostEqualZero (P[i].x, P[i-1].x) && doubleAlmostEqualZero (P[i].y, P[i-1].y)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Records %" PRIu64 " and %" PRIu64 " are duplicates!\n", P[i-1].rec, P[i].rec);
+				n_duplicates++;
+			}
+		}
+		if (n_duplicates) {	/* Clearly not monotonically increasing or decreasing in x */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "WARNING: Bug Report Advice for Watson ACORD External Code:\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The Watson algorithm can fail if there are duplicate (x,y) records.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "We found %" PRIu64 " duplicate records in your data set.\n", n_duplicates);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please remove duplicates and redo your analysis if the results are corrupted.\n");
+		}
+		gmt_M_free (GMT, P);
+	}
+
 	size = 10 * n + 1;
 	n += 3;
-
 	index = gmt_M_memory (GMT, NULL, 3 * size, int);
 	istack = gmt_M_memory (GMT, NULL, size, int64_t);
 	x_tmp = gmt_M_memory (GMT, NULL, size, int64_t);
@@ -4155,7 +4231,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 		error += bad;
 		text[options] = '+';	/* Restore original string */
 		if (ms->old_style && gmt_getpanel (GMT, 'F', oldshit, &(ms->panel))) {
-			gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+			gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 			error++;
 		}
 	}
@@ -4343,7 +4419,7 @@ GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, ui
 		del_x = xb[*xb_stop] - xb[*xb_start];		/* Check if line B has a longitude jump */
 		if (del_x > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
 		/* Here we have fixed any 360 jumps in A and B and reassign what is start and stop. We must now look for overlaps
-		 * betwen the segments by considering that A may be off by -360, 0, or +360 degrees in longitude relative to B. */
+		 * between the segments by considering that A may be off by -360, 0, or +360 degrees in longitude relative to B. */
 
 		for (k = -1; k <= 1; k++) {	/* Try offsets of k * 360. If we find overlap then *dx returns the shift we must add to the xa coordinates later */
 			*dx = k * 360.0;
@@ -4430,8 +4506,8 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 	else if ( (*text_angle - 90.0) > GMT_CONV8_LIMIT) *text_angle -= 180.0;
 #endif
 
-	if (type == 0 && GMT->current.setting.map_annot_oblique & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */
-	if (type == 1 && GMT->current.setting.map_annot_oblique & 4) *text_angle = 0.0;	/* Force horizontal lat annotation */
+	if (type == 0 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lon annotation */
+	if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_HORIZONTAL) *text_angle = 0.0;	/* Force horizontal lat annotation */
 
 	switch (side) {
 		case 0:		/* S */
@@ -4441,7 +4517,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
 		case 1:		/* E */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 10;
 			}
@@ -4455,7 +4531,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
 		default:	/* W */
-			if (type == 1 && GMT->current.setting.map_annot_oblique & 32) {
+			if (type == 1 && GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LAT_PARALLEL) {
 				*text_angle = 90.0;	/* Force parallel lat annotation */
 				*justify = 2;
 			}
@@ -4560,7 +4636,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
+	char name[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
@@ -4575,7 +4651,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		strncpy (name, in_name, length-4);
 	else	/* Use as is */
 		strcpy (name, in_name);
-	
+
 	sprintf (file, "%s.def", name);	/* Full name of potential def file */
 	/* Deal with downloadable GMT data sets first.  Passing 4 to avoid hearing about missing remote file
 	 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
@@ -4684,21 +4760,34 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			for (k = 0; k < nv + 1; k++) {
 				if (arg[k][0] == '$') {	/* Left or right hand side value is a variable */
 					s->is_var[k] = true;
-					if (arg[k][1] == 'x' || arg[k][1] == 'X')	/* Test on x or longitude */
-						s->var[k] = -1;
-					else if (arg[k][1] == 'y' || arg[k][1] == 'Y')	/* Test on y or latitude */
-						s->var[k] = -2;
-					else if (arg[k][1] == 's' || arg[k][1] == 'S')	/* Test on symbol size */
-						s->var[k] = -3;
+					if (arg[k][1] == 'x')	/* Test on x or longitude */
+						s->var[k] = GMT_VAR_IS_X;
+					else if (arg[k][1] == 'y')	/* Test on y or latitude */
+						s->var[k] = GMT_VAR_IS_Y;
+					else if (arg[k][1] == 's')	/* Test on symbol size */
+						s->var[k] = GMT_VAR_SIZE;
+					else if (arg[k][1] == 't')	/* Test on trailing text */
+						s->var[k] = GMT_VAR_STRING;
 					else
 						s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 					s->const_val[k] = 0.0;
 				}
-				else {
+				else {	/* A constant */
 					size_t len = strlen (arg[k]) - 1;
 					s->is_var[k] = false;
-					s->var[k] = 0;
-					s->const_val[k] = (strchr (GMT_DIM_UNITS, arg[k][len])) ? gmt_M_to_inch (GMT, arg[k]) : atof (arg[k]);	/* A constant, posibly a length unit */
+					if (gmt_not_numeric (GMT, arg[k])) {	/* Got a text item for string comparison */
+						size_t len = strlen (arg[k]);
+						s->var[k] = GMT_CONST_STRING;
+						s->string = gmt_M_memory (GMT, NULL, len + 1, char);
+						if (len > 2 && ((arg[k][0] == '\"' && arg[k][len-1] == '\"') || (arg[k][0] == '\'' && arg[k][len-1] == '\'')))	/* Get rid of quotes */
+							strncpy (s->string, &arg[k][1], len-2);
+						else
+							strcpy (s->string, arg[k]);
+					}
+					else {	/* Numerical value */
+						s->var[k] = GMT_CONST_VAR;
+						s->const_val[k] = (strchr (GMT_DIM_UNITS, arg[k][len])) ? gmt_M_to_inch (GMT, arg[k]) : atof (arg[k]);	/* A constant, possibly a length unit */
+					}
 				}
 			}
 			k = 0;
@@ -4828,8 +4917,8 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				strcpy (s->string, col[3]);
 				if ((c = strchr (s->string, '$'))) {	/* Got a text string variable */
 					s->action = GMT_SYMBOL_VARTEXT;
-					if (c[1] == 't' && c[2] == ':' && isdigit (c[3]))	/* Select this word from trailing text */
-						s->var[0] = atoi (&c[3]);
+					if (c[1] == 't' && isdigit (c[2]))	/* Select this word from trailing text */
+						s->var[0] = atoi (&c[2]) + 1;	/* We add the 1 here so 0-(n-1) becomes 1-n */
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
@@ -4932,16 +5021,18 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						pen_p[k++] = '0';
 					if (k) pen_p[k-1] = '1';	/* Now we have a unit pen thickness for later scaling */
 				}
-				else if (strchr (pen_p, 'c') == NULL && strchr (pen_p, 'i') == NULL && strchr (pen_p, 'p') == NULL) {
-					/* No unit means normalized pen thickness in 0-1 range to be scaled by symbol size later */
-					p_normal = true;
-				}
 				if (gmt_getpen (GMT, pen_p, s->pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					fclose (fp);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				}
+				if ((c = strchr (pen_p, ','))) c[0] = '\0';	/* Chop off anything after pen width so we can check for pen units */
+				if (strchr (pen_p, 'c') == NULL && strchr (pen_p, 'i') == NULL && strchr (pen_p, 'p') == NULL) {
+					/* No unit means normalized pen thickness in 0-1 range to be scaled by symbol size later */
+					p_normal = true;
+				}
 				if (p_normal) s->pen->width = -s->pen->width;	/* Negative pen means normalized 0-1 */
+				if (c) c[0] = ',';	/* Restore the pen argument */
 			}
 		}
 		else
@@ -5243,7 +5334,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
 		k_start = 0;
 	np_cross = k_stop - k_start + 1;/* Total cross-profile length */
-		
+
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[GMT_TBL] = Din->n_tables;	dim[GMT_COL] = n_tot_cols;	dim[GMT_ROW] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
@@ -6177,7 +6268,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		if (GMT->current.setting.color_model & GMT_HSV) {	/* h/s/v */
 			n = sscanf (buffer, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
 			if (n != 3 || support_check_hsv (hsv)) return (true);
-			support_hsv_to_rgb (rgb, hsv);
+			gmt_hsv_to_rgb (rgb, hsv);
 			return (false);
 		}
 		else {		/* r/g/b */
@@ -6190,7 +6281,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	if (support_char_count (buffer, '-') == 2) {		/* h-s-v despite pretending to be r/g/b */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		if (n != 3 || support_check_hsv (hsv)) return (true);
-		support_hsv_to_rgb (rgb, hsv);
+		gmt_hsv_to_rgb (rgb, hsv);
 		return (false);
 	}
 
@@ -6271,7 +6362,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
-    F->set = 0;     /* Start from no settings */
+	F->set = 0;     /* Start from no settings */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0, i = 1;	/* Chop of this modifier */
 		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
@@ -6329,7 +6420,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	else
 		F->size = pointsize;
 	if (!name[0] || name[0] == '-') { /* Skip */ }
-	else if ((k = support_getfonttype (GMT, name)) >= 0)
+	else if ((k = gmt_getfonttype (GMT, name)) >= 0)
 		F->id = k;
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of font type not recognized. Using default.\n");
@@ -6377,6 +6468,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!P) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
@@ -6390,7 +6482,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	 */
 
 	if ((c = strchr (line, '+')) && strchr ("cosv", c[1])) {	/* Found valid modifiers */
-		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64], *t = NULL, *t2 = NULL;
+		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64] = {"",""}, *t = NULL, *t2 = NULL;
 		unsigned int pos = 0;
 		int n;
 		bool processed_vector = false, use[2] = {false, false}, may_differ = false;
@@ -6422,7 +6514,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 						case 'l':   P->cptmode = 1; break;
 						case 'f':   P->cptmode = 2; break;
 						case '\0':  P->cptmode = 3; break;
-						default: 
+						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error parsing pen modification +%s\n", p);
 							return false;
 						break;
@@ -6540,7 +6632,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		}
 		/* Unstated else branch means we got width stored correctly */
 	}
-	/* Unstated else branch means we got all 3: width,color,style */
+	/* Unstated else branch means we got width stored correctly */
 
 	/* Assign width, color, style if given */
 	if (support_getpenwidth (GMT, width, P)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of pen width (%s) not recognized. Using default.\n", width);
@@ -6596,7 +6688,7 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 
 	int n;
 
-	/* Syntax: -I<xinc>[m|s|e|f|k|M|n|u|+|=][/<yinc>][m|s|e|f|k|M|n|u|+|=]
+	/* Syntax: -I<xinc>[m|s|e|f|k|M|n|u|+e|n][/<yinc>][m|s|e|f|k|M|n|u|+e|n]
 	 * Units: d = arc degrees
 	 * 	  m = arc minutes
 	 *	  s = arc seconds [was c]
@@ -6606,8 +6698,8 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 	 *	  k = km [Convert to degrees]
 	 *	  n = nautical miles [Convert to degrees]
 	 *	  u = survey feet [Convert to degrees]
-	 * Flags: = = Adjust -R to fit exact -I [Default modifies -I to fit -R]
-	 *	  + = incs are actually n_columns/n_rows - convert to get xinc/yinc
+	 * Flags: +e = Adjust -R to fit exact -I [Default modifies -I to fit -R]
+	 *	  +n = incs are actually n_columns/n_rows - convert to get xinc/yinc
 	 */
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_getinc\n"); return (true); }
@@ -6675,7 +6767,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 				scale = GMT_MIN2DEG;
 				break;
 			case 'c':
-				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through on purpose to 's' */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Second interval unit c is deprecated; use s instead\n");
 				}
 				else {
@@ -6723,7 +6815,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		i++;	/* Goto next increment */
 	}
 	if (geo) gmt_set_geographic (GMT, GMT_IN);
-	
+
 	return (i);	/* Returns the number of increments found */
 }
 
@@ -6777,14 +6869,14 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	int last, d_flag = 1, start = 1, way;
 	char copy[GMT_LEN64] = {""};
 
-	/* Syntax:  -S[-|+]<dist>[d|e|f|k|m|M|n|s|u]  */
+	/* Syntax:  -S<dist>[d|e|f|k|m|M|n|s|u]  */
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_get_distance\n"); return (-1); }
 
 	strncpy (copy, line, GMT_LEN64-1);
 	*dist = GMT->session.d_NaN;
 
-	switch (copy[0]) {	/* Look for modifiers -/+ to set how spherical distances are computed */
+	switch (copy[0]) {	/* Look for obsolete modifiers -/+ to set how spherical distances are computed */
 		case '-':	/* Want flat Earth calculations */
 			way = 0;
 			break;
@@ -6795,6 +6887,14 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 			way = 1;
 			start = 0;
 			break;
+	}
+	if (way != 1) {
+		if (gmt_M_compat_check (GMT, 6))
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading +|- to set distance mode is deprecated; use common option -j instead\n");
+		else if (way == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative distance given\n");
+			return (-1);
+		}
 	}
 
 	/* Extract the distance unit, if any */
@@ -7079,7 +7179,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
 	char T5[GMT_LEN64] = {""}, T6[GMT_LEN64] = {""}, T7[GMT_LEN64] = {""}, T8[GMT_LEN64] = {""}, T9[GMT_LEN64] = {""};
-	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[PATH_MAX] = {""};
 	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
@@ -7088,7 +7188,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (cpt_file, source, GMT_BUFSIZ-1);
+		strncpy (cpt_file, source, PATH_MAX-1);
 		Z = support_cpt_parse (GMT, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open color palette table %s\n", cpt_file);
@@ -7137,7 +7237,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	/* Set default BFN colors; these may be overwritten by things in the CPT */
 	for (id = 0; id < 3; id++) {
 		gmt_M_rgb_copy (X->bfn[id].rgb, GMT->current.setting.color_patch[id]);
-		support_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
+		gmt_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
 		if (X->bfn[id].rgb[0] == -1.0) X->bfn[id].skip = true;
 		if (X->is_gray && !gmt_M_is_gray (X->bfn[id].rgb)) X->is_gray = X->is_bw = false;
 		if (X->is_bw && !gmt_M_is_bw(X->bfn[id].rgb)) X->is_bw = false;
@@ -7247,7 +7347,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				}
 				X->has_pattern = true;
 				if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-					strncpy (X->bfn[id].fill->pattern, name, GMT_BUFSIZ-1);
+					strncpy (X->bfn[id].fill->pattern, name, PATH_MAX-1);
 					gmt_M_str_free (name);
 				}
 			}
@@ -7261,12 +7361,12 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				else
 					snprintf (clo, GMT_LEN64, "%s/%s/%s", T1, T2, T3);
 				if (X->model & GMT_HSV) {
-					if (support_gethsv (GMT, clo, X->bfn[id].hsv)) error++;
-					support_hsv_to_rgb (X->bfn[id].rgb, X->bfn[id].hsv);
+					if (support_gethsv (GMT, clo, X->bfn[id].hsv)) error = true;
+					gmt_hsv_to_rgb (X->bfn[id].rgb, X->bfn[id].hsv);
 				}
 				else {
-					if (gmt_getrgb (GMT, clo, X->bfn[id].rgb)) error++;
-					support_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
+					if (gmt_getrgb (GMT, clo, X->bfn[id].rgb)) error = true;
+					gmt_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
 				}
 				if (X->is_gray && !gmt_M_is_gray (X->bfn[id].rgb)) X->is_gray = X->is_bw = false;
 				if (X->is_bw && !gmt_M_is_bw(X->bfn[id].rgb)) X->is_bw = false;
@@ -7362,7 +7462,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			X->has_pattern = true;
 			if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-				strncpy (X->data[n].fill->pattern, name, GMT_BUFSIZ-1);
+				strncpy (X->data[n].fill->pattern, name, PATH_MAX-1);
 				gmt_M_str_free (name);
 			}
 		}
@@ -7395,20 +7495,20 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				snprintf (chi, GMT_LEN64, "%s/%s/%s", T5, T6, T7);
 			}
 			if (X->model & GMT_HSV) {
-				if (support_gethsv (GMT, clo, X->data[n].hsv_low)) error++;
+				if (support_gethsv (GMT, clo, X->data[n].hsv_low)) error = true;
 				if (!strcmp (chi, "-"))	/* Duplicate first color */
 					gmt_M_memcpy (X->data[n].hsv_high, X->data[n].hsv_low, 4, double);
-				else if (support_gethsv (GMT, chi, X->data[n].hsv_high)) error++;
-				support_hsv_to_rgb (X->data[n].rgb_low,  X->data[n].hsv_low);
-				support_hsv_to_rgb (X->data[n].rgb_high, X->data[n].hsv_high);
+				else if (support_gethsv (GMT, chi, X->data[n].hsv_high)) error = true;
+				gmt_hsv_to_rgb (X->data[n].rgb_low,  X->data[n].hsv_low);
+				gmt_hsv_to_rgb (X->data[n].rgb_high, X->data[n].hsv_high);
 			}
 			else {
-				if (gmt_getrgb (GMT, clo, X->data[n].rgb_low)) error++;
+				if (gmt_getrgb (GMT, clo, X->data[n].rgb_low)) error = true;
 				if (!strcmp (chi, "-"))	/* Duplicate first color */
 					gmt_M_memcpy (X->data[n].rgb_high, X->data[n].rgb_low, 4, double);
-				else if (gmt_getrgb (GMT, chi, X->data[n].rgb_high)) error++;
-				support_rgb_to_hsv (X->data[n].rgb_low,  X->data[n].hsv_low);
-				support_rgb_to_hsv (X->data[n].rgb_high, X->data[n].hsv_high);
+				else if (gmt_getrgb (GMT, chi, X->data[n].rgb_high)) error = true;
+				gmt_rgb_to_hsv (X->data[n].rgb_low,  X->data[n].hsv_low);
+				gmt_rgb_to_hsv (X->data[n].rgb_high, X->data[n].hsv_high);
 			}
 			if (!X->categorical) {
 				dz = X->data[n].z_high - X->data[n].z_low;
@@ -7543,6 +7643,22 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
+unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	/* Return which type of default CPT this data set should use */
+	unsigned int zmode = GMT_DEFAULT_CPT;
+	gmt_M_unused (GMT);
+	if (strstr (h->remark, "@earth_relief_"))	/* Detected a DEM grid blend */
+		zmode = 1;
+	else if (strstr (h->remark, "@srtm_relief_"))	/* Detected a SRTM land-only grid blend */
+		zmode = 2;
+	else if (strstr (h->command, "earth_relief_"))	/* Detected a DEM grid */
+		zmode = 1;
+	else if (strstr (h->command, "srtm_relief_"))	/* Detected a SRTM land-only grid */
+		zmode = 2;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Given grid header, select default CPT to be %s\n", GMT->init.cpt[zmode]);
+	return zmode;
+}
+
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL;
@@ -7554,12 +7670,12 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-GMT_LOCAL void support_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	char file[GMT_LEN256] = {""};
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	char file[PATH_MAX] = {""};
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
 	/* Save cpt for use by session */
 	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
-	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, file, P) != GMT_NOERROR)
+	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Save current CPT file to %s !\n", file);
@@ -7574,11 +7690,13 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 		file = strdup (path);
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recycle existing CPT file %s\n", file);
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No existing CPT file %s to recycle\n", path);
 	return (file);
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
+struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz, unsigned int zmode) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7593,7 +7711,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are four possibilities:
 	   1. A cpt in current directory is given - simply read it and return.
-	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT_DEFAULT_CPT.
+	   2. file is NULL and runmode is classic and hence we default to master CPT name GMT->init.cpt[GMT_DEFAULT_CPT] (or a type-specific CPT).
 	   3. file is NULL and runmode is modern and a current cpt exists - use it.
 	   4. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
@@ -7607,12 +7725,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		char *master = NULL, *current_cpt = NULL;
 		double noise;
 
-		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
-			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
-			gmt_M_str_free (current_cpt);
-			return (P);
-		}
-		
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
 			return (NULL);
@@ -7621,23 +7733,30 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing max <= zmin prevents automatic CPT generation!\n");
 			return (NULL);
 		}
-		master = (file && file[0]) ? file : GMT_DEFAULT_CPT;	/* Set master CPT prefix */
+
+		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
+			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
+			gmt_M_str_free (current_cpt);
+			return (P);
+		}
+
+		master = (file && file[0]) ? file : GMT->init.cpt[zmode];	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", file, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
+		gmt_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
@@ -7704,7 +7823,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 		P->has_hinge = 0;
-		ks = (unsigned int)GMT_NOTSET;
+		ks = GMT_NOTSET;
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
@@ -7778,7 +7897,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 		if (i < j) gmt_M_fill_swap (P->data[i].fill, P->data[j].fill);
 
 	}
-	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrrays */
+	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrays */
 		for (k = 0; k < 4; k++) {
 			P->data[i].rgb_diff[k] = P->data[i].rgb_high[k] - P->data[i].rgb_low[k];
 			P->data[i].hsv_diff[k] = P->data[i].hsv_high[k] - P->data[i].hsv_low[k];
@@ -7825,7 +7944,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
 	i += gmt_M_check_condition (GMT, (no_inter || set_z_only) && P->n_colors > Pin->n_colors, "Number of picked colors exceeds colors in input cpt!\n");
-	
+
 	/* First normalize old CPT so z-range is 0-1 */
 
 	b = 1.0 / (Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
@@ -7888,20 +8007,20 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		if (set_z_only) { /* Just duplicate the RGB colors */
 			gmt_M_memcpy (rgb_low, Pin->data[i].rgb_low, 4, double);
 			gmt_M_memcpy (rgb_high, Pin->data[i].rgb_high, 4, double);
-			support_rgb_to_hsv (rgb_low, hsv_low);
-			support_rgb_to_hsv (rgb_high, hsv_high);
+			gmt_rgb_to_hsv (rgb_low, hsv_low);
+			gmt_rgb_to_hsv (rgb_high, hsv_high);
 		}
 		else if (no_inter) { /* Just pick the first n_colors */
 			j = MIN (i, Pin->n_colors);
 			if (Pin->model & GMT_HSV) {	/* Pick in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = lut[j].hsv_low[k], hsv_high[k] = lut[j].hsv_high[k];
-				support_hsv_to_rgb (rgb_low, hsv_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Pick in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = lut[j].rgb_low[k], rgb_high[k] = lut[j].rgb_low[k];
-				support_rgb_to_hsv (rgb_low, hsv_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 		}
 		else if (continuous) { /* Interpolate color at lower and upper value */
@@ -7913,11 +8032,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[lower] - lut[j].z_low);
-				support_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[lower] - lut[j].z_low);
-				support_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
 			}
 
 			while (j < Pin->n_colors && x[upper] > lut[j].z_high) j++;
@@ -7926,11 +8045,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (x[upper] - lut[j].z_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_high[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (x[upper] - lut[j].z_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 #if 0
 			/* Avoid aliasing for continuous CPTs */
@@ -7939,11 +8058,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "CPT resampling caused aliasing - corrected by averaging at boundaries\n");
 				if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 					for (k = 0; k < 4; k++) P->data[i-1].hsv_high[k] = hsv_low[k] = 0.5 * (P->data[i-1].hsv_high[k] + hsv_low[k]);
-					support_hsv_to_rgb (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
+					gmt_hsv_to_rgb (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
 				}
 				else {
 					for (k = 0; k < 4; k++) P->data[i-1].rgb_high[k] = rgb_low[k] = 0.5 * (P->data[i-1].rgb_high[k] + rgb_low[k]);
-					support_rgb_to_hsv (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
+					gmt_rgb_to_hsv (P->data[i-1].rgb_high, P->data[i-1].hsv_high);
 				}
 			}
 #endif
@@ -7958,13 +8077,13 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (a - lut[j].z_low);
-				support_hsv_to_rgb (rgb_low, hsv_low);
-				support_hsv_to_rgb (rgb_high, hsv_high);
+				gmt_hsv_to_rgb (rgb_low, hsv_low);
+				gmt_hsv_to_rgb (rgb_high, hsv_high);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low);
-				support_rgb_to_hsv (rgb_low, hsv_low);
-				support_rgb_to_hsv (rgb_high, hsv_high);
+				gmt_rgb_to_hsv (rgb_low, hsv_low);
+				gmt_rgb_to_hsv (rgb_high, hsv_high);
 			}
 		}
 
@@ -8048,7 +8167,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	unsigned int i, append = 0;
 	bool close_file = false;
 	double cmyk[5];
-	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
+	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
 	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
@@ -8061,7 +8180,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (cpt_file, dest, GMT_BUFSIZ-1);
+		strncpy (cpt_file, dest, PATH_MAX-1);
 		append = (cpt_file[0] == '>');	/* Want to append to existing file */
 		if ((Z = support_cpt_parse (GMT, &cpt_file[append], GMT_OUT))) {
 			support_cpt_z_scale (GMT, P, Z, GMT_OUT);
@@ -8173,13 +8292,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		return (GMT_NOERROR);
 	}
 
-	if (cpt_flags & GMT_CPT_EXTEND_BNF) {	/* Use low and high colors as back and foreground */
-		gmt_M_rgb_copy (P->bfn[GMT_BGD].rgb, P->data[0].rgb_low);
-		gmt_M_rgb_copy (P->bfn[GMT_FGD].rgb, P->data[P->n_colors-1].rgb_high);
-		gmt_M_rgb_copy (P->bfn[GMT_BGD].hsv, P->data[0].hsv_low);
-		gmt_M_rgb_copy (P->bfn[GMT_FGD].hsv, P->data[P->n_colors-1].hsv_high);
-	}
-
 	for (i = 0; i < 3; i++) {
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
@@ -8262,8 +8374,8 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	unsigned int k, n;
 
 	for (n = 0; n < P->n_colors; n++) {
-		support_rgb_to_hsv (P->data[n].rgb_low,  P->data[n].hsv_low);
-		support_rgb_to_hsv (P->data[n].rgb_high, P->data[n].hsv_high);
+		gmt_rgb_to_hsv (P->data[n].rgb_low,  P->data[n].hsv_low);
+		gmt_rgb_to_hsv (P->data[n].rgb_high, P->data[n].hsv_high);
 		P->data[n].i_dz = 1.0 / (P->data[n].z_high - P->data[n].z_low);	/* Recompute inverse stepsize */
 		/* Differences used in gmt_get_rgb_from_z */
 		for (k = 0; k < 4; k++) P->data[n].rgb_diff[k] = P->data[n].rgb_high[k] - P->data[n].rgb_low[k];
@@ -8347,7 +8459,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 		rel = (value - P->data[index].z_low) * P->data[index].i_dz;
 		if (GMT->current.setting.color_model == (GMT_HSV | GMT_COLORINT)) {	/* Interpolation in HSV space */
 			for (i = 0; i < 4; i++) hsv[i] = P->data[index].hsv_low[i] + rel * P->data[index].hsv_diff[i];
-			support_hsv_to_rgb (rgb, hsv);
+			gmt_hsv_to_rgb (rgb, hsv);
 		}
 		else {	/* Interpolation in RGB space */
 			for (i = 0; i < 4; i++) rgb[i] = P->data[index].rgb_low[i] + rel * P->data[index].rgb_diff[i];
@@ -8457,7 +8569,7 @@ void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double rgb[]) {
 	if (intensity == 0.0) return;
 	if (fabs (intensity) > 1.0) intensity = copysign (1.0, intensity);
 
-	support_rgb_to_hsv (rgb, hsv);
+	gmt_rgb_to_hsv (rgb, hsv);
 	if (intensity > 0.0) {	/* Lighten the color */
 		di = 1.0 - intensity;
 		if (hsv[1] != 0.0) hsv[1] = di * hsv[1] + intensity * GMT->current.setting.color_hsv_max_s;
@@ -8472,7 +8584,7 @@ void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double rgb[]) {
 	if (hsv[2] < 0.0) hsv[2] = 0.0;
 	if (hsv[1] > 1.0) hsv[1] = 1.0;
 	if (hsv[2] > 1.0) hsv[2] = 1.0;
-	support_hsv_to_rgb (rgb, hsv);
+	gmt_hsv_to_rgb (rgb, hsv);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8880,6 +8992,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
 				G->nudge_flag = 1;
+				/* Fall through on purpose to 'N' */
 			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
 				G->nudge_flag++;
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
@@ -8912,7 +9025,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 't':	/* Save contour label locations to given file [x y angle label] */
 				G->save_labels = 1;
-				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ-1);
+				if (p[1]) strncpy (G->label_file, &p[1], PATH_MAX-1);
 				break;
 
 			case 'u':	/* Label Unit specification */
@@ -8998,6 +9111,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 	switch (arg) {
 		case 'L':	/* Quick straight lines for intersections */
 			L->do_interpolate = true;
+			/* Fall through on purpose to 'l' */
 		case 'l':
 			L->crossing = GMT_CONTOUR_XLINE;
 			break;
@@ -9005,6 +9119,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->number_placement = 1;	/* Distribution of labels */
 			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left label if n = 1 */
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
+			/* Fall through on purpose to 'n' */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = true;
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
@@ -9023,22 +9138,24 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
 			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
+			/* Fall through on purpose to 'x' */
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
+			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
+			/* Fall through on purpose to 'd' */
 		case 'd':	/* Specify distances in plot units [cip] */
 			L->spacing = true;
 			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->label_dist_frac);
@@ -9134,6 +9251,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
 				G->nudge_flag = 1;
+				/* Fall through on purpose to 'N' */
 			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
 				G->nudge_flag++;
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
@@ -9205,6 +9323,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 	switch (arg) {
 		case 'L':	/* Quick straight lines for intersections */
 			L->do_interpolate = true;
+			/* Fall through on purpose to 'l' */
 		case 'l':
 			L->crossing = GMT_DECORATE_XLINE;
 			break;
@@ -9212,6 +9331,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			L->number_placement = 1;	/* Distribution of labels */
 			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left symbol if n = 1 */
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right symbol if n = 1 */
+			/* Fall through on purpose to 'n' */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = true;
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
@@ -9236,9 +9356,10 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
+			/* Fall through on purpose to 'x' */
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
+			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;
@@ -9246,6 +9367,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
+			/* Fall through on purpose to 'd' */
 		case 'd':	/* Specify distances in plot units [cip] */
 			L->spacing = true;
 			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->symbol_dist_frac);
@@ -9303,13 +9425,13 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
 	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profiles: Return distances along track\n");
-	
+
 	n_cols = (get_distances) ? 3 :2;
 	dim[GMT_COL] = n_cols;
 	dim[GMT_SEG] = GMT_SMALL_CHUNK;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return (NULL);
-	
+
 	T = D->table[0];	/* The only table */
 	TH = gmt_get_DT_hidden (T);
 	T->n_segments = 0;    /* Start working on first segment */
@@ -9676,7 +9798,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		if (T->type == GMT_READ_MIXED) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
-			S = T->table[0]->segment[seg];	/* Curent segment */
+			S = T->table[0]->segment[seg];	/* Current segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				xy[GMT_X] = S->data[GMT_X][row];	xy[GMT_Y] = S->data[GMT_Y][row];
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
@@ -9920,7 +10042,7 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 
 	unsigned int i, n_fmt;
 	static char kind[2] = {'O', 'C'};
-	char file[GMT_BUFSIZ];
+	char file[PATH_MAX];
 	gmt_M_unused(GMT);
 
 	for (i = n_fmt = 0; i < 3; i++) if (fmt[i]) n_fmt++;
@@ -9963,47 +10085,87 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 	return (strdup (file));
 }
 
+
+/* Function to split a floating point into nearest fraction, with maxden the largest allowable denominator.
+ * Borrowed from https://www.ics.uci.edu/~eppstein/numth/frap.c */
+
+GMT_LOCAL void make_fraction (struct GMT_CTRL *GMT, double x0, int maxden, int *n, int *d) {
+	uint64_t m[2][2], ai;
+	double x = x0, e;
+	/* initialize matrix */
+	m[0][0] = m[1][1] = 1, m[0][1] = m[1][0] = 0;
+
+	/* loop finding terms until denom gets too big */
+	while (m[1][0] *  ( ai = (uint64_t)x ) + m[1][1] <= (uint64_t)maxden) {
+		uint64_t t = m[0][0] * ai + m[0][1];
+		m[0][1] = m[0][0];
+		m[0][0] = t;
+		t = m[1][0] * ai + m[1][1];
+		m[1][1] = m[1][0];
+		m[1][0] = t;
+		if (x == (double)ai) break;     // AF: division by zero
+		x = 1 / (x - (double) ai);
+		if (x > (double)0x7FFFFFFF) break;  // AF: representation failure
+ 	}
+
+	*n = m[0][0];	*d = m[1][0];
+ 	e = x0 - ((double) *n / (double) *d);
+	if (e > GMT_CONV4_LIMIT)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bad fraftion, error = %g\n", e);
+}
+
 /*! . */
 void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x) {
 	/* Determines if %-apostrophe is used in the format for a float. If so, must temporarily switch to LC_NUMERIC=en_US */
-#ifdef HAVE_SETLOCALE
 	char *use_locale = strstr (format, "%'");
+#ifdef HAVE_SETLOCALE
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 #endif
-	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi */
-		/* We only allow n pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4.
+	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi. This variable is set per axis in gmt_xy_axis */
+		/* Any fraction of pi up to 1/20th allowed.
 		 * substitute_pi becomes true when items with "pi" are used in -R, -I etc. */
-		double f = fabs (x / M_PI);	/* Float multiple of pi */
-		int n = irint (f);
-		char s = (x < 0.0) ? '-' : '+';
-		if (n > 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Exact multiple of 2*pi, 3*pi, etc */
-			sprintf (string, "%c@~%dp@~", s, n);
-		else if (n == 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Just pi instead of 1*pi */
-			sprintf (string, "%c@~p@~", s);
-		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)	/* 3/2 pi */
-			sprintf (string, "%c@~3p/2@~", s);
-		else if (fabs (f-1.0) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p@~", s);
-		else if (fabs (f-0.75) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~3p/4@~", s);
-		else if (fabs (f-0.6666666666666666) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~2p/3@~", s);
-		else if (fabs (f-0.5) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p/2@~", s);
-		else if (fabs (f-0.3333333333333333) < GMT_CONV6_LIMIT)
-			sprintf (string, "%c@~p/3@~", s);
-		else if (fabs (f-0.25) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p/4@~", s);
-		else if (fabs (f) < GMT_CONV4_LIMIT)
+		int k = 1, m, n;
+		char fmt[16] = {""};
+		double f = fabs (x / M_PI);		/* Float multiples of pi */
+		if (fabs (f) < GMT_CONV4_LIMIT) {	/* Deal with special case of zero pi */
 			sprintf (string, "0");
-		else
-			sprintf (string, format, x);
+			return;
+		}
+		make_fraction (GMT, f, 20, &n, &m);	/* Max 20th of pi */
+		string[0] = (x < 0.0) ? '-' : '+';	/* Place leading sign */
+		string[1] = '\0';			/* Chop off old string */
+		if (n > 1) {	/* Need an integer in front of pi */
+			k += sprintf (fmt, "%d", n);
+			strcat (string, fmt);
+			//k += irint (floor (log10 ((double)n))) + 1;	/* Add how many decimals needed for n */
+		}
+		strcat (string, "@~p@~");	/* Place the pi symbol */
+		k += 5;	/* Add number of characters just placed to print pi */
+		if (m > 1) {	/* Add the fractions part */
+			k += sprintf (fmt, "/%d", m);
+			strcat (string, fmt);
+			//k += irint (floor (log10 ((double)m))) + 2;	/* Add how many decimals needed for /m */
+		}
+		string[k] = '\0';	/* Truncate any old string */
+		//fprintf (stderr, "f = %g n = %d  m = %d.  String = %s\n", f, n, m, string);
 	}
 	else
+#ifndef WIN32
 		sprintf (string, format, x);
-#ifdef HAVE_SETLOCALE
+#else
+	{	/* Windows doesn't support %' format */
+		if (use_locale) {
+			char *new_format;
+			new_format = gmt_strrep(format, "%'", "%");
+			sprintf (string, new_format, x);
+		} else
+			sprintf (string, format, x);
+	}
+#endif
 	if (use_locale) {
+#ifdef HAVE_SETLOCALE
 		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
+#endif
 		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && fabs (x - irint (x)) < GMT_CONV8_LIMIT) {
 			/* System not capable of printf groups for integers so we insert those commas manually... */
 			char *tmp = strdup (string);
@@ -10022,7 +10184,6 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 			gmt_M_str_free (tmp);
 		}
 	}
-#endif
 }
 
 /*! . */
@@ -10156,7 +10317,7 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 		GMT->current.proj.sph_inside = true;
 	else if (mode == GMT_IOO_CARTESIAN)	/* Force Cartesian */
 		GMT->current.proj.sph_inside = false;
-	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do taht */
+	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do that */
 		GMT->current.proj.sph_inside = false;
 	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data that has 360 degree range */
 		GMT->current.proj.sph_inside = true;
@@ -10169,7 +10330,7 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 			uint64_t tbl, seg, row;
 			unsigned int range;
 			struct GMT_DATASEGMENT *S = NULL;
-			
+
 			GMT->current.proj.sph_inside = false;
 			if (D->min[GMT_X] >= 0.0 && D->max[GMT_X] > 0.0)
 				range = GMT_IS_0_TO_P360_RANGE;
@@ -10409,6 +10570,18 @@ unsigned int gmt_inonout (struct GMT_CTRL *GMT, double x, double y, struct GMT_D
 		if (side_h == GMT_INSIDE) side = GMT_OUTSIDE;	/* Inside one of the holes, hence outside polygon; go to next perimeter polygon */
 		if (side_h == GMT_ONEDGE) side = GMT_ONEDGE;	/* On path of one of the holes, hence on polygon path; update side */
 	}
+	else if ((H = SH->next)) {	/* Must also check non ogr polygones for holes */
+		side_h = GMT_OUTSIDE;	/* We are outside a hole until we are found to be inside it */
+		SHnext = gmt_get_DS_hidden (H);
+		while (side_h == GMT_OUTSIDE && H && SHnext->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
+			/* Must check if point is inside this hole polygon */
+			side_h = support_inonout_sub (GMT, x, y, H);
+			H = SHnext->next;	/* Move to next polygon hole */
+			if (H) SHnext = gmt_get_DS_hidden (H);
+		}
+		if (side_h == GMT_INSIDE) side = GMT_OUTSIDE;	/* Inside one of the holes, hence outside polygon; go to next perimeter polygon */
+		if (side_h == GMT_ONEDGE) side = GMT_ONEDGE;	/* On path of one of the holes, hence on polygon path; update side */
+	}
 
 	/* Here, point is inside or on edge, we return the value */
 	return (side);
@@ -10556,6 +10729,7 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	}
 	else if (gmt_grd_is_global (GMT, h)) {	/* Grid is truly global */
 		double xtest = fmod (180.0, h->inc[GMT_X]) * HH->r_inc[GMT_X];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid is considered to have a 360-degree longitude range.\n");
 		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
 		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
@@ -10844,7 +11018,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[js + iei1]);
 	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
 	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = G->data[js + ieo1] + G->data[jso1 + ie] - G->data[js + ie];
-	
+
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
 			for (i = iwi1; i <= iei1; i++) {
 				if (set[YHI]) G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
@@ -10886,10 +11060,11 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 		/* DONE with all X not periodic cases  */
 	}
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
+		bool check_repeat = (G->header->registration == GMT_GRID_NODE_REG && HH->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 		if (set[XLO]) HH->BC[XLO] = GMT_BC_IS_PERIODIC;
 		if (set[XHI]) HH->BC[XHI] = GMT_BC_IS_PERIODIC;
 		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
-			if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
+			if (check_repeat && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
 				++bok;
 			if (set[XLO]) {
 				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
@@ -11761,7 +11936,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	B->plot = true;
 	if (oldshit[0] && gmt_getpanel (GMT, 'F', oldshit, &(B->panel))) {
-		gmt_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map inset", 3);
+		gmt_mappanel_syntax (GMT, 'F', "Specify the rectangular panel attributes for map inset", 3);
 		error++;
 	}
 	return (error);
@@ -11836,7 +12011,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}
-	
+
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		if (string[0] == '\0') {	/* Got nutin' */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No length argument given to +w modifier\n", option);
@@ -11937,7 +12112,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 		gmt_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
 	if (vertical || gmt_M_is_cartesian (GMT, GMT_IN))
 		ms->measure = '\0';	/* No units for Cartesian data */
-	
+
 	ms->plot = true;
 	return (error);
 }
@@ -12417,7 +12592,7 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 			return (T->interval * GMT_MIN2DEG);
 			break;
 		case 'c':	/* arc Seconds [deprecated] */
-			if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
+			if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through on purpose to 's' */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Second interval unit c is deprecated; use s instead\n");
 			}
 			else
@@ -12720,7 +12895,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 		gmt_eliminate_lon_jumps (GMT, xa, na);
 		if (!internal) gmt_eliminate_lon_jumps (GMT, xb, nb);
 	}
-	
+
 	this_a = this_b = nx = 0;
 	new_a = new_b = true;
 	nx_alloc = GMT_SMALL_CHUNK;
@@ -12990,6 +13165,8 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						}
 					}
 				}
+				else if (gmt_M_is_dnan(del_yb)) {}	/* Just do nothing and prevent call to doubleAlmostEqual() which would assert fail with NaNs */
+
 				else {	/* General case */
 
 					i_del_xa = 1.0 / del_xa;
@@ -13329,7 +13506,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	uint64_t row;
 	bool text, found, save_trailing;
  	unsigned int k = 0, n_annot = 0, n_int = 0;
-	double *x = NULL;
+	double *x = NULL, limit[2] = {-DBL_MAX, +DBL_MAX};
 	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -13341,6 +13518,8 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
 	GMT->current.io.trailing_text[GMT_IN] = true;	/* Since we definitively have that here */
 	text = ((item == 'a' || item == 'i') && labels);
+	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
+		limit[0] = GMT->common.R.wesn[2*A->id], limit[1] = GMT->common.R.wesn[2*A->id+1];
 
 	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
@@ -13354,20 +13533,21 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	S = D->table[0]->segment[0];	/* All we got */
-	
+
 	x = gmt_M_memory (GMT, NULL, S->n_rows, double);
 	if (text) L = gmt_M_memory (GMT, NULL, S->n_rows, char *);
 	for (row = 0; row < S->n_rows; row++) {
 		nc = sscanf (S->text[row], "%s %[^\n]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
+		if (S->coord[GMT_X][row] < limit[0] || S->coord[GMT_X][row] > limit[1]) continue;
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->coord[GMT_X][row];
 		if (text && nc == 2) L[k] = strdup (txt);
 		k++;
 	}
-	
+
 	if (k == 0) {	/* No such items */
 		gmt_M_free (GMT, x);
 		if (text) gmt_M_free (GMT, L);
@@ -13380,7 +13560,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	*xx = x;
 	if (text) *labels = L;
 	GMT_Destroy_Data (GMT->parent, &D);
-	
+
 	return (k);
 }
 
@@ -13502,7 +13682,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
 
-	if (GMT->current.setting.map_annot_oblique & 16 && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
 
 	if (angle < 0.0) angle += 360.0;
 
@@ -13517,7 +13697,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 
 	if (!support_get_label_parameters (GMT, side, angle, type, text_angle, justify)) return -1;
 	*line_angle = angle;
-	if (GMT->current.setting.map_annot_oblique & 16) *line_angle = (side - 1) * 90.0;
+	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS) *line_angle = (side - 1) * 90.0;
 
 	if (!set_angle) *justify = support_polar_adjust (GMT, side, angle, x, y);
 	if (set_angle && !GMT->common.R.oblique && GMT->current.proj.projection_GMT == GMT_GNOMONIC) {
@@ -13679,32 +13859,6 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 	if (direction < 0.0) direction += 360.0;
 	if (direction >= 360.0) direction -= 360.0;
 	return (direction);
-}
-
-/*! . */
-double gmtlib_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level) {
-	/* Return offset in inches for text annotation.  If annotation
-	 * is to be placed 'inside' the map, set flip to true */
-
-	double a = GMT->current.setting.map_annot_offset[level];
-	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
-		a = -fabs (a);
-		a -= fabs (GMT->current.setting.map_tick_length[0]);
-		*flip = true;
-	}
-	else if (a >= 0.0) {	/* Outside annotation */
-		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
-		/* For fancy frame we must consider that the frame width might exceed the ticklength */
-		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
-		if (dist > 0.0) a += dist;
-		*flip = false;
-	}
-	else {		/* Inside annotation via negative tick length */
-		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
-		*flip = true;
-	}
-
-	return (a);
 }
 
 /*! . */
@@ -14030,7 +14184,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
-	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
+	 *   by psxy -Sv|=<size>+s or external applications.  Again, appending a|f|s controls if we should
 	 *   honor the segment headers [Default is -Fvs if -Fv is given].
 	 */
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
@@ -14362,7 +14516,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 		L[seg] = GMT_Alloc_Segment (GMT->parent, smode, length, S->n_columns, S->header, NULL);	/* Allocate array space for coordinates */
 		LH = gmt_get_DS_hidden (L[seg]);
 		for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (L[seg]->data[col], &(Sx->data[col][start]), length, double);	/* Copy coordinates */
-		LH->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
+		LH->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on output */
 		/* Modify label to part number */
 		sprintf (label, "%s part %" PRIu64, txt, seg);
 		L[seg]->label = strdup (label);
@@ -14719,7 +14873,7 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
  	 * If an oblique projection is in effect OR the spacing between graticules is
  	 * nonlinear AND we are requesting a justification centered in y, then we must
 	 * use the projectioned coordinates and invert for lon,lat, else we can do our
-	 * calculation on the origianl (geographic or Cartesian) coordinates. */
+	 * calculation on the original (geographic or Cartesian) coordinates. */
 	int i, j;
 	double *box = NULL;
 	bool use_proj;
@@ -14756,14 +14910,14 @@ void gmt_just_to_xy (struct GMT_CTRL *GMT, int justify,double *x, double *y) {
 	/* See gmt_just_decode for how text code becomes the justify integer.
  	 * If an oblique projection is in effect OR the spacing between graticules is
  	 * nonlinear AND we are requesting a justification centered in y, then we must
-	 * use the projectioned coordinates directly and return x,y in plot coordintaes. */
+	 * use the projected coordinates directly and return x,y in plot coordinates. */
 	int i, j;
 
 	i = justify % 4;	/* Split the 2-D justify code into x just 1-3 */
 	j = justify / 4;	/* Split the 2-D justify code into y just 0-2 */
 	/* Check for negative Cartesian scales */
-	if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
-	if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
+	//if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
+	//if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
 	if (i == 1)
 		*x = GMT->current.proj.rect[XLO];
 	else if (i == 2)
@@ -14841,14 +14995,17 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 		case 'x':	mode = GMT_REFPOINT_PLOT;		break;	/* Plot coordinates */
 		default: 	k = 0;	break;	/* None given, reset first arg to be at position 0 */
 	}
-	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {
+	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {	/* Here we know k == 1 */
 		n = support_find_mod_syntax_start (arg, k);	/* Returns position of first modifier +? */
-		if (arg[n] || k == 1) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
+		if (arg[n]) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
 			strncpy (txt_x, &arg[k], 2);	txt_x[2] = 0;
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
-		else {	/* Old syntax with things separated by slashes */
-			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) return NULL;	/* Not so good */
+		else {	/* Old syntax with no +modifier and with things separated by slashes */
+			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
 	}
@@ -14870,7 +15027,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		else { /* No such modifiers given, so just slashes or nothing follows */
-			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) return NULL;	/* Not so good */
+			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 	}
 
@@ -15215,7 +15375,7 @@ char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]) {
  * Function to Convert Numbers to Roman Numerals
  * [http://www.sanfoundry.com/c-program-convert-numbers-roman/]
  */
- 
+
 GMT_LOCAL void predigit(char num1, char num2, char string[], unsigned int *i) {
     string[(*i)++] = num1;
     string[(*i)++] = num2;
@@ -15298,6 +15458,34 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
+double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n) {
+	/* Given a comma-separated string of values of type, parse and return array and its length */
+	size_t k;
+	unsigned int pos = 0;
+	char p[GMT_LEN64] = {""};
+	double *array = NULL;
+	if (list == NULL || list[0] == '\0') {	/* Got nothing, return nothing; likely an error */
+		*n = 0;
+		return NULL;
+	}
+	/* Count the commas but not a trailing comma with nothing after it */
+	for (k = 0, *n = 1; k < strlen (list); k++) {
+		if (list[k] == ',' && list[k+1])
+			(*n)++;
+	}
+	array = gmt_M_memory (GMT, NULL, *n, double);	/* Allocate exact length of array */
+	k = 0;
+	while ((gmt_strtok (list, ",", &pos, p))) {	/* March along and convert each string to double */
+		if (gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, p, type, false, &(array[k])), p)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unable to parse value %s from list %s\n", p, list);
+			gmt_M_free (GMT, array);
+			return NULL;
+		}
+		k++;
+	}
+	return array;
+}
+
 GMT_LOCAL uint64_t make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
@@ -15323,7 +15511,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|n|b|l]
+	 *	[<min/max/]<inc>[<unit>|+a|e|n|b|l]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -15356,23 +15544,28 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	   equidistant in log2(t).  Here, inc must be an integer and indicates
 	 *	   the log2 increment.
 	 *      8) If +a is given then we will add the output array as a new output column.
+	 *      9) If +e is given when only an increment is given then we must keep the
+	 *	   increment exact and adjust max to ensure (max-min)/inc is an integer.
+	 *	   The default adjusts inc instead, if flag GMT_ARRAY_ROUND is passed.
+	 *     10) Since -T is a command-line option we enforce ISO calendar string format
+	 *	   only (yyyy-mm-ddT, yyyy-jjjT, yyyy-WwwT).
 	 *
 	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
 	 *	   flags are passed to the parser.
 	 */
-	
+
 	char txt[3][GMT_LEN32] = {{""}, {""}, {""}}, *m = NULL;
 	bool has_inc = false;
 	int ns = 0;
 	size_t len = 0;
-	
+
 	if (argument == NULL || argument[0] == '\0') {	/* A nothingburger */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: No arguments given\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
-	
+
 	/* 1a. Check if argument is a remote file */
 	if (gmt_M_file_is_remotedata (argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
 		char path[PATH_MAX] = {""};
@@ -15385,44 +15578,48 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->file = strdup (&argument[first]);
 		return (GMT_NOERROR);
 	}
-	
+
 	/* 1b. Check if argument is a local file */
 	if (!gmt_access (GMT, argument, F_OK)) {	/* File exists */
 		T->file = strdup (argument);
 		return (GMT_NOERROR);
 	}
-	
+
 	/* 1c. Check if we are given a list t1,t2,t3,... */
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
-			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-			gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+			/* Set output column type as time unless -fo has been set */
+			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 			T->temporal = true;
 		}
 		return (GMT_NOERROR);
 	}
 
-	if ((m = gmt_first_modifier (GMT, argument, "ablnt"))) {	/* Process optional modifiers +a, +b, +l, +n, +t */
+	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
 		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, "ablnt", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'T', m, "abelnt", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
 				case 'a':	/* Add spatial distance column to output */
-					T->add = true; 
+					T->add = true;
 					break;
 				case 'b':	/* Do a log2 grid */
-					T->logarithmic2 = true; 
+					T->logarithmic2 = true;
+					break;
+				case 'e':	/* Increment must be honored exactly */
+					T->exact_inc = true;
 					break;
 				case 'n':	/* Gave number of points instead; calculate inc later */
 					T->count = true;
 					break;
 				case 'l':	/* Do a log10 grid */
-					T->logarithmic = true; 
+					T->logarithmic = true;
 					break;
 				case 't':	/* Do a time vector */
-					T->temporal = true; 
+					T->temporal = true;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
@@ -15432,7 +15629,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		m[0] = '\0';	/* Chop off the modifiers */
 	}
 	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[-|+][<unit>][+a|n] instead.\n", option, option);
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[<unit>][+a|n] instead.\n", option, option);
 		m = strrchr (argument, '+');	/* Position of last + */
 		m[0] = '\0';	/* Chop off the plus */
 		T->count = true;
@@ -15456,7 +15653,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
 	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires and increment argument\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires an increment argument\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
@@ -15483,9 +15680,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
-		/* Set input column type as time */
-		gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);
-		gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+		/* Set output column type as time unless -fo has been set */
+		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 		if (has_inc) {
 			if (strchr (GMT_TIME_UNITS, T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
 				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
@@ -15510,7 +15707,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		else
 			T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
 		gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST);
-		T->spatial = (T->unit == 'X') ? 1 : 2;	
+		T->spatial = (T->unit == 'X') ? 1 : 2;
 	}
 
 	/* 5. Get the increment (or count) */
@@ -15531,7 +15728,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				return GMT_PARSE_ERROR;
 			}
 			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3 || k_inc < 0)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Log10 increment must be 1, 2, 3 (or a negative integer)\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic increment must be 1, 2, 3 (or a negative integer)\n", option);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -15541,14 +15738,26 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (ns >= 1) {
 		if (!strcmp (txt[GMT_X], "-"))	/* Must get this value later */
 			T->delay[GMT_X] = true;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
+		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
 		if (!strcmp (txt[GMT_Y], "-"))	/* Must get this value later */
 			T->delay[GMT_Y] = true;
+		else if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
+				return GMT_PARSE_ERROR;
+			}
+		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s\n", option, txt[GMT_Y]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s (ISO datetime format required)\n", option, txt[GMT_Y]);
 			return GMT_PARSE_ERROR;
 		}
 		if ((T->delay[GMT_X] || T->delay[GMT_Y]) && !(flags & GMT_ARRAY_NOMINMAX)) {
@@ -15562,7 +15771,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->set += 2;
 	}
 	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
-		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
+		if (T->temporal) {
+			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				return GMT_PARSE_ERROR;
+			}
+		}
+		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
@@ -15571,19 +15786,26 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (has_inc && ns == 0 && (flags & GMT_ARRAY_NOMINMAX)) {	/* The min/max will be set later */
 		T->delay[GMT_X] = T->delay[GMT_Y] = true;
 	}
-		
+	if (flags & GMT_ARRAY_ROUND)	/* Adjust increment to fit min/max so (max-min)/inc is an integer */
+		T->round = true;
+	if (T->exact_inc && T->set == 3) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Modifier +e only applies when increment is given without any range\n", option);
+		return GMT_PARSE_ERROR;
+
+	}
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
-	
+
 	return GMT_NOERROR;
 }
 
 unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
+	/* If min and max are not NULL then will override what T->min,max says */
 	char unit = GMT->current.setting.time_system.unit;
 	double scale = GMT->current.setting.time_system.scale, inc = T->inc, t0, t1;
 
 	if (T->array) gmt_M_free (GMT, T->array);	/* Free if previously set */
-	
+
 	if (T->file) {	/* Got a file, read first column into the array; must be one segment only */
 		/* Temporarily change what data type col zero is */
 		struct GMT_DATASET *D = NULL;
@@ -15616,28 +15838,15 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
-		uint64_t k;
-		unsigned int pos = 0;
-		char p[GMT_LEN64] = {""};
-		for (k = 0, T->n = 1; k < strlen (T->list); k++) {
-			if (T->list[k] == ',' && T->list[k+1])
-				T->n++;	/* Count the commas */
-		}
-		T->array = gmt_M_memory (GMT, NULL, T->n, double);
-		k = 0;
-		while ((gmt_strtok (T->list, ",", &pos, p))) {
-			if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, T->col), gmt_scanf_arg (GMT, p, gmt_M_type (GMT, GMT_IN, T->col), false, &(T->array[k])), p)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse value from %s\n", option, p);
-				return GMT_PARSE_ERROR;
-			}
-			k++;
-		}
+		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
+			return GMT_PARSE_ERROR;
 		return GMT_NOERROR;
 	}
-	
-	if (! (min == NULL && max == NULL)) {		/* Update min,max now */
-		T->min = *min;	T->max = *max;
-	}
+
+	if (min != NULL)	/* Update min now */
+		T->min = *min;
+	if (max != NULL)	/* Update max now */
+		T->max = *max;
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 
@@ -15661,11 +15870,30 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log2_array (GMT, t0, t1, inc, &(T->array));
-	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
-		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
-				return (GMT_PARSE_ERROR);
+	else {	/* Equidistant intervals are straightforward - make sure the min/max/inc values harmonize */
+		unsigned int nt;
+		double range = t1 - t0;
+		if (T->exact_inc) {	/* Must enforce that max-min is a multiple of inc and adjust max if it is not */
+			double new = rint (range / inc) * inc;
+			if (!doubleAlmostEqualZero (new, range)) {	/* Must adjust t1 to match proper range */
+				t1 = t0 + new;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
+			}
+		}
+		else if (T->round) {	/* Must enforce an increment that fits the given range */
+			double new;
+			nt = urint (range / inc);
+			new = nt * inc;
+			if (nt && !doubleAlmostEqualZero (new, range)) {	/* Must adjust inc to match proper range */
+				inc = range / (nt - 1);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted inc to %g\n", option, inc);
+			}
+		}
+		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV8_LIMIT)) {
+			case 1:	/* Must trim max to give a range in multiple of inc */
+				nt = floor ((t1 - t0) / inc);
+				t1 = t0 + inc * nt;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Information from -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
 				break;
 			case 2:
 				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
@@ -15694,10 +15922,23 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 }
 
 void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T) {
-	/* Free anyting that was allocated during parsing and creating a 1D array */
+	/* Free anything that was allocated during parsing and creating a 1D array */
 	gmt_M_str_free (T->file);
 	gmt_M_str_free (T->list);
 	if (T->array) gmt_M_free (GMT, T->array);
+}
+
+bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg) {
+	char *c = NULL;
+	gmt_M_unused (API);
+	/* Determine if -F is such that there is nothing to read */
+	if (strstr (arg, "+c") == NULL) return false;	/* Without +c there will be input */
+	if (strstr (arg, "+t") == NULL) return false;	/* Without +t there will be input */
+	if ((c = strstr (arg, "+A")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
+	if ((c = strstr (arg, "+a")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
+	if ((c = strstr (arg, "+j")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +j and no arg there must be input */
+	if ((c = strstr (arg, "+f")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +f and no arg there must be input */
+	return true;
 }
 
 #if 0	/* Probably not needed after all */

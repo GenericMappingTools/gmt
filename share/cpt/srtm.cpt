@@ -1,4 +1,3 @@
-#       $Id: srtm.cpt 17597 2017-02-24 02:49:00Z pwessel $
 #
 # Color table for SRTM tiles (land only with blue ocean).
 # Designed by P. Wessel, SOEST

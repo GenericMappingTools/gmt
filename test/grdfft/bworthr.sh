@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdfft power spectrum values [radial]
 
 ps=bworthr.ps

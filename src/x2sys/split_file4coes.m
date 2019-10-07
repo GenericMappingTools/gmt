@@ -22,7 +22,7 @@ function split_file4coes(fname, n_int)
 
 %  -------------------------------------------------------------------------------------
 % 
-%       Copyright (c) 1999-2018 by J. Luis
+%       Copyright (c) 1999-2019 by J. Luis
 %       See LICENSE.TXT file for copying and redistribution conditions.
 %
 %       This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ function split_file4coes(fname, n_int)
 %       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %       GNU Lesser General Public License for more details.
 % 
-%       Contact info: gmt.soest.hawaii.edu
+%       Contact info: www.generic-mapping-tools.org
 %  -------------------------------------------------------------------------------------
 
 	if (nargin == 0)

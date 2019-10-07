@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test trimming of lines in psxy via -W<pen>+o<offsets> for geo and Cartesian cases
 ps=linetrim.ps
 # Geographic

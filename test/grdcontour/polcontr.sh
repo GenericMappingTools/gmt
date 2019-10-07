@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test based on issue # 968.  This one uses -JP6ir and fails.
 ps=polcontr.ps
 gmt grd2xyz -s @test.dat.nc > t.txt

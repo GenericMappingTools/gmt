@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Contains macros for presenting variations of GMT common options in program
@@ -42,8 +42,8 @@
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
-#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
-#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
+#define GMT_bi_OPT	"-bi[<ncol>][t][w][+l|b]"
+#define GMT_bo_OPT	"-bo[<ncol>][t][w][+l|b]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_fi_OPT	"-f<info>"
@@ -61,8 +61,8 @@
 
 /* For options needing a length or radius */
 
-#define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
-#define GMT_RADIUS_OPT	"[-|+]<radius>[<unit>]"
+#define GMT_DIST_OPT	"<dist>[<unit>]"
+#define GMT_RADIUS_OPT	"<radius>[<unit>]"
 
 /* Options for map rose, scale and insert, used in pscoast and psbasemap */
 
@@ -77,15 +77,15 @@
 
 /* Options for background panel, used in gmtlogo, psimage, pslegend and psscale */
 
-#define GMT_PANEL	"-F[+c<clearance(s)>][+g<fill>][+i[[<gap>/]<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]"
+#define GMT_PANEL	"[+c<clearance(s)>][+g<fill>][+i[[<gap>/]<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]"
 
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
-#define GMT_CONTT	"-T[+|-][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
+#define GMT_CONTT	"-T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
 /* Options for coastline extraction  */
-#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s|S][+r|l][+p<percent>]"
+#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+a[g|i][s|S]][+r|l][+p<percent>]"
 
 /* Used in tools that sets grdheader information via a -D option */
 
@@ -98,27 +98,27 @@
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
 #define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
-#define GMT_U_OPT	"-U[[<just>]/<dx>/<dy>/][c|<label>]"
+#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>/<dy>]"
 #define GMT_V_OPT	"-V[<level>]"
-#define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
-#define GMT_Y_OPT	"-Y[a|c|r]<yshift>[<unit>]"
+#define GMT_X_OPT	"-X[a|c|f|r]<xshift>[<unit>]"
+#define GMT_Y_OPT	"-Y[a|c|f|r]<yshift>[<unit>]"
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
-#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+L|B]"
+#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+l|b]"
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>"
 #define GMT_f_OPT	"-f[i|o]<info>"
-#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[<unit>]"
+#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[<unit>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...]"
+#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...][,t[<word>]]"
+#define GMT_j_OPT	"-je|f|g"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
-#define GMT_o_OPT	"-o<cols>[,...]"
+#define GMT_o_OPT	"-o<cols>[,...][t[<word>]]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
-#define GMT_r_OPT	"-r"
-#define GMT_s_OPT	"-s[<cols>][a|r]"
+#define GMT_r_OPT	"-r[g|p]"
+#define GMT_s_OPT	"-s[<cols>][+a|r]"
 #define GMT_t_OPT	"-t<transp>"
+#define GMT_tv_OPT	"-t[<transp>]"
 #define GMT_colon_OPT	"-:[i|o]"
-
-EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT;	/* Used to print -O -K -P (classic mode) or not (modern mode) */
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
 

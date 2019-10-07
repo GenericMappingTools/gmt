@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 by pwessel
+ * Copyright (c) 2016-2019 by pwessel
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -11,8 +11,8 @@
  */
 
 #pragma once
-#ifndef _GMT_MBSYSTEM_MODULE_H
-#define _GMT_MBSYSTEM_MODULE_H
+#ifndef GMT_MBSYSTEM_MODULE_H
+#define GMT_MBSYSTEM_MODULE_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -37,4 +37,4 @@ EXTERN_MSC const char * gmt_mbsystem_module_info (void *API, char *candidate);
 }
 #endif
 
-#endif /* !_GMT_MBSYSTEM_MODULE_H */
+#endif /* !GMT_MBSYSTEM_MODULE_H */

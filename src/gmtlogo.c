@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: gmtlogo plots a GMT logo on a map.
@@ -175,6 +175,10 @@ struct GMTLOGO_CTRL {
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
+	struct S {	/* -S means only plot logo and not title below */
+		bool active;
+		unsigned int mode;	/* 0 = draw label, 1 draw URL, 2 no label */
+	} S;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -196,9 +200,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", GMT_XYANCHOR, GMT_OFFSET, name);
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", name, GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s] %s[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -208,8 +212,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo.\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot text label [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot URL for GMT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
 	GMT_Option (API, "U,V");
-	GMT_Option (API, "X,f,t,.");
+	GMT_Option (API, "X,c,f,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -257,6 +265,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
+			case 'S':
+				Ctrl->S.active = true;
+				switch (opt->arg[0]) {
+					case 'l': Ctrl->S.mode = 0;	break;	/* Label */
+					case 'u': Ctrl->S.mode = 1;	break;	/* URL */
+					case 'n': Ctrl->S.mode = 2;	break;	/* URL */
+					default:  Ctrl->S.mode = 0;	break;	/* Label */
+				}
+				break;
 			case 'W':	/* Scale for the logo */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
 				Ctrl->D.width = gmt_M_to_inch (GMT, opt->arg);
@@ -267,9 +284,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	if (!Ctrl->D.active) {
-		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0+w2i", 'D');	/* Default if no -D given */
-		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
+	if (!Ctrl->D.active) {	/* Default to -Dx0/0+w2i if no -D given */
+		if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0+w2i", 'D')) == NULL)	/* Cannot happen but Coverity thinks so */
+			n_errors++;
+		else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
 			Ctrl->D.width = gmt_M_to_inch (GMT, string);
 		Ctrl->D.active = true;
 	}
@@ -293,9 +311,9 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	uint64_t par[4] = {0, 0, 0, 0};
 	
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
-	double scale, dim[2];
+	double scale, y, dim[2];
 
-	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_STR16] = {""};
 
 	struct GMT_FONT F;
 	struct GMT_MATRIX *M = NULL;
@@ -329,7 +347,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
 	gmt_M_memset (wesn, 4, double);
-	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = 0.5 * Ctrl->D.width; /* Height is 0.5 * width */
+	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = (Ctrl->S.mode == 2) ? 1.55 * 0.25 * Ctrl->D.width : 0.5 * Ctrl->D.width; /* Height is 0.5 * width unless when text is deactivated */
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
@@ -366,18 +384,26 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
-	sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
-	gmt_getfont (GMT, cmd, &F);
-	fmode = gmt_setfont (GMT, &F);
-	PSL_setfont (PSL, F.id);
-	PSL_command (PSL, "V 1 1.5 scale\n");
-	PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
-	PSL_command (PSL, "U\n");
+	if (Ctrl->S.mode == 2)
+		y = 0.0;
+	else {
+		sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
+		gmt_getfont (GMT, cmd, &F);
+		fmode = gmt_setfont (GMT, &F);
+		PSL_setfont (PSL, F.id);
+		PSL_command (PSL, "V 1 1.5 scale\n");
+		if (Ctrl->S.mode == 0)
+			PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
+		else
+			PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "G@#ENERIC@#-M@#APPING@#-T@#OOLS@#.@#ORG@#", 0.0, PSL_BC, fmode);
+		PSL_command (PSL, "U\n");
+		y = scale * 0.220;
+	}
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */
 
 	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", c_grid, scale * 0.3, c_grid);
-	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, scale * 0.220, pars);
+	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, c_water, c_land, pars);

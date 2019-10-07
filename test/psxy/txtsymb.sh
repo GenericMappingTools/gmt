@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test custom symbols with different fonts and both fixed and variable sizes.
 ps=txtsymb.ps
 

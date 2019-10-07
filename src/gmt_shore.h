@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Include file for gmt_shore.c
@@ -27,8 +27,8 @@
  * \brief Include file for gmt_shore.c
  */
 
-#ifndef _GMT_SHORE_H
-#define _GMT_SHORE_H
+#ifndef GMT_SHORE_H
+#define GMT_SHORE_H
 
 /* Declaration modifier for netcdf DLL support
  * annoying: why can't netcdf.h do this on its own? */
@@ -51,10 +51,10 @@ enum gmt_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_ANTARCTICA_LIMBO		= 7,	/* Level assigned to nodes between ice and grounding lines */
 	GSHHS_ANTARCTICA_ICE_SRC	= 2,	/* Source ID for Antarctica ice line */
 	GSHHS_ANTARCTICA_GROUND_SRC	= 3,	/* Source ID for Antarctica grounding line */
-	GSHHS_ANTARCTICA_ICE		= 0,	/* Use Antarctica ice boundary as coastline */
-	GSHHS_ANTARCTICA_GROUND		= 1,	/* Use Antarctica grounding line as coastline [Default] */
-	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastlines */
-	GSHHS_ANTARCTICA_SKIP_INV	= 3,	/* Skip everything BUT Antarctica coastlines */
+	GSHHS_ANTARCTICA_ICE		= 1,	/* Use Antarctica ice boundary as coastline */
+	GSHHS_ANTARCTICA_GROUND		= 2,	/* Use Antarctica grounding line as coastline [Default] */
+	GSHHS_ANTARCTICA_SKIP		= 4,	/* Skip Antarctica coastlines */
+	GSHHS_ANTARCTICA_SKIP_INV	= 8,	/* Skip everything BUT Antarctica coastlines */
 	GSHHS_ANTARCTICA_ICE_ID		= 4,	/* The GSHHG ID of the Antarctica ice-coastline polygon */
 	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
@@ -248,4 +248,4 @@ struct GMT_GSHHS_POL {
 	double *lat;
 };
 
-#endif /* _GMT_SHORE_H */
+#endif /* GMT_SHORE_H */

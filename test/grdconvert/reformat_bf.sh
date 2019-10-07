@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Convert grids between netcdf and several of the other "native" formats
 
@@ -6,7 +6,7 @@ log=reformat_bf.log
 
 gmt grdmath -R-10/10/-10/10 -I1 X = lixo.nc
 
-# First conver to int
+# First convert to int
 gmt grdconvert lixo.nc lixo.bf=bf
 gmt grdmath lixo.nc lixo.bf=bf SUB = lixo_dif.nc
 gmt grd2xyz lixo_dif.nc -ZTLa > $log

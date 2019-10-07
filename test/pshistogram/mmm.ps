@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14984 [64-bit] Document from pshistogram
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pshistogram
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Oct 13 17:47:12 2015
+%%CreationDate: Thu Dec  6 10:52:43 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pshistogram /Users/pwessel/GMTdev/gmt5-dev/branches/5.2.0/test/pshistogram/pac.txt -W50 -JX9i/6i -Bafg '-BWSne+glightblue+tPeak, Mode, Median, Mean' -R-6100/-500/0/700 -Gred -K -F
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pshistogram Pacific_Depths.txt -W50 -JX9i/6i -Bafg '-BWSne+glightblue+tPeak, Mode, Median, Mean' -R-6100/-500/0/700 -Gred -K -F
+%@PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy
+%GMTBoundingBox: 72 72 648 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -679,6 +686,7 @@ clipsave
 10800 0 D
 0 7200 D
 -10800 0 D
+P
 PSL_clip N
 {1 0 0 C} FS
 -48 0 0 21 48 0 3 0 0 SP
@@ -964,26 +972,26 @@ N 7907 0 M 0 -83 D S
 N 9836 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-6000) sh mx
-(-5000) sh mx
-(-4000) sh mx
-(-3000) sh mx
-(-2000) sh mx
-(-1000) sh mx
+(”6000) sh mx
+(”5000) sh mx
+(”4000) sh mx
+(”3000) sh mx
+(”2000) sh mx
+(”1000) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 193 PSL_A0_y MM
-(-6000) bc Z
+(”6000) bc Z
 2121 PSL_A0_y MM
-(-5000) bc Z
+(”5000) bc Z
 4050 PSL_A0_y MM
-(-4000) bc Z
+(”4000) bc Z
 5979 PSL_A0_y MM
-(-3000) bc Z
+(”3000) bc Z
 7907 PSL_A0_y MM
-(-2000) bc Z
+(”2000) bc Z
 9836 PSL_A0_y MM
-(-1000) bc Z
+(”1000) bc Z
 N 579 0 M 0 -42 D S
 N 964 0 M 0 -42 D S
 N 1350 0 M 0 -42 D S
@@ -1055,8 +1063,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-6100/-500/0/700 -JX9i/6i -O -K -W2p tmp
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-6100/-500/0/700 -JX9i/6i -O -K -W2p tmp
+%@PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1081,8 +1089,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-6100/-500/0/700 -JX9i/6i -O -K -D-4600/-600/280/690 -F+glightgreen+p1p
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psbasemap -R-6100/-500/0/700 -JX9i/6i -O -K -D-4600/-600/280/690 -F+glightgreen+p1p
+%@PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1098,8 +1106,8 @@ O0
 3600 3300 TM
 
 % PostScript produced by:
-%%GMT: pshistogram /Users/pwessel/GMTdev/gmt5-dev/branches/5.2.0/test/pshistogram/pac.txt -W50 -JX5.5i/3i -Bafg -BWSne -R-6100/-4500/0/700 -L0.25p -Gred -O -K -F -X3i -Y2.75i
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pshistogram Pacific_Depths.txt -W50 -JX5.5i/3i -Bafg -BWSne -R-6100/-4500/0/700 -L0.25p -Gred -O -K -F -X3i -Y2.75i
+%@PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1109,6 +1117,7 @@ clipsave
 6600 0 D
 0 3600 D
 -6600 0 D
+P
 PSL_clip N
 4 W
 {1 0 0 C} FS
@@ -1146,7 +1155,6 @@ O1
 -207 0 0 566 207 0 3 6084 0 SP
 -206 0 0 499 206 0 3 6291 0 SP
 -103 0 0 458 103 0 3 6497 0 SP
-103 0 0 334 -103 0 3 6703 0 SP
 PSL_cliprestore
 25 W
 4 W
@@ -1235,20 +1243,20 @@ N 4538 0 M 0 -83 D S
 N 6600 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-6000) sh mx
-(-5500) sh mx
-(-5000) sh mx
-(-4500) sh mx
+(”6000) sh mx
+(”5500) sh mx
+(”5000) sh mx
+(”4500) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 412 PSL_A0_y MM
-(-6000) bc Z
+(”6000) bc Z
 2475 PSL_A0_y MM
-(-5500) bc Z
+(”5500) bc Z
 4538 PSL_A0_y MM
-(-5000) bc Z
+(”5000) bc Z
 6600 PSL_A0_y MM
-(-4500) bc Z
+(”4500) bc Z
 N 0 0 M 0 -42 D S
 N 825 0 M 0 -42 D S
 N 1238 0 M 0 -42 D S
@@ -1296,8 +1304,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -K -W2p tmp
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -K -W2p tmp
+%@PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1322,8 +1330,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-6100/-4500/0/700 -JX5.5i/3i -O -K -F+jCM+a90+f12p -Gwhite -W0.25p
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R-6100/-4500/0/700 -JX5.5i/3i -O -K -F+jCM+a90+f12p -Gwhite -W0.25p
+%@PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1333,6 +1341,7 @@ clipsave
 6600 0 D
 0 3600 D
 -6600 0 D
+P
 PSL_clip N
 4 W
 {1 A} FS
@@ -1379,13 +1388,17 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -T
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -T
+%@PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

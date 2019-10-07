@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 47
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
@@ -35,13 +35,13 @@ gmt begin ex47 ps
   plot_one -Ey -N2 -c4,2
   #LMS regressions - also add labels on right side
   plot_one -Er -Nr -c1,3 +tLMS
-  echo "Y ON X" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
+  gmt text -F+cRM+jTC+a90+t"Y ON X" -N -Dj0.2i
   plot_one -Eo -Nr -c2,3
-  echo "X ON Y" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
+  gmt text -F+cRM+jTC+a90+t"X ON Y" -N -Dj0.2i
   plot_one -Ex -Nr -c3,3
-  echo "ORTHOGONAL" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
+  gmt text -F+cRM+jTC+a90+tORTHOGONAL -N -Dj0.2i
   plot_one -Ey -Nr -c4,3
-  echo "REDUCED MAJOR AXIS" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
+  gmt text -F+cRM+jTC+a90+t"REDUCED MAJOR AXIS" -N -Dj0.2i
   gmt subplot end
 gmt end
 rm -f data.txt giants.txt

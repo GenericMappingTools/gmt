@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
@@ -285,7 +285,7 @@ EOF
 	now=`date`
 	you=`finger $LOGNAME | head -1 | awk -F': ' '{print $3}'`
 	cat << EOF > $name.sh
-#!/bin/bash
+#!/usr/bin/env bash
 # Author:	$you
 # Purpose:	Make an animation of ...
 # Date:		$now
@@ -490,7 +490,7 @@ EOF
 	# Create n_cpu empty files for execution
 	let cpu=0
 	while [ $cpu -lt $n_cpu ]; do
-		printf "#!/bin/bash\n# gmt_launch_jobs command file chunk # ${cpu}\n#---------------------------------\n" > /tmp/gmt_launch_jobs${tag}.$cpu.sh
+		printf "#!/usr/bin/env bash\n# gmt_launch_jobs command file chunk # ${cpu}\n#---------------------------------\n" > /tmp/gmt_launch_jobs${tag}.$cpu.sh
 		let cpu=cpu+1
 	done
 	# Distribute $n_lines from the commands across these core scripts

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Show all splines and their derivatives for a basic data set
 ps=splines.ps

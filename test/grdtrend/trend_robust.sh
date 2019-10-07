@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Remove a bilinear robust trend
 ps=trend_robust.ps

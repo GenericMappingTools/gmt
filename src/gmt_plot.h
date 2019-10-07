@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*!
@@ -20,8 +20,8 @@
  * \brief 
  */
 
-#ifndef _GMT_PLOT_H
-#define _GMT_PLOT_H
+#ifndef GMT_PLOT_H
+#define GMT_PLOT_H
 
 /*! Identifier for gmt_plane_perspective. The others come from GMT_io.h */
 
@@ -75,15 +75,22 @@ enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
 	GMT_FRONT_CENTERED,
 	GMT_FRONT_LEFT};
 
+/*! Type of wedge symbols: */
+
+enum GMT_enum_wedgetype {GMT_WEDGE_NORMAL = 0,
+	GMT_WEDGE_ARCS = 1,
+	GMT_WEDGE_RADII = 2,
+	GMT_WEDGE_SPIDER = 3};
+
 /*! A sub-symbol for symbols along a front */
 struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */
 	double f_angle;		/* Angle of the slip vector hook [30] */
-	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
-	int f_symbol;	/* Which symbol to draw along the front line */
-	int f_pen;	/* -1 for no outline (+p), 0 for default outline [-1], +1 if +p<pen> was used to set separate pen for outline */
+	int f_sense;		/* Draw symbols to left (+1), centered (0), or right (-1) of line */
+	int f_symbol;		/* Which symbol to draw along the front line */
+	int f_pen;		/* -1 for no outline (+p), 0 for default outline [-1], +1 if +p<pen> was used to set separate pen for outline */
 	struct GMT_PEN pen;	/* Pen for outline of front symbol [-W] */
 };
 
@@ -128,9 +135,9 @@ struct GMT_SYMBOL {
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
-	bool read_size;	/* true when we must read symbol size from file for the current record */
-	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
-	bool fq_parse;	/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
+	bool read_size;		/* true when we must read symbol size from file for the current record */
+	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
+	bool fq_parse;		/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
 	bool accumulate;	/* true if -So takes many band z and they are increments, not total z values */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
@@ -146,8 +153,10 @@ struct GMT_SYMBOL {
 	/* These apply to geo-wedges */
 	char w_unit;		/* Radius unit */
 	double w_radius;	/* In spherical degrees */
+	double w_radius_i;	/* Inner radius [0] */
+	double w_dr, w_da;	/* Angular and radial increments for spider web */
 	unsigned int w_mode;	/* Distance mode */
-	unsigned int w_type;	/* Wedge type */
+	enum GMT_enum_wedgetype w_type;	/* Wedge type */
 	bool w_active;
 	
 	/* These apply to vectors */
@@ -161,4 +170,4 @@ struct GMT_SYMBOL {
 	struct GMT_DECORATE D;	/* For decorated lines */
 };
 
-#endif /* _GMT_PLOT_H */
+#endif /* GMT_PLOT_H */

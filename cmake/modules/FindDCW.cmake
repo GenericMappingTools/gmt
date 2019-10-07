@@ -32,5 +32,3 @@ find_path (DCW_PATH dcw-gmt.nc
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (DCW DEFAULT_MSG DCW_PATH)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

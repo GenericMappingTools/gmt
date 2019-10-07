@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 14
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2018 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for moving points along small circles on a sphere given a
@@ -96,7 +96,7 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 		bool active;
 		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct E {	/* -Erotfile[+i], -E<ID1>-<ID2>[+i], or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
@@ -267,7 +267,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				break;
 
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -286,11 +286,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
 						Ctrl->L.stage_id = true;
+						/* Fall through on purpose to 'f' */
 					case 'f':
 						Ctrl->L.mode = SPOTTER_FLOWLINE;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
 						Ctrl->L.stage_id = true;
+						/* Fall through on purpose to 'b' */
 					case 'b':
 						Ctrl->L.mode = SPOTTER_TRAILLINE;
 						break;

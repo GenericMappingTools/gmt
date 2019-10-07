@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2018 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/pwessel
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys_datalist will read one or several data files and dump their
  * contents to stdout in ASCII or binary (double precision) mode.
@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char file[GMT_BUFSIZ] = {""}, *line = file; /* Just reusing the file space */
+	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
 	
@@ -316,6 +316,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
+				/* Fall through on purpose to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
@@ -352,6 +353,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
+				/* Fall through on purpose to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);

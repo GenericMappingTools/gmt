@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=spotter_09.ps
 # Create a small circle
 gmt project -C0/-30 -E0/30  -Q -G500/60 > FZ.txt

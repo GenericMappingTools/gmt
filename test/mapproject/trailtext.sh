@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Another test from forum message
 # http://gmt.soest.hawaii.edu/boards/1/topics/6027
 # Expanded to test a few of the -o settings

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2018 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -44,7 +44,7 @@
  *	2. Draw FROM a seamount TO a hotspot (and beyond): Use spotter_forthtrack
  *
  * All coordinates herein are assumed to be GEOCENTRIC.  The main programs are
- * respondible for coverting to/from geodetic data coordinates.  Rotation pole
+ * respondible for converting to/from geodetic data coordinates.  Rotation pole
  * latitudes are usually implied to be geocentric.
  */
 
@@ -61,7 +61,7 @@ EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, d
 
 void spotter_rot_usage (struct GMTAPI_CTRL *API, char option) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-%c Specify file with the rotations to be used (see documentation for format).\n", option);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i if you want to invert the finite rotations prior to use.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 1: Give a single rotation as plon/plat/prot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 2: Give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database.\n");
@@ -346,20 +346,21 @@ bool spotter_GPlates_pair (char *file) {
 
 unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R) {
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	gmt_M_unused(GMT);
+	if ((c = strstr (arg, "+i"))) c[0] = '\0';	/* Chop off modifier */
 	if (k == 0 && spotter_GPlates_pair (arg)) {	/* A GPlates plate pair to look up in the rotation table */
 		R->file = strdup (arg);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
 	}
 	else if (!gmt_access (GMT, &arg[k], F_OK) && gmt_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
-		if (k == 1) R->invert = true;
+		if (k == 1 || c) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
 	else if (gmt_M_file_is_cache (arg)) {	/* Was given a remote file */
 		R->file = strdup (&arg[k]);
-		if (k == 1) R->invert = true;
+		if (k == 1 || c) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
 	else {	/* Apply a fixed total reconstruction rotation to all input points  */
@@ -382,7 +383,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		}
 	}
 	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Rotation argument is neither GPlates pair, rotation file, or rotation parameters: %s\n", arg);
-	
+	if (c) c[0] = '+';	/* Restore modifier */
 	return (n_errors);
 }
 
@@ -608,7 +609,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 }
 
 /* hotspot_init: Reads a file with hotspot information and returns pointer to
- * array of structures.  Hotspot locations are stored as geodetic coordintaes
+ * array of structures.  Hotspot locations are stored as geodetic coordinates
  * but are converted to GEOCENTRIC by this function if geocentric == true */
 
 int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p) {
@@ -1562,7 +1563,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	 * we simply always go with the positive root for all angles.  (2) If origin is outside P'(u,v) then there will
 	 * be angles for which the radius vector does not intersect the curve (and we get two complex roots to ignore),
 	 * otherwise the real roots come in pairs of the same sign.  Since the negative pairs repeat the information
-	 * of hte positive pairs (except they are 180 degrees shifted) we only keep the positive pairs.  These two
+	 * of the positive pairs (except they are 180 degrees shifted) we only keep the positive pairs.  These two
 	 * roots represents two different angles 180 degrees apart so therefore we store both and do the stitching
 	 * further down.
 	*/

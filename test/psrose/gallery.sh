@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test all gmt psrose region and types
 
 ps=gallery.ps

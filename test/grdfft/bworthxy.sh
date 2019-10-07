@@ -1,5 +1,4 @@
-#!/bin/bash
-#	$Id: power2D.sh 12115 2013-09-03 23:22:48Z fwobbe $
+#!/usr/bin/env bash
 # Testing gmt grdfft power spectrum values
 
 ps=bworthxy.ps

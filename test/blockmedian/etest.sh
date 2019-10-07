@@ -1,5 +1,4 @@
-#!/bin/bash
-#	$Id: etest.sh 15178 2015-11-06 10:45:03Z fwobbe $
+#!/usr/bin/env bash
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks

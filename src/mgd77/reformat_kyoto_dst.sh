@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Example command to reformat the DST indices downloaded from
 # http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html 

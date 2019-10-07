@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Cartesian, relative and absolute time axis custom annotations
 # As of 6/16/2016 the relative time example fails.  I faked the orig PS
 # by running the absolute time part twice (the commented out commands).

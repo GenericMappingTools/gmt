@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Follows from http://gmt.soest.hawaii.edu/boards/1/topics/7166?r=7178#message-7178
 # from Sabin.  Another case where their *.xy file causes trouble at S pole. 
 ps=bugger.ps

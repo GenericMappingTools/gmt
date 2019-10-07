@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt psrose with -Cm and basemap
 
 ps=rose.ps

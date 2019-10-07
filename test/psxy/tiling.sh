@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing tiling of 2 small JPG images (64x64 and 90x90 pixels)
 
 ps=tiling.ps

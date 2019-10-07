@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the grdredpol application.
@@ -278,7 +278,7 @@ GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim,
 /*          - M/N => NUMBER OF LINES/COLUMN OF THE FILTER */
 
 /*     OUTPUT ARGUMENTS DESCRIPTION: */
-/*          - W => AN ARRAY WHICH CONTAINS THE FILTER COEFICIENTS STORED */
+/*          - W => AN ARRAY WHICH CONTAINS THE FILTER COEFFICIENTS STORED */
 /*               COLUMNWISE */
 
 /*     REMARKS: */
@@ -1431,7 +1431,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				if (ftlat[row] < slati || ftlat[row] > slatf) continue;		/* Current point outside WOI */
 				gmt_M_col_loop (GMT, Gout,row,col,ij) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
-					/* Compute dec and dip at corrent point */
+					/* Compute dec and dip at current point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */
 						igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf); 
 						Ctrl->C.dec = out_igrf[5] * D2R;

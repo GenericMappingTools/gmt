@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_constants.h contains definitions of constants used through GMT.
@@ -27,8 +27,8 @@
  * \brief Definitions of constants used through GMT.
  */
 
-#ifndef _GMT_CONSTANTS_H
-#define _GMT_CONSTANTS_H
+#ifndef GMT_CONSTANTS_H
+#define GMT_CONSTANTS_H
 
 /*=====================================================================================
  *	GMT API CONSTANTS DEFINITIONS
@@ -64,6 +64,9 @@
 #ifndef M_EULER
 #define M_EULER		0.577215664901532860606512	/* Euler's constant (gamma) */
 #endif
+#ifndef M_PHI
+#define M_PHI		1.618033988749894848204587	/* Golden ratio (phi) */
+#endif
 #define MAD_NORMALIZE	1.4826	/*  1/N^{-1}(0.75), where z = \N^{-1}(p) is the inverse cumulative normal distribution */
 
 #define GMT_CONV15_LIMIT 1.0e-15	/* Very tight convergence limit or "close to zero" limit */
@@ -81,8 +84,8 @@
 #define GMT_CONTROLLER	0	/* func_level of controlling process (gmt.c or external API) */
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
-#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin in inches under modern mode */
+#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
+#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (~1 meter) */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -104,7 +107,7 @@ enum GMT_enum_ogr {
 
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
-	GMT_DIM_SIZE	= 4U,          /* Length of dim array used in Read|Creat Data */
+	GMT_DIM_SIZE	= 4U,          /* Length of dim array used in Read|Create Data */
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
@@ -137,7 +140,8 @@ enum GMT_enum_array {
 	GMT_ARRAY_DIST  = 4,
 	GMT_ARRAY_NOINC = 8,
 	GMT_ARRAY_SCALAR = 16,
-	GMT_ARRAY_NOMINMAX = 32};
+	GMT_ARRAY_NOMINMAX = 32,
+	GMT_ARRAY_ROUND = 64};
 
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
@@ -187,8 +191,8 @@ enum GMT_swap_direction {
 #define GMT_DEC_WIDTH	0.54	/* Width of a decimal number compared to point size */
 #define GMT_PER_WIDTH	0.30	/* Width of a decimal point compared to point size */
 
-#define GMT_PEN_LEN	128
-#define GMT_PENWIDTH	0.25	/* Default pen width in points */
+#define GMT_PEN_LEN		128
+#define GMT_PENWIDTH		0.25	/* Default pen width in points */
 #define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
 #define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
@@ -207,8 +211,15 @@ enum GMT_swap_direction {
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
+#define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
+#define GMT_N_CPT		3	/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
+
 #define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
+
+/* Settings for the MAP_FRAME_TYPE = graph */
+#define GMT_GRAPH_EXTENSION		7.5	/* In percent */
+#define GMT_GRAPH_EXTENSION_UNIT	'%'	/* In percent */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -235,7 +246,7 @@ enum GMT_enum_refpoint {
 	GMT_REFPOINT_NOTSET = -1,	/* -D */
 	GMT_REFPOINT_MAP,		/* -Dg */
 	GMT_REFPOINT_JUST,		/* -Dj */
-	GMT_REFPOINT_JUST_FLIP,	/* -DJ */
+	GMT_REFPOINT_JUST_FLIP,		/* -DJ */
 	GMT_REFPOINT_NORM,		/* -Dn */
 	GMT_REFPOINT_PLOT};		/* -Dx */
 
@@ -249,18 +260,26 @@ enum GMT_enum_rose {
 
 /*! Various types of trend model */
 enum GMT_enum_model {
-	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER
-	};
+	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER};
 
 /*! Various array indices of fonts and pens */
 enum GMT_enum_index {
-	GMT_PRIMARY = 0, GMT_SECONDARY = 1
-	};
+	GMT_PRIMARY = 0, GMT_SECONDARY = 1};
 
 /*! Various mode for auto-download */
 enum GMT_enum_download {
-	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1
-	};
+	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1};
+
+/*! Various mode for axes */
+enum GMT_enum_oblique {
+	GMT_OBL_ANNOT_LON_X_LAT_Y    =  0,
+	GMT_OBL_ANNOT_ANYWHERE       =  1,
+	GMT_OBL_ANNOT_LON_HORIZONTAL =  2,
+	GMT_OBL_ANNOT_LAT_HORIZONTAL =  4,
+	GMT_OBL_ANNOT_EXTEND_TICKS   =  8,
+	GMT_OBL_ANNOT_NORMAL_TICKS   = 16,
+	GMT_OBL_ANNOT_LAT_PARALLEL   = 32,
+	GMT_OBL_ANNOT_FLAG_LIMIT     = 64};
 
 /*! Various mode for axes */
 enum GMT_enum_axes {
@@ -394,14 +413,14 @@ enum GMT_enum_latswap {GMT_LATSWAP_NONE = -1,	/* Deactivate latswapping */
 enum GMT_enum_geodesic {	/* Various geodesic algorithms */
 	GMT_GEODESIC_VINCENTY = 0,	/* Best possible, currently Vincenty */
 	GMT_GEODESIC_ANDOYER,		/* Faster approximation, currently Andoyer */
-	GMT_GEODESIC_RUDOE};		/* For legacy calculations */
+	GMT_GEODESIC_RUDOE};		/* For legacy GMT4 calculations */
 
 #define METERS_IN_A_FOOT		0.3048			/* 2.54 * 12 / 100 */
 #define METERS_IN_A_SURVEY_FOOT		(1200.0/3937.0)		/* ~0.3048006096 m */
 #define METERS_IN_A_KM			1000.0
-#define METERS_IN_A_MILE		1609.433	/* meters in statute mile */
-#define METERS_IN_A_NAUTICAL_MILE	1852.0
-#define GMT_MAP_DIST_UNIT		'e'		/* Default distance is the meter */
+#define METERS_IN_A_MILE		1609.433		/* meters in statute mile */
+#define METERS_IN_A_NAUTICAL_MILE	1852.0			/* meters in a nautical mile */
+#define GMT_MAP_DIST_UNIT		'e'			/* Default distance is the meter */
 
 enum GMT_enum_coord {GMT_GEOGRAPHIC = 0,	/* Means coordinates are lon,lat : compute spherical distances */
 	GMT_CARTESIAN,	/* Means coordinates are Cartesian x,y : compute Cartesian distances */
@@ -427,9 +446,11 @@ enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hyp
 	GMT_CARTESIAN_DIST_PERIODIC,		/* Cartesian 2-D x,y data,but with periodic BCs */
 	GMT_CARTESIAN_DIST2,		/* Cartesian 2-D x,y data, return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */
-	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot */
+	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot calls */
 	GMT_CARTESIAN_DIST_PROJ_INV};	/* Project Cartesian 2-D x,y data to lon,lat, then get distance */
-enum GMT_enum_mdist {GMT_FLATEARTH = 1,	/* Compute Flat Earth distances */
+enum GMT_enum_mdist {
+	GMT_NO_MODE = 0,
+	GMT_FLATEARTH,		/* Compute Flat Earth distances */
 	GMT_GREATCIRCLE,	/* Compute great circle distances */
 	GMT_GEODESIC,		/* Compute geodesic distances */
 	GMT_LOXODROME};		/* Compute loxodrome distances (otherwise same as great circle machinery) */
@@ -460,10 +481,8 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 #define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
 #define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
 #define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
-#define GMT_SRTM_EXTENSION_REMOTE_LEN  3U			/* Length of JPEG2000 file extension */
+#define GMT_SRTM_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */
 #define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
 #define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
 
-#define GMT_DEFAULT_CPT "rainbow"				/* When no CPT is given we choose this one */
-
-#endif  /* _GMT_CONSTANTS_H */
+#endif  /* GMT_CONSTANTS_H */

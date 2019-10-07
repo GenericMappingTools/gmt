@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test simple line intersection in gmtspatial
 # Should be a single intersection at -45.1337990939  -2.32614829776
 ps=crossings.ps

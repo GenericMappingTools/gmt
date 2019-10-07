@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * common_sighandler.c contains code for catching SIGINT
@@ -68,6 +68,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
 # elif defined( __arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined(__ppc__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_srr0)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_eip)
 # endif
@@ -104,6 +106,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # elif defined(__powerpc__) || defined(__powerpc64__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.regs->nip)
+# elif defined(__ia64__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.sc_ip)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.eip)
 # endif

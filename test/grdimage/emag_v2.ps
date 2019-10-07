@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_r19974 [64-bit] Document from grdimage
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Mar 24 16:56:01 2018
+%%CreationDate: Thu Dec  6 10:52:50 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -638,7 +640,7 @@ end
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
     psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath fs S} ifelse
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -670,7 +672,7 @@ O0
 -2400 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: grdimage @EMAG2_V2_1x1.grd -P -JX4id -R-25/-10/60/67 -Ccol.cpt -K -Baf -BWSne -Xc
+%@GMT: gmt grdimage @EMAG2_V2_1x1.grd -P -JX4id -R-25/-10/60/67 -Ccol.cpt -K -Baf -BWSne -Xc
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: -144 72 288 288
 %%BeginObject PSL_Layer_1
@@ -784,12 +786,12 @@ N 0 4883 M 0 -4966 D S
 N -83 4883 M 0 -4966 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-25 ) tc Z
-1600 -167 M (-20 ) tc Z
-3200 -167 M (-15 ) tc Z
-4800 -167 M (-10 ) tc Z
--167 0 M (60 ) mr Z
--167 3429 M (65 ) mr Z
+(î25è) tc Z
+1600 -167 M (î20è) tc Z
+3200 -167 M (î15è) tc Z
+4800 -167 M (î10è) tc Z
+-167 0 M (60è) mr Z
+-167 3429 M (65è) mr Z
 %%EndObject
 0 A
 FQ
@@ -797,7 +799,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-25/-10/60/67 -JX4id -O -K -F+cTR+f24p+jTR -Gwhite
+%@GMT: gmt pstext -R-25/-10/60/67 -JX4id -O -K -F+cTR+f24p+jTR -Gwhite
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -830,7 +832,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Gblack -Dc -O -K -R-25/-10/60/67 -JX4id
+%@GMT: gmt pscoast -Gblack -Dc -O -K -R-25/-10/60/67 -JX4id
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -888,7 +890,7 @@ O0
 0 6000 TM
 
 % PostScript produced by:
-%@GMT: grdimage tmp.nc -JX4id -Ccol.cpt -K -O -Y5i -Baf -BWSne
+%@GMT: gmt grdimage tmp.nc -JX4id -Ccol.cpt -K -O -Y5i -Baf -BWSne
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1001,12 +1003,12 @@ N 0 4883 M 0 -4966 D S
 N -83 4883 M 0 -4966 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-25 ) tc Z
-1600 -167 M (-20 ) tc Z
-3200 -167 M (-15 ) tc Z
-4800 -167 M (-10 ) tc Z
--167 0 M (60 ) mr Z
--167 3429 M (65 ) mr Z
+(î25è) tc Z
+1600 -167 M (î20è) tc Z
+3200 -167 M (î15è) tc Z
+4800 -167 M (î10è) tc Z
+-167 0 M (60è) mr Z
+-167 3429 M (65è) mr Z
 %%EndObject
 0 A
 FQ
@@ -1014,7 +1016,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Gblack -Dc -O -K -R-25/-10/60/67 -JX4id
+%@GMT: gmt pscoast -Gblack -Dc -O -K -R-25/-10/60/67 -JX4id
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1072,7 +1074,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-25/-10/60/67 -JX4id -O -F+cTR+f24p+jTR -Gwhite
+%@GMT: gmt pstext -R-25/-10/60/67 -JX4id -O -F+cTR+f24p+jTR -Gwhite
 %@PROJ: latlong -25.00000000 -10.00000000 60.00000000 67.00000000 -7.500 7.500 60.000 67.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test case for bug in -i with psxy where there is a conversion from datavalue
 # assumed to be cm before the scaling takes place.  The issue is this line
 # echo 0 0 150 | gmt psxy -Scc -i0,1,2+s0.01+o-0.5

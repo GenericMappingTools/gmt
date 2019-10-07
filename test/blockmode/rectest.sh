@@ -1,5 +1,4 @@
-#!/bin/bash
-#	$Id: rectest.sh 11490 2013-05-16 06:26:21Z pwessel $
+#!/usr/bin/env bash
 #
 # Test to make sure the -Ei option works as advertised.
 # We have data that will fall in to 4 separate blocks

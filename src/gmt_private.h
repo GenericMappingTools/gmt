@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -146,12 +146,12 @@ struct GMTAPI_CTRL {
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
 	int shelf;				/* Place to pass hidden values within API */
-	int PPID;				/* The Process ID of the parent (e.g., shell) or the external caller */
 	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
+	char *session_name;			/* Unique name for modern mode session (NULL for classic) */
 	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
 	char *session_dir;			/* GMT Session dir (NULL if not running in modern mode) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
@@ -195,6 +195,8 @@ struct GMTAPI_CTRL {
 	struct GMT_VECTOR *current_get_V;
 	p_func_uint64_t current_get_V_index;
 	GMT_getfunction *current_get_V_val;
+	/* These are used for -O -K -P -c and set to blank under modern/classic modes */
+	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
 };
 
 /* Macro to test if filename is a special name indicating memory location */

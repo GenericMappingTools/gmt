@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: gmtinfo.c will read ASCII or binary tables and report the
@@ -64,7 +64,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		unsigned int mode;	/* 0 means center, 1 means use dx granularity */
 		double inc[GMT_MAX_COLUMNS];
 	} D;
-	struct E {	/* -E<L|l|H|h><col> */
+	struct E {	/* -E<L|l|H|h>[<col>] */
 		bool active;
 		bool abs;
 		int mode;	/* -1, 0, +1 */
@@ -74,7 +74,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		bool active;
 		int mode;	/*  */
 	} F;
-	struct I {	/* -I[f|p|s]dx[/dy[/<dz>..]] */
+	struct I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]] */
 		bool active;
 		unsigned int ncol;
 		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
@@ -122,8 +122,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deal
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-Fi|d|t] [-I[b|p|f|s]<dx>[/<dy>[/<dz>..]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -142,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t: Tables:  Same as D but the counts resets per table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I- to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
 	GMT_Option (API, "V,a");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
 	GMT_Option (API, "bi2,d,e,f,g,h,i,o,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -224,11 +224,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->E.abs = true;
+						/* fall through on purpose to 'l' */
 					case 'l':
 						Ctrl->E.mode = -1;
 						break;
 					case 'H':
 						Ctrl->E.abs = true;
+						/* fall through on purpose to 'h' */
 					case 'h':
 						Ctrl->E.mode = +1;
 						break;
@@ -259,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					case 'f': Ctrl->I.mode = BEST_FOR_FFT; break;
 					case 's': Ctrl->I.mode = BEST_FOR_SURF; break;
 					case 'b': Ctrl->I.mode = BOUNDBOX; break;
-					case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;
+					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;	/* -I- is backwards compatible */
 					default: j = 0;	break;
 				}
 				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
@@ -300,6 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 
 			case 'b':	/* -b[i]c will land here */
 				if (gmt_M_compat_check (GMT, 4)) break;
+				/* Otherwise we fall through on purpose to get an error */
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -344,7 +347,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
 	uint64_t col, ncol = 0, n = 0, n_alloc = GMT_BIG_CHUNK;
 
-	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
+	char file[PATH_MAX] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 	char buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""}, *t_ptr = NULL;
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
@@ -764,7 +767,11 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
 			if (give_r_string) ncol = 2;	/* Since we only will concern ourselves with lon/lat or x/y */
-
+			if (ncol == 0) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Something went wrong, ncol is still = 0. Maybe a call from an external program? Have to abort here.\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
@@ -848,7 +855,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
-		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], GMT_BUFSIZ-1);	/* Grab name of current file while we can */
+		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], PATH_MAX-1);	/* Grab name of current file while we can */
 		
 	}
 	if (GMT->common.a.active) {

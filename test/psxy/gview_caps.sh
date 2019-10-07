@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing a S polar cap using -JG in a variety of views
 ps=gview_caps.ps
 gmt grdmath -R0.5/6.5/0.5/9.5 -I1.5 XCOL 36 MUL 72 SUB = lat.nc

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *
@@ -32,6 +32,8 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_gsformats.h"
+
 #define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
@@ -77,8 +79,8 @@ EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods
 	static char *squote = "\'";
 	struct popen2 {
 		int fd[2];		/* The input [0] and output [1] file descriptors */
-		int n_closed;	/* Number of times we have called gmt_pclose */
-	    pid_t child_pid;	/* Pid of child */
+		int n_closed;		/* Number of times we have called gmt_pclose */
+		pid_t child_pid;	/* Pid of child */
 	};
 #endif
 
@@ -108,7 +110,8 @@ enum GMT_KML_Elevation {
 
 enum psconv_alias {
 	PSC_LINES = 0,
-	PSC_TEXT = 1
+	PSC_TEXT = 1,
+	PSC_GEO = 2
 };
 
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
@@ -121,13 +124,13 @@ struct PS2RASTER_CTRL {
 	struct PS2R_A {             /* -A[+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u] */
 		bool active;
 		bool max;          /* Only scale if dim exceeds the given size */
-		bool round;        /* Round HiRes BB instead of ceil */
-		bool strip;        /* Remove the -U time-stamp */
+		bool round;        /* Round HiRes BB instead of ceil (+r) */
+		bool strip;        /* Remove the -U time-stamp (+u)*/
 		bool resize;       /* Resize to a user selected size */
 		bool rescale;      /* Resize to a user selected scale factor */
-		bool outline;      /* Draw frame around plot with selected pen [0.25p] */
-		bool paint;        /* Paint box behind plot with selected fill */
-		bool crop;         /* If true we must find the BB; turn off via -A- */
+		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
+		bool paint;        /* Paint box behind plot with selected fill (+g) */
+		bool crop;         /* If true we must find the BB; turn off via -A+n */
 		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double new_size[2];
 		double margin[4];
@@ -173,9 +176,9 @@ struct PS2RASTER_CTRL {
 	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
-	struct PS2R_Q {	/* -Q[g|t]<bits> */
+	struct PS2R_Q {	/* -Q[g|t]<bits> -Qp */
 		bool active;
-		bool on[2];	/* [0] for graphics, [1] for text antialiasing */
+		bool on[3];	/* [0] for graphics, [1] for text antialiasing, [2] for pdfmark GeoPDF */
 		unsigned int bits[2];
 	} Q;
 	struct PS2R_S {	/* -S */
@@ -213,31 +216,31 @@ struct PS2RASTER_CTRL {
 struct popen2 * gmt_popen2 (const char *cmdline) {
 	struct popen2 *F = NULL;
 	/* Must implement a bidirectional popen instead */
-    pid_t p;
-    int pipe_stdin[2] = {0, 0}, pipe_stdout[2] = {0, 0};
+	pid_t p;
+	int pipe_stdin[2] = {0, 0}, pipe_stdout[2] = {0, 0};
 
-    if (pipe(pipe_stdin))  return NULL;
-    if (pipe(pipe_stdout)) return NULL;
+	if (pipe (pipe_stdin))  return NULL;
+	if (pipe (pipe_stdout)) return NULL;
 
-    printf("pipe_stdin[0] = %d,  pipe_stdin[1]  = %d\n", pipe_stdin[0], pipe_stdin[1]);
-    printf("pipe_stdout[0] = %d, pipe_stdout[1] = %d\n", pipe_stdout[0], pipe_stdout[1]);
+	printf ("pipe_stdin[0] = %d,  pipe_stdin[1]  = %d\n", pipe_stdin[0], pipe_stdin[1]);
+	printf ("pipe_stdout[0] = %d, pipe_stdout[1] = %d\n", pipe_stdout[0], pipe_stdout[1]);
 
-    if ((p = fork()) < 0) return NULL; /* Fork failed */
+	if ((p = fork()) < 0) return NULL; /* Fork failed */
 
-    if(p == 0) { /* child */
-        close (pipe_stdin[1]);
-        dup2 (pipe_stdin[0], 0);
-        close (pipe_stdout[0]);
-        dup2 (pipe_stdout[1], 1);
-        execl ("/bin/sh", "sh", "-c", cmdline, NULL);
-        perror ("execl"); exit (99);
-    }
+	if (p == 0) { /* child */
+		close (pipe_stdin[1]);
+		dup2 (pipe_stdin[0], 0);
+		close (pipe_stdout[0]);
+		dup2 (pipe_stdout[1], 1);
+		execl ("/bin/sh", "sh", "-c", cmdline, NULL);
+		perror ("execl"); exit (99);
+	}
 	/* Return the file handles back via structure */
 	F = calloc (1, sizeof (struct popen2));
-    F->child_pid = p;
-    F->fd[1] = pipe_stdin[1];
-    F->fd[0] = pipe_stdout[0];
-    return F;
+	F->child_pid = p;
+	F->fd[1] = pipe_stdin[1];
+	F->fd[0] = pipe_stdout[0];
+	return F;
 }
 
 #ifndef _WIN32
@@ -268,13 +271,12 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]]
 	 */
 
-	bool error = false;
-	unsigned int pos = 0;
+	unsigned int pos = 0, error = 0;
 	int j, k = 0, trim_j = -1;
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
-	Ctrl->A.active = Ctrl->A.crop = true;	/* The default is to crop unless we get -A- */
+	Ctrl->A.active = Ctrl->A.crop = true;	/* The default is to crop unless we get -A+n */
 
 	/* For historical reasons we may encounter -A-<stuff> or -Au- so check for both */
 	
@@ -307,7 +309,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 		}
 	}
 	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
-	/* Here we are doing the NEW syntax parsin */
+	/* Here we are doing the NEW syntax parsing */
 	strncpy (txt, arg, GMT_LEN128-1);
 	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
@@ -340,7 +342,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 						break;
 					default:
 						error++;
-						GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A: Must specify 1, 2, or 4 margins\n");
+						GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A+m: Must specify 1, 2, or 4 margins\n");
 						break;
 				}
 				break;
@@ -521,7 +523,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
@@ -538,16 +540,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to adjusted BoundingBox, with <margin(s)> being\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[u] for uniform margin for all 4 sides.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>[u]/<yoff>[u] for separate x- and y-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[u] for uniform margin for all 4 sides,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>[u]/<yoff>[u] for separate x- and y-margins, or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] for separate w-,e-,s-,n-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to leave the BoundingBox as is.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to outline the BoundingBox [%s].\n",
 	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (GhostScript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append unit u (%s) [%c].\n",
 	             GMT_DIM_UNITS_DISPLAY, &API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
@@ -558,14 +560,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is same directory as PS files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D. to place the output in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set raster resolution in dpi [default = 720 for images in a PDF, 300 for other formats].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force the output file name. By default output names are constructed\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the input names as base, which are appended with an appropriate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your ghostscript executable.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined and appended automatically.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your GhostScript executable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, ghostscript path is fished from the registry.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, GhostScript path is fished from the registry.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If this fails you can still add the GS path to system's path\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or give the full path here.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
@@ -587,7 +589,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Qp to create a GeoPDF (requires -Tf).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the GhostScript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
@@ -599,9 +602,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your ghostscript version].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your GhostScript version].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append - to get a grayscale image [color].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append +m to get a monochrome (grayscale) image [color].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For example, -Tef creates both an EPS and PDF file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and show the\n");
@@ -664,7 +667,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, mode;
 	int j = 0;
-	bool grayscale, halfbaked = false;
+	bool grayscale = false, halfbaked = false;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -680,7 +683,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] or -A- */
+			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][+n][+r][+s<width>[u][/<height>[u]]] */
 				n_errors += parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
@@ -701,8 +704,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
+					char *ext = NULL;
 					Ctrl->F.file = strdup (opt->arg);
-					if (!gmt_M_file_is_memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+					if (!gmt_M_file_is_memory (Ctrl->F.file) && (ext = strchr (Ctrl->F.file, '.'))) {	/* Make sure file name has no graphics file format extension */
+						unsigned int kk = 0;
+						ext++;	/* Skip the period */
+						while (gmt_session_format[kk] && strcmp (ext, gmt_session_format[kk]))
+							kk++;	/* Not matching that format, go to next */
+						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
+							gmt_chop_ext (Ctrl->F.file);
+					}
 				}
 				else
 					n_errors++;
@@ -758,21 +769,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					mode = PSC_LINES;
 				else if (opt->arg[0] == 't')
 					mode = PSC_TEXT;
+				else if (opt->arg[0] == 'p')
+					mode = PSC_GEO;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -Q option requires setting -Qg or -Qt!\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -Q option requires setting -Qg, -Qp, or -Qt!\n");
 					n_errors++;
 					continue;
 
 				}
 				Ctrl->Q.on[mode] = true;
-				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
+				if (mode < PSC_GEO) Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				break;
 			case 'S':	/* Write the GS command to STDERR */
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
 				Ctrl->T.active = true;
-				grayscale = ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-');
+				if ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-')	/* Old deprecated way of appending a single - sign at end */
+					grayscale = true;
+				else if (strstr (opt->arg, "+m"))	/* Modern monochrome option (like -M in grdimage) */
+					grayscale = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
@@ -811,7 +827,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						case 't':	/* TIFF */
 							Ctrl->T.device = (grayscale) ? GS_DEV_TIFG : GS_DEV_TIF;
 							break;
-						case '-':	/* Just skip the trailing - for grayscale since it is handled separately */
+						case '-':	/* Just skip the trailing - for grayscale since it is handled separately above */
+							break;
+						case '+':	/* Just skip the trailing +m for grayscale since it is handled separately above */
+							j++;
 							break;
 						default:
 							gmt_default_error (GMT, opt->option);
@@ -865,10 +884,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
+	                                   "Syntax error: Creating GeoPDF format requires -Tf\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
 	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_TEXT] && (Ctrl->Q.bits[PSC_TEXT] < 1 || Ctrl->Q.bits[PSC_TEXT] > 4),
 	                                   "Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
@@ -979,7 +1001,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A (if used here) option but on a in-memory PS 'file' */
-	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
+	char      cmd[GMT_LEN512] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
 	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;
@@ -1023,7 +1045,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the internal plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
-	/* Send the PS down ghostscripts throat */
+	/* Send the PS down GhostScripts throat */
 #ifdef _WIN32
 	fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
 	fflush (fp);
@@ -1033,7 +1055,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 #else
  	write (H->fd[1], PS->data, PS->n_bytes);
 	/* Now closed for writing */
-    gmt_pclose2 (&H, 1);
+	gmt_pclose2 (&H, 1);
 	fh = H->fd[0];	/* File handle for reading */
 #endif
 
@@ -1204,7 +1226,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
-	/* Send the PS down ghostscript's throat */
+	/* Send the PS down GhostScript's throat */
 #ifdef _WIN32
 	if ((n_bytes = fwrite (PS->data, sizeof(char), PS->n_bytes, fp)) != PS->n_bytes)
 		GMT_Report (API, GMT_MSG_NORMAL,
@@ -1226,7 +1248,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	else {	/* On non-Windows and want a raster back */
  		write (H->fd[1], PS->data, PS->n_bytes);
 		/* Now closed for writing */
-    	gmt_pclose2 (&H, 1);
+		gmt_pclose2 (&H, 1);
 		fh = H->fd[0];	/* File handle for reading */
 	}
 #endif
@@ -1278,7 +1300,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
-	else {
+	else {	/* For MEX, probably */
 		for (row = 0; row < nRows; row++) {
 			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
@@ -1289,7 +1311,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	gmt_M_free (API->GMT, tmp);
 
 #ifdef _WIN32
-	if (close (fh) == -1) 		/* Close read end of pipe */
+	if (close (fh) == -1)	/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close read end of pipe.\n");
 #else
 	/* Now closed for reading */
@@ -1308,7 +1330,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char **ps_names, char *gs_BB, char *gs_params, char *device[], char *device_options[], char *ext[]) {
-	char out_file[GMT_LEN256] = {""};
+	char out_file[PATH_MAX] = {""};
 	int    error = 0;
 	double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 
@@ -1327,11 +1349,11 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 
 	if (Ctrl->T.active) {		/* Then write the converted file into a file instead of storing it into a Image struct */
-		char t[GMT_LEN256] = {""};
+		char t[PATH_MAX] = {""};
 		sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 		strcat (out_file, t);
 		if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
-			strncpy (t, Ctrl->F.file, GMT_LEN256-1);
+			strncpy (t, Ctrl->F.file, PATH_MAX-1);
 		}
 		else {
 			if (API->tmp_dir)	/* Use the established temp directory */
@@ -1348,16 +1370,16 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 			strcat (out_file, " -");
 		}
 	}
-	if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run ghostscript to convert the PS to the desired output format */
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
+	if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run GhostScript to convert the PS to the desired output format */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap GhostScript in pipes.\n");
 		error++;
 	}
 	return error;
 }
 
-GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, char *ffile) {
+GMT_LOCAL int wrap_the_PS_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, char *ffile) {
 	/* Replace main file with the sandwich of [bfile] + main + [ffile].  We know at least
-	   one of bfile or ffile exists, as do main. */
+	   one of bfile or ffile exists when this function is called, as do main of course. */
 	char newfile[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	
@@ -1369,21 +1391,29 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (bfile) {	/* We have a background PS layer that should go first */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepend %s as background in %s\n", bfile, newfile);
 		gmt_ps_append (GMT, bfile, 1, fp);	/* Start with this file but skip trailer */
 		if (ffile) {	/* There is also a foreground PS layer that should go last */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as main content in %s\n", main, newfile);
 			gmt_ps_append (GMT, main,  0, fp);	/* Append main file first but exclude both header and trailer */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as foreground in %s\n", ffile, newfile);
 			gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 		}
-		else	/* No foreground, append main and its trailer */
+		else {	/* No foreground, append main and its trailer */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as main content in %s\n", main, newfile);
 			gmt_ps_append (GMT, main, 2, fp);	/* Append main file; skip header but include trailer */
+		}
 	}
 	else {	/* Just a foreground layer to append */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepend %s as main in %s\n", main, newfile);
 		gmt_ps_append (GMT, main,  1, fp);	/* Begin with main file but exclude trailer */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as foreground in %s\n", ffile, newfile);
 		gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 	}
 	fclose (fp);	/* Completed */
 	
 	/* Now remove original ps_file and rename the new file to main */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove old %s\n", main);
 	if (gmt_remove_file (GMT, main)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove original file %s.\n", main);
 		return (GMT_RUNTIME_ERROR);
@@ -1517,7 +1547,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Your ghostscript version (%d.%d) no longer supports the SVG device.\n",
+		GMT_Report (API, GMT_MSG_NORMAL, "Your GhostScript version (%d.%d) no longer supports the SVG device.\n",
 		            gsVersion.major, gsVersion.minor);
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (GMT_RUNTIME_ERROR);
@@ -1550,7 +1580,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it
    	   right now and remove this conditional once it becomes the default */
 
-	/* INitial assignment of gs_params. NOte: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
+	/* INitial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
 		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
@@ -1706,7 +1736,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			strncpy (ps_file, ps_names[k], PATH_MAX-1);
 
 		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
-			if (wrap_the_sandwich (GMT, ps_file, Ctrl->M[0].file, Ctrl->M[1].file)) {
+			if (wrap_the_PS_sandwich (GMT, ps_file, Ctrl->M[0].file, Ctrl->M[1].file)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_file);
 				if (fp) fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
@@ -1722,7 +1752,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff, but pass any font encodings */
 			int dump = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
-			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place temporary EPS files in session dir */
+				sprintf (no_U_file, "%s/psconvert_%db.eps", API->gwf_dir, (int)getpid());
+			else
+				sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
 			if (fp2) {fclose (fp2);		fp2 = NULL;}
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				unsigned int kk;
@@ -1774,7 +1807,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
-			sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place BB file in session dir */
+				sprintf (BB_file, "%s/psconvert_%dc.bb", API->gwf_dir, (int)getpid());
+			else
+				sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %c%s%c 2> %c%s%c",
 			         at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
@@ -1819,7 +1855,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c -f%c%s%c",
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c %c%s%c",
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
@@ -1863,7 +1899,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
-		/* Open temporary file to be processed by ghostscript. When -Te or -TE is used, tmp_file is for keeps */
+		/* Open temporary file to be processed by GhostScript. When -Te or -TE is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Format EPS file...\n");
@@ -1880,7 +1916,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
+			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place temporary EPS files in session dir */
+				sprintf (tmp_file, "%s/psconvert_%dd.eps", API->gwf_dir, (int)getpid());
+			else
+				sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				continue;
@@ -1954,7 +1993,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* Do the math on the BoundingBox and translation coordinates */
 
-		if (Ctrl->P.active && landscape)
+		if ((Ctrl->P.active && landscape) || (landscape && Ctrl->A.crop))
 			xt = -x1, yt = -y0, w = y1-y0, h = x1-x0, r = -90;
 		else
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
@@ -1987,7 +2026,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				continue;
 			}
 			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
-				char *ptmp = NULL, xx1[64], xx2[64], yy1[64], yy2[64];
+				char *ptmp = NULL, xx1[128], xx2[128], yy1[128], yy2[128];
 				sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
 				west = atof (c1);		east = atof (c2);
 				south = atof (c3);		north = atof (c4);
@@ -2080,7 +2119,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				r = 0;
 			}
 			else if (Ctrl->A.resize) {
-				/* We are going to trick ghostscript to do what -dEPSFitPage was supposed to do but doesn't
+				/* We are going to trick GhostScript to do what -dEPSFitPage was supposed to do but doesn't
 				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
@@ -2110,7 +2149,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						old_scale_x = 1;		old_scale_y = 1;	/* Assume this */
 						/* Receed two lines to position us again in a comment line (hopefully %%EndPageSetup) */
 						fseek (fp, -(off_t)(strlen(line_)+strlen(t3)+2U), SEEK_CUR);
-						/* But because the line termination issue we must test if we seeked back long enough */
+						/* But because the line termination issue we must test if we sought back long enough */
 						c = fgetc (fp);
 						if (c == '%')
 							fseek (fp, -(off_t)(1U), SEEK_CUR);		/* Just receed the read character (file is unix terminate) */
@@ -2181,52 +2220,57 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
 
-				/* Write a GeoPDF registration info */
+				if (Ctrl->Q.on[PSC_GEO]) {	/* Write a GeoPDF registration info */
 
-				/* Allocate new control structures */
-				to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-				from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
-				to_gdalread->W.active = true;
-				from_gdalread->ProjRefPROJ4 = proj4_cmd;
-				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
-				if (from_gdalread->ProjRefWKT != NULL) {
-					char  *new_wkt = NULL;
+					/* Allocate new control structures */
+					to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+					from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+					to_gdalread->W.active = true;
+					from_gdalread->ProjRefPROJ4 = proj4_cmd;
+					gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
+					if (from_gdalread->ProjRefWKT != NULL) {
+						char  *new_wkt = NULL;
 
-					fprintf (fpo, "\n%% embed georegistation info\n");
-					fprintf (fpo, "[ {ThisPage} <<\n");
-					fprintf (fpo, "\t/VP [ <<\n");
-					fprintf (fpo, "\t\t/Type /Viewport\n");
-					fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
-					fprintf (fpo, "\t\t/Measure <<\n");
-					fprintf (fpo, "\t\t\t/Type /Measure\n");
-					fprintf (fpo, "\t\t\t/Subtype /GEO\n");
-					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
-					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
-					         south, west, north, west, north, east, south, east);
-					if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
-						fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
-					else {
-						/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
-						double h0, v0, x1,x2,y1,y2;
-						h0 = gmtBB_x0 + xt_bak;		/* x|yt_bak are negative */
-						v0 = gmtBB_y0 + yt_bak;
-						x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
-						y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
-						fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+						fprintf (fpo, "\n%% embed georegistation info\n");
+						fprintf (fpo, "[ {ThisPage} <<\n");
+						fprintf (fpo, "\t/VP [ <<\n");
+						fprintf (fpo, "\t\t/Type /Viewport\n");
+						fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
+						fprintf (fpo, "\t\t/Measure <<\n");
+						fprintf (fpo, "\t\t\t/Type /Measure\n");
+						fprintf (fpo, "\t\t\t/Subtype /GEO\n");
+						fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
+						fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
+						         south, west, north, west, north, east, south, east);
+						if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
+							fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
+						else {
+							/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
+							double h0, v0, x1,x2,y1,y2;
+							h0 = gmtBB_x0 + xt_bak;		/* x|yt_bak are negative */
+							v0 = gmtBB_y0 + yt_bak;
+							x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
+							y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
+							if (landscape_orig) {		/* Uggly hack but so far have no better solution */
+								x2 = gmtBB_width / w;		x1 = 1 - x2;	
+								y2 = gmtBB_height / h;		y1 = 1 - y2;	
+							}
+							fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+						}
+						fprintf (fpo, "\t\t\t/GCS <<\n");
+						fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
+						fprintf (fpo, "\t\t\t\t/WKT\n");
+						new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
+						fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
+						fprintf (fpo, "\t\t\t>>\n");
+						fprintf (fpo, "\t\t>>\n");
+						fprintf (fpo, "\t>>]\n");
+						fprintf (fpo, ">> /PUT pdfmark\n\n");
+						if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
 					}
-					fprintf (fpo, "\t\t\t/GCS <<\n");
-					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
-					fprintf (fpo, "\t\t\t\t/WKT\n");
-					new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
-					fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
-					fprintf (fpo, "\t\t\t>>\n");
-					fprintf (fpo, "\t\t>>\n");
-					fprintf (fpo, "\t>>]\n");
-					fprintf (fpo, ">> /PUT pdfmark\n\n");
-					if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
+					gmt_M_free (GMT, to_gdalread);
+					gmt_M_free (GMT, from_gdalread);
 				}
-				gmt_M_free (GMT, to_gdalread);
-				gmt_M_free (GMT, from_gdalread);
 				continue;
 			}
 #endif
@@ -2249,7 +2293,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 			gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
-		/* Build the converting ghostscript command and execute it */
+		/* Build the converting GhostScript command and execute it */
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16] = {""};
@@ -2291,7 +2335,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				sprintf (resolution, "-g%dx%d -r%g -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
 			else
 				sprintf (resolution, "-g%dx%d -r%g", pix_w, pix_h, Ctrl->E.dpi);
-			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c -f%c%s%c",
+			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
 
@@ -2638,7 +2682,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
 	   four GS_32|64 + GMT_32|64 combinations.
 
-		 Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
+		 Adapted from snippets at http://www.daniweb.com/software-development/c/code/217174
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */

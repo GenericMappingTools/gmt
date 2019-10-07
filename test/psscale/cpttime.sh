@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # See issue # 1092.  Fixed in r18275.
 ps=cpttime.ps
 cat << EOF  > tmp.cpt

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt psrose with -Cm and basemap with old arrow attribute syntax
 
 ps=oldrose.ps

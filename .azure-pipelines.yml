@@ -1,0 +1,135 @@
+# Configuration for Azure Pipelines
+########################################################################################
+
+# Only build the master branch, tags, and PRs (on by default) to avoid building random
+# branches in the repository until a PR is opened.
+trigger:
+  branches:
+    include:
+    - master
+    - 6.0
+    - 5.4
+    - refs/tags/*
+
+# Scheduled build
+schedules:
+- cron: "0 0 * * *"
+  displayName: Scheduled daily build
+  branches:
+    include:
+    - master
+    - 6.0
+  always: true
+- cron: "0 0 1 * *"
+  displayName: Scheduled monthly build
+  branches:
+    include:
+    - 5.4
+  always: true
+
+jobs:
+
+# Mac - Compile only
+########################################################################################
+- job:
+  displayName: 'Mac | Compile only'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Mac - Build docs + Package
+########################################################################################
+- job:
+  displayName: 'Mac | Build docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Mac - Test
+########################################################################################
+- job:
+  displayName: 'Mac | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.14'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: true
+
+  steps:
+  - template: ci/azure-pipelines-mac.yml
+
+# Windows - Compile only
+########################################################################################
+- job:
+  displayName: 'Windows | Compile only'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-windows.yml
+
+# Windows - Build Docs + Package
+########################################################################################
+- job:
+  displayName: 'Windows | Build Docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  variables:
+    BUILD_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-windows.yml
+
+# Windows - Test
+########################################################################################
+- job:
+  displayName: 'Windows | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+  timeoutInMinutes: 360
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  variables:
+    BUILD_DOCS: false
+    PACKAGE: false
+    TEST: true
+
+  steps:
+  - template: ci/azure-pipelines-windows.yml

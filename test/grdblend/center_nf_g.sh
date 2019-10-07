@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Shows bug in grdblend when cutting across input grids
 # The bottom region should equal the inset box on top.
 # This is for the new netCDF format. Gridline-registration.

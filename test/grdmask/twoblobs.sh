@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script demonstrating problem discussed in message #7065 [Sabin].
 # grdmask does not create the mask for the polygon in the W hemisphere (?)
 ps=twoblobs.ps

@@ -124,7 +124,6 @@ check_function_exists (fcntl            HAVE_FCNTL)
 check_function_exists (fopen64          HAVE_FOPEN64)
 check_function_exists (fseeko           HAVE_FSEEKO)
 check_function_exists (ftello           HAVE_FTELLO)
-check_function_exists (getopt           HAVE_GETOPT)
 check_function_exists (getpwuid         HAVE_GETPWUID)
 check_function_exists (abs              HAVE_ABS)
 check_function_exists (llabs            HAVE_LLABS)
@@ -178,7 +177,7 @@ if (WIN32)
 endif (WIN32)
 
 # Check if these functions are declared (might not be the case although they
-# are build-in)
+# are built-in)
 check_symbol_exists (strdup    string.h DECLARED_STRDUP)
 check_symbol_exists (strsep    string.h DECLARED_STRSEP)
 
@@ -533,7 +532,7 @@ cmake_pop_check_state()
 #check_type_size (double         SIZEOF_DOUBLE)
 #check_type_size (float         SIZEOF_FLOAT)
 #check_type_size (int            SIZEOF_INT)
-#check_type_size (long           SIZEOF_LONG) 
+#check_type_size (long           SIZEOF_LONG)
 #check_type_size (short          SIZEOF_SHORT)
 
 if (NOT DEFINED STDC_HEADERS)
@@ -612,5 +611,3 @@ endif (NOT DEFINED STDC_HEADERS)
 #     int main (){return 0;}
 #     "
 #   SIZEOF_WCHAR_T_IS_4)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

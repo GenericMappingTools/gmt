@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt filter1d highpass and lowpass
 
 ps=highpass.ps

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test makecpt -S options
 
 ps=autocpt.ps

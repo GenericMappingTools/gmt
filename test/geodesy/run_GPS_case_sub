@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#	Testing gpsgridder for small vs large region, with our without weights
+#
+#  Get data, region, dinc, ginc, decimate, weight option from first six arguments
+#
+D=$1
+R=-R$2
+I=$3
+ginc=$4
+dec=$5
+W=$6
+
+#
+# Reformat the data and set the minimum sigma at 0.6 mm/yr
+#
+gmt select $D $R -fg | awk '{su = ($5 < .6 ? .6 : $5);sv = ($6 < .6 ? .6 : $6);print($1,$2,$3,$4,su,sv) }' > data.lluv
+
+#
+# Use blockmean to avoid aliasing and combine u,v into one file
+gmt blockmean $R -I$I data.lluv -fg -i0,1,2,4 -W > blk.llu
+gmt blockmean $R -I$I data.lluv -fg -i0,1,3,5 -W > blk.llv
+gmt convert -A blk.llu blk.llv -o0-2,6,3,7 > tmp.lluv
+#
+# Change some of the e-components of the vectors and scale errors by factor of 5
+# We expect the result with weight to differ from the run without considering weights
+#
+awk '{if($1 > -116.6 && $1 < -116.5 && $2 > 33.5 && $2 < 33.7) print($1,$2,-$3,$4,5*$5,5*$6); else print($0);}' < tmp.lluv > blk.lluv
+#
+#  Do the gridding.
+#
+# Only use ~1/4 of the eigenvalues
+gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Fd4 -r -Cn0.25+feigen.txt -S0.50 $W
+#
+
+gmt set FORMAT_GEO_MAP dddF
+gmt select blk.lluv $R -fg | awk '{ print($0," 0 ") }' > data.lluvenct
+#
+#   first make a mask
+#
+gmt grdlandmask -Gmask.nc -RGPS_u.nc -Df
+gmt grdmath GPS_u.nc mask.nc MUL = GPS_u.nc
+gmt grdmath GPS_v.nc mask.nc MUL = GPS_v.nc
+#
+#   make the map
+#
+gmt pscoast -R -JM7i -P -Glightgray -Ba1f30m -BWSne -K -Df -X0.7i -Wfaint
+gmt psxy @CA_fault_data.txt -J -R -W.5 -O -K
+gmt psvelo data.lluvenct -J -R -Se.008i/0.95/8 -A9p -W0.4p,red -O -K
+gmt psxy -R -J -O -K -W0.25p,green -L << EOF
+-116.6	33.5
+-116.5	33.5
+-116.5	33.7
+-116.6	33.7
+EOF
+# Shrink down heads of vectors shorter than 5 km
+gmt grdvector GPS_u.nc GPS_v.nc -Ix$dec/$dec -J -R -O -Q0.03i+e+n5 -Gblue -W0.4p,blue -S100i --MAP_VECTOR_SHAPE=0.2

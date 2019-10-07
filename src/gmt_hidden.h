@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_hidden.h contains the hidden support structures for the 5 GMT resources
@@ -29,8 +29,8 @@
  * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET, etc...)
  */
 
-#ifndef _GMT_HIDDEN_H
-#define _GMT_HIDDEN_H
+#ifndef GMT_HIDDEN_H
+#define GMT_HIDDEN_H
 
 GMT_LOCAL inline struct GMT_DATASET_HIDDEN     * gmt_get_DD_hidden (struct GMT_DATASET *p)     {return (p->hidden);}
 GMT_LOCAL inline struct GMT_DATATABLE_HIDDEN   * gmt_get_DT_hidden (struct GMT_DATATABLE *p)   {return (p->hidden);}
@@ -70,16 +70,16 @@ struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment */
 struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API */
 	enum GMT_enum_write mode;	/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	enum GMT_enum_pol pol_mode;	/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
-	uint64_t id;            /* The internal number of the segment */
-	size_t n_alloc;         /* The current allocation length of rows */
-	unsigned int range;     /* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
-	int pole;               /* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
-	double dist;            /* Distance from a point to this feature */
-	double lat_limit;       /* For polar caps: the latitude of the point closest to the pole */
-	struct GMT_OGR_SEG *ogr;/* NULL unless OGR/GMT metadata exist for this segment */
+	uint64_t id;			/* The internal number of the segment */
+	size_t n_alloc;			/* The current allocation length of rows */
+	unsigned int range;		/* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
+	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
+	double dist;			/* Distance from a point to this feature */
+	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
+	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
-	char *file[2];          /* Name of file or source [0 = in, 1 = out] */
+	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 #ifdef GMT_BACKWARDS_API
 	double **coord;
 #endif
@@ -122,9 +122,9 @@ struct GMT_PALETTE_HIDDEN {	/* Supporting information hidden from the API */
 };
 
 struct GMT_POSTSCRIPT_HIDDEN {	/* Supporting information hidden from the API */
-	uint64_t id;                /* The internal number of the data set */
-	size_t n_alloc;             /* Memory allocated so far */
-	unsigned int alloc_level;   /* The level it was allocated at */
+	uint64_t id;			/* The internal number of the data set */
+	size_t n_alloc;			/* Memory allocated so far */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
 
@@ -158,7 +158,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
-	size_t n_alloc;                  /* Bytes allcoated for this grid */	
+	size_t n_alloc;                  /* Bytes allocated for this grid */	
 	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char   flags[4];                 /* Flags used for ESRI grids */
@@ -205,4 +205,4 @@ struct GMT_IMAGE_HIDDEN {	/* Supporting information hidden from the API */
 /* Get the segments next segment (for holes in perimeters */
 GMT_LOCAL inline struct GMT_DATASEGMENT * gmt_get_next_S (struct GMT_DATASEGMENT *S) {struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S); return (SH->next);}
 
-#endif /* _GMT_HIDDEN_H */
+#endif /* GMT_HIDDEN_H */

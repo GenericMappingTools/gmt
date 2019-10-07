@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Compare gmt gravfft and gmt grdfft calculations of admittance and coherence between bathymetry and geoid over the Azores
 ps=cross_spec.ps

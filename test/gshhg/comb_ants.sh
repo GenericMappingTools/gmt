@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing pscoast for plotting either of the Antarcticas in GSHHG > 2.3.0
 
 ps=comb_ants.ps

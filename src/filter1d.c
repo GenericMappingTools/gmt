@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the filter1d application.
@@ -44,7 +44,7 @@
 #define THIS_MODULE_PURPOSE	"Time domain filtering of 1-D data tables"
 #define THIS_MODULE_KEYS	"<D{,>D},FD(1"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghio" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghijo" GMT_OPT("HMm")
 
 /* Control structure for filter1d */
 
@@ -68,7 +68,7 @@ struct FILTER1D_CTRL {
 		bool active;
 		double value;
 	} L;
-	struct N {	/* -N<t_col> or -Nc|[-|+]<unit>[+a] */
+	struct N {	/* -N<t_col> or -Nc|<unit>[+a] */
 		bool active;
 		bool add_col;
 		char unit;
@@ -181,9 +181,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E] [-I<ignore_val>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/][-|+]<inc>[<unit>][+n|a]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[<unit>][+e|n|a]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -228,13 +228,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc< is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [-|+][<unit>]<inc>, with - for fast (Flat Earth) or + for slow (ellipsoidal) calculations [great circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   <inc>[<unit>] and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column or a comma-separated list.\n");
-	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,:,.");
+	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,j,o,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				else
 					sval = atoi (opt->arg);
 				if (gmt_M_compat_check (GMT, 5) && (strstr (opt->arg, "+a") || (opt->arg[0] == 'g' || opt->arg[0] == 'c'))) {	/* Deprecated syntax */
-					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[-|+][<unit>][+a] option is deprecated; use -T[<min>/<max>/]<int>[-|+][<unit>][+a|n] instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[<unit>][+a] option is deprecated; use -T[<min>/<max>/]<int>[<unit>][+a|n] instead.\n");
 					if ((c = strstr (opt->arg, "+a"))) {	/* Want to output any spatial distances computed */
 						c[0] = '\0';	/* Chop off the modifier */
 						Ctrl->N.add_col = true;
@@ -384,7 +384,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 	}
 
 	if (Ctrl->T.active)	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, Ctrl->N.col);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND, Ctrl->N.col);
 	if (Ctrl->N.spatial) Ctrl->T.T.spatial = Ctrl->N.spatial;	/* Obsolete -N settings propagated to -T */
 	if (Ctrl->N.add_col) Ctrl->T.T.add = true;	/* Obsolete -N+a settings propagated to -T */
 	

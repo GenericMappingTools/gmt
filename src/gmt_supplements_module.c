@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2012-2018
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -41,15 +40,11 @@ struct Gmt_moduleinfo {
 };
 
 static struct Gmt_moduleinfo g_supplements_module[] = {
+	{"earthtide", "geodesy", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
+	{"gpsgridder", "geodesy", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
+	{"psvelo", "geodesy", "Plot velocity vectors, crosses, and wedges on maps", "<D{,>X}"},
 	{"gshhg", "gshhg", "Extract data tables from binary GSHHS or WDBII data files", ">D}"},
 	{"img2grd", "img", "Extract a subset from an img file in Mercator or Geographic format", "<G{,GG}"},
-	{"pscoupe", "meca", "Plot cross-sections of focal mechanisms", "<D{,>X}"},
-	{"psmeca", "meca", "Plot focal mechanisms on maps", "<D{,>X}"},
-	{"pspolar", "meca", "Plot polarities on the inferior focal half-sphere on maps", "<D{,>X}"},
-	{"pssac", "meca", "Plot seismograms in SAC format on maps", ">X},RG-"},
-	{"psvelo", "meca", "Plot velocity vectors, crosses, and wedges on maps", "<D{,>X}"},
-	{"shake", "meca", "Compute Peak Ground Acceleration/Velocity and Intensity", "<G{,LD(=,>GG)"},
-	{"vs30", "meca", "Compute VS30 velocities", "<G{,CD(=,GG}"},
 	{"mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
 	{"mgd77header", "mgd77", "Create MGD77 headers from A77 files", ""},
 	{"mgd77info", "mgd77", "Extract information about MGD77 files", ""},
@@ -59,12 +54,8 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77path", "mgd77", "Return paths to MGD77 cruises and directories", ">D}"},
 	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", ""},
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", ">X}"},
-	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<G{,GG},>DQ"},
-	{"grdppa", "misc", "Automatic extraction of ridge or valley axes", "<G{,>D}"},
-	{"earthtide", "potential", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "ED(,QD(,TD(,>D}"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
-	{"gpsgridder", "potential", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
 	{"gravfft", "potential", "Spectral calculations of gravity, isostasy, admittance, and coherence for grids", "<G{+,GG},DG(,GDC,GDI"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG},LD),TD("},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{+,FD(,GG}"},
@@ -75,6 +66,10 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X}"},
 	{"pssegy", "segy", "Plot a SEGY file on a map", ">X}"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", "GG}"},
+	{"pscoupe", "seis", "Plot cross-sections of focal mechanisms", "<D{,>X}"},
+	{"psmeca", "seis", "Plot focal mechanisms on maps", "<D{,>X}"},
+	{"pspolar", "seis", "Plot polarities on the inferior focal half-sphere on maps", "<D{,>X}"},
+	{"pssac", "seis", "Plot seismograms in SAC format on maps", ">X},RG-"},
 	{"backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},FD("},
 	{"gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,FD(,>D}"},
 	{"grdpmodeler", "spotter", "Evaluate a plate motion model on a geographic grid", "<G{,FD(,GG),>DG"},
@@ -84,9 +79,9 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"originater", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
 	{"polespotter", "spotter", "Find stage poles given fracture zones and abyssal hills", "AD(,CD),FD(,GG},LD)"},
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
-	{"rotsmoother", "spotter", "Get mean rotations and covarience matrices from set of finate rotations", "<D{,>D}"},
+	{"rotsmoother", "spotter", "Get mean rotations and covariance matrices from set of finite rotations", "<D{,>D}"},
 	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">D}"},
-	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", ">D}"},
+	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", "<D{,>D}"},
 	{"x2sys_datalist", "x2sys", "Extract content of track data files", ">D}"},
 	{"x2sys_get", "x2sys", "Get track listing from track index database", ">D}"},
 	{"x2sys_init", "x2sys", "Initialize a new x2sys track database", ""},

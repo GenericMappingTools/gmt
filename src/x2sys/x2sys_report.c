@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2018 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: gmt.soest.hawaii.edu
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys_report will read the crossover data base and report on the statistics
  * of the crossovers for each track and overall.
@@ -133,7 +133,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output results for tracks with more than <nx_min> crossovers only [0, i.e., report all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is external].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
 	GMT_Option (API, "V,.");
 	
@@ -415,7 +415,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
 		unsigned int n_out, n1;
-		char file[GMT_BUFSIZ] = {""};
+		char file[PATH_MAX] = {""};
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
 		struct COE_ADJLIST *adj = NULL;

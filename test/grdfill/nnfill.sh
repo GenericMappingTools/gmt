@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdfill with NN infill of NaN areas
 ps=nnfill.ps
 # Get topo for Hawaiian Islands and set data inside a 200 km radius of 203/20:30 to NaN
@@ -9,4 +9,4 @@ gmt grdfill islands.nc -An -Gnew.nc
 gmt grdimage islands.nc -JQ6i -Ct.cpt -P -Baf -BWSne -Xc -K -Y0.75i > $ps
 gmt grdimage new.nc -J -Ct.cpt -O -K -Baf -BWSne -Y5.15i >> $ps
 echo 203 20:30 400 | gmt psxy -R -J -O -K -SE- -W0.25p >> $ps
-echo "-An" | gmt pstext -R -J -O -F+f24p+cTR -Dj0.2i -Gwhite >> $ps
+gmt pstext -R -J -O -F+f24p+cTR+t"-An" -Dj0.2i -Gwhite >> $ps

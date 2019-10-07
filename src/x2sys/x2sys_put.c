@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2018 by P. Wessel
+ *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: gmt.soest.hawaii.edu
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* x2sys_put will read one track bin file (.tbf) (from x2sys_binlist)
  * and update the track index database. The tbf file has the index
@@ -192,9 +192,9 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL, *new_info = NULL;
 	struct X2SYS_BIX_TRACK *this_track = NULL;
 
-	char track[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
-	char track_file[GMT_BUFSIZ] = {""}, index_file[GMT_BUFSIZ] = {""}, old_track_file[GMT_BUFSIZ] = {""}, old_index_file[GMT_BUFSIZ] = {""};
-	char track_path[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
+	char track[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
+	char track_file[PATH_MAX] = {""}, index_file[PATH_MAX] = {""}, old_track_file[PATH_MAX] = {""}, old_index_file[PATH_MAX] = {""};
+	char track_path[PATH_MAX] = {""}, index_path[PATH_MAX] = {""}, old_track_path[PATH_MAX] = {""}, old_index_path[PATH_MAX] = {""};
 
 	int error = 0, k;
 	bool found_it, skip;
@@ -352,8 +352,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, track_file, track_path);
 	x2sys_path (GMT, index_file, index_path);
 
-	snprintf (old_track_file, (size_t)GMT_BUFSIZ, "%s_old", track_file);
-	snprintf (old_index_file, (size_t)GMT_BUFSIZ, "%s_old", index_file);
+	snprintf (old_track_file, (size_t)PATH_MAX, "%s_old", track_file);
+	snprintf (old_index_file, (size_t)PATH_MAX, "%s_old", index_file);
 	x2sys_path (GMT, old_track_file, old_track_path);
 	x2sys_path (GMT, old_index_file, old_index_path);
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test makecpt -Q options
 
 ps=logcpt.ps

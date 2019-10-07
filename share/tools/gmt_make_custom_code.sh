@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# $Id: gmt_make_custom_code.sh 52 2017-05-05 23:31:19Z pwessel $
-#
-# Copyright (c) 2012-2018
-# by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 2012-2019
+# by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # Below, <TAG> is a users custom shared lib tag set via the argument
@@ -22,7 +20,7 @@ if [ "X$1" = "X" ]; then
 	cat << EOF >&2
 
 	gmt_make_custom_code.sh - Build API glue for new supplement
-	
+
 	gmt_make_custom_code.sh <TAG>
 
 	gmt_make_custom_code.sh assists developers of a custom supplement
@@ -31,14 +29,14 @@ if [ "X$1" = "X" ]; then
 	modules.  It also creates another function that is required by
 	the GMT_Encode_Options API function used by developers of any
 	external APIs, such as MATLAB, Julia, Python, and others.
-	
+
 	You must specify the desired <TAG> as argument to this script.
 
 	Run this script with the <TAG> as arguments and it will create two files:
-	
+
 		gmt_<TAG>_module.h.
 		gmt_<TAG>_module.c.
-	
+
 	The gmt-custom project's CMakeLists.txt files will automatically add
 	these to your provided C code.
 
@@ -72,7 +70,7 @@ rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tm
 if [ -f CMakeLists.txt ]; then
 	LIB_STRING=`grep LIB_STRING CMakeLists.txt | awk -F= '{print $NF}'`
 else
-	LIB_STRING="R${L_TAG} modules accessible via gmt"	
+	LIB_STRING="R${L_TAG} modules accessible via gmt"
 fi
 
 # The output file produced
@@ -86,8 +84,7 @@ COPY_YEAR=$(date +%Y)
 echo "gmt_make_custom_code.sh: Generate ${FILE_CUSTOM_MODULE_H}" >&2
 
 cat << EOF > ${FILE_CUSTOM_MODULE_H}
-/* \$Id\$
- *
+/*
  * Copyright (c) 2016-${COPY_YEAR} by $USER
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -135,8 +132,7 @@ EOF
 echo "gmt_make_custom_code.sh: Generate ${FILE_CUSTOM_MODULE_C}" >&2
 
 cat << EOF > ${FILE_CUSTOM_MODULE_C}
-/* \$Id\$
- *
+/*
  * Copyright (c) 2016-${COPY_YEAR} by $USER
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -262,5 +258,3 @@ const char *gmt_${L_TAG}_module_group (void *API, char *candidate) {
 EOF
 
 exit 0
-
-# vim: set ft=c:

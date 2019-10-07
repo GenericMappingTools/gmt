@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 13
 #
 # Purpose:	Illustrate vectors and contouring

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_hash.h contains definition of the structure used for hashing.
@@ -27,8 +27,8 @@
  * \brief Definition of the structure used for hashing
  */
 
-#ifndef _GMT_HASH_H
-#define _GMT_HASH_H
+#ifndef GMT_HASH_H
+#define GMT_HASH_H
 
 /*--------------------------------------------------------------------
  *			GMT HASH STRUCTURE DEFINITION
@@ -50,4 +50,4 @@ struct GMT_HASH {
 	char *key[GMT_HASH_MAXDEPTH];		/* Name of these entries */
 };
 
-#endif  /* _GMT_HASH_H */
+#endif  /* GMT_HASH_H */

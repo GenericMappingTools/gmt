@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -272,9 +272,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or stdout if no file specified (see -bo for binary output).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	if (gmt_M_showusage (API)) {
+		GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl is a linear (1-D) or bilinear (2-D) spline.\n");
@@ -1562,7 +1564,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
 		}
 
-		X[n] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
+		if (X[n] == NULL) X[n] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
 		/* Check for duplicates */
 		skip = false;
@@ -1570,7 +1572,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			r = get_radius (GMT, X[i], X[n], dimension);
 			if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 				if (doubleAlmostEqualZero (in[dimension], obs[i])) {
-					GMT_Report (API, GMT_MSG_NORMAL,
+					GMT_Report (API, GMT_MSG_VERBOSE,
 					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
 					skip = true;
 					n_skip++;
@@ -1753,7 +1755,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 							n_skip++;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Slope constraint %" PRIu64 " and %" PRIu64
+							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " and %" PRIu64
 							            " occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i-n, obs[p], obs[i]);
 							n_duplicates++;
 						}
@@ -1890,7 +1892,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
-	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
+	switch (Ctrl->S.mode) {	/* Assign pointers to Green's functions and the gradient and set up required parameters */
 		case LINEAR_1D:
 		case LINEAR_2D:
 			G = &spline1d_linear;
@@ -2384,7 +2386,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_memset (V, 4, double);
 		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
-			char file[GMT_LEN256] = {""};
+			char file[PATH_MAX] = {""};
 			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);

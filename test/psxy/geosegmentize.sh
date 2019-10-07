@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test segmentizing option -F in psxy with geographic data
 ps=geosegmentize.ps
 
@@ -6,7 +6,7 @@ function plotpts
 {	# Plots the two data tables and places given text
 	gmt psxy -R -J -O -K -Sc0.2c -Ggreen -Wfaint t1.txt
 	gmt psxy -R -J -O -K -Sc0.2c -Gblue -Wfaint t2.txt
-	echo $* | gmt pstext -R -J -O -K -F+cTL+jTL+f12p -Dj0.05i
+	gmt pstext -R -J -O -K -F+cTL+jTL+f12p+t"$*" -Dj0.05i
 }
 cat << EOF > t1.txt
 10	10

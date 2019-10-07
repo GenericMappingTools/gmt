@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2016-2018 by P. Wessel
+ *   Copyright (c) 2016-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for averaging finite rotations, resulting in mean rotations
@@ -37,7 +37,7 @@
 
 #define THIS_MODULE_NAME	"rotsmoother"
 #define THIS_MODULE_LIB		"spotter"
-#define THIS_MODULE_PURPOSE	"Get mean rotations and covarience matrices from set of finate rotations"
+#define THIS_MODULE_PURPOSE	"Get mean rotations and covariance matrices from set of finite rotations"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")

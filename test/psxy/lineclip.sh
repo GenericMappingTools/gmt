@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Example of problem submitted by Roger Davis, HMRG, Issue #603
 # Point 0 is slightly inside, all others are outside. Got diagonal
 # line from TR corner to point 3

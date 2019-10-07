@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot Poland directly or via a data dump
 ps=dumpvsplot.ps
 

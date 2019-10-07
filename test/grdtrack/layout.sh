@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script to ensure forum message 3511 has been dealt with
 ps=layout.ps
 function plot_it {

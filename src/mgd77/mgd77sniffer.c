@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2018 by P. Wessel and M. T. Chandler
+ *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -573,7 +573,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32] = {""}, placeStr[128] = {""}, errorStr[128] = {""}, outfile[32] = {""}, abbrev[8] = {""}, fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64] = {""};
+	char timeStr[GMT_LEN32] = {""}, placeStr[GMT_LEN128] = {""}, errorStr[GMT_LEN128] = {""}, outfile[GMT_LEN128] = {""};
+	char abbrev[GMT_LEN8] = {""}, fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64] = {""};
 
 	bool *prevOffsetSign, prevFlag, prevType, decimated = false;
 	bool gotTime, landcruise, *offsetSign, newScale = false, mtf1, nav_error;
@@ -650,9 +651,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* READ COMMAND LINE ARGUMENTS */
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE)
-			sprintf (arguments,"%s %s", arguments, opt->arg);
+			snprintf (arguments, GMT_BUFSIZ, "%s %s", arguments, opt->arg);
 		else
-			sprintf (arguments,"%s -%c%s", arguments, opt->option, opt->arg);
+			snprintf (arguments, GMT_BUFSIZ, "%s -%c%s", arguments, opt->option, opt->arg);
 		switch (opt->option) {
 			case '<':	/* Skip input files */
 			case '#':	/* Skip input files confused as numbers (e.g. 123456) */
@@ -1120,6 +1121,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
+				if (n_grids > 0) {
+					gmt_M_free (GMT, MaxDiff);
+					gmt_M_free (GMT, iMaxDiff);
+				}
 				Return (API->error);
 			}
 	 	}
@@ -2866,13 +2871,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (E[rec].flags[type] OR_TRUE) { /*Error in this category */
 						for (field = 0; field < (int)n_types[type]; field++) {
 							if (E[rec].flags[type] & (1 << field) OR_TRUE)
-								sprintf (errorStr, "%s%c", errorStr, (int)('A'+field));
+								snprintf (errorStr, GMT_LEN128, "%s%c", errorStr, (int)('A'+field));
 						}
 					}
 					else
-						sprintf (errorStr, "%s0",errorStr);
+						snprintf (errorStr, GMT_LEN128, "%s0",errorStr);
 					if (type < N_ERROR_CLASSES-1)
-						sprintf (errorStr, "%s-",errorStr);
+						snprintf (errorStr, GMT_LEN128, "%s-",errorStr);
 				}
 				if (!strcmp(errorStr,"0-0-0")) continue;
 				if (gotTime)

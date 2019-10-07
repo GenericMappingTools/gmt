@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: grdtrack reads a data table, opens the gridded file,
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>RVabdefghinos" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghijnos" GMT_OPT("HMmQ")
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
@@ -157,9 +157,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+l|r][+v]] [-D<dfile>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -221,7 +221,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to instead replace input lon, lat with that of nearest node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Can only be used with a single non-IMG grid and incompatible with -A, -C, -D, -E, -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,n,o,s,:,.");
+	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -351,14 +351,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				}
 				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
 					FILE *fp = NULL;
-					char file[GMT_BUFSIZ] = {""};
+					char file[PATH_MAX] = {""};
 					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Error opening list file %s\n", &c[2]);
 						n_errors++;
 						break;
 					}
 					/* Process all the grids listed in this text table */
-					while (fgets (file, GMT_BUFSIZ, fp)) {
+					while (fgets (file, PATH_MAX, fp)) {
 						if (file[0] == '#') continue;	/* Skip all headers */
 						if (process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;
@@ -404,7 +404,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 			case 'S':
 				if (opt->arg[0] == 0 && gmt_M_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
-					GMT_Report (API, GMT_MSG_VERBOSE, "Option -S deprecated. Use -sa instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -S deprecated. Use -sa instead.\n");
 					GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE;
 					break;
 				}
@@ -502,7 +502,11 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		gmt_M_memset (l_mode, 3, unsigned int);	/* Clean register */
 		strcpy (modifiers, &p[s]);
 		pos2 = 0;
-		if (modifiers[2] == '+') modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
+		if (modifiers[2] == '+') {	/* Gave leading + for geodesic calculation (deprecated) */
+			if (gmt_M_compat_check (GMT, 6))
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading + with increment to set ellipsoidal mode is deprecated; use -je instead\n");
+			modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
+		}
 		while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 			switch (p2[0]) {
 				case 'i':	id = 0;	break;	/* Increment along line */
@@ -513,8 +517,20 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 			if (id == 9) continue;	/* Just go to next */
 			/* id points to the correct array index for i, l, r (0-2) */
 			if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[id] = p2[strlen(p2)-1];
-			if (p2[1] == '-') l_mode[id] = GMT_FLATEARTH;
-			else if (p2[1] == '@') l_mode[id] = GMT_GEODESIC;
+			if (p2[1] == '-') {
+				if (gmt_M_compat_check (GMT, 6)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading - to increment to set Flat Earth mode is deprecated; use -jf instead\n");
+					l_mode[id] = GMT_FLATEARTH;
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative increment is not allowed\n");
+					error++;
+				}
+			}
+			else if (p2[1] == '@') {	/* Leading + in strict GMT6 mode is just a positive sign */
+				if (gmt_M_compat_check (GMT, 6))
+					l_mode[id] = GMT_GEODESIC;
+			}
 		}
 		/* Some sanity checking to make sure only one unit and mode are given for all lines */
 		for (k = 0; k < 3; k++) {
@@ -736,6 +752,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+	struct GMT_GRID_HEADER *h = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1109,12 +1127,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
+			h = GC[0].G->header;
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
 			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
-			Ctrl->T.S->x = gmt_grd_coord (GMT, GC[0].G->header, GMT_X);
-			Ctrl->T.S->y = gmt_grd_coord (GMT, GC[0].G->header, GMT_Y);
+			Ctrl->T.S->x = gmt_grd_coord (GMT, h, GMT_X);
+			Ctrl->T.S->y = gmt_grd_coord (GMT, h, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;
+			HH = GC[0].HH;	/* Since we only need one */
 		}
 
 		do {	/* Keep returning records until we reach EOF */
@@ -1152,14 +1172,26 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				some_outside = true;
 				if (!Ctrl->N.active) continue;
 			}
-			else if (Ctrl->T.active && status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
-				if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
-					uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
-					value[0] = GC[0].G->data[ij];
+			else if (Ctrl->T.active) {
+				if (status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
+					if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
+						uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
+						value[0] = GC[0].G->data[ij];
+						if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */
+							in[ix] = Ctrl->T.S->x[Ctrl->T.S->col];
+							in[iy] = Ctrl->T.S->y[Ctrl->T.S->row];
+						}
+					}
+				}
+				else if (Ctrl->T.mode) {	/* No NaN, but need to change coordinates or get distance to nearest node */
+					Ctrl->T.S->col = irint ((in[ix] - h->wesn[XLO]) * HH->r_inc[GMT_X] - h->xy_off);
+					Ctrl->T.S->row = irint ((h->wesn[YHI] - in[iy]) * HH->r_inc[GMT_Y] - h->xy_off);
 					if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */
 						in[ix] = Ctrl->T.S->x[Ctrl->T.S->col];
 						in[iy] = Ctrl->T.S->y[Ctrl->T.S->row];
 					}
+					else	/* Get distance from original input location to nearest node */
+						Ctrl->T.S->radius = gmt_distance (GMT, in[ix], in[iy], Ctrl->T.S->x[Ctrl->T.S->col], Ctrl->T.S->y[Ctrl->T.S->row]);
 				}
 			}
 

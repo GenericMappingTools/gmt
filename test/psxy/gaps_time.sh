@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt psxy plotting with gaps
 
 ps=gaps_time.ps

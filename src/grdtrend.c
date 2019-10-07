@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: Reads a grid file and fits a trend surface.  Trend surface
@@ -85,7 +85,7 @@
 #define THIS_MODULE_NAME	"grdtrend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit trend surface to grids and compute residuals"
-#define THIS_MODULE_KEYS	"<G{,DG),TG),WG)"
+#define THIS_MODULE_KEYS	"<G{,DG),TG),WG(,WG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RV"
 
@@ -94,24 +94,24 @@
 #endif
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
-	struct In {
+	struct GRDTREND_In {
 		bool active;
 		char *file;
 	} In;
-	struct D {	/* -D<diffgrid> */
+	struct GRDTREND_D {	/* -D<diffgrid> */
 		bool active;
 		char *file;
 	} D;
-	struct N {	/* -N[r]<n_model> */
+	struct GRDTREND_N {	/* -N[r]<n_model> */
 		bool active;
 		bool robust;
 		unsigned int value;
 	} N;
-	struct T {	/* -T<trend.grd> */
+	struct GRDTREND_T {	/* -T<trend.grd> */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W<weight.grd>[+s] */
+	struct GRDTREND_W {	/* -W<weight.grd>[+s] */
 		bool active;
 		unsigned int mode;
 		char *file;
@@ -491,9 +491,9 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	bool trivial, weighted,iterations, set_ones = true;
+	bool trivial, weighted, set_ones = true;
 	int error = 0;
-	unsigned int row, col;
+	unsigned int row, col, iterations;
 
 	uint64_t ij;
 
@@ -575,6 +575,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 					error = API->error;
 					goto END;
 				}
+				gmt_M_str_free (Ctrl->W.file);	/* Prevent that the weights grid is overwritten later down */
 				if (Ctrl->W.mode == 2) {	/* Convert sigmas to weights */
 					gmt_M_grd_loop (GMT, W, row, col, ij) {
 						W->data[ij] = (gmt_grdfloat)(1.0 / (W->data[ij] * W->data[ij]));

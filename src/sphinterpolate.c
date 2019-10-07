@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2008-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Spherical gridding in tension.  We read input data and want to create
@@ -92,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
                
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -103,20 +103,20 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achieve the following [Default is no tension]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1: Smooth interpolation with local gradient estimates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      U = Maximum change in a gradient at the last iteration [0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g: Smooth interpolation with global gradient estimates and tension.  Optionally append <N>/<M>/<U>:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <M> = Number of Gauss-Seidel iterations when determining gradients [10],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Maximum change in a gradient at the last iteration [0.01].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: Smoothing.  Optionally append <E>/<U>/<N>, where\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Qp) [constant].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
 	GMT_Option (API, "bi3,di,e,h,i,r,s,:,.");
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k;
 	int m;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -157,25 +157,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 			case 'Q':
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
-					case '0':	/* Linear */
+					case 'p':	case '0':	/* Piecewise Linear p (0 is old mode)*/
 						Ctrl->Q.mode = 0;	break;
-					case '1':
+					case 'l':	case '1':	/* Local gradients l (1 is old mode) */
 						Ctrl->Q.mode = 1;	break;
-					case '2':
+					case 'g':	case '2':	/* Global gradients g (2 is old mode) */
 						Ctrl->Q.mode = 2;
-						if (opt->arg[1] == '/') {	/* Gave optional n/m/dgmx */
-							if ((m = get_args (GMT, &opt->arg[2], Ctrl->Q.value, "-Q3/N[/M[/U]]")) < 0) n_errors++;
+						if (opt->arg[1]) {	/* Gave optional n/m/dgmx */
+							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /n/m/dgmx */
+							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
 						}
 						break;
-					case '3':
+					case 's':	case '3':	/* Smoothing s (3 is old mode) */
 						Ctrl->Q.mode = 3;
-						if (opt->arg[1] == '/') {	/* Gave optional e/sm/niter */
-							if ((m = get_args (GMT, &opt->arg[2], Ctrl->Q.value, "-Q3/E[/U[/niter]]")) < 0) n_errors++;
+						if (opt->arg[1]) {	/* Gave optional e/sm/niter */
+							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /e/sm/niter */
+							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
 						}
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "-%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_Report (API, GMT_MSG_NORMAL, "-%c Mode must be one of p,l,g,s\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -206,9 +208,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
 	int error = 0;
+	
+	bool skip;
 
 	size_t n_alloc = 0;
-	uint64_t i, n = 0, ij, ij_f;
+	uint64_t i, n = 0, ij, ij_f, n_read = 0, n_skip = 0, n_duplicates = 0;
 	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -277,16 +281,45 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
+		/* Check for duplicates */
+		skip = false;
+		for (i = 0; !skip && i < n; i++) {
+			double c = xx[i] * xx[n] + yy[i] * yy[n] + zz[i] * zz[n];
+			if (doubleAlmostEqual (c, 1.0)) {	/* Duplicates will give a dot product of 1 */
+				if (doubleAlmostEqualZero (ww[n], ww[i])) {
+					GMT_Report (API, GMT_MSG_VERBOSE,
+					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
+					skip = true;
+					n_skip++;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ"
+					            " in observation (%.12g vs %.12g)\n", n_read, i, ww[n], ww[i]);
+					n_duplicates++;
+				}
+			}
+		}
+		n_read++;
+		if (skip) continue;	/* Current point was a duplicate of a previous point */
+		
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
 		if (++n == n_alloc) gmt_M_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	} while (true);
+	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR || n_duplicates) {	/* Disables further data input */
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
+		if (n_duplicates) {
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "You must reconcile duplicates before running sphinterpolate\n");
+		}
 		Return (API->error);
 	}
 

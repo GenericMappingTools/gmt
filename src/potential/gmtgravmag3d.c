@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the gmtgravmag3d application.
@@ -163,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives names of xyz (-Tp<fname>[+m]) and vertex (-Tv<fname>) files defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The [+m] in -Tp tells the program that file has 4 columns and fourth holds a variable mangetization.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The [+m] in -Tp tells the program that file has 4 columns and fourth holds a variable magnetization.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The file formats correspond to the output of the triangulate program.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -Tr<file> for file in raw triangle format (x1 y1 z1 x2 ... z3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Ts<file> for file in STL format.\n");
@@ -1130,7 +1130,7 @@ GMT_LOCAL void set_center (unsigned int n_triang) {
 
 #if 0
 GMT_LOCAL void triang_norm (int n_triang) {
-	/* Computes the unit normal to trianglular facet */
+	/* Computes the unit normal to triangular facet */
 	int i;
 	double v1[3], v2[3], v3[3], mod, n[3];
 

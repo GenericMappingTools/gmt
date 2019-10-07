@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2018 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  */
@@ -29,7 +29,7 @@
 #define RADIAN2KM (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
-	/* active is true if the option has been activaed */
+	/* active is true if the option has been activated */
 	struct A {	/* -A<abyssalhilefile> */
 		bool active;
 		char *file;

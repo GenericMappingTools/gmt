@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt psxy lines with -g
 
 ps=new_gaps.ps

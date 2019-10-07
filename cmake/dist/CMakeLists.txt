@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
-# Contact info: gmt.soest.hawaii.edu
+# Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
 
@@ -23,59 +23,30 @@ set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools data processin
 set (CPACK_PACKAGE_VERSION_MAJOR ${GMT_PACKAGE_VERSION_MAJOR})
 set (CPACK_PACKAGE_VERSION_MINOR ${GMT_PACKAGE_VERSION_MINOR})
 set (CPACK_PACKAGE_VERSION_PATCH ${GMT_PACKAGE_VERSION_PATCH})
-set (CPACK_PACKAGE_VERSION ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+set (CPACK_PACKAGE_VERSION ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION})
 if (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 	if (WIN32)
 		set (CPACK_PACKAGE_INSTALL_DIRECTORY gmt${GMT_PACKAGE_VERSION_MAJOR})
 	else (WIN32)
-		set (CPACK_PACKAGE_INSTALL_DIRECTORY GMT-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+		set (CPACK_PACKAGE_INSTALL_DIRECTORY GMT-${GMT_PACKAGE_VERSION_WITH_GIT_REVISION})
 	endif (WIN32)
 endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpack_package_description.txt")
 
-if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
-	# A license with an accept button will only be displayed if
-	# GMT_BUNDLE_ACCEPT_BUTTON is set.
-	set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
-
-	# Read GPL and LGPL license files
-	file(READ ${COPYING_GPL} _license_gpl)
-	file(READ ${COPYING_LGPL} _license_lgpl)
-
-	set (_license_extra)
-	if (NOT LICENSE_RESTRICTED)
-		# Read extra license files
-		foreach (_license_file ${GMT_EXTRA_LICENSE_FILES})
-			file(READ ${_license_file} _license_string)
-			set (_license_extra
-				"${_license_extra}\n---------------------------------------------------------------------------\n\n${_license_string}")
-		endforeach (_license_file ${GMT_EXTRA_LICENSE_FILES})
-
-		# Copy combined license template
-		execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-			${CMAKE_CURRENT_SOURCE_DIR}/COPYING.RESTRICTED.template
-			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-	else (NOT LICENSE_RESTRICTED)
-		# Clear contents of license file if it exists
-		execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f
-			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-	endif (NOT LICENSE_RESTRICTED)
-
-	# Append GPL, LGPL, and licenses from GMT_EXTRA_LICENSE_FILES
-	set (_license_combined "${_license_gpl}")
-	if (NOT LICENSE_RESTRICTED STREQUAL GPL)
-		set (_license_combined
-			"${_license_combined}\n---------------------------------------------------------------------------\n\n${_license_lgpl}")
-	endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
-	set (_license_combined "${_license_combined}\n${_license_extra}")
-
-	# Append to COPYING.COMBINED or create new combined license file
-	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
-endif (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
+if (WIN32)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+        set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-win64")
+    elseif (CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
+        set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-win32")
+    endif()
+endif (WIN32)
+if (APPLE)
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-x86_64")
+endif (APPLE)
 
 # Install components:
-set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG)
+set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG GDALDATA)
 # set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
 set (CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime files")
 set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
@@ -86,6 +57,8 @@ set (CPACK_COMPONENT_DCW_DESCRIPTION
 	"Digital Chart of the World files.")
 set (CPACK_COMPONENT_GSHHG_DESCRIPTION
 	"Shoreline database files.")
+set (CPACK_COMPONENT_GDALDATA_DESCRIPTION
+	"GDAL & PROJ4 auxiliary files.")
 
 # Create two installation types with pre-selected components:
 set (CPACK_ALL_INSTALL_TYPES Full Minimal)
@@ -93,9 +66,11 @@ set (CPACK_INSTALL_TYPE_FULL_DISPLAY_NAME "Everything")
 set (CPACK_COMPONENT_RUNTIME_INSTALL_TYPES Minimal Full)
 set (CPACK_COMPONENT_DOCUMENTATION_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GSHHG_INSTALL_TYPES Full)
+set (CPACK_COMPONENT_DCW_INSTALL_TYPES Full)
+set (CPACK_COMPONENT_GDALDATA_INSTALL_TYPES Full)
 
-# One package per COMPONENT:
-set(CPACK_COMPONENTS_GROUPING "IGNORE")
+# Creates a single package with all (requested) components
+set (CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
 
 # Enable component install for archive generators:
 set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
@@ -148,7 +123,7 @@ if (WIN32 AND NOT CYGWIN)
 	endif (NOT DEFINED CPACK_NSIS_INSTALL_ROOT)
 	set (CPACK_NSIS_MODIFY_PATH ON)
 	string(REPLACE "/" "\\\\" _native_share_path "${GMT_DATADIR}")
-	set (CPACK_NSIS_ADD_ENVVAR1 "GMT5_SHAREDIR")
+	set (CPACK_NSIS_ADD_ENVVAR1 "GMT6_SHAREDIR")
 	set (CPACK_NSIS_ADD_ENVVAL1 "\\\$INSTDIR\\\\${_native_share_path}")
 
 	# StartMenu items:
@@ -166,8 +141,8 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-	if (WIN32 AND GMTMEX_PATH) 
-		# Install the gmtmex on Windows. Its location is controled by GMTMEX_PATH set in ConfigUser.cmake
+	if (WIN32 AND GMTMEX_PATH)
+		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
 			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		else ()
@@ -199,7 +174,7 @@ if (APPLE)
 	# Configure CPack:
 	set (CPACK_GENERATOR Bundle TGZ TBZ2)
 	set (CPACK_BUNDLE_NAME
-		"${CPACK_PACKAGE_NAME}-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+		"${CPACK_PACKAGE_NAME}-${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")
 	set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/GMT.icns")
 	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/startup_macosx.sh")
@@ -259,5 +234,3 @@ set (CPACK_SOURCE_GENERATOR TGZ TBZ2 ZIP)
 
 # This must always be last:
 include (CPack)
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #	Test gmtspatial hold/perimeter function
 # File with polygons, some are holes, none marked or reversed
 ps=ph.ps

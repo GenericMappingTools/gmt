@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -449,7 +449,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
 
-	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
+	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[PATH_MAX] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
@@ -506,7 +506,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
 		if (Ctrl->C.mode == GRDINFO_TRADITIONAL) geometry = GMT_IS_TEXT;
-		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
+		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunately */
 	}
 	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
 		n_cols = 2;
@@ -569,7 +569,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, GMT_LEN256-1);
+		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
@@ -625,6 +625,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			if (gmt_grd_is_global(GMT, G->header) || (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] <= 0.0))
+				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
+			else if ((G->header->wesn[XHI] - G->header->wesn[XLO]) > 180.0)
 				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;

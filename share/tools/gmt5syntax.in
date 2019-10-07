@@ -1,10 +1,8 @@
-#!/bin/bash
-#! -*-perl-*-
+#!/usr/bin/env perl
 eval 'exec perl -x -wS $0 ${1+"$@"}'
   if 0;
 #
-#  Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo,
-#  J. Luis, and F. Wobbe
+#  Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #  See LICENSE.TXT file for copying and redistribution conditions.
 #
 # gmt5syntax convert old GMT script to use new 'gmt <module>' syntax
@@ -18,12 +16,12 @@ my $progname = 'gmt@GMT_INSTALL_NAME_SUFFIX@';
 
 # words to prepend with $progname
 my @modulenames = qw( backtracker blockmean blockmedian blockmode dimfilter
-filter1d fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure \
+filter1d fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure
 gmtget gmtgravmag3d gmtinfo gmtlogo gmtregress
 gmtmath gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich
-gravfft grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit
+gravfft grd2cpt grd2xyz grdblend grdclip grdcontour grdcut grdedit
 grdfft grdfilter grdflexure grdgradient grdgravmag3d grdhisteq grdimage grdinfo
-grdlandmask grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol
+grdlandmask grdmask grdmath grdpaste grdpmodeler grdproject grdredpol
 grdconvert grdrotater grdsample grdseamount grdspotter grdtrack grdtrend
 grdvector grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt
 makecpt mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage

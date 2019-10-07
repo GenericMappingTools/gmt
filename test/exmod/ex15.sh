@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 15
 #
 # Purpose:	Gridding and clipping when data are missing

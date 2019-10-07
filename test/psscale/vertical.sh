@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing psscale -F option etc.
 ps=vertical.ps
 gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 16p MAP_LABEL_OFFSET 8p

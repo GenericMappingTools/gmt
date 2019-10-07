@@ -1,7 +1,6 @@
 /*--------------------------------------------------------------------
- *	$Id: surface.c 15861 2016-03-10 04:17:28Z pwessel $
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -13,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * surface.c: a gridding program using splines in tension.
@@ -77,7 +76,7 @@ struct SURFACE_CTRL {
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct SRF_M {	/* -M<radius> */
+	struct SRF_M {	/* -M<radius>[u] */
 		bool active;
 		char *arg;
 	} M;
@@ -233,7 +232,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	bool periodic;			/* true if geographic grid and west-east == 360 */
 	bool constrained;		/* true if set_limit[LO] or set_limit[HI] is true */
 	bool logging;			/* true if -W was specified */
-	double limit[2];		/* Low and hight constrains on range of solution */
+	double limit[2];		/* Low and high constrains on range of solution */
 	double inc[2];			/* Size of each grid cell for current grid factor */
 	double r_inc[2];		/* Reciprocal grid spacings  */
 	double converge_limit;		/* Convergence limit */
@@ -582,7 +581,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			 * possibly clip the value if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
 	 			 * corresponding dx,dy in units of current grid fractions we must scale both
-				 * dx and dy by current_stride; this is equivalant to scaling the trend.
+				 * dx and dy by current_stride; this is equivalent to scaling the trend.
 				 * This trend then is normalized by dividing by the z rms.*/
 	 			
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
@@ -1289,6 +1288,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 
 	if (n_sug) {	/* We did find some suggestions, report them (up to the first 10 suggestions) */
 		char region[GMT_LEN128] = {""}, buffer[GMT_LEN128] = {""};
+		bool lat_bad = false;
 		unsigned int m, save_range = GMT->current.io.geo.range;
 		double w, e, s, n;
 		GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;		/* Override this setting explicitly */
@@ -1300,6 +1300,8 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			m = sug[k].n_rows - (G->header->n_rows - 1);	/* Additional nodes needed in y to give more factors */
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];	/* Potential revised s/n extent */
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
+			if (!lat_bad && gmt_M_is_geographic (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
+				lat_bad = true;
 			if (m%2) n += G->header->inc[GMT_Y];
 			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
 				w -= G->header->inc[GMT_X] / 2.0;	e -= G->header->inc[GMT_X] / 2.0;
@@ -1313,15 +1315,19 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			strcat (region, buffer);	strcat (region, "/");
 			gmt_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
 			strcat (region, buffer);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
 				region, sug[k].n_columns, sug[k].n_rows, sug[k].factor);
 		}
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: After completion you can recover the desired region via gmt grdcut\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Hint: After completion you can recover the desired region via gmt grdcut\n");
+		if (lat_bad) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Note: One or more of the suggested south/north bounds exceed the allowable range [-90/90]\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "A workaround is to use -fx to only consider x as geographic longitudes\n");
+		}
 		gmt_M_free (GMT, sug);
 		GMT->current.io.geo.range = save_range;
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot suggest any n_columns,n_rows better than your current -R -I settings.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Cannot suggest any n_columns,n_rows better than your current -R -I settings.\n");
 	return;
 }
 
@@ -1611,7 +1617,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M[-|+]<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -1640,7 +1646,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this fills all nodes within the rectangular area of the given half-widths.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -M<n_cells>c\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells arround the data point. As an example,");
+	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells around the data point. As an example,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -M0c means that only the cell where point lies is retained, -M1c keeps one cell\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);
@@ -1822,9 +1828,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0,
 	                                   "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->Q.active, "Syntax error option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN),
-	                                   "Syntax error option -G: Must specify output file\n");
+	                                   "Syntax error option -Am: Requires geographic input data\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -1835,6 +1841,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 
 int GMT_surface (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1, end;
+	unsigned int old_verbose;
 	char *limit[2] = {"lower", "upper"};
 	double wesn[6];
 	
@@ -1862,6 +1869,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the surface main code ----------------------------*/
 
 	gmt_M_tic(GMT);
+	old_verbose = GMT->current.setting.verbose;
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Some initializations and defaults setting */
@@ -1899,14 +1907,19 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	/* Determine the initial and intermediate grid dimensions */
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 
+	if (Ctrl->Q.active && old_verbose < GMT_MSG_LONG_VERBOSE)	/* Temporarily escalate verbosity to INFORMATION */
+		GMT->current.setting.verbose = GMT_MSG_LONG_VERBOSE;
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
-		GMT_Report (API, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
-	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
+	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
 	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
-	if (Ctrl->Q.active) Return (GMT_NOERROR);
+	if (Ctrl->Q.active) {	/* Reset verbosity and bail */
+		GMT->current.setting.verbose = old_verbose;
+		Return (GMT_NOERROR);
+	}
 
 	/* Set current_stride = 1, read data, setting indices.  Then throw
 	   away data that can't be used in the end game, limiting the

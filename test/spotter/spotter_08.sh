@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test multiple outputs from grdrotator
 ps=spotter_08.ps
 # Just a small test grid to rotate

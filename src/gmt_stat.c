@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *  Misc statistical and special functions.
@@ -126,7 +126,7 @@ GMT_LOCAL double gmtstat_ln_gamma (struct GMT_CTRL *GMT, double xx) {
 }
 
 GMT_LOCAL int gmtstat_ln_gamma_r (struct GMT_CTRL *GMT, double x, double *lngam) {
-	/* Get natural logrithm of Gamma(x), x > 0.
+	/* Get natural logarithm of Gamma(x), x > 0.
 		To maintain full accuracy, this
 		routine uses Gamma(1 + x) / x when
 		x < 1.  This routine in turn calls

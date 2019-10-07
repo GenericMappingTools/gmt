@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #	Test grdedits grid transpose and rotations
 ps=transrot.ps
 # Original grid
@@ -10,7 +10,7 @@ gmt grdedit w.nc -Gt.nc -Et
 gmt grdimage t.nc -Ct.cpt -J -Baf -BWSne+tTRANSPOSE -Y-7.5i -O -K >> $ps
 # grid after 90 CCW rotation
 gmt grdedit w.nc -Gp.nc -El
-gmt grdimage p.nc -Ct.cpt -J -O -K -Baf -BWSne+t"90\312 CCW" -X2.363632i >> $ps
+gmt grdimage p.nc -Ct.cpt -J -O -K -Baf -BWSne+t"90@. CCW" -X2.363632i >> $ps
 # grid after 90 CW rotation
 gmt grdedit w.nc -Gm.nc -Er
-gmt grdimage m.nc -Ct.cpt -J -O -Baf -BWSne+t"90\312 CW" -X2.363632i >> $ps
+gmt grdimage m.nc -Ct.cpt -J -O -Baf -BWSne+t"90@. CW" -X2.363632i >> $ps

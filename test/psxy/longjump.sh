@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Testing to see if points very far outside the box will be
 # a) ignored if geographic

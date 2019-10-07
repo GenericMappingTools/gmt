@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt pstext with filled and outline fonts
 
 ps=filled_font.ps

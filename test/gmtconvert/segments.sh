@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt convert with different segment markers
 
 ps=segments.ps

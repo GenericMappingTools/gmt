@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the gmtmath application.
@@ -50,14 +50,15 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GMTMATH_ARG_IS_F_EPS	-5
 #define GMTMATH_ARG_IS_D_EPS	-6
 #define GMTMATH_ARG_IS_EULER	-7
-#define GMTMATH_ARG_IS_TMIN	-8
-#define GMTMATH_ARG_IS_TMAX	-9
-#define GMTMATH_ARG_IS_TRANGE	-10
-#define GMTMATH_ARG_IS_TINC	-11
-#define GMTMATH_ARG_IS_N	-12
-#define GMTMATH_ARG_IS_J_MATRIX	-13
-#define GMTMATH_ARG_IS_T_MATRIX	-14
-#define GMTMATH_ARG_IS_t_MATRIX	-15
+#define GMTMATH_ARG_IS_PHI	-8
+#define GMTMATH_ARG_IS_TMIN	-9
+#define GMTMATH_ARG_IS_TMAX	-10
+#define GMTMATH_ARG_IS_TRANGE	-11
+#define GMTMATH_ARG_IS_TINC	-12
+#define GMTMATH_ARG_IS_N	-13
+#define GMTMATH_ARG_IS_J_MATRIX	-14
+#define GMTMATH_ARG_IS_T_MATRIX	-15
+#define GMTMATH_ARG_IS_t_MATRIX	-16
 #define GMTMATH_ARG_IS_STORE	-50
 #define GMTMATH_ARG_IS_RECALL	-51
 #define GMTMATH_ARG_IS_CLEAR	-52
@@ -131,6 +132,7 @@ struct GMTMATH_INFO {
 	bool roots_found;	/* true if roots have been solved for */
 	bool local;		/* Per segment operation (true) or global operation (false) */
 	bool notime;		/* No time-array available for operators who depend on that */
+	bool scalar;		/* -Q in effect */
 	unsigned int n_roots;	/* Number of roots found */
 	unsigned int fit_mode;	/* Used for {LSQ|SVD}FIT */
 	unsigned int w_mode;	/* Used for weighted fit */
@@ -471,7 +473,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] A B op C op ... = [outfile]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] A B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -485,14 +487,212 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tThe operators and number of input and output arguments:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
-#include "gmtmath_explain.h"
+	GMT_Message (API, GMT_TIME_NONE, 
+		"	ABS        1  1    abs (A)\n"
+		"	ACOS       1  1    acos (A)\n"
+		"	ACOSH      1  1    acosh (A)\n"
+		"	ACOT       1  1    acot (A)\n"
+		"	ACOTH      1  1    acoth (A)\n"
+		"	ACSC       1  1    acsc (A)\n"
+		"	ACSCH      1  1    acsch (A)\n"
+		"	ADD        2  1    A + B\n"
+		"	AND        2  1    B if A == NaN, else A\n"
+		"	ASEC       1  1    asec (A)\n"
+		"	ASECH      1  1    asech (A)\n"
+		"	ASIN       1  1    asin (A)\n"
+		"	ASINH      1  1    asinh (A)\n"
+		"	ATAN       1  1    atan (A)\n"
+		"	ATAN2      2  1    atan2 (A, B)\n"
+		"	ATANH      1  1    atanh (A)\n"
+		"	BCDF       3  1    Binomial cumulative distribution function for p = A, n = B and x = C\n"
+		"	BEI        1  1    bei (A)\n"
+		"	BER        1  1    ber (A)\n"
+		"	BPDF       3  1    Binomial probability density function for p = A, n = B and x = C\n"
+		"	BITAND     2  1    A & B (bitwise AND operator)\n"
+		"	BITLEFT    2  1    A << B (bitwise left-shift operator)\n"
+		"	BITNOT     1  1    ~A (bitwise NOT operator, i.e., return two's complement)\n"
+		"	BITOR      2  1    A | B (bitwise OR operator)\n"
+		"	BITRIGHT   2  1    A >> B (bitwise right-shift operator)\n"
+		"	BITTEST    2  1    1 if bit B of A is set, else 0 (bitwise TEST operator)\n"
+		"	BITXOR     2  1    A ^ B (bitwise XOR operator)\n"
+		"	CEIL       1  1    ceil (A) (smallest integer >= A)\n"
+		"	CHI2CRIT   2  1    Chi-squared distribution critical value for alpha = A and nu = B\n"
+		"	CHI2CDF    2  1    Chi-squared cumulative distribution function for chi2 = A and nu = B\n"
+		"	CHI2PDF    2  1    Chi-squared probability density function for chi = A and nu = B\n"
+		"	COL        1  1    Places column A on the stack\n"
+		"	COMB       2  1    Combinations n_C_r, with n = A and r = B\n"
+		"	CORRCOEFF  2  1    Correlation coefficient r(A, B)\n"
+		"	COS        1  1    cos (A) (A in radians)\n"
+		"	COSD       1  1    cos (A) (A in degrees)\n"
+		"	COSH       1  1    cosh (A)\n"
+		"	COT        1  1    cot (A) (A in radians)\n"
+		"	COTD       1  1    cot (A) (A in degrees)\n"
+		"	COTH       1  1    coth (A)\n"
+		"	CSC        1  1    csc (A) (A in radians)\n"
+		"	CSCD       1  1    csc (A) (A in degrees)\n"
+		"	CSCH       1  1    csch (A)\n"
+		"	PCDF       2  1    Poisson cumulative distribution function for x = A and lambda = B\n"
+		"	DDT        1  1    d(A)/dt Central 1st derivative\n"
+		"	D2DT2      1  1    d^2(A)/dt^2 2nd derivative\n"
+		"	D2R        1  1    Converts Degrees to Radians\n"
+		"	DENAN      2  1    Replace NaNs in A with values from B\n"
+		"	DILOG      1  1    dilog (A)\n"
+		"	DIFF       1  1    Difference (forward) between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., NaN)\n"
+		"	DIV        2  1    A / B\n"
+		"	DUP        1  2    Places duplicate of A on the stack\n"
+		"	ECDF       2  1    Exponential cumulative distribution function for x = A and lambda = B\n"
+		"	ECRIT      2  1    Exponential distribution critical value for alpha = A and lambda = B\n"
+		"	EPDF       2  1    Exponential probability density function for x = A and lambda = B\n"
+		"	ERF        1  1    Error function erf (A)\n"
+		"	ERFC       1  1    Complementary Error function erfc (A)\n"
+		"	ERFINV     1  1    Inverse error function of A\n"
+		"	EQ         2  1    1 if A == B, else 0\n"
+		"	EXCH       2  2    Exchanges A and B on the stack\n"
+		"	EXP        1  1    exp (A)\n"
+		"	FACT       1  1    A! (A factorial)\n"
+		"	FCRIT      3  1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C\n"
+		"	FCDF       3  1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C\n"
+		"	FLIPUD     1  1    Reverse order of each column\n"
+		"	FLOOR      1  1    floor (A) (greatest integer <= A)\n"
+		"	FMOD       2  1    A % B (remainder after truncated division)\n"
+		"	FPDF       3  1    F probability density distribution for F = A, nu1 = B and nu2 = C\n"
+		"	GE         2  1    1 if A >= B, else 0\n"
+		"	GT         2  1    1 if A > B, else 0\n"
+		"	HSV2LAB    3  3    Convert hsv to lab, with h = A, s = B and v = C\n"
+		"	HSV2RGB    3  3    Convert hsv to rgb, with h = A, s = B and v = C\n"
+		"	HSV2XYZ    3  3    Convert hsv to xyz, with h = A, s = B and v = C\n"
+		"	HYPOT      2  1    hypot (A, B) = sqrt (A*A + B*B)\n"
+		"	I0         1  1    Modified Bessel function of A (1st kind, order 0)\n"
+		"	I1         1  1    Modified Bessel function of A (1st kind, order 1)\n"
+		"	IFELSE     3  1    B if A != 0, else C\n"
+		"	IN         2  1    Modified Bessel function of A (1st kind, order B)\n"
+		"	INRANGE    3  1    1 if B <= A <= C, else 0\n"
+		"	INT        1  1    Numerically integrate A\n"
+		"	INV        1  1    1 / A\n"
+		"	ISFINITE   1  1    1 if A is finite, else 0\n"
+		"	ISNAN      1  1    1 if A == NaN, else 0\n"
+		"	J0         1  1    Bessel function of A (1st kind, order 0)\n"
+		"	J1         1  1    Bessel function of A (1st kind, order 1)\n"
+		"	JN         2  1    Bessel function of A (1st kind, order B)\n"
+		"	K0         1  1    Modified Kelvin function of A (2nd kind, order 0)\n"
+		"	K1         1  1    Modified Bessel function of A (2nd kind, order 1)\n"
+		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
+		"	KEI        1  1    kei (A)\n"
+		"	KER        1  1    ker (A)\n"
+		"	KURT       1  1    Kurtosis of A\n"
+		"	LAB2HSV    3  3    Convert lab to hsv, with l = A, a = B and b = C\n"
+		"	LAB2RGB    3  3    Convert lab to rgb, with l = A, a = B and b = C\n"
+		"	LAB2XYZ    3  3    Convert lab to xyz, with l = A, a = B and b = C\n"
+		"	LCDF       1  1    Laplace cumulative distribution function for z = A\n"
+		"	LCRIT      1  1    Laplace distribution critical value for alpha = A\n"
+		"	LE         2  1    1 if A <= B, else 0\n"
+		"	LMSSCL     1  1    LMS scale estimate (LMS STD) of A\n"
+		"	LMSSCLW    1  1    Weighted LMS scale estimate (LMS STD) of A for weights in B\n"
+		"	LOG        1  1    log (A) (natural log)\n"
+		"	LOG10      1  1    log10 (A) (base 10)\n"
+		"	LOG1P      1  1    log (1+A) (accurate for small A)\n"
+		"	LOG2       1  1    log2 (A) (base 2)\n"
+		"	LOWER      1  1    The lowest (minimum) value of A\n"
+		"	LPDF       1  1    Laplace probability density function for z = A\n"
+		"	LRAND      2  1    Laplace random noise with mean A and std. deviation B\n"
+		"	LSQFIT     1  0    Current table is [A | b]; return LS solution to A * x = b via Cholesky decomposition\n"
+		"	LT         2  1    1 if A < B, else 0\n"
+		"	MAD        1  1    Median Absolute Deviation (L1 STD) of A\n"
+		"	MADW       2  1    Weighted Median Absolute Deviation (L1 STD) of A for weights in B\n"
+		"	MAX        2  1    Maximum of A and B\n"
+		"	MEAN       1  1    Mean value of A\n"
+		"	MEANW      2  1    Weighted mean value of A for weights in B\n"
+		"	MEDIAN     1  1    Median value of A\n"
+		"	MEDIANW    2  1    Weighted median value of A for weights in B\n"
+		"	MIN        2  1    Minimum of A and B\n"
+		"	MOD        2  1    A mod B (remainder after floored division)\n"
+		"	MODE       1  1    Mode value (Least Median of Squares) of A\n"
+		"	MODEW      2  1    Weighted mode value of A for weights in B\n"
+		"	MUL        2  1    A * B\n"
+		"	NAN        2  1    NaN if A == B, else A\n"
+		"	NEG        1  1    -A\n"
+		"	NEQ        2  1    1 if A != B, else 0\n"
+		"	NORM       1  1    Normalize (A) so max(A)-min(A) = 1\n"
+		"	NOT        1  1    NaN if A == NaN, 1 if A == 0, else 0\n"
+		"	NRAND      2  1    Normal, random values with mean A and std. deviation B\n"
+		"	OR         2  1    NaN if B == NaN, else A\n"
+		"	PERM       2  1    Permutations n_P_r, with n = A and r = B\n"
+		"	PLM        3  1    Associated Legendre polynomial P(A) degree B order C\n"
+		"	PLMg       3  1    Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)\n"
+		"	POP        1  0    Delete top element from the stack\n"
+		"	POW        2  1    A ^ B\n"
+		"	PPDF       2  1    Poisson probability density function for x = A and lambda = B\n"
+		"	PQUANT     2  1    The B'th Quantile (0-100%) of A\n"
+		"	PQUANTW    3  1    The C'th Quantile (0-100%) of A for weights in B\n"
+		"	PSI        1  1    Psi (or Digamma) of A\n"
+		"	PV         3  1    Legendre function Pv(A) of degree v = real(B) + imag(C)\n"
+		"	QV         3  1    Legendre function Qv(A) of degree v = real(B) + imag(C)\n"
+		"	R2         2  1    R2 = A^2 + B^2\n"
+		"	R2D        1  1    Convert Radians to Degrees\n"
+		"	RAND       2  1    Uniform random values between A and B\n"
+		"	RCDF       1  1    Rayleigh cumulative distribution function for z = A\n"
+		"	RCRIT      1  1    Rayleigh distribution critical value for alpha = A\n"
+		"	RGB2HSV    3  3    Convert rgb to hsv, with r = A, g = B and b = C\n"
+		"	RGB2LAB    3  3    Convert rgb to lab, with r = A, g = B and b = C\n"
+		"	RGB2XYZ    3  3    Convert rgb to xyz, with r = A, g = B and b = C\n"
+		"	RPDF       1  1    Rayleigh probability density function for z = A\n"
+		"	RINT       1  1    rint (A) (round to integral value nearest to A)\n"
+		"	RMS        1  1    Root-mean-square of A\n"
+		"	RMSW       2  1    Weighted Root-mean-square of A for weights in B\n"
+		"	ROLL       2  0    Cyclicly shifts the top A stack items by an amount B\n"
+		"	ROTT       2  1    Rotate A by the (constant) shift B in the t-direction\n"
+		"	SEC        1  1    sec (A) (A in radians)\n"
+		"	SECD       1  1    sec (A) (A in degrees)\n"
+		"	SECH       1  1    sech (A)\n"
+		"	SIGN       1  1    sign (+1 or -1) of A\n"
+		"	SIN        1  1    sin (A) (A in radians)\n"
+		"	SINC       1  1    sinc (A) (sin (pi*A)/(pi*A))\n"
+		"	SIND       1  1    sin (A) (A in degrees)\n"
+		"	SINH       1  1    sinh (A)\n"
+		"	SKEW       1  1    Skewness of A\n"
+		"	SORT       3  1    Sort all columns in stack based on column A in direction of B (-1 descending |+1 ascending)\n"
+		"	SQR        1  1    A^2\n"
+		"	SQRT       1  1    sqrt (A)\n"
+		"	STD        1  1    Standard deviation of A\n"
+		"	STDW       2  1    Weighted standard deviation of A for weights in B\n"
+		"	STEP       1  1    Heaviside step function H(A)\n"
+		"	STEPT      1  1    Heaviside step function H(t-A)\n"
+		"	SUB        2  1    A - B\n"
+		"	SUM        1  1    Cumulative sum of A\n"
+		"	SVDFIT     1  0    Current table is [A | b]; return LS solution to A * x = B via SVD decomposition (see -E)\n"
+		"	TAN        1  1    tan (A) (A in radians)\n"
+		"	TAND       1  1    tan (A) (A in degrees)\n"
+		"	TANH       1  1    tanh (A)\n"
+		"	TAPER      1  1    Unit weights cosine-tapered to zero within A of end margins\n"
+		"	TCDF       2  1    Student's t cumulative distribution function for t = A and nu = B\n"
+		"	TN         2  1    Chebyshev polynomial Tn(-1<A<+1) of degree B\n"
+		"	TPDF       2  1    Student's t probability density function for t = A and nu = B\n"
+		"	TCRIT      2  1    Student's t distribution critical value for alpha = A and nu = B\n"
+		"	UPPER      1  1    The highest (maximum) value of A\n"
+		"	VAR        1  1    Variance of A\n"
+		"	VARW       2  1    Weighted variance of A for weights in B\n"
+		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
+		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
+		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
+		"	XOR        2  1    B if A == NaN, else A\n"
+		"	XYZ2HSV    3  3    Convert xyz to hsv, with x = A, y = B and z = C\n"
+		"	XYZ2LAB    3  3    Convert xyz to lab, with x = A, y = B and z = C\n"
+		"	XYZ2RGB    3  3    Convert xyz to rgb, with x = A, y = B and z = C\n"
+		"	Y0         1  1    Bessel function of A (2nd kind, order 0)\n"
+		"	Y1         1  1    Bessel function of A (2nd kind, order 1)\n"
+		"	YN         2  1    Bessel function of A (2nd kind, order B)\n"
+		"	ZCRIT      1  1    Normal distribution critical value for alpha = A\n"
+		"	ZCDF       1  1    Normal cumulative distribution function for z = A\n"
+		"	ZPDF       1  1    Normal probability density function for z = A\n"
+		"	ROOTS      2  1    Treats col A as f(t) = 0 and returns its roots\n");
 	GMT_Message (API, GMT_TIME_NONE,
 		"\n\tThe special symbols are:\n\n"
 		"\tPI                  = 3.1415926...\n"
 		"\tE                   = 2.7182818...\n"
 		"\tEULER               = 0.5772156...\n"
-		"\tF_EPS (single eps)   = 1.192092896e-07\n"
-		"\tD_EPS (double eps)   = 2.2204460492503131e-16\n"
+		"\tPHI (golden ratio)  = 1.6180339...\n"
+		"\tF_EPS (single eps)  = 1.192092896e-07\n"
+		"\tD_EPS (double eps)  = 2.2204460492503131e-16\n"
 		"\tTMIN, TMAX, TRANGE, or TINC = the corresponding constant.\n"
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
@@ -517,14 +717,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t-N Set the number of columns and optionally the id of the time column (0 is first) [2/0].\n"
 		"\t   If input files are given, -N will add extra columns initialized to zero, if needed.\n"
 		"\t-Q Quick scalar calculator (Shorthand for -Ca -N1/0 -T0/0/1).\n"
-		"\t-  Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n", GMT_DIM_UNITS_DISPLAY
+		"\t   Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n"
 		"\t-S Only write first row upon completion of calculations [write all rows].\n"
 		"\t   Optionally, append l for last row or f for first row [Default].\n"
 		"\t-T Set domain from <min> to <max> in steps of <inc>. Append +n to <inc if number of points was given instead.\n"
 		"\t   Append +b for log2 spacing in <inc> and +l for log10 spacing via <inc> = 1,2,3.\n"
 		"\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n"
 		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
-		"\t   This choice also implies -Ca.\n");
+		"\t   This choice also implies -Ca.\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,s,.");
 
 	return (GMT_MODULE_USAGE);
@@ -686,7 +886,8 @@ GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last,
 /* -----------------------------------------------------------------
  *              Definitions of all operator functions
  * -----------------------------------------------------------------*/
-/* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
+/* Note: The OPERATOR: **** lines were used to extract syntax for documentation in the old days.
+ * the first number is input args and the second is the output args. */
 
 GMT_LOCAL int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ABS 1 1 abs (A).  */
@@ -2047,6 +2248,151 @@ GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	return 0;
 }
 
+GMT_LOCAL int table_HSV2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: HSV2LAB 3 3 Convert HSV to LAB, with h = A, s = B and v = C.  */
+	uint64_t s, row;
+	double hsv[4], rgb[4], lab[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+		hsv[0] = S[prev2]->factor;
+		hsv[1] = S[prev1]->factor;
+		hsv[2] = S[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_lab (rgb, lab);
+		T_prev2->segment[0]->data[col][0] = lab[0];
+		T_prev1->segment[0]->data[col][0] = lab[1];
+		T->segment[0]->data[col][0]       = lab[2];
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			hsv[0] = T->segment[s]->data[0][row];
+			hsv[1] = T->segment[s]->data[1][row];
+			hsv[2] = T->segment[s]->data[2][row];
+			gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+			gmt_rgb_to_lab (rgb, lab);
+			T->segment[s]->data[0][row] = lab[0];
+			T->segment[s]->data[1][row] = lab[1];
+			T->segment[s]->data[2][row] = lab[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_HSV2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: HSV2RGB 3 3 Convert HSV to RGB, with h = A, s = B and v = C.  */
+	uint64_t s, row;
+	double rgb[4], hsv[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+		hsv[0] = S[prev2]->factor;
+		hsv[1] = S[prev1]->factor;
+		hsv[2] = S[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);
+		T_prev2->segment[0]->data[col][0] = gmt_M_s255 (rgb[0]);
+		T_prev1->segment[0]->data[col][0] = gmt_M_s255 (rgb[1]);
+		T->segment[0]->data[col][0]       = gmt_M_s255 (rgb[2]);
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			hsv[0] = T->segment[s]->data[0][row];
+			hsv[1] = T->segment[s]->data[1][row];
+			hsv[2] = T->segment[s]->data[2][row];
+			gmt_hsv_to_rgb (rgb, hsv);
+			T->segment[s]->data[0][row] = gmt_M_s255 (rgb[0]);
+			T->segment[s]->data[1][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[2][row] = gmt_M_s255 (rgb[2]);
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_HSV2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: HSV2XYZ 3 3 Convert HSV to XYZ, with h = A, s = B and v = C.  */
+	uint64_t s, row;
+	double hsv[4], xyz[4], rgb[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to HSV2XYZ must be a 0 <= b <= 1!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+		hsv[0] = S[prev2]->factor;
+		hsv[1] = S[prev1]->factor;
+		hsv[2] = S[last]->factor;
+		gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+		gmt_rgb_to_xyz (rgb, xyz);
+		T_prev2->segment[0]->data[col][0] = xyz[0];
+		T_prev1->segment[0]->data[col][0] = xyz[1];
+		T->segment[0]->data[col][0]       = xyz[2];
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			hsv[0] = T->segment[s]->data[0][row];
+			hsv[1] = T->segment[s]->data[1][row];
+			hsv[2] = T->segment[s]->data[2][row];
+			gmt_hsv_to_rgb (rgb, hsv);	/* Must do this via RGB */
+			gmt_rgb_to_xyz (rgb, xyz);
+			T->segment[s]->data[0][row] = xyz[0];
+			T->segment[s]->data[1][row] = xyz[1];
+			T->segment[s]->data[2][row] = xyz[2];
+		}
+	}
+	return 0;
+}
+
 GMT_LOCAL int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: HYPOT 2 1 hypot (A, B) = sqrt (A*A + B*B).  */
 {
@@ -2448,6 +2794,153 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	else
 		kurt = GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = kurt;
+	return 0;
+}
+
+GMT_LOCAL int table_LAB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: LAB2HSV 3 3 Convert LAB to HSV, with L = A, a = B and b = C.  */
+	uint64_t s, row;
+	double hsv[4], lab[4], rgb[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			return -1;
+		}
+#if 0
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to LAB2HSV must be a 0 <= S <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to LAB2HSV must be a 0 <= V <= 1!\n");
+			return -1;
+		}
+#endif
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+		lab[0] = S[prev2]->factor;
+		lab[1] = S[prev1]->factor;
+		lab[2] = S[last]->factor;
+		gmt_lab_to_rgb (rgb, lab);	/* Must do this via RGB */
+		gmt_rgb_to_hsv (rgb, hsv);
+		T_prev2->segment[0]->data[col][0] = hsv[0];
+		T_prev1->segment[0]->data[col][0] = hsv[1];
+		T->segment[0]->data[col][0]       = hsv[2];
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			lab[0] = T->segment[s]->data[0][row];
+			lab[1] = T->segment[s]->data[1][row];
+			lab[2] = T->segment[s]->data[2][row];
+			gmt_lab_to_rgb (rgb, lab);	/* Must do this via RGB */
+			gmt_rgb_to_hsv (rgb, hsv);
+			T->segment[s]->data[0][row] = hsv[0];
+			T->segment[s]->data[1][row] = hsv[1];
+			T->segment[s]->data[2][row] = hsv[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_LAB2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: LAB2RGB 3 3 Convert LAB to RGB, with L = A, a = B and b = C.  */
+	uint64_t s, row;
+	double lab[3], rgb[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			return -1;
+		}
+#if 0
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to LAB2RGB must be a 0 <= S <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to LAB2RGB must be a 0 <= V <= 1!\n");
+			return -1;
+		}
+#endif
+		lab[0] = S[prev2]->factor;
+		lab[1] = S[prev1]->factor;
+		lab[2] = S[last]->factor;
+		gmt_lab_to_rgb (rgb, lab);
+		T_prev2->segment[0]->data[col][0] = gmt_M_s255 (rgb[0]);
+		T_prev1->segment[0]->data[col][0] = gmt_M_s255 (rgb[1]);
+		T->segment[0]->data[col][0]       = gmt_M_s255 (rgb[2]);
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			lab[0] = T->segment[s]->data[0][row];
+			lab[1] = T->segment[s]->data[1][row];
+			lab[2] = T->segment[s]->data[2][row];
+			gmt_lab_to_rgb (rgb, lab);
+			T->segment[s]->data[0][row] = gmt_M_s255 (rgb[0]);
+			T->segment[s]->data[1][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[2][row] = gmt_M_s255 (rgb[2]);
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_LAB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: LAB2XYZ 3 3 Convert LAB to XYZ, with L = A, a = B and b = C.  */
+	uint64_t s, row;
+	double lab[3], xyz[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Scalars have a stack of 3 constants */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			return -1;
+		}
+#if 0
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument S to LAB2XYZ must be a 0 <= S <= 1!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument V to LAB2XYZ must be a 0 <= V <= 1!\n");
+			return -1;
+		}
+#endif
+		lab[0] = S[prev2]->factor;
+		lab[1] = S[prev1]->factor;
+		lab[2] = S[last]->factor;
+		gmt_lab_to_xyz (xyz, lab);
+		T_prev2->segment[0]->data[col][0] = xyz[0];
+		T_prev1->segment[0]->data[col][0] = xyz[1];
+		T->segment[0]->data[col][0]       = xyz[2];
+		return 0;
+	}
+	/* Table input, only one item on stack but has 3 columns; we wait for col == 2 */
+	if (col != 2) return 0;
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			lab[0] = T->segment[s]->data[0][row];
+			lab[1] = T->segment[s]->data[1][row];
+			lab[2] = T->segment[s]->data[2][row];
+			gmt_lab_to_xyz (xyz, lab);
+			T->segment[s]->data[0][row] = xyz[0];
+			T->segment[s]->data[1][row] = xyz[1];
+			T->segment[s]->data[2][row] = xyz[2];
+		}
+	}
 	return 0;
 }
 
@@ -3722,6 +4215,148 @@ GMT_LOCAL int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	return 0;
 }
 
+GMT_LOCAL int table_RGB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: RGB2HSV 3 3 Convert RGB to HSV, with r = A, b = B and b = C.  */
+	uint64_t s = 0, row;
+	double rgb[4], hsv[4];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
+		rgb[0] = gmt_M_is255 (S[prev2]->factor);
+		rgb[1] = gmt_M_is255 (S[prev1]->factor);
+		rgb[2] = gmt_M_is255 (S[last]->factor);
+		gmt_rgb_to_hsv (rgb, hsv);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = hsv[0];
+		T_prev1->segment[0]->data[col][0] = hsv[1];
+		T->segment[0]->data[col][0] = hsv[2];
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			rgb[0] = gmt_M_is255 (T->segment[s]->data[0][row]);
+			rgb[1] = gmt_M_is255 (T->segment[s]->data[1][row]);
+			rgb[2] = gmt_M_is255 (T->segment[s]->data[2][row]);
+			gmt_rgb_to_hsv (rgb, hsv);
+			T->segment[s]->data[0][row] = hsv[0];
+			T->segment[s]->data[1][row] = hsv[1];
+			T->segment[s]->data[2][row] = hsv[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_RGB2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: RGB2LAB 3 3 Convert RGB to LAB, with r = A, g = B and b = C.  */
+	uint64_t s = 0, row;
+	double rgb[3], lab[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+		rgb[0] = gmt_M_is255 (S[prev2]->factor);
+		rgb[1] = gmt_M_is255 (S[prev1]->factor);
+		rgb[2] = gmt_M_is255 (S[last]->factor);
+		gmt_rgb_to_lab (rgb, lab);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = lab[0];
+		T_prev1->segment[0]->data[col][0] = lab[1];
+		T->segment[0]->data[col][0] = lab[2];
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			rgb[0] = gmt_M_is255 (T->segment[s]->data[0][row]);
+			rgb[1] = gmt_M_is255 (T->segment[s]->data[1][row]);
+			rgb[2] = gmt_M_is255 (T->segment[s]->data[2][row]);
+			gmt_rgb_to_lab (rgb, lab);
+			T->segment[s]->data[0][row] = lab[0];
+			T->segment[s]->data[1][row] = lab[1];
+			T->segment[s]->data[2][row] = lab[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_RGB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: RGB2XYZ 3 3 Convert RGB to LAB, with r = A, g = B and b = C.  */
+	uint64_t s = 0, row;
+	double rgb[3], xyz[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+		rgb[0] = gmt_M_is255 (S[prev2]->factor);
+		rgb[1] = gmt_M_is255 (S[prev1]->factor);
+		rgb[2] = gmt_M_is255 (S[last]->factor);
+		gmt_rgb_to_xyz (rgb, xyz);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = xyz[0];
+		T_prev1->segment[0]->data[col][0] = xyz[1];
+		T->segment[0]->data[col][0] = xyz[2];
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			rgb[0] = gmt_M_is255 (T->segment[s]->data[0][row]);
+			rgb[1] = gmt_M_is255 (T->segment[s]->data[1][row]);
+			rgb[2] = gmt_M_is255 (T->segment[s]->data[2][row]);
+			gmt_rgb_to_xyz (rgb, xyz);
+			T->segment[s]->data[0][row] = xyz[0];
+			T->segment[s]->data[1][row] = xyz[1];
+			T->segment[s]->data[2][row] = xyz[2];
+		}
+	}
+	return 0;
+}
+
 GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -4060,9 +4695,9 @@ GMT_LOCAL void free_sort_list (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info) 
 }
 
 GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: SORT 3 1 Sort stack based on column A in direction of B (-1 descending |+1 ascending).  */
+/*OPERATOR: SORT 3 1 Sort all columns in stack based on column A in direction of B (-1 descending |+1 ascending).  */
 {
-	uint64_t s, seg, row, k = 0;
+	uint64_t s, seg, row, k0 = 0, k = 0;
 	unsigned int scol;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	int dir;
@@ -4082,7 +4717,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		info->Q = gmt_M_memory (GMT, NULL, (info->local) ? info->T->n_segments : 1, struct GMT_ORDER *);
 		if (!info->local) Z = info->Q[0] = gmt_M_memory (GMT, NULL, info->T->n_records, struct GMT_ORDER);
 		for (s = k = 0; s < info->T->n_segments; s++) {
-			if (info->local) {	/* SOrt each segment independently */
+			if (info->local) {	/* Sort each segment independently */
 				Z = info->Q[s] = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, struct GMT_ORDER);
 				seg = s;
 				k = 0;	/* Reset for new segment */
@@ -4101,19 +4736,23 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	
 	/* OK now we can deal with shuffling of rows based on how the selected column was sorted */
-	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors */
-	for (s = k = 0; s < info->T->n_segments; s++) {
+	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors once if the entire table */
+	for (s = k0 = 0; s < info->T->n_segments; s++) {
 		if (info->local) {	/* Do the shuffle on a segment-by-segment basis */
 			seg = s;
-			k = 0;	/* Reset for new segment */
+			k0 = 0;	/* Reset for new segment */
 		}
-		else	/* Just do everything at once */
+		else	/* Just do everything at once, so k0 increases by n_rows after each segment */
 			seg = 0;
 		Z = info->Q[seg];	/* Pointer to this segment's (or all) order scheme */
-		if (info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
-			GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
-		gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);
+		if (info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors if a segment is longer */
+		for (col = 0; col < info->n_col; col++) {
+			k = k0;	/* Reset for each column */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
+				GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
+			gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);
+		}
+		k0 += info->T->segment[s]->n_rows;	/* May be reset above if local */
 	}
 	return 0;
 }
@@ -4659,6 +5298,158 @@ GMT_LOCAL int table_XOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	return 0;
 }
 
+GMT_LOCAL int table_XYZ2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: XYZ2HSV 3 3 Convert XYZ to HSV, with x = A, y = B and z = C.  */
+	uint64_t s = 0, row;
+	double rgb[4], hsv[4], xyz[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused (GMT);
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+#if 0
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to XYZ2HSV must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to XYZ2HSV must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to XYZ2HSV must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+#endif
+		xyz[0] = S[prev2]->factor;
+		xyz[1] = S[prev1]->factor;
+		xyz[2] = S[last]->factor;
+		gmt_xyz_to_rgb (rgb, xyz);
+		gmt_rgb_to_hsv (rgb, hsv);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = hsv[0];
+		T_prev1->segment[0]->data[col][0] = hsv[1];
+		T->segment[0]->data[col][0]       = hsv[2];
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			xyz[0] = T->segment[s]->data[0][row];
+			xyz[1] = T->segment[s]->data[1][row];
+			xyz[2] = T->segment[s]->data[2][row];
+			gmt_xyz_to_rgb (rgb, xyz);
+			gmt_rgb_to_hsv (rgb, hsv);
+			T->segment[s]->data[0][row] = hsv[0];
+			T->segment[s]->data[1][row] = hsv[1];
+			T->segment[s]->data[2][row] = hsv[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_XYZ2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: XYZ2LAB 3 3 Convert XYZ to LAB, with x = A, y = B and z = C.  */
+	uint64_t s = 0, row;
+	double lab[3], xyz[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused (GMT);
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+#if 0
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to XYZ2LAB must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to XYZ2LAB must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to XYZ2LAB must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+#endif
+		xyz[0] = S[prev2]->factor;
+		xyz[1] = S[prev1]->factor;
+		xyz[2] = S[last]->factor;
+		gmt_xyz_to_lab (xyz, lab);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = lab[0];
+		T_prev1->segment[0]->data[col][0] = lab[1];
+		T->segment[0]->data[col][0]       = lab[2];
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			xyz[0] = T->segment[s]->data[0][row];
+			xyz[1] = T->segment[s]->data[1][row];
+			xyz[2] = T->segment[s]->data[2][row];
+			gmt_xyz_to_lab (xyz, lab);
+			T->segment[s]->data[0][row] = lab[0];
+			T->segment[s]->data[1][row] = lab[1];
+			T->segment[s]->data[2][row] = lab[2];
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int table_XYZ2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: XYZ2RGB 3 3 Convert XYZ to RGB, with x = A, y = B and z = C.  */
+	uint64_t s = 0, row;
+	double rgb[3], xyz[3];
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused (GMT);
+
+	if (info->scalar) {	/* Three stacks given since three separate values on the stack */
+		unsigned int prev1 = last - 1, prev2 = last - 2;
+		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+#if 0
+		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument r to XYZ2RGB must be a 0 <= r <= 255!\n");
+			return -1;
+		}
+		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to XYZ2RGB must be a 0 <= g <= 255!\n");
+			return -1;
+		}
+		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to XYZ2RGB must be a 0 <= b <= 255!\n");
+			return -1;
+		}
+#endif
+		xyz[0] = S[prev2]->factor;
+		xyz[1] = S[prev1]->factor;
+		xyz[2] = S[last]->factor;
+		gmt_xyz_to_rgb (rgb, xyz);
+		/* Only a single segment with one row */
+		T_prev2->segment[0]->data[col][0] = gmt_M_s255 (rgb[0]);
+		T_prev1->segment[0]->data[col][0] = gmt_M_s255 (rgb[1]);
+		T->segment[0]->data[col][0]       = gmt_M_s255 (rgb[2]);
+		return 0;
+	}
+	/* Operate across rows. col must be 2 */
+	if (col != 2) return 0;	/* Do nothing */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			xyz[0] = T->segment[s]->data[0][row];
+			xyz[1] = T->segment[s]->data[1][row];
+			xyz[2] = T->segment[s]->data[2][row];
+			gmt_xyz_to_rgb (rgb, xyz);
+			T->segment[s]->data[0][row] = gmt_M_s255 (rgb[0]);
+			T->segment[s]->data[1][row] = gmt_M_s255 (rgb[1]);
+			T->segment[s]->data[2][row] = gmt_M_s255 (rgb[2]);
+		}
+	}
+	return 0;
+}
+
 GMT_LOCAL int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: Y0 1 1 Bessel function of A (2nd kind, order 0).  */
 {
@@ -4808,7 +5599,210 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 /* ---------------------- end operator functions --------------------- */
 
-#include "gmtmath.h"
+#define GMTMATH_N_OPERATORS 197
+
+GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[])
+{
+	/* Operator function	# of operands	# of outputs */
+
+	ops[0] = table_ABS;	n_args[0] = 1;	n_out[0] = 1;
+	ops[1] = table_ACOS;	n_args[1] = 1;	n_out[1] = 1;
+	ops[2] = table_ACOSH;	n_args[2] = 1;	n_out[2] = 1;
+	ops[3] = table_ACOT;	n_args[3] = 1;	n_out[3] = 1;
+	ops[4] = table_ACOTH;	n_args[4] = 1;	n_out[4] = 1;
+	ops[5] = table_ACSC;	n_args[5] = 1;	n_out[5] = 1;
+	ops[6] = table_ACSCH;	n_args[6] = 1;	n_out[6] = 1;
+	ops[7] = table_ADD;	n_args[7] = 2;	n_out[7] = 1;
+	ops[8] = table_AND;	n_args[8] = 2;	n_out[8] = 1;
+	ops[9] = table_ASEC;	n_args[9] = 1;	n_out[9] = 1;
+	ops[10] = table_ASECH;	n_args[10] = 1;	n_out[10] = 1;
+	ops[11] = table_ASIN;	n_args[11] = 1;	n_out[11] = 1;
+	ops[12] = table_ASINH;	n_args[12] = 1;	n_out[12] = 1;
+	ops[13] = table_ATAN;	n_args[13] = 1;	n_out[13] = 1;
+	ops[14] = table_ATAN2;	n_args[14] = 2;	n_out[14] = 1;
+	ops[15] = table_ATANH;	n_args[15] = 1;	n_out[15] = 1;
+	ops[16] = table_BCDF;	n_args[16] = 3;	n_out[16] = 1;
+	ops[17] = table_BEI;	n_args[17] = 1;	n_out[17] = 1;
+	ops[18] = table_BER;	n_args[18] = 1;	n_out[18] = 1;
+	ops[19] = table_BPDF;	n_args[19] = 3;	n_out[19] = 1;
+	ops[20] = table_BITAND;	n_args[20] = 2;	n_out[20] = 1;
+	ops[21] = table_BITLEFT;	n_args[21] = 2;	n_out[21] = 1;
+	ops[22] = table_BITNOT;	n_args[22] = 1;	n_out[22] = 1;
+	ops[23] = table_BITOR;	n_args[23] = 2;	n_out[23] = 1;
+	ops[24] = table_BITRIGHT;	n_args[24] = 2;	n_out[24] = 1;
+	ops[25] = table_BITTEST;	n_args[25] = 2;	n_out[25] = 1;
+	ops[26] = table_BITXOR;	n_args[26] = 2;	n_out[26] = 1;
+	ops[27] = table_CEIL;	n_args[27] = 1;	n_out[27] = 1;
+	ops[28] = table_CHI2CRIT;	n_args[28] = 2;	n_out[28] = 1;
+	ops[29] = table_CHI2CDF;	n_args[29] = 2;	n_out[29] = 1;
+	ops[30] = table_CHI2PDF;	n_args[30] = 2;	n_out[30] = 1;
+	ops[31] = table_COL;	n_args[31] = 1;	n_out[31] = 1;
+	ops[32] = table_COMB;	n_args[32] = 2;	n_out[32] = 1;
+	ops[33] = table_CORRCOEFF;	n_args[33] = 2;	n_out[33] = 1;
+	ops[34] = table_COS;	n_args[34] = 1;	n_out[34] = 1;
+	ops[35] = table_COSD;	n_args[35] = 1;	n_out[35] = 1;
+	ops[36] = table_COSH;	n_args[36] = 1;	n_out[36] = 1;
+	ops[37] = table_COT;	n_args[37] = 1;	n_out[37] = 1;
+	ops[38] = table_COTD;	n_args[38] = 1;	n_out[38] = 1;
+	ops[39] = table_COTH;	n_args[39] = 1;	n_out[39] = 1;
+	ops[40] = table_CSC;	n_args[40] = 1;	n_out[40] = 1;
+	ops[41] = table_CSCD;	n_args[41] = 1;	n_out[41] = 1;
+	ops[42] = table_CSCH;	n_args[42] = 1;	n_out[42] = 1;
+	ops[43] = table_PCDF;	n_args[43] = 2;	n_out[43] = 1;
+	ops[44] = table_DDT;	n_args[44] = 1;	n_out[44] = 1;
+	ops[45] = table_D2DT2;	n_args[45] = 1;	n_out[45] = 1;
+	ops[46] = table_D2R;	n_args[46] = 1;	n_out[46] = 1;
+	ops[47] = table_DENAN;	n_args[47] = 2;	n_out[47] = 1;
+	ops[48] = table_DILOG;	n_args[48] = 1;	n_out[48] = 1;
+	ops[49] = table_DIFF;	n_args[49] = 1;	n_out[49] = 1;
+	ops[50] = table_DIV;	n_args[50] = 2;	n_out[50] = 1;
+	ops[51] = table_DUP;	n_args[51] = 1;	n_out[51] = 2;
+	ops[52] = table_ECDF;	n_args[52] = 2;	n_out[52] = 1;
+	ops[53] = table_ECRIT;	n_args[53] = 2;	n_out[53] = 1;
+	ops[54] = table_EPDF;	n_args[54] = 2;	n_out[54] = 1;
+	ops[55] = table_ERF;	n_args[55] = 1;	n_out[55] = 1;
+	ops[56] = table_ERFC;	n_args[56] = 1;	n_out[56] = 1;
+	ops[57] = table_ERFINV;	n_args[57] = 1;	n_out[57] = 1;
+	ops[58] = table_EQ;	n_args[58] = 2;	n_out[58] = 1;
+	ops[59] = table_EXCH;	n_args[59] = 2;	n_out[59] = 2;
+	ops[60] = table_EXP;	n_args[60] = 1;	n_out[60] = 1;
+	ops[61] = table_FACT;	n_args[61] = 1;	n_out[61] = 1;
+	ops[62] = table_FCRIT;	n_args[62] = 3;	n_out[62] = 1;
+	ops[63] = table_FCDF;	n_args[63] = 3;	n_out[63] = 1;
+	ops[64] = table_FLIPUD;	n_args[64] = 1;	n_out[64] = 1;
+	ops[65] = table_FLOOR;	n_args[65] = 1;	n_out[65] = 1;
+	ops[66] = table_FMOD;	n_args[66] = 2;	n_out[66] = 1;
+	ops[67] = table_FPDF;	n_args[67] = 3;	n_out[67] = 1;
+	ops[68] = table_GE;	n_args[68] = 2;	n_out[68] = 1;
+	ops[69] = table_GT;	n_args[69] = 2;	n_out[69] = 1;
+	ops[70] = table_HYPOT;	n_args[70] = 2;	n_out[70] = 1;
+	ops[71] = table_I0;	n_args[71] = 1;	n_out[71] = 1;
+	ops[72] = table_I1;	n_args[72] = 1;	n_out[72] = 1;
+	ops[73] = table_IFELSE;	n_args[73] = 3;	n_out[73] = 1;
+	ops[74] = table_IN;	n_args[74] = 2;	n_out[74] = 1;
+	ops[75] = table_INRANGE;	n_args[75] = 3;	n_out[75] = 1;
+	ops[76] = table_INT;	n_args[76] = 1;	n_out[76] = 1;
+	ops[77] = table_INV;	n_args[77] = 1;	n_out[77] = 1;
+	ops[78] = table_ISFINITE;	n_args[78] = 1;	n_out[78] = 1;
+	ops[79] = table_ISNAN;	n_args[79] = 1;	n_out[79] = 1;
+	ops[80] = table_J0;	n_args[80] = 1;	n_out[80] = 1;
+	ops[81] = table_J1;	n_args[81] = 1;	n_out[81] = 1;
+	ops[82] = table_JN;	n_args[82] = 2;	n_out[82] = 1;
+	ops[83] = table_K0;	n_args[83] = 1;	n_out[83] = 1;
+	ops[84] = table_K1;	n_args[84] = 1;	n_out[84] = 1;
+	ops[85] = table_KN;	n_args[85] = 2;	n_out[85] = 1;
+	ops[86] = table_KEI;	n_args[86] = 1;	n_out[86] = 1;
+	ops[87] = table_KER;	n_args[87] = 1;	n_out[87] = 1;
+	ops[88] = table_KURT;	n_args[88] = 1;	n_out[88] = 1;
+	ops[89] = table_LCDF;	n_args[89] = 1;	n_out[89] = 1;
+	ops[90] = table_LCRIT;	n_args[90] = 1;	n_out[90] = 1;
+	ops[91] = table_LE;	n_args[91] = 2;	n_out[91] = 1;
+	ops[92] = table_LMSSCL;	n_args[92] = 1;	n_out[92] = 1;
+	ops[93] = table_LMSSCLW;	n_args[93] = 1;	n_out[93] = 1;
+	ops[94] = table_LOG;	n_args[94] = 1;	n_out[94] = 1;
+	ops[95] = table_LOG10;	n_args[95] = 1;	n_out[95] = 1;
+	ops[96] = table_LOG1P;	n_args[96] = 1;	n_out[96] = 1;
+	ops[97] = table_LOG2;	n_args[97] = 1;	n_out[97] = 1;
+	ops[98] = table_LOWER;	n_args[98] = 1;	n_out[98] = 1;
+	ops[99] = table_LPDF;	n_args[99] = 1;	n_out[99] = 1;
+	ops[100] = table_LRAND;	n_args[100] = 2;	n_out[100] = 1;
+	ops[101] = table_LSQFIT;	n_args[101] = 1;	n_out[101] = 0;
+	ops[102] = table_LT;	n_args[102] = 2;	n_out[102] = 1;
+	ops[103] = table_MAD;	n_args[103] = 1;	n_out[103] = 1;
+	ops[104] = table_MADW;	n_args[104] = 2;	n_out[104] = 1;
+	ops[105] = table_MAX;	n_args[105] = 2;	n_out[105] = 1;
+	ops[106] = table_MEAN;	n_args[106] = 1;	n_out[106] = 1;
+	ops[107] = table_MEANW;	n_args[107] = 2;	n_out[107] = 1;
+	ops[108] = table_MEDIAN;	n_args[108] = 1;	n_out[108] = 1;
+	ops[109] = table_MEDIANW;	n_args[109] = 2;	n_out[109] = 1;
+	ops[110] = table_MIN;	n_args[110] = 2;	n_out[110] = 1;
+	ops[111] = table_MOD;	n_args[111] = 2;	n_out[111] = 1;
+	ops[112] = table_MODE;	n_args[112] = 1;	n_out[112] = 1;
+	ops[113] = table_MODEW;	n_args[113] = 2;	n_out[113] = 1;
+	ops[114] = table_MUL;	n_args[114] = 2;	n_out[114] = 1;
+	ops[115] = table_NAN;	n_args[115] = 2;	n_out[115] = 1;
+	ops[116] = table_NEG;	n_args[116] = 1;	n_out[116] = 1;
+	ops[117] = table_NEQ;	n_args[117] = 2;	n_out[117] = 1;
+	ops[118] = table_NORM;	n_args[118] = 1;	n_out[118] = 1;
+	ops[119] = table_NOT;	n_args[119] = 1;	n_out[119] = 1;
+	ops[120] = table_NRAND;	n_args[120] = 2;	n_out[120] = 1;
+	ops[121] = table_OR;	n_args[121] = 2;	n_out[121] = 1;
+	ops[122] = table_PERM;	n_args[122] = 2;	n_out[122] = 1;
+	ops[123] = table_PLM;	n_args[123] = 3;	n_out[123] = 1;
+	ops[124] = table_PLMg;	n_args[124] = 3;	n_out[124] = 1;
+	ops[125] = table_POP;	n_args[125] = 1;	n_out[125] = 0;
+	ops[126] = table_POW;	n_args[126] = 2;	n_out[126] = 1;
+	ops[127] = table_PPDF;	n_args[127] = 2;	n_out[127] = 1;
+	ops[128] = table_PQUANT;	n_args[128] = 2;	n_out[128] = 1;
+	ops[129] = table_PQUANTW;	n_args[129] = 3;	n_out[129] = 1;
+	ops[130] = table_PSI;	n_args[130] = 1;	n_out[130] = 1;
+	ops[131] = table_PV;	n_args[131] = 3;	n_out[131] = 1;
+	ops[132] = table_QV;	n_args[132] = 3;	n_out[132] = 1;
+	ops[133] = table_R2;	n_args[133] = 2;	n_out[133] = 1;
+	ops[134] = table_R2D;	n_args[134] = 1;	n_out[134] = 1;
+	ops[135] = table_RAND;	n_args[135] = 2;	n_out[135] = 1;
+	ops[136] = table_RCDF;	n_args[136] = 1;	n_out[136] = 1;
+	ops[137] = table_RCRIT;	n_args[137] = 1;	n_out[137] = 1;
+	ops[138] = table_RPDF;	n_args[138] = 1;	n_out[138] = 1;
+	ops[139] = table_RINT;	n_args[139] = 1;	n_out[139] = 1;
+	ops[140] = table_RMS;	n_args[140] = 1;	n_out[140] = 1;
+	ops[141] = table_RMSW;	n_args[141] = 2;	n_out[141] = 1;
+	ops[142] = table_ROLL;	n_args[142] = 2;	n_out[142] = 0;
+	ops[143] = table_ROTT;	n_args[143] = 2;	n_out[143] = 1;
+	ops[144] = table_SEC;	n_args[144] = 1;	n_out[144] = 1;
+	ops[145] = table_SECD;	n_args[145] = 1;	n_out[145] = 1;
+	ops[146] = table_SECH;	n_args[146] = 1;	n_out[146] = 1;
+	ops[147] = table_SIGN;	n_args[147] = 1;	n_out[147] = 1;
+	ops[148] = table_SIN;	n_args[148] = 1;	n_out[148] = 1;
+	ops[149] = table_SINC;	n_args[149] = 1;	n_out[149] = 1;
+	ops[150] = table_SIND;	n_args[150] = 1;	n_out[150] = 1;
+	ops[151] = table_SINH;	n_args[151] = 1;	n_out[151] = 1;
+	ops[152] = table_SKEW;	n_args[152] = 1;	n_out[152] = 1;
+	ops[153] = table_SORT;	n_args[153] = 3;	n_out[153] = 1;
+	ops[154] = table_SQR;	n_args[154] = 1;	n_out[154] = 1;
+	ops[155] = table_SQRT;	n_args[155] = 1;	n_out[155] = 1;
+	ops[156] = table_STD;	n_args[156] = 1;	n_out[156] = 1;
+	ops[157] = table_STDW;	n_args[157] = 2;	n_out[157] = 1;
+	ops[158] = table_STEP;	n_args[158] = 1;	n_out[158] = 1;
+	ops[159] = table_STEPT;	n_args[159] = 1;	n_out[159] = 1;
+	ops[160] = table_SUB;	n_args[160] = 2;	n_out[160] = 1;
+	ops[161] = table_SUM;	n_args[161] = 1;	n_out[161] = 1;
+	ops[162] = table_SVDFIT;	n_args[162] = 1;	n_out[162] = 0;
+	ops[163] = table_TAN;	n_args[163] = 1;	n_out[163] = 1;
+	ops[164] = table_TAND;	n_args[164] = 1;	n_out[164] = 1;
+	ops[165] = table_TANH;	n_args[165] = 1;	n_out[165] = 1;
+	ops[166] = table_TAPER;	n_args[166] = 1;	n_out[166] = 1;
+	ops[167] = table_TCDF;	n_args[167] = 2;	n_out[167] = 1;
+	ops[168] = table_TN;	n_args[168] = 2;	n_out[168] = 1;
+	ops[169] = table_TPDF;	n_args[169] = 2;	n_out[169] = 1;
+	ops[170] = table_TCRIT;	n_args[170] = 2;	n_out[170] = 1;
+	ops[171] = table_UPPER;	n_args[171] = 1;	n_out[171] = 1;
+	ops[172] = table_VAR;	n_args[172] = 1;	n_out[172] = 1;
+	ops[173] = table_VARW;	n_args[173] = 2;	n_out[173] = 1;
+	ops[174] = table_WCDF;	n_args[174] = 3;	n_out[174] = 1;
+	ops[175] = table_WCRIT;	n_args[175] = 3;	n_out[175] = 1;
+	ops[176] = table_WPDF;	n_args[176] = 3;	n_out[176] = 1;
+	ops[177] = table_XOR;	n_args[177] = 2;	n_out[177] = 1;
+	ops[178] = table_Y0;	n_args[178] = 1;	n_out[178] = 1;
+	ops[179] = table_Y1;	n_args[179] = 1;	n_out[179] = 1;
+	ops[180] = table_YN;	n_args[180] = 2;	n_out[180] = 1;
+	ops[181] = table_ZCRIT;	n_args[181] = 1;	n_out[181] = 1;
+	ops[182] = table_ZCDF;	n_args[182] = 1;	n_out[182] = 1;
+	ops[183] = table_ZPDF;	n_args[183] = 1;	n_out[183] = 1;
+	ops[184] = table_ROOTS;	n_args[184] = 2;	n_out[184] = 1;
+	ops[185] = table_HSV2LAB;	n_args[185] = 3;	n_out[185] = 3;
+	ops[186] = table_HSV2RGB;	n_args[186] = 3;	n_out[186] = 3;
+	ops[187] = table_HSV2XYZ;	n_args[187] = 3;	n_out[187] = 3;
+	ops[188] = table_LAB2HSV;	n_args[188] = 3;	n_out[188] = 3;
+	ops[189] = table_LAB2RGB;	n_args[189] = 3;	n_out[189] = 3;
+	ops[190] = table_LAB2XYZ;	n_args[190] = 3;	n_out[190] = 3;
+	ops[191] = table_RGB2HSV;	n_args[191] = 3;	n_out[191] = 3;
+	ops[192] = table_RGB2LAB;	n_args[192] = 3;	n_out[192] = 3;
+	ops[193] = table_RGB2XYZ;	n_args[193] = 3;	n_out[193] = 3;
+	ops[194] = table_XYZ2HSV;	n_args[194] = 3;	n_out[194] = 3;
+	ops[195] = table_XYZ2LAB;	n_args[195] = 3;	n_out[195] = 3;
+	ops[196] = table_XYZ2RGB;	n_args[196] = 3;	n_out[196] = 3;
+}
 
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
 	unsigned int k, error = 0;
@@ -4881,6 +5875,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	if (!strcmp (txt, "F_EPS")) return GMTMATH_ARG_IS_F_EPS;
 	if (!strcmp (txt, "D_EPS")) return GMTMATH_ARG_IS_D_EPS;
 	if (!strcmp (txt, "EULER")) return GMTMATH_ARG_IS_EULER;
+	if (!strcmp (txt, "PHI")) return GMTMATH_ARG_IS_PHI;
 	if (!strcmp (txt, "TMIN")) return GMTMATH_ARG_IS_TMIN;
 	if (!strcmp (txt, "TMAX")) return GMTMATH_ARG_IS_TMAX;
 	if (!strcmp (txt, "TRANGE")) return GMTMATH_ARG_IS_TRANGE;
@@ -4978,10 +5973,29 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	}
 }
 
+bool color_operator_on_table (bool scalar, char *arg) {
+	if (scalar) return false;
+	if (strlen (arg) < 7) return false;
+	if (arg[3] != '2') return false;
+	if (!strcmp (arg, "HSV2LAB")) return true;
+	if (!strcmp (arg, "HSV2RGB")) return true;
+	if (!strcmp (arg, "HSV2XYZ")) return true;
+	if (!strcmp (arg, "LAB2HSV")) return true;
+	if (!strcmp (arg, "LAB2RGB")) return true;
+	if (!strcmp (arg, "LAB2XYZ")) return true;
+	if (!strcmp (arg, "RGB2HSV")) return true;
+	if (!strcmp (arg, "RGB2LAB")) return true;
+	if (!strcmp (arg, "RGB2XYZ")) return true;
+	if (!strcmp (arg, "XYZ2HSV")) return true;
+	if (!strcmp (arg, "XYZ2LAB")) return true;
+	if (!strcmp (arg, "XYZ2RGB")) return true;
+	return false;
+}
+
 int GMT_gmtmath (void *V_API, int mode, void *args) {
-	int i, k, op = 0, status = 0;
+	int i, k, op = 0, status = 0, last;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
-	unsigned int j, nstack = 0, n_stored = 0, kk;
+	unsigned int j, nstack = 0, n_stored = 0, kk, eaten, created;
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false, dimension = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
@@ -4991,7 +6005,210 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	double t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
 	char *label = NULL;
-#include "gmtmath_op.h"
+
+	/* Declare operator array */
+
+	static char *operator[GMTMATH_N_OPERATORS + 1] = {
+
+		"ABS",	/* id = 0 */
+		"ACOS",	/* id = 1 */
+		"ACOSH",	/* id = 2 */
+		"ACOT",	/* id = 3 */
+		"ACOTH",	/* id = 4 */
+		"ACSC",	/* id = 5 */
+		"ACSCH",	/* id = 6 */
+		"ADD",	/* id = 7 */
+		"AND",	/* id = 8 */
+		"ASEC",	/* id = 9 */
+		"ASECH",	/* id = 10 */
+		"ASIN",	/* id = 11 */
+		"ASINH",	/* id = 12 */
+		"ATAN",	/* id = 13 */
+		"ATAN2",	/* id = 14 */
+		"ATANH",	/* id = 15 */
+		"BCDF",	/* id = 16 */
+		"BEI",	/* id = 17 */
+		"BER",	/* id = 18 */
+		"BPDF",	/* id = 19 */
+		"BITAND",	/* id = 20 */
+		"BITLEFT",	/* id = 21 */
+		"BITNOT",	/* id = 22 */
+		"BITOR",	/* id = 23 */
+		"BITRIGHT",	/* id = 24 */
+		"BITTEST",	/* id = 25 */
+		"BITXOR",	/* id = 26 */
+		"CEIL",	/* id = 27 */
+		"CHI2CRIT",	/* id = 28 */
+		"CHI2CDF",	/* id = 29 */
+		"CHI2PDF",	/* id = 30 */
+		"COL",	/* id = 31 */
+		"COMB",	/* id = 32 */
+		"CORRCOEFF",	/* id = 33 */
+		"COS",	/* id = 34 */
+		"COSD",	/* id = 35 */
+		"COSH",	/* id = 36 */
+		"COT",	/* id = 37 */
+		"COTD",	/* id = 38 */
+		"COTH",	/* id = 39 */
+		"CSC",	/* id = 40 */
+		"CSCD",	/* id = 41 */
+		"CSCH",	/* id = 42 */
+		"PCDF",	/* id = 43 */
+		"DDT",	/* id = 44 */
+		"D2DT2",	/* id = 45 */
+		"D2R",	/* id = 46 */
+		"DENAN",	/* id = 47 */
+		"DILOG",	/* id = 48 */
+		"DIFF",	/* id = 49 */
+		"DIV",	/* id = 50 */
+		"DUP",	/* id = 51 */
+		"ECDF",	/* id = 52 */
+		"ECRIT",	/* id = 53 */
+		"EPDF",	/* id = 54 */
+		"ERF",	/* id = 55 */
+		"ERFC",	/* id = 56 */
+		"ERFINV",	/* id = 57 */
+		"EQ",	/* id = 58 */
+		"EXCH",	/* id = 59 */
+		"EXP",	/* id = 60 */
+		"FACT",	/* id = 61 */
+		"FCRIT",	/* id = 62 */
+		"FCDF",	/* id = 63 */
+		"FLIPUD",	/* id = 64 */
+		"FLOOR",	/* id = 65 */
+		"FMOD",	/* id = 66 */
+		"FPDF",	/* id = 67 */
+		"GE",	/* id = 68 */
+		"GT",	/* id = 69 */
+		"HYPOT",	/* id = 70 */
+		"I0",	/* id = 71 */
+		"I1",	/* id = 72 */
+		"IFELSE",	/* id = 73 */
+		"IN",	/* id = 74 */
+		"INRANGE",	/* id = 75 */
+		"INT",	/* id = 76 */
+		"INV",	/* id = 77 */
+		"ISFINITE",	/* id = 78 */
+		"ISNAN",	/* id = 79 */
+		"J0",	/* id = 80 */
+		"J1",	/* id = 81 */
+		"JN",	/* id = 82 */
+		"K0",	/* id = 83 */
+		"K1",	/* id = 84 */
+		"KN",	/* id = 85 */
+		"KEI",	/* id = 86 */
+		"KER",	/* id = 87 */
+		"KURT",	/* id = 88 */
+		"LCDF",	/* id = 89 */
+		"LCRIT",	/* id = 90 */
+		"LE",	/* id = 91 */
+		"LMSSCL",	/* id = 92 */
+		"LMSSCLW",	/* id = 93 */
+		"LOG",	/* id = 94 */
+		"LOG10",	/* id = 95 */
+		"LOG1P",	/* id = 96 */
+		"LOG2",	/* id = 97 */
+		"LOWER",	/* id = 98 */
+		"LPDF",	/* id = 99 */
+		"LRAND",	/* id = 100 */
+		"LSQFIT",	/* id = 101 */
+		"LT",	/* id = 102 */
+		"MAD",	/* id = 103 */
+		"MADW",	/* id = 104 */
+		"MAX",	/* id = 105 */
+		"MEAN",	/* id = 106 */
+		"MEANW",	/* id = 107 */
+		"MEDIAN",	/* id = 108 */
+		"MEDIANW",	/* id = 109 */
+		"MIN",	/* id = 110 */
+		"MOD",	/* id = 111 */
+		"MODE",	/* id = 112 */
+		"MODEW",	/* id = 113 */
+		"MUL",	/* id = 114 */
+		"NAN",	/* id = 115 */
+		"NEG",	/* id = 116 */
+		"NEQ",	/* id = 117 */
+		"NORM",	/* id = 118 */
+		"NOT",	/* id = 119 */
+		"NRAND",	/* id = 120 */
+		"OR",	/* id = 121 */
+		"PERM",	/* id = 122 */
+		"PLM",	/* id = 123 */
+		"PLMg",	/* id = 124 */
+		"POP",	/* id = 125 */
+		"POW",	/* id = 126 */
+		"PPDF",	/* id = 127 */
+		"PQUANT",	/* id = 128 */
+		"PQUANTW",	/* id = 129 */
+		"PSI",	/* id = 130 */
+		"PV",	/* id = 131 */
+		"QV",	/* id = 132 */
+		"R2",	/* id = 133 */
+		"R2D",	/* id = 134 */
+		"RAND",	/* id = 135 */
+		"RCDF",	/* id = 136 */
+		"RCRIT",	/* id = 137 */
+		"RPDF",	/* id = 138 */
+		"RINT",	/* id = 139 */
+		"RMS",	/* id = 140 */
+		"RMSW",	/* id = 141 */
+		"ROLL",	/* id = 142 */
+		"ROTT",	/* id = 143 */
+		"SEC",	/* id = 144 */
+		"SECD",	/* id = 145 */
+		"SECH",	/* id = 146 */
+		"SIGN",	/* id = 147 */
+		"SIN",	/* id = 148 */
+		"SINC",	/* id = 149 */
+		"SIND",	/* id = 150 */
+		"SINH",	/* id = 151 */
+		"SKEW",	/* id = 152 */
+		"SORT",	/* id = 153 */
+		"SQR",	/* id = 154 */
+		"SQRT",	/* id = 155 */
+		"STD",	/* id = 156 */
+		"STDW",	/* id = 157 */
+		"STEP",	/* id = 158 */
+		"STEPT",	/* id = 159 */
+		"SUB",	/* id = 160 */
+		"SUM",	/* id = 161 */
+		"SVDFIT",	/* id = 162 */
+		"TAN",	/* id = 163 */
+		"TAND",	/* id = 164 */
+		"TANH",	/* id = 165 */
+		"TAPER",	/* id = 166 */
+		"TCDF",	/* id = 167 */
+		"TN",	/* id = 168 */
+		"TPDF",	/* id = 169 */
+		"TCRIT",	/* id = 170 */
+		"UPPER",	/* id = 171 */
+		"VAR",	/* id = 172 */
+		"VARW",	/* id = 173 */
+		"WCDF",	/* id = 174 */
+		"WCRIT",	/* id = 175 */
+		"WPDF",	/* id = 176 */
+		"XOR",	/* id = 177 */
+		"Y0",	/* id = 178 */
+		"Y1",	/* id = 179 */
+		"YN",	/* id = 180 */
+		"ZCRIT",	/* id = 181 */
+		"ZCDF",	/* id = 182 */
+		"ZPDF",	/* id = 183 */
+		"ROOTS",	/* id = 184 */
+		"HSV2LAB",	/* id = 185 */
+		"HSV2RGB",	/* id = 186 */
+		"HSV2XYZ",	/* id = 187 */
+		"LAB2HSV",	/* id = 188 */
+		"LAB2RGB",	/* id = 189 */
+		"LAB2XYZ",	/* id = 190 */
+		"RGB2HSV",	/* id = 191 */
+		"RGB2LAB",	/* id = 192 */
+		"RGB2XYZ",	/* id = 193 */
+		"XYZ2HSV",	/* id = 194 */
+		"XYZ2LAB",	/* id = 195 */
+		"XYZ2RGB",	/* id = 196 */
+		"" /* last element is intentionally left blank */
+	};
 
 	int (*call_operator[GMTMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int);
 
@@ -5046,6 +6263,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling of x/y (e.g. lon/lat columns) */
 	GMT->current.io.skip_if_NaN[Ctrl->N.tcol] = t_check_required;	/* Determines if the t-column may have NaNs */
+	info.scalar = Ctrl->Q.active;
 
 	/* Because of how gmtmath works we do not use GMT_Init_IO to register inputfiles */
 
@@ -5222,9 +6440,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_PI]     = M_PI;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_E]      = M_E;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_F_EPS]   = FLT_EPSILON;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_D_EPS]   = DBL_EPSILON;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_F_EPS]  = FLT_EPSILON;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_D_EPS]  = DBL_EPSILON;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER]  = M_EULER;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_PHI]    = M_PHI;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN]   = Ctrl->T.T.min;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX]   = Ctrl->T.T.max;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.T.max - Ctrl->T.T.min;
@@ -5280,8 +6499,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GMTMATH_ARG_IS_STORE) {
 				/* Duplicate stack into stored memory location */
-				int last = nstack - 1;
 				bool new = false;
+				last = nstack - 1;
 				if (nstack == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
 					Return (GMT_RUNTIME_ERROR);
@@ -5417,24 +6636,33 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* Here we have an operator */
 
+		eaten = consumed_operands[op];	created = produced_operands[op];
+		if (color_operator_on_table (info.scalar, opt->arg)) {	/* These operators read across 3 columns instead */
+			if (info.n_col != 3) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input tables must have 3 columns for using the color triplet operator %s!\n", opt->arg);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			eaten = created = 1;
+		}
+
 		if (!strncmp (opt->arg, "ROOTS", 5U) && !(opt->next && opt->next->arg[0] == '=')) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Only = may follow operator ROOTS\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if ((new_stack = nstack - consumed_operands[op] + produced_operands[op]) >= GMTMATH_STACK_SIZE) {
+		if ((new_stack = nstack - eaten + created) >= GMTMATH_STACK_SIZE) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Stack overflow (%s)\n", opt->arg);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (nstack < consumed_operands[op]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
+		if (nstack < eaten) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], eaten);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s ", operator[op]);
 
-		for (i = produced_operands[op] - consumed_operands[op]; i > 0; i--) {
+		for (i = created - eaten; i > 0; i--) {
 			if (stack[nstack+i-1]->D) continue;
 
 			/* Must make space for more */
@@ -5443,7 +6671,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* If operators operates on constants only we may have to make space as well */
 
-		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
+		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (!Ctrl->T.notime) load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
@@ -5458,37 +6686,46 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			solve_SVDFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options, A_in);
 			Return (GMT_NOERROR);
 		}
-
-		for (j = 0; j < n_columns; j++) {
-			if (Ctrl->C.cols[j]) continue;
-			status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
-			if (status == -1) {	/* Serious problem, need to bail */
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+		else if (!strcmp (operator[op], "SORT")) {	/* Special case, sort all columns inside operator */
+			status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, 0);	/* Do it for all columns, the col = 0 is not used inside function */
+		}
+		else {
+			for (j = 0; j < n_columns; j++) {
+				if (Ctrl->C.cols[j]) continue;
+				status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
+				if (status == -1) {	/* Serious problem, need to bail */
+					GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+				}
 			}
 		}
-		
 		free_sort_list (GMT, &info);	/* Frees helper array if SORT was called */
 		
 		nstack = new_stack;
 
-		for (kk = 1; kk <= produced_operands[op]; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
+		for (kk = 1; kk <= created; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		(Ctrl->Out.file) ? GMT_Message (API, GMT_TIME_NONE, "= %s", Ctrl->Out.file) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
 	}
 
-	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
-		if (!stack[0]->D)
-			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+	if (nstack == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No operands left on the stack!\n");
+		Return (API->error);
+	}
+	last = nstack - 1;	/* Index of top of stack (also hopefully bottom of stack) */
+	
+	if (stack[last]->constant) {	/* Only a constant provided, set table accordingly */
+		if (!stack[last]->D)
+			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
 			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
-				load_column (stack[0]->D, j, info.T, COL_T);
+				load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
-				load_const_column (stack[0]->D, j, stack[0]->factor);
+				load_const_column (stack[last]->D, j, stack[last]->factor);
 		}
-		DH = gmt_get_DD_hidden (stack[0]->D);
-		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
+		DH = gmt_get_DD_hidden (stack[last]->D);
+		gmt_set_tbl_minmax (GMT, stack[last]->D->geometry, stack[last]->D->table[0]);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -5513,8 +6750,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	else {	/* Regular table result */
 		bool template_used = false, place_t_col = (Ctrl->T.active && t_check_required && !Ctrl->Q.active && !touched_t_col);
 
-		if (stack[0]->D)	/* There is an output stack, select it */
-			R = stack[0]->D;
+		if (stack[last]->D)	/* There is an output stack, select it */
+			R = stack[last]->D;
 		else {		/* Can happen if only -T [-N] was specified with no operators */
 			R = Template;
 			template_used = true;
@@ -5530,7 +6767,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)R->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */
 			uint64_t row, c;
-			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columns below */
 			struct GMT_DATASET *N = NULL;
 			dim[GMT_SEG] = R->table[0]->n_segments;
 			dim[GMT_COL] = n_columns;

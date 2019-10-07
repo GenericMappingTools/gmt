@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test highpass-filter with or without coarse grid low-pass option
 # Doing a 10x10 degree patch near Nigeria
 ps=highpass.ps

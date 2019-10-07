@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gshhg_version.h contains prototypes
@@ -27,8 +27,8 @@
  * \brief 
  */
 
-#ifndef _GMT_GSHHG_VERSION_H
-#define _GMT_GSHHG_VERSION_H
+#ifndef GMT_GSHHG_VERSION_H
+#define GMT_GSHHG_VERSION_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -59,4 +59,4 @@ EXTERN_MSC int gshhg_require_min_version (const char* filename, const struct GSH
 }
 #endif
 
-#endif  /* _GMT_GSHHG_VERSION_H */
+#endif  /* GMT_GSHHG_VERSION_H */

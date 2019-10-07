@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Due to issue #1202. Now passes after fix in r19821
 ps=split_mean.ps
 gmt set PROJ_LENGTH_UNIT inch

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_defaults.h contains definition of the structure with default settings.
@@ -27,8 +27,8 @@
  * \brief Definition of the structure with default settings.
  */
 
-#ifndef _GMT_DEFAULTS_H
-#define _GMT_DEFAULTS_H
+#ifndef GMT_DEFAULTS_H
+#define GMT_DEFAULTS_H
 
 /*--------------------------------------------------------------------
  *			GMT DEFAULTS STRUCTURE DEFINITION
@@ -53,7 +53,7 @@ struct DATUM {
 
 struct GMT_ENCODING {
 	char name[GMT_LEN64];
-	int code[5]; /* Codes for symbols we print. */
+	int code[GMT_LEN8]; /* Codes for 7 symbols we plot but whose code depends on character set (ring, degree, colon, squote, dquote, minus, hyphen). */
 };
 
 /*! Holds all variables directly controlled by GMT Default parameters */
@@ -138,9 +138,11 @@ struct GMT_DEFAULTS {
 	double map_tick_length[4];		/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
-	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
+	double map_graph_extension;		/* If mapframetype is graph, how must longer to make axis length. [7.5%] */
+	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
+	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
 	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
@@ -148,7 +150,7 @@ struct GMT_DEFAULTS {
 	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
 	char map_frame_axes[6];			/* Which axes to draw and annotate ["WESNZ"]  */
 	char map_annot_ortho[6];		/* Which axes have orthogonal annotations in linear projections ["we"] */
-	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
+	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_minus, gmt_hyphen, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	unsigned int proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
@@ -164,6 +166,7 @@ struct GMT_DEFAULTS {
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_transparency;			/* Later transparency [0] */
+	double ps_penwidth;			/* Current pen width */
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
@@ -185,4 +188,4 @@ struct GMT_DEFAULTS {
 	char given_unit[GMT_N_KEYS];		/* Unit given or implied for each setting */
 };
 
-#endif  /* _GMT_DEFAULTS_H */
+#endif  /* GMT_DEFAULTS_H */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * API functions to support the grdedit application.
@@ -64,6 +64,10 @@ struct GRDEDIT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct L {	/* -L[+n|+p] */
+		bool active;
+		int mode;
+	} L;
 	struct N {	/* N<xyzfile> */
 		bool active;
 		char *file;
@@ -99,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-L[+n|+p]] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -116,8 +120,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose the entire grid (this will exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Shift the grid\'s longitude range (geographic grids only):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -L+n Adjust <west>/<east> so <east> <= 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -L+p Adjust <west>/<east> so <west> >= 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S For global grids of 360 degree longitude range.\n");
@@ -183,6 +190,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 				else
 					n_errors++;
 				break;
+			case 'L':	/* Rotate w/e */
+				Ctrl->L.active = true;
+				if (strstr (opt->arg, "+n")) Ctrl->L.mode = -1;
+				else if (strstr (opt->arg, "+p")) Ctrl->L.mode = +1;
+				else if (opt->arg[0])
+					n_errors++;
+				break;
 			case 'N':	/* Replace nodes */
 				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->N.file = strdup (opt->arg);
@@ -229,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 
 int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
-	bool grid_was_read = false;
+	bool grid_was_read = false, do_J = false;
 	
 	unsigned int row, col;
 	int error;
@@ -238,7 +252,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	double shift_amount = 0.0;
 
-	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL;
+	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL;
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -264,6 +278,22 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
+	if ((do_J = GMT->common.J.active)) {	/* Only gave -J to set the proj4 flag, so grid is already projected (i.e., Cartesian) */
+		EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
+		projstring = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */
+ 		if (strstr (projstring, "+proj=longlat") || strstr (projstring, "+proj=latlong")) {	/* These means we have a geographic grid */
+			gmt_set_geographic (GMT, GMT_IN);	/* Force Geographic */
+			gmt_set_geographic (GMT, GMT_OUT);
+		}
+		else {
+			gmt_set_cartesian (GMT, GMT_IN);	/* Force Cartesian since processing -J changed that */
+			gmt_set_cartesian (GMT, GMT_OUT);
+			gmt_parse_R_option (GMT, GMT->common.R.string);	/* Since parsing under -J would have imposed checks. */
+		}
+		GMT->current.proj.projection = GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		GMT->common.J.active = false;	/* Leave no trace of this, except in the history... */
+	}
+
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -287,8 +317,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/* Decode grd information given, if any */
 
-	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
-		G->header->ProjRefPROJ4 = gmt_export2proj4 (GMT);
+	if (do_J)	/* Save proj4 string in the header */
+		G->header->ProjRefPROJ4 = projstring;
 
 	if (Ctrl->D.active) {
 		double scale_factor, add_offset;
@@ -474,6 +504,38 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 		G->data = save_grid_pointer;
 		gmt_M_free (GMT, a_tr);
+	}
+	else if (Ctrl->L.active) {	/* Wrap the longitude boundaries */
+		double wesn[4];
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+			Return (API->error);
+		}
+		gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy */
+		if (Ctrl->L.mode == -1) {
+			while (G->header->wesn[XHI] > 0.0) G->header->wesn[XLO] -= 360.0, G->header->wesn[XHI] -= 360.0;
+		}
+		else if (Ctrl->L.mode == +1) {
+			while (G->header->wesn[XLO] < 0.0) G->header->wesn[XLO] += 360.0, G->header->wesn[XHI] += 360.0;
+		}
+		else {	/* Aim for a reasonable w/e range */
+			if (G->header->wesn[XHI] < -180.0) G->header->wesn[XLO] += 360.0, G->header->wesn[XHI] += 360.0;
+			if (G->header->wesn[XLO] < -180.0 && (G->header->wesn[XHI] + 360.0) <= 180.0) G->header->wesn[XLO] += 360.0, G->header->wesn[XHI] += 360.0;
+			if (G->header->wesn[XLO] >  360.0) G->header->wesn[XLO] -= 360.0, G->header->wesn[XHI] -= 360.0;
+			if (G->header->wesn[XHI] >  180.0 && (G->header->wesn[XLO] - 360.0) >= -180.0) G->header->wesn[XLO] -= 360.0, G->header->wesn[XHI] -= 360.0;
+		}
+		if (doubleAlmostEqual (G->header->wesn[XLO], wesn[XLO])) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Change region in file %s from %g/%g/%g/%g to %g/%g/%g/%g\n", out_file,
+				G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI],
+				wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		}
+		else {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Region in file remains unchanged: %g/%g/%g/%g\n", out_file,
+				G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
+		}
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, out_file, G) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	else {	/* Change the domain boundaries */
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */

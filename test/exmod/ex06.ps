@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19353 [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Nov 20 13:13:37 2017
+%%CreationDate: Thu Dec  6 10:53:09 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1800 1800 TM
 
 % PostScript produced by:
-%@GMT: psxy -R0/6/0/8.32311 -Jx1i -P -T -Xr1.5i -Yr1.5i --GMT_HISTORY=false
+%@GMT: gmt psxy -R0/6/0/8.32311 -Jx1i -T -Xr1.5i -Yr1.5i --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 6.00000000 0.00000000 8.32311000 0.000 6.000 0.000 8.323 +xy
+%GMTBoundingBox: 108 108 432 599.264
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -678,7 +687,7 @@ O0
 1500 0 TM
 
 % PostScript produced by:
-%@GMT: psrose @fractures_06.txt -: -A10r -Sn -JX3.6i6i -Gorange -R0/1/0/360 -Bx0.2g0.2 -By30g30 -BWENS+glightblue -W1p -Xa0i -Ya0i
+%@GMT: gmt psrose @fractures_06.txt -: -A10r -Sn -JX3.6i6i -Gorange -R0/1/0/360 -Bx0.2g0.2 -By30g30 -BWENS+glightblue -W1p -Xa0i -Ya0i
 %@PROJ: xy -1.80000000 1.80000000 -1.80000000 1.80000000 -1.800 1.800 -1.800 1.800 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -692,7 +701,6 @@ V
 (b\)) br Z
 U
 }!
-/PSL_exec_completion 1 def
 2160 2160 T
 {0.678 0.847 0.902 C} FS
 2160 0 0 Sc
@@ -781,7 +789,7 @@ O0
 0 5788 TM
 
 % PostScript produced by:
-%@GMT: pshistogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue @v3206_06.txt -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -L1p -Z1 -W250 -Xa0i -Ya4.8231i
+%@GMT: gmt pshistogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue @v3206_06.txt -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -L1p -Z1 -W250 -Xa0i -Ya4.8231i
 %@PROJ: xy -6000.00000000 0.00000000 0.00000000 30.00000000 -6000.000 0.000 0.000 30.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -795,7 +803,6 @@ V
 (a\)) br Z
 U
 }!
-/PSL_exec_completion 1 def
 {0.678 0.847 0.902 C} FS
 -7200 0 0 4200 7200 0 3 0 0 SP
 clipsave
@@ -917,27 +924,27 @@ N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
 200 F0
-(-6000) sh mx
-(-5000) sh mx
-(-4000) sh mx
-(-3000) sh mx
-(-2000) sh mx
-(-1000) sh mx
+(”6000) sh mx
+(”5000) sh mx
+(”4000) sh mx
+(”3000) sh mx
+(”2000) sh mx
+(”1000) sh mx
 (0) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-6000) bc Z
+(”6000) bc Z
 1200 PSL_A0_y MM
-(-5000) bc Z
+(”5000) bc Z
 2400 PSL_A0_y MM
-(-4000) bc Z
+(”4000) bc Z
 3600 PSL_A0_y MM
-(-3000) bc Z
+(”3000) bc Z
 4800 PSL_A0_y MM
-(-2000) bc Z
+(”2000) bc Z
 6000 PSL_A0_y MM
-(-1000) bc Z
+(”1000) bc Z
 7200 PSL_A0_y MM
 (0) bc Z
 N 240 0 M 0 -42 D S
@@ -1016,6 +1023,10 @@ N 6960 0 M 0 42 D S
 %%EndObject
 0 -5788 TM
 PSL_completion /PSL_completion {} def
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

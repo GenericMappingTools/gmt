@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test makecpt and psscale with calendar time axis as x or y
 
 ps=timecpt.ps

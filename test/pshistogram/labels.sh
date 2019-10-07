@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test all the ways of labeling the bars with -D
 ps=labels.ps
 cat << EOF > t.txt

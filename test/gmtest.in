@@ -1,21 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #
 # Functions to be used with test scripts
 
 # Print the shell script name and purpose and fill out to 72 characters
-# and make sure to use US system defaults
+# and make sure to use US GMT system defaults
 
 test -z "$1" && exit 1
 
 # Name of the script and the directory portion of it
 script_name="$1"
-script_mode="$2"
 script_dir=$(dirname "${script_name}")
 local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/test/${script_name}"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
-classic=$(grep "GMT CLASSIC" "$script" -c)
+# Is it a modern mode script?
+modern=$(grep "gmt begin" "$script" -c)
+# Is it a script that is known to fail?
+known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+# Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
+# GRAPHICSMAGICK_RMS = <custom-limit>
+GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -28,8 +33,10 @@ LANG=C
 
 # Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
-
+# If no script-specific rms we use the system default
+if [ -z "$GRAPHICSMAGICK_RMS" ]; then
+	GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+fi
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
@@ -66,35 +73,20 @@ function psldemo()
 
 # Must have wrappers for all test programs not part of GMT distro:
 
-# testapi wrapper
-function testapi()
-{
-  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi" "$@"
-}
-
-# testgrdio wrapper
-function testgrdio()
-{
-  valgrind_wrapper "@GMT_BINARY_DIR@/src/testgrdio" "$@"
-}
-
-# testapi_userdataset wrapper
-function testapi_userdataset()
-{
-  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_userdataset" "$@"
-}
-
-# testapi_uservectors wrapper
-function testapi_uservectors()
-{
-  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_uservectors" "$@"
-}
-
-# testapi_usergrid wrapper
-function testapi_usergrid()
-{
-  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_usergrid" "$@"
-}
+for apiprog in \
+    testapi \
+    testapi_matrix \
+    testapi_matrix_plot \
+    testapi_mixmatrix \
+    testapi_userdataset \
+    testapi_usergrid \
+    testapi_uservectors \
+    testapi_vector \
+    testapiconv \
+    testgrdio
+do
+    eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
+done
 
 # export function definitions to subshells
 export -f gmt psldemo valgrind_wrapper
@@ -120,23 +112,29 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
   return
 fi
 for ps in *.ps ; do
-  # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
-  rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
-  if [ -z "$rms" ]; then
-    rms="NA"
+  if [ ${known2fail} -eq 1 ]; then	# No point running the comparison since we know it fails
+      echo "${script_dir}/${ps}: RMS Error = N/A [FAIL] (known failure)"
+      now=$(date "+%F %T")
+      echo "$now ${script_dir}/${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
-    rms=$(printf "%.3f\n" $rms)
-  fi
-  if [ "$pscmpfailed" ]; then
-    now=$(date "+%F %T")
-    echo "${script_dir}/${ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${script_dir}/${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
-    make_pdf "$ps" # try to make pdf file
-    ((++ERROR))
-  else
-    test -z "$rms" && rms=NA
-    echo "${script_dir}/${ps}: RMS Error = $rms [PASS]"
+    # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
+    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+    rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
+    if [ -z "$rms" ]; then
+      rms="NA"
+    else
+      rms=$(printf "%.4f\n" $rms)
+    fi
+    if [ "$pscmpfailed" ]; then
+      now=$(date "+%F %T")
+      echo "${script_dir}/${ps}: RMS Error = $rms [FAIL]"
+      echo "$now ${script_dir}/${ps}: RMS Error = $rms Limit = $GRAPHICSMAGICK_RMS Failure = new" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
+      make_pdf "$ps" # try to make pdf file
+      ((++ERROR))
+    else
+      test -z "$rms" && rms=N/A
+      echo "${script_dir}/${ps}: RMS Error = $rms [PASS]"
+    fi
   fi
 done
 }
@@ -146,7 +144,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
     ((++ERROR))
   else
     echo "[PASS]"
@@ -198,7 +196,12 @@ set -E # Shell functions and subshells need to inherit ERR trap
 function on_err()
 {
   trap - EXIT ERR SIGSEGV SIGTRAP SIGBUS # Restore trap
-  ((++ERROR))
+  if [ ${known2fail} -eq 1 ]; then  # known to fail
+    now=$(date "+%F %T")
+    echo "$now ${script_name}: Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
+  else
+    ((++ERROR))
+  fi
   echo "ERROR: ${1}:${2}" >&2 # Report error line
   cleanup
 }
@@ -210,19 +213,8 @@ exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
-if [ "X$script_mode" = "XM" ]; then
-	# Test a modernized version of the script instead
-	if [ $classic -eq 0 ]; then
-		echo "Modernizing $script to $local_script before testing"
-		gmtmodernize "$script" > ./${local_script}
-	else
-		echo "Cannot modernize classic GMT script ${script}. Run in classic mode" >&2
-		ln -sf "$script" .
-	fi
-else
-	# Run the original classic script via link from current directory
-	ln -sf "$script" .
-fi
+# Run the original script via link from current directory
+ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
 cat > gmtest.sh << EOF
@@ -235,7 +227,7 @@ export GMT_DATADIR="$src"
 export GMT_SRCDIR="$src"
 export GSHHG_DIR="@GSHHG_PATH@"
 export DCW_DIR="@DCW_PATH@"
-export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
+export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@"
 export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
@@ -244,9 +236,9 @@ export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 # Start with proper GMT defaults
 gmt set -Du
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
-if [ "X$script_mode" = "XM" ] || [ "X$script_mode" = "Xm" ]; then
-	export GMT_PPID=\$\$
-	echo "Set GMT_PPID = \$GMT_PPID"
+if [ ${modern} -gt 0 ]; then
+	export GMT_SESSION_NAME=\$\$
+	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script
@@ -258,5 +250,3 @@ chmod 755 gmtest.sh
 if [ "X$script_mode" = "XM" ] && [ "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi
-
-# vim: ft=sh

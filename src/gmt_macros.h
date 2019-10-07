@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_macros.h contains definitions of macros used through GMT.
@@ -27,8 +27,8 @@
  * \brief Definitions of macros used through GMT.
  */
 
-#ifndef _GMT_MACROS_H
-#define _GMT_MACROS_H
+#ifndef GMT_MACROS_H
+#define GMT_MACROS_H
 
 /*--------------------------------------------------------------------
  *			GMT MACROS DEFINITIONS
@@ -42,7 +42,7 @@
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
-#ifndef MOD			/* Knuth-style modulo function (remainder after floored division) */
+#ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
 #define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
 
@@ -150,12 +150,21 @@
 /* Determine if we should skip this CPT slice */
 #define gmt_M_skip_cptslice(P,index) ((index >= 0 && P->data[index].skip) || (index < 0 && P->bfn[index+3].skip))
 
+/* See if CPT modifiers was given (+u|U modifier) */
+#define gmt_M_cpt_mod(arg) ((arg) && ((arg)[0] =='+' && strchr ("uU", (arg)[1])))
+
+/* See if no CPT name was given (+u|U modifier may be present but not filename) */
+#define gmt_M_no_cpt_given(arg) (arg == NULL || arg[0] == '\0' || gmt_M_cpt_mod(arg))
+
 /*! Copy two RGB[T] arrays (a = b) */
 #define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 
 /*! To compare is two colors are ~ the same */
 #define gmt_M_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)
 #define gmt_M_same_rgb(a,b) (gmt_M_eq(a[0],b[0]) && gmt_M_eq(a[1],b[1]) && gmt_M_eq(a[2],b[2]) && gmt_M_eq(a[3],b[3]))
+
+/*! To compare is two pens are ~ the same */
+#define gmt_M_same_pen(a,b) (gmt_M_eq(a.width,b.width) && gmt_M_eq(a.offset,b.offset) && gmt_M_same_rgb(a.rgb,b.rgb) && !strcmp (a.style, b.style))
 
 /*! Macros for conversion of RGB in 0-1 range to 0-255 range */
 #define gmt_M_s255(s) ((s) * 255.0)
@@ -196,4 +205,4 @@
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)
 
-#endif  /* _GMT_MACROS_H */
+#endif  /* GMT_MACROS_H */

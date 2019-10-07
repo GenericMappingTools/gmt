@@ -804,7 +804,7 @@ GMT_LOCAL doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doubl
 /*                 interpolants.  C1 = 1 on the edge opposite */
 /*                 V1 and C1 = 0 on the other edges.  Simi- */
 /*                 larly for C2 and C3.  C1+C2+C3 = 1. */
-/* DS =          Directional derivative (scaled by distnace) */
+/* DS =          Directional derivative (scaled by distance) */
 /*                 at U1, U2, or U3:  DS = (G,U1-V1)/U1N = */
 /*                 -(G,V1)/U1N on side opposite V1, where G/ */
 /*                 U1N (plus an orthogonal component) is the */

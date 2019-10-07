@@ -119,5 +119,3 @@ find_package_handle_standard_args (PCRE DEFAULT_MSG PCRE_LIBRARY PCRE_INCLUDE_DI
 
 set (PCRE_LIBRARIES ${PCRE_LIBRARY})
 set (PCRE_INCLUDE_DIRS ${PCRE_INCLUDE_DIR})
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

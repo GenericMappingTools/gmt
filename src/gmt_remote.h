@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *      Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: gmt.soest.hawaii.edu
+ *      Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -30,6 +30,12 @@ struct GMT_DATA_INFO {
 	char tag[4];	/* E.g., 30m */
 	char size[8];	/* E.g., 300M */
 	char remark[GMT_LEN128];	/* What it is */
+};
+
+struct GMT_MD5 {
+	char name[GMT_LEN64];	/* File name */
+	char md5[GMT_LEN64];	/* The MD5 hash */
+	size_t size;		/* File size in bytes */
 };
 
 #define GMT_N_DATA_INFO_ITEMS 15

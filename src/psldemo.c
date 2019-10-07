@@ -66,7 +66,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_plotaxis (PSL, 20.0, "Some Axis", 10.0, 0);
 	PSL_plotaxis (PSL, 25.0, "A Reversed Axis", 10.0, 3);
 	PSL_setlinewidth (PSL, 5.0);
-	PSL_plotline (PSL, x, y, 6, PSL_MOVE + PSL_STROKE);
+	PSL_plotline (PSL, x, y, 6, PSL_MOVE|PSL_STROKE);
 	PSL_setlinewidth (PSL, 1.0);
 	PSL_setfill (PSL, rgb[0], outline[0]);
 	for (i = 0; i < 6; i++) PSL_plotsymbol (PSL, x[i], y[i], size, PSL_STAR);
@@ -96,7 +96,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_setfill (PSL, rgb[5], PSL_OUTLINE);
 	PSL_plotsymbol (PSL, 125.0, 30.0, size, PSL_ELLIPSE);
 
-	size[0] = 0.3; size[1] = 45.0; size[2] = 315.0;
+	size[0] = 0.3; size[1] = 45.0; size[2] = 315.0;	size[3] = 0.0;	size[7] = 3.0;
 	rgb[5][1] = (double) PSL_setimage (PSL, 14, "14", NULL, 100, dim, rgb[1], rgb[0]);
 	PSL_plotsymbol (PSL, 140.0, 30.0, size, PSL_WEDGE);
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis:
@@ -116,11 +116,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[%s] %s[-M] [-N] %s\n", GMT_J_OPT, GMT_K_OPT, GMT_O_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_P_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] %s ", API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", API->P_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, API->O_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -146,7 +146,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
-	GMT_Option (API, "X,b,o,p");
+	GMT_Option (API, "X,b,c,o,p");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						gmt_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						gmt_M_str_free (date);
 					}
-					pch[0] = '\0';	/* Chop off date settting */
+					pch[0] = '\0';	/* Chop off date setting */
 				}
 				if (opt->arg[0]) {
 					for (j = 0; j < (int)strlen(opt->arg); j++) {
@@ -396,7 +396,7 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 int GMT_solar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}

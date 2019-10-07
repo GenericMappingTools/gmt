@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Addresses issue #1205.  The bottom plot is all auto and
 # correct, while the top plot failed to flip the annotation
 # side whem +m was added, because it had already been flipped

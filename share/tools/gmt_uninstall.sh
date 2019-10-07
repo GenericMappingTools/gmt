@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo,
-# J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script removes the entire GMT installation. If the bin, share
@@ -42,7 +41,7 @@ else
 fi
 
 # 3. Remove share directory
-for dir in conf cpt custom dbase doc localization man mgd77 mgg postscriptlight tools x2sys; do
+for dir in conf cpt custom doc localization man mgd77 mgg postscriptlight spotter tools x2sys; do
 	printf "Remove: %s/%s\n" $share $dir
 	rm -rf $share/$dir
 done
@@ -88,7 +87,7 @@ else			# Just delete plugin directory
 	printf "Remove: %s\n" $lib
 	rm -rf $lib
 fi
-# Check for GMT libs here	
+# Check for GMT libs here
 printf "Remove: libgmt.*\n"
 printf "Remove: libpostscriptlight.*\n"
 rm -rf libgmt.* libpostscriptlight.*

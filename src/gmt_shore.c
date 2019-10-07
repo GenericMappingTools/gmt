@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /* NOTE: This is a new version for dual Antarctica polygons.
@@ -178,7 +178,7 @@ GMT_LOCAL void shore_done_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 }
 
 GMT_LOCAL void shore_path_shift (double *lon, unsigned int n, double edge) {
-	/* Shift all longitudes >= edige by 360 westwards */
+	/* Shift all longitudes >= edge by 360 westwards */
 	unsigned int i;
 
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
@@ -238,14 +238,15 @@ GMT_LOCAL void shore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c, i
 	}
 }
 
-GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
+GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path, bool reset) {
 	/* Prepends the appropriate directory to the file name
 	 * and returns path if file is readable, NULL otherwise */
 
 	FILE *fp = NULL;
-	char dir[GMT_BUFSIZ];
+	char dir[PATH_MAX];
 	static struct GSHHG_VERSION version = GSHHG_MIN_REQUIRED_VERSION;
-	static int warn_once = true;
+	static bool warn_once = true;
+	bool found = false;
 
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.GSHHGDIR
@@ -267,35 +268,36 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 				return (path);
 			}
 			else
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "1. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 		}
 		else {
 			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
 			 * the pointer. this is no leak because the reference still exists
 			 * in the previous copy of the current GMT_CTRL struct. */
-			GMT->session.GSHHGDIR = NULL;
+			if (reset) GMT->session.GSHHGDIR = NULL;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: Failure, could not access %s\n", path);
 		}
 	}
 
-	/* 2. First check for coastline.conf */
+	/* 2. Next, check for coastline.conf */
 
 	if (gmt_getsharepath (GMT, "conf", "coastline", ".conf", path, F_OK) || gmt_getsharepath (GMT, "coast", "coastline", ".conf", path, F_OK)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: coastline.conf found at %s\n", path);
-		if (access (path, R_OK) == 0) {					/* File can be read */
+		if (access (path, R_OK) == 0) {				/* coastline.conf can be read */
 			if ((fp = fopen (path, "r")) == NULL) {		/* but Coverity still complains if we don't test if it's NULL */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to open %s\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failed to open %s\n", path);
 				return (NULL);
 			}
-			while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
+			while (fgets (dir, PATH_MAX, fp)) {	/* Loop over all input lines until found or done */
 				if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 				gmt_chop (dir);		/* Chop off LF or CR/LF */
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
-				if (access (path, R_OK) == 0) {	/* File can be read */
+				found = (access (path, F_OK) == 0);	/* File was found */
+				if (access (path, R_OK) == 0) {		/* File can be read */
 L1:
 					if (gshhg_require_min_version (path, version)) {
 						fclose (fp);
@@ -306,20 +308,23 @@ L1:
 						return (path);
 					}
 					else
-						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Failure, could not access %s\n", path);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failure, could not access %s\n", path);
 				}
 				else {
-					/* Before giving up, try the old .cdf file names */
-					sprintf(path, "%s/%s%s", dir, stem, ".cdf");
-					if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
-						goto L1;
-					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+					if (found)
+						GMT_Report(GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
+					else {	/* Before giving up, try the old .cdf file names */
+						sprintf(path, "%s/%s%s", dir, stem, ".cdf");
+						if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
+							goto L1;
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Did not find %s nor ithe older *.cdf version\n", path);
+					}
 				}
 			}
 			fclose (fp);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
 	/* 3. Then check for the named file itself */
@@ -340,11 +345,13 @@ L1:
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Failure, could not access %s\n", path);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "3. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
+	/* 4. No success, just break down and cry */
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
-	if (warn_once) {
+	if (warn_once && reset) {
 		warn_once = false;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
@@ -359,7 +366,7 @@ GMT_LOCAL void shore_check (struct GMT_CTRL *GMT, bool ok[5]) {
  * resolution (f, h, i, l, c) */
 
 	int i, j, n_found;
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
 
 	for (i = 0; i < 5; i++) {
 		/* For each resolution... */
@@ -367,7 +374,7 @@ GMT_LOCAL void shore_check (struct GMT_CTRL *GMT, bool ok[5]) {
 		for (j = n_found = 0; j < 3; j++) {
 			/* For each data type... */
 			snprintf (stem, GMT_LEN64, "binned_%s_%c", kind[j], res[i]);
-			if (!shore_getpathname (GMT, stem, path))
+			if (!shore_getpathname (GMT, stem, path, false))
 				/* Failed to find file */
 				continue;
 			n_found++; /* Increment how many found so far for this resolution */
@@ -391,10 +398,30 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
-	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
-	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;	/* Skip everything BUT Antarctica data south of 60S */
-	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;	/* Use Antarctica ice boundary as coastline */
-	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
+	if ((p = strstr (info, "+a"))) {	/* On or more modifiers under +a */
+		p += 2;	/* Skip to first letter */
+		while (p[0] && p[0] != '+') {	/* Processes all codes until next modifier or we are done */
+			switch (p[0]) {
+				case 'g': I->antarctica_mode |= GSHHS_ANTARCTICA_GROUND;	break;	/* Use Antarctica shelf ice grounding line as coastline */
+				case 'i': I->antarctica_mode |= GSHHS_ANTARCTICA_ICE;		break;	/* Use Antarctica ice boundary as coastline */
+				case 's': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP;		break;	/* Skip Antarctica data south of 60S */
+				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Invalid code %c\n", p[0]);
+					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+					break;
+			}
+			p++;	/* Go to next code */
+		}
+		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both g and i\n");
+			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		}
+		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both s and S\n");
+			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		}
+	}
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p")) != NULL) {	/* Requested percentage limit on small features */
@@ -503,11 +530,11 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""};
 
 	snprintf (stem, GMT_LEN64, "binned_GSHHS_%c", res);
 
-	if (!shore_getpathname (GMT, stem, path))
+	if (!shore_getpathname (GMT, stem, path, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 		/* zap structure (nc_get_att_text does not null-terminate strings!) */
@@ -573,13 +600,26 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	c->fraction = info->fraction;
 	c->skip_feature = info->flag;
-	c->ant_mode = info->antarctica_mode;
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;
 	c->max_level = (info->low == info->high && info->high == 0) ? GSHHS_MAX_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
 	c->two_Antarcticas = (two_Antarcticas) ? 1 : 0;
 	c->ant_mode = info->antarctica_mode;
+	if ((c->ant_mode & GSHHS_ANTARCTICA_GROUND) == 0)	/* Groundline not set, default to ice front */
+		c->ant_mode |= GSHHS_ANTARCTICA_ICE;
+
+	if (two_Antarcticas && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report information regarding Antarctica */
+		if (c->ant_mode & GSHHS_ANTARCTICA_GROUND)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice grounding line as Antarctica coastline\n");
+		else
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice front line as Antarctica coastline\n");
+		if (c->ant_mode & GSHHS_ANTARCTICA_SKIP)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping Antarctica coastline entirely\n");
+		else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV)
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping all coastlines except Antarctica\n");
+	}
+
 	c->res = res;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
@@ -601,8 +641,8 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));	/* South limit of this bin */
 		if (this_south < is || this_south >= in) continue;
 		this_north = this_south + irint (c->bsize);
-		if (c->ant_mode == GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
-		else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
+		if (c->ant_mode & GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
@@ -635,7 +675,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
-	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
+	if (c->min_area > 0.0 || (info->flag & GSHHS_NO_RIVERLAKES) || (info->flag & GSHHS_NO_LAKES)) {	/* Want to exclude small polygons so we need info about the node polygons, or need info about lakes */
 	        if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
 			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 			return (err);
@@ -659,7 +699,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	count[0] = c->n_bin;
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
 
-	if (c->ant_mode == GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
+	if (c->ant_mode & GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
 		err = nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp);
 	}
 	else {	/* Get node levels relevant for grounding line */
@@ -786,12 +826,12 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		if (c->two_Antarcticas) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
 			if (seg_info_ANT[i]) level = ANT_LEVEL_ICE;	/* Replace the 1 with 5 so Ant polygons now have levels 5 (ice) or 6 (ground) */
 			if (level == ANT_LEVEL_ICE || level == ANT_LEVEL_GROUND) {	/* Need more specific checking */
-				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Don't want anything to do with Antarctica */
-				else if (level == ANT_LEVEL_GROUND && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
-				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
+				if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) continue;	/* Don't want anything to do with Antarctica */
+				else if (level == ANT_LEVEL_GROUND && c->ant_mode & GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
+				else if (level == ANT_LEVEL_ICE && c->ant_mode & GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
 				level = 1;	/* Reset either shelf-ice or grounding line polygon level to land */
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
 		}
 		if (level < c->min_level) continue;	/* Test if level range was set */
 		if (level > c->max_level) continue;
@@ -888,7 +928,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""};
 
 	/* zap structure (nc_get_att_text does not null-terminate strings!) */
 	gmt_M_memset (c, 1, struct GMT_BR);
@@ -898,7 +938,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	else
 		snprintf (stem, GMT_LEN64, "binned_border_%c", res);
 
-	if (!shore_getpathname (GMT, stem, path))
+	if (!shore_getpathname (GMT, stem, path, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
@@ -1090,10 +1130,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			p[P].lat = gmt_M_memory (GMT, NULL, c->seg[id].n, double);
 			p[P].n = shore_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 			if (c->ant_special) {	/* Discard any pieces south of 60S */
-				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+				if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
 				}
-				else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+				else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
 				}
 			}
@@ -1219,10 +1259,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 		}
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+			if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] > -60.0) skip = false;
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] < -60.0) skip = false;
 			}
 		}
@@ -1256,10 +1296,10 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 		p[P].lat = gmt_M_memory (GMT, NULL, n_alloc, double);
 		p[P].n = shore_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+			if (c->ant_mode & GSHHS_ANTARCTICA_SKIP) {
 				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
 			}
-			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+			else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV) {
 				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
 			}
 		}

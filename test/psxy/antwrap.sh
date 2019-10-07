@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Test plotting of Antarctica polygon in different projections.
 
 ps=antwrap.ps

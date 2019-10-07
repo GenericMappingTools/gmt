@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -28,8 +28,8 @@
  * \brief Holds current selections for the family of common GMT options
  */
 
-#ifndef _GMT_COMMON_H
-#define _GMT_COMMON_H
+#ifndef GMT_COMMON_H
+#define GMT_COMMON_H
 
 /*! Constants related to detecting data gaps which should be treated as segment boundaries */
 enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
@@ -106,12 +106,12 @@ struct GMT_COMMON {
 	struct X {	/* -X */
 		bool active;
 		double off;
-		char mode;	/* r, a, or c */
+		char mode;	/* a, c, f, or r */
 	} X;
 	struct Y {	/* -Y */
 		bool active;
 		double off;
-		char mode;	/* r, a, or c */
+		char mode;	/* a, c, f, or r */
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		bool active;
@@ -174,31 +174,36 @@ struct GMT_COMMON {
 		char *multi_segment;    /* To hold a multi-segment string */
 		char string[GMT_LEN256];
 	} h;
-	struct i {	/* -i[<col>|<colrange>,...][+t[<col>]] */
-		bool active, select, orig;
-		uint64_t n_cols;
+	struct i {	/* -i[<col>|<colrange>,...][t[<word>]] */
+		bool active, select, orig, word;
+		uint64_t n_cols, w_col;
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
 	} i;
+	struct j {	/* -je|f|g [g] */
+		bool active;
+		enum GMT_enum_mdist mode;	/* Defaults to GMT_GREATCIRCLE */
+		char string[GMT_LEN8];
+	} j;
 	struct l {	/* -l<label> */
 		bool active;
 		char label[GMT_LEN128];
 	} l;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
-		bool antialias;	/* Defaults to true, if supported */
-		bool truncate;	/* Defaults to false */
+		bool antialias;		/* Defaults to true, if supported */
+		bool truncate;		/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
-		bool bc_set;	/* true if +b was parsed */
+		bool bc_set;		/* true if +b was parsed */
 		bool periodic[2];	/* For periodic non-geographic grids */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
 		double range[2], half_range[2];	/* For periodic non-geographic grids */
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
-	struct o {	/* -o[<col>|<colrange>,...][+t[<col>]] */
-		bool active, select, orig;
-		uint64_t n_cols;
+	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
+		bool active, select, orig, word;
+		uint64_t n_cols, w_col;
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;
@@ -209,8 +214,9 @@ struct GMT_COMMON {
 		bool active;
 		char string[GMT_LEN64];
 	} s;
-	struct t {	/* -t<transparency> */
+	struct t {	/* -t[<transparency>] */
 		bool active;
+		bool variable;
 		double value;
 	} t;
 	struct x {	/* -x[[-]<n>] */
@@ -224,4 +230,4 @@ struct GMT_COMMON {
 	} colon;
 };
 
-#endif /* _GMT_COMMON_H */
+#endif /* GMT_COMMON_H */

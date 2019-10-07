@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psrose reads a file [or standard input] with azimuth and length information
@@ -46,13 +46,13 @@
 #define THIS_MODULE_NAME	"psrose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X}"
+#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("c")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<sector_angle>[r] */
+	struct A {	/* -A<sector_angle>[+r] */
 		bool active;
 		bool rose;
 		double inc;
@@ -156,18 +156,18 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[r]<sector_angle>] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I] [-JX<width[u]>]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I]\n", name, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width[u]>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to get rose diagram.\n");
 	GMT_Option (API, "B-");
 	if (gmt_M_showusage (API)) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   The scale bar length is set to the radial gridline spacing.\n");
@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting; use -Zu to set input radii to 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (API, "bi2,di,e,h,i,p,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,h,i,p,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -237,11 +237,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Get Sector angle in degrees */
+			case 'A':	/* Get Sector angle in degrees -A<inc>[+r]*/
 				Ctrl->A.active = true;
-				if (strchr (opt->arg, 'r')) Ctrl->A.rose = true;
-				k = (opt->arg[0] == 'r') ? 1 : 0;
+				k = 0;
+				if ((c = strstr (opt->arg, "+r"))) {
+					Ctrl->A.rose = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
+				else if (strchr (opt->arg, 'r')) {	/* Old syntax -A[r]<inc> */
+					Ctrl->A.rose = true;
+					if (opt->arg[0] == 'r') k = 1;
+				}
 				Ctrl->A.inc = atof (&opt->arg[k]);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'C':
 				if (gmt_M_compat_check (GMT, 5)) {	/* Need to check for deprecated -Cm|[+w]<modefile> option */
@@ -263,9 +271,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						break;
 					}
 				}
-				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
 				Ctrl->D.active = true;
@@ -389,6 +397,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		}
 	}
 
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	/* Check that the options selected are mutually consistent */
 
 	GMT->common.R.wesn[XLO] = 0.0;
@@ -403,7 +413,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error -C option: Cannot give both -C and -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Syntax error -C option: Cannot be used with -Ar\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Syntax error -C option: Cannot be used with -A+r\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Syntax error -C option: Requires -A\n");
 	if (!Ctrl->I.active) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify -JX option\n");
@@ -425,7 +435,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 int GMT_rose (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: rose\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
@@ -771,19 +781,29 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 	if (GMT->common.B.active[0]) {	/* Draw frame */
 		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE;
-		double dim[3];
+		double dim[PSL_MAX_DIMS];
 		struct GMT_FILL no_fill;
 
 		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		dim[0] = (half_only) ? 0.5 * diameter : diameter;
 		dim[1] = 0.0;
 		dim[2] = (half_only) ? 180.0 : 360.0;
+		dim[7] = 2;	/* Do draw line */
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 		gmt_setfill (GMT, &no_fill, true);
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 	}
 
 	gmt_setpen (GMT, &Ctrl->W.pen[0]);
+	if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+		PSL_defpen (GMT->PSL, "PSL_vecheadpen", Ctrl->M.S.v.pen.width, Ctrl->M.S.v.pen.style, Ctrl->M.S.v.pen.offset, Ctrl->M.S.v.pen.rgb);
+		dim[11] = Ctrl->M.S.v.pen.width;
+	}
+	else if (Ctrl->M.active) {
+		PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * Ctrl->W.pen[1].width, Ctrl->W.pen[1].style, Ctrl->W.pen[1].offset, Ctrl->W.pen[1].rgb);
+		dim[11] = 0.5 * Ctrl->W.pen[1].width;
+	}
 	if (windrose) {	/* Here we draw individual vectors */
 		if (Ctrl->M.active) { /* Initialize vector head settings */
 			gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
@@ -848,6 +868,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			gmt_setfill (GMT, &(Ctrl->G.fill), false);
+		dim[7] = 0;
+		if (Ctrl->G.active) dim[7] = 1;
+		if (Ctrl->W.active[0]) dim[7] += 2;
 		for (bin = 0; bin < n_bins; bin++) {
 			if (Ctrl->C.active) {
 				index = gmt_get_rgb_from_z (GMT, P, sum[bin] * Ctrl->S.scale, rgb);
@@ -976,6 +999,16 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				this_rgb = GMT->session.no_rgb;
 			if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		}
+		else {
+			if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+				PSL_defpen (GMT->PSL, "PSL_vecheadpen", Ctrl->M.S.v.pen.width, Ctrl->M.S.v.pen.style, Ctrl->M.S.v.pen.offset, Ctrl->M.S.v.pen.rgb);
+				dim[11] = Ctrl->M.S.v.pen.width;
+			}
+			else if (Ctrl->M.active) {
+				PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * Ctrl->W.pen[1].width, Ctrl->W.pen[1].style, Ctrl->W.pen[1].offset, Ctrl->W.pen[1].rgb);
+				dim[11] = 0.5 * Ctrl->W.pen[1].width;
+			}
+		}
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {
 			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
 			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;
@@ -1022,7 +1055,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {
 			n_bins = urint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval);
 			for (bin = 1; bin <= n_bins; bin++)
-				PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
+				PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE|PSL_STROKE);
 		}
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY];

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2018 by P. Wessel and R. Scharroo
+ *	Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -40,56 +40,58 @@
  * List of API functions:
  *
  * PSL_beginaxes
- * PSL_beginclipping	: Clips plot outside the specified polygon
- * PSL_beginlayer	: Place begin object group DSC comment.
- * PSL_beginplot	: Initialize parameters for a new plot.
- * PSL_beginsession	: Creates a new PSL session
- * PSL_copy		: Writes the given string as is to the PS output
- * PSL_endaxes		: Turns off mapping of user coordinates to PS units
- * PSL_endclipping	: Restores previous clipping path
- * PSL_endlayer		: Place end object group DSC comment.
- * PSL_endplot		: Close plotfile
- * PSL_endsession	: Terminates the PSL session
- * PSL_getplot		: Return string with entire PS code
- * PSL_plotarc		: Plots a circular arc
- * PSL_plotaxis		: Plots an axis with tickmarks and annotation/label
- * PSL_plotbitimage	: Plots a 1-bit image or imagemask
- * PSL_plotcolorimage	: Plots a 24-bit 2-D image using the colorimage operator
- * PSL_plotepsimage	: Inserts EPS image
- * PSL_plotline		: Plots a line
- * PSL_plotparagraph	: Plots a text paragraph
- * PSL_plotparagraphbox	: Plots a box beneath a text paragraph
- * PSL_plotpoint	: Absolute or relative move to new position (pen up or down)
- * PSL_plotpolygon	: Creates a polygon and optionally fills it
- * PSL_plotsegment	: Plots a 2-point straight line segment
- * PSL_plotsymbol	: Plots a geometric symbol and [optionally] fills it
- * PSL_plottext		: Plots textstring
- * PSL_plottextbox	: Draw a filled box around a textstring
- * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadeps		: Read EPS file into string
- * PSL_command		: Writes a given PostScript statement to the plot file
- * PSL_comment		: Writes a comment statement to the plot file
- * PSL_makecolor	: Returns string with PostScript command to set a new color
- * PSL_makepen		: Returns string with PostScript command to set a new pen
- * PSL_setcolor		: Sets the pen color or pattern
- * PSL_setdefaults	: Change several PSL session default values
- * PSL_setdash		: Specify pattern for dashed line
- * PSL_setfill		: Sets the fill color or pattern
- * PSL_setfont		: Changes current font and possibly reencodes it to current encoding
- * PSL_setformat	: Changes # of decimals used in color and gray specs [3]
- * PSL_setlinecap	: Changes the line cap setting
- * PSL_setlinejoin	: Changes the line join setting
- * PSL_setlinewidth	: Sets a new linewidth
- * PSL_setmiterlimit	: Changes the miter limit setting for joins
- * PSL_setimage		: Sets up a image pattern fill in PS
- * PSL_setorigin	: Translates/rotates the coordinate system
- * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_defpen		: Encodes a pen with attributes by name in the PS output
- * PSL_definteger	: Encodes an integer by name in the PS output
- * PSL_defpoints	: Encodes a pointsize by name in the PS output
- * PSL_defcolor		: Encodes a rgb color by name in the PS output
- * PSL_deftextdim	: Sets variables for text height and width in the PS output
- * PSL_defunits:	: Encodes a dimension by name in the PS output
+ * PSL_beginclipping	   : Clips plot outside the specified polygon
+ * PSL_beginlayer	   : Place begin object group DSC comment.
+ * PSL_beginplot	   : Initialize parameters for a new plot.
+ * PSL_beginsession	   : Creates a new PSL session
+ * PSL_copy		   : Writes the given string as is to the PS output
+ * PSL_endaxes		   : Turns off mapping of user coordinates to PS units
+ * PSL_endclipping	   : Restores previous clipping path
+ * PSL_endlayer		   : Place end object group DSC comment.
+ * PSL_endplot		   : Close plotfile
+ * PSL_endsession	   : Terminates the PSL session
+ * PSL_getplot		   : Return string with entire PS code
+ * PSL_plotarc		   : Plots a circular arc
+ * PSL_plotaxis		   : Plots an axis with tickmarks and annotation/label
+ * PSL_plotbitimage	   : Plots a 1-bit image or imagemask
+ * PSL_plotcolorimage	   : Plots a 24-bit 2-D image using the colorimage operator
+ * PSL_plotepsimage	   : Inserts EPS image
+ * PSL_plotline		   : Plots a line
+ * PSL_plotparagraph	   : Plots a text paragraph
+ * PSL_plotparagraphbox	   : Plots a box beneath a text paragraph
+ * PSL_plotpoint	   : Absolute or relative move to new position (pen up or down)
+ * PSL_plotpolygon	   : Creates a polygon and optionally fills it
+ * PSL_plotsegment	   : Plots a 2-point straight line segment
+ * PSL_plotsymbol	   : Plots a geometric symbol and [optionally] fills it
+ * PSL_plottext		   : Plots textstring
+ * PSL_plottextbox	   : Draw a filled box around a textstring
+ * PSL_plottextline	   : Place labels along paths (straight or curved), set clip path, draw line
+ * PSL_loadeps		   : Read EPS file into string
+ * PSL_command		   : Writes a given PostScript statement to the plot file
+ * PSL_comment		   : Writes a comment statement to the plot file
+ * PSL_makecolor	   : Returns string with PostScript command to set a new color
+ * PSL_makepen		   : Returns string with PostScript command to set a new pen
+ * PSL_setcolor		   : Sets the pen color or pattern
+ * PSL_setdefaults	   : Change several PSL session default values
+ * PSL_setdash		   : Specify pattern for dashed line
+ * PSL_setfill		   : Sets the fill color or pattern
+ * PSL_setfont		   : Changes current font and possibly re-encodes it to current encoding
+ * PSL_setformat	   : Changes # of decimals used in color and gray specs [3]
+ * PSL_setlinecap	   : Changes the line cap setting
+ * PSL_setlinejoin	   : Changes the line join setting
+ * PSL_setlinewidth	   : Sets a new linewidth
+ * PSL_setmiterlimit	   : Changes the miter limit setting for joins
+ * PSL_setimage		   : Sets up a image pattern fill in PS
+ * PSL_setorigin	   : Translates/rotates the coordinate system
+ * PSL_setparagraph	   : Sets parameters used to typeset text paragraphs
+ * PSL_settransparencymode : Set a new mode for how transparency is understoody
+ * PSL_settransparency     : Set a new transparency
+ * PSL_defpen		   : Encodes a pen with attributes by name in the PS output
+ * PSL_definteger	   : Encodes an integer by name in the PS output
+ * PSL_defpoints	   : Encodes a pointsize by name in the PS output
+ * PSL_defcolor		   : Encodes a rgb color by name in the PS output
+ * PSL_deftextdim	   : Sets variables for text height and width in the PS output
+ * PSL_defunits:	   : Encodes a dimension by name in the PS output
  *
  * For information about usage, syntax etc, see the postscriptlight documentation
  *
@@ -604,6 +606,88 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 	return (tmp);
 }
 
+/* Things to do with UTF8 */
+
+/* Try to convert UTF-8 accented characters to PostScriptLight octal codes.
+ * This depends on which character set we have.  We will limit this to just
+ * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
+ * only work for some of the encoded letters while the three others should
+ * all be fine. We also handle the differences between hyphens and minus symbol.
+ * In ISOLatin1 the hyphen key on the keyboard results in a minus sign while
+ * in Standard it gives a hyphen.  In GMT we want minus signs in annotations
+ * contours and other numerical negative values.  We assume that if a string
+ * begins with a hyphen then a minus sign is implied.  Likewise, if a hyphen
+ * is found later on in the string we assume it is a hyphen and under ISOLatin1
+ * we must insert the octal code for the hyphen (0255). */
+
+
+static unsigned int psl_ut8_code_to_ISOLatin (char code) {
+	/* This is called when the previous character in a string has octal 0303 */
+	unsigned int kode = (unsigned char)code;
+
+	return (kode >= 0200 && kode <= 0277) ? kode += 64 : 0;
+}
+
+static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
+	/* Given in_string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
+	unsigned int k, kout, use, utf8_codes = 0;
+	char *out_string = NULL;
+
+	if (!strncmp (PSL->init.encoding, "Standard+", 9U)) {	/* For Standard+ encoding we need to swap leading minus values encoded as hyphen with the actual minus symbol */
+		if (in_string[0] == 0055)	/* Found leading hyphen which we interpret to be a minus sign */
+			in_string[0] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
+	}
+	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
+
+	for (k = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
+			utf8_codes++;	/* Count them up */
+		else if (in_string[k] == 0055 && k && !(in_string[k-1] == '@' || in_string[k-1] == ' '))	/* A hyphen needs a non-blank before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
+			in_string[k] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
+	}
+	if (utf8_codes == 0) return;	/* Nothing to do */
+
+	out_string = PSL_memory (PSL, NULL, strlen(in_string), char);	/* Get a new string of same length */
+	
+	for (k = kout = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
+			k++;	/* Skip the control code */
+			if ((use = psl_ut8_code_to_ISOLatin (in_string[k])))       /* Found a 2-char utf8 combo, replace with single octal code from our table */
+				out_string[kout++] = use;
+			else {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
+			}
+		}
+		else if ((unsigned char)(in_string[k]) == 0305) {    /* Found Ydieresis, ae, AE, L&l-slash and the S,Z,s,z carons */
+			k++;	/* Skip the control code */
+			switch ((unsigned char)in_string[k]) {	/* These 9 chars are placed all over the table so must have individual cases */
+				case 0201: use = 0203; break;	/* Lslash */
+				case 0202: use = 0213; break;	/* lslash */
+				case 0222: use = 0200; break;	/* ae */
+				case 0223: use = 0210; break;	/* AE */
+				case 0240: use = 0206; break;	/* Scaron */
+				case 0241: use = 0177; break;	/* scaron */
+				case 0270: use = 0211; break;	/* Ydieresis */
+				case 0275: use = 0212; break;	/* Zcaron */
+				case 0276: use = 0037; break;	/* zcaron */
+				default:   use = 0;    break;	/* Not one of the recognized ones in our table */
+			}
+			if (use)	/* Found a 2-char utf8 combo */
+				out_string[kout++] = use;
+			else  {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
+			}
+		}
+		else    /* Just output char as was given */
+			out_string[kout++] = in_string[k];
+	}
+	memset (in_string, 0, strlen (in_string));		/* Set old in_string to NULL */
+	strncpy (in_string, out_string, strlen (out_string));	/* Overwrite old string with possibly adjusted string */
+	PSL_free (out_string);
+}
+
 /* This one is NOT static since needed in psimage, at least for now */
 
 unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
@@ -642,7 +726,7 @@ static int psl_ip (struct PSL_CTRL *PSL, double p) {
 	return ((int)lrint (p * PSL->internal.dpp));
 }
 
-static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -650,13 +734,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	 * no shortening. */
 
 	int i, k, dx, dy;
-#ifdef OLD_shorten_path
-	int old_dir = 0, new_dir;
-	double old_slope = -DBL_MAX, new_slope;
-	/* These seeds for old_slope and old_dir make sure that first point gets saved */
-#else
 	int d, db, bx, by, j, ij;
-#endif
 
 	if (n < 2) return (n);	/* Not a path to start with */
 
@@ -666,36 +744,6 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	}
 	if (mode == 1) return (n);
 
-#ifdef OLD_shorten_path
-	/* The only truly unique point is the starting point; all else must show increments
-	 * relative to the previous point */
-
-	/* First point is the anchor. We will find at least one point, unless all points are the same */
-	for (i = k = 0; i < n - 1; i++) {
-		dx = ix[i+1] - ix[i];
-		dy = iy[i+1] - iy[i];
-		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
-		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
-		new_dir = (dx >= 0) ? 1 : -1;
-		if (new_slope != old_slope || new_dir != old_dir) {
-			ix[k] = ix[i];
-			iy[k] = iy[i];
-			k++;
-			old_slope = new_slope;
-			old_dir = new_dir;
-		}
-	}
-
-	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
-	if (k < 1) return (1);
-
-	/* Last point (k cannot be < 1 so k-1 >= 0) */
-	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
-		ix[k] = ix[n-1];
-		iy[k] = iy[n-1];
-		k++;
-	}
-#else
 	/* Skip intermediate points that are "close" to the line between point i and point j, where
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
 	   A point is always close when it coincides with one of the end points (i or j).
@@ -746,9 +794,78 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 		iy[k] = iy[n-1];
 	}
 	k++;
-#endif
 
 	return (k);
+}
+
+static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
+	 * and eliminating repeating points and intermediate points along straight
+	 * line segments.  The result is the fewest points needed to draw the path
+	 * and still look exactly like the original path.  However, if mode == 1 we do
+	 * no shortening. */
+
+	int i, k, dx, dy;
+	int old_dir = 0, new_dir;
+	double old_slope = -DBL_MAX, new_slope;
+	/* These seeds for old_slope and old_dir make sure that first point gets saved */
+
+	if (n < 2) return (n);	/* Not a path to start with */
+
+	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
+		ix[i] = psl_ix (PSL, x[i]);
+		iy[i] = psl_iy (PSL, y[i]);
+	}
+	if (mode == 1) return (n);
+
+	/* The only truly unique point is the starting point; all else must show increments
+	 * relative to the previous point */
+
+	/* First point is the anchor. We will find at least one point, unless all points are the same */
+	for (i = k = 0; i < n - 1; i++) {
+		dx = ix[i+1] - ix[i];
+		dy = iy[i+1] - iy[i];
+		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
+		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
+		new_dir = (dx >= 0) ? 1 : -1;
+		if (new_slope != old_slope || new_dir != old_dir) {
+			ix[k] = ix[i];
+			iy[k] = iy[i];
+			k++;
+			old_slope = new_slope;
+			old_dir = new_dir;
+		}
+	}
+
+	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
+	if (k < 1) return (1);
+
+	/* Last point (k cannot be < 1 so k-1 >= 0) */
+	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
+		ix[k] = ix[n-1];
+		iy[k] = iy[n-1];
+		k++;
+	}
+
+	return (k);
+}
+
+#define N_LENGTH_THRESHOLD 100000000
+static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	if (n > N_LENGTH_THRESHOLD)
+		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
+	else
+		return psl_shorten_path_new (PSL, x, y, n, ix, iy, mode);
+}
+
+static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
+	if (linewidth < 0.0) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
+		return (PSL_BAD_WIDTH);
+	}
+	PSL_command (PSL, "%d W\n", psl_ip (PSL, linewidth));
+	PSL->current.linewidth = linewidth;
+	return (PSL_NO_ERROR);
 }
 
 static void psl_set_real_array (struct PSL_CTRL *PSL, const char *prefix, double *array, int n) {
@@ -775,8 +892,13 @@ void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, in
 
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[], int n) {
 	int i;
+	char *outtext = NULL;
 	PSL_command (PSL, "/PSL_%s [\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "\t(%s)\n", array[i]);
+	for (i = 0; i < n; i++) {
+		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
+		PSL_command (PSL, "\t(%s)\n", outtext);
+		PSL_free (outtext);
+	}
 	PSL_command (PSL, "] def\n", n);
 }
 
@@ -1343,7 +1465,7 @@ static int psl_putfont (struct PSL_CTRL *PSL, double fontsize) {
 
 static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	if (PSL->init.encoding == NULL) return (PSL_NO_ERROR);		/* Already have StandardEncoding by default */
-	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already reencoded or should not be reencoded ever */
+	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already re-encoded or should not be re-encoded ever */
 
 	/* Re-encode fonts with Standard+ or ISOLatin1[+] encodings */
 	PSL_command (PSL, "PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
@@ -1352,13 +1474,13 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	return (PSL_NO_ERROR);
 }
 
-static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
+char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 
 /*	Adds escapes for misc parenthesis, brackets etc.
 	Will also translate to some European characters such as the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
-	const char *psl_scandcodes[15][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
+	const char *psl_scandcodes[16][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
 		{ "AA", "AA"   , "\\375", "\\305", "\\305"},	/* Aring */
 		{ "AE", "\\341", "\\341", "\\306", "\\306"},	/* AE */
 		{ "OE", "\\351", "\\351", "\\330", "\\330"},	/* Oslash */
@@ -1373,10 +1495,11 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 		{ "ss", "\\373", "\\373", "\\337", "\\337"},	/* germandbls */
 		{ "u" , "ue"   , "\\370", "\\374", "\\374"},	/* udieresis */
 		{ "i" , "i"    , "\\354", "\\355", "\\355"},	/* iaccute */
-		{ "@" , "\\100", "\\100", "\\100", "\\100"}	/* atsign */
+		{ "@" , "\\100", "\\100", "\\100", "\\100"},	/* atsign */
+		{ "*" , "\\312", "\\217", "\\260", "\\260"}	/* degree */
 	};
 	char *string = NULL;
-	int i=0, j=0, font;
+	int i = 0, j = 0, font;
 	int he = 0;		/* PSL Historical Encoding (if any) */
 
 	if (!text) return NULL;
@@ -1457,6 +1580,10 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					strcat (string, psl_scandcodes[14][he]);
 					j += (int)strlen(psl_scandcodes[14][he]); i++;
 					break;
+				case '.':
+					strcat (string, psl_scandcodes[15][he]);
+					j += (int)strlen(psl_scandcodes[15][he]); i++;
+					break;
 				case '%':	/* Font switcher */
 					if (isdigit ((int)text[i+1])) {	/* Got a font */
 						font = atoi (&text[i+1]);
@@ -1468,6 +1595,7 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					break;
 				case '~':	/* Symbol font toggle */
 					psl_encodefont (PSL, PSL_SYMBOL_FONT);
+					/* Fall through and place the text? */
 				default:
 					string[j++] = '@';
 					string[j++] = text[i++];
@@ -1497,6 +1625,9 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 			}
 		}
 	}
+	
+	psl_fix_utf8 (PSL, string);
+	
 	return (string);
 }
 
@@ -1509,8 +1640,8 @@ static int psl_pattern_cleanup (struct PSL_CTRL *PSL) {
 	PSL_comment (PSL, "Undefine patterns and images\n");
 	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
 		if (PSL->internal.pattern[image_no].status) {
-			PSL_command (PSL, "currentdict /image%d undef\n", image_no);
-			PSL_command (PSL, "currentdict /pattern%d undef\n", image_no);
+			PSL_command (PSL, "currentdict /image%d undef\n", image_no+1);
+			PSL_command (PSL, "currentdict /pattern%d undef\n", image_no+1);
 		}
 	}
 	return (PSL_NO_ERROR);
@@ -2111,13 +2242,15 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 	/* Called from psl_matharc for the special case of right angle only; no heads involved */
 	double size, xx[3], yy[3];
 
+	PSL_comment (PSL, "Start of Math right angle\n");
 	PSL_command (PSL, "V %d %d T %lg R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
 	size = param[0] / M_SQRT2;
 
 	xx[0] = xx[1] = size;	xx[2] = 0.0;
 	yy[0] = 0.0;	yy[1] = yy[2] = size;
-	PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
+	PSL_plotline (PSL, xx, yy, 3, PSL_MOVE|PSL_STROKE);
 	PSL_command (PSL, "U \n");
+	PSL_comment (PSL, "End of Math right angle\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -2133,19 +2266,21 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
  	 * param[6] = vector-shape (0-1), param[7] = status bit flags
 	 * param[8] = begin head type;	param[9] = end head type)
 	 * param[10] = begin trim (degrees);	param[11] = end trim (degrees)
+	 * param[12] = head penwidth
 	 * add 4 to param[6] if you want to use a straight angle
 	 * symbol if the opening is 90.  */
 
 	int i, side[2], heads, outline, fill, sign[2] = {+1, -1};
 	unsigned int status, kind[2];
-	double head_arc_length, head_half_width, arc_width, da, da_c, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
+	double head_arc_length, head_half_width, arc_width, da, da_c, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape, h_penwidth;
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift[2] = {0.0, 0.0}, circ_r, xx[2], yy[2], trim[2];
-	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
+	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"}, *end[2] = {"start", "end"};
 
 	status = (unsigned int)lrint (param[7]);
 	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
+	PSL_comment (PSL, "Start of Math arc\n");
 	/* Make any adjustments caused by trim */
 	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[10] : 0.0;
 	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[11] : 0.0;
@@ -2158,6 +2293,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	head_half_width = 0.5 * param[4];	  /* Head half-width in inch */
 	arc_width = param[5];			  /* Arc width in inch */
 	shape = param[6];			  /* Vector head shape (0-1) */
+	h_penwidth = param[12];
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
@@ -2195,17 +2331,20 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	}
 	if (heads) {	/* Will draw at least one head */
 		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
+		PSL_command (PSL, "PSL_vecheadpen\n");	/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, 2.0 * h_penwidth);	/* Force pen width update; double width due to clipping below */
 	}
 
 	for (i = 0; i < 2; i++) {	/* For both ends */
 		if ((heads & (i+1)) == 0) continue;	/* No arrow head at this angle */
+		PSL_comment (PSL, "Mathangle head at %s\n", end[i]);
 		A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
 		r2 = r + sign[i] * rshift[i];
 		xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
 		switch (kind[i]) {
 			case PSL_VEC_ARROW:
 				B = D2R * (angle[i] + sign[i] * da);	sb = sin (B);	cb = cos (B);
-				PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
+				PSL_command (PSL, "V\n");	/* Do this inside gsave/restore since we are clipping */
 				if (side[i] != +sign[i]) {	/* Need right side of arrow head */
 					xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
 					psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);
@@ -2259,12 +2398,13 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 				 	xx[0] = (r-head_half_width) * ca;	yy[0] = (r-head_half_width) * sa;
 				 	xx[1] = (r+head_half_width) * ca;	yy[1] = (r+head_half_width) * sa;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
 	}
 
 	PSL_command (PSL, "U \n");
+	PSL_comment (PSL, "End of Math arc\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -2377,16 +2517,17 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 
 static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Will make sure that arrow has a finite width in PS coordinates.
-	 * param must hold up to 11 values:
+	 * param must hold up to 12 values:
 	 * param[0] = xtip;		param[1] = ytip;
 	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
 	 * param[5] = headshape;	param[6] = status bit flags
 	 * param[7] = begin head type;	param[8] = end head type
 	 * param[9] = begin trim value;	param[10] = end trim value.
+	 * param[11] = head penwidth
 	 */
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0;
+	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0, h_penwidth;
 	int length, asymmetry[2], n, heads, outline, fill, status;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
@@ -2397,6 +2538,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
 	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in degrees */
 	status = lrint (param[6]);
+	h_penwidth = param[11];
 	/* Make any adjustments caused by trim */
 	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[9]  : 0.0;
 	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[10] : 0.0;
@@ -2423,13 +2565,14 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
-	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);	/* Inherits color from current pen */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
 	asymmetry[PSL_BEGIN] = -PSL_vec_side (status, 0);	  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	asymmetry[PSL_END] = PSL_vec_side (status, 1);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	r = sqrt (headlength * headwidth / M_PI);	/* Same circle area as vector head */
 	s = sqrt (headlength * headwidth)/2;		/* Same square 	area as vector head */
+	PSL_comment (PSL, "Start of Cartesian vector\n");
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 	/* Make any adjustments caused by trim */
@@ -2449,6 +2592,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	}
 	if (heads == 0) {	/* No heads requested */
 		PSL_command (PSL, "U\n");
+		PSL_comment (PSL, "End of Cartesian vector\n");
 		return (PSL_NO_ERROR);
 	}
 
@@ -2457,6 +2601,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	yshift[PSL_END] = 0.5 * asymmetry[PSL_END] * tailwidth;
 
 	if (heads & 1) {	/* Need head at beginning, pointing backwards */
+		double f = (kind[PSL_BEGIN] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
+		PSL_comment (PSL, "Cartesian vector head at start\n");
+		PSL_command (PSL, "PSL_vecheadpen\n");		/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, f * h_penwidth);	/* Force pen width update */
 		switch (kind[PSL_BEGIN]) {
 			case PSL_VEC_ARROW:
 				xx[0] = xp; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
@@ -2487,11 +2635,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				}
 				xc[2] = xp + headlength; yc[2] = headwidth;
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
-				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
-				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Plot arrow head */
+				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
@@ -2523,7 +2670,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
 					xx[n] = xp - headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_BEGIN] == -1)	/* Need left side */
@@ -2561,15 +2708,18 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					yy[0] = -headwidth;
 					yy[1] = +headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
-
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */
+		double f = (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
+		PSL_comment (PSL, "Cartesian vector head at end\n");
 		PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set head point the local origin (0, 0) */
 		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
+		PSL_command (PSL, "PSL_vecheadpen\n");		/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, f * h_penwidth);	/* Force pen width update */
 		switch (kind[PSL_END]) {
 			case PSL_VEC_ARROW:
 				xx[0] = xp; yy[0] = yshift[PSL_END];	n = 1;	/* Vector tip */
@@ -2598,43 +2748,42 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				}
 				xc[2] = xp - headlength; yc[2] = headwidth;
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
-				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
-				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Plot arrow head */
+				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
-				xx[0] = xp - tailwidth - off[PSL_BEGIN]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
+				xx[0] = xp - tailwidth - off[PSL_END]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_BEGIN]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_END]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 				}
-				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = -yshift[PSL_END];
+				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_END]; yy[n++] = -yshift[PSL_END];
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_END]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				if (asymmetry[PSL_END] == 0) {	/* Draw feather center */
 					PSL_command (PSL, "V 0 W ");
-					xx[1] = xp - tailwidth + headlength - off[PSL_BEGIN]; yy[1] = -yshift[PSL_END];
+					xx[1] = xp - tailwidth + headlength - off[PSL_END]; yy[1] = -yshift[PSL_END];
 					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);				/* Draw vector line body */
 					PSL_command (PSL, "U\n");
 				}
 				break;
 			case PSL_VEC_TAIL_PLAIN:
 				n = 0;
-				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+				if (asymmetry[PSL_END] != +1) {	/* Need left side */
 					xx[n] = xp + headlength; yy[n++] = -headwidth;
 				}
-				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
-				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+				xx[n] = xp; yy[n++] = -yshift[PSL_END];	/* Vector tip */
+				if (asymmetry[PSL_END] != -1) {	/* Need right side */
 					xx[n] = xp + headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_END] == -1)	/* Need left side */
@@ -2672,39 +2821,93 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					yy[0] = -headwidth;
 					yy[1] = +headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE);	/* Set up path */
 				break;
 		}
 		PSL_command (PSL, "U\n");
 	}
+	PSL_comment (PSL, "End of Cartesian vector\n");
 	return (PSL_NO_ERROR);
 }
 
 static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Takes care of plotting a wedge.
-	 * param must hold up to 11 values:
+	 * param may hold up to 11 values; only 8 used here.
 	 * param[0] = radius;
 	 * param[1] = start angle;	param[2] = end angle;
-	 * param[3] = status bit flags
+	 * param[3] = status bit flags;	param[4] = inner_radius [0]
+	 * param[5] = dr [0];		param[6] = da [0]
+	 * param[7] = do_fill (1) | do_outline (2)
 	 */
 
 	double xx[3], yy[3];
-	int status = lrint (param[3]);
-	switch (status) {
-		case 1:		/* Just draw arc */
-			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arc */
-			break;
-		case 2:		/* Just draw radial lines */
-			xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
-			xx[1] = x;				yy[1] = y;
-			xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
-			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
-			break;
-		default:	/* Standard wedge operation */
-			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
-			break;
+	int status = lrint (param[3]), flags = lrint (param[7]);
+	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
+	bool fill = flags & 1, outline = flags & 2;
+	
+	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
+		PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+		return (PSL_NO_ERROR);
 	}
-
+	/* Somewhat more involved */
+	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
+		if (windshield) 
+			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+		else
+			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+	}
+	/* Next, if spiderweb is desired we need to set up a save/restore section and change the pen to PSL_spiderpen */
+	if (status) PSL_command (PSL, "V PSL_spiderpen\n");
+	if (status & 1) {	/* Draw one or more arcs */
+		if (param[5] > 0.0) {	/* Array of arcs requested */
+			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];	/* Either start at first arc inside windshield or the first zero-length arc of wedge */
+			while (r <= (param[0]+PSL_SMALL)) {
+				PSL_plotarc (PSL, x, y, r, param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arcs */
+				r += param[5];	/* Go to next radial distance */
+			}
+		}
+		else {	/* Just draw outer and possibly inner arcs */
+			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the outer arc */
+			if (windshield)	/* Draw the inner arc */
+				PSL_plotarc (PSL, x, y, param[4], param[1], param[2], PSL_MOVE | PSL_STROKE);
+		}
+	}
+	if (status & 2) {	/* Draw one or more radial lines */
+		if (param[6] > 0.0) {	/* Array of lines requestedii */
+			double a = ceil (param[1] / param[6]) * param[6];	/* First angle of desired multiple inside range */
+			while (a <= (param[2]+PSL_SMALL)) {
+				xx[0] = x + param[4] * cos (D2R * a);	yy[0] = y + param[4] * sin (D2R * a);
+				xx[1] = x + param[0] * cos (D2R * a);	yy[1] = y + param[0] * sin (D2R * a);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot radial line */
+				a += param[6];	/* Go to next angle */
+			}
+		}
+		else {	/* Just draw the start and stop radii */
+			if (windshield) {	/* These are two separate lines not connecting */
+				xx[0] = x + param[4] * cos (D2R * param[1]);	yy[0] = y + param[4] * sin (D2R * param[1]);
+				xx[1] = x + param[0] * cos (D2R * param[1]);	yy[1] = y + param[0] * sin (D2R * param[1]);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+				xx[0] = x + param[4] * cos (D2R * param[2]);	yy[0] = y + param[4] * sin (D2R * param[2]);
+				xx[1] = x + param[0] * cos (D2R * param[2]);	yy[1] = y + param[0] * sin (D2R * param[2]);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+			}
+			else {	/* Open triangular jaw */
+				xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
+				xx[1] = x;				yy[1] = y;
+				xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
+				PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
+			}
+		}
+	}
+	if (status) PSL_command (PSL, "U\n");	/* Restore graphics state after messing with spiders */
+	if (outline) {	/* Draw wedge outline on top */
+		if (windshield) 
+			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+		else
+			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+	}
 	return (PSL_NO_ERROR);
 }
 
@@ -2811,7 +3014,7 @@ static int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb
 
 	PSL_command (PSL, " [/Indexed /Device");
 	if (b_rgb[0] < 0.0) {
-		/* Backgound is transparent */
+		/* Background is transparent */
 		polarity = 0;
 		if (PSL_is_gray (f_rgb))
 			PSL_command (PSL, "Gray 0 <%02X>", PSL_u255(f_rgb[0]));
@@ -3635,6 +3838,19 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	PSL->internal.ix = psl_ix (PSL, x1);
 	PSL->internal.iy = psl_iy (PSL, y1);
 	PSL_command (PSL, "N %d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
+	/* Updates the current PDF transparency only */
+	if (transparency < 0.0 || transparency > 1.0) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Bad transparency value [%g] - ignored\n", transparency);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
+	
+	PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL->current.transparency = transparency;	/* Remember current setting */
 	return (PSL_NO_ERROR);
 }
 
@@ -5188,7 +5404,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 			int k, offset = 0;
 			for (k = 0; k < n_segments; k++) {	/* Draw each segment line */
 				PSL_command (PSL, "PSL_path_pen %d get cvx exec\n", k);	/* Set this segment's pen */
-				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE|PSL_STROKE);
 				offset += np[k];
 			}
 		}

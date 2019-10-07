@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test single hole points in grdmask, including the poles
 ps=holes.ps
 gmt math -T-90/90/10 -N2/1 0 = points.txt

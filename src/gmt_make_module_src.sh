@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# $Id: gmt_make_module_src.sh 16501 2016-06-04 18:21:29Z pwessel $
-#
-# Copyright (c) 2012-2018
-# by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 2012-2019
+# by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # Below, <TAG> is either core, supplements, or a users custom shared lib tag
@@ -14,10 +12,9 @@
 # 	gmt_<TAG>_module.h	Function prototypes (required for Win32)
 # 	gmt_<TAG>_module.c	Look-up functions
 #
-# Note: gmt_<TAG>_module.[ch] are in svn.  Only rerun this
+# Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
 # script when there are changes in the code, e.g. a new module.
 #
-SUPP_DIRS="gshhg|img|meca|mgd77|misc|potential|segy|spotter|x2sys"	# Edit this is new supplements are added
 if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
@@ -34,10 +31,10 @@ U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
 L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" */*.c | egrep "$SUPP" | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" *.c | grep -v _mt | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
 	LIB_STRING="GMT core: The main modules of the Generic Mapping Tools"
 else
 	echo "Error: Tag must be either core or supplements"
@@ -67,8 +64,7 @@ COPY_YEAR=$(date +%Y)
 
 cat << EOF > ${FILE_GMT_MODULE_H}
 /*
- * Copyright (c) 2012-${COPY_YEAR}
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-${COPY_YEAR} by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -80,8 +76,8 @@ cat << EOF > ${FILE_GMT_MODULE_H}
  */
 
 #pragma once
-#ifndef _GMT_${U_TAG}_MODULE_H
-#define _GMT_${U_TAG}_MODULE_H
+#ifndef GMT_${U_TAG}_MODULE_H
+#define GMT_${U_TAG}_MODULE_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -108,7 +104,7 @@ EXTERN_MSC const char * gmt_${L_TAG}_module_group (void *API, char *candidate);
 }
 #endif
 
-#endif /* !_GMT_${U_TAG}_MODULE_H */
+#endif /* !GMT_${U_TAG}_MODULE_H */
 EOF
 
 #
@@ -117,8 +113,7 @@ EOF
 
 cat << EOF > ${FILE_GMT_MODULE_C}
 /*
- * Copyright (c) 2012-${COPY_YEAR}
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-${COPY_YEAR} by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -358,7 +353,7 @@ EOF
 
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
-	
+
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
 void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
@@ -380,5 +375,3 @@ EOF
 fi
 #rm -f /tmp/$LIB.txt
 exit 0
-
-# vim: set ft=c:

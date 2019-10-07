@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Evaluate first 36 degrees of EGM96 geoid model
 

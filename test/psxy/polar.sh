@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check plotting of boxes in stereographic polar gmt projection
 # Original script by Bruce Raup.

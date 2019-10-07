@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2012-2018
- * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -12,8 +11,8 @@
  */
 
 #pragma once
-#ifndef _GMT_CORE_MODULE_H
-#define _GMT_CORE_MODULE_H
+#ifndef GMT_CORE_MODULE_H
+#define GMT_CORE_MODULE_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -28,6 +27,7 @@ EXTERN_MSC int GMT_blockmean (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmedian (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmode (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clear (void *API, int mode, void *args);
+EXTERN_MSC int GMT_dimfilter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_docs (void *API, int mode, void *args);
 EXTERN_MSC int GMT_end (void *API, int mode, void *args);
 EXTERN_MSC int GMT_figure (void *API, int mode, void *args);
@@ -66,6 +66,7 @@ EXTERN_MSC int GMT_grdgradient (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdhisteq (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdimage (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdinfo (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdinterpolate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdlandmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdmath (void *API, int mode, void *args);
@@ -90,6 +91,7 @@ EXTERN_MSC int GMT_psclip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscontour (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psconvert (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psevents (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pshistogram (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psimage (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pslegend (void *API, int mode, void *args);
@@ -102,7 +104,6 @@ EXTERN_MSC int GMT_pstext (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
-EXTERN_MSC int GMT_revert (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sample1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_spectrum1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sph2grd (void *API, int mode, void *args);
@@ -111,8 +112,6 @@ EXTERN_MSC int GMT_sphinterpolate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sphtriangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_splitxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_subplot (void *API, int mode, void *args);
-EXTERN_MSC int GMT_surface_mt (void *API, int mode, void *args);
-EXTERN_MSC int GMT_surface_old (void *API, int mode, void *args);
 EXTERN_MSC int GMT_surface (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);
@@ -132,4 +131,4 @@ EXTERN_MSC const char * gmt_core_module_group (void *API, char *candidate);
 }
 #endif
 
-#endif /* !_GMT_CORE_MODULE_H */
+#endif /* !GMT_CORE_MODULE_H */

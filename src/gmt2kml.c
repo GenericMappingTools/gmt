@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*void *V_API, int mode
  * API functions to support the gmt2kml application.
@@ -87,15 +87,17 @@ struct GMT2KML_CTRL {
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E */
+	struct E {	/* -E[+e][+s] */
 		bool active;
+		bool extrude;
+		bool tessellate;
 	} E;
 	struct F {	/* -F */
 		bool active;
 		unsigned int mode;
 		unsigned int geometry;
 	} F;
-	struct G {	/* -G<fill> */
+	struct G {	/* -G<fill>+f|n */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
@@ -163,6 +165,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C->A.mode = KML_GROUND;
 	C->A.scale = 1.0;
+	C->E.tessellate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
 	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
@@ -199,8 +202,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -215,19 +218,20 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to seafloor or ground.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or via -Z<value> lookup for lines and polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend feature down to the ground [no extrusion].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Control parameters of lines and polygons:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to extend feature down to the ground [no extrusion].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to connect points with straight lines [tessellate onto surface].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Feature type; choose from (e)vent, (s)ymbol, (t)imespan, (l)ine, (p)olygon, or (w)iggle [s].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All features expect lon, lat in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Value or altitude is given in the third column (see -A and -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Event requires a timestamp in the next column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end ISO timestamps in the next two columns\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (use NaN for unlimited begin and/or end times).\n");
-	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label color is white.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Gf- to turn off polygon fill.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Gn- to turn off labels.\n");
+	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-G<color>[+f]) or label font (-G<color>+n).");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency; use -G+f for no fill.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label font color is white; use -G+n to turn off labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I URL to an alternative icon used for the symbol [Google circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I- to not place any icons.\n");
@@ -287,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
+	unsigned int n_errors = 0, pos = 0, k, n_files = 0, ind;
 	size_t n_alloc = 0;
 	char buffer[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, T[4][GMT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -347,8 +351,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				gmt_M_str_free (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
-			case 'E':	/* Extrude feature down to the ground*/
+			case 'E':	/* Extrude feature down to the ground */
 			 	Ctrl->E.active = true;
+				if (strstr (opt->arg, "+s"))	/* Straight lines, turn off tessellation */
+				 	Ctrl->E.tessellate = false;
+				if (strstr (opt->arg, "+e"))	/* Straight lines, turn off tessellation */
+				 	Ctrl->E.extrude = true;
+				else if (opt->arg[0] == '\0')	/* Old syntax -E means -E+e */
+				 	Ctrl->E.extrude = true;
 				break;
 			case 'F':	/* Feature type */
 		 		Ctrl->F.active = true;
@@ -381,29 +391,34 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Set fill for symbols or polygon */
-				switch (opt->arg[0]) {
-					case 'f':	/* Symbol/polygon color fill */
-						if (opt->arg[1] == '-')
-				 			Ctrl->G.active[F_ID] = true;
-						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
-							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
-							n_errors++;
-						}
-						break;
-					case 'n':	/* Label name color */
-		 				Ctrl->G.active[N_ID] = true;
-						if (opt->arg[1] == '-')
-							Ctrl->t_transp = 0.0;
-						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
-							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
-							n_errors++;
-						}
-						break;
-					default:
-						gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
+				ind = F_ID;	/* Default is fill if not overridden below */
+				k = 0;
+				if ((c = strstr (opt->arg, "+f"))) 	/* Polygon fill */
+					ind = F_ID, k = 0, c[0] = '\0';
+				else if ((c = strstr (opt->arg, "+n")))	/* Label color */
+					ind = N_ID, k = 0, c[0] = '\0';
+				else if (gmt_M_compat_check (GMT, 5)) {	/* Old style -Gf or -Gn OK */
+					GMT_Report (API, GMT_MSG_COMPAT, "-Gf or -Gn is deprecated, use -G[<fill>][+f|n] instead\n");
+					if (opt->arg[0] == 'f')	/* Polygon fill */
+						ind = F_ID, k = 1;
+					else if (opt->arg[0] == 'n')	/* Label color */
+						ind = N_ID, k = 1;
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Old syntax is -Gf or -Gn (use -G[<fill>][+f|n] instead).\n");
 						n_errors++;
-						break;
+					}
 				}
+				if (opt->arg[0] == '\0')	/* Transparency selected */
+		 			Ctrl->G.active[ind] = true;
+				else if (opt->arg[1] == '-' && gmt_M_compat_check (GMT, 5)) {
+		 			Ctrl->G.active[ind] = true;
+					GMT_Report (API, GMT_MSG_COMPAT, "Using - for no fill is deprecated, use -G[+f|n] instead\n");
+				}
+				else if (gmt_getfill (GMT, &opt->arg[k], &Ctrl->G.fill[ind])) {
+					gmt_fill_syntax (GMT, 'G', "(-G[<fill>]+f|n)");
+					n_errors++;
+				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;
@@ -428,9 +443,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					Ctrl->N.mode = GET_COL_LABEL;
 					Ctrl->N.col = GMT_Z;
 				}
-				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[0] == '\0') {	/* Trailing text (+ is backwards compatible)  */
+				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[1] == '\0')	/* Trailing text (+ is backwards compatible)  */
 					Ctrl->N.mode = GET_LABEL;
-				}
 				else if (strchr (opt->arg, '%')) {	/* Want a format */
 					Ctrl->N.fmt = strdup (opt->arg);
 					Ctrl->N.mode = FMT_LABEL;
@@ -547,6 +561,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
+	
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
@@ -587,10 +604,10 @@ GMT_LOCAL int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
 	return (false);
 }
 
-GMT_LOCAL void print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, int extrude, int fmode, int altmode, int ntabs) {
+GMT_LOCAL void print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, bool extrude, bool tessellate, int altmode, int ntabs) {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) kml_print (API, Out, ntabs, "<extrude>1</extrude>");
-	if (fmode) kml_print (API, Out, ntabs, "<tessellate>1</tessellate>");
+	if (tessellate) kml_print (API, Out, ntabs, "<tessellate>1</tessellate>");
 	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) kml_print (API, Out, ntabs, "<altitudeMode>%s</altitudeMode>", RefLevel[altmode]);
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) kml_print (API, Out, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>", RefLevel[altmode]);
 }
@@ -710,7 +727,7 @@ GMT_LOCAL void kml_free (struct GMT_CTRL *GMT, struct KML ** kml) {
 }
 
 void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x, double *y, uint64_t np, int type, int process_id, int alt_mode, int N, double z_level) {
-	/* Plots a self-contained polygon or line, depending on type, using
+	/* Wiggles: Plots a self-contained polygon or line, depending on type, using
 	 * the current fill/line styles */
 	static char *name[2] = {"Wiggle Anomaly", "Positive Anomaly"};
 	static char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
@@ -720,7 +737,7 @@ void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x
 	kml_print (API, Out, N, "<name>%s</name>", name[type-LINE]);
 	kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, 0); /* It is always style 0 */
 	kml_print (API, Out, N++, "<%s>", feature[type]);
-	print_altmode (API, Out, 0, 1, alt_mode, N);
+	print_altmode (API, Out, false, true, alt_mode, N);
 	if (type == POLYGON) {
 		kml_print (API, Out, N++, "<outerBoundaryIs>");
 		kml_print (API, Out, N++, "<LinearRing>");
@@ -854,9 +871,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
 	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
-	get_z = (Ctrl->F.mode < LINE && (Ctrl->C.active || Ctrl->A.get_alt));
-	if (get_z) n_coord++;
-
+	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
+	if (get_z && Ctrl->F.mode < LINE) n_coord++;
+	if (Ctrl->F.mode < LINE) Ctrl->E.tessellate = false;	/* No tessellation for symbols */
+	
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
@@ -1099,7 +1117,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, Out, N, "<description>%s</description>", description);
 				kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make style ID  >= 0 */
 				kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-				print_altmode (API, Out, Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
+				print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
 					kml_print (API, Out, N++, "<outerBoundaryIs>");
 					kml_print (API, Out, N++, "<LinearRing>");
@@ -1176,7 +1194,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 						else if (Ctrl->N.mode == GET_COL_LABEL) {
-							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], Ctrl->N.col);
+							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], gmt_M_type(GMT,GMT_IN,Ctrl->N.col));
 							kml_print (API, Out, N, "<name>%s</name>", item);
 						}
 						else if (Ctrl->N.mode == GET_LABEL)
@@ -1201,7 +1219,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 								kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
 								kml_print (API, Out, N++, "<value>");
 								if ((n_coord+col) < S->n_columns) {	/* Part of the numerical section */
-									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], n_coord+col);
+									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], gmt_M_type(GMT,GMT_IN,n_coord+col));
 									kml_print (API, Out, N, "%s", item);
 								}
 								else if (all_text) {	/* Place entire trailing text */
@@ -1244,7 +1262,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						}
 						kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make index a positive integer */
 						kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-						print_altmode (API, Out, Ctrl->E.active, false, Ctrl->A.mode, N);
+						print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 						kml_print (API, Out, N, "<coordinates>");
 						ascii_output_three (API, Out, out, N);
 						kml_print (API, Out, N, "</coordinates>");

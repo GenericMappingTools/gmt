@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # GMT test script for plot placement on some gmt projections. By Ken McLean.
 # Create triplicate plots of each.
 
 ps=placement.ps
-gmt defaults > save.conf
 
 coast () {
 gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c $*

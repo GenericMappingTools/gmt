@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
  * 
- *    Copyright (c) 2005-2018 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.h
@@ -427,7 +427,7 @@ struct MGD77_CONTROL {
 	unsigned int n_MGD77_paths;			/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
-	char path[GMT_BUFSIZ];				/* Full path to current file */
+	char path[PATH_MAX];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
 	unsigned int verbose_level;			/* 0 = none, 1 = warnings, 2 = errors (combined 3 for both) */
 	unsigned int verbose_dest;			/* 1 = to stdout, 2 = to stderr */
@@ -519,7 +519,7 @@ EXTERN_MSC void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL
 EXTERN_MSC void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
 EXTERN_MSC int MGD77_nc_status (struct GMT_CTRL *GMT, int status);										/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format);								/* Process the ignre-format option */
-EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format);										/* Dissallow some formats for consideration */
+EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format);										/* Disallow some formats for consideration */
 EXTERN_MSC int MGD77_Select_Format (struct GMT_CTRL *GMT, int format);										/* Only select a specific format for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *GMT);									/* Create an empty data set structure */
 EXTERN_MSC int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */

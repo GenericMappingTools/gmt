@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test to make sure the -Ei option works as advertised.
 # We have data that will fall in to 4 separate blocks

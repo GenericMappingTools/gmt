@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check that vertical and horizontal box-and-whisker symbols work
 ps=boxwhisk.ps

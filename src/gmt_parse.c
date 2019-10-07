@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Public function prototypes for GMT API option parsing.
@@ -133,13 +133,21 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
 				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
 				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 'L') {mod = 'L'; ignore5 = true;  gmt5++;}	/* Forced horizontal Label */
+				else if (k < last && in[k+1] == 's') {mod = 's'; ignore5 = true;  gmt5++;}	/* Secondary label */
+				else if (k < last && in[k+1] == 'S') {mod = 'S'; ignore5 = true;  gmt5++;}	/* Forced horizontal Secondary lLabel */
 				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
+				else if (k < last && in[k+1] == 'n') {mod = 'n'; ignore5 = true;  gmt5++;}	/* Turn off frames and annotations */
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
 				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
-			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
+				break;
+			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'z':	/* Not checking s as confusion with seconds and n because of +n */
 				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
+				break;
+			case 'n':	/* Tell this apart from +n */
+				if (!(k && in[k-1] == '+') && k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
 				break;
 		}
 	}
@@ -272,7 +280,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && strncmp (GMT->init.module_name, "psscale", 7U)) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+		sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
 			return (-1);
@@ -441,16 +449,18 @@ GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
 /*! . */
 struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
-	 * returns a linked list of GMT_OPTION structures for each program option.
-	 * These will in turn will be processed by the program-specific option parsers.
+	 * then creates a linked list of GMT_OPTION structures for each program option.
+	 * These will in turn will be processed by the module-specific option parsers.
 	 * What actually happens is controlled by n_args_in.  There are three cases:
-	 * n_args_in < 0 : This means that in is already a linked list and we just return it.
+	 * n_args_in < 0 : This means that in is already a linked list and we just duplicate and return a copy.
 	 * n_args_in == 0: in is a single text string with multiple options (e.g., "-R0/2/0/5 -Jx1 -O -K > file")
 	 *		   and we must first break this command string into separate words.
 	 * n_args_in > 0 : in is an array of text strings (e.g., argv[]).
 	 *
 	 * Note: 1. If argv[0] is the calling program name, make sure to pass argc-1, args+1 instead.
 	 *	 2. in == NULL is allowed only for n_args_in <= 0 (an empty list of options).
+	 *
+	 * The linked list returned by GMT_Create_Options should be freed by GMT_Destroy_Options().
 	 */
 
 	int error = GMT_OK;
@@ -463,8 +473,19 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (in == NULL && n_args_in > 1) return_null (V_API, GMT_ARGV_LIST_NULL);	/* Gave no argument pointer but said we had at least 1 */
 	if (in == NULL) return (NULL);	/* Gave no argument pointer so a null struct is returned */
-	if (n_args_in < 0) return ((struct GMT_OPTION *)in);	/* Already was to linked list */
-	API = parse_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
+	API = parse_get_api_ptr (V_API);	/* Convert V_API to a GMTAPI_CTRL pointer */
+	if (n_args_in < 0) {	/* Already was given a linked list.  Duplicate and return the copy */
+		struct GMT_OPTION *head_in = (struct GMT_OPTION *)in;
+		while (head_in) {
+			if ((new_opt = GMT_Make_Option (API, head_in->option, head_in->arg)) == NULL)	/* Make option with the listing name flagged as option -= */
+				return_null (API, API->error);	/* Create the new option structure given the args, or return the error */
+			if ((head = GMT_Append_Option (API, new_opt, head)) == NULL)		/* Hook new option to the end of the list (or initiate list if new == NULL) */
+				return_null (API, API->error);	/* Create the new option structure given the args, or return the error */
+			head_in = head_in->next;	/* Go to next input option */
+		}
+		return (head);
+	}
+	
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		unsigned int pos = 0, new_n_args = 0, k;

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 

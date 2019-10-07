@@ -20,7 +20,7 @@ enum GMT_enum_grd98 {GRD98_MAGIC_NUM = 1000000000,
 typedef struct {
 	int	version;		/* 1,000,000,001 Magic_Num + Version */
 	int	length;			/* 128 bytes */
-	int dataType;       /* 1=data, 2=density, 3=radius, -1=template */
+	int	dataType;		/* 1=data, 2=density, 3=radius, -1=template */
 	int	latDeg;
 	int	latMin;
 	int	latSec;
@@ -34,10 +34,10 @@ typedef struct {
 	int	minValue;		/* Whole meters */
 	int	maxValue;		/* Whole meters */
 	int	gridRadius;		/* -1 for grid radius not performed */
-	int	precision;     	/* 1 = whole meters, 10 = tenths of meters */
+	int	precision;		/* 1 = whole meters, 10 = tenths of meters */
 	int	nanValue;
-	int numType;        /* bytesize, pos=int, neg=float */
-	int waterDatum;     /* Vertical datum 0 = Mean Sea Level, 1 = local */
+	int	numType;		/* bytesize, pos=int, neg=float */
+	int	waterDatum;		/* Vertical datum 0 = Mean Sea Level, 1 = local */
 	int	dataLimit;		/* 2-byte, 4-byte -1 = float */
 	int	cellRegistration;	/* 1 for pixel (cell centered), 0 for gridline */
 	int unused[GRD98_N_UNUSED];	/* Unused 4byte ints */

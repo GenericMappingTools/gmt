@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
@@ -80,6 +80,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
+	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
@@ -95,13 +96,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		pos = 0;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what kind it is */
 			if (arg_category == GMT_NOTSET)
-				arg_category = (strlen (p) == 1 || strchr (p, '+') || isupper (p[0])) ? GMT_IS_OPT : GMT_IS_FMT;
+				arg_category = (strlen (p) == 1 || strchr (p, '+') || (isupper (p[0]) && strcmp (p, "PNG"))) ? GMT_IS_OPT : GMT_IS_FMT;
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
+				else if (!strcmp (p, "ps"))	/* Need to honor PS_MEDIA setting */
+					GMT->current.ps.crop_to_fit = false;
 			}
 			else {	/* Check if valid psconvert options */
 				if (!strchr ("ACDEHMQS", p[0])) {

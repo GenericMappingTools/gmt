@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -1060,8 +1060,14 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		sing_max = MAX (sing_max, w_abs);
 	}
 
+	if (cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+		double was = cutoff;
+		cutoff = rint (n*cutoff);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
+	}
+
 	if (mode) {
-		 /* mode = 1: Find the m largest singular values, with m = cutoff.
+		 /* mode = 1: Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variace contributions. */
@@ -1396,7 +1402,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
 	if (gmt_M_is_dnan (lon[0]) || gmt_M_is_dnan (lat[0])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data contains NaNs - no resampling taken place!\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row 0 contains NaNs - no resampling taken place!\n");
 		return n;
 	}
 	
@@ -1420,12 +1426,23 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	boostable = !(gmt_M_is_linear (GMT) || gmt_M_pole_is_point (GMT));	/* Only boost for projections where poles are lines */
 	f_lat_a = fabs (lat[0]);
 	for (i = 1; i < n; i++) {
+		if (gmt_M_is_dnan (lon[i]) || gmt_M_is_dnan (lat[i])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row %" PRIu64 " contains NaNs - no resampling taken place!\n", i);
+			return n;
+		}
 		f_lat_b = fabs (lat[i]);
 
 		gmt_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
-		if (boostable && MIN(f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
-			boost = 1.0 + 10.0 * (MAX(f_lat_a, f_lat_b) - 75.0);	/* Crude way to get a boost from 1 at 75 to ~151 at the pole */
-		else
+		if (boostable) {	/* Enforce closer sampling close to poles or for near anti-meridian separation of points */
+			gmt_M_set_delta_lon (lon[i-1], lon[i], dlon);	/* Beware of jumps due to sign differences */
+			if (MIN (f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
+				boost = 1.0 + 10.0 * (MAX(f_lat_a, f_lat_b) - 75.0);	/* Crude way to get a boost from 1 at 75 to ~151 at the pole */
+			else if ((c = fabs (fabs (dlon)-180.0)) < 5.0)	/* Enforce closer sampling if points are ~180 degrees apart in longitude */
+				boost = 1.0 + 10.0 * c;	/* Crude way to get a boost when we are close to points along antimeridian */
+			else
+				boost = 1.0;
+		}
+		else	/* No boost needed */
 			boost = 1.0;
 
 		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
@@ -1475,7 +1492,6 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			}
 			k = 0;
 		}
-
 		/* Follow great circle */
 		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
@@ -1488,7 +1504,48 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			}
 			return 0;
 		}
-
+		else if (doubleAlmostEqual (fabs (fmod (lon[i-1] - lon[i], 360)), 180.0)) {
+			/* Must march along the two meridians through the nearest pole */
+			double sL = lat[i-1] + lat[i], dy;
+			double Narc = 180.0 - sL, Sarc = 180.0 + sL;	/* Compute the arc lengths of the two pole passes */
+			if (Narc < Sarc) {	/* Shortest path is to connect through N pole */
+				n_step = lrint ((90.0 - lat[i-1]) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (90.0 - lat[i-1]) / n_step;	/* Ensure we land exactly on N pole */
+				for (j = 1; j <= n_step; j++) {	/* Start at 1 since 0 is lon[i-1] and end exactly at pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];	/* Keep longitude constant */
+					GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] + j * dy;	/* March towards N pole */
+					n_new++;
+				}
+				n_step = lrint ((90.0 - lat[i]) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (90.0 - lat[i]) / n_step;	/* Ensure we start exactly on N pole */
+				for (j = 0; j < n_step; j++) {	/* Start at 0 to pick up N pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = 90.0 - j * dy;
+					n_new++;
+				}
+			}
+			else {	/* Must connect via S pole */
+				n_step = lrint ((lat[i-1] + 90.0) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (lat[i-1] + 90.0) / n_step;	/* Ensure we land exactly on S pole */
+				for (j = 1; j <= n_step; j++) {	/* Start at 1 since 0 is lon[i-1] and end exactly at pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] - j * dy;
+					n_new++;
+				}
+				n_step = lrint ((lat[i] + 90.0) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (lat[i] + 90.0) / n_step;	/* Ensure we start exactly on S pole */
+				for (j = 0; j < n_step; j++) {	/* Start at 0 to pick up S pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = j * dy - 90.0;
+					n_new++;
+				}
+			}
+			/* Next point is now point i */
+		}
 		else if ((n_step = lrint (boost * theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
 			minlon = MIN (lon[i-1], lon[i]);

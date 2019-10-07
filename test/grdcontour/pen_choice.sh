@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the -W[a|c][<pen>][+c[l|f]] option given issue #1184
 
 ps=pen_choice.ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2018 by P. Wessel
+ *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -77,23 +77,23 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -Fa|c|m|t -Ta|c|m|t[+f] [-C] [-D] [-L[e][w][+l]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
         
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
              
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[Files are read from data repositories and written to current directory]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Files are read from data repositories and written to current directory]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default we will refuse to overwrite existing files.  Prepend + to override this policy.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default we will refuse to overwrite existing files.  Append +f to force an override this policy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give one or more names of h77-files, a77-files, or just cruise prefixes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set log level and destination setting for verification reporting.  Append a combination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of w for warnings, e for errors, and + to send log to stdout [Default is stderr].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of w for warnings and e for errors, and append +l to send log to stdout [Default is stderr].\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -107,6 +107,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 	 */
 
 	unsigned int n_errors = 0, code_pos, i;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -124,7 +125,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 				for (i = 0; opt->arg[i]; i++) {
 					if (opt->arg[i] == 'e') Ctrl->L.mode |= 2;
 					if (opt->arg[i] == 'w') Ctrl->L.mode |= 1;
-					if (opt->arg[i] == '+') Ctrl->L.dest = 1;
+					if (opt->arg[i] == '+' && (opt->arg[i+1] == '\0' || opt->arg[i+1] == 'l')) Ctrl->L.dest = 1;
 				}
 				break;
 			case 'F':
@@ -135,7 +136,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
 						Ctrl->F.mode = true;	/* Overlook revisions */
-					case 'c':
+					case 'c':	/* Falling through from 'C' to 'c' on purpose */
 						Ctrl->F.format = MGD77_FORMAT_CDF;
 						break;
 					case 'm':		/* New ASCII MGD77T file */
@@ -153,7 +154,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 			case 'T':
 				Ctrl->T.active = true;
 				code_pos = 0;
-				if (opt->arg[code_pos] == '+') Ctrl->T.mode = true, code_pos++;	/* Force overwriting existing files */
+				if (opt->arg[code_pos] == '+')
+					Ctrl->T.mode = true, code_pos++;	/* Force overwriting existing files */
+				else if ((c = strstr (opt->arg, "+f"))) {
+					Ctrl->T.mode = true;	/* Force overwriting existing files */
+					c[0] = '\0';	/* Chop off modifier */
+				}
 				switch (opt->arg[code_pos]) {									
 					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
@@ -168,10 +174,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 						Ctrl->T.format = MGD77_FORMAT_TBL;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Option -T Bad format (%c)!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -T Bad format (%c)!\n", opt->arg[code_pos]);
 						n_errors++;
 						break;
 				}
+				if (c) c[0] = '\0';	/* Restore modifier */
 				break;
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -210,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	int i, argno, n_cruises = 0, n_paths, error = 0;
 	
-	char file[GMT_BUFSIZ] = {""}, **list = NULL, *fcode = "cmat";
+	char file[PATH_MAX] = {""}, **list = NULL, *fcode = "cmat";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77+ netCDF", "MGD77T ASCII", "MGD77 ASCII", "ASCII table"};
 
 	struct MGD77_CONTROL M;
@@ -238,7 +245,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
 	if (Ctrl->C.active) {	/* Just build *.mgd77 from *.h77 and *.a77 */
-		char a77_file[GMT_BUFSIZ] = {""}, h77_file[GMT_BUFSIZ] = {""}, mgd77_file[GMT_BUFSIZ] = {""}, prefix[GMT_BUFSIZ] = {""};
+		char a77_file[PATH_MAX] = {""}, h77_file[PATH_MAX] = {""}, mgd77_file[PATH_MAX] = {""}, prefix[PATH_MAX] = {""};
 		int pos, c, n_files = 0;
 		struct GMT_OPTION *opt = NULL;
 		FILE *fpa77 = NULL, *fph77 = NULL, *fpout = NULL;
@@ -247,10 +254,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
 			if ((pos = (int)(strlen (opt->arg) - 4)) < 0) continue;	/* Odd item, skip */
-			strncpy (prefix, opt->arg, GMT_BUFSIZ);	/* Make copy of name/file */
+			strncpy (prefix, opt->arg, PATH_MAX);	/* Make copy of name/file */
 			if (!strncmp (&prefix[pos], ".a77", 4U) || !strncmp (&prefix[pos], ".h77", 4U)) prefix[pos] = 0;	/* Truncate any extension */
-			sprintf (a77_file, "%s.a77", prefix);
-			sprintf (h77_file, "%s.h77", prefix);
+			snprintf (a77_file, PATH_MAX-4, "%s.a77", prefix);
+			snprintf (h77_file, PATH_MAX-4, "%s.h77", prefix);
 			if (access (a77_file, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "A77 file %s not found - skipping conversion\n", a77_file);
 				continue;
@@ -259,7 +266,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "H77 file %s not found - skipping conversion\n", h77_file);
 				continue;
 			}
-			sprintf (mgd77_file, "%s.mgd77", prefix);
+			snprintf (mgd77_file, PATH_MAX-6, "%s.mgd77", prefix);
 			if ((fpout = fopen (mgd77_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
 				continue;
@@ -341,7 +348,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				}
 			}
 			else {	/* Cowardly refuse to do this */
-				GMT_Report (API, GMT_MSG_NORMAL, "\nOutput file already exists.  Use -T+%c to force overwriting\n", fcode[Ctrl->T.format]);
+				GMT_Report (API, GMT_MSG_NORMAL, "\nOutput file already exists.  Use -T%c+f to force overwriting\n", fcode[Ctrl->T.format]);
 				MGD77_Close_File (GMT, &M);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 				continue;

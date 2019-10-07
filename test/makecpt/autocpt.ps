@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r18817 [64-bit] Document from psscale
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psscale
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Aug 30 08:51:15 2017
+%%CreationDate: Thu Dec  6 10:51:37 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx0i/7i -P -K -By+l-S
+%@GMT: gmt psscale -Dx0i/7i+w3i/0.2i+jML -P -K -By+l-S
 %@PROJ: xy -4504.00000000 -9.00000000 0.00000000 0.20000000 -4504.000 -9.000 0.000 0.200 +xy
+%GMTBoundingBox: 72 72 216 14.4
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -729,13 +738,13 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -1091 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-4504.000) mr Z U
-450 -1091 M V -90 R (-3942.125) mr Z U
-1350 -1091 M V -90 R (-2818.375) mr Z U
-2250 -1091 M V -90 R (-1694.625) mr Z U
-3150 -1091 M V -90 R (-570.875) mr Z U
-3600 -1091 M V -90 R (-9.000) mr Z U
-3683 120 M V -90 R (-S) bc Z U
+V -90 R (”4504.000) mr Z U
+450 -1091 M V -90 R (”3942.125) mr Z U
+1350 -1091 M V -90 R (”2818.375) mr Z U
+2250 -1091 M V -90 R (”1694.625) mr Z U
+3150 -1091 M V -90 R (”570.875) mr Z U
+3600 -1091 M V -90 R (”9.000) mr Z U
+3683 120 M V -90 R (”S) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -747,7 +756,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx2i/7i -By+l-S500 -O -K
+%@GMT: gmt psscale -Dx2i/7i+w3i/0.2i+jML -By+l-S500 -O -K
 %@PROJ: xy -5000.00000000 0.00000000 0.00000000 0.20000000 -5000.000 0.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -812,13 +821,13 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -707 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-5000) mr Z U
-450 -707 M V -90 R (-4375) mr Z U
-1350 -707 M V -90 R (-3125) mr Z U
-2250 -707 M V -90 R (-1875) mr Z U
-3150 -707 M V -90 R (-625) mr Z U
+V -90 R (”5000) mr Z U
+450 -707 M V -90 R (”4375) mr Z U
+1350 -707 M V -90 R (”3125) mr Z U
+2250 -707 M V -90 R (”1875) mr Z U
+3150 -707 M V -90 R (”625) mr Z U
 3600 -707 M V -90 R (0) mr Z U
-3683 120 M V -90 R (-S500) bc Z U
+3683 120 M V -90 R (”S500) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -830,8 +839,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx3.5i/7i -By+l-S500+d -O -K
-%@PROJ: xy -5000.00000000 0.00000000 0.00000000 0.20000000 -5000.000 0.000 0.000 0.200 +xy
+%@GMT: gmt psscale -Dx3.5i/7i+w3i/0.2i+jML -By+l-S500+d -O -K
+%@PROJ: xy -5000.00000000 -0.00000000 0.00000000 0.20000000 -5000.000 0.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -877,18 +886,18 @@ N 3240 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -707 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-5000) mr Z U
-360 -707 M V -90 R (-4500) mr Z U
-720 -707 M V -90 R (-4000) mr Z U
-1080 -707 M V -90 R (-3500) mr Z U
-1440 -707 M V -90 R (-3000) mr Z U
-1800 -707 M V -90 R (-2500) mr Z U
-2160 -707 M V -90 R (-2000) mr Z U
-2520 -707 M V -90 R (-1500) mr Z U
-2880 -707 M V -90 R (-1000) mr Z U
-3240 -707 M V -90 R (-500) mr Z U
-3600 -707 M V -90 R (0) mr Z U
-3683 120 M V -90 R (-S500+d) bc Z U
+V -90 R (”5000) mr Z U
+360 -707 M V -90 R (”4500) mr Z U
+720 -707 M V -90 R (”4000) mr Z U
+1080 -707 M V -90 R (”3500) mr Z U
+1440 -707 M V -90 R (”3000) mr Z U
+1800 -707 M V -90 R (”2500) mr Z U
+2160 -707 M V -90 R (”2000) mr Z U
+2520 -707 M V -90 R (”1500) mr Z U
+2880 -707 M V -90 R (”1000) mr Z U
+3240 -707 M V -90 R (”500) mr Z U
+3600 -707 M V -90 R (”0) mr Z U
+3683 120 M V -90 R (”S500+d) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -900,7 +909,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx5i/7i -By+l-Sa3 -O -K
+%@GMT: gmt psscale -Dx5i/7i+w3i/0.2i+jML -By+l-Sa3 -O -K
 %@PROJ: xy -5759.69257526 1069.25642808 0.00000000 0.20000000 -5759.693 1069.256 0.000 0.200 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -965,13 +974,13 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -1739 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-5759.692575260) mr Z U
-450 -1739 M V -90 R (-4906.073949840) mr Z U
-1350 -1739 M V -90 R (-3198.836699000) mr Z U
-2250 -1739 M V -90 R (-1491.599448170) mr Z U
+V -90 R (”5759.692575260) mr Z U
+450 -1739 M V -90 R (”4906.073949840) mr Z U
+1350 -1739 M V -90 R (”3198.836699000) mr Z U
+2250 -1739 M V -90 R (”1491.599448170) mr Z U
 3150 -1739 M V -90 R (215.637802666) mr Z U
 3600 -1739 M V -90 R (1069.256428080) mr Z U
-3683 120 M V -90 R (-Sa3) bc Z U
+3683 120 M V -90 R (”Sa3) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -983,7 +992,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx0i/2i -By+l-Sm3 -O -K
+%@GMT: gmt psscale -Dx0i/2i+w3i/0.2i+jML -By+l-Sm3 -O -K
 %@PROJ: xy -5436.33660000 -125.66340000 0.00000000 0.20000000 -5436.337 -125.663 0.000 0.200 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1048,13 +1057,13 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -1307 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-5436.33660) mr Z U
-450 -1307 M V -90 R (-4772.50245) mr Z U
-1350 -1307 M V -90 R (-3444.83415) mr Z U
-2250 -1307 M V -90 R (-2117.16585) mr Z U
-3150 -1307 M V -90 R (-789.49755) mr Z U
-3600 -1307 M V -90 R (-125.66340) mr Z U
-3683 120 M V -90 R (-Sm3) bc Z U
+V -90 R (”5436.33660) mr Z U
+450 -1307 M V -90 R (”4772.50245) mr Z U
+1350 -1307 M V -90 R (”3444.83415) mr Z U
+2250 -1307 M V -90 R (”2117.16585) mr Z U
+3150 -1307 M V -90 R (”789.49755) mr Z U
+3600 -1307 M V -90 R (”125.66340) mr Z U
+3683 120 M V -90 R (”Sm3) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -1066,7 +1075,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx2.5i/2i -By+l-Sp3 -O -K
+%@GMT: gmt psscale -Dx2.5i/2i+w3i/0.2i+jML -By+l-Sp3 -O -K
 %@PROJ: xy -5352.02732857 -798.11552857 0.00000000 0.20000000 -5352.027 -798.116 0.000 0.200 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1131,13 +1140,13 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -1739 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-5352.027328570) mr Z U
-450 -1739 M V -90 R (-4782.788353570) mr Z U
-1350 -1739 M V -90 R (-3644.310403570) mr Z U
-2250 -1739 M V -90 R (-2505.832453570) mr Z U
-3150 -1739 M V -90 R (-1367.354503570) mr Z U
-3600 -1739 M V -90 R (-798.115528571) mr Z U
-3683 120 M V -90 R (-Sp3) bc Z U
+V -90 R (”5352.027328570) mr Z U
+450 -1739 M V -90 R (”4782.788353570) mr Z U
+1350 -1739 M V -90 R (”3644.310403570) mr Z U
+2250 -1739 M V -90 R (”2505.832453570) mr Z U
+3150 -1739 M V -90 R (”1367.354503570) mr Z U
+3600 -1739 M V -90 R (”798.115528571) mr Z U
+3683 120 M V -90 R (”Sp3) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
@@ -1149,7 +1158,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Dx5i/2i -By+l-Sq10/90 -O
+%@GMT: gmt psscale -Dx5i/2i+w3i/0.2i+jML -By+l-Sq10/90 -O
 %@PROJ: xy -3529.00000000 -383.00000000 0.00000000 0.20000000 -3529.000 -383.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1214,18 +1223,22 @@ N 3150 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
 0 -983 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V -90 R (-3529.00) mr Z U
-450 -983 M V -90 R (-3135.75) mr Z U
-1350 -983 M V -90 R (-2349.25) mr Z U
-2250 -983 M V -90 R (-1562.75) mr Z U
-3150 -983 M V -90 R (-776.25) mr Z U
-3600 -983 M V -90 R (-383.00) mr Z U
-3683 120 M V -90 R (-Sq10/90) bc Z U
+V -90 R (”3529.00) mr Z U
+450 -983 M V -90 R (”3135.75) mr Z U
+1350 -983 M V -90 R (”2349.25) mr Z U
+2250 -983 M V -90 R (”1562.75) mr Z U
+3150 -983 M V -90 R (”776.25) mr Z U
+3600 -983 M V -90 R (”383.00) mr Z U
+3683 120 M V -90 R (”Sq10/90) bc Z U
 -90 R
 -240 0 T
 0 setlinecap
 -6000 -600 T
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

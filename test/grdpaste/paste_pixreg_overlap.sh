@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Paste overlapping pixel registered grids along X & Y
 

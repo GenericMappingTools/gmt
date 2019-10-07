@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*!
@@ -27,8 +27,8 @@
 
 */
 
-#ifndef _GMT_INTERNALS_H
-#define _GMT_INTERNALS_H
+#ifndef GMT_INTERNALS_H
+#define GMT_INTERNALS_H
 
 #ifdef HAVE_FFTW3F
 /* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
@@ -48,7 +48,11 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
-EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module);
+EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
+
+EXTERN_MSC void gmt_check_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, struct GMT_OPTION *head);
+EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);
+EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module);
 EXTERN_MSC const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module);
 EXTERN_MSC double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -63,7 +67,7 @@ EXTERN_MSC char *gmtlib_get_srtmlist  (struct GMTAPI_CTRL *API, double wesn[], u
 EXTERN_MSC struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file);
 EXTERN_MSC bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y);
-EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
 EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);
@@ -113,7 +117,6 @@ EXTERN_MSC void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, gmt
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmtlib_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmtlib_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
-EXTERN_MSC double gmtlib_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level);
 EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC int gmtlib_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
@@ -258,4 +261,4 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 #define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
 #define gmt_M_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
 
-#endif /* _GMT_INTERNALS_H */
+#endif /* GMT_INTERNALS_H */

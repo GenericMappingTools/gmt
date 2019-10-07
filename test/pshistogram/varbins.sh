@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test pshistogram with monthly (variable) bins
 ps=varbins.ps
 gmt set FORMAT_TIME_PRIMARY_MAP Abbrev FORMAT_DATE_MAP "o"

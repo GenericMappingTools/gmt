@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=filtersample.ps
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then

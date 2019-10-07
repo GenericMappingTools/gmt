@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test of gmt projection
 
 ps=east_map_0.ps

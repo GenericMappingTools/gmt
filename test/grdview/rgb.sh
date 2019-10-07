@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Drape image via three r,g,b grids on top of 3-D topo relief
 # testing both old and new syntax
 ps=rgb.ps

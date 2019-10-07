@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_types.h contains definitions of special types used by GMT.
@@ -27,8 +27,8 @@
  * \brief Definitions of special types used by GMT.
  */
 
-#ifndef _GMT_TYPES_H
-#define _GMT_TYPES_H
+#ifndef GMT_TYPES_H
+#define GMT_TYPES_H
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -42,6 +42,14 @@ struct GMT_MATH_MACRO {
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
 };
+
+#ifdef USE_GMT_KWD
+/*! Definition of GMT_KW_DICT used to expand keyword-value pairs to GMT options */
+struct GMT_KW_DICT {	/* Used for keyword-value lookup */
+	char code;	/* Single character GMT option code */
+	char name[31];	/* Name of corresponding keyword */
+};
+#endif
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
 struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
@@ -90,13 +98,15 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool count;	/* true if we got number of items rather than increment */
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
+	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
+	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max instead */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
 	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
-	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
 	unsigned int col;	/* The column that this array goes with */
+	int distmode;	/* Type of geospatial calculation mode for distances */
 	uint64_t n;	/* Number of elements in the array when complete */
 	double min, max, inc;	/* Equidistant items */
 	double *array;	/* This will eventually hold the array */
@@ -140,7 +150,7 @@ struct GMT_SUBPLOT {
 	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
 	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
 	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
-	char Baxes[GMT_LEN8];		/* The -B setting for selected axes */
+	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
 	char Bylabel[GMT_LEN128];	/* The -By setting for x labels */
@@ -294,6 +304,7 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 	char *runtime_library;        /* Name of the main shared library at run-time */
 	char *runtime_plugindir;      /* Directory that contains the main supplemental plugins at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal gmt.history information */
+	char cpt[GMT_N_CPT][GMT_LEN16];	/* The default CPTs for different data types; see gmt_cpt_default() */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */
 };
 
@@ -337,7 +348,7 @@ struct GMT_INTERNAL {
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
-	bool mem_set;			/* true when we hvae initialized the tmp memory already */
+	bool mem_set;			/* true when we have initialized the tmp memory already */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;
@@ -429,4 +440,4 @@ static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 		exit (code);
 }
 
-#endif  /* _GMT_TYPES_H */
+#endif  /* GMT_TYPES_H */

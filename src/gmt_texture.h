@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_texture.h contains definitions of structures for pens, fills, and fonts.
@@ -27,8 +27,12 @@
  * \brief Definitions of structures for pens, fills, and fonts.
  */
 
-#ifndef _GMT_TEXTURE_H
-#define _GMT_TEXTURE_H
+#ifndef GMT_TEXTURE_H
+#define GMT_TEXTURE_H
+
+#ifndef PATH_MAX
+#	define PATH_MAX 1024
+#endif
 
 /*--------------------------------------------------------------------
  *			GMT TEXTURE STRUCTURE DEFINITIONS
@@ -66,7 +70,7 @@ struct GMT_FILL {
 	int pattern_no;			/* Number of a predefined pattern, or -1 if not set */
 	unsigned int dpi;		/* Desired dpi of image building-block if use_pattern is true */
 	unsigned int dim[3];		/* width, height, depth of image */
-	char pattern[GMT_BUFSIZ];	/* Full filename of user-defined raster pattern */
+	char pattern[PATH_MAX];		/* Full filename of user-defined raster pattern */
 	unsigned char *image;	/* Pointer to image array */
 	struct GMT_IMAGE *I;	/* The image container */
 };
@@ -95,4 +99,4 @@ struct GMT_MEDIA {
 	double height;		/* Height in points */
 };
 
-#endif  /* _GMT_TEXTURE_H */
+#endif  /* GMT_TEXTURE_H */

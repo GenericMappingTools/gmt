@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing that standard symbols plotted in psxy directly are the same
 # as plotted when used as macros via a custom symbol.
 ps=comparesymbols.ps

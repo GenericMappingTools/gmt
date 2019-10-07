@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2018 by P. Wessel
+ *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -11,7 +11,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/pwessel
+ *   Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmtpmodeler will read an lon ,at[, age] table and a plate motion model and
@@ -271,7 +271,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 	}
 

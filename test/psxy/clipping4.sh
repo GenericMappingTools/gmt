@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 # Check ellipse clipping and filling/outline
 
 ps=clipping4.ps

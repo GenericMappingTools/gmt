@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=flowvectors.ps
 gmt makecpt -Cseis -T0/2000 > t.cpt
 

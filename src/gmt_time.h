@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * gmt_time.h contains definitions of structures dealing with time.
@@ -27,8 +27,8 @@
  * \brief Definitions of structures dealing with time.
  */
 
-#ifndef _GMT_TIME_H
-#define _GMT_TIME_H
+#ifndef GMT_TIME_H
+#define GMT_TIME_H
 
 /*--------------------------------------------------------------------
  *			GMT TIME STRUCTURES
@@ -43,4 +43,4 @@ struct GMT_TIME_SYSTEM {
 	char unit;			/* User-defined time unit */
 };
 
-#endif  /* _GMT_TIME_H */
+#endif  /* GMT_TIME_H */
