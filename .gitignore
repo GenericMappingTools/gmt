@@ -7,3 +7,4 @@ share/coast
 share/dcw
 **/gmt.history
 .DS_Store
+*.m
