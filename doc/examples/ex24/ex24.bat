@@ -27,4 +27,3 @@ gmt psxy -R -J -O dateline.txt -Wfat,white -A >> %ps%
 del point.txt
 del dateline.txt
 del awk.txt
-del .gmt*

@@ -47,5 +47,4 @@ del key.*
 del tmp
 del awk.txt
 del script*.bat
-del .gmt*
 del gmt.conf
