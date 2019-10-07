@@ -15,7 +15,7 @@ gmt begin ex36
 
 		gmt plot @mars370d.txt -Sc0.05i -G0 -B30g30 -c1
 
-	# Smoothing
+		# Smoothing
 		gmt sphinterpolate @mars370d.txt -Rg -I1 -Q3 -Gtt.nc
 		gmt grdimage tt.nc -Bag -c2
 	gmt subplot end
