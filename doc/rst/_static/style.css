@@ -25,3 +25,8 @@
     display: inline-grid;
     margin-right: 15px;
 }
+
+/* Set tab-width to 2 spaces */
+.highlight {
+    tab-size: 2;
+}
