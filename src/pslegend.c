@@ -50,10 +50,14 @@ struct PSLEGEND_CTRL {
 		bool debug;			/* If true we draw guide lines */
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct PSLEGND_S {	/* -S<legendfile> */
+	struct PSLEGND_S {	/* -S<scale> */
+		bool active;
+		double scale;
+	} S;
+	struct PSLEGND_T {	/* -T<legendfile> */
 		bool active;
 		char *file;
-	} S;
+	} T;
 #ifdef DEBUG
 	struct PSLEGND_DEBUG {	/* -; */
 		bool active;
@@ -70,6 +74,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C->C.off[GMT_X] = C->C.off[GMT_Y] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* 4 pt */
 	C->D.spacing = 1.1;
+	C->S.scale = 1.0;	/* Full given size of symbols */
 	return (C);
 }
 
@@ -77,7 +82,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_free_refpoint (GMT, &C->D.refpoint);
 	gmt_M_free (GMT, C->F.panel);
-	gmt_M_str_free (C->S.file);
+	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -88,8 +93,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<specfile>] -D%s+w<width>[/<height>][+l<spacing>]%s [%s]\n", name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [-F%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s%s%s[%s]\n", GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s%s%s[%s] [-S<scale>]\n", GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT);
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+		GMT_Message (API, GMT_TIME_NONE, "\t[-T<file>] [%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n\n");
 
@@ -108,6 +116,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Option (API, "O,P,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale all symbol sizes by <scale> [1].\n");
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+		GMT_Message (API, GMT_TIME_NONE, "\t-T Write hidden legend specfile to <file>.\n");
 	GMT_Option (API, "U,V,X,c,p,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -245,17 +256,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
-			case 'L':			/* Sets linespacing in units of fontsize [1.1] */
+			case 'L':	/* Sets linespacing in units of fontsize [1.1] */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
 				Ctrl->D.spacing = atof (opt->arg);
 				break;
 
-			case 'S':	/* Sets legendfile for saving the hidden file */
-				Ctrl->S.active = true;
+			case 'S':	/* Sets common symbol scale factor [1] */
+				Ctrl->S.scale = atof (opt->arg);
+				break;
+
+			case 'T':	/* Sets legendfile for saving the hidden file */
+				Ctrl->T.active = true;
 				if (opt->arg[0])
-					Ctrl->S.file = strdup (opt->arg);
+					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -S requires a filename\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -T requires a filename\n");
 					n_errors++;
 				}
 				break;
@@ -276,6 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error: The -S option cannot set a zero scale!\n");
 
 	if (!Ctrl->D.refpoint) return (GMT_PARSE_ERROR);	/* Need to exit because next ones to not apply */
 
@@ -491,7 +507,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Ctrl->S.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, 0, NULL, Ctrl->S.file, In) != GMT_NOERROR) {
+		if (Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, 0, NULL, Ctrl->T.file, In) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -666,7 +682,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						column_number++;
 						sscanf (line, "%*s %*s %*s %s", size);
 						/* Find the largest symbol size specified */
-						x = gmt_M_to_inch (GMT, size);
+						x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 						if (x > def_size) def_size = x;
 						break;
 
@@ -1235,16 +1251,16 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
 
 							if (n == 3) {	/* Got line length, tickgap, and ticklength */
-								length = gmt_M_to_inch (GMT, A);	/* The length of the line */
-								tlen = gmt_M_to_inch (GMT, C);	/* The length of the tick */
+								length = Ctrl->S.scale * gmt_M_to_inch (GMT, A);	/* The length of the line */
+								tlen = Ctrl->S.scale * gmt_M_to_inch (GMT, C);	/* The length of the tick */
 							}
 							else if (n == 2 && B[0] != '-') {	/* Got line length and tickgap only */
-								length = gmt_M_to_inch (GMT, A);	/* The length of the line */
-								gap = gmt_M_to_inch (GMT, B);	/* The tick gap */
+								length = Ctrl->S.scale * gmt_M_to_inch (GMT, A);	/* The length of the line */
+								gap = Ctrl->S.scale * gmt_M_to_inch (GMT, B);	/* The tick gap */
 								tlen = 0.3 * gap;		/* The default length of the tick is 30% of gap */
 							}
 							else {	/* Got line length, select defaults for other things */
-								length = gmt_M_to_inch (GMT, A);	/* The length of the line */
+								length = Ctrl->S.scale * gmt_M_to_inch (GMT, A);	/* The length of the line */
 								strcpy (B, "-1");		/* One centered tick */
 								tlen = 0.3 * length;		/* The default length of the tick is 30% of length */
 							}
@@ -1274,7 +1290,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							}
 						}
 						else if (symbol[0] == 'q' || symbol[0] == '~') {	/* Quoted and decorated line is different, must plot as a line segment */
-							double length = gmt_M_to_inch (GMT, size);	/* The length of the line */;
+							double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
 
 							if ((D[QLINE] = get_dataset_pointer (API, D[QLINE], GMT_IS_LINE, 64U, 2U, 2U, false)) == NULL) return (API->error);
 							x = 0.5 * length;
@@ -1309,11 +1325,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
 									az1 = atof (A);
-									x = gmt_M_to_inch (GMT, B);
-									y = gmt_M_to_inch (GMT, C);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
+									y = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 								}
 								else {	/* Ellipse needs more arguments; we use minor = 0.65*major, az = 0 */
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									az1 = 0.0;
 									y = 0.65 * x;
 								}
@@ -1325,11 +1341,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (strchr (size, ',')) {	/* We got dir,w,h instead of just size; parse and use */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
 									az1 = atof (A);
-									x = gmt_M_to_inch (GMT, B);
-									y = gmt_M_to_inch (GMT, C);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
+									y = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 								}
 								else {	/* Rotated rectangle needs more arguments; we use height = 0.65*width, az = 30 */
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									y = 0.65 * x;
 									az1 = 30.0;
 								}
@@ -1342,11 +1358,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (strchr (size, ',')) {	/* We got dir,length combined as one argument */
 									sscanf (size, "%[^,],%s", A, B);
 									az1 = atof (A);
-									x = gmt_M_to_inch (GMT, B);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 								}
 								else {	/* No dir given, default to horizontal */
 									az1 = 0.0;
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 								}
 								if (strchr (size, '/') && gmt_M_compat_check (GMT, 4))  {	/* The necessary arguments was supplied via GMT4 size arguments */
 									i = 0;
@@ -1381,11 +1397,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							else if (symbol[0] == 'r') {	/* Rectangle  */
 								if (strchr (size, ',')) {	/* We got w,h */
 									sscanf (size, "%[^,],%s", A, B);
-									x = gmt_M_to_inch (GMT, A);
-									y = gmt_M_to_inch (GMT, B);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, A);
+									y = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 								}
 								else {	/* Rectangle also need more args, we use h = 0.65*w */
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									y = 0.65 * x;
 								}
 								S[SYM]->data[2][0] = x;
@@ -1394,12 +1410,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							else if (symbol[0] == 'R') {	/* Rounded rectangle  */
 								if (strchr (size, ',')) {	/* We got w,h,r */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
-									x = gmt_M_to_inch (GMT, A);
-									y = gmt_M_to_inch (GMT, B);
-									r = gmt_M_to_inch (GMT, C);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, A);
+									y = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
+									r = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 								}
 								else {	/* Rounded rectangle also need more args, we use h = 0.65*w and r = 0.1*w */
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									y = 0.65 * x;
 									r = 0.1 * x;
 								}
@@ -1410,12 +1426,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							else if (symbol[0] == 'm') {	/* Math angle  */
 								if (strchr (size, ',')) {	/* We got r,az1,az2 */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
-									x = gmt_M_to_inch (GMT, A);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, A);
 									az1 = atof (B);
 									az2 = atof (C);
 								}
 								else {	/* Math angle need more args, we set fixed az1,az22 as 10 45 */
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									az1 = 10;	az2 = 45;
 								}
 								/* We want to center the arc around its mid-point */
@@ -1438,10 +1454,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
 									az1 = atof (A);
 									az2 = atof (B);
-									x = gmt_M_to_inch (GMT, C);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 								}
 								else {
-									x = gmt_M_to_inch (GMT, size);
+									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 									az1 = -30;	az2 = 30;
 								}
 								/* We want to center the wedge around its mid-point */
@@ -1453,7 +1469,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[SYM]->data[4][0] = az2;
 							}
 							else {
-								x = gmt_M_to_inch (GMT, size);
+								x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
 								S[SYM]->data[2][0] = x;
 							}
 							/* Place pen and fill colors in segment header */

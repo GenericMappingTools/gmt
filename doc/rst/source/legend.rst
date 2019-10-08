@@ -20,6 +20,8 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
 [ |SYN_OPT-R| ]
+[ |-S|\ *scale* ]
+[ |-T|\ *file* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]

@@ -61,7 +61,8 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	char pen[2][GMT_LEN32];		/* Pens to use with +d and +v */
 	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
 	int just;			/* Legend placement [TR] */
-	double size;			/* Override symbol size or set length of a line */
+	double scale;			/* Scale all given sizes, including +llength of a line */
+	double length;			/* Set length of a line segment */
 	double gap;			/* Move this much down before placing symbol entry */
 	unsigned int ncols;		/* How many columns to use for symbols */
 };

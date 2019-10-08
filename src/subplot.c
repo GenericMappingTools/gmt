@@ -1184,12 +1184,12 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""};
-		double gap[4], legend_width = 0.0;
+		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 		
-		if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1209,14 +1209,14 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		int k, id;
 		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
 		char legend_justification[4] = {""};
-		double legend_width = 0.0;
+		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 		
-		if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
 				Return (error);

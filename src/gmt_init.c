@@ -8081,10 +8081,10 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 	if (arg == NULL) return GMT_PARSE_ERROR;		/* Must supply the label arg */
 	gmt_M_memset (&(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Initialize */
 
-	if ((c = gmt_first_modifier (GMT, arg, "dfghjnsv"))) {	/* Got modifiers */
+	if ((c = gmt_first_modifier (GMT, arg, "dfghjlnsv"))) {	/* Got modifiers */
 		unsigned int pos = 0, n_errors = 0;
 		char txt[GMT_LEN128] = {""};
-		while (gmt_getmodopt (GMT, 'l', c, "dfghjnsv", &pos, txt, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'l', c, "dfghjlnsv", &pos, txt, &n_errors) && n_errors == 0) {
 			switch (txt[0]) {
 				case 'd': /* Draw horizontal line */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_D;
@@ -8094,8 +8094,9 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 				case 'g': GMT->common.l.item.gap = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Gap before next item */
 				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1);	break;	/* Legend header */
 				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
+				case 'l': GMT->common.l.item.length = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Line length */
 				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);			break;	/* Number of columns */
-				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);	break;	/* Symbol size or line length */
+				case 's': GMT->common.l.item.scale = atof (&txt[1]);			break;	/* Scale all symbols */
 				case 'v': /* Draw vertical line(s) */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_V;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_V], &txt[1], GMT_LEN32-1);
@@ -12758,14 +12759,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
-				double gap[4], legend_width = 0.0;
+				double gap[4], legend_width = 0.0, legend_scale = 1.0;
 				char legend_justification[4] = {""};
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-					if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+					if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 						char cmd[GMT_LEN64] = {""};
 						int error;
 						/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-						snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+						snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
 						if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
 							return NULL;
@@ -15636,7 +15637,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	bool not_PS;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
 	unsigned int pos = 0;
-	double legend_width = 0.0;
+	double legend_width = 0.0, legend_scale = 1.0;
 
  	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No workflow directory set\n");
@@ -15670,7 +15671,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 					continue;
 				}
 			}
-			if (gmt_get_legend_info (API, &legend_width, legend_justification)) {	/* Unplaced legend file */
+			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 				if (n_orig) {	/* Specified figs via gmt figure so must switch to the current figure and update the history */
 					if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Failed to switch to figure%s\n", fig[k].prefix);
@@ -15680,7 +15681,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 					gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 				}
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite", legend_justification, legend_width);
+				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
@@ -15996,7 +15997,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	double size;
 	FILE *fp = NULL;
 
-	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+n<cols>][+s<size>][+v[<pen>]] */
+	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+l<length>][+n<cols>][+s<scale>][+v[<pen>]] */
 	
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
 	if (item == NULL) return;	/* Nothing given */
@@ -16011,9 +16012,11 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create current legend file %s !\n", file);
 			return;
 		}
+		if (item->scale == 0.0) item->scale = 1.0;
 		gmt_just_to_code (API->GMT, item->just, justcode);
 		fprintf (fp, "# Auto-generated legend information file\n");
 		fprintf (fp, "# LEGEND_JUSTIFICATION: %s\n", justcode);
+		fprintf (fp, "# LEGEND_SCALING: %g\n", item->scale);
 		if (!gmt_M_is_zero (item->gap)) {	/* Want to place a gap first, even before any title */
 			fprintf (fp, "G %gi\n", item->gap);
 			gap_done = true;	/* So we dont do it again below */
@@ -16041,7 +16044,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	
 	/* Place the symbol command */
-	size = (item->size > 0.0) ? item->size : S->size_x;
+	size = (item->length > 0.0) ? item->length : S->size_x;
 	if (S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (size > 0.0)	/* Got a line length in inches */
 			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);
@@ -16058,13 +16061,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	fclose (fp);
 }
 
-bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, char justification[]) {
+bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[]) {
 	/* Determine if there is a hidden legend file that has not been placed */
 	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""};
 	size_t L, N_max = 0;
 	double W, W_max = 0.0;
 	FILE *fp = NULL;
 
+	*scale = 1.0;	/* Default scaling */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* This is a modern mode only feature */
 	if (!gmt_legend_file (API, file)) return false;			/* There is no legend file in the scope */
 	if ((fp = fopen (file, "r")) == NULL) {	/* Unable to open for reading */
@@ -16075,6 +16079,8 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, char justifica
 	while (fgets (file, PATH_MAX, fp)) {	/* Recycle the array file to read the records here */
 		if (strstr (file, "# LEGEND_JUSTIFICATION:"))	/* Need to override the default justification */
 			sscanf (&file[2], "%*s %s\n", justification);
+		else if (strstr (file, "# LEGEND_SCALING:"))	/* Need to override the default justification */
+			sscanf (&file[2], "%*s %lf\n", scale);
 		if (file[0] != 'S') continue;	/* Only examine symbol requests */
 		sscanf (file, "%*s %*s %*s %s %*s %*s %*s %[^\n]\n", size, label);
 		if ((L = strlen (label)) > N_max) N_max = L;
@@ -16082,7 +16088,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, char justifica
 	}
 	fclose (fp);
 	/* Best estimate of legend box width from longest string in the labels */
-	*width = 3.0 * W_max + N_max * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+	*width = 3.0 * (*scale) * W_max + N_max * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 	return true;
 }
 
