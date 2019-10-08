@@ -1705,7 +1705,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 #endif
 	}
 	
-	//if (PSL->internal.fp == NULL) PSL->internal.fp = psl_fp;
+	if (PSL->internal.fp == NULL) PSL->internal.fp = psl_fp;
 	
 	PSL_setorigin (PSL, shrink[XLO], shrink[YLO], 0.0, PSL_FWD);	/* Undo any damage for adjustments due to subplot set -C */
 
