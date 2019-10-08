@@ -1,35 +1,37 @@
-REM             GMT EXAMPLE 40
+REM               GMT EXAMPLE 40
 REM
 REM Purpose:      Illustrate line simplification and area calculations
-REM GMT progs:    psbasemap, pstext, psxy, gmtsimplify, gmtspatial
-REM DOS calls:	  gawk, del
+REM GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial, subplot
 REM
 
-echo GMT EXAMPLE 40
-set ps=example_40.ps
+gmt begin ex40
+	gmt spatial @GSHHS_h_Australia.txt -fg -Qk > centroid.txt
+	gmt spatial @GSHHS_h_Australia.txt -fg -Qk | gawk "{printf \"Full area = %%.0f km@+2@+\n\", $3}" > area.txt
 
-gmt spatial @GSHHS_h_Australia.txt -fg -Qk > centroid.txt
-gmt psbasemap -R112/154/-40/-10 -JM5.5i -P -K -B20 -BWSne+g240/255/240 -Xc > %ps%
-gmt psxy @GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K >> %ps%
-gmt psxy @GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K >> %ps%
-gmt simplify @GSHHS_h_Australia.txt -T500k > T500k.txt
-gmt spatial @GSHHS_h_Australia.txt -fg -Qk | gawk "{printf 'Full area = %.0f km@+2@+\n', $3}" > area.txt
-gmt spatial T500k.txt -fg -Qk | awk '{printf "Reduced area = %.0f km@+2@+\n", $3}' > area_T500k.txt
-gmt psxy -R -J -O -K -W1p,blue T500k.txt >> %ps%
-gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> %ps%
-echo T = 500 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> %ps%
-gmt pstext -R -J -O -K area.txt -F+f14p+cCM >> %ps%
-gmt pstext -R -J -O -K area_T500k.txt -F+f14p+cLB -Dj0.2i >> %ps%
-gmt psbasemap -R -J -O -K -B20+lightgray -BWsne+g240/255/240 -Y4.7i >> %ps%
-gmt psxy @GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K >> %ps%
-gmt psxy @GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K >> %ps%
-gmt simplify @GSHHS_h_Australia.txt -T100k > T100k.txt
-gmt spatial T100k.txt -fg -Qk | gawk "{printf 'Reduced area = %.0f km@+2@+\n', $3}" > area_T100k.txt
-gmt psxy -R -J -O -K -W1p,blue T100k.txt >> %ps%
-gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> %ps%
-echo T = 100 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> %ps%
-gmt pstext -R -J -O -K area.txt -F+f14p+cCM >> %ps%
-gmt pstext -R -J -O -K area_T100k.txt -F+f14p+cLB -Dj0.2i >> %ps%
-gmt psxy -R -J -O -T >> %ps%
-REM Clean up
-del centroid.txt area*.txt T*.txt
+	gmt subplot begin 2x1 -Fs5.5i/5i -R112/154/-40/-10 -JM5.5i
+		gmt subplot set 0
+		gmt basemap -B20+lightgray -BWsne+g240/255/240
+		gmt plot @GSHHS_h_Australia.txt -Wfaint -G240/240/255
+		gmt plot @GSHHS_h_Australia.txt -Sc0.01c -Gred
+		gmt simplify @GSHHS_h_Australia.txt -T100k > T100k.txt
+		gmt spatial T100k.txt -fg -Qk | gawk "{printf \"Reduced area = %%.0f km@+2@+\n\", $3}" > area_T100k.txt
+		gmt plot -W1p,blue T100k.txt
+		gmt plot -Sx0.3i -W3p centroid.txt
+		gmt text -Dj0.1i/0.1i -F+cLT+jTL+f18p+t"T = 100 km"
+		gmt text area.txt -F+f14p+cCM
+		gmt text area_T100k.txt -F+f14p+cLB -Dj0.2i
+
+		gmt subplot set 1
+		gmt basemap -B20+lightgray -BWSne+g240/255/240
+		gmt plot @GSHHS_h_Australia.txt -Wfaint -G240/240/255
+		gmt plot @GSHHS_h_Australia.txt -Sc0.01c -Gred
+		gmt simplify @GSHHS_h_Australia.txt -T500k > T500k.txt
+		gmt spatial T500k.txt -fg -Qk | gawk "{printf \"Reduced area = %%.0f km@+2@+\n\", $3}" > area_T500k.txt
+		gmt plot -W1p,blue T500k.txt
+		gmt plot -Sx0.3i -W3p centroid.txt
+		gmt text -Dj0.1i/0.1i -F+cLT+jTL+f18p+t"T = 500 km"
+		gmt text area.txt -F+f14p+cCM
+		gmt text area_T500k.txt -F+f14p+cLB -Dj0.2i
+	gmt subplot end
+	del centroid.txt area*.txt T*.txt
+gmt end show

@@ -3,7 +3,7 @@ REM DOS batch script to run all GMT examples (DOS versions).
 REM
 
 REM Set GMT_END_SHOW to off to disable automatic display of the plots
-REM setx GMT_END_SHOW off
+REM set GMT_END_SHOW=off
 
 echo OFF
 echo Loop over all examples and run each job

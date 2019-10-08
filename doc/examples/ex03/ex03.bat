@@ -1,54 +1,60 @@
-REM
 REM		GMT EXAMPLE 03
 REM
+REM Purpose:	Resample track data, do spectral analysis, and plot
+REM GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
+REM 		spectrum1d, plot, subplot, legend, math
+REM DOS calls:	echo, set, del
 REM
-echo GMT EXAMPLE 03
-set ps=example_03.ps
-REM This version of example 3 is short and ugly.  We simply do not
-REM have access to all the UNIX tools needed. See job03.sh for details.
-REM First, we use "gmt fitcircle" to find the parameters of a great circle
-REM most closely fitting the x,y points in "sat_03.xyg":
-REM We find that center is 330.169/-18.4207 and pole is 52.7452/21.204
+REM This example begins with data files "ship_03.txt" and "sat_03.txt" which
+REM are measurements of a quantity "g" (a "gravity anomaly" which is an
+REM anomalous increase or decrease in the magnitude of the acceleration
+REM of gravity at sea level).  g is measured at a sequence of points "x,y"
+REM which in this case are "longitude,latitude".  The "sat_03.txt" data were
+REM obtained by a satellite and the sequence of points lies almost along
+REM a great circle.  The "ship_03.txt" data were obtained by a ship which
+REM tried to follow the satellite's path but deviated from it in places.
+REM Thus the two data sets are not measured at the same of points,
+REM and we use various GMT tools to facilitate their comparison.
 REM
-REM Now we use "gmt project" to project the data in both sat_03.xyg and ship_03.xyg
-REM into data.pg, where g is the same and p is the oblique longitude around
-REM the great circle.  We use -Q to get the p distance in kilometers, and -S
-REM to sort the output into increasing p values.
-REM
-gmt project  @sat_03.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > sat.pg
-gmt project @ship_03.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > ship.pg
-REM Now we can use sampr in gawk to make a sampling points file for gmt sample1d:
-gmt math -T-1167/1169/1 -N1/0 = samp.x
-REM
-REM Now we can resample the gmt projected satellite data:
-REM
-gmt sample1d sat.pg -Tsamp.x > samp_sat.pg
-REM
-REM For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample it
-REM because of the gaps over 1 km we found.  So we use gmt filter1d and gmt sample1d.  We also use the -E
-REM on gmt filter1d to use the data all the way out to sampr1/sampr2 :
-REM
-gmt filter1d ship.pg -Fm1 -T-1167/1169/1 -E | gmt sample1d -Tsamp.x > samp_ship.pg
-REM Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
-REM data, we do this:
-REM 
-gmt spectrum1d -S256 -D1 -W -C @shipsat_03.txt -T
-REM 
-REM Now we want to plot the spectra.  The following commands will plot the ship and sat 
-REM power in one diagram and the coherency on another diagram,  both on the same page.  
-REM We end by adding a map legends and some labels on the plots.
-REM For that purpose we often use -Jx1i and specify positions in inches directly:
-REM
-gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i -R1/1000/0/1 -P -K -X2.5i -Sc0.07i -Gpurple -Ey+p0.5p -Y1.5i > %ps%
-echo Coherency@+2@+ | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
-gmt psxy -Gred -ST0.07i -O -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity"+g240/255/240 spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey+p0.5p >> %ps%
-gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey+p0.5p >> %ps%
-echo Input Power | gmt pstext -R -Jx1i -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
-echo S 0.1i T 0.07i black - 0.3i Ship > tmp
-echo S 0.1i c 0.07i black - 0.3i Satellite >> tmp
-gmt pslegend -R0/4/0/3.75 -Jx -O -DjBL+w1.2i+o0.25i -F+glightgray+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold tmp >> %ps%
-REM
-del tmp
-del *.pg
-del spectrum.*
-del samp.x
+
+gmt begin ex03
+	gmt set GMT_FFT kiss
+	REM First, we use "gmt fitcircle" to find the parameters of a great circle
+	REM most closely fitting the x,y points in "sat_03.txt":
+	gmt fitcircle @sat_03.txt -L2 -Fm --IO_COL_SEPARATOR=/ > cpos.txt
+	set /p cpos=<cpos.txt
+	gmt fitcircle @sat_03.txt -L2 -Fn --IO_COL_SEPARATOR=/ > ppos.txt
+	set /p ppos=<ppos.txt
+	REM Now we use "gmt project" to project the data in both sat_03.txt and ship_03.txt
+	REM into data.pg, where g is the same and p is the oblique longitude around
+	REM the great circle.  We use -Q to get the p distance in kilometers, and -S
+	REM to sort the output into increasing p values.
+	gmt project  @sat_03.txt -C%cpos% -T%ppos% -S -Fpz -Q > sat.pg
+	gmt project @ship_03.txt -C%cpos% -T%ppos% -S -Fpz -Q > ship.pg
+	gmt info ship.pg sat.pg -I1 -Af -L -C -i0  --IO_COL_SEPARATOR=/ > bounds.txt
+	set /p bounds=<bounds.txt
+	REM Now we can use %bounds% in gmt math to make a sampling points file for gmt sample1d:
+	gmt math -T%bounds%/1 -N1/0 T = samp.x
+	REM Now we can resample the gmt projected satellite data:
+	gmt sample1d sat.pg -Tsamp.x > samp_sat.pg
+	REM For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample
+	REM it because of the gaps > 1 km we found.  So we use gmt filter1d | gmt sample1d.  We also
+	REM use the -E on gmt filter1d to use the data all the way out to bounds :
+	gmt filter1d ship.pg -Fm1 -T%bounds%/1 -E | gmt sample1d -Tsamp.x > samp_ship.pg
+	REM Now to do the cross-spectra, assuming that the ship is the input and the sat is the output
+	REM data, we do this:
+	gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
+	REM Time to plot spectra
+	gmt set FONT_TAG 18p,Helvetica-Bold
+	gmt subplot begin 2x1 -M0.1i -SCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR+o0.1i -BWeSn+g240/255/240 -X2i -Y1.5i
+		gmt subplot set 0,0 -A"Input Power"
+		gmt plot spectrum.xpower -JX-?l/?l -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
+		gmt plot spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p
+		echo S 0.1i T 0.07i red  - 0.3i Ship		> legend.txt
+		echo S 0.1i c 0.07i blue - 0.3i Satellite	>> legend.txt
+		gmt legend legend.txt -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold
+		gmt subplot set 1,0 -A"Coherency@+2@+"
+		gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
+	gmt subplot end
+gmt end show
+del samp* *.pg spectrum.* cpos.txt ppos.txt legend.txt
