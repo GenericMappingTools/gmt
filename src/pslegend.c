@@ -457,6 +457,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
+	
+	FILE *psl_fp = NULL;
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
@@ -503,7 +505,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (gmt_legend_file (API, legend_file, GMT_NOTSET) == 1) {	/* Running modern mode and we have a hidden legend file to read */
+	if (gmt_legend_file (API, legend_file) == 1) {	/* Running modern mode and we have a hidden legend file to read */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing hidden legend specfile %s\n", legend_file);
 		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
 			Return (API->error);
@@ -747,6 +749,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	psl_fp = PSL->internal.fp;	/* Just in case we loose it */
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -1701,6 +1704,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 #endif
 	}
+	
+	//if (PSL->internal.fp == NULL) PSL->internal.fp = psl_fp;
+	
 	PSL_setorigin (PSL, shrink[XLO], shrink[YLO], 0.0, PSL_FWD);	/* Undo any damage for adjustments due to subplot set -C */
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
