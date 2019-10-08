@@ -503,7 +503,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (gmt_legend_file (API, legend_file) == 1) {	/* Running modern mode and we have a hidden legend file to read */
+	if (gmt_legend_file (API, legend_file, GMT_NOTSET) == 1) {	/* Running modern mode and we have a hidden legend file to read */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing hidden legend specfile %s\n", legend_file);
 		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
 			Return (API->error);
 		}

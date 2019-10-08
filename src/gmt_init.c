@@ -12762,7 +12762,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				double gap[4], legend_width = 0.0, legend_scale = 1.0;
 				char legend_justification[4] = {""};
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-					if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+					if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, GMT_NOTSET)) {	/* Unplaced legend file */
 						char cmd[GMT_LEN64] = {""};
 						int error;
 						/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
@@ -15671,7 +15671,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 					continue;
 				}
 			}
-			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, fig[k].ID)) {	/* Unplaced legend file */
 				if (n_orig) {	/* Specified figs via gmt figure so must switch to the current figure and update the history */
 					if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Failed to switch to figure%s\n", fig[k].prefix);
@@ -15951,12 +15951,13 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
+GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file, int fix_fig) {
 	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
 	file[0] = '\0';	/* Initialize the path */
 	gmtlib_get_cpt_level (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
+	if (fix_fig >= 0) fig = fix_fig;	/* Override figure number */
 	/* Set the correct output file name given the CPT level */
 	if (inset)	/* Only one inset may be active at any given time */
 		snprintf (file, PATH_MAX, "%s/gmt.inset.legend", API->gwf_dir);
@@ -15973,9 +15974,9 @@ GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 }
 
 
-int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
+int gmt_legend_file (struct GMTAPI_CTRL *API, char *file, int set_fig) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return 0;	/* Only available in modern mode */
-	set_legend_filename (API, file);
+	set_legend_filename (API, file, set_fig);
 	return (access (file, R_OK) == 0);
 }
 
@@ -16002,7 +16003,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
 	if (item == NULL) return;	/* Nothing given */
 
-	set_legend_filename (API, file);	/* Get the legend filename given current scope */
+	set_legend_filename (API, file, GMT_NOTSET);	/* Get the legend filename given current scope */
 
 	/* OK, do we append or create? */
 	
@@ -16012,7 +16013,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create current legend file %s !\n", file);
 			return;
 		}
-		if (item->scale == 0.0) item->scale = 1.0;
+		if (item->scale == 0.0) item->scale = 1.0;	/* Default scaling */
+		if (item->just == 0) item->just = PSL_TR;	/* Default justification */
 		gmt_just_to_code (API->GMT, item->just, justcode);
 		fprintf (fp, "# Auto-generated legend information file\n");
 		fprintf (fp, "# LEGEND_JUSTIFICATION: %s\n", justcode);
@@ -16061,7 +16063,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	fclose (fp);
 }
 
-bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[]) {
+bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[], int set_fig) {
 	/* Determine if there is a hidden legend file that has not been placed */
 	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""};
 	size_t L, N_max = 0;
@@ -16070,7 +16072,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 
 	*scale = 1.0;	/* Default scaling */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* This is a modern mode only feature */
-	if (!gmt_legend_file (API, file)) return false;			/* There is no legend file in the scope */
+	if (!gmt_legend_file (API, file, set_fig)) return false;			/* There is no legend file in the scope */
 	if ((fp = fopen (file, "r")) == NULL) {	/* Unable to open for reading */
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open file %s for reading\n", file);
 		return false;

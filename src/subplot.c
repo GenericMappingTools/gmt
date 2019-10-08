@@ -1186,7 +1186,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		char legend_justification[4] = {""};
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 		
-		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, GMT_NOTSET)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
@@ -1213,7 +1213,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		FILE *fp = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 		
-		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, GMT_NOTSET)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
