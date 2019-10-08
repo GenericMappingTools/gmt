@@ -5222,8 +5222,12 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 	if (clip) {	/* Set up clip path for this inset */
 		double xc[4], yc[4];
 		/* Adjust for the padding so that clipping matches the panel rectangle which may be larger than inset */
-		xc[0] = xc[3] = rect[XLO] - panel->padding[XLO];	xc[1] = xc[2] = rect[XHI] + panel->padding[XHI];
-		yc[0] = yc[1] = rect[YLO] - panel->padding[YLO];	yc[2] = yc[3] = rect[YHI] + panel->padding[YHI];
+		xc[0] = xc[3] = rect[XLO];	xc[1] = xc[2] = rect[XHI];
+		yc[0] = yc[1] = rect[YLO];	yc[2] = yc[3] = rect[YHI];
+		if (panel) {	/* Adjust for clearance, if any */
+			xc[0] -= panel->padding[XLO]; xc[3] -= panel->padding[XLO];	xc[1] += panel->padding[XHI]; xc[2] += panel->padding[XHI];
+			yc[0] -= panel->padding[YLO]; yc[1] -= panel->padding[YLO];	yc[2] += panel->padding[YHI]; yc[3] += panel->padding[YHI];
+		}
 		PSL_comment (GMT->PSL, "Start of inset clip path\n");
 		PSL_command (GMT->PSL, "clipsave\n");
 		PSL_plotline (GMT->PSL, xc, yc, 4, PSL_MOVE | PSL_CLOSE);	/* Must not close path since first point not given ! */
