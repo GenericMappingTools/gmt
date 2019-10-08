@@ -5128,7 +5128,7 @@ unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	return (outline);
 }
 
-void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
+void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool clip) {
 	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	unsigned int k;
 	double rect[4], dim[3], s;
@@ -5218,6 +5218,16 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
 		panel->width = dim[GMT_X];	panel->height = dim[GMT_Y];
 		if (!panel->clearance) gmt_M_memset (panel->padding, 4, double);	/* No clearance is default for map insets unless actually specified */
 		gmt_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
+	}
+	if (clip) {	/* Set up clip path for this inset */
+		double xc[4], yc[4];
+		xc[0] = xc[3] = rect[XLO];	xc[1] = xc[2] = rect[XHI];
+		yc[0] = yc[1] = rect[YLO];	yc[2] = yc[3] = rect[YHI];
+		PSL_comment (PSL, "Start of inset clip path\n");
+		PSL_command (PSL, "clipsave\n");
+		PSL_plotline (PSL, xc, yc, 4, PSL_MOVE | PSL_CLOSE_INTERIOR);	/* Must not close path since first point not given ! */
+		PSL_command (PSL, "clip N\n");
+		PSL_command (PSL, "/PSL_inset_clip 1 def\n");	/* Restore graphics state to what it was before the map inset */
 	}
 	if (B->translate)	/* Translate the plot origin */
 		PSL_setorigin (GMT->PSL, rect[XLO], rect[YLO], 0.0, PSL_FWD);

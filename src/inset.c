@@ -60,6 +60,9 @@ struct INSET_CTRL {
 		bool active;
 		double margin[4];
 	} M;
+	struct N {	/* -N  */
+		bool active;
+	} N;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -161,6 +164,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 					for (k = 0; k < 4; k++) Ctrl->M.margin[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				}
 				break;
+			case 'N':	/* Turn off clipping  */
+				Ctrl->N.active = true;
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -260,7 +266,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
 		PSL_command (PSL, "V %% Begin inset\n");
 
-		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset background */
+		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
 		
@@ -299,6 +305,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		 * and finally remove the inset information file */
 		char tag[GMT_LEN16] = {""};
 			
+		PSL_command (PSL, "PSL_inset_clip 1 eq {cliprestore /PSL_inset_clip 0 def} if\n");	/* Restore graphics state to what it was before the map inset */
 		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
 
 		/* Remove the inset history file */
