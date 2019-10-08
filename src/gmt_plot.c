@@ -5223,12 +5223,15 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 		double xc[4], yc[4];
 		xc[0] = xc[3] = rect[XLO];	xc[1] = xc[2] = rect[XHI];
 		yc[0] = yc[1] = rect[YLO];	yc[2] = yc[3] = rect[YHI];
-		PSL_comment (PSL, "Start of inset clip path\n");
-		PSL_command (PSL, "clipsave\n");
-		PSL_plotline (PSL, xc, yc, 4, PSL_MOVE | PSL_CLOSE_INTERIOR);	/* Must not close path since first point not given ! */
-		PSL_command (PSL, "clip N\n");
-		PSL_command (PSL, "/PSL_inset_clip 1 def\n");	/* Restore graphics state to what it was before the map inset */
+		PSL_comment (GMT->PSL, "Start of inset clip path\n");
+		PSL_command (GMT->PSL, "clipsave\n");
+		PSL_plotline (GMT->PSL, xc, yc, 4, PSL_MOVE | PSL_CLOSE);	/* Must not close path since first point not given ! */
+		PSL_command (GMT->PSL, "clip N\n");
+		PSL_command (GMT->PSL, "/PSL_inset_clip 1 def\n");	/* Remember that inset clipping is on */
 	}
+	else
+		PSL_command (GMT->PSL, "/PSL_inset_clip 0 def\n");	/* No inset clipping set */
+	
 	if (B->translate)	/* Translate the plot origin */
 		PSL_setorigin (GMT->PSL, rect[XLO], rect[YLO], 0.0, PSL_FWD);
 }
