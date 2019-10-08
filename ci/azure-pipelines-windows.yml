@@ -118,6 +118,12 @@ steps:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
   condition: eq(variables['TEST'], true)
 
+- script: |
+    cd doc/examples
+    set GMT_END_SHOW=off && call do_examples.bat
+  displayName: Run DOS batch examples
+  condition: eq(variables['TEST'], true)
+
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2
   inputs:
