@@ -416,7 +416,7 @@ int GMT_legend (void *V_API, int mode, void *args) {
 
 int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
-	unsigned int tbl, pos, first = 0;
+	unsigned int tbl, pos, first = 0, ID;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false;
 	bool drawn = false, b_cpt = false, C_is_active = false;
@@ -432,6 +432,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""};
 	char txtcolor[GMT_LEN256] = {""}, def_txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[PATH_MAX] = {""};
 	char path[PATH_MAX] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
+	char *plot_points[2] = {"psxy", "plot"}, *plot_text[2] = {"pstext", "text"};
 	char *line = NULL, string[GMT_STR16] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
 	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
@@ -504,6 +505,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 	}
 
+	ID = GMT->current.setting.run_mode;	/* Use as index to arrays with correct module names for classic [0] or modern [1] */
+	
 	/* First attempt to compute the legend height */
 
 	one_line_spacing = Ctrl->D.spacing * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
@@ -519,7 +522,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 				/* Data record to process */
 
-				if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_pstext] */
+				if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_text] */
 					flush_paragraph = false;
 					column_number = 0;
 				}
@@ -790,7 +793,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	gap = Ctrl->C.off[GMT_Y];	/* This gets reset to 0 once we finish the first printable row */
 
 	/* Tech, note: Using GMT->current.setting.io_seg_marker[GMT_IN] instead of GMT_OUT when writing data records as segment records
-	 * since these will become input to psxy and psxy will use the GMT_IN marker to identify these as header records. */
+	 * since these will become input to plot, and plot will use the GMT_IN marker to identify these as header records. */
 
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
@@ -800,7 +803,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 				/* Data record to process */
 
-				if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_pstext] */
+				if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_text] */
 					flush_paragraph = false;
 					column_number = 0;
 				}
@@ -1155,7 +1158,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
-					case 'P':	/* Paragraph text header: P paragraph-mode-header-for-pstext */
+					case 'P':	/* Paragraph text header: P paragraph-mode-header-for-text */
 						if (!did_old) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
@@ -1568,8 +1571,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sf0.1i %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: FRONT: gmt psxy %s\n", buffer);
-		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: FRONT: gmt %s %s\n", plot_points[ID], buffer);
+		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
@@ -1591,8 +1594,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sqn1 %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: QLINE: gmt psxy %s\n", buffer);
-		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: QLINE: gmt %s %s\n", plot_points[ID], buffer);
+		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
@@ -1613,10 +1616,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D[SYM], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		/* Because the sizes internally are in inches we must tell psxy that inch is the current length unit */
+		/* Because the sizes internally are in inches we must tell plot that inch is the current length unit */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: SYM: gmt psxy %s\n", buffer);
-		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbols */
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: SYM: gmt %s %s\n", plot_points[ID], buffer);
+		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbols */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
@@ -1638,8 +1641,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: TXT: gmt pstext %s\n", buffer);
-		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbol labels */
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: TXT: gmt %s %s\n", plot_text[ID], buffer);
+		if (GMT_Call_Module (API, plot_text[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbol labels */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
@@ -1665,8 +1668,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+a+f+j %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: PAR: gmt pstext %s\n", buffer);
-		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot paragraphs */
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: PAR: gmt %s %s\n", plot_text[ID], buffer);
+		if (GMT_Call_Module (API, plot_text[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot paragraphs */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
