@@ -22,7 +22,7 @@
  * Brief synopsis: gmt inset determines dimensions and offsets for a figure inset.
  * It has two modes of operation:
  *	1) Initialize a new inset, which determines dimensions and sets parameters:
- *	   gmt inset begin -D<params> [-F<panel>] [-V]
+ *	   gmt inset begin -D<params> [-F<panel>] [-M<margins>] [-N] [-V]
  *	   Sugsequent plot calls will be placed in the inset window.
  *	2) Exit inset mode, which resets plot origin and previous -R -J parameters:
  *	   gmt inset end [-V]
@@ -60,7 +60,7 @@ struct INSET_CTRL {
 		bool active;
 		double margin[4];
 	} M;
-	struct N {	/* -N  */
+	struct N {	/* -N  (no clip) */
 		bool active;
 	} N;
 };
@@ -84,7 +84,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -94,6 +94,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for space around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -134,6 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 				Ctrl->D.active = true;
 				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				break;
+
 			case 'F':
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
@@ -164,6 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 					for (k = 0; k < 4; k++) Ctrl->M.margin[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				}
 				break;
+
 			case 'N':	/* Turn off clipping  */
 				Ctrl->N.active = true;
 				break;
@@ -182,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 		}
 	}
-	else {	/* gmt inset end was given, when -D -F -M are not allowed */
+	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -D: Not valid for gmt inset end.\n");
 			n_errors++;
@@ -193,6 +196,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 		}
 		if (Ctrl->M.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
+		if (Ctrl->N.active) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -N: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 	}

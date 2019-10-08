@@ -5221,16 +5221,17 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 	}
 	if (clip) {	/* Set up clip path for this inset */
 		double xc[4], yc[4];
-		xc[0] = xc[3] = rect[XLO];	xc[1] = xc[2] = rect[XHI];
-		yc[0] = yc[1] = rect[YLO];	yc[2] = yc[3] = rect[YHI];
+		/* Adjust for the padding so that clipping matches the panel rectangle which may be larger than inset */
+		xc[0] = xc[3] = rect[XLO] - panel->padding[XLO];	xc[1] = xc[2] = rect[XHI] + panel->padding[XHI];
+		yc[0] = yc[1] = rect[YLO] - panel->padding[YLO];	yc[2] = yc[3] = rect[YHI] + panel->padding[YHI];
 		PSL_comment (GMT->PSL, "Start of inset clip path\n");
 		PSL_command (GMT->PSL, "clipsave\n");
 		PSL_plotline (GMT->PSL, xc, yc, 4, PSL_MOVE | PSL_CLOSE);	/* Must not close path since first point not given ! */
 		PSL_command (GMT->PSL, "clip N\n");
 		PSL_command (GMT->PSL, "/PSL_inset_clip 1 def\n");	/* Remember that inset clipping is on */
 	}
-	else
-		PSL_command (GMT->PSL, "/PSL_inset_clip 0 def\n");	/* No inset clipping set */
+	else	/* No inset clipping set */
+		PSL_command (GMT->PSL, "/PSL_inset_clip 0 def\n");
 	
 	if (B->translate)	/* Translate the plot origin */
 		PSL_setorigin (GMT->PSL, rect[XLO], rect[YLO], 0.0, PSL_FWD);
@@ -5542,7 +5543,7 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 }
 
 void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int mode, struct GMT_MAP_PANEL *P) {
-	/* Draw a recrangular backpanel behind things like logos, scales, legends, images.
+	/* Draw a rectangular backpanel behind things like logos, scales, legends, images.
 	 * Here, (x,y) is the center-point of the panel.
 	 * mode is a bit flag that can be 1,2, or 3:
 	 * mode = 1.  Lay down fills for background (if any fills) but no outlines
