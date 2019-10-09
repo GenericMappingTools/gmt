@@ -870,8 +870,15 @@ GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 	if (Ctrl->I.active) fclose (Ctrl->I.fp);
 }
 
+GMT_LOCAL bool is_comment (char *line) {
+	unsigned int k = 0;
+	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
+	return (line[k] == '#') ? true : false;		/* Will return true for lines starting with some tabs, then # */
+}
+
 GMT_LOCAL bool is_gmtbegin (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and begin... */
+	if (is_comment (line)) return false;	/* Must void finding # gmt begin */
 	if (strstr (line, "gmt ") && strstr (line, " begin"))
 		return true;
 	else
@@ -880,6 +887,7 @@ GMT_LOCAL bool is_gmtbegin (char *line) {
 
 GMT_LOCAL bool is_gmtend (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and end... */
+	if (is_comment (line)) return false;	/* Must void finding # gmt end */
 	if (strstr (line, "gmt ") && strstr (line, " end"))
 		return true;
 	else
@@ -888,6 +896,7 @@ GMT_LOCAL bool is_gmtend (char *line) {
 
 GMT_LOCAL bool is_gmtendshow (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and end and show... */
+	if (is_comment (line)) return false;	/* Must void finding # gmt end show */
 	if (strstr (line, "gmt ") && strstr (line, " end ") && strstr (line, " show"))
 		return true;
 	else
