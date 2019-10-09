@@ -334,6 +334,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
+		gmt_reload_history (API->GMT);
 	}
 	
 	gmt_plotend (GMT);

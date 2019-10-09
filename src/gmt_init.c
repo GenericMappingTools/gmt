@@ -2570,7 +2570,7 @@ void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
+int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	int id;
 	size_t len = strlen ("BEGIN GMT " GMT_PACKAGE_VERSION);
 	bool done = false, process = false;
@@ -2671,7 +2671,6 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 			GMT->current.setting.history = GMT->current.setting.history_orig;
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 	}
-
 	/* This is called once per GMT Session by gmt_end via GMT_Destroy_Session.
 	 * It writes out the known shorthands to the gmt.history file
 	 */
@@ -2725,10 +2724,18 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
+
+/*! . */
 GMT_LOCAL void gmtinit_reset_history (struct GMT_CTRL *GMT) { 
 	for (int id = 0; id < GMT_N_UNIQUE; id++) {
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);
 	}
+}
+
+/*! . */
+void gmt_reload_history (struct GMT_CTRL *GMT) { 
+	gmtinit_reset_history (GMT);	/* First remove our memory */
+	gmtinit_get_history (GMT);	/* Get the latest history for current scope */
 }
 
 /*! . */

@@ -459,8 +459,6 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 	
-	FILE *psl_fp = NULL;
-
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -688,7 +686,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						column_number++;
 						sscanf (line, "%*s %*s %*s %s", size);
 						/* Find the largest symbol size specified */
-						x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+						x = gmt_M_to_inch (GMT, size);
 						if (x > def_size) def_size = x;
 						break;
 
@@ -752,7 +750,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	psl_fp = PSL->internal.fp;	/* Just in case we loose it */
+
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -813,7 +811,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	gap = Ctrl->C.off[GMT_Y];	/* This gets reset to 0 once we finish the first printable row */
 
 	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
-		def_size = 0.196850393701;	/* In inches */
+		def_size = 0.5 / 2.54;	/* In inches */
 
 	/* Tech, note: Using GMT->current.setting.io_seg_marker[GMT_IN] instead of GMT_OUT when writing data records as segment records
 	 * since these will become input to plot, and plot will use the GMT_IN marker to identify these as header records. */
@@ -1707,8 +1705,6 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 #endif
 	}
-	
-	if (PSL->internal.fp == NULL) PSL->internal.fp = psl_fp;
 	
 	PSL_setorigin (PSL, shrink[XLO], shrink[YLO], 0.0, PSL_FWD);	/* Undo any damage for adjustments due to subplot set -C */
 
