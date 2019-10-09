@@ -1208,7 +1208,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	else {	/* SUBPLOT_END */
 		int k, id;
 		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
-		char legend_justification[4] = {""};
+		char legend_justification[4] = {""}, Jstr[3] = {"J"};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
 		struct GMT_SUBPLOT *P = NULL;
@@ -1278,17 +1278,21 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		
 		/* Set -R and J to match subplot frame so later calls, e.g., colorbar, can use -DJ */
 		/* First set R (i.e., RP for plotting) */
-		id = gmt_get_option_id (0, "R");		/* The -RP history item */
+		id = gmt_get_option_id (0, "R");		/* The -RP history index */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
 		sprintf (Rtxt, "0/%.16g/0/%.16g", P->dim[GMT_X], P->dim[GMT_Y]);
-		GMT->init.history[id] = strdup (Rtxt);
-		/* Now set -Jx1i */
+		GMT->init.history[id] = strdup (Rtxt);	/* Update with the dimension of the whole subplot fiture */
+		/* Now add -Jx1i to the history */
 		id = gmt_get_option_id (0, "J");	/* Top level -J history */
-		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
-		GMT->init.history[id] = strdup ("x");	/* Just the flavor */
+		if (id > 0 && GMT->init.history[id]) {	/* Should be an entry but we check id nevertheless */
+			Jstr[1] = GMT->init.history[id][0];	/* The acual -J? that was used in the subplot */
+			gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
+			GMT->init.history[id] = strdup ("x");	/* Just the flavor */
+			if ((id = gmt_get_option_id (id + 1, Jstr)) >= 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove the subplot -J? entry */
+		}
 		id = gmt_get_option_id (id, "Jx");	/* Find Jx history, if any */
-		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
-		GMT->init.history[id] = strdup ("x1i");
+		if (id > 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
+		GMT->init.history[id] = strdup ("x1i");	/* Add a scale of 1 inch per unit to match the inches we gave in the -R history */
 		
 		gmt_M_memset (&GMT->current.plot.panel, 1, struct GMT_SUBPLOT);	/* Wipe that smile off your face */
 	}
