@@ -16070,13 +16070,17 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 
 	/* Place the symbol command */
 	if (S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
+		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (size > 0.0)	/* Got a line length in inches */
 			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);
 		else	/* Punt to the legend module */
 			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), item->label);
 	}
-	else	/* Regular symbol */
+	else {	/* Regular symbol */
+		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
+		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+	}
 	
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
 		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);		/* Draw horizontal line, if requested, after last symbol */
