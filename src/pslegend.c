@@ -408,9 +408,6 @@ GMT_LOCAL bool new_fontsyntax (struct GMT_CTRL *GMT, char *word1, char *word2) {
 #define FONT_HEIGHT(font_id) (GMT->session.font[font_id].height)
 #define FONT_HEIGHT_LABEL (GMT->session.font[GMT->current.setting.font_label.id].height)
 
-#define DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '*' */
-#define DX2_MUL 2.0	/* Default offset from margin to start of label if given as '*' */
-
 #define SYM 	0
 #define FRONT	1
 #define QLINE	2
@@ -1237,7 +1234,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						}
 						else if (!strcmp (txt_a, "-")) {	/* Automatic margin offset */
-							off_ss = DX1_MUL * Ctrl->S.scale * def_size;
+							off_ss = GMT_LEGEND_DX1_MUL * Ctrl->S.scale * def_size;
 							x_off = col_left_x + x_off_col[column_number];
 						}
 						else {	/* Gave a specific offset */
@@ -1245,7 +1242,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							x_off = col_left_x + x_off_col[column_number];
 						}
 						if (!strcmp (txt_b, "-"))	/* Automatic label offset */
-							off_tt = DX2_MUL * Ctrl->S.scale * def_size;
+							off_tt = GMT_LEGEND_DX2_MUL * Ctrl->S.scale * def_size;
 						else	/* Gave a specific offset */
 							off_tt = gmt_M_to_inch (GMT, txt_b);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */

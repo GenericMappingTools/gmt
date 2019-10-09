@@ -16111,8 +16111,8 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 		if (size[0] != '-' && (W = gmt_M_to_inch (API->GMT, size)) > W_max) W_max = W;
 	}
 	fclose (fp);
-	/* Best estimate of legend box width from longest string in the labels */
-	*width = 3.0 * (*scale) * W_max + N_max * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+	/* Best estimate of legend box width from longest string in the labels and space needed for symbols, plus 5 % */
+	*width = GMT_LEGEND_DX2_MUL * (*scale) * W_max + N_max * 1.05 * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 	return true;
 }
 
