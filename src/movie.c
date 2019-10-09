@@ -876,10 +876,15 @@ GMT_LOCAL bool is_comment (char *line) {
 	return (line[k] == '#') ? true : false;		/* Will return true for lines starting with some tabs, then # */
 }
 
+GMT_LOCAL bool is_not_insetsub (char *line) {
+	/* Return true if neither inset nor subplot strings are found */
+	return (strstr (line, "inset") || strstr (line, "subplot")) ? false : true;
+}
+
 GMT_LOCAL bool is_gmtbegin (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and begin... */
-	if (is_comment (line)) return false;	/* Must avoid finding # gmt begin */
-	if (strstr (line, "gmt ") && strstr (line, " begin"))
+	if (is_comment (line)) return false;	/* Must avoid finding "# gmt begin" or "gmt inset begin" or "gmt subplot begin" */
+	if (strstr (line, "gmt ") && strstr (line, " begin") && is_not_insetsub (line))
 		return true;
 	else
 		return false;
@@ -887,8 +892,8 @@ GMT_LOCAL bool is_gmtbegin (char *line) {
 
 GMT_LOCAL bool is_gmtend (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and end... */
-	if (is_comment (line)) return false;	/* Must avoid finding # gmt end */
-	if (strstr (line, "gmt ") && strstr (line, " end"))
+	if (is_comment (line)) return false;	/* Must avoid finding "# gmt end" or "gmt inset end" or "gmt subplot end" */
+	if (strstr (line, "gmt ") && strstr (line, " end") && is_not_insetsub (line))
 		return true;
 	else
 		return false;
