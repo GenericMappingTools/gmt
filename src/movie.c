@@ -878,7 +878,7 @@ GMT_LOCAL bool is_comment (char *line) {
 
 GMT_LOCAL bool is_gmtbegin (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and begin... */
-	if (is_comment (line)) return false;	/* Must void finding # gmt begin */
+	if (is_comment (line)) return false;	/* Must avoid finding # gmt begin */
 	if (strstr (line, "gmt ") && strstr (line, " begin"))
 		return true;
 	else
@@ -887,7 +887,7 @@ GMT_LOCAL bool is_gmtbegin (char *line) {
 
 GMT_LOCAL bool is_gmtend (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and end... */
-	if (is_comment (line)) return false;	/* Must void finding # gmt end */
+	if (is_comment (line)) return false;	/* Must avoid finding # gmt end */
 	if (strstr (line, "gmt ") && strstr (line, " end"))
 		return true;
 	else
@@ -896,7 +896,7 @@ GMT_LOCAL bool is_gmtend (char *line) {
 
 GMT_LOCAL bool is_gmtendshow (char *line) {
 	/* To handle the cases where there may be more than one space between gmt and end and show... */
-	if (is_comment (line)) return false;	/* Must void finding # gmt end show */
+	if (is_comment (line)) return false;	/* Must avoid finding # gmt end show */
 	if (strstr (line, "gmt ") && strstr (line, " end ") && strstr (line, " show"))
 		return true;
 	else
