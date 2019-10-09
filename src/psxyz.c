@@ -885,7 +885,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
-		else if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.length > 0.0)) {
+		else if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.size > 0.0)) {
 			/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 			gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 		}
