@@ -1237,7 +1237,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						}
 						else if (!strcmp (txt_a, "-")) {	/* Automatic margin offset */
-							off_ss = DX1_MUL * def_size;
+							off_ss = DX1_MUL * Ctrl->S.scale * def_size;
 							x_off = col_left_x + x_off_col[column_number];
 						}
 						else {	/* Gave a specific offset */
@@ -1245,7 +1245,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							x_off = col_left_x + x_off_col[column_number];
 						}
 						if (!strcmp (txt_b, "-"))	/* Automatic label offset */
-							off_tt = DX2_MUL * def_size;
+							off_tt = DX2_MUL * Ctrl->S.scale * def_size;
 						else	/* Gave a specific offset */
 							off_tt = gmt_M_to_inch (GMT, txt_b);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
