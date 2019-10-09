@@ -1059,6 +1059,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				do_indexed = true;	/* Now it will be RGB */
 				gray_only = false;	/* True technocolor, baby */
 			}
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "Indexed image without colormap. Can't proceed.\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 
