@@ -1658,6 +1658,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
+			GMT->PSL->internal.call_level++;	/* Must increment here since PSL_beginplot not called, and PSL_endplot will decrement */
 			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
 			if (PSL_fclose (GMT->PSL)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to close hidden PS file %s!\n", ps_names[0]);

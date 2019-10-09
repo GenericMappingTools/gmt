@@ -326,7 +326,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
-	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset);
+	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

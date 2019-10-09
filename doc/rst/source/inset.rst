@@ -23,6 +23,7 @@ Synopsis (begin mode)
 |-D|\ *inset-box*
 [ |-F|\ *box* ]
 [ |-M|\ *margins* ]
+[ |-N| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -92,6 +93,11 @@ Optional Arguments
     within the inner region only. The margins can be a single value, a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
     separate left, right, bottom, and top margins) [no margins].
+
+.. _inset_begin-N:
+
+**-N**
+    Do NOT clip features extruding outside map inset boundaries [Default will clip]. 
 
 .. _inset_begin-V:
 
