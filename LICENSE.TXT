@@ -27,7 +27,7 @@ The GMT package is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 In particular, the authors or any other individuals involved in the design and
-maintenance of GMT are NOT responsible for any damage that may follow
-from correct or incorrect use of these programs.
+maintenance of GMT, as well as their employers, are NOT responsible
+for any damage that may follow from correct or incorrect use of these programs.
 It is provided with no support and without obligation on the part of the authors,
 to assist in its use, correction, modification, or enhancement.
