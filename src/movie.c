@@ -878,9 +878,10 @@ GMT_LOCAL bool line_is_a_comment (char *line) {
 
 GMT_LOCAL bool is_gmt_module (char *line, char *module) {
 	/* Robustly identify the command "gmt begin" */
-	char word[GMT_LEN64] = {""};
+	char word[GMT_LEN128] = {""};
 	unsigned int pos = 0;
 	size_t L;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt begin */
 	/* To handle cases where there may be more than one space between gmt and module */
 	if (line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
 	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
@@ -892,8 +893,9 @@ GMT_LOCAL bool is_gmt_module (char *line, char *module) {
 }
 
 GMT_LOCAL bool is_gmt_end_show (char *line) {
-	char word[GMT_LEN64] = {""};
+	char word[GMT_LEN128] = {""};
 	unsigned int pos = 0;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */
 	/* Robustly identify the command "gmt end show" */
 	/* To handle cases where there may be more than one space between gmt and module */
 	if (line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
@@ -1141,7 +1143,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		set_script (fp, Ctrl->In.mode);				/* Write 1st line of a script */
+		set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Preflight script");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
