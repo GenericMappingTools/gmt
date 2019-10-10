@@ -291,7 +291,7 @@ GMT_LOCAL void sprod(double *x, double *y, double *scal, double *r1, double *r2)
 
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL double enorm8(double *a) {
-	/* compute euclidian norm of a vector (of length 3) */
+	/* compute euclidean norm of a vector (of length 3) */
 	return sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
 }
 
