@@ -478,7 +478,7 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 	get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
 
 	dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
-	dr2 = dx2 + dy2;				/* Origial radius squared */
+	dr2 = dx2 + dy2;				/* Original radius squared */
 	dr2_fudge = dr2 + par[1];	/* Fudged radius squared (par[1] holds delta_r^2) */
 	if (dr2 == 0.0)	/* Since r will be fudged away from origin we decide dr2_fudge should fall along N45E trend */
 		dx2_fudge = dy2_fudge = dxdy_fudge = 0.5 * par[1];	/* Squared quantities */
