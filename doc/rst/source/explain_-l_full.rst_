@@ -14,6 +14,8 @@
     previous to current horizontal line [no vertical line], use **+w** to set legend width [auto], and use **+x**\ *scale* to resize all symbol
     and length sizes in the legend.  Default pen is given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`.
     Note that **+h**, **+j**, **+w**, and **+x** will only take effect if given on the very first **-l** option for a plot.
+    The **+n** modifier, if used on the first **-l** option, affects the legend width (unless set via **+w**); otherwise it
+    just subdivides the available width among the specified columns.
     The automatic legend has a fixed white background with a solid black pen outline and offset 0.2 cm from the map frame.
     The modifiers largely reflect legend codes described in :doc:`legend`, which provide more details and
     customization.
