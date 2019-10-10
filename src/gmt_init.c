@@ -15986,7 +15986,12 @@ GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return 0;	/* Only available in modern mode */
 	set_legend_filename (API, file);
-	return (access (file, R_OK) == 0);
+	if (access (file, R_OK) == 0)
+		return true;
+	else {	/* No such file, wipe filename */
+		file[0] = '\0';
+		return false;
+	}
 }
 
 GMT_LOCAL void draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, struct GMT_LEGEND_ITEM *item, unsigned int code) {
