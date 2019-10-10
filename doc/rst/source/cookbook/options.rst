@@ -2,7 +2,7 @@ Standardized command line options
 =================================
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 24 switches in
+to setting the data region, the map projection, etc. The switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -44,6 +44,8 @@ importance (some are used a lot more than others).
 | **-i**   | Specify which input columns to read                                |
 +----------+--------------------------------------------------------------------+
 | **-j**   | Specify how spherical distances should be computed                 |
++----------+--------------------------------------------------------------------+
+| **-l**   | Add a legend entry for the symbol or line being plotted            |
 +----------+--------------------------------------------------------------------+
 | **-n**   | Specify grid interpolation settings                                |
 +----------+--------------------------------------------------------------------+
@@ -1022,6 +1024,42 @@ When **-b** is used to indicate binary data the **-h** takes on a
 slightly different meaning. Now, the *n_recs* argument is taken to mean
 how many *bytes* should be skipped (on input) or padded with the space
 character (on output).
+
+.. _option_-l:
+
+Setting automatic legend entries: The **-l** option
+---------------------------------------------------
+
+Map or plot legends are created by :doc:`legend` and normally this module
+will read a *specfile* that outlines how the legend should look.  You can
+make very detailed and complicated legends by mixing a variety of items,
+such as symbol, free text, colorbars, scales, images, and more.  Yet, for
+the vast majority of plots displaying symbols or lines a simple legend will suffice.
+The **-l** option is used to automatically build the *specfile* as we plot
+the various layers that will make up our illustration.  Apart from setting
+the label string that goes with the current symbol or line, you can select
+from a series of modifiers that mirror the effect of control codes normally
+added to the *specfile* by hand.  For instance, a simple plot with two
+symbols can obtain a legend by using this option and modifiers and is shown
+in Figure :ref:`Auto Legend <auto_legend>`::
+
+   gmt begin fruit
+     gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
+     gmt plot @Table_5_11.txt -St0.35c -Gorange -B -BWStr -lOranges
+     gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
+   gmt end show
+
+As the script shows, when no *specfile* is given to :doc:`legend` then we
+look for the automatically generated on in the session directory.
+
+.. _auto_legend:
+
+.. figure:: /_images/GMT_autolegend.*
+   :width: 500 px
+   :align: center
+
+   Each of the two :doc:`plot` commands use **-l** to add a symbol to the
+   auto legend; the first also sets a legend header of given size and draws a horizontal line.
 
 .. _option_-i:
 

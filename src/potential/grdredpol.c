@@ -221,11 +221,11 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 
 	upper_ny = Ctrl->S.n_rows+i_data_start;
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
-		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
-		jee = Ctrl->S.n_columns + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
+		jww = j_data_start-j;		/* Minimum Outside xmin and approaching West border  */
+		jee = Ctrl->S.n_columns + j_data_start + j-1;	/* Minimum Outside xmax and approaching East border  */
 		if (Ctrl->M.mirror) {
-			jwe = j_data_start+j;			/* Minimum Inside xmin and aproaching center  */
-			jew = Ctrl->S.n_columns + j_data_start - j-1;	/* Minimum Inside xmax and aproching center  */
+			jwe = j_data_start+j;			/* Minimum Inside xmin and approaching center  */
+			jew = Ctrl->S.n_columns + j_data_start - j-1;	/* Minimum Inside xmax and approaching center  */
 		}
 		else {
 			jwe = j_data_start;			/* West border */
@@ -241,10 +241,10 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 
 	upper_nx = Ctrl->S.n_columns + nc;
 	for (i = 0; i < i_data_start; i++) {	/* ROWS */
-		iss = Ctrl->S.n_rows+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
+		iss = Ctrl->S.n_rows+i_data_start+i;	/* Minimum Outside ymin and approaching South border  */
 		if (Ctrl->M.mirror) {
-			ins = 2*i_data_start - i;		/* Maximum Inside ymax and aproaching North border */
-			isn = Ctrl->S.n_rows+i_data_start-2-i;	/* Minimum Inside ymin and aproaching center  */
+			ins = 2*i_data_start - i;		/* Maximum Inside ymax and approaching North border */
+			isn = Ctrl->S.n_rows+i_data_start-2-i;	/* Minimum Inside ymin and approaching center  */
 		}
 		else {
 			ins = i_data_start;			/* North border */

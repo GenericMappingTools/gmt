@@ -45,6 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag);
 EXTERN_MSC void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap);
 EXTERN_MSC int gmt_get_option_id (int start, char *this_option);
@@ -355,7 +356,8 @@ EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active,
 EXTERN_MSC double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
 EXTERN_MSC int gmt_getfonttype (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC int gmt_legend_file (struct GMTAPI_CTRL *API, char *file);
-EXTERN_MSC int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, struct GMT_FILL *fill, struct GMT_PEN *pen, char *label);
+EXTERN_MSC void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item);
+EXTERN_MSC bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[]);
 EXTERN_MSC unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags, unsigned int tcol);
 EXTERN_MSC unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max);
 EXTERN_MSC void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T);

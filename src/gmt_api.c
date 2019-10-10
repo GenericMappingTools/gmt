@@ -11032,7 +11032,7 @@ int GMT_Option (void *V_API, const char *options) {
 				break;
 			case 'd':	/* Nodata flag -d, -di, -do */
 				if (p[1] == 'i') arg[k++] = 'k';
-				else if (p[1] == 'o') arg[k++] = 'l';
+				else if (p[1] == 'o') arg[k++] = 'm';
 				else arg[k++] = 'd';
 				break;
 			case 'j':	/* Spherical distance calculation mode */

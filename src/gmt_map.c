@@ -1709,7 +1709,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 /* This is new approach to get rid of those crossing lines for filled polygons,
  * i.e., issue # 949.  Also see comments further down.
  * P. Wessel, Dec 1 2016 */
-	if (GMT->current.map.coastline) {	/* Make data longitudes have no jumps [This is for pscoast] */
+	if (GMT->current.map.coastline && periodic) {	/* Make data longitudes have no jumps [This is for pscoast] */
 		for (i = 0; i < n; i++) {
 			if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
 				lon[i] += 360.0;

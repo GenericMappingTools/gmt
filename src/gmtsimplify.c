@@ -156,7 +156,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		true if data is lon/lat */
-/* index[]	output co-ordinates indices */
+/* index[]	output coordinates indices */
 
 	uint64_t n_stack, n_dest, start, end, i, sig;
 	uint64_t *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */

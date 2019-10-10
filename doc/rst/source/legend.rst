@@ -20,6 +20,8 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
 [ |SYN_OPT-R| ]
+[ |-S|\ *scale* ]
+[ |-T|\ *file* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -38,12 +40,9 @@ Examples
 .. include:: oneliner_info.rst_
 
 To add an example of a legend to a Mercator plot (map.ps) with the given
-specifications, use
+specifications, use::
 
-   ::
-
-     gmt legend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2
-                -C0.1i/0.1i -B5f1 -pdf map << EOF
+     gmt legend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2 -C0.1i/0.1i -B5f1 -pdf map << EOF
      # Legend test for legend
      # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
      # H is header, L is label, S is symbol, T is paragraph text, M is map scale.
@@ -76,6 +75,18 @@ specifications, use
      T There is no easy way to predetermine how many lines will be required,
      T so we may have to adjust the box height to get the right size box.
      EOF
+
+Auto-legends
+------------
+
+In modern mode, some modules can access the **-l** option and build the legend
+*specfile* from individual entries per command.  The **-l** option takes a
+label and allows optional modifiers **+d**, **+g**, **+n**, **+h**, **+j**, and **+v**
+that follows the corresponding uppercase legend codes discussed above.  In addition,
+there is **+f** to set current font and **+s** to set the symbol size (or line length)
+to use for the current entry.  Some defaults are hardwired: We draw a white panel with
+a 1 point outline offset from the justification point (**+j**) by 0.2 cm.  To use
+different settings you must call **legend** explicitly instead.
 
 See Also
 --------

@@ -442,7 +442,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		mean_rot_angle = sum_rot_angle / sum_weights;
 		std_rot_angle = sqrt ((sum_weights * sum_rot_angle2 - sum_rot_angle * sum_rot_angle) / (sum_weights * sum_weights * ((n_use - 1.0) / n_use)));
 
-		/* Get Euclidian [weighted] mean pseudo-vector location */
+		/* Get Euclidean [weighted] mean pseudo-vector location */
 		for (k = 0; k < 3; k++) xyz_mean_pole[k] /= sum_weights;	/* Components of [weighted] mean pseudovector */
 		gmt_normalize3v (GMT, xyz_mean_pole);	/* Make it a unit vector ... */
 

@@ -40,6 +40,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]

@@ -54,6 +54,20 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 #define GSET	2	/* Index into R.active[] for -r */
 #define FSET	3	/* Index into R.active[] for "got -R -I -r from a grid file" */
 
+struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
+	char label[GMT_LEN128];		/* The label to go with the symbol */
+	char header[GMT_LEN128];	/* Header for the whole legend */
+	char font[GMT_LEN32];		/* Fontsize to use */
+	char pen[2][GMT_LEN32];		/* Pens to use with +d and +v */
+	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
+	int just;			/* Legend placement [TR] */
+	double size;		/* Fixed symbol size when otherwise cannot set it */
+	double scale;		/* Scale all given sizes, including +s<length> of a line */
+	double width;		/* Override auto-width with a fixed legend width */
+	double gap;			/* Move this much down before placing symbol entry */
+	unsigned int ncols;		/* How many columns to use for symbols */
+};
+
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
 	struct synopsis {	/* \0 (zero) or ^ */
@@ -185,9 +199,9 @@ struct GMT_COMMON {
 		enum GMT_enum_mdist mode;	/* Defaults to GMT_GREATCIRCLE */
 		char string[GMT_LEN8];
 	} j;
-	struct l {	/* -l<label> */
+	struct l {	/* -l[<label>][+s<size>][+t<title>][+n<ncols>][+d<gap>/<pen>] */
 		bool active;
-		char label[GMT_LEN128];
+		struct GMT_LEGEND_ITEM item;
 	} l;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
