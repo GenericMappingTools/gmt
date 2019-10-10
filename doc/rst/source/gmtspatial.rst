@@ -126,7 +126,7 @@ Optional Arguments
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
-    between paris of polygons) crossovers [Default is both].
+    between pairs of polygons) crossovers [Default is both].
 
 .. _-N:
 
