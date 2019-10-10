@@ -141,9 +141,7 @@ steps:
     set -x -e
     cd build
     cmake --build . --target docs_html_depends
-    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
-    cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
