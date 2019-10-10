@@ -17,3 +17,16 @@
 .hlist {
     width: 100%;
 }
+
+/* style for example gallery */
+.gmtgallary li {
+    list-style: none;
+    width: 180px;
+    display: inline-grid;
+    margin-right: 15px;
+}
+
+/* Set tab-width to 2 spaces */
+.highlight {
+    tab-size: 2;
+}

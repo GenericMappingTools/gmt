@@ -23,6 +23,7 @@ Synopsis (begin mode)
 |-D|\ *inset-box*
 [ |-F|\ *box* ]
 [ |-M|\ *margins* ]
+[ |-N| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -93,6 +94,11 @@ Optional Arguments
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
     separate left, right, bottom, and top margins) [no margins].
 
+.. _inset_begin-N:
+
+**-N**
+    Do NOT clip features extruding outside map inset boundaries [Default will clip]. 
+
 .. _inset_begin-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -120,6 +126,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a simple basemap plot called inset.pdf that demonstrates the inset module, try
 

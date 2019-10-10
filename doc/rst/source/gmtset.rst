@@ -73,6 +73,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To change annotation font to 12-point Helvetica, select grid-crosses of
 size 0.1 inch, and set annotation offset to 0.2 cm:
 

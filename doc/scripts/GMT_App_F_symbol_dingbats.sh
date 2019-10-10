@@ -5,6 +5,7 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with gmt pstext, including the header row and left column
 
+gmt begin GMT_App_F_symbol_dingbats
 gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # Chart for Symbols font
@@ -49,15 +50,15 @@ BEGIN {
 EOF
 
 $AWK -f tt.awk tt.txt > tt.d
-gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tSymbol -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol_dingbats.ps
+gmt plot -R0/9/3/16 -Jx0.345i/-0.21i -BN+tSymbol -Glightgreen -Y2.58i << EOF
 >
 8	16
 9	16
 9	15
 8	15
 EOF
-gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol_dingbats.ps
-gmt psxy -R -J -O -K -Bg1 -Wthick << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt text tt.d -F+f
+gmt plot -Bg1 -Wthick << EOF
 >
 0	4
 9	4
@@ -92,7 +93,7 @@ cat << EOF > tt.awk
 EOF
 
 $AWK -f tt.awk tt.txt > tt.d
-gmt psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt plot -R0/9/20/32 -Glightgreen -Y-2.58i << EOF
 #> The Euro symbol now goes here so I have commented out this green box
 #1	21
 #2	21
@@ -104,8 +105,8 @@ gmt psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol_d
 9	31
 8	31
 EOF
-gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol_dingbats.ps
-gmt psxy -R -J -O -K -Bg1 -Wthick << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt text tt.d -F+f
+gmt plot -Bg1 -Wthick << EOF
 >
 1	20
 1	32
@@ -159,15 +160,15 @@ $AWK -f tt.awk tt.txt > tt.d
 # Chart for ZapfDingbats
 gmt set PS_CHAR_ENCODING ISOLatin1+
 
-gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -O -K -Glightgreen -X3.2i -Y2.58i << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt plot -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -Glightgreen -X3.2i -Y2.58i << EOF
 >
 8	16
 9	16
 9	15
 8	15
 EOF
-gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol_dingbats.ps
-gmt psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt text tt.d -F+f
+gmt plot -Bg1 -Wthick << EOF
 >
 0	4
 9	4
@@ -202,7 +203,7 @@ cat << EOF > tt.awk
 EOF
 
 $AWK -f tt.awk tt.txt > tt.d
-gmt psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt plot -R0/9/20/32 -Glightgreen -Y-2.58i << EOF
 >
 1	21
 2	21
@@ -214,9 +215,10 @@ gmt psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol_d
 9	31
 8	31
 EOF
-gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol_dingbats.ps
-gmt psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_symbol_dingbats.ps
+gmt text tt.d -F+f
+gmt plot -Bg1 -Wthick << EOF
 >
 1	20
 1	32
 EOF
+gmt end show

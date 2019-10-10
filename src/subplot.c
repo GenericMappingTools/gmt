@@ -831,7 +831,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
 			}
-			/* Sum up individual widths or hights and add the fluff space */
+			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0, Ctrl->F.dim[GMT_X] = fluff[GMT_X]; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.dim[GMT_X] += Ctrl->F.w[col];
 			for (row = 0, Ctrl->F.dim[GMT_Y] = fluff[GMT_Y]; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.dim[GMT_Y] += Ctrl->F.h[row];
 		}

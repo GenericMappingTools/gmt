@@ -870,28 +870,42 @@ GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 	if (Ctrl->I.active) fclose (Ctrl->I.fp);
 }
 
-GMT_LOCAL bool is_gmtbegin (char *line) {
-	/* To handle the cases where there may be more than one space between gmt and begin... */
-	if (strstr (line, "gmt ") && strstr (line, " begin"))
-		return true;
-	else
-		return false;
+GMT_LOCAL bool line_is_a_comment (char *line) {
+	unsigned int k = 0;
+	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
+	return (line[k] == '#' || !strncmp (&line[k], "REM", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
 }
 
-GMT_LOCAL bool is_gmtend (char *line) {
-	/* To handle the cases where there may be more than one space between gmt and end... */
-	if (strstr (line, "gmt ") && strstr (line, " end"))
-		return true;
-	else
-		return false;
+GMT_LOCAL bool is_gmt_module (char *line, char *module) {
+	/* Robustly identify the command "gmt begin" */
+	char word[GMT_LEN128] = {""};
+	unsigned int pos = 0;
+	size_t L;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt begin */
+	/* To handle cases where there may be more than one space between gmt and module */
+	if (line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
+	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
+	L = strlen (module);				/* How many characters to compare against */
+	if (!strncmp (word, module, L)) return true;	/* Command starting with gmt <module> found */
+	return false;	/* Not gmt <module> */
 }
 
-GMT_LOCAL bool is_gmtendshow (char *line) {
-	/* To handle the cases where there may be more than one space between gmt and end and show... */
-	if (strstr (line, "gmt ") && strstr (line, " end ") && strstr (line, " show"))
-		return true;
-	else
-		return false;
+GMT_LOCAL bool is_gmt_end_show (char *line) {
+	char word[GMT_LEN128] = {""};
+	unsigned int pos = 0;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */
+	/* Robustly identify the command "gmt end show" */
+	/* To handle cases where there may be more than one space between gmt and module */
+	if (line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
+	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
+	if (strcmp (word, "end")) return false;		/* Not continuing with end so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
+	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
+	return false;	/* Not gmt end show */
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1103,11 +1117,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
-			if (is_gmtbegin (line)) continue;		/* Skip gmt begin */
-			if (is_gmtend (line)) continue;			/* Skip gmt end */
-			if (strstr (line, "#!/")) continue;		/* Skip any leading shell incantation */
+			if (is_gmt_module (line, "begin")) continue;		/* Skip gmt begin */
+			if (is_gmt_module (line, "end")) continue;		/* Skip gmt end */
+			if (strstr (line, "#!/")) continue;			/* Skip any leading shell incantation */
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-			fprintf (fp, "%s", line);			/* Just copy the line as is */
+			fprintf (fp, "%s", line);				/* Just copy the line as is */
 		}
 		fclose (Ctrl->I.fp);	/* Done reading the include script */
 	}
@@ -1129,16 +1143,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		set_script (fp, Ctrl->In.mode);				/* Write 1st line of a script */
+		set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Preflight script");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
 			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
-			if (is_gmtbegin (line)) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
+			if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
 				fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 				fprintf (fp, "\tgmt figure movie_background ps\n");
@@ -1146,11 +1161,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by set_script */
-				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				if (is_gmtendshow (line))
-					fprintf (fp, "gmt end\n");	/* Dont write the show word */
-				else
-					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 			rec++;
 		}
@@ -1247,9 +1260,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
 			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
-			if (is_gmtbegin (line)) {	/* Need to insert gmt figure after this line */
+			if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
 				fprintf (fp, "\tgmt figure movie_foreground ps\n");
@@ -1257,11 +1271,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				if (is_gmtendshow (line))
-					fprintf (fp, "gmt end\n");	/* Dont write the show word */
-				else
-					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
 		fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
@@ -1483,7 +1495,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "mkdir master\n");	/* Make a temp directory for this frame */
 		fprintf (fp, "cd master\n");		/* cd to the temp directory */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
-			if (is_gmtbegin (line)) {	/* Need to insert a gmt figure call after this line */
+			if (is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
@@ -1496,10 +1508,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				if (is_gmtendshow (line))
-					fprintf (fp, "gmt end\n");	/* Dont write the show word */
-				else
-					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
 		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
@@ -1589,13 +1598,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
 		set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+	set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 	set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
 	fprintf (fp, "mkdir %s\n", place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
 	fprintf (fp, "cd %s\n", place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
-	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
-		if (is_gmtbegin (line)) {	/* Need to insert a gmt figure call after this line */
+	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
+		if (is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure %s %s", place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
@@ -1603,11 +1613,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-			if (is_gmtendshow (line))
-				fprintf (fp, "gmt end\n");	/* Dont write the show word */
-			else
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+			else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+			fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */

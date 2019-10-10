@@ -39,6 +39,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To draw the vector field given by the files r.nc and theta.nc on a
 linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and

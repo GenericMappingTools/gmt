@@ -47,8 +47,10 @@ Optional Arguments
     returns all selected parameter values on one line separated by
     spaces]
 
-Example
--------
+Examples
+--------
+
+.. include:: explain_example.rst_
 
 To list the value of the parameter PS_COMMENTS:
 

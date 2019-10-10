@@ -46,6 +46,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)
 (paper coordinates) with justification at top center and automatic annotation interval, do
 

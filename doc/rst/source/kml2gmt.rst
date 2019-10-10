@@ -96,6 +96,8 @@ plotted by :doc:`plot` and the holes will be honored.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To extract the lon,lat values from the KML file google.kml, try
 
    ::

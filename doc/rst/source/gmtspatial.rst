@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+p**\ \|\ **n** ]
+**-E**\ **+p**\ \|\ **n**
     Reset the handedness of all polygons to match the given **+p**
     (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
@@ -237,8 +237,13 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-Example
--------
+Examples
+--------
+
+To determine the centroid of the remote GSHHH high-resolution polygon for Australia,
+as well as the land area in km squared, try::
+
+    gmt spatial @GSHHS_h_Australia.txt -fg -Qk
 
 To turn all lines in the multisegment file lines.txt into closed polygons,
 run

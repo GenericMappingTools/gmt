@@ -107,7 +107,7 @@ steps:
     set -x -e
     cd build
     # Download remote files before testing, see #939.
-    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
@@ -116,6 +116,12 @@ steps:
   displayName: Full tests
   env:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
+  condition: eq(variables['TEST'], true)
+
+- script: |
+    cd doc/examples
+    set GMT_END_SHOW=off && call do_examples.bat
+  displayName: Run DOS batch examples
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose
@@ -135,9 +141,7 @@ steps:
     set -x -e
     cd build
     cmake --build . --target docs_html_depends
-    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
-    cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -148,6 +152,9 @@ steps:
     cmake --build . --target gmt_release_tar
     # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
+    # get sha256 hash value
+    CertUtil -hashfile gmt-*.tar.gz sha256
+    CertUtil -hashfile gmt-*.tar.xz sha256
+    CertUtil -hashfile gmt-*.exe    sha256
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

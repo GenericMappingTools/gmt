@@ -278,6 +278,17 @@ and include the new boundary points at the segment ends you must use
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To only return the data points from the remote file @ship_15.txt that lie
+within the region between longitudes 246 and 247 and latitudes 20 and 21, try::
+
+    gmt select @ship_15.txt -R246/247/20/21
+
+To return all the points *except* those inside that square, use::
+
+    gmt select @ship_15.txt -R246/247/20/21 -Ir
+
 To extract the subset of data set that is within 300 km of any of the
 points in pts.txt but more than 100 km away from the lines in lines.txt, run
 

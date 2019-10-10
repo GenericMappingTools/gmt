@@ -152,6 +152,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To combine the digitized segment lines segment\_\*.txt (whose Cartesian
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run

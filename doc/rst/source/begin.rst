@@ -48,8 +48,9 @@ Optional Arguments
 .. _begin-formats:
 
 *formats*
-    Give one or more comma-separated graphics extensions from the list of allowable graphics formats
-    :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
+    Give one or more comma-separated graphics extensions from the list of allowable
+    :ref:`graphics formats <tbl-formats>`
+    (default is configurable via setting :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` [pdf]).
 
 .. _begin-options:
 
@@ -60,12 +61,16 @@ Optional Arguments
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
-.. _begin-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_help_nopar.rst_
+
+
+Supported Graphic Formats
+-------------------------
 
 .. _tbl-formats:
 
@@ -94,27 +99,23 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To initiate a new modern session that will produce a single
 map called Figure_2 saved as both a PDF vector graphics file
-and an opaque PNG raster image, we would run
-
-   ::
+and an opaque PNG raster image, we would run::
 
     gmt begin Figure_2 pdf,png
 
 If the modern session is only used for computations and no illustrations
-are produced then we do not need to give any further arguments:
-
-   ::
+are produced then we do not need to give any further arguments::
 
     gmt begin
 
 Should we give such a command and still produce a plot then it will automatically
-be called gmtsession.pdf (assuming GMT_GRAPHICS_FORMAT is pdf).
+be called gmtsession.pdf (assuming :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` is pdf).
 
-To set up proceedings for a jpg figure with 0.5c white margin, we would run
-
-   ::
+To set up proceedings for a jpg figure with 0.5c white margin, we would run::
 
     gmt begin 'My Figure4' pdf,png A+m1c
 
@@ -132,15 +133,15 @@ related to a shell spawning sub-shells when you are linking two or more processe
 Each sub-shell will then have its own process ID and gmt modules started by the sub-shell will then
 have that ID as PPID and it will differ from the one determined by gmt begin.
 If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
-then you can add this command to the top of your script to make the issue go away (in Bourne shell):
+then you can add this command to the top of your script to make the issue go away (in Bourne shell)::
 
     export GMT_SESSION_NAME=$$
 
-or in cshell:
+or in C shell::
 
     setenv GMT_SESSION_NAME $$
 
-This setting is prescribed if you create a new script with **gmt** --new-script.
+This setting is prescribed if you create a new script with ``gmt --new-script``.
 
 See Also
 --------

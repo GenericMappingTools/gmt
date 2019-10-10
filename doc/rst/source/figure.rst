@@ -73,6 +73,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To start a new figure in your current modern mode session by the name Regional and
 request we make both a PDF and an EPS file, try::
 

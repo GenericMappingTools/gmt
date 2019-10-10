@@ -133,6 +133,8 @@ neighbor interpolation for such cases.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do
 

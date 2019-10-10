@@ -52,6 +52,8 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make an overlay that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:
 

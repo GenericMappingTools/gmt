@@ -24,7 +24,7 @@ steps:
 - bash: |
     set -x -e
     # we need the GNU tar
-    brew install gnu-tar md5sha1sum
+    brew install gnu-tar
   displayName: Install dependencies for packaging
   condition: eq(variables['PACKAGE'], true)
 
@@ -64,7 +64,7 @@ steps:
     set -x -e
     cd build
     # Download remote files before testing, see #939.
-    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # run all jobs and rerun if failed
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
@@ -99,9 +99,7 @@ steps:
 - bash: |
     cd build
     cmake --build . --target docs_html_depends
-    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
-    cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -110,7 +108,7 @@ steps:
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
     cpack -G Bundle
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
+    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
 

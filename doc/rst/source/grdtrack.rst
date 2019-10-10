@@ -280,6 +280,13 @@ important. Use bilinear to minimize the propagation of NaNs, or lower
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To extract a profile along a great circle between (0,0) to (20,20) from the remote grid earth_relief_05m,
+and only write out (dist, topo) records, try::
+
+    gmt grdtrack -G@earth_relief_05m -R0/20/0/20 -EBL/TR+d -o3,2 > profile.txt
+
 To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record):

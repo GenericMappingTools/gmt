@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Demonstrate how arrows look like
-gmt begin GMT_arrows ps
+gmt begin GMT_arrows
 # Cartesian straight arrows
 gmt plot -R0/5/0/5 -JX1.75i -S -W1.5p -Gred -B0 --MAP_VECTOR_SHAPE=0.5 << EOF 
 0.5	0.5	4.5	0.5	v0.2i+s
@@ -29,4 +29,4 @@ gmt plot -R0/90/-41.17/41.17 -JM1.75i -S -W1.5p -Gred -B0 --MAP_VECTOR_SHAPE=0.5
 10	35	90	8000	=0.2i+r+b
 10	-35	90	8000	=0.2i+bl
 EOF
-gmt end
+gmt end show
