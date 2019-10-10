@@ -28,10 +28,10 @@ xstart=`gmt math -Q $LL_x $UR_x MIN =`
 xstop=`gmt math -Q $LL_x $UR_x MAX =`
 ystart=`gmt math -Q $LL_y $UR_y MIN =`
 ystop=`gmt math -Q $LL_y $UR_y MAX =`
-gmt math -T$xstart/$xstop/101+ $LL_y = > box.xy
-gmt math -o1,0 -T$ystart/$ystop/101+ $UR_x = >> box.xy
-gmt math -I -T$xstart/$xstop/101+ $UR_y = >> box.xy
-gmt math -I -o1,0 -T$ystart/$ystop/101+ $LL_x = >> box.xy
+gmt math -T$xstart/$xstop/101+n $LL_y = > box.xy
+gmt math -o1,0 -T$ystart/$ystop/101+n $UR_x = >> box.xy
+gmt math -I -T$xstart/$xstop/101+n $UR_y = >> box.xy
+gmt math -I -o1,0 -T$ystart/$ystop/101+n $LL_x = >> box.xy
 # Get back degrees
 gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$scale -I -Fk box.xy > box.d
 # Use -Joa to set origin and azimuth.
