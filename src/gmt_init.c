@@ -8105,7 +8105,7 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
 				case 'l': GMT->common.l.item.length = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Line length */
 				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);				break;	/* Number of columns */
-				case 's': GMT->common.l.item.size = atof (&txt[1]);				break;	/* Fixed size for a symbol */
+				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Fixed size for a symbol */
 				case 'v': /* Draw vertical line(s) */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_V;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_V], &txt[1], GMT_LEN32-1);
