@@ -2,7 +2,6 @@
 #
 # Problem is https://github.com/GenericMappingTools/gmt/issues/1759
 # Can test with -+83 for a single square
-# GMT_KNOWN_FAILURE
 
 ps=pscoast_JQ.ps
 
