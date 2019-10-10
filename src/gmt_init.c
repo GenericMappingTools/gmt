@@ -16042,6 +16042,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		fprintf (fp, "# LEGEND_SCALING: %g\n", item->scale);
 		if (item->width > 0.0)	/* Specified legend width directly */
 			fprintf (fp, "# LEGEND_WIDTH: %gi\n", item->width);
+		if (item->ncols > 1)	/* Specified +n up front */
+			fprintf (fp, "# LEGEND_NCOLS: %d\n", item->ncols);
 		if (!gmt_M_is_zero (item->gap)) {	/* Want to place a gap first, even before any title */
 			fprintf (fp, "G %gi\n", item->gap);
 			gap_done = true;	/* So we don't do it again below */
@@ -16107,6 +16109,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 	/* Determine if there is a hidden legend file that has not been placed */
 	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""}, dim[GMT_LEN32] = {""};
 	size_t L, N_max = 0;
+	int ncols = 1;
 	double W, W_max = 0.0;
 	FILE *fp = NULL;
 
@@ -16128,6 +16131,10 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 			sscanf (&file[2], "%*s %s\n", dim);
 			*width = gmt_M_to_inch (API->GMT, dim);
 		}
+		else if (strstr (file, "# LEGEND_NCOLS:")) {	/* Need to explicitly set number of columns */
+			sscanf (&file[2], "%*s %s\n", dim);
+			ncols = atoi (dim);
+		}
 		if (file[0] != 'S') continue;	/* Only examine symbol requests */
 		sscanf (file, "%*s %*s %*s %s %*s %*s %*s %[^\n]\n", size, label);
 		if ((L = strlen (label)) > N_max) N_max = L;
@@ -16136,7 +16143,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 	fclose (fp);
 	
 	if (*width == 0.0)	/* Best estimate of legend box width from longest string in the labels and space needed for symbols, plus 5 % */
-		*width = GMT_LEGEND_DX2_MUL * (*scale) * W_max + N_max * 1.05 * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+		*width = ncols * (GMT_LEGEND_DX2_MUL * (*scale) * W_max + N_max * 1.05 * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
 	return true;
 }
 
