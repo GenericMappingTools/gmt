@@ -4304,7 +4304,6 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
 	if (PSL->internal.call_level == 1)
 		PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
-
 	PSL->internal.overlay = overlay;
 	memcpy (PSL->init.page_size, page_size, 2 * sizeof(double));
 

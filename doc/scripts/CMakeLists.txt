@@ -52,7 +52,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_API_flow.sh GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh GMT_obl_nz.sh
 	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh GMT_inset.sh GMT_linearrow.sh
 	GMT_dir_rose.sh GMT_images.sh GMT_colorbar.sh GMT_cyclic.sh GMT_legend.sh GMT_mag_rose.sh
-	GMT_hinge.sh GMT_CPTscale.sh GMT_SRTM.sh GMT_vertscale.sh GMT_fatline.sh
+	GMT_hinge.sh GMT_CPTscale.sh GMT_SRTM.sh GMT_vertscale.sh GMT_fatline.sh GMT_autolegend.sh
 	psevents_intensity.sh psevents_size.sh psevents_transparency.sh)
 
 # Scripts that are only used for testing, figures are not in the documentation

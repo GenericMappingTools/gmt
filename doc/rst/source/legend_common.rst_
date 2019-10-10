@@ -72,6 +72,16 @@ Optional Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-S:
+
+**-S**\ *scale*
+    Scale all symbol sizes by a common *scale* [1].
+
+.. _-T:
+
+**-T**\ *file*
+    Modern mode only: Write hidden legend specification file to *file*.
+
 .. _-U:
 
 .. include:: explain_-U.rst_
