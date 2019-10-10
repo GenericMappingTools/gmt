@@ -69,7 +69,7 @@ or brew command:
     fink install gdal ghostscript graphicsmagick ffmpeg
 
     # For MacPorts users
-    sudo port install gdal +hdf5 +netcdf
+    sudo port install gdal +hdf5 +netcdf +openjpeg
     sudo port install ghostscript graphicsmagick ffmpeg
 
     # For Homebrew users
@@ -103,7 +103,7 @@ You also need to install other GMT run-time dependencies separately:
 
 Install [MacPorts](https://www.macports.org) and then the required ports in this order:
 
-    sudo port install gdal +hdf5 +netcdf
+    sudo port install gdal +hdf5 +netcdf +openjpeg
     sudo port install gmt6
 
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
