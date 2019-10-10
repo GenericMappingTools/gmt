@@ -17,7 +17,7 @@ for compiling GMT source package (either stable release or development version).
 - [macOS](#macos)
   * [Application Bundle](#application-bundle)
   * [Install via Homebrew](#install-via-homebrew)
-  * [Install via macports](#install-via-macports)
+  * [Install via Macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
 - [Linux](#linux)
   * [Ubuntu/Debian](#ubuntudebian)
@@ -61,12 +61,18 @@ run-time dependencies on executables that you will need to install separately:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
 
-Install these via fink, macport, or homebrew. If you do not use any of these, then
-we recommend installing [homebrew](https://brew.sh/). Now, run either the fink, port,
+Install these via Fink, MacPorts, or Homebrew. If you do not use any of these, then
+we recommend installing [Homebrew](https://brew.sh/). Now, run either the fink, port,
 or brew command:
 
+    # For Fink users
     fink install gdal ghostscript graphicsmagick ffmpeg
-    port install gdal ghostscript graphicsmagick ffmpeg
+
+    # For MacPorts users
+    sudo port install gdal +hdf5 +netcdf
+    sudo port install ghostscript graphicsmagick ffmpeg
+
+    # For Homebrew users
     brew install gdal ghostscript graphicsmagick ffmpeg
 
 ### Install via Homebrew
@@ -93,11 +99,11 @@ You also need to install other GMT run-time dependencies separately:
 
     brew install ghostscript graphicsmagick ffmpeg
 
-### Install via macports
+### Install via MacPorts
 
-Install [macports](https://www.macports.org/) and then the required ports in this order:
+Install [MacPorts](https://www.macports.org) and then the required ports in this order:
 
-    sudo port install gdal +curl +geos +hdf5 +netcdf
+    sudo port install gdal +hdf5 +netcdf
     sudo port install gmt6
 
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
@@ -105,7 +111,7 @@ enabled with the `+fftw3` and `+openmp` flags.
 
 You also need to install other GMT run-time dependencies separately:
 
-    port install ghostscript graphicsmagick ffmpeg
+    sudo port install graphicsmagick ffmpeg
 
 For the legacy GMT 4 or GMT 5 versions, use:
 
