@@ -1,7 +1,7 @@
 .. _-l_full:
 
 **-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*\ ][**+j**\ *just*][**+n**\ *cols*][**+s**\ *size*\ ][**+v**\ [*pen*]][**+w**\ *width*][**+x**\ *scale*\ ]
-    Add a map legend entry to the session legend information file for the
+    [**beta version**] Add a map legend entry to the session legend information file for the
     current plot.  Optionally append a text *label* to describe the entry.
     Several modifiers allow further changes to the legend (to be built
     when :doc:`legend` is called): Use **+d** to draw a horizontal line before the
@@ -19,4 +19,5 @@
     just subdivides the available width among the specified columns.
     The automatic legend has a fixed white background with a solid black pen outline and offset 0.2 cm from the map frame.
     The modifiers largely reflect legend codes described in :doc:`legend`, which provide more details and
-    customization.
+    customization.  If **legend** is not called explicitly we will call it implicitly when finishing the plot
+    via :doc:`end`.
