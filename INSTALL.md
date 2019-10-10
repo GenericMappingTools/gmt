@@ -174,7 +174,7 @@ For RHEL and CentOS you can add this repository by telling yum:
 
 then, you can install GMT5 via
 
-    sudo yum install GMT gshhg-gmt-nc4-all dcw-gmt
+    sudo yum install GMT gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high dcw-gmt
 
 Install other GMT dependencies (some are optional) via:
 
