@@ -41,6 +41,7 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag);
 EXTERN_MSC void gmt_subplot_gaps (struct GMTAPI_CTRL *API, int fig, double *gap);
