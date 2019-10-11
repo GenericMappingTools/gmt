@@ -218,16 +218,22 @@ int main (int argc, char *argv[]) {
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
 				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
 #ifdef WIN32
-				if (txt == NULL) {	/* Assume batch if no shell setting exist udner Windows */
+				if (txt == NULL) {	/* Assume batch if no shell setting exist under Windows */
 					type = 2;
 					printf ("@echo off\n");
 				}
 #endif
 				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
 					type = 1;
-				if (type < 2)
+				if (txt) {	/* Use the actuall SHELL returned and add -e so script will exit upon error */
+					char *p = strrchr (txt, '/');
+					printf ("#!%s -e\n", txt);
+					printf ("%s GMT modern mode %s template\n", comment[type], &p[1]);
+				}
+				else if (type < 2) {
 					printf ("#!/usr/bin/env %s\n", shell[type]);
-				printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
+					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
+				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
 				switch (type) {
 					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
