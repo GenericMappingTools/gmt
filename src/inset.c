@@ -305,7 +305,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		fprintf (fp, "# FRAME: %s\n", Bopts);
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Wrote inset settings to information file %s\n", file);
-		
+		gmt_reset_history (GMT);	/* Prevent gmt from copying previous history to this iinset */
 	}
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
