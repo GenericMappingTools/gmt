@@ -496,9 +496,9 @@ It is expected that the GMT supplements plugin be distributed with the core prog
 
 ### DCW-GMT
 
-- Homepage:	http://www.soest.hawaii.edu/pwessel/dcw/index.html
-- Source:	ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
-            http://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+- Homepage:	https://www.soest.hawaii.edu/pwessel/dcw/
+- Source:	https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+			ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
 - Description:	Digital Chart of the World (DCW) for GMT
 - Long description:	DCW-GMT is an enhancement to the original 1:1,000,000 scale vector
   basemap of the world available from the Princeton University Digital Map and Geospatial
@@ -508,9 +508,9 @@ It is expected that the GMT supplements plugin be distributed with the core prog
 
 ### GSHHG
 
-- Homepage:	http://www.soest.hawaii.edu/pwessel/gshhg/index.html
-- Source:	ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
-            http://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+- Homepage:	https://www.soest.hawaii.edu/pwessel/gshhg/
+- Source:	https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+			ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
 - Description:	Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
 - Long description:	GSHHG is a high-resolution shoreline data set amalgamated from
   two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
