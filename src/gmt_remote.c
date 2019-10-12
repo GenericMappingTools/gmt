@@ -25,6 +25,9 @@
 #include "gmt_internals.h"
 #include "gmt_remote.h"
 #include <curl/curl.h>
+#ifdef WIN32
+#include <sys/utime.h>
+#endif
 
 #ifdef	__APPLE__
 	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
@@ -248,7 +251,11 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	if (time_spent > 10.0) {	/* Ten seconds is too long time - server down? */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT data server may be down - delay checking hash file for 24 hours\n");
+#ifdef WIN32
+		_utime (file, NULL);	/* Refresh modification time */
+#else
 		utimes (file, NULL);	/* Refresh modification time */
+#endif
 		GMT->current.io.hash_refreshed = true;
 	}
 	return 0;
