@@ -496,47 +496,65 @@ It is expected that the GMT supplements plugin be distributed with the core prog
 
 ### DCW-GMT
 
-- Homepage:	https://www.soest.hawaii.edu/pwessel/dcw/
-- Source:	https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
-			ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
-- Description:	Digital Chart of the World (DCW) for GMT
-- Long description:	DCW-GMT is an enhancement to the original 1:1,000,000 scale vector
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/dcw/
+- **Summary**: Digital Chart of the World (DCW) for GMT
+- **License**: LGPL-3+
+- **Source**: https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+			  ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
+- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector
   basemap of the world available from the Princeton University Digital Map and Geospatial
   Information Center and from GeoCommunity at http://data.geocomm.com/readme/dcw/dcw.html.
   This data is for use by GMT, the Generic Mapping Tools.
-- License:	LGPL-3+
+
 
 ### GSHHG
 
-- Homepage:	https://www.soest.hawaii.edu/pwessel/gshhg/
-- Source:	https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
-			ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
-- Description:	Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
-- Long description:	GSHHG is a high-resolution shoreline data set amalgamated from
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/gshhg/
+- **Summary**: Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
+- **License**: LGPL-3+
+- **Source**: https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+			  ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
+- **Description**: GSHHG is a high-resolution shoreline data set amalgamated from
   two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
   and CIA World Data Bank II (WDBII). GSHHG contains vector descriptions at five different
   resolutions of land outlines, lakes, rivers, and political boundaries.
   This data is for use by GMT, the Generic Mapping Tools.
-- License:	LGPL-3+
 
 ### GMT
 
-- Homepage:	https://www.generic-mapping-tools.org/
-- Source:	ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
-            ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
-- Build dependencies:	cmake
-- Build+runtime dependencies:
-    - fftw3-single (optional)
-    - gdal
-    - gmt-dcw
-    - gmt-gshhg (at least the crude resolution GSHHG files are mandatory)
-    - libcurl
+- **Homepage**: https://www.generic-mapping-tools.org/
+- **Summary**: The Generic Mapping Tools
+- **License**: GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
+- **Source**: ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
+              ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
+- **Description**: GMT is an open source collection of ~130 tools for manipulating
+  geographic and Cartesian data sets and producing PostScript illustrations ranging
+  from simple x-y plots via contour maps to artificially illuminated surfaces and
+  3D perspective views.
+- **Build dependencies**:
+    - cmake
+    - gcc
+    - curl
     - netcdf
+    - gdal
     - pcre
-    - zlib
-- Runtime dependencies:	ghostscript
-- CMake arguments:
-
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt
+- **Runtime dependencies**:
+    - ghostscript (*required*)
+    - curl
+    - netcdf
+    - gdal
+    - pcre
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt (at least the crude resolution GSHHG files are mandatory)
+- **CMake arguments**:
     ```
     -DCMAKE_BUILD_TYPE=RelWithDebInfo
     -DCMAKE_C_FLAGS=-fstrict-aliasing
@@ -552,13 +570,4 @@ It is expected that the GMT supplements plugin be distributed with the core prog
     -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
     ```
 
-- Description:	The Generic Mapping Tools
-- Long description:	GMT is an open source collection of ~130 tools for manipulating
-  geographic and Cartesian data sets and producing PostScript illustrations ranging
-  from simple x-y plots via contour maps to artificially illuminated surfaces and
-  3D perspective views.
-- License:	GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
-
 Note that you have to configure and build out-of-source. It is safe to make a parallel build with make -j. Please configure with CMAKE_BUILD_TYPE=RelWithDebInfo (appends -O2 -g to CFLAGS) so that we get reliable backtraces from sighandler.
-
-For reference, here is the link to the current MacPorts gmt5 Portfile: https://trac.macports.org/browser/trunk/dports/science/gmt5/Portfile
