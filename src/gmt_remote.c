@@ -192,8 +192,10 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 
 GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	int curl_err = 0;
+	double time_spent;
 	CURL *Curl = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
+	clock_t begin, end;
 
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", url);
@@ -228,6 +230,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (file);
+	begin = clock();
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to download file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -241,6 +244,13 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
 	turn_off_ctrl_C_check ();
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	if (time_spent > 10.0) {	/* Ten seconds is too long time - server down? */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT data server may be down - delay checking hash file for 24 hours\n");
+		utimes (file, NULL);	/* Refresh modification time */
+		GMT->current.io.hash_refreshed = true;
+	}
 	return 0;
 }
 
