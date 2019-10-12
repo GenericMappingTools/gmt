@@ -16150,6 +16150,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 	
 	if (*width == 0.0)	/* Best estimate of legend box width from longest string in the labels and space needed for symbols, plus 5 % */
 		*width = ncols * (GMT_LEGEND_DX2_MUL * (*scale) * W_max + N_max * 1.05 * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
+	if (ncols == 1) *width = 0.0;	/* Set in PostScript */
 	return true;
 }
 
