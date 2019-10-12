@@ -22,6 +22,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -168,7 +169,8 @@ Optional Arguments
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
-    the input grid]. 
+    the input grid]. Alternatively, use **-r**\ [**g**\ \|\ **p**\ ] to
+    set the registration explicitly.
 
 .. _-V:
 
@@ -177,6 +179,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
 

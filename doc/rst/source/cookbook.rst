@@ -36,12 +36,10 @@ GMT Cookbook
    :maxdepth: 1
    :numbered:
 
-   cookbook/acknowledgments
-   cookbook/citation
-   cookbook/copyright
    cookbook/preface
    cookbook/introduction
    cookbook/features
+   cookbook/options
    cookbook/coordinate_transformations
    cookbook/map_projections
    cookbook/supplemental_packages

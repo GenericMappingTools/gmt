@@ -17,7 +17,8 @@ Version 3.0 in 1993 which was released with another article in EOS
 on August 15, 1995.  A major upgrade to GMT 4.0 took place in Oct 2004.
 Finally, in 2013 we released the new GMT 5 series and we have updated this tutorial
 to reflect the changes in style and syntax.  However, GMT 5 is generally
-backwards compatible with GMT 4 syntax.
+backwards compatible with GMT 4 syntax. In October 2019 we released the current
+version GMT 6.
 GMT is used by tens of thousands of users worldwide in a broad range of disciplines.
 
 Philosophy

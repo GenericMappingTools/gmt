@@ -159,7 +159,7 @@ The Common GMT Options
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
-**-r**
+|SYN_OPT-r|
 |SYN_OPT-s|
 |SYN_OPT-t|
 |SYN_OPT-x|
@@ -224,6 +224,8 @@ programs. No space between the option flag and the associated arguments.
 
 .. |Add_-j| unicode:: 0x20 .. just an invisible code
 .. include:: explain_distcalc_full.rst_
+
+.. include:: explain_-l_full.rst_
 
 .. include:: explain_-n_full.rst_
 

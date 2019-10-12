@@ -22,11 +22,9 @@ gmt begin ex23
 	237.67	47.58	RM	SEATTLE
 	28.20	-25.75	LM	PRETORIA
 	END
-	gmt coast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 \
-		-B+t"Distances from $name to the World" -Wthinnest
+	gmt coast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 -B+t"Distances from $name to the World" -Wthinnest
 
-	gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 \
-		-Wathin,white -Wcthinnest,white,-
+	gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -Wathin,white -Wcthinnest,white,-
 
 	# For each of the cities, plot great circle arc to Rome with gmt plot
 	gmt plot -Wthickest,red -Fr$lon/$lat cities.txt

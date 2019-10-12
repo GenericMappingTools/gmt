@@ -8318,6 +8318,19 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	return (false);	/* This may in fact be numeric */
 }
 
+bool gmt_is_float (struct GMT_CTRL *GMT, char *text) {
+	/* Returns true if text is a valid floating point number.
+	 * Only called if we know text is not longitude or time, etc. */
+	int len;
+	double dummy = 0.0;
+	gmt_M_unused(GMT);
+
+	if (sscanf (text, "%lf %n", &dummy, &len) == 1 && len == (int)strlen(text))
+		return true;
+	else
+		return false;
+}
+
 /*! . */
 unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out) {
 	/* Used when we read text records and need to obtain doubles */

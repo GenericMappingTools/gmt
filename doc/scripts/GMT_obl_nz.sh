@@ -31,7 +31,7 @@ gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite << EOF
 3	0.75	TR	x
 1.5	1.5	TR	y
 EOF
-echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
+#echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
 az=215
 gmt coast $R -JOA$lon/$lat/$az/3i -Ba5f5g5 -Gred -Dh -X3.4i -TdjTL+w0.5i+l+o0.2i/-0.05i --FONT_TITLE=9p --MAP_ANNOT_OBLIQUE=34 --FORMAT_GEO_MAP=dddF 
 echo $plon $plat | gmt plot -Sc0.2c -Gblue -W0.25p 
@@ -52,5 +52,5 @@ gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite << EOF
 3	0.75	TR	x
 1.5	1.5	TR	y
 EOF
-echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
+#echo $plon $plat | gmt mapproject -JoA$lon/$lat/$az/1:1 -Fk -C
 gmt end show
