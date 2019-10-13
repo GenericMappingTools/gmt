@@ -336,6 +336,8 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
 			if (!access (hashpath, F_OK)) gmt_remove_file (GMT, hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
+			GMT->current.io.internet_error = true;				/* No point trying again */
+			return 1;
 		}
 		GMT->current.io.hash_refreshed = true;	/* Done our job */
 		return 0;
@@ -492,6 +494,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to obtain remote file %s\n", file);
+		gmt_M_free (GMT, file);
 		return 1;
 	}
 
