@@ -8007,13 +8007,18 @@ void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free
 	}
 	if (I->header) {	/* Free the header structure and anything allocated by it */
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
-		gmt_M_str_free (I->header->ProjRefWKT);
-		gmt_M_str_free (I->header->ProjRefPROJ4);
-		gmt_M_str_free (HH->pocket);
+		if (I->header->ProjRefPROJ4 && IH->alloc_mode == GMT_ALLOC_INTERNALLY)
+			gmt_M_str_free (I->header->ProjRefPROJ4);
+		if (I->header->ProjRefWKT && IH->alloc_mode == GMT_ALLOC_INTERNALLY)
+			gmt_M_str_free(I->header->ProjRefWKT);
+		if (HH->pocket && IH->alloc_mode == GMT_ALLOC_INTERNALLY)
+			gmt_M_str_free (HH->pocket);
 		gmt_M_free (GMT, HH);
 		gmt_M_free (GMT, I->header);
 	}
-	gmt_M_free (GMT, I->colormap);
+	if (I->colormap && IH->alloc_mode == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, I->colormap);
+
 	gmt_M_free (GMT, I->hidden);
 }
 
