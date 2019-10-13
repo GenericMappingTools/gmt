@@ -8103,7 +8103,7 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_D], &txt[1], GMT_LEN32-1);
 					break;
 				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);		break;	/* Font to use for this -l entry */
-				case 'g': GMT->common.l.item.gap = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Gap before next item */
+				case 'g': strncpy (GMT->common.l.item.gap, &txt[1], GMT_LEN32-1);		break;	/* Gap before next item */
 				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1); 		break;	/* Legend header */
 				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
 				case 'l': if (txt[2] == '/') {	/* Gave <code>/<label> */
@@ -16067,8 +16067,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "# LEGEND_WIDTH: %gi\n", item->width);
 		if (item->ncols > 1)	/* Specified +n up front */
 			fprintf (fp, "# LEGEND_NCOLS: %d\n", item->ncols);
-		if (!gmt_M_is_zero (item->gap)) {	/* Want to place a gap first, even before any title */
-			fprintf (fp, "G %gi\n", item->gap);
+		if (item->gap[0]) {	/* Want to place a gap first, even before any title */
+			fprintf (fp, "G %s\n", item->gap);
 			gap_done = true;	/* So we don't do it again below */
 		}
 		if (item->header[0]) {	/* Want to place a centered legend header first */
@@ -16092,8 +16092,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
-	if (!gap_done && !gmt_M_is_zero (item->gap))	/* Always place a gap first, if requested, and not already done before title */
-		fprintf (fp, "G %gi\n", item->gap);
+	if (!gap_done && item->gap[0])	/* Always place a gap first, if requested, and not already done before title */
+		fprintf (fp, "G %s\n", item->gap);
 	/* Horizontal lines are normally drawn before the symbol placement */
 	if ((item->draw & GMT_LEGEND_DRAW_D) && ((item->draw & GMT_LEGEND_DRAW_V) == 0 || item->pen[GMT_LEGEND_PEN_V][0] == '\0'))
 		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);	/* Draw horizontal line, if requested, before symbol */
