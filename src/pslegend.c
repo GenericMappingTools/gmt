@@ -837,10 +837,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 		PSL_comment (PSL, "Symbol labels start at PSL_tmp_w\n");
 		PSL_defunits (PSL, "PSL_tmp_w", def_dx2);
-		PSL_defunits (PSL, "PSL_tmp_c", 2.0 * Ctrl->C.off[GMT_X]);
+		PSL_defunits (PSL, "PSL_legend_clear_x", 2.0 * Ctrl->C.off[GMT_X]);
 		PSL_comment (PSL, "Determine largest possible width\n");
 		PSL_command (PSL, "/PSL_tmp_w PSL_tmp_w PSL_legend_label_width add def\n");
-		PSL_command (PSL, "/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_tmp_c add def\n");
+		PSL_command (PSL, "/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_legend_clear_x add def\n");
 		gmt_M_free (GMT, legend_item);
 	}
 	else {	/* Hardwired width */
@@ -1160,16 +1160,26 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 						}
 						justify = gmt_just_decode (GMT, key, 0);
-						x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
-						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
-						sprintf (buffer, "%s B%s %s", gmt_putfont (GMT, &ifont), key, text);
-						if ((D[TXT] = get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, 64U, 2U, true)) == NULL) return (API->error);
-						S[TXT] = get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
-						S[TXT]->data[GMT_X][krow[TXT]] = x_off;
-						S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
-						S[TXT]->text[krow[TXT]++] = strdup (buffer);
-						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
-						maybe_realloc_segment (GMT, S[TXT]);
+						if (do_width) {
+							PSL_setcurrentpoint (PSL, Ctrl->D.refpoint->x + Ctrl->C.off[GMT_X], row_base_y + d_off);
+							if (justify == PSL_BR)
+								PSL_command (PSL, "PSL_legend_box_width PSL_legend_clear_x sub 0 G\n");
+							else if (justify == PSL_BC)
+								PSL_command (PSL, "PSL_legend_box_width PSL_legend_clear_x sub 2 div 0 G\n");
+							PSL_plottext (PSL, 0.0, 0.0, -ifont.size, text, 0.0, justify, 0);
+						}
+						else {
+							x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
+							x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
+							sprintf (buffer, "%s B%s %s", gmt_putfont (GMT, &ifont), key, text);
+							if ((D[TXT] = get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, 64U, 2U, true)) == NULL) return (API->error);
+							S[TXT] = get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
+							S[TXT]->data[GMT_X][krow[TXT]] = x_off;
+							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
+							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
+							maybe_realloc_segment (GMT, S[TXT]);
+						}
 						column_number++;
 						drawn = true;
 						break;
