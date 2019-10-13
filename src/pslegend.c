@@ -161,7 +161,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
-				if (strchr ("jgn", opt->arg[0]) || strstr (opt->arg, "+j") || strstr (opt->arg, "+l") || strstr (opt->arg, "+o") || strstr (opt->arg, "+w")) {	/* New syntax: 	*/
+				if (strlen (opt->arg) < 5 || strchr ("jgn", opt->arg[0]) || strstr (opt->arg, "+j") || strstr (opt->arg, "+l") || strstr (opt->arg, "+o") || strstr (opt->arg, "+w")) {	/* New syntax: 	*/
 					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL) {
 						n_errors++;	/* Failed basic parsing */
 						continue;
@@ -873,13 +873,28 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (do_width)	/* Adjust for mismatch between width and actual width */
 		PSL_command (PSL, "PSL_legend_box_width PSL_legend_box_height sub %d 2 div mul neg 0 translate\n", (Ctrl->D.justify%4)-1);
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		if (do_width) {
+		if (do_width) {	/* Doing it all via PostScript settings */
+			if (Ctrl->F.panel->mode & GMT_PANEL_ROUNDED)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Disabling your -F... +r modifier since not implemented yet for automatic width setting\n");
 			PSL_command (PSL, "V\n");
+			if (Ctrl->F.panel->mode & GMT_PANEL_SHADOW) {	/* Draw offset background shadow first */
+				gmt_setfill (GMT, &Ctrl->F.panel->sfill, false);	/* The shadow has no outline */
+				PSL_setcurrentpoint (PSL, Ctrl->F.panel->off[GMT_X], Ctrl->F.panel->off[GMT_Y]);
+				PSL_command (PSL, "PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N\n");
+			}
 			if (Ctrl->F.panel->mode & GMT_PANEL_OUTLINE) gmt_setpen (GMT, &Ctrl->F.panel->pen1);
 			gmt_setfill (GMT, & Ctrl->F.panel->fill, (Ctrl->F.panel->mode & GMT_PANEL_OUTLINE) > 0);
-			PSL_command (PSL, "0 0 M PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N U\n");
+			PSL_command (PSL, "0 0 M PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N\n");
+			if (Ctrl->F.panel->mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
+				PSL_defunits (PSL, "PSL_legend_box_shrink", 2.0 * Ctrl->F.panel->gap);
+				gmt_setpen (GMT, &Ctrl->F.panel->pen2);	/* Set inner border pen */
+				gmt_setfill (GMT, NULL, true);	/* Never fill for inner frame */
+				PSL_setcurrentpoint (PSL, Ctrl->F.panel->gap, Ctrl->F.panel->gap);
+				PSL_command (PSL, "PSL_legend_box_width PSL_legend_box_shrink sub 0 D 0 PSL_legend_box_height PSL_legend_box_shrink sub D PSL_legend_box_width PSL_legend_box_shrink sub neg 0 D P FO N\n");
+			}
+			PSL_command (PSL, "U\n");
 		}
-		else {
+		else {	/* Via C function */
 			Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];
 			gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
 		}
