@@ -80,13 +80,17 @@ Auto-legends
 ------------
 
 In modern mode, some modules can access the **-l** option and build the legend
-*specfile* from individual entries per command.  The **-l** option takes a
-label and allows optional modifiers **+d**, **+g**, **+n**, **+h**, **+j**, and **+v**
-that follows the corresponding uppercase legend codes discussed above.  In addition,
-there is **+f** to set current font and **+s** to set the symbol size (or line length)
-to use for the current entry.  Some defaults are hardwired: We draw a white panel with
-a 1 point outline offset from the justification point (**+j**) by 0.2 cm.  To use
-different settings you must call **legend** explicitly instead.
+*specfile* from individual entries for each command.  The **-l** option takes an optional
+label and allows optional modifiers **+d**, **+g**, **+n**, **+h**, **+j**, **+l**, and **+v**
+that follow the corresponding uppercase legend codes discussed above.  In addition,
+there is **+f** to set header (H) or label (L) font,  **+s** to set the symbol size (or line length)
+to use for the current entry, and **+x** to scale all symbols uniformly (see **-S** above).
+Some defaults are hardwired: We draw a white rectangular panel with
+a 1 point black outline offset from the justification point (**+j**) by 0.2 cm.  To use
+different settings you must call **legend** explicitly before :doc:`end` does so
+implicitly instead.  Note: With an explicit call to **legend** you can also use **-S** to
+save the auto-generate *specfile*, make modification to it, and then pass that to **legend*
+directly.
 
 See Also
 --------
