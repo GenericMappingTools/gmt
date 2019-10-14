@@ -202,7 +202,7 @@ For RHEL/CentOS, run:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
     yum install GraphicsMagick ffmpeg gdal
 
 **Note**:
