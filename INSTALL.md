@@ -145,7 +145,7 @@ You also need to install other GMT run-time dependencies separately:
 ### RHEL/CentOS/Fedora
 
 GMT binary packages are available from Extra Packages for Enterprise Linux (EPEL).
-However, EPEL is far hebind packaging a recent version. Thus, we provide a official
+However, EPEL is far hebind packaging a recent version. Thus, we provide an official
 RPM repository [genericmappingtools/gmt](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 powered by the Fedora Copr build system.
 
