@@ -2296,14 +2296,14 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    gmt image jpeg_image_with_three_bands.jpg+b0
+    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray 
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and
 
    ::
 
-    gmt image jpeg_image_with_three_bands.jpg+b2,1,0
+    gmt image jpeg_image_with_three_bands.jpg+b2,1,0 -jpg bgr
 
 will plot the same image in color but where the RGB band order has been reversed.
 

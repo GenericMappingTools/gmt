@@ -123,6 +123,7 @@ steps:
     set GMT_END_SHOW=off && call do_examples.bat
   displayName: Run DOS batch examples
   condition: eq(variables['TEST'], true)
+  enabled: false
 
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2

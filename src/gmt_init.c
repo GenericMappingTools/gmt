@@ -2726,7 +2726,8 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 
 
 /*! . */
-GMT_LOCAL void gmtinit_reset_history (struct GMT_CTRL *GMT) { 
+void gmt_reset_history (struct GMT_CTRL *GMT) { 
+	/* We must reset history when doing things like insets, new figure, etc. */
 	for (int id = 0; id < GMT_N_UNIQUE; id++) {
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);
 	}
@@ -2734,7 +2735,7 @@ GMT_LOCAL void gmtinit_reset_history (struct GMT_CTRL *GMT) {
 
 /*! . */
 void gmt_reload_history (struct GMT_CTRL *GMT) { 
-	gmtinit_reset_history (GMT);	/* First remove our memory */
+	gmt_reset_history (GMT);	/* First remove our memory */
 	gmtinit_get_history (GMT);	/* Get the latest history for current scope */
 }
 
@@ -12446,7 +12447,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				return GMT_NOTSET;
 			}
 			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmt_begin_module_sub ! */
-			gmtinit_reset_history (API->GMT);	/* A one-liner should have no history */
+			gmt_reset_history (API->GMT);	/* A one-liner should have no history */
 
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to call module begin from set_modern_mode_if_oneliner.\n");
