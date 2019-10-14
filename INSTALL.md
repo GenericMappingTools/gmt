@@ -20,8 +20,8 @@ for compiling GMT source package (either stable release or development version).
   * [Install via Macports](#install-via-macports)
   * [Install via fink](#install-via-fink)
 - [Linux](#linux)
-  * [Ubuntu/Debian](#ubuntudebian)
   * [RHEL/CentOS/Fedora](#rhelcentosfedora)
+  * [Ubuntu/Debian](#ubuntudebian)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 
@@ -142,13 +142,80 @@ You also need to install other GMT run-time dependencies separately:
 
 ## Linux
 
+### RHEL/CentOS/Fedora
+
+GMT binary packages are available from Extra Packages for Enterprise Linux (EPEL).
+However, EPEL is far hebind packaging a recent version. Thus, we provide a official
+RPM repository [genericmappingtools/gmt](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
+powered by the Fedora Copr build system.
+
+For Fedora, you can add the GMT official RPM repository and install gmt by:
+
+	# enable the RPM repository
+	dnf copr enable genericmappingtools/gmt
+
+	# Install the latest GMT provided by the RPM repository
+	dnf install gmt
+
+	# Update to the latest version if available
+	dnf update gmt
+
+For RHEL/CentOS 7, run:
+
+    # install epel-release and the copr plugin for yum
+	yum install epel-release yum-plugin-copr
+
+	# enable the RPM repository
+	yum copr enable genericmappingtools/gmt
+
+	# Install GMT
+	yum install gmt
+
+    # Update to the latest version if available
+	yum update gmt
+
+For RHEL/CentOS 6, run:
+
+    # install epel-release
+	yum install epel-release
+
+    # enable the genericmappingtools/gmt repostort
+	wget https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/repo/epel-6/genericmappingtools-gmt-epel-6.repo -O /etc/yum.repos.d/genericmappingtools-gmt-epel-6.repo
+
+    # Install the latest GMT provided by the RPM repository
+	yum install gmt
+
+    # Update to the latest version if available
+	yum update gmt
+
+You may also install other optional dependencies for more capabilities within GMT:
+
+    # For Fedora
+    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    dnf install GraphicsMagick ffmpeg gdal
+
+    # For RHEL/CentOS
+    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    yum install GraphicsMagick ffmpeg gdal
+
+**Note**:
+If you already installed the GMT packages provided by your distros,
+you have to uninstall them before installing the new GMT packages provided
+by the official GMT repository. You can uninstall the older packages by:
+
+    # For Fedora
+    dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+
+    # For RHEL/CentOS
+    yum uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+
+### Ubuntu/Debian
+
 **Note:** For mysterious reasons, many Linux distros are way behind in packing
 a recent GMT version. Typically you may find they offer 5.2.1 from 2015 while
 the rest of us have moved on to 2018. Your best bet then is to
 [build the latest release from source](BUILDING.md).
 Otherwise, installing from the distros goes like this:
-
-### Ubuntu/Debian
 
 Install GMT5 via
 
@@ -164,24 +231,6 @@ Install other GMT dependencies (some are optional) via:
 **Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
-
-### RHEL/CentOS/Fedora
-
-GMT binary packages are available from Extra Packages for Enterprise Linux.
-For RHEL and CentOS you can add this repository by telling yum:
-
-    sudo yum install epel-release
-
-then, you can install GMT5 via
-
-    sudo yum install GMT gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high dcw-gmt
-
-Install other GMT dependencies (some are optional) via:
-
-    # required
-    sudo yum install ghostscript
-    # optional
-    sudo yum install gdal
 
 ## Cross Platform Install Instructions
 
