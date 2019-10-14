@@ -145,8 +145,7 @@ You also need to install other GMT run-time dependencies separately:
 
 ### Fedora
 
-The Fedora official repositories provide GMT binary packages.
-However, the GMT binary packages are usually too old.
+The GMT binary packages provided by the Fedora official repositories are usually too old.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow Fedora users access the latest GMT releases in a easy way.
 
@@ -174,7 +173,6 @@ by the official GMT repository. You can uninstall the older packages by:
     dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### RHEL/CentOS
-
 
 GMT binary packages are available from Extra Packages for Enterprise Linux (EPEL).
 However, EPEL is far hebind packaging a recent version.
