@@ -182,7 +182,6 @@ to allow RHEL/CentOS users access the latest GMT releases in an easy way.
 For RHEL/CentOS, run:
 
     # install epel-release
-     and the copr plugin for yum
 	yum install epel-release
 
     # enable the RPM repository (RHEL/CentOS 7 ONLY)
