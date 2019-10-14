@@ -145,10 +145,10 @@ You also need to install other GMT run-time dependencies separately:
 
 ### Fedora
 
-The Fedora official repositories provide GMT binary packages, which can be installed
-via package manager `dnf`. However, the GMT binary packages are usually too old.
-We provide an official RPM repository [genericmappingtools/gmt](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
-to allow Fedora users access the latest GMT release in a easy way.
+The Fedora official repositories provide GMT binary packages.
+However, the GMT binary packages are usually too old.
+We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
+to allow Fedora users access the latest GMT releases in a easy way.
 
 Fedora users can add the GMT official RPM repository and install gmt by:
 
@@ -175,34 +175,26 @@ by the official GMT repository. You can uninstall the older packages by:
 
 ### RHEL/CentOS
 
+
 GMT binary packages are available from Extra Packages for Enterprise Linux (EPEL).
-However, EPEL is far hebind packaging a recent version. We provide a official
-RPM repository [genericmappingtools/gmt](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
-powered by the Fedora Copr build system.
+However, EPEL is far hebind packaging a recent version.
+We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
+to allow RHEL/CentOS users access the latest GMT releases in a easy way.
 
-For RHEL/CentOS 7, run:
-
-    # install epel-release and the copr plugin for yum
-	yum install epel-release yum-plugin-copr
-
-	# enable the RPM repository
-	yum copr enable genericmappingtools/gmt
-
-	# Install GMT
-	yum install gmt
-
-    # Update to the latest version if available
-	yum update gmt
-
-For RHEL/CentOS 6, run:
+For RHEL/CentOS, run:
 
     # install epel-release
+     and the copr plugin for yum
 	yum install epel-release
 
-    # enable the genericmappingtools/gmt repostort
-	wget https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/repo/epel-6/genericmappingtools-gmt-epel-6.repo -O /etc/yum.repos.d/genericmappingtools-gmt-epel-6.repo
+    # enable the RPM repository (RHEL/CentOS 7 ONLY)
+    yum install yum-plugin-copr
+	yum copr enable genericmappingtools/gmt
 
-    # Install the latest GMT provided by the RPM repository
+    # enable the RPM repository (RHEL/CentOS 6 ONLY)
+    wget https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/repo/epel-6/genericmappingtools-gmt-epel-6.repo -O /etc/yum.repos.d/genericmappingtools-gmt-epel-6.repo
+
+	# Install GMT
 	yum install gmt
 
     # Update to the latest version if available
