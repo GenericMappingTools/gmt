@@ -223,15 +223,10 @@ int main (int argc, char *argv[]) {
 					printf ("@echo off\n");
 				}
 #endif
-				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
+				if (type == 0 && txt && (strstr (txt, "csh") || strstr (txt, "tcsh")))	/* Got csh or tcsh */
 					type = 1;
-				if (txt) {	/* Use the actuall SHELL returned and add -e so script will exit upon error */
-					char *p = strrchr (txt, '/');
-					printf ("#!%s -e\n", txt);
-					printf ("%s GMT modern mode %s template\n", comment[type], &p[1]);
-				}
-				else if (type < 2) {
-					printf ("#!/usr/bin/env %s\n", shell[type]);
+				if (type < 2) {
+					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
