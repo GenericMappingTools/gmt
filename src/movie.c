@@ -873,7 +873,7 @@ GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 GMT_LOCAL bool line_is_a_comment (char *line) {
 	unsigned int k = 0;
 	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
-	return (line[k] == '#' || !strncmp (&line[k], "REM", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
+	return (line[k] == '#' || !strncmp (&line[k], "REM", 3U) || !strncmp (&line[k], "Rem", 3U) || !strncmp (&line[k], "rem", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
 }
 
 GMT_LOCAL bool is_gmt_module (char *line, char *module) {
