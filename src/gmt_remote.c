@@ -243,7 +243,6 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
 		time_spent = (long)(end - begin);
-		fprintf (stderr, "Time spent = %ld seconds\n", time_spent);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to download file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {

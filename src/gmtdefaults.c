@@ -144,7 +144,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Start with default params using SI settings */
 		if (Ctrl->D.mode == 'u')
-			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
+			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else
 		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
