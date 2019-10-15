@@ -2660,7 +2660,7 @@ int gmtinit_get_history (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
+int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	int id;
 	bool empty;
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
