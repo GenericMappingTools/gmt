@@ -489,31 +489,31 @@ run cmake again manually.
 **These recommendations are directed at package maintainers of GMT.**
 
 First split off DCW-GMT and GSHHG into separate architecture independent packages,
-e.g., gmt-dcw and gmt-gshhg, because they have a different development cycle.
-Files should go into directories `/usr/share/gmt-dcw/` and `/usr/share/gmt-gshhg/` or
-`/usr/share/gmt/{dcw,gshhg}/`. Then configure GMT as shown in the table below.
-It is expected that the GMT supplements plugin be distributed with the core programs.
+e.g., `dcw-gmt` and `gshhg-gmt`, because they have a different development cycle.
+Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt/` or
+`/usr/share/gmt/{dcw,gshhg}/`. Then configure GMT as shown below.
 
 ### DCW-GMT
 
 - **Homepage**: https://www.soest.hawaii.edu/pwessel/dcw/
 - **Summary**: Digital Chart of the World (DCW) for GMT
 - **License**: LGPL-3+
-- **Source**: https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
-			  ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
 - **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector
   basemap of the world available from the Princeton University Digital Map and Geospatial
   Information Center and from GeoCommunity at http://data.geocomm.com/readme/dcw/dcw.html.
   This data is for use by GMT, the Generic Mapping Tools.
-
 
 ### GSHHG
 
 - **Homepage**: https://www.soest.hawaii.edu/pwessel/gshhg/
 - **Summary**: Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
 - **License**: LGPL-3+
-- **Source**: https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
-			  ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
 - **Description**: GSHHG is a high-resolution shoreline data set amalgamated from
   two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
   and CIA World Data Bank II (WDBII). GSHHG contains vector descriptions at five different
@@ -523,10 +523,11 @@ It is expected that the GMT supplements plugin be distributed with the core prog
 ### GMT
 
 - **Homepage**: https://www.generic-mapping-tools.org/
-- **Summary**: The Generic Mapping Tools
+- **Summary**: Generic Mapping Tools
 - **License**: GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
-- **Source**: ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
-              ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
+- **Source**:
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
 - **Description**: GMT is an open source collection of ~130 tools for manipulating
   geographic and Cartesian data sets and producing PostScript illustrations ranging
   from simple x-y plots via contour maps to artificially illuminated surfaces and
@@ -556,7 +557,6 @@ It is expected that the GMT supplements plugin be distributed with the core prog
     - gshhg-gmt (at least the crude resolution GSHHG files are mandatory)
 - **CMake arguments**:
     ```
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo
     -DCMAKE_C_FLAGS=-fstrict-aliasing
     -DCMAKE_INSTALL_PREFIX=${prefix}
     -DDCW_ROOT=${prefix}/share/gmt/dcw
@@ -570,4 +570,6 @@ It is expected that the GMT supplements plugin be distributed with the core prog
     -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
     ```
 
-Note that you have to configure and build out-of-source. It is safe to make a parallel build with make -j. Please configure with CMAKE_BUILD_TYPE=RelWithDebInfo (appends -O2 -g to CFLAGS) so that we get reliable backtraces from sighandler.
+Note that you have to configure and build out-of-source.
+It is safe to make a parallel build with `make -j`.
+It is expected that the GMT supplements plugin be distributed with the core programs.
