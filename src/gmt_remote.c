@@ -645,7 +645,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 		}
-		GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
+		else if (curl_err == CURLE_COULDNT_CONNECT)
+			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
 	}
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
