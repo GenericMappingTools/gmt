@@ -2570,7 +2570,7 @@ void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
 }
 
 /*! . */
-int gmtinit_get_history (struct GMT_CTRL *GMT) {
+int gmt_get_history (struct GMT_CTRL *GMT) {
 	int id;
 	size_t len = strlen ("BEGIN GMT " GMT_PACKAGE_VERSION);
 	bool done = false, process = false;
@@ -2582,7 +2582,7 @@ int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmtinit_get_history\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmt_get_history\n");
 
 	/* This is called once per GMT Session by GMT_Create_Session via gmt_begin and before any GMT_* module is called.
 	 * It loads in the known shorthands found in the gmt.history file
@@ -2654,13 +2654,13 @@ int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	gmtinit_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmt_get_history\n");
 
 	return (GMT_NOERROR);
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
+int gmt_put_history (struct GMT_CTRL *GMT) {
 	int id;
 	bool empty;
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
@@ -2726,7 +2726,8 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 
 
 /*! . */
-GMT_LOCAL void gmtinit_reset_history (struct GMT_CTRL *GMT) { 
+void gmt_reset_history (struct GMT_CTRL *GMT) { 
+	/* We must reset history when doing things like insets, new figure, etc. */
 	for (int id = 0; id < GMT_N_UNIQUE; id++) {
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);
 	}
@@ -2734,8 +2735,8 @@ GMT_LOCAL void gmtinit_reset_history (struct GMT_CTRL *GMT) {
 
 /*! . */
 void gmt_reload_history (struct GMT_CTRL *GMT) { 
-	gmtinit_reset_history (GMT);	/* First remove our memory */
-	gmtinit_get_history (GMT);	/* Get the latest history for current scope */
+	gmt_reset_history (GMT);	/* First remove our memory */
+	gmt_get_history (GMT);	/* Get the latest history for current scope */
 }
 
 /*! . */
@@ -5303,7 +5304,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-void gmtinit_conf (struct GMT_CTRL *GMT) {
+void gmt_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
 	/* Initialize all the settings to standard SI settings */
@@ -5645,11 +5646,11 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
-		gmtinit_conf_US (GMT);	/* Override with US settings */
+		gmt_conf_US (GMT);	/* Override with US settings */
 }
 
 /*! . */
-void gmtinit_conf_US (struct GMT_CTRL *GMT) {
+void gmt_conf_US (struct GMT_CTRL *GMT) {
 	int i, case_val;
 	/* Update the settings to US where they differ from standard SI settings:
 	 *     Setting			SI			US
@@ -6538,8 +6539,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
-			gmt_message (GMT, "\t-l Add symbol or line to the legend; append label string.  Optionally, append any of\n");
-			gmt_message (GMT, "\t   +d<pen>, +f<font>, +g<gap>, +h<header>, +j<just>, +n<cols>, +s<size>, +v[<pen>], and +x<scale>.\n");
+			gmt_message (GMT, "\t-l Add a symbol or line to the legend; append symbol label.  Optionally, add any of the legend codes\n");
+			gmt_message (GMT, "\t   +d<pen>, +f<font>, +g<gap>, +h<header>, +l[<just>/]<txt>, +n<cols>, +s<size>, +v[<pen>].\n");
+			gmt_message (GMT, "\t   You can also choose legend placement codes +j<just> and +x<scale>, corresponding\n");
+			gmt_message (GMT, "\t   to legend options -DJ<just> and -S<scale>.\n");
 			break;
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
@@ -8078,7 +8081,7 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 	return (err);
 }
 
-#define GMT_OPTION_L_MODIFIERS "dfghjnsvwx"	/* All the modifiers available to -l */
+#define GMT_OPTION_L_MODIFIERS "dfghjlnsvwx"	/* All the modifiers available to -l */
 
 /*! Parse the legend-building option -l */
 int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
@@ -8100,9 +8103,22 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_D], &txt[1], GMT_LEN32-1);
 					break;
 				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);		break;	/* Font to use for this -l entry */
-				case 'g': GMT->common.l.item.gap = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Gap before next item */
-				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1);		break;	/* Legend header */
+				case 'g': strncpy (GMT->common.l.item.gap, &txt[1], GMT_LEN32-1);		break;	/* Gap before next item */
+				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1); 		break;	/* Legend header */
 				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
+				case 'l': if (txt[2] == '/') {	/* Gave <code>/<label> */
+						if (!strchr ("LCRlcr", txt[1])) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-l +l<just>/<label> has bad justification %c\n", txt[1]);
+							return GMT_PARSE_ERROR;
+						}
+						strncpy (GMT->common.l.item.subheader, &txt[3], GMT_LEN128-1);	break;	/* Legend label */
+						GMT->common.l.item.code = txt[1];	/* Justification code */
+					}
+					else {
+						strncpy (GMT->common.l.item.subheader, &txt[1], GMT_LEN128-1);	break;	/* Legend label default left justified */
+						GMT->common.l.item.code = 'L';
+					}
+					break;
 				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);				break;	/* Number of columns */
 				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Fixed size for a symbol */
 				case 'v': /* Draw vertical line(s) */
@@ -11592,7 +11608,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 
 	unsigned int i;
 
-	gmtinit_put_history (GMT);
+	gmt_put_history (GMT);
 
 	/* Remove font structures */
 	gmt_M_free (GMT, GMT->session.font);
@@ -11952,6 +11968,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 		}
 		if (row >= P->nrows || col >= P->ncolumns) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)\n", row, col, P->nrows, P->ncolumns);
+			GMT_Report (API, GMT_MSG_NORMAL, "Note: Subplot panel first index starts at 0 or 0,0\n");
 			fclose (fp);
 			return NULL;
 		}
@@ -12446,7 +12463,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				return GMT_NOTSET;
 			}
 			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmt_begin_module_sub ! */
-			gmtinit_reset_history (API->GMT);	/* A one-liner should have no history */
+			gmt_reset_history (API->GMT);	/* A one-liner should have no history */
 
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to call module begin from set_modern_mode_if_oneliner.\n");
@@ -13158,7 +13175,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/*
 	if (GMT->parent->external) {
-		gmtinit_conf (GMT);
+		gmt_conf (GMT);
 		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
 	}
 	*/
@@ -15224,7 +15241,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
-	gmtinit_conf (GMT);	/* Initialize the standard GMT system default settings */
+	gmt_conf (GMT);	/* Initialize the standard GMT system default settings */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_getdefaults\n");
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
@@ -15252,7 +15269,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Set default for -n parameters */
 	GMT->common.n.antialias = true; GMT->common.n.interpolant = BCR_BICUBIC; GMT->common.n.threshold = 0.5;
 
-	gmtinit_get_history (GMT);	/* Process and store command shorthands passed to the application */
+	gmt_get_history (GMT);	/* Process and store command shorthands passed to the application */
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmtinit_setshorthand (GMT);	/* Load the short hand mechanism from gmt.io */
 
@@ -15676,7 +15693,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				gmt_M_free (API->GMT, fig);
 				return error;
 			}
-			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
+			gmt_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
@@ -16012,12 +16029,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	double size;
 	FILE *fp = NULL;
 
-	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+n<cols>][+s<size>][+v[<pen>]][+w<length>][+x<scale>]
+	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+<just>][+l[<code>/]<label>][+n<cols>][+s<size>][+v[<pen>]][+w<length>][+x<scale>]
 	 *
 	 * +d corresponds to command D in the legend codes and draws a horizontal line.
 	 * +f sets the font to use the header string [FONT_HEADER].
 	 * +g corresponds to command G in the legend codes and adds a gap before current item.
 	 * +h corresponds to command H in the legend codes and places a legend header (see +f).
+	 * +j -Dj?? as to where to place legend
+	 * +l corresponds to command L in the legend codes and places a line subheader (see +f).
 	 * +n corresponds to command N in the legend codes and changes the number of columns.
 	 * +s sets symbol size or line length for symbols that otherwise won't have a dimension.
 	 * +v corresponds to command V in the legend codes and starts/ends a vertical line.
@@ -16049,8 +16068,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "# LEGEND_WIDTH: %gi\n", item->width);
 		if (item->ncols > 1)	/* Specified +n up front */
 			fprintf (fp, "# LEGEND_NCOLS: %d\n", item->ncols);
-		if (!gmt_M_is_zero (item->gap)) {	/* Want to place a gap first, even before any title */
-			fprintf (fp, "G %gi\n", item->gap);
+		if (item->gap[0]) {	/* Want to place a gap first, even before any title */
+			fprintf (fp, "G %s\n", item->gap);
 			gap_done = true;	/* So we don't do it again below */
 		}
 		if (item->header[0]) {	/* Want to place a centered legend header first */
@@ -16074,11 +16093,17 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
-	if (!gap_done && !gmt_M_is_zero (item->gap))	/* Always place a gap first, if requested, and not already done before title */
-		fprintf (fp, "G %gi\n", item->gap);
+	if (!gap_done && item->gap[0])	/* Always place a gap first, if requested, and not already done before title */
+		fprintf (fp, "G %s\n", item->gap);
 	/* Horizontal lines are normally drawn before the symbol placement */
 	if ((item->draw & GMT_LEGEND_DRAW_D) && ((item->draw & GMT_LEGEND_DRAW_V) == 0 || item->pen[GMT_LEGEND_PEN_V][0] == '\0'))
 		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);	/* Draw horizontal line, if requested, before symbol */
+	if (item->subheader[0]) {	/* Want to place a line header first */
+		if (item->font[0])	/* Use the given font */
+			fprintf (fp, "L %s %c %s\n", item->font, item->code, item->subheader);
+		else	/* Default to FONT_LABEL setting */
+			fprintf (fp, "L - %c %s\n", item->code, item->subheader);
+	}
 	if (item->ncols > 0)	/* Specified a different number of columns */
 		fprintf (fp, "N %d\n", item->ncols);
 	if (((item->draw & GMT_LEGEND_DRAW_V) && item->pen[GMT_LEGEND_PEN_V][0] == '\0'))	/* Initialize the vertical line setting */
@@ -16149,6 +16174,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 	
 	if (*width == 0.0)	/* Best estimate of legend box width from longest string in the labels and space needed for symbols, plus 5 % */
 		*width = ncols * (GMT_LEGEND_DX2_MUL * (*scale) * W_max + N_max * 1.05 * GMT_LET_WIDTH * API->GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
+	if (ncols == 1) *width = 0.0;	/* Set in PostScript */
 	return true;
 }
 
@@ -16199,7 +16225,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
-			gmtinit_conf (API->GMT);			/* Get the original system defaults */
+			gmt_conf (API->GMT);				/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */

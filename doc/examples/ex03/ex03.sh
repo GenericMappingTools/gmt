@@ -48,7 +48,7 @@ gmt begin ex03
 		gmt subplot set 0,0 -A"Input Power"
 		gmt plot spectrum.xpower -JX-?l/?l -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p -lShip
 		gmt plot spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p -lSatellite
-		gmt legend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold
+		gmt legend -DjBL+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold
 		gmt subplot set 1,0 -A"Coherency@+2@+"
 		gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
 	gmt subplot end

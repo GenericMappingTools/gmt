@@ -55,16 +55,18 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 #define FSET	3	/* Index into R.active[] for "got -R -I -r from a grid file" */
 
 struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
-	char label[GMT_LEN128];		/* The label to go with the symbol */
-	char header[GMT_LEN128];	/* Header for the whole legend */
-	char font[GMT_LEN32];		/* Fontsize to use */
+	char label[GMT_LEN128];		/* The symbol label */
+	char header[GMT_LEN128];	/* Header for the whole legend H */
+	char subheader[GMT_LEN128];	/* Subheader, i.e., line label L*/
+	char font[GMT_LEN32];		/* Fontsize to use for current H or L */
+	char gap[GMT_LEN32];		/* Move this much down before placing symbol entry */
 	char pen[2][GMT_LEN32];		/* Pens to use with +d and +v */
 	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
 	int just;			/* Legend placement [TR] */
-	double size;		/* Fixed symbol size when otherwise cannot set it */
-	double scale;		/* Scale all given sizes, including +s<length> of a line */
-	double width;		/* Override auto-width with a fixed legend width */
-	double gap;			/* Move this much down before placing symbol entry */
+	char code;			/* Label justification code (L|C|R) [L] */
+	double size;			/* Fixed symbol size when otherwise cannot set it */
+	double scale;			/* Scale all given sizes, including +s<length> of a line */
+	double width;			/* Override auto-width with a fixed legend width */
 	unsigned int ncols;		/* How many columns to use for symbols */
 };
 
