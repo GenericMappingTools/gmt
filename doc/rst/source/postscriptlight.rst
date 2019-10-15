@@ -323,7 +323,7 @@ affect the current state of parameters such as line and fill attributes.
     PDF transparency, set *rgb*\ [3] to a value between 0 (opaque) and 1
     (fully transparent).
 
-**long PSL_setcurrentpoin** (**struct PSL_CTRL** *\*P*, **double**
+**long PSL_setcurrentpoint** (**struct PSL_CTRL** *\*P*, **double**
 *x*, **double** *y*)
 
     Sets the current point to the location given by (*x*, *y*).
