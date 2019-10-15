@@ -193,7 +193,7 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 
 /* Deal with hash values of cache/data files */
 
-#define GMT_HASH_TIME_OUT 5L	/* Not waiting longer than this to time out on getting the hash file */
+#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig) {
 	int curl_err = 0;
