@@ -217,15 +217,16 @@ int main (int argc, char *argv[]) {
 				char *comment[3] = {"#", "#", "REM"};
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
 				if ((s = strchr (argv[arg_n], '=')) && s[1]) {	/* Gave a specific script language name */
-					if ((strstr (&s[1], shell[0]) || strstr (&s[1], shell[1]) || strstr (&s[1], shell[2])))
+					if ((strstr (&s[1], shell[0]) || strstr (&s[1], shell[1]) || strstr (&s[1], shell[2]) || strstr (&s[1], "dos")))
 						txt = &s[1];
 					else
 						fprintf (stderr, "gmt: ERROR: --new-script language %s not recognized; default to bash\n\n", &s[1]);
 				}
 				else if ((txt = getenv ("shell")) == NULL) 
 					txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
-				if (txt && !strcmp (txt, "batch")) {	/* User asked for batch */
+				if (txt && (!strcmp (txt, "batch") || !strcmp (txt, "dos"))) {	/* User asked for batch */
 					type = 2;
+					txt = shell[type];
 					printf ("@echo off\n");
 				}
 #ifdef WIN32
