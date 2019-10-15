@@ -211,7 +211,7 @@ int main (int argc, char *argv[]) {
 
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
-				unsigned int type = 0;
+				unsigned int type = 0;	/* Default is bash */
 				time_t right_now = time (NULL);
 				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
 				char *comment[3] = {"#", "#", "REM"};
@@ -222,22 +222,22 @@ int main (int argc, char *argv[]) {
 					else
 						fprintf (stderr, "gmt: ERROR: --new-script language %s not recognized; default to bash\n\n", &s[1]);
 				}
-				else if ((txt = getenv ("shell")) == NULL) 
+				else if ((txt = getenv ("shell")) == NULL) /* Likely not in a csh-type environment, try the Bourne shell enviroment variable SHELL */
 					txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
 				if (txt && (!strcmp (txt, "batch") || !strcmp (txt, "dos"))) {	/* User asked for batch */
-					type = 2;
-					txt = shell[type];
-					printf ("@echo off\n");
+					type = 2;		/* Select batch */
+					txt = shell[type];	/* Since user may have typed dos instead of batch */
+					printf ("@echo off\n");	/* Turn of the default echo-ing of commands */
 				}
 #ifdef WIN32
 				else if (txt == NULL) {	/* Assume batch if no shell setting exist under Windows */
-					type = 2;
-					printf ("@echo off\n");
+					type = 2;		/* Select batch */
+					printf ("@echo off\n");	/* Turn of the default echo-ing of commands */
 				}
 #endif
 				if (type == 0 && txt && (strstr (txt, "csh") || strstr (txt, "tcsh")))	/* Got csh or tcsh */
-					type = 1;
-				if (type < 2) {
+					type = 1;	/* Select csh */
+				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
