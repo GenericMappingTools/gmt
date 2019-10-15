@@ -12,14 +12,14 @@ gmt mapproject pt.txt -J+proj=eqdc+ellps=WGS84+units=m+lat_1=60+lat_2=0 | gmt ma
 gmt mapproject pt.txt -J+proj=hammer+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 370843.923425 SUB -C1 5630047.232233 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=lcc+ellps=WGS84+units=m+lat_1=20n+lat_2=60n | gmt math -o1 STDIN -C0 319700.820572 SUB -C1 5828852.504871 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=merc+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 545131.546415 SUB -C1 6833623.829215 SUB 0 COL HYPOT 0.01 GT = >> results.txt
-gmt mapproject pt.txt -J+proj=mill+ellps=WGS84+units=m+wktext | gmt math -o1 STDIN -C0 545131.546415 SUB -C1 6431916.372717 SUB 0 COL HYPOT 0.01 GT = >> results.txt
+# gmt mapproject pt.txt -J+proj=mill+ellps=WGS84+units=m+wktext | gmt math -o1 STDIN -C0 545131.546415 SUB -C1 6431916.372717 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=moll+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 360567.451176 SUB -C1 6119459.421291 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=poly+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 333274.269648 SUB -C1 5815908.957562 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 # gmt mapproject pt.txt -J+proj=robin+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 394576.507489 SUB -C1 5571243.439235 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=sinu+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 333528.909809 SUB -C1 5804625.044313 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=tmerc+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 333425.492136 SUB -C1 5815921.814396 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 #gmt mapproject pt.txt -J+proj=utm+ellps=WGS84+units=m+lon_0=11d32'00E | gmt math -o1 STDIN -C0 220721.998929 SUB -C1 5810228.672907 SUB 0 COL HYPOT 0.01 GT = >> results.txt
-gmt mapproject pt.txt -J+proj=vandg+ellps=WGS84+units=m+wktext | gmt math -o1 STDIN -C0 489005.929978 SUB -C1 6431581.024949 SUB 0 COL HYPOT 0.01 GT = >> results.txt
+# gmt mapproject pt.txt -J+proj=vandg+ellps=WGS84+units=m+wktext | gmt math -o1 STDIN -C0 489005.929978 SUB -C1 6431581.024949 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=omerc+ellps=WGS84+units=m+lat_1=20n+lat_2=60n+lon_1=1e+lon_2=30e+wktext | gmt math -o1 STDIN -C0 1009705.329154 SUB -C1 5829437.254923 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=oea+ellps=WGS84+units=m+lat_1=20n+lat_2=60n+lon_1=1e+lon_2=30e+m=1+n=1 | gmt math -o1 STDIN -C0 545723.850088 SUB -C1 5058869.127694 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 # The airy test is failing for GDAL3 for its own (GDAL) reasons.
