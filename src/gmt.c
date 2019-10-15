@@ -213,12 +213,23 @@ int main (int argc, char *argv[]) {
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
 				unsigned int type = 0;
 				time_t right_now = time (NULL);
-				char *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
+				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
 				char *comment[3] = {"#", "#", "REM"};
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
-				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+				if ((s = strchr (argv[arg_n], '=')) && s[1]) {	/* Gave a specific script language name */
+					if ((strstr (&s[1], shell[0]) || strstr (&s[1], shell[1]) || strstr (&s[1], shell[2])))
+						txt = &s[1];
+					else
+						fprintf (stderr, "gmt: ERROR: --new-script language %s not recognized; default to bash\n\n", &s[1]);
+				}
+				else if ((txt = getenv ("shell")) == NULL) 
+					txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+				if (txt && !strcmp (txt, "batch")) {	/* User asked for batch */
+					type = 2;
+					printf ("@echo off\n");
+				}
 #ifdef WIN32
-				if (txt == NULL) {	/* Assume batch if no shell setting exist under Windows */
+				else if (txt == NULL) {	/* Assume batch if no shell setting exist under Windows */
 					type = 2;
 					printf ("@echo off\n");
 				}
@@ -275,7 +286,8 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
-			fprintf (stderr, "  --new-script      Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "  --new-script[=L]  Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell]\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
