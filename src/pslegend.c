@@ -759,7 +759,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
 		def_size = 0.5 / 2.54;	/* In inches */
 	if (def_dx2 == 0.0)	/* No dist to texl label given; default to 2x*/
-		def_dx2 = GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
+		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
 		int n_lines;
