@@ -2570,7 +2570,7 @@ void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
 }
 
 /*! . */
-int gmtinit_get_history (struct GMT_CTRL *GMT) {
+int gmt_get_history (struct GMT_CTRL *GMT) {
 	int id;
 	size_t len = strlen ("BEGIN GMT " GMT_PACKAGE_VERSION);
 	bool done = false, process = false;
@@ -2582,7 +2582,7 @@ int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmtinit_get_history\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmt_get_history\n");
 
 	/* This is called once per GMT Session by GMT_Create_Session via gmt_begin and before any GMT_* module is called.
 	 * It loads in the known shorthands found in the gmt.history file
@@ -2654,13 +2654,13 @@ int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	gmtinit_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmt_get_history\n");
 
 	return (GMT_NOERROR);
 }
 
 /*! . */
-int gmtinit_put_history (struct GMT_CTRL *GMT) {
+int gmt_put_history (struct GMT_CTRL *GMT) {
 	int id;
 	bool empty;
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
@@ -2736,7 +2736,7 @@ void gmt_reset_history (struct GMT_CTRL *GMT) {
 /*! . */
 void gmt_reload_history (struct GMT_CTRL *GMT) { 
 	gmt_reset_history (GMT);	/* First remove our memory */
-	gmtinit_get_history (GMT);	/* Get the latest history for current scope */
+	gmt_get_history (GMT);	/* Get the latest history for current scope */
 }
 
 /*! . */
@@ -5304,7 +5304,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-void gmtinit_conf (struct GMT_CTRL *GMT) {
+void gmt_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
 	/* Initialize all the settings to standard SI settings */
@@ -5646,11 +5646,11 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
-		gmtinit_conf_US (GMT);	/* Override with US settings */
+		gmt_conf_US (GMT);	/* Override with US settings */
 }
 
 /*! . */
-void gmtinit_conf_US (struct GMT_CTRL *GMT) {
+void gmt_conf_US (struct GMT_CTRL *GMT) {
 	int i, case_val;
 	/* Update the settings to US where they differ from standard SI settings:
 	 *     Setting			SI			US
@@ -11593,7 +11593,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 
 	unsigned int i;
 
-	gmtinit_put_history (GMT);
+	gmt_put_history (GMT);
 
 	/* Remove font structures */
 	gmt_M_free (GMT, GMT->session.font);
@@ -13160,7 +13160,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/*
 	if (GMT->parent->external) {
-		gmtinit_conf (GMT);
+		gmt_conf (GMT);
 		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
 	}
 	*/
@@ -15226,7 +15226,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
-	gmtinit_conf (GMT);	/* Initialize the standard GMT system default settings */
+	gmt_conf (GMT);	/* Initialize the standard GMT system default settings */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_getdefaults\n");
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
@@ -15254,7 +15254,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Set default for -n parameters */
 	GMT->common.n.antialias = true; GMT->common.n.interpolant = BCR_BICUBIC; GMT->common.n.threshold = 0.5;
 
-	gmtinit_get_history (GMT);	/* Process and store command shorthands passed to the application */
+	gmt_get_history (GMT);	/* Process and store command shorthands passed to the application */
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmtinit_setshorthand (GMT);	/* Load the short hand mechanism from gmt.io */
 
@@ -15678,7 +15678,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				gmt_M_free (API->GMT, fig);
 				return error;
 			}
-			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
+			gmt_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
@@ -16201,7 +16201,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
-			gmtinit_conf (API->GMT);			/* Get the original system defaults */
+			gmt_conf (API->GMT);				/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
