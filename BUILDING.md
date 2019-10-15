@@ -501,9 +501,10 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
 - **Source**:
   - https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
   - ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
-- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector
-  basemap of the world available from the Princeton University Digital Map and Geospatial
-  Information Center and from GeoCommunity at http://data.geocomm.com/readme/dcw/dcw.html.
+- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector basemap of the world,
+  available from the Princeton University Digital Map and Geospatial Information Center.
+  It contains more state boundaries (the largest 8 countries are now represented) than the original data source.
+  Information about DCW can be found on Wikipedia (https://en.wikipedia.org/wiki/Digital_Chart_of_the_World).
   This data is for use by GMT, the Generic Mapping Tools.
 
 ### GSHHG
