@@ -410,6 +410,7 @@ EXTERN_MSC int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], i
 EXTERN_MSC int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image);
 EXTERN_MSC int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture);
 EXTERN_MSC int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode);
+EXTERN_MSC int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y);
 EXTERN_MSC int PSL_setexec (struct PSL_CTRL *PSL, int action);
 EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding);
 EXTERN_MSC int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset);

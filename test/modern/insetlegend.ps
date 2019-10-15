@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_30d210f_2019.10.11 [64-bit] Document from psbasemap
+%%Title: GMT v6.0.0_ae8e825_2019.10.15 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Oct 11 14:04:26 2019
+%%CreationDate: Tue Oct 15 09:51:51 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -1079,28 +1079,53 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pslegend -DjLT+w1.1833i+o0.2c -F+p1p+gwhite -S0.5 -R0/7/3/7 -JX15c
+%@GMT: gmt pslegend -DjLT+w0i+o0.2c -F+p1p+gwhite -S0.5 -R0/7/3/7 -JX15c
 %@PROJ: xy 0.00000000 7.00000000 3.00000000 7.00000000 0.000 7.000 3.000 7.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+/PSL_legend_label_width 0 def
+/PSL_legend_string_width 0 def
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+267 F0
+(LEGEND) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_string_width gt { /PSL_legend_string_width PSL_tmp_w def } if
+200 F0
+(Apples) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+(My Lines) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+(Oranges) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+/PSL_tmp_w 354 def
+/PSL_legend_clear_x 133 def
+/PSL_tmp_w PSL_tmp_w PSL_legend_label_width add def
+/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_legend_clear_x add def
+/PSL_legend_box_height 1197 def
 94 764 T
-{1 A} FS
-1197 1420 710 598 Sr
-4 W
-N 0 782 M 1420 0 D S
+PSL_legend_box_width PSL_legend_box_height sub 0 2 div mul neg 0 translate
+V
 17 W
-FQ
+{1 A} FS
 O1
-1197 1420 710 598 Sr
+0 0 M PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N
+U
+0 890 M
+PSL_legend_box_width 2 div 0 G
+267 F0
+(LEGEND) bc Z
+4 W
+/PSL_legend_hor_off 0 def
+0 782 M
+PSL_legend_box_width PSL_legend_hor_off sub 0 D S
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R0/3.2126/0/1.7126 -Jx1i -O -K -N -S @GMTAPI@-000002 --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false
+%@GMT: gmt psxy -R0/3.2126/0/1.7126 -Jx1i -O -K -N -S @GMTAPI@-000001 --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 3.21260000 0.00000000 1.71260000 0.000 3.213 0.000 1.713 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1111,16 +1136,16 @@ V
 {0.565 0.933 0.565 C} FS
 O1
 0 W
-45 303 617 Sc
+45 185 617 Sc
 FQ
 25 W
 0.745 A
-118 303 397 S-
+118 185 397 S-
 {1 0.647 0 C} FS
 O0
 4 W
 0 A
-45 303 177 St
+45 185 177 St
 U
 %%EndObject
 0 A
@@ -1129,20 +1154,18 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/3.2126/0/1.7126 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
+%@GMT: gmt pstext -R0/3.2126/0/1.7126 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002 --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 3.21260000 0.00000000 1.71260000 0.000 3.213 0.000 1.713 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-710 890 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-267 F0
-(LEGEND) bc Z
-539 547 M 200 F0
+421 547 M 200 F0
 (Apples) bl Z
-539 327 M (My Lines) bl Z
-539 107 M (Oranges) bl Z
+421 327 M (My Lines) bl Z
+421 107 M (Oranges) bl Z
 %%EndObject
+PSL_legend_box_width PSL_legend_box_height sub 0 2 div mul 0 translate
 -94 -764 T
 %%EndObject
 PSL_inset_clip 1 eq {cliprestore /PSL_inset_clip 0 def} if
