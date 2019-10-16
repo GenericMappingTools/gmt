@@ -68,7 +68,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _inset_begin-F:
+.. _-F:
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the map inset using
@@ -86,7 +86,7 @@ Optional Arguments
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
-.. _inset_begin-M:
+.. _-M:
 
 **-M**\ *margins*
     This is clearance that is added around the inside of the inset.  Plotting will take place
@@ -94,12 +94,12 @@ Optional Arguments
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
     separate left, right, bottom, and top margins) [no margins].
 
-.. _inset_begin-N:
+.. _-N:
 
 **-N**
-    Do NOT clip features extruding outside map inset boundaries [Default will clip]. 
+    Do NOT clip features extruding outside map inset boundaries [Default will clip].
 
-.. _inset_begin-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
