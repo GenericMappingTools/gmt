@@ -692,7 +692,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	 * GMT_Create_Session so at this point it is already stored in memory.  Hence we need to reset all of that before we
 	 * parse the common and specific arguments to this module */
 	
-	if (!strcmp (opt->arg, "begin") && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, options)))	/* Called gmt subplot begin */
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, options)) && !strcmp (opt->arg, "begin"))	/* Called gmt subplot begin */
 		gmt_reset_history (API->GMT);	/* Remove any history obtained by GMT_Create_Session */
 
 	/* Parse the command-line arguments */
