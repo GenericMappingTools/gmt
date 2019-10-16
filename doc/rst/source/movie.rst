@@ -220,8 +220,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *workdir*
-    In addition to the current directory, the *prefix* directory, and any directories specified via the
-    GMT defaults setting :ref:`DIR_DATA <DIR_DATA>`, add *workdir* as a place to scan for data files needed by the scripts.
+    By default, all temporary files and frame PNG file are built in the subdirectory *prefix* set via **-N**.
+    You can override that by giving another *workdir* as a relative or full directory path.
 
 .. _-Z:
 
@@ -266,8 +266,7 @@ Data Files
 The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
-require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting
-or specified via **-W**.
+require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting.
 
 Your Canvas
 -----------
