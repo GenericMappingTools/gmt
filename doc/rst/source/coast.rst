@@ -52,11 +52,9 @@ Examples
 To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at
-scale 0.1 inch/degree, use
+scale 0.1 inch/degree, use::
 
-   ::
-
-    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,-
+    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- \
                 -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -pdf africa
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
