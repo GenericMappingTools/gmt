@@ -192,8 +192,7 @@ distance calculations, you need:
 
    ::
 
-    gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 \
-        -Nl6 -R150/250/10/40 -I0.5 -V
+    gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
 
 Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
