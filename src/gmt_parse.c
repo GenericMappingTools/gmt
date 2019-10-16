@@ -309,9 +309,16 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
-				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					gmt_M_str_free (GMT->init.history[id]);
-					GMT->init.history[id] = strdup (&str[1]);
+				if (remember) {
+					if (str[1] == 'Z' || str[1] == 'z') {
+						int z_id = gmt_get_option_id (0, "Z");
+						gmt_M_str_free (GMT->init.history[z_id]);
+						GMT->init.history[z_id] = strdup (&str[1]);
+					}
+					else {
+						gmt_M_str_free (GMT->init.history[id]);
+						GMT->init.history[id] = strdup (&str[1]);
+					}
 				}
 				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
 			}
