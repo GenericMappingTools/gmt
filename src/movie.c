@@ -820,7 +820,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					"Syntax error -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.frame < Ctrl->T.start_frame,
 					"Syntax error -M: Cannot specify a frame before the first frame number set via -T\n");
-	
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && !strcmp (Ctrl->W.dir, "/tmp"),
+					"Syntax error option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
+
 	if (n_errors) return (GMT_PARSE_ERROR);	/* No point going further */
 	
 	/* Note: We open script files for reading below since we are changing cwd later and sometimes need to rewind and re-read */
