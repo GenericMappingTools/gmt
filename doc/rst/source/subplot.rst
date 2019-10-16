@@ -29,6 +29,8 @@ Synopsis (begin mode)
 [ **-S**\ *layout* ]
 [ **-T**\ *title* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -166,6 +168,10 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
+
+.. include:: explain_-XY.rst_
 
 .. include:: explain_help.rst_
 
