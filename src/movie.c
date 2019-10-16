@@ -1085,19 +1085,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (datadir, "%s,%s,%s", topdir, cwd, GMT->session.DATADIR);	/* Start with topdir */
 	else	/* Set the initial and prefix subdirectory as data dirs */
 		sprintf (datadir, "%s,%s", topdir, cwd);
-	if (Ctrl->W.active && strlen (Ctrl->W.dir) > 2) {	/* Also append a specific work directory with data files that we should search */
-		char work_dir[PATH_MAX] = {""};
-#ifdef WIN32
-		if (Ctrl->W.dir[1] != ':') /* Not hard path */
-#else
-		if (Ctrl->W.dir[0] != '/') /* Not hard path */
-#endif
-			/* Prepend cwd to the given relative path and update Ctrl->D.dir */
-			sprintf (work_dir, ",%s,%s", topdir, Ctrl->W.dir);
-		else
-			sprintf (work_dir, ",%s", Ctrl->W.dir);
-		strcat (datadir, work_dir);
-	}
+
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
 	
 	/* Create the initialization file with settings common to all frames */
@@ -1518,7 +1506,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
 		set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
 		fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, topdir);	/* Move master plot up to top dir */
-		fprintf (fp, "cd ..\n");	/* cd up to prefix dir */
+		fprintf (fp, "cd ..\n");	/* cd up to workdir */
 		if (!Ctrl->Q.active) {	/* Remove the work dir and any files in it */
 			set_comment (fp, Ctrl->In.mode, "Remove frame directory");
 			fprintf (fp, "%s master\n", rmdir[Ctrl->In.mode]);
