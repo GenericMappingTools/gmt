@@ -59,8 +59,10 @@ EXTERN_MSC struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fi
 EXTERN_MSC int get_V (char arg);
 EXTERN_MSC int gmt_get_V (char arg);
 EXTERN_MSC char gmt_set_V (int mode);
-EXTERN_MSC void gmtinit_conf_US (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmtinit_conf (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_conf_US (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_conf (struct GMT_CTRL *GMT);
+EXTERN_MSC int gmt_put_history (struct GMT_CTRL *GMT);
+EXTERN_MSC int gmt_get_history (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size);
 EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, double gap[], char *label, unsigned int first);
 EXTERN_MSC int gmt_get_current_figure (struct GMTAPI_CTRL *API);

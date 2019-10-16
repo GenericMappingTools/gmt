@@ -193,7 +193,7 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 
 /* Deal with hash values of cache/data files */
 
-#define GMT_HASH_TIME_OUT 5L	/* Not waiting longer than this to time out on getting the hash file */
+#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig) {
 	int curl_err = 0;
@@ -243,7 +243,6 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
 		time_spent = (long)(end - begin);
-		fprintf (stderr, "Time spent = %ld seconds\n", time_spent);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to download file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {
@@ -645,7 +644,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 		}
-		GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
+		else if (curl_err == CURLE_COULDNT_CONNECT)
+			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
 	}
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */

@@ -163,7 +163,7 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Start with the system defaults settings which were loaded by GMT_Create_Session */
 		gmtinit_update_keys (GMT, false);
 		if (Ctrl->D.mode == 'u')
-			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
+			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else if (Ctrl->C.active)
 		gmt_getdefaults (GMT, ".gmtdefaults4");

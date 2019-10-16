@@ -166,7 +166,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
+	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
@@ -221,7 +222,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    Alternatively, you can also use +s.  If no label is given then you msut set it when the subplot is plotted via -B.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +p if y-axes annotations should be parallel to axis [horizontal].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify a main heading to be centered above the figure [none].\n");
-	GMT_Option (API, "V.");
+	GMT_Option (API, "VX.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -669,7 +670,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, command[GMT_LEN256] = {""};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_DATASET *D = NULL, *L = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct SUBPLOT_CTRL *Ctrl = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -685,10 +686,21 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		bailout (GMT_NOT_MODERN_MODE);
 	}
 
+	/* When gmt subplot begin is called the gmt.history file for the figure or session may have a record of -R -J -X -Y
+	 * settings.  Once the subplot begin starts we may or may not be given -R -J -X -Y arguments.  If not, then we do not
+	 * want old history settings to leak into the subplot panels.  The past history is read during sessino creation in
+	 * GMT_Create_Session so at this point it is already stored in memory.  Hence we need to reset all of that before we
+	 * parse the common and specific arguments to this module */
+	
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, options)) && !strcmp (opt->arg, "begin"))	/* Called gmt subplot begin */
+		gmt_reset_history (API->GMT);	/* Remove any history obtained by GMT_Create_Session */
+
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
+	
+	
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
@@ -1276,21 +1288,21 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Removed subplot files\n");
 		
-		/* Set -R and J to match subplot frame so later calls, e.g., colorbar, can use -DJ */
-		/* First set R (i.e., RP for plotting) */
-		id = gmt_get_option_id (0, "R");		/* The -RP history index */
-		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
-		sprintf (Rtxt, "0/%.16g/0/%.16g", P->dim[GMT_X], P->dim[GMT_Y]);
-		GMT->init.history[id] = strdup (Rtxt);	/* Update with the dimension of the whole subplot fiture */
-		/* Now add -Jx1i to the history */
+		/* Set -R and J to match subplot frame size so later calls, e.g., colorbar, can use -DJ for positioning */
+		/* First set R (i.e., RP suitable for plotting) */
+		id = gmt_get_option_id (0, "R");	/* The -RP history index */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove whatever this was */
+		sprintf (Rtxt, "0/%.16g/0/%.16g", P->dim[GMT_X], P->dim[GMT_Y]);	/* Range for the subplot frame */
+		GMT->init.history[id] = strdup (Rtxt);	/* Update with the dimension of the whole subplot frame */
+		/* Now add a -Jx1i projection to the history */
 		id = gmt_get_option_id (0, "J");	/* Top level -J history */
-		if (id > 0 && GMT->init.history[id]) {	/* Should be an entry but we check id nevertheless */
-			Jstr[1] = GMT->init.history[id][0];	/* The acual -J? that was used in the subplot */
-			gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
-			GMT->init.history[id] = strdup ("x");	/* Just the flavor */
+		if (id > 0 && GMT->init.history[id]) {	/* There should/must be an entry but we check id nevertheless */
+			Jstr[1] = GMT->init.history[id][0];	/* The acual -J? that was used in the last subplot panel */
+			gmt_M_str_free (GMT->init.history[id]);	/* Remove whatever that was */
+			GMT->init.history[id] = strdup ("x");	/* Just place the linear projection code */
 			if ((id = gmt_get_option_id (id + 1, Jstr)) >= 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove the subplot -J? entry */
 		}
-		id = gmt_get_option_id (id, "Jx");	/* Find Jx history, if any */
+		id = gmt_get_option_id (id, "Jx");	/* Find previous -Jx history, if any */
 		if (id > 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove what this was */
 		GMT->init.history[id] = strdup ("x1i");	/* Add a scale of 1 inch per unit to match the inches we gave in the -R history */
 		

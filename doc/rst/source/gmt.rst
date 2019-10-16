@@ -69,8 +69,10 @@ If no module is given then several other options are available:
 **--help**
     List and description of GMT modules.
 
-**--new-script**
-    Write a GMT modern mode script template to stdout.
+**--new-script**\ [=*L*]
+    Write a GMT modern mode script template to stdout. Optionally append the desired
+    scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
+    closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
 **--show-bindir**
     Show directory of executables and exit.

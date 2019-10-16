@@ -72,6 +72,7 @@
  * PSL_makecolor	   : Returns string with PostScript command to set a new color
  * PSL_makepen		   : Returns string with PostScript command to set a new pen
  * PSL_setcolor		   : Sets the pen color or pattern
+ * PSL_setcurrentpoint     : Sets the current point
  * PSL_setdefaults	   : Change several PSL session default values
  * PSL_setdash		   : Specify pattern for dashed line
  * PSL_setfill		   : Sets the fill color or pattern
@@ -3845,6 +3846,14 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	PSL->internal.ix = psl_ix (PSL, x1);
 	PSL->internal.iy = psl_iy (PSL, y1);
 	PSL_command (PSL, "N %d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
+	/* Set the current point only */
+	PSL->internal.ix = psl_ix (PSL, x);
+	PSL->internal.iy = psl_iy (PSL, y);
+	PSL_command (PSL, "%d %d M\n", PSL->internal.ix, PSL->internal.iy);
 	return (PSL_NO_ERROR);
 }
 

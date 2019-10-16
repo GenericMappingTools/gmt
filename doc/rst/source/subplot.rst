@@ -19,16 +19,18 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
-[ **-A**\ *autolabel* ]
-[ **-C**\ [*side*]\ /*clearance*\ [**u**]]
+|-F|\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
+[ |-A|\ *autolabel* ]
+[ |-C|\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
-[ **-M**\ *margins* ]
+[ |-M|\ *margins* ]
 [ |SYN_OPT-R| ]
-[ **-S**\ *layout* ]
-[ **-T**\ *title* ]
+[ |-S|\ *layout* ]
+[ |-T|\ *title* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -47,7 +49,7 @@ Required Arguments
     the same number of subplots.
     Note: You are not required to place a plot in each subplot.
 
-.. _subplot_begin-F:
+.. _-F:
 
 **-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
     Specify the dimensions of the figure.  There are two different ways to do this:
@@ -83,7 +85,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _subplot_begin-A:
+.. _-A:
 
 **-A**\ *autolabel*
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
@@ -105,7 +107,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-.. _subplot_set-C1:
+.. _-C:
 
 **-C**\ [*side*]\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
@@ -121,7 +123,7 @@ Optional Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _subplot_begin-M:
+.. _-M:
 
 **-M**\ *margins*
     This is margin space that is added *between* neighboring subplots (i.e., the interior margins) *in addition*
@@ -137,7 +139,7 @@ Optional Arguments
 .. |Add_-R| replace:: This is useful when all subplots share a common plot domain.
 .. include:: explain_-R.rst_
 
-.. _subplot_begin-S:
+.. _-S:
 
 **-S**\ *layout*
     Set subplot layout for shared axes. May be set separately for rows (**-SR**) and columns (**-SC**).
@@ -155,17 +157,20 @@ Optional Arguments
     extra space for long horizontal annotations.
     Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
 
-
-.. _subplot_begin-T:
+.. _-T:
 
 **-T**\ *heading*
     While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
     overarching *heading* [no heading]. Font is determined by setting :ref:`FONT_HEADING <FONT_HEADING>`.
 
-.. _subplot_begin-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
+
+.. include:: explain_-XY.rst_
 
 .. include:: explain_help.rst_
 
