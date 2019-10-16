@@ -45,9 +45,7 @@ Examples
 .. include:: explain_example.rst_
 
 To see the effect of a simple clip path which result in some symbols
-being partly visible or missing altogether, try
-
-   ::
+being partly visible or missing altogether, try::
 
     gmt begin clip
       gmt clip -R0/6/0/6 -Jx2.5c -W1p,blue << EOF
@@ -55,8 +53,8 @@ being partly visible or missing altogether, try
     5 1
     5 5
     EOF
-      gmt plot @tut_data.txt -Gred -Sc2c 
-      gmt psclip -C -B
+      gmt plot @tut_data.txt -Gred -Sc2c
+      gmt clip -C -B
     gmt end show
 
 where we activate and deactivate the clip path.  Note we also draw the
