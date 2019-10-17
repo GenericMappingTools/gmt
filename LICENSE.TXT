@@ -1,12 +1,12 @@
 Copyright (c) 1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 As of GMT 5.0.0, GMT is distributed under the GNU Lesser General Public
-License (LGPL) version 3 or later. Copies of the The GNU General Public
+License (LGPL) version 3 or later. Copies of the GNU General Public
 License (GPL) and the GNU Lesser General Public License (LGPL) are
 distributed along with the sources. Refer to the files COPYINGv3 and
 COPYING.LESSERv3.
 
-NOTE: Some of the source files in src/ have different licenses.  For
+NOTE: Some of the source files in src/ have different licenses. For
 instance Shewchuk's Delaunay Triangulator (triangle.c) is distributed
 under a proprietary non-permissive license. Refer to the license in
 every source file. Users who wish to enforce strict GPL or LGPL
