@@ -164,7 +164,7 @@ struct MOVIE_CTRL {
 	} Z;
 	struct MOVIE_x {	/* -x[[-]<ncores>] */
 		bool active;
-		unsigned int n_threads;
+		int n_threads;
 	} x;
 };
 
@@ -215,7 +215,7 @@ GMT_LOCAL int parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, cha
 	if (Ctrl->x.n_threads == 0)	/* Not having any of that.  At least one */
 		Ctrl->x.n_threads = 1;
 	else if (Ctrl->x.n_threads < 0)	/* Meant to reduce the number of threads */
-		Ctrl->x.n_threads = MAX(GMT->parent->n_cores - Ctrl->x.n_threads, 1);		/* Max-n but at least one */
+		Ctrl->x.n_threads = MAX(GMT->parent->n_cores + Ctrl->x.n_threads, 1);		/* Max-n but at least one */
 	return (GMT_NOERROR);
 }
 
