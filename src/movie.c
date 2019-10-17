@@ -1053,7 +1053,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		strcpy (workdir, Ctrl->W.dir);
 	else
 		strcpy (workdir, Ctrl->N.prefix);
-	gmt_replace_backslash_in_path (workdir);
 
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
@@ -1091,6 +1090,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (datadir, "%s,%s", topdir, cwd);
 
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	gmt_replace_backslash_in_path (workdir);
 	
 	/* Create the initialization file with settings common to all frames */
 
