@@ -1053,6 +1053,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		strcpy (workdir, Ctrl->W.dir);
 	else
 		strcpy (workdir, Ctrl->N.prefix);
+	gmt_replace_backslash_in_path (workdir);
 
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
@@ -1060,6 +1061,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	gmt_replace_backslash_in_path (topdir);
 	
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
