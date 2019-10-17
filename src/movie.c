@@ -1060,6 +1060,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	gmt_replace_backslash_in_path (topdir);
 	
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
@@ -1089,6 +1090,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (datadir, "%s,%s", topdir, cwd);
 
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	gmt_replace_backslash_in_path (workdir);
 	
 	/* Create the initialization file with settings common to all frames */
 
