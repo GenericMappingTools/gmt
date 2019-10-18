@@ -252,7 +252,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT data server may be down - delay checking hash file for 24 hours\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
-			if (!access (orig, F_OK)) {	/* Refresh modification time of original hash file */
+			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
 #ifdef WIN32
 				_utime (orig, NULL);
 #else
@@ -423,9 +423,6 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 				gmt_remove_file (GMT, url);
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove outdated file %s.\n", new_hashpath);
-		if (access (new_hashpath, F_OK))
-			gmt_remove_file (GMT, new_hashpath);	/* Finally remove the outdated hash file */
 		gmt_M_free (GMT, O);	/* Free old hash table structures */
 		gmt_M_free (GMT, N);	/* Free new hash table structures */
 		/* We now have an updated hash file and any out-of-date file has been removed so it can be downloaded again */
