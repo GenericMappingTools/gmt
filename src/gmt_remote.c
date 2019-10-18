@@ -423,9 +423,6 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 				gmt_remove_file (GMT, url);
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove outdated file %s.\n", new_hashpath);
-		if (!access (new_hashpath, F_OK))
-			gmt_remove_file (GMT, new_hashpath);	/* Finally remove the outdated hash file */
 		gmt_M_free (GMT, O);	/* Free old hash table structures */
 		gmt_M_free (GMT, N);	/* Free new hash table structures */
 		/* We now have an updated hash file and any out-of-date file has been removed so it can be downloaded again */
