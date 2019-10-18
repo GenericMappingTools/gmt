@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: CacheBeta@0
   inputs:
-    key: $(Agent.OS) | vcpkg | 20190820
+    key: $(Agent.OS) | vcpkg | 20191017
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -89,7 +89,7 @@ steps:
 - script: |
     mkdir build
     cd build
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
     cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release
     cmake --build .
     cmake --build . --target install
@@ -97,6 +97,7 @@ steps:
 
 - script: |
     gmt --version
+    bash %INSTALLDIR%/bin/gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
