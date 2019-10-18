@@ -1,13 +1,13 @@
 # Configuration for Azure Pipelines
 ########################################################################################
 
-# Only build the master branch, tags, and PRs (on by default) to avoid building random
-# branches in the repository until a PR is opened.
+# Only build the master, 6.x and 5.4 branches, tags, and PRs (on by default)
+# to avoid building random branches in the repository until a PR is opened.
 trigger:
   branches:
     include:
     - master
-    - 6.0
+    - 6.?
     - 5.4
     - refs/tags/*
 
@@ -20,7 +20,7 @@ jobs:
   condition: ne(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-18.04'
 
   variables:
     BUILD_DOCS: false
@@ -38,7 +38,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-18.04'
 
   variables:
     BUILD_DOCS: true
@@ -56,7 +56,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-18.04'
 
   variables:
     BUILD_DOCS: false
@@ -129,7 +129,7 @@ jobs:
   timeoutInMinutes: 120
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: false
@@ -148,7 +148,7 @@ jobs:
   timeoutInMinutes: 120
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: true
@@ -167,7 +167,7 @@ jobs:
   timeoutInMinutes: 360
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: false

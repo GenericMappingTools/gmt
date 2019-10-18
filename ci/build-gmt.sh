@@ -37,9 +37,7 @@ fi
 if [[ "$BUILD_DOCS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (DO_ANIMATIONS TRUE)
-#set (CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 EOF
-EXTRA_CMAKE_OPTS="-DCMAKE_VERBOSE_MAKEFILE=ON"
 fi
 
 echo ""
@@ -50,10 +48,7 @@ echo ""
 mkdir -p build && cd build
 
 # Configure
-cmake ${EXTRA_CMAKE_OPTS} -G Ninja ..
-
-# Show CMakeCache.txt, strip comments
-grep -Ev "^(//|$)" CMakeCache.txt
+cmake -G Ninja ..
 
 # Build and install
 cmake --build .
