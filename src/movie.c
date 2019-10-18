@@ -164,7 +164,7 @@ struct MOVIE_CTRL {
 	} Z;
 	struct MOVIE_x {	/* -x[[-]<ncores>] */
 		bool active;
-		unsigned int n_threads;
+		int n_threads;
 	} x;
 };
 
@@ -215,7 +215,7 @@ GMT_LOCAL int parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, cha
 	if (Ctrl->x.n_threads == 0)	/* Not having any of that.  At least one */
 		Ctrl->x.n_threads = 1;
 	else if (Ctrl->x.n_threads < 0)	/* Meant to reduce the number of threads */
-		Ctrl->x.n_threads = MAX(GMT->parent->n_cores - Ctrl->x.n_threads, 1);		/* Max-n but at least one */
+		Ctrl->x.n_threads = MAX(GMT->parent->n_cores + Ctrl->x.n_threads, 1);		/* Max-n but at least one */
 	return (GMT_NOERROR);
 }
 
@@ -1060,6 +1060,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	gmt_replace_backslash_in_path (topdir);
 	
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
@@ -1089,6 +1090,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (datadir, "%s,%s", topdir, cwd);
 
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	gmt_replace_backslash_in_path (workdir);
 	
 	/* Create the initialization file with settings common to all frames */
 
@@ -1144,6 +1146,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
 			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
 		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
@@ -1254,6 +1257,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
 			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
 		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
@@ -1592,6 +1596,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
 		set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
 	set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 	set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
@@ -1648,7 +1653,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Execute movie frame scripts in parallel\n");
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
+#ifdef WIN32
+			if (Ctrl->In.mode < 2)		/* A bash or sh run from Windows. Need to call via "start" to get parallel */
+				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
+			else						/* Runing batch, so no need for the above trick */
+				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
+#else 
 			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
+#endif
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
 			if ((error = system (cmd))) {

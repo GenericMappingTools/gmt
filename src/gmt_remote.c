@@ -376,14 +376,14 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		remove (old_hashpath);	/* Remove old hash file if it exists */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, old_hashpath);
 		if (gmt_rename_file (GMT, hashpath, old_hashpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, new_hashpath);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, new_hashpath);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, old_hashpath);
 			return 1;
 		}
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", new_hashpath, hashpath);
 		if (gmt_rename_file (GMT, new_hashpath, hashpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, new_hashpath);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, new_hashpath);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", new_hashpath, hashpath);
 			return 1;
 		}
 		if ((N = hash_load (GMT, hashpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
@@ -424,7 +424,8 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			}
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove outdated file %s.\n", new_hashpath);
-		gmt_remove_file (GMT, new_hashpath);	/* Finally remove the outdated hash file */
+		if (access (new_hashpath, F_OK))
+			gmt_remove_file (GMT, new_hashpath);	/* Finally remove the outdated hash file */
 		gmt_M_free (GMT, O);	/* Free old hash table structures */
 		gmt_M_free (GMT, N);	/* Free new hash table structures */
 		/* We now have an updated hash file and any out-of-date file has been removed so it can be downloaded again */

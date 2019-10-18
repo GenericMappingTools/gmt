@@ -1030,7 +1030,7 @@ character (on output).
 Setting automatic legend entries: The **-l** option
 ---------------------------------------------------
 
-Map or plot legends are created by :doc:`legend` and normally this module
+Map or plot legends are created by :doc:`/legend` and normally this module
 will read a *specfile* that outlines how the legend should look.  You can
 make very detailed and complicated legends by mixing a variety of items,
 such as symbol, free text, colorbars, scales, images, and more.  Yet, for
@@ -1049,7 +1049,7 @@ in Figure :ref:`Auto Legend <auto_legend>`::
      gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
    gmt end show
 
-As the script shows, when no *specfile* is given to :doc:`legend` then we
+As the script shows, when no *specfile* is given to :doc:`/legend` then we
 look for the automatically generated on in the session directory.
 
 .. _auto_legend:
@@ -1058,7 +1058,7 @@ look for the automatically generated on in the session directory.
    :width: 500 px
    :align: center
 
-   Each of the two :doc:`plot` commands use **-l** to add a symbol to the
+   Each of the two :doc:`/plot` commands use **-l** to add a symbol to the
    auto legend; the first also sets a legend header of given size and draws a horizontal line.
 
 .. _option_-i:

@@ -7872,7 +7872,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (i < 4 || i > 6 || ((!GMT->common.R.oblique && gmt_check_region (GMT, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	gmt_M_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by gmt_map_setup */
-	if (i == 6 && !GMT->current.proj.JZ_set) {
+	if (i == 6 && !GMT->current.proj.JZ_set && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-R with six parameters but no -Jz|Z given - ignore zmin/zmax\n");
 		GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
 	}
@@ -12972,6 +12972,25 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'J', scl)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", scl);
+			}
+		}
+		/* Check if -p was given and if we need to add -Jz|Z from history */
+		if (options && (opt = GMT_Find_Option (API, 'p', *options)) && (opt_R = GMT_Find_Option (API, 'R', *options)) && (gmtlib_count_char (GMT, opt_R->arg, '/') == 5)) {	/* 3-D perspective plotting module with -Rx0/x1/y0/y1/z0/z1 */
+			bool got_JZ = false;
+			char str[3] = {"J"};
+			/* First check if -Jz|Z was not given */
+			for (opt = *options; !got_JZ && opt; opt = opt->next) {
+				if (opt->option == 'J' && strchr ("zZ", opt->arg[0]))
+					got_JZ = true;
+			}
+			
+			if (!got_JZ && (id = gmt_get_option_id (0, "Z")) >= 0 && GMT->init.history[id]) {	/* Did not specify vertical projection but there is history for Z */
+				str[1] = GMT->init.history[id][0];
+				if ((id = gmt_get_option_id (0, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -Jz|Z */
+					if ((opt = GMT_Make_Option (API, 'J', &str[1])) == NULL) return NULL;	/* Failure to make option -Jz|Z */
+					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%c to options since there is history available and -p and -R implies a vertical projection.\n", str[1]);
+				}
 			}
 		}
 	}
