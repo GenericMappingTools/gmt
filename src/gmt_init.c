@@ -16061,6 +16061,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	 * +v corresponds to command V in the legend codes and starts/ends a vertical line.
 	 * +w specifies the legend width, as in -D+w<width>.
 	 * +s specifies an overall symbol scaling factor, as in -S<factor> [1].
+	 *
+	 * S can be given as NULL for lines but then item->size must be set (+size).
 	 */
 	
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
@@ -16130,11 +16132,13 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	/* Get the symbol size */
 	if (item->size > 0.0)	/* Hard-wired symbol size given */
 		size = item->size;
-	else
+	else if (S)
 		size = S->size_x;	/* Use the symbol size given */
+	else 
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
 
 	/* Place the symbol command */
-	if (S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
+	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (size > 0.0)	/* Got a line length in inches */
 			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);

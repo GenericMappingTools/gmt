@@ -46,6 +46,8 @@ Synopsis
 
 .. include:: plot3d_common.rst_
 
+.. include:: auto_legend_info.rst_
+
 Examples
 --------
 

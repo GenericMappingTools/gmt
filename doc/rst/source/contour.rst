@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
@@ -80,6 +81,8 @@ them into multisegment files (one for each contour level), try
     gmt contour topo.txt -C100 -Dcontours_%.0f.txt
 
 .. include:: contour_notes.rst_
+
+.. include:: auto_legend_info.rst_
 
 See Also
 --------

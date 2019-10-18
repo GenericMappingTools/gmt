@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
 #define THIS_MODULE_KEYS	"<D{,AD)=t,CC(,ED(,DDD,G?(=1,>X}@<D{,AD)=t,CC(,ED(,DD),G?(=1"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("Mmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehilpstxy" GMT_OPT("Mmc")
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
@@ -397,8 +397,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<indextable>] [%s] [-I] %s[-L<pen>] [-N]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", API->O_OPT, API->P_OPT, GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-	             GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	             GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -467,7 +467,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append l to let pen colors follow the CPT setting (requires -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append f to let fill/font colors follow the CPT setting.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Default [+c] sets both effects.\n");
-	GMT_Option (API, "X,bi3,bo,c,d,e,h,i,p,s,t,:,.");
+	GMT_Option (API, "X,bi3,bo,c,d,e,h,i,l,p,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -1273,6 +1273,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
 		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[0];
+		if (GMT->common.l.active) {	/* Add a contour to the auto-legend entry under modern mode */
+			gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[0]), &(GMT->common.l.item));
+		}
 	}
 
 	if (Ctrl->L.active) {	/* Draw triangular mesh */

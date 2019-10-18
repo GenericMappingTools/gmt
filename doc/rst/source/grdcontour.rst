@@ -37,6 +37,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -44,6 +45,8 @@ Synopsis
 .. include:: grdcontour_common.rst_
 
 .. include:: grdcontour_notes.rst_
+
+.. include:: auto_legend_info.rst_
 
 Examples
 --------

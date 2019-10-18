@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
 #define THIS_MODULE_KEYS	"<G{,AD)=t,CC(,DDD,>X},G?(=1@<G{,AD)=t,CC(,DD),G?(=1"
 #define THIS_MODULE_NEEDS	"Jg"
-#define THIS_MODULE_OPTIONS "-BJKOPRUVXYbdfhptxy" GMT_OPT("EMmc")
+#define THIS_MODULE_OPTIONS "-BJKOPRUVXYbdfhlptxy" GMT_OPT("EMmc")
 
 /* Control structure for grdcontour */
 
@@ -184,7 +184,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n", GMT_bo_OPT, API->c_OPT, GMT_do_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n", GMT_bo_OPT, API->c_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_l_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -263,7 +263,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) and multiply data by <fact> (via +s<fact> [1])\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   before contouring. Append + for z-data that are periodic in 360 (i.e., phase data).\n");
-	GMT_Option (API, "bo3,c,do,f,h,p,t,.");
+	GMT_Option (API, "bo3,c,do,f,h,l,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1552,6 +1552,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+
+		if (GMT->common.l.active) {	/* Add a contour to the auto-legend entry under modern mode */
+			gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[0]), &(GMT->common.l.item));
+		}
 	}
 
 	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
