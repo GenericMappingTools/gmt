@@ -252,7 +252,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT data server may be down - delay checking hash file for 24 hours\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
-			if (!access (orig, F_OK)) {	/* Refresh modification time of original hash file */
+			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
 #ifdef WIN32
 				_utime (orig, NULL);
 #else
