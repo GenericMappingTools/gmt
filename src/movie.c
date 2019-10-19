@@ -1656,7 +1656,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #ifdef WIN32
 			if (Ctrl->In.mode < 2)		/* A bash or sh run from Windows. Need to call via "start" to get parallel */
 				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
-			else						/* Runing batch, so no need for the above trick */
+			else						/* Running batch, so no need for the above trick */
 				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
 #else 
 			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);

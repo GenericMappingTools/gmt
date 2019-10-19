@@ -2265,7 +2265,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							v0 = gmtBB_y0 + yt_bak;
 							x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
 							y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
-							if (landscape_orig) {		/* Uggly hack but so far have no better solution */
+							if (landscape_orig) {		/* Ugly hack but so far have no better solution */
 								x2 = gmtBB_width / w;		x1 = 1 - x2;	
 								y2 = gmtBB_height / h;		y1 = 1 - y2;	
 							}
