@@ -12620,7 +12620,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	bool is_PS, is_psrose = false;
 	unsigned int srtm_res = 0;
 	char *required = (char *)in_required;
-	const char *this_module_name;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
