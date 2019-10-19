@@ -548,8 +548,8 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gshhg-gmt
 - **Runtime dependencies**:
     - ghostscript (*required*)
-    - curl
-    - netcdf
+    - curl (*required*)
+    - netcdf (*required*)
     - gdal
     - pcre
     - fftw
