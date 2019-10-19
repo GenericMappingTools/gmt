@@ -10,11 +10,11 @@ echo "Loop over all examples and run each job"
 
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
-  export AWK=gawk
+    export AWK=gawk
 elif type nawk >/dev/null 2>&1 ; then
-  export AWK=nawk
+    export AWK=nawk
 else
-  export AWK=awk
+    export AWK=awk
 fi
 
 for i in ex*; do

@@ -112,7 +112,7 @@ You then can install the GMT dependencies with:
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -203,7 +203,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     brew install cmake curl netcdf ghostscript
 
     # Install optional dependencies
-    brew install gdal pcre fftw
+    brew install gdal pcre2 fftw
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -244,8 +244,7 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
     vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    # NOTE: clapack and openblas currently aren't available for x86-windows.
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install

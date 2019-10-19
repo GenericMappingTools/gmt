@@ -8,7 +8,7 @@ and can be downloaded from the [GMT main site](https://www.generic-mapping-tools
 and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 
 This file provides instructions for installing GMT binary packages on
-different operating systems. Please refer to [Building Instructions](BUILDING.md)
+different operating systems. Please refer to the [Building Instructions](BUILDING.md)
 for compiling GMT source package (either stable release or development version).
 
 ## Contents
@@ -33,8 +33,8 @@ on the [GMT main site](https://www.generic-mapping-tools.org).
 The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
 In addition to the GMT installer, you also need to download and install
-[GraphicsMagick](http://www.graphicsmagick.org/) if you want to making movies in
-GIF format.
+[GraphicsMagick](http://www.graphicsmagick.org/) if you want to create
+animated GIFs.
 
 ## macOS
 
@@ -212,9 +212,9 @@ by the official GMT repository. You can uninstall the older packages by:
 
 ### Ubuntu/Debian
 
-**Note:** For mysterious reasons, many Linux distros are way behind in packing
-a recent GMT version. Typically you may find they offer 5.2.1 from 2015 while
-the rest of us have moved on to 2018. Your best bet then is to
+**Note:** Ubuntu/Debian are way behind in packing a recent GMT version.
+Typically you may find they offer 5.2.1 from 2015 while the rest of us have
+moved on to 2019. Your best bet then is to
 [build the latest release from source](BUILDING.md).
 Otherwise, installing from the distros goes like this:
 

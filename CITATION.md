@@ -8,7 +8,7 @@ will benefit from the availability of GMT:
 > The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
 > https://doi.org/10.1029/2019GC008515
 
-Here is a Bibtex entry for LaTeX users:
+Here is a BibTeX entry for LaTeX users:
 
 ```
 @article{doi:10.1029/2019GC008515,
