@@ -344,7 +344,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 }
 
 GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry, uint64_t n_segments, uint64_t n_rows, uint64_t n_cols, bool text) {
-	uint64_t dim[GMT_DIM_SIZE] = {1, n_segments, n_rows, n_cols};	/* We will a 1 or 2-row data set for up to n_segments segments; allocate just once */
+	uint64_t seg, dim[GMT_DIM_SIZE] = {1, n_segments, n_rows, n_cols};	/* We will a 1 or 2-row data set for up to n_segments segments; allocate just once */
 	unsigned int mode = (text) ? GMT_WITH_STRINGS : 0;
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -352,6 +352,10 @@ GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, stru
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for pslegend\n");
 		return (NULL);
 	}
+	/* Initialize counters to zero */
+	D->n_records = D->table[0]->n_records = 0;
+	for (seg = 0; seg < n_segments; seg++)
+		D->table[0]->segment[seg]->n_rows = 0;
 	return (D);
 }
 
@@ -1090,6 +1094,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X];
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							D[TXT]->n_records++;
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 							maybe_realloc_segment (GMT, S[TXT]);
@@ -1177,6 +1182,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = x_off;
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 							maybe_realloc_segment (GMT, S[TXT]);
 						}
@@ -1624,6 +1630,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = x_off + off_tt;
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							maybe_realloc_segment (GMT, S[TXT]);
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 						}
