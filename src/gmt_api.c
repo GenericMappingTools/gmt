@@ -11082,6 +11082,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
+	const char *module_name;
 	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -11103,6 +11104,11 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 			source_info_len = strlen (API->message);	/* Update length of message from 0 */
 		}
 	}
+	if (GMT && GMT->init.module_name)
+		module_name = ((GMT->current.setting.run_mode == GMT_MODERN)) ? gmtlib_get_active_name (API, GMT->init.module_name) : GMT->init.module_name;
+	else
+		module_name = API->session_tag;
+
 	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
 	source_info_len = strlen (API->message);
 	va_start (args, format);
