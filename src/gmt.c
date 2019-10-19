@@ -222,7 +222,7 @@ int main (int argc, char *argv[]) {
 					else
 						fprintf (stderr, "gmt: ERROR: --new-script language %s not recognized; default to bash\n\n", &s[1]);
 				}
-				else if ((txt = getenv ("shell")) == NULL) /* Likely not in a csh-type environment, try the Bourne shell enviroment variable SHELL */
+				else if ((txt = getenv ("shell")) == NULL) /* Likely not in a csh-type environment, try the Bourne shell environment variable SHELL */
 					txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
 				if (txt && (!strcmp (txt, "batch") || !strcmp (txt, "dos"))) {	/* User asked for batch */
 					type = 2;		/* Select batch */

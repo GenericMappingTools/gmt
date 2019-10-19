@@ -875,7 +875,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
 		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
-		if (Ctrl->H.pirtt) goto L1;                            /* Uggly, I know but the 2-grids case is not Bhattacharya implemented */
+		if (Ctrl->H.pirtt) goto L1;                            /* Ugly, I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {                                       /* That is, one grid and a flat base Do the BASE now */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
@@ -911,7 +911,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
 		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
-		if (Ctrl->H.pirtt) goto L1;     /* Uggly,I know but the 2-grids case is not Bhattacharya implemented */
+		if (Ctrl->H.pirtt) goto L1;     /* Ugly,I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {               /* That is, one grid and a flat base. Do the BASE now */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */

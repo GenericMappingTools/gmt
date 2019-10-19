@@ -1297,7 +1297,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Now add a -Jx1i projection to the history */
 		id = gmt_get_option_id (0, "J");	/* Top level -J history */
 		if (id > 0 && GMT->init.history[id]) {	/* There should/must be an entry but we check id nevertheless */
-			Jstr[1] = GMT->init.history[id][0];	/* The acual -J? that was used in the last subplot panel */
+			Jstr[1] = GMT->init.history[id][0];	/* The actual -J? that was used in the last subplot panel */
 			gmt_M_str_free (GMT->init.history[id]);	/* Remove whatever that was */
 			GMT->init.history[id] = strdup ("x");	/* Just place the linear projection code */
 			if ((id = gmt_get_option_id (id + 1, Jstr)) >= 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove the subplot -J? entry */
