@@ -12593,7 +12593,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *this_module_name, const char *keys, const char *in_required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
@@ -12620,6 +12620,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	bool is_PS, is_psrose = false;
 	unsigned int srtm_res = 0;
 	char *required = (char *)in_required;
+	const char *mod_name;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
@@ -12627,6 +12628,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 #ifdef USE_GMT_KWD
 	gmtinit_kw_replace (API, NULL, options);
 #endif
+
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		mod_name = gmtlib_get_active_name (API, this_module_name);
+	else
+		mod_name = this_module_name;
+	
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
