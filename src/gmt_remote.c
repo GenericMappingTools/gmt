@@ -391,7 +391,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			return 1;
 		}
 			
-		O = hash_load (GMT, new_hashpath, &nO);	/* Read in the old array of hash structs */
+		O = hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
 			/* Here the file was found locally and the full path is in the url */
@@ -425,7 +425,8 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		}
 		gmt_M_free (GMT, O);	/* Free old hash table structures */
 		gmt_M_free (GMT, N);	/* Free new hash table structures */
-		/* We now have an updated hash file and any out-of-date file has been removed so it can be downloaded again */
+		/* We now have an updated hash file */
+		remove (old_hashpath);	/* Remove old hash file if it exists */
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", hashpath);
