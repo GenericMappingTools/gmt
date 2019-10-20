@@ -48,7 +48,7 @@ New modules
 
 Apart from modern mode we have added a few modules that are accessible to all users:
 
-#. :doc:`psevents` makes a snapshot of all time-dependent events.
+#. :doc:`events` makes a snapshot of all time-dependent events.
 #. :doc:`/supplements/geodesy/earthtide` (supplement) computes the solid Earth tides.
 
 General improvements
