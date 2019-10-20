@@ -1607,8 +1607,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[SYM]->data[4][0] = az2;
 							}
 							else {
-								x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-								S[SYM]->data[2][0] = x;
+								x = gmt_M_to_inch (GMT, size);
+								S[SYM]->data[2][0] = Ctrl->S.scale * ((x == 0.0) ? def_size : x);
 							}
 							/* Place pen and fill colors in segment header */
 							sprintf (buffer, "-G"); strcat (buffer, txt_c);
