@@ -132,7 +132,8 @@ Several modules have obtained new options to extend their capabilities:
    and a new **-Z**\ *value* option (instead of directly via **-G**). The wedge symbol (**-Sw**) has been greatly upgraded to
    offer windshield and spider-graph symbols.  There is now also a new QR code symbol
    that will redirect to the GMT homepage.  We also added a **+h** modifier for quoted lines
-   when the user wants to hide the line
+   when the user wants to hide the line. Finally, symbols **-SE-**, **-SJ-** and **-SW** can
+   now all handle geographic units.
 
 *  :doc:`plot3d` also allows users to specify a color indirectly via a CPT (i.e., **-C**)
    and a new **-Z**\ *value* option.  The wedge symbol (**-Sw**) has been greatly upgraded to
@@ -154,7 +155,11 @@ Several modules have obtained new options to extend their capabilities:
    golden ratio, as well as **NODE** and **NODEP** operators, and added more
    OpenMP support for operators **LDISTG**, **PSI**, **TCRIT**, **PLM**, and **PLMg**.
 
+*  :doc:`rose` can now take **-JX** instead of **-S** so all plot modules take **-J**.
+
 *  :doc:`grdedit` can now take **-J** and add meta-data to the grid header.
+
+@  :doc:`gmt2kml takes new option **-E** to extract altitudes stored in the Extended data property.
 
 *  :doc:`/supplements/seis/pspolar` and :doc:`/supplements/seis/meca` can let beachball size scale
    with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via **-p**.
@@ -166,6 +171,7 @@ Several modules have obtained new options to extend their capabilities:
    entirely.
 
 *  :doc:`mapproject` has an enhanced option **-W** that can return reference point coordinates.
+   Also, either **-J**\ +*proj* or **-J**\ *EPSG*:n can now be given.
 
 *  :doc:`project` has a new option **-Z** for generating the path of a specified ellipse.
 
