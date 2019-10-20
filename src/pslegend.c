@@ -1468,6 +1468,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Ellipse needs more arguments; we use minor = 0.65*major, az = 0 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = 0.0;
 									y = 0.65 * x;
 								}
@@ -1484,6 +1485,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rotated rectangle needs more arguments; we use height = 0.65*width, az = 30 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 									az1 = 30.0;
 								}
@@ -1540,6 +1542,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rectangle also need more args, we use h = 0.65*w */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 								}
 								S[SYM]->data[2][0] = x;
@@ -1554,6 +1557,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rounded rectangle also need more args, we use h = 0.65*w and r = 0.1*w */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 									r = 0.1 * x;
 								}
@@ -1570,6 +1574,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Math angle need more args, we set fixed az1,az22 as 10 45 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = 10;	az2 = 45;
 								}
 								/* We want to center the arc around its mid-point */
@@ -1596,6 +1601,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = -30;	az2 = 30;
 								}
 								/* We want to center the wedge around its mid-point */
@@ -1608,6 +1614,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							}
 							else {
 								x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+								if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 								S[SYM]->data[2][0] = x;
 							}
 							/* Place pen and fill colors in segment header */
