@@ -161,7 +161,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`gmt2kml takes new option **-E** to extract altitudes stored in the Extended data property.
 
-*  :doc:`/supplements/seis/pspolar` and :doc:`/supplements/seis/meca` can let beachball size scale
+*  :doc:`/supplements/seis/polar` and :doc:`/supplements/seis/meca` can let beachball size scale
    with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via **-p**.
 
 *  Both :doc:`grdcontour` and :doc:`contour` can now accept a list of comma-separated contours instead
