@@ -45,7 +45,7 @@ if (NOT OGR2OGR)
 	message (WARNING "Cannot find program ogr2ogr - gmt will be unable to convert Shapefiles to GMT/OGR format")
 	set (GMT_CONFIG_OGR2OGR_MESSAGE "no" CACHE INTERNAL "OGR2OGR config message")
 else (NOT OGR2OGR)
-	execute_process(COMMAND bash "-c" "ogr2ogr --version | tr ',' ' ' | cut -f2 -d' '" OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND ${BASH} "-c" "ogr2ogr --version | tr ',' ' ' | cut -f2 -d' '" OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set (GMT_CONFIG_OGR2OGR_MESSAGE "yes (${answer})" CACHE INTERNAL "OGR2OGR config message")
 endif (NOT OGR2OGR)
 # Find executable needed by psconvert
