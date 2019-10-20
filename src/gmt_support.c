@@ -16032,7 +16032,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 			gmt_strrepc (cmd, '\'', '\"');
 	}
 	else	/* No spaces, just copy */
-		strncpy (cmd, program, PATH_MAX);
+		strncpy (cmd, program, PATH_MAX-1);
 	if (arg) {	/* Append the command argument */
 		strcat (cmd, " ");
 		strcat (cmd, arg);
