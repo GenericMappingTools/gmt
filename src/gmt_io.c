@@ -951,6 +951,7 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 		else
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
 		fprintf (fp, "\n");
+		gmt_M_str_free (orig);
 	}
 	else	/* Output the whole enchilada */
 		fprintf (fp, "%s\n", txt);

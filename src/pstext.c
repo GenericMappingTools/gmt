@@ -913,6 +913,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
+		gmt_M_str_free (use_text);
 
 		Return (GMT_NOERROR);
 	}

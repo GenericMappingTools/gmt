@@ -150,8 +150,10 @@ int GMT_begin (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the begin main code ----------------------------*/
 
 	arg = get_session_name_and_format (API, options, &error);
-	if (error)
+	if (error) {
+		if (arg) gmt_M_str_free (arg);
 		Return (error);
+	}
 	if (gmt_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
 		error = GMT_RUNTIME_ERROR;
 

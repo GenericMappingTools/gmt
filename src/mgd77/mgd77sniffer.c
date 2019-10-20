@@ -956,6 +956,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error in custom limits file [%s]\n", custom_limit_line);
+					gmt_fclose (GMT, custom_fp);
 					Return (API->error);
 				}
 			}

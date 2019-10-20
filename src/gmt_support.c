@@ -10188,9 +10188,9 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 #else
 	{	/* Windows doesn't support %' format */
 		if (use_locale) {
-			char *new_format;
-			new_format = gmt_strrep(format, "%'", "%");
+			char *new_format = gmt_strrep(format, "%'", "%");
 			sprintf (string, new_format, x);
+			gmt_M_str_free (new_format);
 		} else
 			sprintf (string, format, x);
 	}
@@ -16046,7 +16046,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
 
 	if ((fp = popen (cmd, "r")))	/* There was such a command */
-		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+		gmt_fgets (GMT, line, GMT_LEN256, fp);	/* Read first line */
 	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
 	}
