@@ -1669,6 +1669,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%[^\n]", text);
 						S[PAR]->text[krow[PAR]++] = strdup (text);
 						S[PAR]->n_rows++;
+						maybe_realloc_segment (GMT, S[PAR]);
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", text);
 						flush_paragraph = true;
 						column_number = 0;
@@ -1825,6 +1826,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (D[PAR]) {
 		if (n_para >= 0) {	/* End of last paragraph for sure */
 			S[PAR]->n_rows = krow[PAR];
+			D[PAR]->table[0]->n_records += S[PAR]->n_rows;
+			D[PAR]->n_records = D[PAR]->table[0]->n_records;
 			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
 			
