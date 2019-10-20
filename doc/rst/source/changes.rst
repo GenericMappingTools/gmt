@@ -49,7 +49,7 @@ New modules
 Apart from modern mode we have added a few modules that are accessible to all users:
 
 #. :doc:`psevents` makes a snapshot of all time-dependent events.
-#. :doc:`/supplements/geodesy/earthtide` computes the solid Earth tides.
+#. :doc:`/supplements/geodesy/earthtide` (supplement) computes the solid Earth tides.
 
 General improvements
 --------------------
@@ -95,7 +95,7 @@ summary of these changes:
 
 *  We now offer slanted annotations via the **-B** option, using the modifier **+a**\ *angle*.
    We have added auto-computed annotation and tick intervals for time-axes.  There is also the
-   frame specifications *lrbtu* that just draw the corresponding frames without ticking.
+   frame specifications **lrbtu** that just draw the corresponding frames without ticking.
 
 *  We offer a wide range of new color tables, including the scientific color maps from Fabio Crameri,
    and we now use Google's *turbo* as the default GMT color table, and *geo* for topographic DEMs.
@@ -110,7 +110,7 @@ summary of these changes:
 
 *  Let common option **-a** with no arguments place add all aspatial items to the input record.
 
-*  Added *dashdot* as a new shorthand style name.
+*  We have added *dashdot* as a new shorthand style name.
 
 *  Map regions can now be specified via **-R**\ *ISOcode* using the 2-char ISO country codes, with modifiers
    to round the resulting exact regions into multiples of given increments.  Under modern mode, new shorthand
@@ -159,7 +159,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`grdedit` can now take **-J** and add meta-data to the grid header.
 
-@  :doc:`gmt2kml takes new option **-E** to extract altitudes stored in the Extended data property.
+*  :doc:`gmt2kml takes new option **-E** to extract altitudes stored in the Extended data property.
 
 *  :doc:`/supplements/seis/pspolar` and :doc:`/supplements/seis/meca` can let beachball size scale
    with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via **-p**.
