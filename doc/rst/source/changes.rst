@@ -24,20 +24,20 @@ Modern mode modules
 
 GMT modern mode is supported by five new commands:
 
-#. :doc:`begin`
-#. :doc:`figure`
-#. :doc:`subplot`
-#. :doc:`inset`
-#. :doc:`end`
+#. :doc:`begin` starts a new GMT modern mode session.
+#. :doc:`figure` names a new GMT figure in the current session
+#. :doc:`subplot` starts, manages, and ends subplots in a figure.
+#. :doc:`inset` starts, manages and ends an inset in a figure or subplot.
+#. :doc:`end` ends a GMT modern mode session.
 
 Here, **gmt begin** and **gmt end** begins and ends a modern mode sessions, hence
 it is not possible to get entangled in modern mode if you prefer to run classic
-mode scripts.  There are three addition commands that are associated with modern
+mode scripts.  There are three additional commands that are associated with modern
 mode; the first two also work in classic mode since they are typically not useful in scripts:
 
-#. :doc:`docs`
-#. :doc:`clear`
-#. :doc:`movie`
+#. :doc:`docs` gives browser access to any GMT module documentation.
+#. :doc:`clear` removes various session files or cached data files.
+#. :doc:`movie` simplifies the construction of animated sequences.
 
 The entire cookbook, tutorial and gallery examples all use modern mode. In modern mode,
 the default graphics format is PDF and scripts can open up the plots in the default
@@ -48,8 +48,8 @@ New modules
 
 Apart from modern mode we have added a few modules that are accessible to all users:
 
-#. :doc:`psevents`
-#. :doc:`/supplements/geodesy/earthtide`
+#. :doc:`psevents` makes a snapshot of all time-dependent events.
+#. :doc:`/supplements/geodesy/earthtide` computes the solid Earth tides.
 
 General improvements
 --------------------
@@ -59,35 +59,36 @@ range of new capabilities have been added to all of GMT; here is a
 summary of these changes:
 
 *  The :doc:`gmt` driver has several new options to display the latest GMT citation, DOI,
-   the current data server, and the ability to create a blank modern mode shell script template.
+   the current data server, and the ability to create a blank modern mode shell script or
+   DOS batch template.
 
 *  A new common option **-l** lets some modules (currently, only :doc:`plot` and :doc:`plot3d`)
    build an automatic legend. Most legends are now perfectly dimensions and aligned using
    the PostScript language.
 
 *  We now consider untouched pixels when rendering PostScript to be opaque, hence automatic
-   cropping to tightest bounding box will respect areas painted white as different from opaque.
+   cropping to tightest bounding box will recognize areas painted white as different from opaque.
 
 *  We have a much improved scheme for distinguishing between minus-signs and hyphens when typesetting
    text since these are different glyphs in various character sets.
 
-*  Modern mode can produce any of several graphics formats (:ref:`formats <tbl-formats>`). While the default
+*  Modern mode can produce any of several graphics :ref:`formats <tbl-formats>`. While the default
    is PDF, this can be changed via a new GMT defaults :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>`.
    The conversion from PostScript to the desired format can be modified via another new GMT defaults
    setting :ref:`PS_CONVERT <PS_CONVERT>`.
 
-*  We have relaxed the *style* syntax for pens so that the :*phase* part os optional, with default 0.
+*  We have relaxed the *style* syntax for pens so that the :*phase* part is optional, with a default of 0.
 
 *  We have rearranged our supplements a bit: We have split meca to seis and geodesy and moved new module
    :doc:`/supplements/geodesy/earthtide` and existing module :doc:`/supplements/geodesy/gpsgridder` to
-   the geodesy supplement.  Also, :doc:`dimfilter` ahs moved to the core and we have remove the empty misc supplement.
+   the geodesy supplement.  Also, :doc:`dimfilter` has moved to the core and we have remove the empty misc supplement.
 
 *  In most modules that need to set up an equidistant 1-D array we now use the same machinery to parse
    options and created the arrays through a redesigned **-T** option.  For details on array creation,
-   see `Generate 1D Array`_.
+   see `Generate 1D Array`.
    
 *  We have a new GMT common option **-j** that clarifies how to select flat Earth, great circle,
-   and geodesic calculations and thus eliminate awkward, sign-based increments.
+   and geodesic calculations and thus eliminates awkward, sign-based increments.
 
 *  The GMT common option **-r** used to always set pixel-registration for grids but it can now
    take the optional directives **g** or **p** to specify the desired registration.
@@ -101,7 +102,7 @@ summary of these changes:
 
 *  Modules that read data tables can now be given an ESRI shapefile directly.
 
-*  GMT common options **-X** and **-Y** may now be specified using fractions of previous plots
+*  GMT common options **-X** and **-Y** may now be specified using fractions of current plot's
    dimensions.
 
 *  When specifying master CPTs one can add the modifier **+i**\ *dz* to ensure any automatically computed
@@ -128,8 +129,8 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`plot` takes a new modifier **+s** to **-Sr** to specify a rectangle via opposite
    diagonal corners.  Users can now also specify a color indirectly via a CPT (i.e., **-C**)
-   and a new **-Z**\ *value* option. The wedge symbol (**-Sw**) has been greatly upgraded to
-   offer windshield symbols and spider-graph symbols.  There is now also a new QR code symbol
+   and a new **-Z**\ *value* option (instead of directly via **-G**). The wedge symbol (**-Sw**) has been greatly upgraded to
+   offer windshield and spider-graph symbols.  There is now also a new QR code symbol
    that will redirect to the GMT homepage.  We also added a **+h** modifier for quoted lines
    when the user wants to hide the line
 
@@ -143,39 +144,39 @@ Several modules have obtained new options to extend their capabilities:
 
 *  In modern mode, both :doc:`makecpt` and :doc:`grd2cpt` require a new option **-H** to actually
    write the resulting CPT to standard output (by default they write a hidden CPT that modern mode
-   modules know where to find automatically).  **makecpt* also has a new option **-S** to create
+   modules know where to find automatically).  **makecpt** also has a new option **-S** to create a
    symmetric color table given the range in a data file given via **-T**.
 
 *  :doc:`gmtmath` has a new operator **PHI** that computes the
    golden ratio.  We now allow **-Cx** and **-Cy** to represent **-C**\ 0 and **-C** \1.
 
 *  :doc:`grdmath` also has a new operator **PHI** that computes the
-   golden ratio, as well as **NODE** and **NODEP** operators, and added
-   OpneMP support for operators **LDISTG**, **PSI**, **TCRIT**, **PLM**, and **PLMg**.
+   golden ratio, as well as **NODE** and **NODEP** operators, and added more
+   OpenMP support for operators **LDISTG**, **PSI**, **TCRIT**, **PLM**, and **PLMg**.
 
 *  :doc:`grdedit` can now take **-J** and add meta-data to the grid header.
 
 *  :doc:`/supplements/seis/pspolar` and :doc:`/supplements/seis/meca` can let beachball size scale
    with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via **-p**.
 
-*  Both doc:`grdcontour` and :doc:`contour` can now accept a list of comma-separated contours instead
+*  Both :doc:`grdcontour` and :doc:`contour` can now accept a list of comma-separated contours instead
    of always creating equidistant lists. Also, if no contours are specified we auto-compute a reasonable
    selection of 10 to 20 contours.  We also added **-Ln**\ \|\ **N**\ \|\ **p**\ \|\ **P** for selecting
    just negative or positive contours.  Finally, we added modifier **+z** to **-Q** to exclude the zero-contour
    entirely.
 
-*  :doc:`mapproject` has an enhanced option **-W** that can return reference point coordinates
+*  :doc:`mapproject` has an enhanced option **-W** that can return reference point coordinates.
 
 *  :doc:`project` has a new option **-Z** for generating the path of a specified ellipse.
 
-*  :doc:`dimfilter` now writes an analysis template to standard output via the **-L** option.
+*  :doc:`dimfilter` now writes an error analysis template to standard output via the **-L** option.
 
 *  :doc:`surface` can now apply a data mask computed from the data distribution directly rather than
    having to make separate calls to :doc:`grdmask` and :doc:`grdmath`.  Also, the **-A** option now
    has a directive **m** to select Flat Earth scaling via the mean latitude.
 
 *  The block-modules :doc:`blockmean`, :doc:`blockmedian`, and :doc:`blockmode` have new options
-   **-A** and **-G** which allows them to write one or more grids directly.
+   **-A** and **-G** which allow them to write one or more grids directly.
 
 *  :doc:`gmtinfo` has a new option **-a** which allows it to report aspatial column names, and
    **-Ib** to output the boundary polygon for the data.
@@ -183,14 +184,14 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`/supplements/spotter/backtracker` can now do reconstruction given individual hotspot
    drift histories.  We also added **-M** for fractional stage rotations.
 
-*  :doc:`/supplements/spotter/grdrotater` has a option **-A** to override region of output grid.
+*  :doc:`/supplements/spotter/grdrotater` has an option **-A** to override region of output grid.
 
 *  :doc:`/supplements/spotter/polespotter` has a new option **-Cx**\ *file*.
 
 *  :doc:`psconvert` has a new option **-H** for automatic sub-pixel rendering and scaling. Under
    modern mode we also have option **-M** for sandwiching a PostScript plot between two other plots.
 
-*  Add modifiers **+a** and **+i** to option **-Z** in :doc:`gmtselect`.
+*  We added modifiers **+a** and **+i** to option **-Z** in :doc:`gmtselect`.
 
 *  :doc:`grdcut` has new option **-ZN** to strip off outside rows and cols that are all NaN.
 
