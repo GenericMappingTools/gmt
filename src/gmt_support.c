@@ -16027,7 +16027,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
 			snprintf (cmd, PATH_MAX, "\"%s\"", program);
 		else	/* Already has quotes, but these might be double or single */
-			strncpy (cmd, program, PATH_MAX);
+			strncpy (cmd, program, PATH_MAX-1);
 		if (program[0] == '\'')	/* Replace single quotes with double quotes*/
 			gmt_strrepc (cmd, '\'', '\"');
 	}
