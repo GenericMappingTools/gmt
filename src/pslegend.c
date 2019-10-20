@@ -1668,6 +1668,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						/* Now processes paragraph text */
 						sscanf (&line[2], "%[^\n]", text);
 						S[PAR]->text[krow[PAR]++] = strdup (text);
+						S[PAR]->n_rows++;
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", text);
 						flush_paragraph = true;
 						column_number = 0;
