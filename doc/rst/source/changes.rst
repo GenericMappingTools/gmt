@@ -124,7 +124,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`grdfilter` now accepts the **-r** option to set grid node registration.
 
-*  :doc:`psclip` has a new option **-W**\ *pen* to draw the clip path as well as
+*  :doc:`clip` has a new option **-W**\ *pen* to draw the clip path as well as
    setting up clipping.
 
 *  :doc:`plot` takes a new modifier **+s** to **-Sr** to specify a rectangle via opposite
