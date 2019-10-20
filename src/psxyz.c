@@ -1585,9 +1585,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 
 		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
-			if (polygon) {	/* Place a square in the legend */
+			if (polygon) {	/* Place a rectangle in the legend */
 				int symbol = S.symbol;
-				S.symbol = PSL_SQUARE;
+				S.symbol = PSL_RECT;
 				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 				S.symbol = symbol;
 			}
