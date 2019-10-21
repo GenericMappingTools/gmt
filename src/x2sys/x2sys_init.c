@@ -283,7 +283,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	time_t right_now;
 	char tag_file[PATH_MAX] = {""}, track_file[PATH_MAX] = {""}, bin_file[PATH_MAX] = {""}, def_file[PATH_MAX] = {""};
 	char path_file[PATH_MAX] = {""}, path[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
-	char *name = gmt_putusername(NULL);
+	char *name = NULL;
 
 	int error = 0;
 
@@ -434,7 +434,8 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
-        right_now = time ((time_t *)0);
+	name = gmt_putusername(NULL);
+	right_now = time ((time_t *)0);
 	fprintf (fp, "# TAG file for system: %s\n", Ctrl->In.TAG);
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
 	fprintf (fp, "# Initialized by: %s\n#\n", name);
