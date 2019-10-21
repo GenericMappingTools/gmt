@@ -16,8 +16,13 @@ there are numerous changes:
 #. A data server in Hawaii  (oceania.generic-mapping-tools.org) with plans
    for mirror servers around the world.  This is where the remote files
    that start with @ come from.
-#. A new way to use GMT (modern mode) that eliminates many of the
-   aspects of classic GMT that perplexes users.
+#. A new way to use GMT (*modern* mode) that eliminates many of the
+   aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+   is no longer the default graphics output format and most modules that
+   had names starting with **ps** have had that prefix removed.  In addition,
+   a few modules have entirely different names in modern mode (*psxy* is *plot*,
+   *psxyz* is *plot3d*, and *psscale* is *colorbar*).
+#. The default mode remains *classic*, the only mode previously available.
 
 Modern mode modules
 -------------------
@@ -172,6 +177,8 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`mapproject` has an enhanced option **-W** that can return reference point coordinates.
    Also, either **-J**\ +*proj* or **-J**\ *EPSG*:n can now be given.
+
+*  :doc:`grdproject` also takes **-J**\ +*proj* or **-J**\ *EPSG*:n.
 
 *  :doc:`project` has a new option **-Z** for generating the path of a specified ellipse.
 
