@@ -8610,7 +8610,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			return errno;
 		}
 		if (total == 0)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Source file was empty (?): \n", oldfile);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Source file %s was empty (?): \n", oldfile);
 
 		/* Finally delete the old file */
 		if (mode == GMT_RENAME_FILE) errno = gmt_remove_file (GMT, oldfile);
