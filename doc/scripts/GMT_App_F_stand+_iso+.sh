@@ -63,16 +63,16 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 gmt begin
-gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
+	gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First chart for standard font
-gmt figure stand+ png A,E600
+	gmt figure stand+ png A,E600
 
 # Chart for Standard+ font
-gmt set PS_CHAR_ENCODING Standard+
+	gmt set PS_CHAR_ENCODING Standard+
 
 # First mark uncoded entries
-gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard+ -Glightred -Y0.0 << EOF
+	gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard+ -Glightred -Y0.0 << EOF
 >
 1	4
 2	4
@@ -85,7 +85,7 @@ gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard+ -Glightred -Y0.0 << EOF
 1	20
 EOF
 #Then highlight Standard+ enhancements
-gmt plot -Glightgreen << EOF
+	gmt plot -Glightgreen << EOF
 >
 2	4
 9	4
@@ -192,8 +192,8 @@ gmt plot -Glightgreen << EOF
 9	31
 5	31
 EOF
-gmt text tt.d -F+f
-gmt plot -Bg1 -Wthick << EOF
+	gmt text tt.d -F+f
+	gmt plot -Bg1 -Wthick << EOF
 >
 0	3
 9	3
@@ -202,12 +202,12 @@ gmt plot -Bg1 -Wthick << EOF
 1	32
 EOF
 
-gmt figure iso+ png A,E600
+	gmt figure iso+ png A,E600
 # Chart ISOLatin1+ font
-gmt set PS_CHAR_ENCODING ISOLatin1+
+	gmt set PS_CHAR_ENCODING ISOLatin1+
 
 # First the uncoded ones
-gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tISOLatin1+ -Glightred -Y0.0 << EOF
+	gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tISOLatin1+ -Glightred -Y0.0 << EOF
 >
 1	4
 2	4
@@ -220,7 +220,7 @@ gmt plot -R0/9/2/32 -Jx0.345i/-0.21i -BN+tISOLatin1+ -Glightred -Y0.0 << EOF
 1	20
 EOF
 # Then highlight ISOLatin1+ enhancements
-gmt plot -Glightgreen << EOF
+	gmt plot -Glightgreen << EOF
 >
 2	4
 9	4
@@ -247,8 +247,8 @@ gmt plot -Glightgreen << EOF
 6	19
 5	19
 EOF
-gmt text tt.d -F+f
-gmt plot -Bg1 -Wthick << EOF
+	gmt text tt.d -F+f
+	gmt plot -Bg1 -Wthick << EOF
 >
 0	3
 9	3
@@ -259,7 +259,7 @@ EOF
 gmt end
 
 gmt begin GMT_App_F_stand+_iso+
-gmt image stand+.png -Dx0/0+r600
-gmt image iso+.png -Dx0/0+r600 -X3.2i
+	gmt image stand+.png -Dx0/0+r600
+	gmt image iso+.png -Dx0/0+r600 -X3.2i
 gmt end show
 rm stand+.png iso+.png tt.awk tt.d tt.txt
