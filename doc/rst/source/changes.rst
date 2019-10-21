@@ -10,11 +10,11 @@ New Features in GMT 6.0
 GMT 6.0 is a major revision of GMT and its eco-system.  At the top level,
 there are numerous changes:
 
-#. An entirely permanent address: www.generic-mapping-tools.org.
-#. An brand new website layout and organization.
-#. A new discussion forum at forum.generic-mapping-tools.org.
-#. A data server in Hawaii  (oceania.generic-mapping-tools.org) with plans
-   for mirror servers around the world.  This is where the remote files
+#. An entirely new and permanent address with a brand new website layout and
+   organization: http://www.generic-mapping-tools.org.
+#. A new discussion forum at http://forum.generic-mapping-tools.org.
+#. A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
+   for new mirror servers around the world.  This is where the remote files
    that start with @ come from.
 #. A new way to use GMT (*modern* mode) that eliminates many of the
    aspects of classic GMT that perplexes users.  In modern mode, PostSCript
@@ -22,7 +22,8 @@ there are numerous changes:
    had names starting with **ps** have had that prefix removed.  In addition,
    a few modules have entirely different names in modern mode (*psxy* is *plot*,
    *psxyz* is *plot3d*, and *psscale* is *colorbar*).
-#. The default mode remains *classic*, the only mode previously available.
+#. The default mode remains *classic*, the only mode previously available.  All
+   existing classic mode GMT 4 and 5 scripts will run as before.
 
 Modern mode modules
 -------------------
@@ -35,7 +36,7 @@ GMT modern mode is supported by five new commands:
 #. :doc:`inset` starts, manages and ends an inset in a figure or subplot.
 #. :doc:`end` ends a GMT modern mode session.
 
-Here, **gmt begin** and **gmt end** begins and ends a modern mode sessions, hence
+Here, **gmt begin** and **gmt end** begins and ends a modern mode session, hence
 it is not possible to get entangled in modern mode if you prefer to run classic
 mode scripts.  There are three additional commands that are associated with modern
 mode; the first two also work in classic mode since they are typically not useful in scripts:
@@ -176,7 +177,7 @@ Several modules have obtained new options to extend their capabilities:
    entirely.
 
 *  :doc:`mapproject` has an enhanced option **-W** that can return reference point coordinates.
-   Also, either **-J**\ +*proj* or **-J**\ *EPSG*:n can now be given.
+   Also, either **-J+**\ *proj* or **-J**\ *EPSG*:n can now be given.
 
 *  :doc:`grdproject` also takes **-J**\ +*proj* or **-J**\ *EPSG*:n.
 
