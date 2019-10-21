@@ -73,8 +73,6 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To start a new figure in your current modern mode session by the name Regional and
 request we make both a PDF and an EPS file, try::
 
@@ -87,14 +85,14 @@ To start a new figure GlobalMap that should be returned as a JPEG file with a 1 
 around the image, try::
 
     gmt begin
-    gmt figure GlobalMap jpg A1c
+    gmt figure GlobalMap jpg A+m1c
     gmt ...
     gmt end show
 
 If the same figure were to be called Global Map.jpg you would need quotes::
 
     gmt begin
-    gmt figure 'Global Map' jpg A1c
+    gmt figure 'Global Map' jpg A+m1c
     gmt ...
     gmt end show
 

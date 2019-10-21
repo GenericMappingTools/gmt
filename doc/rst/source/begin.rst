@@ -99,8 +99,6 @@ Supported Graphic Formats
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To initiate a new modern session that will produce a single
 map called Figure_2 saved as both a PDF vector graphics file
 and an opaque PNG raster image, we would run::
@@ -117,7 +115,7 @@ be called gmtsession.pdf (assuming :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMA
 
 To set up proceedings for a jpg figure with 0.5c white margin, we would run::
 
-    gmt begin 'My Figure4' pdf,png A+m1c
+    gmt begin 'My Figure4' pdf,png A+m0.5c
 
 .. include:: explain_postscript.rst_
 
