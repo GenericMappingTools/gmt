@@ -215,6 +215,8 @@ int main (int argc, char *argv[]) {
 				time_t right_now = time (NULL);
 				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
 				char *comment[3] = {"#", "#", "REM"};
+				char *name = gmt_putusername (NULL);
+				
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
 				if ((s = strchr (argv[arg_n], '=')) && s[1]) {	/* Gave a specific script language name */
 					if ((strstr (&s[1], shell[0]) || strstr (&s[1], shell[1]) || strstr (&s[1], shell[2]) || strstr (&s[1], "dos")))
@@ -241,7 +243,7 @@ int main (int argc, char *argv[]) {
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
-				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
+				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
 				switch (type) {
 					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
 					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
@@ -250,6 +252,7 @@ int main (int argc, char *argv[]) {
 						break;
 				}
 				printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
+				gmt_M_str_free (name);
 				status = GMT_NOERROR;
 			}
 

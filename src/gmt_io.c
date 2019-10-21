@@ -951,6 +951,7 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 		else
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
 		fprintf (fp, "\n");
+		gmt_M_str_free (orig);
 	}
 	else	/* Output the whole enchilada */
 		fprintf (fp, "%s\n", txt);
@@ -8303,7 +8304,7 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	if (!strlen (text)) return (true);	/* Blank string */
 	if (isalpha ((int)text[0])) return (true);	/* Numbers cannot start with letters */
 	i = (int)text[0];
-	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i >= 0 && i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that should never appear in any number */
 		if (!strchr (valid, text[i])) return (true);	/* Found a char not among valid letters */
@@ -8560,10 +8561,14 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 	/* Try to rename a file - give error message if it fails.  Depends on extern int errno.
 	 * mode is either GMT_COPY_FILE or GMT_RENAME_FILE */
 	
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
+	if (mode == GMT_COPY_FILE)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Copying %s -> %s\n", oldfile, newfile);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
+	
 	errno = GMT_NOERROR;
 	if (mode == GMT_COPY_FILE || rename (oldfile, newfile)) {	/* This may be benign as rename won't move files between different mounted partitions on a drive. Copy/remove instead */
-		size_t ni, no;
+		size_t ni, no, total = 0;
 		char *chunk = NULL;
 		FILE *fpi = NULL, *fpo = NULL;
 		if (mode == GMT_RENAME_FILE) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to rename %s -> %s! [rename error: %s].  Try copy/delete instead.\n", oldfile, newfile, strerror (errno));
@@ -8585,6 +8590,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			return errno;
 		}
 		while ((ni = fread (chunk, sizeof (char), GMT_BUFSIZ, fpi))) {	/* Read until nothing, write each chunk */
+			total += ni;
 			if ((no = fwrite (chunk, sizeof (char), ni, fpo)) != ni) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to write %" PRIuS " bytes to %s! [fwrite error: %s]\n", ni, newfile, strerror (errno));
 				fclose (fpi);
@@ -8603,6 +8609,9 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to close %s! [fwrite error: %s]\n", newfile, strerror (errno));
 			return errno;
 		}
+		if (total == 0)
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Source file %s was empty (?): \n", oldfile);
+
 		/* Finally delete the old file */
 		if (mode == GMT_RENAME_FILE) errno = gmt_remove_file (GMT, oldfile);
 	}

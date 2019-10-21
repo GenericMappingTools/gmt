@@ -1584,9 +1584,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
-		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE && !polygon) {
-			/* For specified line, width, color we can do an auto-legend entry under modern mode */
-			gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
+			if (polygon) {	/* Place a rectangle in the legend */
+				int symbol = S.symbol;
+				S.symbol = PSL_RECT;
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				S.symbol = symbol;
+			}
+			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 		}
 		
 		for (tbl = 0; tbl < D->n_tables; tbl++) {

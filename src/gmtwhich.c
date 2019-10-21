@@ -209,12 +209,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->C.active)	/* Just want a Yes */
 				strcpy (path, Yes);
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			if (Ctrl->G.active && Ctrl->G.mode == GMT_LOCAL_DIR && path[0] == '/' && (L = strrchr(path, '/'))) {
+			if (Ctrl->G.active && Ctrl->G.mode == GMT_LOCAL_DIR && (path[0] == '/' || path[1] == ':') && (L = strrchr(path, '/'))) {
 				/* File found on system but we want a copy in the current directory */
 				if (gmt_rename_file (GMT, path, &L[1], GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
+				strncpy (path, &L[1], PATH_MAX);	/* Report the file in the local directory now */
 			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Did not find.  Report no or be quiet */
 			if (Ctrl->C.active) {

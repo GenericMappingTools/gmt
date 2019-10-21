@@ -491,6 +491,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 					sprintf (tmp_file_symbols, "%s/GMT_psevents_symbols_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_symbols = fopen (tmp_file_symbols, "w")) == NULL) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s\n", tmp_file_symbols);
+					if (fp_labels) fclose (fp_labels);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}

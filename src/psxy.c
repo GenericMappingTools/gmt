@@ -1820,9 +1820,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
-		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE && !polygon) {
-			/* For specified line, width, color we can do an auto-legend entry under modern mode */
-			gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
+			if (polygon) {	/* Place a rectangle in the legend */
+				int symbol = S.symbol;
+				S.symbol = PSL_RECT;
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				S.symbol = symbol;
+			}
+			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 		}
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;

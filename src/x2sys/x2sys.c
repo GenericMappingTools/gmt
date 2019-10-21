@@ -652,7 +652,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	double **z = NULL, *rec = NULL;
 	char path[PATH_MAX] = {""}, file[GMT_LEN32] = {""};
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN32-1);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		start = gmt_download_file_if_not_found (GMT, file, 0);
@@ -723,7 +723,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	double NaN = GMT->session.d_NaN, t_off;
 	struct GMTMGG_REC record;
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN32-1);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 9);
@@ -828,7 +828,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 
 	MGD77_Init (GMT, &MC);	/* Initialize MGD77 Machinery */
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN32-1);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
@@ -956,7 +956,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	FILE *fp = NULL;
 	gmt_M_unused(G);
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN64-1);
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
