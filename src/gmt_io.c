@@ -8304,7 +8304,7 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	if (!strlen (text)) return (true);	/* Blank string */
 	if (isalpha ((int)text[0])) return (true);	/* Numbers cannot start with letters */
 	i = (int)text[0];
-	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i >= 0 && i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that should never appear in any number */
 		if (!strchr (valid, text[i])) return (true);	/* Found a char not among valid letters */

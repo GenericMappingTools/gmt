@@ -285,6 +285,10 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of records to follow */
+	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
+		fclose (fp);
+		return NULL;
+	}
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
 	for (k = 0; k < *n; k++) {
 		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
