@@ -20,7 +20,7 @@
 
 if [ $# -eq 0 ]; then
 	cat << END >&2
-isogmt @GMT_PACKAGE_VERSION@ - Run GMT command or script in isolation mode
+isogmt @GMT_PACKAGE_VERSION_WITH_GIT_REVISION@ - Run GMT command or script in isolation mode
 
 usage: isogmt <command>
 
