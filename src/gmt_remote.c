@@ -285,6 +285,10 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of records to follow */
+	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
+		fclose (fp);
+		return NULL;
+	}
 	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
 	for (k = 0; k < *n; k++) {
 		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
@@ -375,7 +379,8 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			if (!access (new_hashpath, F_OK)) gmt_remove_file (GMT, new_hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
-		remove (old_hashpath);	/* Remove old hash file if it exists */
+		if (!access (old_hashpath, F_OK))
+			remove (old_hashpath);	/* Remove old hash file if it exists */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, old_hashpath);
 		if (gmt_rename_file (GMT, hashpath, old_hashpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, old_hashpath);
@@ -426,7 +431,8 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		gmt_M_free (GMT, O);	/* Free old hash table structures */
 		gmt_M_free (GMT, N);	/* Free new hash table structures */
 		/* We now have an updated hash file */
-		remove (old_hashpath);	/* Remove old hash file if it exists */
+		if (!access (old_hashpath, F_OK))
+			remove (old_hashpath);	/* Remove old hash file if it exists */
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", hashpath);

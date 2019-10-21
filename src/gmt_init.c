@@ -2503,7 +2503,7 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 }
 
 GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, struct GMT_INSET *inset) {
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
 	unsigned int k;
 	double margin[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
@@ -2521,15 +2521,16 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 		return (GMT_ERROR_ON_FOPEN);
 	}
 	/* For now, skip the first 3 comments and get the 4th and 5th record which holds the dim and margin lines */
-	/* We recycle the char string file to hold the records */
-	for (k = 0; k < 4; k++) gmt_fgets (API->GMT, file, GMT_LEN128, fp);
-	if (sscanf (&file[13], "%lf %lf", &inset->w, &inset->h) != 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse dimensions %s\n", file);
+	for (k = 0; k < 4; k++) gmt_fgets (API->GMT, line, GMT_LEN256, fp);
+	if (sscanf (&line[13], "%lf %lf", &inset->w, &inset->h) != 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse dimensions %s\n", line);
+		fclose (fp);
 		return (GMT_DATA_READ_ERROR);
 	}
-	gmt_fgets (API->GMT, file, GMT_LEN128, fp);
-	if (sscanf (&file[11], "%lf %lf %lf %lf", &margin[XLO], &margin[XHI], &margin[YLO], &margin[YHI]) != 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse margins %s\n", file);
+	gmt_fgets (API->GMT, line, GMT_LEN256, fp);
+	if (sscanf (&line[11], "%lf %lf %lf %lf", &margin[XLO], &margin[XHI], &margin[YLO], &margin[YHI]) != 4) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot parse margins %s\n", line);
+		fclose (fp);
 		return (GMT_DATA_READ_ERROR);
 	}
 	fclose (fp);
@@ -8111,11 +8112,11 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-l +l<just>/<label> has bad justification %c\n", txt[1]);
 							return GMT_PARSE_ERROR;
 						}
-						strncpy (GMT->common.l.item.subheader, &txt[3], GMT_LEN128-1);	break;	/* Legend label */
+						strncpy (GMT->common.l.item.subheader, &txt[3], GMT_LEN128-1);	/* Legend label */
 						GMT->common.l.item.code = txt[1];	/* Justification code */
 					}
 					else {
-						strncpy (GMT->common.l.item.subheader, &txt[1], GMT_LEN128-1);	break;	/* Legend label default left justified */
+						strncpy (GMT->common.l.item.subheader, &txt[1], GMT_LEN128-1);	/* Legend label default left justified */
 						GMT->common.l.item.code = 'L';
 					}
 					break;
@@ -11079,7 +11080,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			}
 			break;
 		case GMTCASE_GMT_GRAPHICS_FORMAT:
-			strcpy (value, gmt_session_format[GMT->current.setting.graphics_format]);
+			strncpy (value, gmt_session_format[GMT->current.setting.graphics_format], GMT_LEN256-1);
 			break;
 		case GMTCASE_HISTORY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12535,7 +12536,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	
 	if (opt_J == NULL) return false;	/* No -J option to update */
 	if ((c = strchr (opt_J->arg, '?')) == NULL) return false;	/* No questionmark in the argument to update */
-	strcpy (oldarg, opt_J->arg);
+	strncpy (oldarg, opt_J->arg, GMT_LEN128-1);
 	
 	/* Here, c[0] is the first question mark (there may be one or two) */
 	if (strchr ("xX", opt_J->arg[0]))	/* Cartesian projection */
@@ -15647,7 +15648,7 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 			}
 		}
 		if (bad == 0 && strcmp (API->GMT->current.setting.ps_convert, &c[1])) {	/* Got psconvert options, and if different we update defaults */
-			strcpy (API->GMT->current.setting.ps_convert, &c[1]);
+			strncpy (API->GMT->current.setting.ps_convert, &c[1], GMT_LEN256-1);
 			GMT_keywords_updated[GMTCASE_PS_CONVERT] = true;	/* To make sure it will write it to gmt.conf */
 			c[0] = '\0';
 			restore = true;

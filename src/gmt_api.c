@@ -676,7 +676,8 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
-	GMT_Destroy_Options (API, &head);	/* Done with these here */
+	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
 }
 
 /* Function to get PPID under Windows is a bit different */
