@@ -14585,25 +14585,26 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 
 /*! . */
 char *gmt_putusername (struct GMT_CTRL *GMT) {
+	/* Calling function must free the result */
 	static char *unknown = "unknown";
 	gmt_M_unused(GMT);
 #ifdef HAVE_GETPWUID
 #include <pwd.h>
 	struct passwd *pw = NULL;
 	pw = getpwuid (getuid ());
-	if (pw) return (pw->pw_name);
+	if (pw) return (strdup (pw->pw_name));
 #endif
 #ifdef WIN32
 	{
 		char name[GMT_LEN256] = {""}, *U = NULL;
 		DWORD Size = _tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
-			return (name);
+			return (strdup (name));
 		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
-			return (U);
+			return (strdup (U));
 	}
 #endif
-	return (unknown);
+	return (strdup (unknown));
 }
 
 /* Various functions from surface that are now used elsewhere as well */
