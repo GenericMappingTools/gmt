@@ -40,7 +40,7 @@ endif (NOT CMAKE_BUILD_TYPE)
 # Here we change it to add the git commit hash for non-public releases
 set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
 
-# Check if it's a git repository of not
+# Check if it's a git repository or not
 if (EXISTS ${GMT_SOURCE_DIR}/.git)
 	set (HAVE_GIT_VERSION TRUE)
 endif (EXISTS ${GMT_SOURCE_DIR}/.git)
