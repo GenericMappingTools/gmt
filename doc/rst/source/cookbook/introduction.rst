@@ -238,7 +238,7 @@ The modern mode relies on know what session is being run. If your script is expl
 inadvertently creating sub-shells under UNIX then the script could fail.  If this is the
 case then you will need to add
 export GMT_SESSION_NAME=<some unique string>
-before gmt begin starts the script.  This is most easily done by using the :doc:`gmt` --new-script
+before gmt begin starts the script.  This is most easily done by using the **gmt --new-script**
 option to print a shell template to the standard output.
 
 

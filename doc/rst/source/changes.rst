@@ -92,7 +92,7 @@ summary of these changes:
 *  In most modules that need to set up an equidistant 1-D array we now use the same machinery to parse
    options and created the arrays through a redesigned **-T** option.  For details on array creation,
    see `Generate 1D Array`.
-   
+
 *  We have a new GMT common option **-j** that clarifies how to select flat Earth, great circle,
    and geodesic calculations and thus eliminates awkward, sign-based increments.
 
@@ -165,7 +165,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`grdedit` can now take **-J** and add meta-data to the grid header.
 
-*  :doc:`gmt2kml takes new option **-E** to extract altitudes stored in the Extended data property.
+*  :doc:`gmt2kml` takes new option **-E** to extract altitudes stored in the Extended data property.
 
 *  :doc:`/supplements/seis/polar` and :doc:`/supplements/seis/meca` can let beachball size scale
    with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via **-p**.
