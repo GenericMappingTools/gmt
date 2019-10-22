@@ -223,14 +223,14 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	for (k = 1; k <= 2; k++) {
 		if (d_limit[XLO]) d_limit[XLO]--, wesn[XLO] -= G->header->inc[GMT_X];	/* Move one column westward */
 		if (d_limit[XHI] < (G->header->n_columns-1)) d_limit[XHI]++, wesn[XHI] += G->header->inc[GMT_X];	/* Move one column eastward */
-		if (d_limit[YLO]) d_limit[YLO]--, wesn[YLO] -= G->header->inc[GMT_Y];	/* Move one row northward */
-		if (d_limit[YHI] < (G->header->n_rows-1)) d_limit[YHI]++, wesn[YHI] += G->header->inc[GMT_Y];	/* Move one row southward */
+		if (d_limit[YLO]) d_limit[YLO]--, wesn[YHI] += G->header->inc[GMT_Y];	/* Move one row northward */
+		if (d_limit[YHI] < (G->header->n_rows-1)) d_limit[YHI]++, wesn[YLO] -= G->header->inc[GMT_Y];	/* Move one row southward */
 	}
 	n_constraints = (d_limit[YHI] - d_limit[YLO] - 1) * (d_limit[XHI] - d_limit[XLO] - 1) - n_in_hole;
 	x = gmt_M_memory (GMT, NULL, n_constraints, double);
 	y = gmt_M_memory (GMT, NULL, n_constraints, double);
 	z = gmt_M_memory (GMT, NULL, n_constraints, gmt_grdfloat);
-	for (row = d_limit[YLO]; row < d_limit[YHI]; row++) {
+	for (row = d_limit[YLO], k = 0; row < d_limit[YHI]; row++) {
 		for (col = d_limit[XLO]; col < d_limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
 			if (gmt_M_is_fnan (G->data[node])) continue;
