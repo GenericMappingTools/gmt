@@ -42,8 +42,6 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To close the current modern session and finalize any plots requested, we use::
 
     gmt end

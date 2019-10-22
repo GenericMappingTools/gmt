@@ -68,8 +68,6 @@ Optional Module Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To see the documentation of *grdimage*::
 
     gmt docs grdimage
@@ -82,9 +80,9 @@ To see the link to the documentation of *grdimage* on the GMT server::
 
     gmt docs -Q -S grdimage
 
-To see the documentation of the **-B** option in *pscoast*::
+To see the documentation of the **-B** option in *coast*::
 
-    gmt docs pscoast -B
+    gmt docs coast -B
 
 To examine the list of GMT defaults, try::
 

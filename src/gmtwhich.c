@@ -213,7 +213,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 				/* File found on system but we want a copy in the current directory */
 				if (gmt_rename_file (GMT, path, &L[1], GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
-				strncpy (path, &L[1], PATH_MAX);	/* Report the file in the local directory now */
+				strncpy (path, &L[1], PATH_MAX-1);	/* Report the file in the local directory now */
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}

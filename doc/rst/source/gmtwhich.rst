@@ -6,7 +6,7 @@ gmtwhich
 
 .. only:: not man
 
-    Find full path to specified files
+    Find path to specified files
 
 Synopsis
 --------
@@ -20,16 +20,18 @@ Synopsis
 Description
 -----------
 
-**which** reports the full paths to the files given on the command
+**which** reports the paths to the files given on the command
 line. We look for the file in (1) the current directory,
 (2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
 (4) in $GMT_CACHEDIR (if defined). If
-found we print the full path name to the file, just the directory (see
+found we print the path name to the file, just the directory (see
 **-D**), or a confirmation (see **-C**). The $GMT_USERDIR and
 $GMT_DATADIR environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
-be searched recursively.)
+be searched recursively.)  If the file is in the current directory then
+we just return the relative path (i.e., the file name); otherwise we
+return the full path.
 
 Required Arguments
 ------------------
@@ -61,7 +63,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [**c**\ \|\ **l**\ \|\ **u**]
-    If a file argument is a downloadable file (either a full URL, a @file for
+    If a file argument is a downloadable file (either a complete URL, a @file for
     downloading from the GMT Site Cache, or @earth_relief_*.grd) we will try
     to download the file if it is not found in your local data or cache dirs.
     By default [**-Gl**] we download to the current directory. Append **c** to place
@@ -79,7 +81,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To see the full path to the file myjunk.txt, use
+To see the path to the file myjunk.txt, use
 
    ::
 
