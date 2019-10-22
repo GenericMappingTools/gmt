@@ -230,14 +230,16 @@ modern mode is activated and deactivated by the new commands **gmt begin** and *
 respectively.  Since these are not part of the classic repertoire one cannot
 accidentally execute a classic mode script in modern mode (or vice versa).
 We will discuss these two commands later.  Finally, there are some new features in GMT that
-are only accessible under modern mode, such as subplots, new ways to specify the map domain, map insets, and to
+are only accessible under modern mode, such as subplots, new ways to specify the map domain,
+map insets, perform automatic legend creation and placement, create simpler animations, and to
 get multiple output formats from the same plot.
 
 The modern mode relies on know what session is being run. If your script is explicitly or
 inadvertently creating sub-shells under UNIX then the script could fail.  If this is the
 case then you will need to add
 export GMT_SESSION_NAME=<some unique string>
-before gmt begin starts the script.
+before gmt begin starts the script.  This is most easily done by using the :doc:`gmt` --new-script
+option to print a shell template to the standard output.
 
 
 .. [2]
