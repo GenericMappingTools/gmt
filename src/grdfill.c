@@ -88,9 +88,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
-//	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
-//	GMT_Message (API, GMT_TIME_NONE, "\t   append <max_radius> nodes for the outward search.\n");
-//	GMT_Message (API, GMT_TIME_NONE, "\t   [Default radius is sqrt(xn^2+by^2)]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     append <max_radius> nodes for the outward search.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [Default radius is sqrt(xn^2+by^2)]\n");
+//	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaNs with a spline (optionally append tension).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -146,6 +147,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 						Ctrl->A.mode = ALG_NN;
 						Ctrl->A.value = (opt->arg[1]) ? atof (&opt->arg[1]) : -1;
 						break;
+					case 's':	/* Spline fill */
+						Ctrl->A.mode = ALG_SPLINE;
+						if (opt->arg[1]) Ctrl->A.value =  atof (&opt->arg[1]);
+						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
 						n_errors++;
@@ -180,37 +185,38 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
+GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
 	/* Algorithm 1: Replace NaNs with a constant value */
-	unsigned int row, col;
 	uint64_t node;
 	
-	for (row = limit[YLO]; row < limit[YHI]; row++) {
-		for (col = limit[XLO]; col < limit[XHI]; col++) {
+	for (unsigned int row = limit[YLO]; row < limit[YHI]; row++) {
+		for (unsigned int col = limit[XLO]; col < limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
 			if (gmt_M_is_fnan (G->data[node]))
 				G->data[node] = value;
 		}
 	}
+	return GMT_NOERROR;
 }
 
 #if 0
-GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
+GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
-	unsigned int row, col, row_hole, col_hole, mode, d_limit[4];
-	uint64_t node, node_hole, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
+	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
+	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
+	uint64_t node, node_hole, k = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;
 	gmt_grdfloat *z = NULL;
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_GRID *G_hole = NULL;
-	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""};
+	struct GMT_CTRL *GMT = API->GMT;
 	
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
 	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
 	/* Create a virtual file to hold the resampled grid */
-	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
-		Return (API->error);
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+		return (API->error);
 	}
 	/* Add up to 2 rows/cols around hole, but watch for grid edges */
 	gmt_M_memcpy (d_limit, limit, 4, unsigned int);	/* d_limit will be used to set the grid domain */
@@ -231,40 +237,59 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 			x[k] = gmt_M_grd_col_to_x (GMT, col, G->header);
 			y[k] = gmt_M_grd_row_to_y (GMT, row, G->header);
 			z[k] = G->data[node];
+			k++;
 		}
 	}
 	GMT_Put_Vector (API, V, GMT_X, GMT_DOUBLE, x);
 	GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, y);
 	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
-	V->n_rows = n_constraints;	/* Must specify how many input points we have */
-   /* Associate our input data vectors with a virtual input file */
-    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V, input);
+	V->n_rows = k;	/* Must specify how many input points we have */
+	/* Associate our input data vectors with a virtual input file */
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V, input);
 	/* Prepare the greenspline command-line arguments */
-	mode = (gmt_M_geographic (GMT, GMT_IN)) ? 2 : 1;
-    sprintf (args, "%s -G%s -Sc -R%g/%g/%g/%g -I%g/%g -D%d", input, output, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
-	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r";)
+	mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? 2 : 1;
+	if (value > 0.0)
+		sprintf (method, "t%g", value);
+	else
+		sprintf (method, "c");
+	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], mode);
+	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling greenspline with args %s\n", args);
-  	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) GMT_exit (API->GMT, EXIT_FAILURE);
-	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
-		Return (API->error);
+  	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
+		return (API->error);	/* Some sort of failure */
 	}
-	/* Use 0-nx,0-ny for the hold index and the large grid G nodes for the holes */
+	if ((G_hole = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the resampled grid */
+		return (API->error);	/* Some sort of failure */
+	}
+	/* Use 0-nx,0-ny for the hole index and the large grid G nodes for the holes */
 	for (row_hole = 0, row = d_limit[YLO]; row_hole < G_hole->header->n_rows; row_hole++, row++) {
 		for (col_hole = 0, col = d_limit[XLO]; col_hole < G_hole->header->n_columns; col_hole++, col++) {
 			node = gmt_M_ijp (G->header, row, col);
-			if (!gmt_M_is_fnan (G->data[node])) continue;
+			if (!gmt_M_is_fnan (G->data[node])) continue;	/* Had data value */
 			node_hole = gmt_M_ijp (G_hole->header, row_hole, col_hole);
-			G->data[node] = G_hole->data[node_hole];
+			G->data[node] = G_hole->data[node_hole];	/* Replace the NaN with splined value */
 		}
 	}
 
 	/* Close the two virtual files */
-	GMT_Close_VirtualFile (API, output);
-	GMT_Close_VirtualFile (API, input);
+	if (GMT_Close_VirtualFile (API, output)) {
+		return (API->error);
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual output file %s\n", output);
+	}
+	if (GMT_Close_VirtualFile (API, input)) {
+		return (API->error);
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual input file %s\n", input);
+	}
+	
 	/* Free our custom vectors */
-	gmt_m_free (GMT, x);	gmt_m_free (GMT, y);	gmt_m_free (GMT, z);
+	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
+	if (GMT_Destroy_Data (API, &G_hole) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to destroy temporary hold grid\n");
+		return (API->error);
+	}
+	return (GMT_NOERROR);
 }
 #endif
 
@@ -298,28 +323,29 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 
 GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
 	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
-	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr;
+	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr, nx1_2, ny_2;
     
 	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
     
 	/* starting with nx = ny */
-	nx = (int64_t)(sqrt((double)(*r2)/2.0));
+	nx = (int64_t)(sqrt((double)(*r2) / 2.0));
 	/* loop over possible nx, find smallest rr */
-	for (nx1 = nx; nx1 <= (int64_t)sqrt((double)(*r2))+1; nx1++) {
-		if (nx1*nx1 < *r2)
-			ny = (int64_t)(sqrt((double)((*r2)-nx1*nx1)));
+	for (nx1 = nx; nx1 <= (int64_t)sqrt((double)(*r2)) + 1; nx1++) {
+		if ((nx1_2 = (nx1 * nx1)) < (*r2))
+			ny = (int64_t)(sqrt((double)((*r2) - nx1_2)));
 		else
 			ny = 0;
-		while (nx1*nx1+ny*ny <= (*r2) && ny<=nx1)
+		while ((nx1_2 + ny * ny ) <= (*r2) && ny <= nx1)
 			ny++;
+		ny_2 = ny * ny;
 		if (ny <= nx1) {
-			if (rr > (nx1*nx1+ny*ny)) {
+			if (rr > (nx1_2 + ny_2)) {
 				k = 0;
-				rr = nx1*nx1+ny*ny;
-				xs[k] = nx1;
-				ys[k] = ny;
+				rr = nx1_2 + ny_2;
+				xs[0] = nx1;
+				ys[0] = ny;
 			}
-			else if (rr == (nx1*nx1+ny*ny)) {
+			else if (rr == (nx1_2 + ny_2)) {
 				k++;
 				xs[k] = nx1;
 				ys[k] = ny;
@@ -333,19 +359,26 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 		ny = ys[ii];
 
 		if (ny == 0) {
-			js[ct+0] = 0;  js[ct+1] = 0;   js[ct+2] = nx; js[ct+3] = -nx;
-			is[ct+0] = nx; is[ct+1] = -nx; is[ct+2] = 0;  is[ct+3] = 0;
-			ct += 4;
+			js[ct] =   0;	is[ct++] =  nx;
+			js[ct] =   0;	is[ct++] = -nx;
+			js[ct] =  nx;	is[ct++] =   0; 
+			js[ct] = -nx;	is[ct++] =   0;
 		}
 		else if (nx != ny){
-			js[ct+0] = ny; js[ct+1] = ny;  js[ct+2] = -ny; js[ct+3] = -ny; js[ct+4] = nx; js[ct+5] = -nx; js[ct+6] = nx;  js[ct+7] = -nx;
-			is[ct+0] = nx; is[ct+1] = -nx; is[ct+2] = nx;  is[ct+3] = -nx; is[ct+4] = ny; is[ct+5] = ny;  is[ct+6] = -ny; is[ct+7] = -ny; 
-			ct += 8;
+			js[ct] =  ny;	is[ct++] =  nx;
+			js[ct] =  ny;	is[ct++] = -nx;
+			js[ct] = -ny;	is[ct++] =  nx;
+			js[ct] = -ny;	is[ct++] = -nx;
+			js[ct] =  nx;	is[ct++] =  ny;
+			js[ct] = -nx;	is[ct++] =  ny;
+			js[ct] =  nx;	is[ct++] = -ny;
+			js[ct] = -nx;	is[ct++] = -ny; 
 		}
 		else {
-			js[ct+0] = nx; js[ct+1] = nx; js[ct+2] = -nx;  js[ct+3] = -nx;
-			is[ct+0] = nx; is[ct+1] = -nx;  is[ct+2] = nx; is[ct+3] = -nx;
-			ct += 4;
+			js[ct] =  nx;	is[ct++] =  nx;
+			js[ct] =  nx;	is[ct++] = -nx;
+			js[ct] = -nx;	is[ct++] =  nx;
+			js[ct] = -nx;	is[ct++] = -nx;
 		}
  	}
 
@@ -378,7 +411,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 		radius = (int64_t)floor (sqrt ((double)(nx*nx + ny*ny)));
 	rad2 = (double)(radius * radius);
 	
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbor...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
  		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
 		rr = 0; 
@@ -388,25 +421,29 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 			else {	/* search nearest neighbor, use previous nearest distance to exclude certain search area. */
 				flag = 0;
 				/* set the starting search radius based on last nearest distance */
-				if (rr >= 4 && recy > 0 && recx > 0) rr = (recx-1)*(recx-1)+(recy-1)*(recy-1)-1;
-				else if (rr >= 4 && recy == 0 && recx > 0) rr = (recx-1)*(recx-1)-1;
-				else if (rr >= 4 && recy > 0 && recx == 0) rr = (recy-1)*(recy-1)-1;
-				else rr = 0;
+				if (rr >= 4) {
+					if (recy > 0 && recx > 0)
+						rr = (recx-1)*(recx-1)+(recy-1)*(recy-1)-1;
+					else if (recy == 0 && recx > 0)
+						rr = (recx-1)*(recx-1)-1;
+					else if (recy > 0 && recx == 0)
+						rr = (recy-1)*(recy-1)-1;
+				}
+				else
+					rr = 0;
 
 				while (flag == 0 && rr <= rad2) {
 					ct = find_nearest (i, j, &rr, is, js, xs, ys);
 					cs++;
-					if (rr <= rad2) {
-						for (k = 0; k < ct; k++) {
-							if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
-								node = gmt_M_ijp (In->header, is[k], js[k]);
-								if (!gmt_M_is_fnan (m[node])) {
-									m_interp[ij] = m[node];
-									flag = 1;
-									recx = int64_abs (is[k]-i);
-									recy = int64_abs (js[k]-j);
-									break;
-								}
+					for (k = 0; k < ct; k++) {
+						if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
+							node = gmt_M_ijp (In->header, is[k], js[k]);
+							if (!gmt_M_is_fnan (m[node])) {
+								m_interp[ij] = m[node];
+								flag = 1;
+								recx = int64_abs (is[k]-i);
+								recy = int64_abs (js[k]-j);
+								break;
 							}
 						}
 					}
@@ -435,7 +472,6 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	uint64_t node, offset;
 	int64_t off[4];
 	double wesn[4];
-	//char command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GRDFILL_CTRL *Ctrl = NULL;
@@ -568,11 +604,15 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			else {
 				switch (Ctrl->A.mode) {
 					case ALG_CONSTANT:	/* Fill in using a constant value */
-						do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
+						error = do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
-						//do_splinefill (Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						//error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
 						break;
+				}
+				if (error) {
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Failed to fill hole %u\n", hole_number);
+					continue;
 				}
 			}
 		}

@@ -244,15 +244,12 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.
-2. Install GMT and its dependencies (including ghostscript and gdal) by running
-   the following in a terminal:
+2. Install GMT and its dependencies (including ghostscript, gdal, ffmpeg and graphicsmagick)
+   by running the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc4 -c conda-forge/label/dev -c conda-forge
+   conda install gmt=6.0.0rc5 -c conda-forge/label/dev -c conda-forge
    ```
 
-3. Install ffmpeg using conda by running the following in a terminal:
-
-   ```
-   conda install ffmpeg -c conda-forge
-   ```
+   NOTE: Currently conda-forge doesn't provide graphicsmagick on win-64 platform.
+   Windows users need to download and install graphicsmagick separately.
