@@ -66,11 +66,7 @@ are user-definable in GMT.
 Examples
 --------
 
-.. include:: explain_example.rst_
-
-To get a copy of the GMT parameter defaults in your home directory, run
-
-   ::
+To get a copy of the GMT parameter defaults in your home directory, run::
 
     gmt defaults -D > ~/gmt.conf
 

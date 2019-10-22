@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** [ **all** \| **cache** \| **defaults** \| **data** \| **sessions** ]
+**gmt clear** **all** \| **cache** \| **defaults** \| **data** \| **sessions**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -61,8 +61,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To remove the current default settings in a modern mode session, use::
 
