@@ -543,7 +543,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, 2 + 2*Ctrl->L.mode, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2 + 2*(1-Ctrl->L.mode), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
