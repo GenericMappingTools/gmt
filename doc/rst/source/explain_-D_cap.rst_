@@ -5,5 +5,9 @@
     *invalid* (a value to represent missing data [NaN]), *title* (anything you
     like), and *remark* (anything you like). Items not listed will remain untouched.
     Give a blank name to completely reset a particular string.
-    Use quotes to group texts with more than one word.
+    Use quotes to group texts with more than one word.  If any of your text contains plus symbols
+    you need to escape them (place a backslash before each plus-sign) so they are not confused with the
+    option modifiers.  Alternatively, you can place the entire double-quoted string inside single
+    quotes.  If you have shell variables that contain plus symbols you cannot use single quotes but
+    you can escape the plus symbols in a variable using constructs like ${variable/+/\\+}.
     Note that for geographic grids (**-fg**) *xname* and *yname* are set automatically.

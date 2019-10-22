@@ -676,7 +676,8 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
-	GMT_Destroy_Options (API, &head);	/* Done with these here */
+	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
 }
 
 /* Function to get PPID under Windows is a bit different */
@@ -11010,7 +11011,7 @@ int GMT_Option (void *V_API, const char *options) {
 				break;
 			case 'd':	/* Nodata flag -d, -di, -do */
 				if (p[1] == 'i') arg[k++] = 'k';
-				else if (p[1] == 'o') arg[k++] = 'l';
+				else if (p[1] == 'o') arg[k++] = 'm';
 				else arg[k++] = 'd';
 				break;
 			case 'j':	/* Spherical distance calculation mode */
@@ -11082,6 +11083,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
+	const char *module_name;
 	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -11103,6 +11105,11 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 			source_info_len = strlen (API->message);	/* Update length of message from 0 */
 		}
 	}
+	if (GMT && GMT->init.module_name)
+		module_name = ((GMT->current.setting.run_mode == GMT_MODERN)) ? gmtlib_get_active_name (API, GMT->init.module_name) : GMT->init.module_name;
+	else
+		module_name = API->session_tag;
+
 	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
 	source_info_len = strlen (API->message);
 	va_start (args, format);

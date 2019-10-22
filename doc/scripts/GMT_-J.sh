@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-gmt begin GMT_-J ps
-gmt text -R0/5/0/3 -Jx1i -F+f+j << EOF
+gmt begin GMT_-J
+	gmt text -R0/5/0/3 -Jx1i -F+f+j << EOF
 2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS
 2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS
 0	1.75	11p,Helvetica		BL	CYLINDRICAL
@@ -9,7 +9,7 @@ gmt text -R0/5/0/3 -Jx1i -F+f+j << EOF
 3	1.75	11p,Helvetica		BL	THEMATIC
 4	1.75	11p,Helvetica		BL	OTHER
 EOF
-gmt text -F+f8p+jBL << EOF 
+	gmt text -F+f8p+jBL << EOF 
 # Cylindrical
 0	1.35	Basic [E]
 0	1.2	Cassini
@@ -51,7 +51,7 @@ gmt text -F+f8p+jBL << EOF
 0.075	2.6	E = Equal Area
 EOF
 
-gmt plot -Wthinner << EOF 
+	gmt plot -Wthinner << EOF 
 >
 2.3	2.75
 2	2.4
@@ -92,4 +92,4 @@ gmt plot -Wthinner << EOF
 0.025	2.87
 0.025	2.55
 EOF
-gmt end
+gmt end show

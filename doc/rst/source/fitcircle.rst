@@ -133,6 +133,13 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To find the parameters of a great circle that most closely fits the (lon,lat)
+points in the remote file @sat_03.txt in a least-squares sense, try::
+
+    gmt fitcircle @sat_03.txt -L2 -Fm
+
 Suppose you have lon,lat,grav data along a twisty ship track in the file
 ship.xyg. You want to project this data onto a great circle and resample
 it in distance, in order to filter it or check its spectrum. Do the

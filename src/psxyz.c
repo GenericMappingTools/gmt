@@ -885,6 +885,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
+		else if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.size > 0.0)) {
+			/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
+			gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		}
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1580,6 +1584,17 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
+		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
+			if (polygon) {	/* Place a rectangle in the legend */
+				int symbol = S.symbol;
+				S.symbol = PSL_RECT;
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				S.symbol = symbol;
+			}
+			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		}
+		
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 

@@ -239,8 +239,7 @@ rectangular by defining the corners of a rectangular map boundary. Using
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10
-              -Wthinnest -pdf GMT_lambert_az_rect
+    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest -pdf GMT_lambert_az_rect
 
 .. figure:: /_images/GMT_lambert_az_rect.*
    :width: 500 px

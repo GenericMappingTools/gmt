@@ -194,6 +194,8 @@ For larger integers you may consider **=ni**, otherwise use the default float gr
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To set all nodes inside and on the polygons coastline_*.xy to 0, and
 outside points to 1, do
 

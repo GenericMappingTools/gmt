@@ -163,10 +163,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify background color of beach ball. It can be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color symbol for station in compressive part. Fill can be either\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color symbol for station in compressive part.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add L[<pen>] to outline [Default is black].\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will ignore those outside].\n");

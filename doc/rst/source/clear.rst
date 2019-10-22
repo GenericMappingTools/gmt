@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** [ **all** \| **cache** \| **defaults** \| **data** \| **sessions** ]
+**gmt clear** **all** \| **cache** \| **defaults** \| **data** \| **sessions**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -52,7 +52,7 @@ Optional Arguments
 **sessions**
     Delete the user's sessions directory.
 
-.. _clear-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -62,15 +62,11 @@ Optional Arguments
 Examples
 --------
 
-To remove the current default settings in a modern mode session, use
-
-   ::
+To remove the current default settings in a modern mode session, use::
 
     gmt clear defaults
 
-To completely wipe your GMT cache directory, try
-
-   ::
+To completely wipe your GMT cache directory, try::
 
     gmt clear cache
 

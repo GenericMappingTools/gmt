@@ -30,6 +30,10 @@ For developers and advanced users:
 - [Packaging](#packaging)
 - [Updating the development source codes](#updating-the-development-source-codes)
 
+For package maintainers:
+
+- [Packaging GMT](#packaging-gmt)
+
 ## Build and runtime dependencies
 
 To build GMT, you must install:
@@ -58,7 +62,7 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 Optionally install for building GMT documentations and running tests:
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the HTML documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need to download support data:
@@ -108,7 +112,7 @@ You then can install the GMT dependencies with:
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -199,7 +203,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     brew install cmake curl netcdf ghostscript
 
     # Install optional dependencies
-    brew install gdal pcre fftw
+    brew install gdal pcre2 fftw
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -240,8 +244,7 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
     vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    # NOTE: clapack and openblas currently aren't available for x86-windows.
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
@@ -364,7 +367,7 @@ cmake --build . --target install --config Release
 will install gmt executable, library, development headers and built-in data
 to the specified GMT install location.
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-UNIX manpages, and HTML documentations.
+and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
@@ -390,16 +393,15 @@ Then, you should now be able to run GMT programs.
 
 ## Building documentation
 
-The GMT documentations are available in different formats and can be generated with:
+The GMT documentation is available in HTML format and can be generated with:
 
 ```
-cmake --build . --target docs_man   # UNIX manual pages
-cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
+cmake --build . --target docs_html  # HTML documentation
 ```
 
 To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
 documentation builder. You can choose to install the documentation files
-from an external location instead of generating the Manpages, and HTML files from the sources.
+from an external location instead of generating the HTML files from the sources.
 This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 
@@ -478,3 +480,98 @@ cmake --build . --target install
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
 run cmake again manually.
+
+---
+
+## Packaging GMT
+
+**These recommendations are directed at package maintainers of GMT.**
+
+First split off DCW-GMT and GSHHG into separate architecture independent packages,
+e.g., `dcw-gmt` and `gshhg-gmt`, because they have a different development cycle.
+Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt/` or
+`/usr/share/gmt/{dcw,gshhg}/`. Then configure GMT as shown below.
+
+### DCW-GMT
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/dcw/
+- **Summary**: Digital Chart of the World (DCW) for GMT
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
+- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector basemap of the world,
+  available from the Princeton University Digital Map and Geospatial Information Center.
+  It contains more state boundaries (the largest 8 countries are now represented) than the original data source.
+  Information about DCW can be found on Wikipedia (https://en.wikipedia.org/wiki/Digital_Chart_of_the_World).
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GSHHG
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/gshhg/
+- **Summary**: Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
+- **Description**: GSHHG is a high-resolution shoreline data set amalgamated from
+  two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
+  and CIA World Data Bank II (WDBII). GSHHG contains vector descriptions at five different
+  resolutions of land outlines, lakes, rivers, and political boundaries.
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GMT
+
+- **Homepage**: https://www.generic-mapping-tools.org/
+- **Summary**: Generic Mapping Tools
+- **License**: GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
+- **Source**:
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
+- **Description**: GMT is an open-source collection of command-line tools for
+  manipulating geographic and Cartesian data sets (including filtering, trend fitting,
+  gridding, projecting, etc.) and producing PostScript illustrations ranging from simple
+  x–y plots via contour maps to artificially illuminated surfaces and 3D perspective views.
+  It supports many map projections and transformations and includes supporting data
+  such as coastlines, rivers, and political boundaries and optionally country polygons.
+- **Build dependencies**:
+    - cmake
+    - gcc
+    - curl
+    - netcdf
+    - gdal
+    - pcre
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt
+- **Runtime dependencies**:
+    - ghostscript (*required*)
+    - curl (*required*)
+    - netcdf (*required*)
+    - gdal
+    - pcre
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt (at least the crude resolution GSHHG files are mandatory)
+- **CMake arguments**:
+    ```
+    -DCMAKE_C_FLAGS=-fstrict-aliasing
+    -DCMAKE_INSTALL_PREFIX=${prefix}
+    -DDCW_ROOT=${prefix}/share/gmt/dcw
+    -DGSHHG_ROOT=${prefix}/share/gmt/gshhg
+    -DNETCDF_ROOT=${prefix}
+    -DFFTW3_ROOT=${prefix}
+    -DGDAL_ROOT=${prefix}
+    -DPCRE_ROOT=${prefix}
+    -DGMT_INSTALL_MODULE_LINKS=off
+    -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
+    -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
+    ```
+
+Note that you have to configure and build out-of-source.
+It is safe to make a parallel build with `make -j`.
+It is expected that the GMT supplements plugin be distributed with the core programs.

@@ -28,7 +28,6 @@ fi
 if [[ "$BUILD_DOCS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (DO_ANIMATIONS TRUE)
-set (CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 EOF
 fi
 

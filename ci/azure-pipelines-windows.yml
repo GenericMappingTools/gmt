@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: CacheBeta@0
   inputs:
-    key: $(Agent.OS) | vcpkg | 20190820
+    key: $(Agent.OS) | vcpkg | 20191017
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -41,7 +41,7 @@ steps:
 - bash: |
     set -x -e
     choco install ninja
-    choco install ghostscript --version 9.26 # gs 9.27 is buggy
+    choco install ghostscript
   displayName: Install dependencies via chocolatey
 
 - bash: |
@@ -89,7 +89,7 @@ steps:
 - script: |
     mkdir build
     cd build
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
     cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release
     cmake --build .
     cmake --build . --target install
@@ -97,6 +97,7 @@ steps:
 
 - script: |
     gmt --version
+    bash %INSTALLDIR%/bin/gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
@@ -107,7 +108,7 @@ steps:
     set -x -e
     cd build
     # Download remote files before testing, see #939.
-    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
@@ -117,6 +118,13 @@ steps:
   env:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
   condition: eq(variables['TEST'], true)
+
+- script: |
+    cd doc/examples
+    set GMT_END_SHOW=off && call do_examples.bat
+  displayName: Run DOS batch examples
+  condition: eq(variables['TEST'], true)
+  enabled: false
 
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2
@@ -135,9 +143,7 @@ steps:
     set -x -e
     cd build
     cmake --build . --target docs_html_depends
-    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
-    cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -148,6 +154,9 @@ steps:
     cmake --build . --target gmt_release_tar
     # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
-    md5sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
+    # get sha256 hash value
+    CertUtil -hashfile gmt-*.tar.gz sha256
+    CertUtil -hashfile gmt-*.tar.xz sha256
+    CertUtil -hashfile gmt-*.exe    sha256
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

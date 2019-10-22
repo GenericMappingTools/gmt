@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_efe1817_2019.07.26 [64-bit] Document from pscoast
+%%Title: GMT v6.0.0_ae8e825_2019.10.15 [64-bit] Document from pscoast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Jul 26 21:09:52 2019
+%%CreationDate: Tue Oct 15 08:19:43 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,7 +658,7 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -6108,7 +6109,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy @quakes_07.txt -h1 -Sci -i0,1,2+s0.01 -Gred -Wthinnest -R-50/0/-10/20 -JM9i
+%@GMT: gmt psxy @quakes_07.txt -h1 -Sci -i0,1,2+s0.01 -Gred -Wthinnest '-lISC Earthquakes+s0.08i' -R-50/0/-10/20 -JM9i
 %@PROJ: merc -50.00000000 0.00000000 -10.00000000 20.00000000 -2782987.270 2782987.270 -1111475.103 2258423.649 +proj=merc +lon_0=-25 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -8791,21 +8792,36 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pslegend -DjTR+w2.2i+o0.2i -F+pthick+ithinner+gwhite --FONT_ANNOT_PRIMARY=18p,Times-Italic
+%@GMT: gmt pslegend -DjTR+o0.2i -F+pthick+ithinner+gwhite --FONT_ANNOT_PRIMARY=18p,Times-Italic -R-50/0/-10/20 -JM9i
 %@PROJ: merc -50.00000000 0.00000000 -10.00000000 20.00000000 -2782987.270 2782987.270 -1111475.103 2258423.649 +proj=merc +lon_0=-25 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-7920 5835 T
-{1 A} FS
-463 2640 1320 232 Sr
+/PSL_legend_label_width 0 def
+/PSL_legend_string_width 0 def
+PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
+300 F6
+(ISC Earthquakes) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+/PSL_tmp_w 144 def
+/PSL_legend_clear_x 133 def
+/PSL_tmp_w PSL_tmp_w PSL_legend_label_width add def
+/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_legend_clear_x add def
+/PSL_legend_box_height 463 def
+10097 5835 T
+PSL_legend_box_width PSL_legend_box_height sub 2 2 div mul neg 0 translate
+V
 17 W
-FQ
+{1 A} FS
 O1
-463 2640 1320 232 Sr
+0 0 M PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N
+/PSL_legend_box_shrink 67 def
 8 W
-397 2573 1320 232 Sr
+FQ
+33 33 M
+PSL_legend_box_width PSL_legend_box_shrink sub 0 D 0 PSL_legend_box_height PSL_legend_box_shrink sub D PSL_legend_box_width PSL_legend_box_shrink sub neg 0 D P FO N
+U
 0 A
 FQ
 O0
@@ -8822,7 +8838,7 @@ O0
 V
 {1 0 0 C} FS
 O1
-48 187 232 Sc
+48 115 232 Sc
 U
 %%EndObject
 0 A
@@ -8837,11 +8853,10 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
-427 131 M 300 F6
-(ISC Earthquakes) bl Z
+211 131 M (ISC Earthquakes) bl Z
 %%EndObject
--7920 -5835 T
+PSL_legend_box_width PSL_legend_box_height sub 2 2 div mul 0 translate
+-10097 -5835 T
 %%EndObject
 0 A
 FQ

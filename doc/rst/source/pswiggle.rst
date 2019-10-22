@@ -48,6 +48,13 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To demonstrate a basic wiggle plot we create some synthetic data with
+:doc:`gmtmath` and pipe it through **pswiggle**::
+
+    gmt math -T-8/6/0.01 -N3/0 -C2 T 3 DIV 2 POW NEG EXP T PI 2 MUL MUL COS MUL 50 MUL = | gmt pswiggle -R-10/10/-3/3 -JM6i -Baf -Z100i -DjRM+w100+lnT -Tfaint -Gred+p -W1p -BWSne -P > map.ps
+
 To plot the magnetic anomaly stored in the file track.xym along track @
 500 nTesla/cm (after removing a mean value of 32000 nTesla), using a
 15-cm-wide Polar Stereographic map ticked every 5 degrees in Portrait

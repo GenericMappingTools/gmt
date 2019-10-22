@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from pstext
+%%Title: GMT v6.0.0_ae8e825_2019.10.15 [64-bit] Document from pstext
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Sep  1 18:11:26 2019
+%%CreationDate: Tue Oct 15 08:19:43 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -685,7 +686,7 @@ O0
 0 4907 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy spectrum.xpower -JX-4il/3.75il -Bxa1f3p '-Bya1f3p+lPower (mGal@+2@+km)' -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p -BWens+g240/255/240 -Xa0i -Ya4.0889i
+%@GMT: gmt psxy spectrum.xpower -JX-4il/3.75il -Bxa1f3p '-Bya1f3p+lPower (mGal@+2@+km)' -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p -lShip -BWens+g240/255/240 -Xa0i -Ya4.0889i
 %@PROJ: xy 1.00000000 1000.00000000 0.10000000 10000.00000000 3.000 -0.000 -1.000 4.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -1693,7 +1694,7 @@ O0
 0 4907 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p -Xa0i -Ya4.0889i -R1/1000/0.1/10000 -JX-4il/3.75il
+%@GMT: gmt psxy spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p -lSatellite -Xa0i -Ya4.0889i -R1/1000/0.1/10000 -JX-4il/3.75il
 %@PROJ: xy 1.00000000 1000.00000000 0.10000000 10000.00000000 3.000 -0.000 -1.000 4.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1839,19 +1840,33 @@ O0
 0 4907 TM
 
 % PostScript produced by:
-%@GMT: gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold -Xa0i -Ya4.0889i
+%@GMT: gmt pslegend -DjBL+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold -Xa0i -Ya4.0889i -R1/1000/0.1/10000 -JX-4il/3.75il
 %@PROJ: xy 1.00000000 1000.00000000 0.10000000 10000.00000000 3.000 -0.000 -1.000 4.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+/PSL_legend_label_width 0 def
+/PSL_legend_string_width 0 def
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+233 F1
+(Ship) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+(Satellite) V MU 0 0 M E /PSL_tmp_w edef FP pathbbox N /PSL_tmp_h edef /PSL_tmp_x1 edef /PSL_tmp_d edef /PSL_tmp_x0 edef U
+PSL_tmp_w PSL_legend_label_width gt { /PSL_legend_label_width PSL_tmp_w def } if
+/PSL_tmp_w 196 def
+/PSL_legend_clear_x 133 def
+/PSL_tmp_w PSL_tmp_w PSL_legend_label_width add def
+/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_legend_clear_x add def
+/PSL_legend_box_height 647 def
 300 300 T
-{1 A} FS
-647 1440 720 323 Sr
+PSL_legend_box_width PSL_legend_box_height sub 0 2 div mul neg 0 translate
+V
 25 W
-FQ
+{1 A} FS
 O1
-647 1440 720 323 Sr
+0 0 M PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N
+U
 0 A
 FQ
 O0
@@ -1867,9 +1882,9 @@ O0
 4 W
 V
 {1 0 0 C} FS
-65 187 452 St
+65 132 452 St
 {0 0 1 C} FS
-42 187 195 Sc
+42 132 195 Sc
 U
 %%EndObject
 0 0 TM
@@ -1885,12 +1900,11 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-427 369 M 233 F1
-(Ship) bl Z
-427 112 M (Satellite) bl Z
+263 369 M (Ship) bl Z
+263 112 M (Satellite) bl Z
 %%EndObject
 0 0 TM
+PSL_legend_box_width PSL_legend_box_height sub 0 2 div mul 0 translate
 -300 -300 T
 %%EndObject
 0 -4907 TM

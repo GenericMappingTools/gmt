@@ -30,6 +30,9 @@
 
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
+	size_t L = strlen (module);
+	
+	if (L >= 32U) return module;	/* Safety valve to protect modname array from oversize */
 	
 	/* First check for modern names and set the classic name in modname */
 	if      (!strncmp (module, "histogram",    9U)) { strcpy (modname, "pshistogram"); return module; }

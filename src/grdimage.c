@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					Ctrl->I.file = strdup (opt->arg);
 				else if (gmt_M_file_is_cache (opt->arg))	/* Got a remote file */
 					Ctrl->I.file = strdup (opt->arg);
-				else if (opt->arg[0] && !gmt_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
+				else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
 					Ctrl->I.constant = true;
 				}
@@ -1039,6 +1039,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->D.active) {	/* Already got an image with colors but need to set up a colormap of 256 entries */
 			uint64_t cpt_len[1] = {256};
+			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
@@ -1059,6 +1060,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				do_indexed = true;	/* Now it will be RGB */
 				gray_only = false;	/* True technocolor, baby */
 			}
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Indexed image without colormap. Can't proceed.\n");
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 

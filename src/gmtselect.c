@@ -32,7 +32,7 @@
  *	6. Only data with z-values within specified range may pass
  *  7. Only data with (x,y) locations inside a mask grid may pass
  *
- * Distances are calculated in the users units using Euclidian geometry
+ * Distances are calculated in the users units using Euclidean geometry
  * unless a map projection and region (-R -J) are used.  Then, distances
  * are calculated using spherical geometry and converted to km, and any
  * distances given in options or via headers are assumed to be in km.

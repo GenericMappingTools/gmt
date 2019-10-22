@@ -171,7 +171,7 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 .. include:: explain_-ocols.rst_
 
-.. |Add_nodereg| replace:: 
+.. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
     **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
     (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
@@ -184,6 +184,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To find 5 by 5 minute block medians from the ASCII data in ship_15.txt
 and output a binary table with double precision triplets, run
@@ -199,7 +201,7 @@ mars370.txt and send output to an ASCII table, run
 
    ::
 
-    gmt gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
+    gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
 
 To determine the median and L1 scale (MAD) on the median per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run

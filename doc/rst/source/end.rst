@@ -32,7 +32,7 @@ Optional Arguments
 **show**
     Open all graphics produced by the session in the default viewer.
 
-.. _end-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -42,11 +42,15 @@ Optional Arguments
 Examples
 --------
 
-To close the current modern session and finalize any plots requested, we use
-
-   ::
+To close the current modern session and finalize any plots requested, we use::
 
     gmt end
+
+Disable display
+---------------
+
+If you wish to run scripts that end with **gmt end show** but sometimes prefer to not display the results,
+you can set the environmental parameter **GMT_END_SHOW** to off.
 
 See Also
 --------

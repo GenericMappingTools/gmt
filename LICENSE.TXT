@@ -1,10 +1,12 @@
+Copyright (c) 1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+
 As of GMT 5.0.0, GMT is distributed under the GNU Lesser General Public
-License (LGPL) version 3 or later. Copies of the The GNU General Public
+License (LGPL) version 3 or later. Copies of the GNU General Public
 License (GPL) and the GNU Lesser General Public License (LGPL) are
 distributed along with the sources. Refer to the files COPYINGv3 and
 COPYING.LESSERv3.
 
-NOTE: Some of the source files in src/ have different licenses.  For
+NOTE: Some of the source files in src/ have different licenses. For
 instance Shewchuk's Delaunay Triangulator (triangle.c) is distributed
 under a proprietary non-permissive license. Refer to the license in
 every source file. Users who wish to enforce strict GPL or LGPL
@@ -18,11 +20,14 @@ appear in all copies, that both that copyright notice and this
 permission notice appear in supporting documentation, and that the name
 of GMT not be used in advertising or publicity pertaining to
 distribution of the software without specific, written prior
-permission.  The GMT package may be included in a bundled distribution
-of software for which a fee may be charged. The University of Hawaii
-(UH) and the National Oceanic and Atmospheric Administration (NOAA)
-make no representations about the suitability of this software for any
-purpose.  It is provided "as is" without expressed or implied warranty.
-It is provided with no support and without obligation on the part of UH
-or NOAA, to assist in its use, correction, modification, or
-enhancement.
+permission. The GMT package may be included in a bundled distribution
+of software for which a reasonable fee may be charged.
+
+The GMT package is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+In particular, the authors or any other individuals involved in the design and
+maintenance of GMT, as well as their employers, are NOT responsible
+for any damage that may follow from correct or incorrect use of these programs.
+It is provided with no support and without obligation on the part of the authors,
+to assist in its use, correction, modification, or enhancement.

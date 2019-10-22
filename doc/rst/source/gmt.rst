@@ -44,7 +44,7 @@ Synopsis
     as figure name for single-figure sessions [gmtsession].  Likewise, the optional
     *format* can be used to override the default graphics format [PDF].
 
-**gmt figure** [*prefix*] [*format(s)*] [*options*]
+**gmt figure** *prefix* [*format(s)*] [*options*]
     Specifies the desired name, output format(s) and any custom arguments that should
     be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
     will be directed to this current figure until another **gmt figure** command is issued
@@ -69,8 +69,10 @@ If no module is given then several other options are available:
 **--help**
     List and description of GMT modules.
 
-**--new-script**
-    Write a GMT modern mode script template to stdout.
+**--new-script**\ [=\ *L*]
+    Write a GMT modern mode script template to stdout. Optionally append the desired
+    scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
+    closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
 **--show-bindir**
     Show directory of executables and exit.
@@ -159,7 +161,7 @@ The Common GMT Options
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
-**-r**
+|SYN_OPT-r|
 |SYN_OPT-s|
 |SYN_OPT-t|
 |SYN_OPT-x|
@@ -224,6 +226,8 @@ programs. No space between the option flag and the associated arguments.
 
 .. |Add_-j| unicode:: 0x20 .. just an invisible code
 .. include:: explain_distcalc_full.rst_
+
+.. include:: explain_-l_full.rst_
 
 .. include:: explain_-n_full.rst_
 

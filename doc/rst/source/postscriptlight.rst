@@ -1,7 +1,7 @@
 .. index:: ! postscriptlight
 
 ***************
-postscriptlight
+PostScriptLight
 ***************
 
 .. only:: not man
@@ -322,6 +322,11 @@ affect the current state of parameters such as line and fill attributes.
     **PSL_setimage** to select an image pattern as current paint color. For
     PDF transparency, set *rgb*\ [3] to a value between 0 (opaque) and 1
     (fully transparent).
+
+**long PSL_setcurrentpoint** (**struct PSL_CTRL** *\*P*, **double**
+*x*, **double** *y*)
+
+    Sets the current point to the location given by (*x*, *y*).
 
 **long PSL_setimage** (**struct PSL_CTRL** *\*P*, **long**
 *image_no*, **char** *\*imagefile*, **unsigned char** *\*image*,

@@ -279,6 +279,16 @@ enum GMT_enum_index {
 enum GMT_enum_download {
 	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1};
 
+/*! Various mode for auto-legend pens */
+enum GMT_enum_autolegend {
+	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1,
+	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
+
+//#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
+//#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
+#define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
+#define GMT_LEGEND_DX2_MUL 1.5	/* Default offset from margin to start of label if given as '-' times max symbol size */
+
 /*! Various mode for axes */
 enum GMT_enum_oblique {
 	GMT_OBL_ANNOT_LON_X_LAT_Y    =  0,

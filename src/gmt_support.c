@@ -10188,9 +10188,9 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 #else
 	{	/* Windows doesn't support %' format */
 		if (use_locale) {
-			char *new_format;
-			new_format = gmt_strrep(format, "%'", "%");
+			char *new_format = gmt_strrep(format, "%'", "%");
 			sprintf (string, new_format, x);
+			gmt_M_str_free (new_format);
 		} else
 			sprintf (string, format, x);
 	}
@@ -12624,6 +12624,10 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 		if (string[i] == '\"' || string[i] == '\'') in_quote = !in_quote;	/* Check when we get past the quoted section */
 	}
 	token[j] = 0;	/* Add terminating \0 */
+	if (j > 2 && token[1] == '\"' && token[j-1] == '\"') { /* The whole thing was given in quotes */
+		memmove (&token[1], &token[2], strlen(token)-3);
+		token[j-2] = 0;
+	}
 
 	*pos = i;
 
@@ -14581,25 +14585,26 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 
 /*! . */
 char *gmt_putusername (struct GMT_CTRL *GMT) {
+	/* Calling function must free the result */
 	static char *unknown = "unknown";
 	gmt_M_unused(GMT);
 #ifdef HAVE_GETPWUID
 #include <pwd.h>
 	struct passwd *pw = NULL;
 	pw = getpwuid (getuid ());
-	if (pw) return (pw->pw_name);
+	if (pw) return (strdup (pw->pw_name));
 #endif
 #ifdef WIN32
 	{
 		char name[GMT_LEN256] = {""}, *U = NULL;
 		DWORD Size = _tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
-			return (name);
+			return (strdup (name));
 		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
-			return (U);
+			return (strdup (U));
 	}
 #endif
-	return (unknown);
+	return (strdup (unknown));
 }
 
 /* Various functions from surface that are now used elsewhere as well */
@@ -16023,12 +16028,12 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
 			snprintf (cmd, PATH_MAX, "\"%s\"", program);
 		else	/* Already has quotes, but these might be double or single */
-			strncpy (cmd, program, PATH_MAX);
+			strncpy (cmd, program, PATH_MAX-1);
 		if (program[0] == '\'')	/* Replace single quotes with double quotes*/
 			gmt_strrepc (cmd, '\'', '\"');
 	}
 	else	/* No spaces, just copy */
-		strncpy (cmd, program, PATH_MAX);
+		strncpy (cmd, program, PATH_MAX-1);
 	if (arg) {	/* Append the command argument */
 		strcat (cmd, " ");
 		strcat (cmd, arg);
@@ -16042,7 +16047,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
 
 	if ((fp = popen (cmd, "r")))	/* There was such a command */
-		gmt_fgets (GMT, line, PATH_MAX, fp);	/* Read first line */
+		gmt_fgets (GMT, line, GMT_LEN256, fp);	/* Read first line */
 	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
 	}

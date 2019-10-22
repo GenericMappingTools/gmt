@@ -85,6 +85,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To identify all regions with NaNs in the grid data.grd and create a listing of the
 bounding coordinates of rectangular regions that would cover these NaN areas, try
 

@@ -259,6 +259,8 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To make a CPT with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 
@@ -281,11 +283,11 @@ To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
 or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
-the data table depths.txt (with lon, lat, depths), run
+the remote ata table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
-    gmt makecpt -Cgebco depths.txt -i2 -Z -E24 > my_depths.cpt
+    gmt makecpt -Cgebco @v3206_06.txt -i2 -Z -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try

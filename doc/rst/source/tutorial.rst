@@ -1,6 +1,6 @@
-################
-The GMT Tutorial
-################
+############
+GMT Tutorial
+############
 
 .. set default highlighting language for this document:
 
@@ -33,7 +33,7 @@ after completion of this short tutorial.
 
 .. note::
 
-   This tutorial is for GMT 6 modern moden only. Looking for the classic mode tutorial?
+   This tutorial is for GMT 6 modern mode only. Looking for the classic mode tutorial?
    Since classic mode commands haven't changed since GMT 5, please visit
    the `GMT 5 tutorial page <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>`_ instead.
 

@@ -939,6 +939,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	if (custom_limit_file) {
 		if ((custom_fp = gmt_fopen (GMT, custom_limit_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not open custom limit file %s\n", custom_limit_file);
+			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (API->error);
 	 	}
 		else {
@@ -956,6 +957,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error in custom limits file [%s]\n", custom_limit_line);
+					gmt_fclose (GMT, custom_fp);
+					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (API->error);
 				}
 			}
