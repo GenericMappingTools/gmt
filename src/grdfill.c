@@ -200,22 +200,23 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 }
 
 #if 0
-GMT_LOCAL int do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
+GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
-	unsigned int row, col, row_hole, col_hole, mode, d_limit[4];
+	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
+	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
 	uint64_t node, node_hole, k = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;
 	gmt_grdfloat *z = NULL;
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_GRID *G_hole = NULL;
-	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
+	struct GMT_CTRL *GMT = API->GMT;
 	
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
 	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
 	/* Create a virtual file to hold the resampled grid */
-	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
-		Return (API->error);
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+		return (API->error);
 	}
 	/* Add up to 2 rows/cols around hole, but watch for grid edges */
 	gmt_M_memcpy (d_limit, limit, 4, unsigned int);	/* d_limit will be used to set the grid domain */
@@ -246,20 +247,20 @@ GMT_LOCAL int do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int lim
 	/* Associate our input data vectors with a virtual input file */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V, input);
 	/* Prepare the greenspline command-line arguments */
-	mode = (gmt_M_geographic (GMT, GMT_IN)) ? 2 : 1;
+	mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? 2 : 1;
 	if (value > 0.0)
 		sprintf (method, "t%g", value);
 	else
 		sprintf (method, "c");
-	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
-	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r";)
+	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], mode);
+	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
 		return (API->error);	/* Some sort of failure */
 	}
-	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
+	if ((G_hole = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the resampled grid */
 		return (API->error);	/* Some sort of failure */
 	}
 	/* Use 0-nx,0-ny for the hole index and the large grid G nodes for the holes */
@@ -277,7 +278,7 @@ GMT_LOCAL int do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int lim
 		return (API->error);
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual output file %s\n", output);
 	}
-	if (GMT_Close_VirtualFile (API, input) {
+	if (GMT_Close_VirtualFile (API, input)) {
 		return (API->error);
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual input file %s\n", input);
 	}
@@ -606,7 +607,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 						error = do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
-						//error = do_splinefill (Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						//error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
 						break;
 				}
 				if (error) {
