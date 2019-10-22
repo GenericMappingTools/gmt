@@ -39,9 +39,14 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 # Here we change it to add the git commit hash for non-public releases
 set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
+
+# Check if it's a git repository of not
+if (EXISTS ${GMT_SOURCE_DIR}/.git)
+	set (HAVE_GIT_VERSION TRUE)
+endif (EXISTS ${GMT_SOURCE_DIR}/.git)
+
 # Add the last git commit hash and date to the package version if this is a non-public release.
 # A non-public release has a FALSE 'GMT_PUBLIC_RELEASE' variable in 'ConfigDefault.cmake'.
-#set (HAVE_GIT_VERSION)
 if (GIT_FOUND AND NOT GMT_PUBLIC_RELEASE)
 	# Get the last git commit hash
 	execute_process (
@@ -55,7 +60,6 @@ if (GIT_FOUND AND NOT GMT_PUBLIC_RELEASE)
 		message (STATUS "Unable to determine git commit hash for non-public release - ignoring.")
 	else (GIT_RETURN_CODE)
 		if (GIT_COMMIT_HASH)
-			set (HAVE_GIT_VERSION TRUE)
 			# For non-public release, add the last git commit hash and date
 			execute_process (
 				COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
