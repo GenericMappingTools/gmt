@@ -174,6 +174,7 @@ enum Grdfilter_mode {
 
 
 struct FILTER_INFO {
+	unsigned int filter_type;
 	unsigned int nx;		/* Original columns in input grid */
 	unsigned int ny;		/* Original rows in input grid */
 	unsigned int n_columns;		/* The max number of filter weights in x-direction */
@@ -372,6 +373,13 @@ void reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
 	/* Parameters computed from width and other settings */
 	double x_width, y_width;
 	
+	par[GRDFILTER_WIDTH] = width;
+	par[GRDFILTER_HALF_WIDTH] = 0.5 * width;
+	if (F->filter_type == GRDFILTER_COSINE) 
+		par[GRDFILTER_INV_R_SCALE] = 2.0 / width;
+	else if (F->filter_type == GRDFILTER_GAUSSIAN)	/*  Gaussian filter weights */
+		par[GRDFILTER_INV_R_SCALE] = -18.0 / (width * width);
+
 	x_width = width / (F->dx * par[GRDFILTER_X_SCALE]);
 	y_width = width / (F->dy * par[GRDFILTER_Y_SCALE]);
 	F->x_half_width = irint (ceil (x_width / 2.0));
@@ -623,6 +631,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : return maximum of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : return maximum of all negative points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     If <width> is a grid it must match output domain and registration\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename for filtered grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 #ifdef DEBUG
@@ -1106,6 +1115,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	par[GRDFILTER_HALF_WIDTH] = 0.5 * Ctrl->F.width;
 	par[GRDFILTER_X_SCALE] = x_scale;
 	par[GRDFILTER_Y_SCALE] = (Ctrl->D.mode == GRDFILTER_GEO_MERCATOR) ? GMT->current.proj.DIST_KM_PR_DEG : y_scale;
+	F.filter_type = filter_type;
 	F.d_flag = Ctrl->D.mode;
 	F.rect = Ctrl->F.rect;
 	F.nx = Gin->header->n_columns;
@@ -1478,8 +1488,10 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 				continue;	/* Done with this node */
 			}
 
-			if (effort_level == 3) /* Update weights for this location */
-				set_weight_matrix (GMT, &F, weight, y_out, par, x_shift[col_out], y_shift, ij_out, F.varwidth);
+			if (effort_level == 3) { /* Update weights for this location */
+				double xxx = (fast_way) ? x_fix : x_shift[col_out];
+				set_weight_matrix (GMT, &F, weight, y_out, par, xxx, y_shift, ij_out, F.varwidth);
+			}
 			wt_sum = value = 0.0;	n_in_median = 0;	go_on = true;	/* Reset all counters */
 #ifdef DEBUG
 			n_conv = 0;	/* Just to check # of points in the convolution - not used in any calculations */
