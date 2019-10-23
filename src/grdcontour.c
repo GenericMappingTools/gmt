@@ -565,7 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'W':	/* Pen settings */
 				Ctrl->W.active = true;
 				k = reset = 0;
-				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
+				if ((opt->arg[0] == '-' && opt->arg[1]) || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (opt->arg[k] == '+') Ctrl->W.cptmode = 1, k++;
 					if (opt->arg[k] == '-') Ctrl->W.cptmode = 3, k++;
 					j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
