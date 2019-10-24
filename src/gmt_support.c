@@ -9469,7 +9469,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	T->n_segments = 0;    /* Start working on first segment */
 
 	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
-		S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, n_cols, NULL, T->segment[T->n_segments]);	/* n_cols with 2 rows each */
+		S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, n_cols, NULL, NULL);	/* n_cols with 2 rows each */
 		SH = gmt_get_DS_hidden (S);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
@@ -9620,20 +9620,24 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
 			/* Need to append to previous segment after allocating more space */
 			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
+			uint64_t start = prev_S->n_rows, add = S->n_rows - 1, rec;
 			if (gmt_alloc_segment (GMT, prev_S, prev_S->n_rows + S->n_rows - 1, prev_S->n_columns, GMT_NO_STRINGS, false)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_make_profiles: Cannot reallocate the existing segment");
 				T->segment[T->n_segments++] = S;	/* Hook into table */
 			}
 			else {	/* Copy over but avoid repeating the joint */
-				gmt_M_memcpy (&(prev_S->data[GMT_X][prev_S->n_rows]), &(S->data[GMT_X][1]), S->n_rows - 1, double);
-				gmt_M_memcpy (&(prev_S->data[GMT_Y][prev_S->n_rows]), &(S->data[GMT_Y][1]), S->n_rows - 1, double);
-				prev_S->n_rows += (S->n_rows - 1);
+				gmt_M_memcpy (&(prev_S->data[GMT_X][start]), &(S->data[GMT_X][1]), add, double);
+				gmt_M_memcpy (&(prev_S->data[GMT_Y][start]), &(S->data[GMT_Y][1]), add, double);
+				gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
+				for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
 				gmt_free_segment (GMT, &S);	/* Done with this guy */
 				S = prev_S;
 			}
 		}
-		else	/* Not continous, or first segment */
+		else {	/* Not continous, or first segment */
+			gmt_free_segment (GMT, &T->segment[T->n_segments]);	/* Done with this guy */
 			T->segment[T->n_segments++] = S;	/* Hook into table */
+		}
 
 		last_x = S->data[GMT_X][S->n_rows-1];
 		last_y = S->data[GMT_Y][S->n_rows-1];
