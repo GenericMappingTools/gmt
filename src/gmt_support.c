@@ -9443,7 +9443,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	bool continuous = false;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
-	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step;
+	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x, last_y;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
@@ -9617,7 +9617,27 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				S->data[GMT_Y][k] = y;
 			}
 		}
-		T->segment[T->n_segments++] = S;	/* Hook into table */
+		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
+			/* Need to append to previous segment after allocating more space */
+			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
+			if (gmt_alloc_segment (GMT, prev_S, prev_S->n_rows + S->n_rows - 1, prev_S->n_columns, GMT_NO_STRINGS, false)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_make_profiles: Cannot reallocate the existing segment");
+				T->segment[T->n_segments++] = S;	/* Hook into table */
+			}
+			else {	/* Copy over but avoid repeating the joint */
+				gmt_M_memcpy (&(prev_S->data[GMT_X][prev_S->n_rows]), &(S->data[GMT_X][1]), S->n_rows - 1, double);
+				gmt_M_memcpy (&(prev_S->data[GMT_Y][prev_S->n_rows]), &(S->data[GMT_Y][1]), S->n_rows - 1, double);
+				prev_S->n_rows += (S->n_rows - 1);
+				gmt_free_segment (GMT, &S);	/* Done with this guy */
+				S = prev_S;
+			}
+		}
+		else	/* Not continous, or first segment */
+			T->segment[T->n_segments++] = S;	/* Hook into table */
+
+		last_x = S->data[GMT_X][S->n_rows-1];
+		last_y = S->data[GMT_Y][S->n_rows-1];
+
 		if (T->n_segments == TH->n_alloc) {	/* Allocate more space */
 			size_t old_n_alloc = TH->n_alloc;
 			TH->n_alloc <<= 1;
