@@ -69,7 +69,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
-	static const char *known_group[2] = {"core", "other"}, *known_doc[6] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf", "gmt"};
+	static const char *known_group[2] = {"core", "other"}, *known_doc[6] = {"cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
