@@ -84,6 +84,9 @@ Required Arguments
     diameter *width*. This gives an isotropic filter; append /*width2*
     for a rectangular filter (requires **-Dp** or **-D0**).  By default we
     perform low-pass filtering; append **+h** to select high-pass filtering.
+    For isotropic filters, *width* may be a grid for variable filter width,
+    in which case the grid must have the same registration and dimensions as
+    the output filtered grid.
     Some filters allow for optional arguments and modifiers.
 
     Convolution filters (and their codes) are:
