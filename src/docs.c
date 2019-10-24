@@ -44,7 +44,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of api, cookbook, gallery, defaults, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, cookbook, gallery, defaults, and tutorial.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");

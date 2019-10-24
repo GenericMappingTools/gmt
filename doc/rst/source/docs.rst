@@ -21,7 +21,7 @@ Description
 -----------
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
-Besides the modules names, the special targets *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
+Besides the modules names, the special targets *gmt*, *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
 are also accepted.
 
 Required Arguments
