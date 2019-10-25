@@ -297,6 +297,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						c[0] = '0';
 						Ctrl->S.symbol = strdup (opt->arg);
 						c[0] = '/';
+						GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
 					}
 					else {	/* Gave no size so get the whole thing and read size from file */
 						Ctrl->S.symbol = strdup (opt->arg);
@@ -306,23 +307,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				else if (opt->arg[0] == 'E' && opt->arg[1] == '-') {
 					if (opt->arg[2])	/* Gave a fixed size */
 						Ctrl->S.size = atof (&opt->arg[2]);
-					else	/* Must read individual event symbol sizes for file using prevailing length-unit setting*/
+					else	/* Must read individual event symbol sizes for file using prevailing length-unit setting */
 						Ctrl->S.mode = 1;
 					Ctrl->S.symbol = strdup ("E-");
 				}
 				else if (strchr ("-+aAcCdDgGhHiInNsStTxy", opt->arg[0])) {	/* Regular symbols of form <code>[<size>], where <code> is 1-char */
 					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Gave a fixed size */
 						Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);	/* Now in inches */
-						sprintf (txt, "%c", opt->arg[0]);	/* Just the symbol code */
+						GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
+						sprintf (txt, "%c", opt->arg[0]);			/* Just the symbol code */
 						Ctrl->S.symbol = strdup (txt);
 					}
-					else if (opt->arg[1] && strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Must read symbol size in this unit from file */
+					else if (opt->arg[1] && strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Must read symbol sizes in this unit from file */
 						Ctrl->S.mode = 1;
 						gmt_set_measure_unit (GMT, opt->arg[1]);
 						sprintf (txt, "%c", opt->arg[0]);	/* Just the symbol code */
 						Ctrl->S.symbol = strdup (txt);
 					}
-					else {	/* Must read individual event symbol sizes for file using prevailing length-unit setting*/
+					else {	/* Must read individual event symbol sizes for file using prevailing length-unit setting */
 						Ctrl->S.mode = 1;
 						Ctrl->S.symbol = strdup (opt->arg);
 					}
