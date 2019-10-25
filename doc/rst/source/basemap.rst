@@ -36,8 +36,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 .. include:: oneliner_info.rst_
 
 The following section illustrates the use of the options by giving some

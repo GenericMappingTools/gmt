@@ -73,3 +73,14 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 StandaloneHTMLBuilder.supported_image_types = [
   'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml'
 ]
+
+# -- Options for manual page output --------------------------------------------
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+man_pages = [
+('gmt', 'gmt', 'The Generic Mapping Tools data processing and display software package', '', 1),
+('gmt-config', 'gmt-config', 'Get information about the gmt installation', '', 1),
+('gmt_shell_functions.sh', 'gmt_shell_functions.sh', 'Practical functions to be used in GMT bourne shell scripts', '', 1),
+('gmtswitch', 'gmtswitch', 'Switching between different GMT versions', '', 1),
+('isogmt', 'isogmt', 'Run GMT command or script in isolation mode', '', 1),
+]

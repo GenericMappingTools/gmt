@@ -324,7 +324,7 @@ to make a file of flowlines in the hotspot reference frame. If you run:
 
    ::
 
-    gmt grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd -Retc -Ietc -Cflow.nc
+    gmt grd2xyz pacific_topo.nc | gmt project -T-75/68 -C0/-90 -Fxyq | gmt xyz2grd -Retc -Ietc -Cflow.nc
 
 then flow.nc is a file in the same area as pacific_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use

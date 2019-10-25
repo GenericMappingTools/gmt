@@ -17,6 +17,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    :hidden:
 
    gmt
+   gmt-config
    gmt5syntax
    gmt_shell_functions.sh
    gmtswitch
@@ -341,6 +342,7 @@ Utility Scripts
 .. hlist::
     :columns: 6
 
+    - :doc:`gmt-config`
     - :doc:`gmt5syntax`
     - :doc:`gmt_shell_functions.sh`
     - :doc:`gmtswitch`

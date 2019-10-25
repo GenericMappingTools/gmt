@@ -161,8 +161,7 @@ To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
 using a 0.5 min grid, a 5 km search radius, using an octant search with
 100% sector coverage, and set empty nodes to -9999::
 
-    gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m \
-                     -E-9999 -Gbathymetry.nc -S5k -N8+m8
+    gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc -S5k -N8+m8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant

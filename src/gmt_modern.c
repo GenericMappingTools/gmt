@@ -88,6 +88,33 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	return module;
 }
 
+const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
+	gmt_M_unused (API);
+	/* Given a named module, return its full name if a leading gmt is missing */
+	
+	/* Look for classic modules that now have a different modern mode name */
+	if      (!strcmp (module, "2kml"))      return "gmt2kml";
+	else if (!strcmp (module, "connect"))   return "gmtconnect";
+	else if (!strcmp (module, "convert"))   return "gmtconvert";
+	else if (!strcmp (module, "defaults"))  return "gmtdefaults";
+	else if (!strcmp (module, "get"))       return "gmtget";
+	else if (!strcmp (module, "info"))      return "gmtinfo";
+	else if (!strcmp (module, "logo"))      return "gmtlogo";
+	else if (!strcmp (module, "math"))      return "gmtmath";
+	else if (!strcmp (module, "regress"))   return "gmtregress";
+	else if (!strcmp (module, "select"))    return "gmtselect";
+	else if (!strcmp (module, "set"))       return "gmtset";
+	else if (!strcmp (module, "simplify"))  return "gmtsimplify";
+	else if (!strcmp (module, "spatial"))   return "gmtspatial";
+	else if (!strcmp (module, "vector"))    return "gmtvector";
+	else if (!strcmp (module, "which"))     return "gmtwhich";
+	else if (!strcmp (module, "pmodeler"))  return "gmtpmodeler";
+	else if (!strcmp (module, "flexure"))   return "gmtflexure";
+	else if (!strcmp (module, "gravmag3d")) return "gmtgravmag3d";
+	return module;
+}
+
+
 const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
 	/* Given a classic name module, return its name according to the run mode */
 	

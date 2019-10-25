@@ -7,7 +7,7 @@ steps:
     sudo apt-get update
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
         cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
-        libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl
+        libfftw3-single3 libpcre3-dev liblapack-dev ghostscript curl
   displayName: Install dependencies
 
 - bash: |
@@ -97,9 +97,10 @@ steps:
 
 - bash: |
     cd build
-    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_depends
     cmake --build . --target animation
     cmake --build . --target docs_html
+    cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
