@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  *
- * Brief synopsis: psconvert converts one or several PostScript file(s) to other formats using GhostScript.
+ * Brief synopsis: psconvert converts one or several PostScript file(s) to other formats using Ghostscript.
  * It works by modifying the page size in order that the image will have a size
  * which is specified by the BoundingBox.
  * As an option, a tight BoundingBox may be computed.
@@ -36,7 +36,7 @@
 
 #define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
+#define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using Ghostscript"
 #define THIS_MODULE_KEYS	"<X{+,FI)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
@@ -279,7 +279,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	Ctrl->A.active = Ctrl->A.crop = true;	/* The default is to crop unless we get -A+n */
 
 	/* For historical reasons we may encounter -A-<stuff> or -Au- so check for both */
-	
+
 	/* The next lines down to NEW is simply backwards compatible parsing */
 	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}		/* Eliminate GMT time stamp */
 	else if (arg[k] == '-') {Ctrl->A.crop = false; k++;}	/* No cropping requested */
@@ -549,13 +549,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (GhostScript does the re-interpolation work).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (Ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append measurement unit u (%s) [%c].\n",
 	             GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -A+S<scale> to scale the image by the <scale> factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to Ghostscript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is same directory as PS files].\n");
@@ -565,9 +565,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the input names as base, which are appended with an appropriate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined and appended automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your GhostScript executable.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your Ghostscript executable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, GhostScript path is fished from the registry.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, Ghostscript path is fished from the registry.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If this fails you can still add the GS path to system's path\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or give the full path here.\n");
 #ifdef WIN32
@@ -594,7 +594,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Qp to create a GeoPDF (requires -Tf).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the GhostScript command to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the Ghostscript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
@@ -606,7 +606,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your GhostScript version].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your Ghostscript version].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append +m to get a monochrome (grayscale) image [color].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
@@ -1035,12 +1035,12 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		return GMT_RUNTIME_ERROR;
 	}
 	if ((fp = popen (cmd, "w")) == NULL) {	/* Failed popen-job, exit */
-		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute Ghostscript command.\n");
 		return GMT_RUNTIME_ERROR;
 	}
 #else
 	if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
-		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute Ghostscript command.\n");
 		return GMT_RUNTIME_ERROR;
 	}
 #endif
@@ -1050,12 +1050,12 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the internal plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
-	/* Send the PS down GhostScripts throat */
+	/* Send the PS down Ghostscript's throat */
 #ifdef _WIN32
 	fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
 	fflush (fp);
 	if (pclose (fp) == -1)
-		GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
+		GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for Ghostscript command.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
  	write (H->fd[1], PS->data, PS->n_bytes);
@@ -1103,7 +1103,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		}
 		else {
 			sscanf (&pch[20], "%lf %lf %lf %lf", &x0, &y0, &x1, &y1);
-			if (landscape)	
+			if (landscape)
 				*w = y1, *h = x1, r = -90;
 			else
 				*w = x1, *h = y1, r = 0;
@@ -1208,13 +1208,13 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			return GMT_RUNTIME_ERROR;
 		}
 		if ((fp = popen (cmd, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute Ghostscript command.\n");
 			gmt_M_free (API->GMT, PS);
 			return GMT_RUNTIME_ERROR;
 		}
 #else
 		if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
-			GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute Ghostscript command.\n");
 			return GMT_RUNTIME_ERROR;
 		}
 #endif
@@ -1222,7 +1222,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	else {	/* Only need a unidirectional pipe as supported by all since gs output is written to a file */
 		strncat (cmd, out_file, 1023);
 		if ((fp = popen (cmd, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute Ghostscript command.\n");
 			return GMT_RUNTIME_ERROR;
 		}
 	}
@@ -1231,24 +1231,24 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
-	/* Send the PS down GhostScript's throat */
+	/* Send the PS down Ghostscript's throat */
 #ifdef _WIN32
 	if ((n_bytes = fwrite (PS->data, sizeof(char), PS->n_bytes, fp)) != PS->n_bytes)
 		GMT_Report (API, GMT_MSG_NORMAL,
-		            "Error writing PostScript buffer to GhostScript process. Bytes written = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
+		            "Error writing PostScript buffer to Ghostscript process. Bytes written = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
 	if (fflush (fp) == EOF)
-		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing Ghostscript process.\n");
 	if (pclose (fp) == -1)
-		GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error closing Ghostscript process.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
 	if (fp) {	/* Did popen after all since we have an output filename */
 		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to Ghostscript process.\n");
 		if (fflush (fp) == EOF)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error flushing Ghostscript process.\n");
 		if (pclose (fp) == -1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error closing Ghostscript process.\n");
 	}
 	else {	/* On non-Windows and want a raster back */
  		write (H->fd[1], PS->data, PS->n_bytes);
@@ -1375,8 +1375,8 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 			strcat (out_file, " -");
 		}
 	}
-	if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run GhostScript to convert the PS to the desired output format */
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap GhostScript in pipes.\n");
+	if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run Ghostscript to convert the PS to the desired output format */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap Ghostscript in pipes.\n");
 		error++;
 	}
 	return error;
@@ -1387,7 +1387,7 @@ GMT_LOCAL int wrap_the_PS_sandwich (struct GMT_CTRL *GMT, char *main, char *bfil
 	   one of bfile or ffile exists when this function is called, as do main of course. */
 	char newfile[PATH_MAX] = {""};
 	FILE *fp = NULL;
-	
+
 	/* Create a temporary file name for the sandwich file and open it for writing */
 	sprintf (newfile, "%s/psconvert_sandwich_%d.ps", GMT->parent->tmp_dir, (int)getpid());
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Creating %s\n", newfile);
@@ -1416,7 +1416,7 @@ GMT_LOCAL int wrap_the_PS_sandwich (struct GMT_CTRL *GMT, char *main, char *bfil
 		gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 	}
 	fclose (fp);	/* Completed */
-	
+
 	/* Now remove original ps_file and rename the new file to main */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove old %s\n", main);
 	if (gmt_remove_file (GMT, main)) {
@@ -1541,23 +1541,23 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	/* Test if GhostScript can be executed (version query) */
-	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found GhostScript */
+	/* Test if Ghostscript can be executed (version query) */
+	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found Ghostscript */
 		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n",
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to Ghostscript version query [n = %d %d %d].\n",
 			            n, gsVersion.major, gsVersion.minor);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	else {	/* Failure to open GhostScript */
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript (%s).\n", Ctrl->G.file);
+	else {	/* Failure to open Ghostscript */
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute Ghostscript (%s).\n", Ctrl->G.file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Your GhostScript version (%d.%d) no longer supports the SVG device.\n",
+		GMT_Report (API, GMT_MSG_NORMAL, "Your Ghostscript version (%d.%d) no longer supports the SVG device.\n",
 		            gsVersion.major, gsVersion.minor);
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (GMT_RUNTIME_ERROR);
@@ -1712,7 +1712,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, all_names_in);
 
 		GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd2);
-		sys_retval = system (cmd2);		/* Execute the GhostScript command */
+		sys_retval = system (cmd2);		/* Execute the Ghostscript command */
 		if (sys_retval) {
 			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
 			error++;
@@ -1872,7 +1872,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
 						GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-						sys_retval = system (cmd);		/* Execute the GhostScript command */
+						sys_retval = system (cmd);		/* Execute the Ghostscript command */
 						if (Ctrl->S.active) {
 							API->print_func (GMT->session.std[GMT_ERR], cmd);
 							API->print_func (GMT->session.std[GMT_ERR], "\n");
@@ -1913,7 +1913,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
-		/* Open temporary file to be processed by GhostScript. When -Te or -TE is used, tmp_file is for keeps */
+		/* Open temporary file to be processed by Ghostscript. When -Te or -TE is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Format EPS file...\n");
@@ -2133,7 +2133,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				r = 0;
 			}
 			else if (Ctrl->A.resize) {
-				/* We are going to trick GhostScript to do what -dEPSFitPage was supposed to do but doesn't
+				/* We are going to trick Ghostscript to do what -dEPSFitPage was supposed to do but doesn't
 				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
@@ -2266,8 +2266,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
 							y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
 							if (landscape_orig) {		/* Ugly hack but so far have no better solution */
-								x2 = gmtBB_width / w;		x1 = 1 - x2;	
-								y2 = gmtBB_height / h;		y1 = 1 - y2;	
+								x2 = gmtBB_width / w;		x1 = 1 - x2;
+								y2 = gmtBB_height / h;		y1 = 1 - y2;
 							}
 							fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
 						}
@@ -2307,7 +2307,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 			gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
-		/* Build the converting GhostScript command and execute it */
+		/* Build the converting Ghostscript command and execute it */
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16] = {""};
@@ -2353,12 +2353,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
 
-			if (Ctrl->S.active) {	/* Print GhostScript command */
+			if (Ctrl->S.active) {	/* Print Ghostscript command */
 				API->print_func (GMT->session.std[GMT_ERR], cmd);
 				API->print_func (GMT->session.std[GMT_ERR], "\n");
 			}
-			
-			/* Execute the GhostScript command */
+
+			/* Execute the Ghostscript command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);
 			if (sys_retval) {
@@ -2403,11 +2403,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 					device_options[Ctrl->T.device],
 					resolution, quote, out_file, quote, quote, pdf_file, quote);
-				if (Ctrl->S.active) {	/* Print 2nd GhostScript command */
+				if (Ctrl->S.active) {	/* Print 2nd Ghostscript command */
 					API->print_func (GMT->session.std[GMT_ERR], cmd);
 					API->print_func (GMT->session.std[GMT_ERR], "\n");
 				}
-				/* Execute the 2nd GhostScript command */
+				/* Execute the 2nd Ghostscript command */
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);
 				if (sys_retval) {
@@ -2534,7 +2534,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 			/* West and North of the world file contain the coordinates of the center of the pixel
 				but our current values are of the NW corner of the pixel (pixel registration).
-				So we'll move halph pixel inward. */ 
+				So we'll move halph pixel inward. */
 			west  += x_inc / 2.0;	north -= y_inc / 2.0;
 
 			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
