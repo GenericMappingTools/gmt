@@ -80,6 +80,7 @@ endforeach (_script ${_examples})
 add_custom_target (_docs_examples_verbatim DEPENDS ${_examples_txt})
 add_custom_target (_docs_html_examples_fig DEPENDS ${_examples_png})
 add_depend_to_target (docs_html_depends _docs_html_examples_fig _docs_examples_verbatim)
+add_depend_to_target (docs_man_depends _docs_html_examples_fig _docs_examples_verbatim)
 
 # Animations
 if (UNIX AND DO_ANIMATIONS)

@@ -229,7 +229,8 @@ message(
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
 	"*  GMT_DATADIR                : ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}\n"
-	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}")
+	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}\n"
+	"*  GMT_MANDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_MANDIR}")
 
 # For debugging: print all set variables
 #get_cmake_property(_variableNames VARIABLES)
