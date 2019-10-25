@@ -21,15 +21,15 @@ Description
 -----------
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
-Besides the modules names, the special targets *gmt*, *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
+Besides the modules names, the special targets *gmt*, *cookbook*, *gallery*, *settings*, *api* and *tutorial*
 are also accepted.
 
 Required Arguments
 ------------------
 
 *module-name*
-    One of teh core or supplemental modules,
-    or one of api, cookbook, gallery, defaults, and tutorial.
+    One of the core or supplemental modules,
+    or one of api, cookbook, gallery, settings, and tutorial.
 
 Optional Arguments
 ------------------
@@ -84,9 +84,9 @@ To see the documentation of the **-B** option in *coast*::
 
     gmt docs coast -B
 
-To examine the list of GMT defaults, try::
+To examine the list of GMT default settings, try::
 
-    gmt docs defaults
+    gmt docs settings
 
 To see the Gallery::
 

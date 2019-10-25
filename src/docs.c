@@ -44,7 +44,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, cookbook, gallery, defaults, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, cookbook, gallery, settings, and tutorial.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
@@ -198,7 +198,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[3];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "default", 7U)) {
+			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "gmt")) {
