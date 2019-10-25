@@ -154,8 +154,7 @@ endforeach (_script)
 # Add build target
 add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
 add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png})
-add_depend_to_target (docs_html_depends _docs_html_scripts_fig _docs_scripts_verbatim)
-add_depend_to_target (docs_man_depends _docs_html_scripts_fig _docs_scripts_verbatim)
+add_depend_to_target (docs_depends _docs_html_scripts_fig _docs_scripts_verbatim)
 
 # run tests
 if (DO_TESTS)
