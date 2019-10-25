@@ -113,7 +113,7 @@ Optional Arguments
 **-M**\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*]
     Sets the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
     the *rise* interval [1, 1, and 100, respectively].
-    Optionally, use **+c** to set the corresponding terminal value during the coda [100].
+    Optionally, use **+c** to set the corresponding terminal value during the coda [0, 0, 100, respectively].
 
 .. _-Q:
 
