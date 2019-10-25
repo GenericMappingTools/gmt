@@ -51,6 +51,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/_extensions/
 		${CMAKE_CURRENT_BINARY_DIR}/_extensions)
 	add_depend_to_target (docs_html_depends _docs_copy_rst_tree_extensions)
+	add_depend_to_target (docs_man_depends _docs_copy_rst_tree_extensions)
 	add_custom_target (_docs_rst_mkdir_verbatim
 		COMMAND ${CMAKE_COMMAND} -E make_directory
 		${CMAKE_CURRENT_BINARY_DIR}/_source/_verbatim
@@ -138,11 +139,3 @@ install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MANDIR}/man1
 	COMPONENT Runtime
 	FILES_MATCHING PATTERN "*.1.gz")
-install (DIRECTORY ${_man_source}/
-	DESTINATION ${GMT_MANDIR}/man3
-	COMPONENT Runtime
-	FILES_MATCHING PATTERN "*.3.gz")
-install (DIRECTORY ${_man_source}/
-	DESTINATION ${GMT_MANDIR}/man5
-	COMPONENT Runtime
-	FILES_MATCHING PATTERN "*.5.gz")
