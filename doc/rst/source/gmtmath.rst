@@ -719,8 +719,7 @@ trigonometric argument (2\*pi\*T/360):
 
    ::
 
-    gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
-                @kT 3 MUL COS ADD = harmonics.txt
+    gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD @kT 3 MUL COS ADD = harmonics.txt
 
 To use **gmtmath** as a RPN Hewlett-Packard calculator on scalars (i.e., no
 input files) and calculate arbitrary expressions, use the **-Q** option.

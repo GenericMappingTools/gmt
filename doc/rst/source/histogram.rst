@@ -67,8 +67,7 @@ bars, run:
 
    ::
 
-    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c
-                  -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
+    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
 
 Since no y-range was specified, **histogram** will calculate *ymax* in even
 increments of 100.

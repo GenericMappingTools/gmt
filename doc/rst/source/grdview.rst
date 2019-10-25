@@ -51,8 +51,7 @@ elevation, run
 
    ::
 
-    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt
-                -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
+    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create a illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.cpt, with linear scaling at
@@ -77,8 +76,7 @@ topo_intens.nc, and looking from the SE, run
 
    ::
 
-    gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt
-                -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
+    gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
 
 .. include:: grdview_notes.rst_
 

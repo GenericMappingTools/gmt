@@ -8,8 +8,8 @@ sphinterpolate
 
     Spherical gridding in tension of data on a sphere
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -140,11 +140,9 @@ method for a 1x1 global grid, then plot it, try::
     gmt end
 
 To interpolate the points in the file testdata.txt on a global 1x1
-degree grid with no tension, use
+degree grid with no tension, use::
 
-  ::
-
-    sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+    gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 
 See Also
 --------
@@ -157,8 +155,8 @@ See Also
 :doc:`surface`,
 :doc:`triangulate`
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, *AMC Trans. Math. Software*,

@@ -155,7 +155,7 @@ diagram via :doc:`plot`, use
 
    ::
 
-    gmt sphtriangulate testdata.txt -Qv | plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
+    gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.txt and save the area of each triangle
