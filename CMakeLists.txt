@@ -219,7 +219,7 @@ message(
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
-	"*  Found GhostScript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
+	"*  Found Ghostscript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
 	"*  Found GraphicsMagick (gm)  : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
 	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"
