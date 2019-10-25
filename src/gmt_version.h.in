@@ -20,6 +20,9 @@
 #ifndef GMT_VERSION_H_
 #define GMT_VERSION_H_
 
+/* for manpages only */
+#define MANDATE "@DAY@ @MONTHNAME@ @YEAR@"
+
 #define GMT_MAJOR_VERSION @GMT_PACKAGE_VERSION_MAJOR@
 #define GMT_MINOR_VERSION @GMT_PACKAGE_VERSION_MINOR@
 #define GMT_RELEASE_VERSION @GMT_PACKAGE_VERSION_PATCH@
@@ -45,7 +48,8 @@
 #	define GMT_MP ""
 #endif
 
-#define GMT_VERSION GMT_version()
+#ifndef GMT_MANPAGE
+#	define GMT_VERSION GMT_version()
 #ifdef _WIN32
 	static _inline char *GMT_version () {
 #else
@@ -55,5 +59,6 @@
 		static char version[] = GMT_STRING GMT_VER_64 GMT_MP;
 		return version;
 	}
+#endif /* !GMT_MANPAGE */
 
 #endif /* !GMT_VERSION_H_ */
