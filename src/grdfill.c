@@ -91,7 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     append <max_radius> nodes for the outward search.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default radius is sqrt(xn^2+by^2)]\n");
-//	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaNs with a spline (optionally append tension).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaNs with a spline (optionally append tension).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -199,7 +199,7 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 	return GMT_NOERROR;
 }
 
-#if 0
+#if 1
 GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
 	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
@@ -220,18 +220,23 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	}
 	/* Add up to 2 rows/cols around hole, but watch for grid edges */
 	gmt_M_memcpy (d_limit, limit, 4, unsigned int);	/* d_limit will be used to set the grid domain */
+	/* Undo the half grid inc padding done in the main */
+	wesn[XLO] += 0.5 * G->header->inc[GMT_X];
+	wesn[XHI] -= 0.5 * G->header->inc[GMT_X];
+	wesn[YLO] += 0.5 * G->header->inc[GMT_Y];
+	wesn[YHI] -= 0.5 * G->header->inc[GMT_Y];
 	for (k = 1; k <= 2; k++) {
 		if (d_limit[XLO]) d_limit[XLO]--, wesn[XLO] -= G->header->inc[GMT_X];	/* Move one column westward */
 		if (d_limit[XHI] < (G->header->n_columns-1)) d_limit[XHI]++, wesn[XHI] += G->header->inc[GMT_X];	/* Move one column eastward */
-		if (d_limit[YLO]) d_limit[YLO]--, wesn[YLO] -= G->header->inc[GMT_Y];	/* Move one row northward */
-		if (d_limit[YHI] < (G->header->n_rows-1)) d_limit[YHI]++, wesn[YHI] += G->header->inc[GMT_Y];	/* Move one row southward */
+		if (d_limit[YLO]) d_limit[YLO]--, wesn[YHI] += G->header->inc[GMT_Y];	/* Move one row northward */
+		if (d_limit[YHI] < (G->header->n_rows-1)) d_limit[YHI]++, wesn[YLO] -= G->header->inc[GMT_Y];	/* Move one row southward */
 	}
-	n_constraints = (d_limit[YHI] - d_limit[YLO] - 1) * (d_limit[XHI] - d_limit[XLO] - 1) - n_in_hole;
+	n_constraints = (d_limit[YHI] - d_limit[YLO] + 1) * (d_limit[XHI] - d_limit[XLO] + 1) - n_in_hole;
 	x = gmt_M_memory (GMT, NULL, n_constraints, double);
 	y = gmt_M_memory (GMT, NULL, n_constraints, double);
 	z = gmt_M_memory (GMT, NULL, n_constraints, gmt_grdfloat);
-	for (row = d_limit[YLO]; row < d_limit[YHI]; row++) {
-		for (col = d_limit[XLO]; col < d_limit[XHI]; col++) {
+	for (row = d_limit[YLO], k = 0; row <= d_limit[YHI]; row++) {
+		for (col = d_limit[XLO]; col <= d_limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
 			if (gmt_M_is_fnan (G->data[node])) continue;
 			x[k] = gmt_M_grd_col_to_x (GMT, col, G->header);
@@ -240,12 +245,13 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 			k++;
 		}
 	}
+	V->n_rows = n_constraints;	/* Must specify how many input points we have */
 	GMT_Put_Vector (API, V, GMT_X, GMT_DOUBLE, x);
 	GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, y);
 	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
-	V->n_rows = k;	/* Must specify how many input points we have */
 	/* Associate our input data vectors with a virtual input file */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V, input);
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input) == GMT_NOTSET)
+		return (API->error);
 	/* Prepare the greenspline command-line arguments */
 	mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? 2 : 1;
 	if (value > 0.0)
@@ -466,8 +472,8 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdfill (void *V_API, int mode, void *args) {
-	char *ID = NULL;
-	int error = 0;
+	char *ID = NULL, *RG_orig_hist = NULL;
+	int error = 0, RG_id;
 	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
@@ -549,6 +555,11 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 	
+	if (Ctrl->A.mode == ALG_SPLINE) {	/* Must preserve the original -RG history which greenspline messes with */
+		RG_id = gmt_get_option_id (0, "R") + 1;
+		if (GMT->init.history[RG_id]) RG_orig_hist = strdup (GMT->init.history[RG_id]);
+	}
+	
 	/* To avoid having to check every row,col for being inside the grid we set
 	 * the boundary row/cols in the ID grid to 1. */
 	
@@ -607,7 +618,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 						error = do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
-						//error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
 						break;
 				}
 				if (error) {
@@ -635,6 +646,11 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	else {
 		GMT_Report (API, GMT_MSG_VERBOSE, "No holes detected in grid - grid was not updated\n");
 	}
-	
+
+	if (Ctrl->A.mode == ALG_SPLINE) {
+		if (GMT->init.history[RG_id]) gmt_M_str_free (GMT->init.history[RG_id]);
+		if (RG_orig_hist) GMT->init.history[RG_id] = RG_orig_hist;
+	}
+
 	Return (GMT_NOERROR);
 }
