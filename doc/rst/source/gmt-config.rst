@@ -11,6 +11,8 @@ gmt-config
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmt-config** [ *options* ]
 
 |No-spaces|
