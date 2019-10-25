@@ -8,8 +8,8 @@ grdtrend
 
     Fit trend surface to grids and compute residuals
 
-`Synopsis`
-----------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 

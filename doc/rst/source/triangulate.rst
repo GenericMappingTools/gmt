@@ -213,15 +213,13 @@ file using a 15-cm-wide Mercator map, use
 
    ::
 
-    gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot \
-        -R-100/-90/30/34 -JM15c -W0.5p -B1 > network.ps
+    gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf network
 
 To instead plot the Voronoi cell outlines, try
 
    ::
 
-    gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 > cells.ps
+    gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf cells
 
 To combine the Voronoi outlines into polygons and paint them
 according to their ID, try
@@ -229,7 +227,7 @@ according to their ID, try
    ::
 
     gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L > polygons.ps
+        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L -pdf polygons
 
 To grid the data using the natural nearest neighbor algorithm, try
 

@@ -148,7 +148,7 @@ following:
    ::
 
     gmt fitcircle ship.xyg -L2
-    gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | sample1d -S-100 -I1 > output.pg
+    gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | gmt sample1d -S-100 -I1 > output.pg
 
 Here, *ox*/*oy* is the lon/lat of the mean from **fitcircle**, and
 *px*/*py* is the lon/lat of the pole. The file output.pg has distance,

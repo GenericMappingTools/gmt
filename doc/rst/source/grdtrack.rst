@@ -319,7 +319,7 @@ try
 
    ::
 
-    grdtrack -ELB/RT+i1k+d -Gdata.nc -je > profiles.txt
+    gmt grdtrack -ELB/RT+i1k+d -Gdata.nc -je > profiles.txt
 
 See Also
 --------

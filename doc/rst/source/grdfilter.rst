@@ -203,8 +203,7 @@ calculations, you need:
 
    ::
 
-    gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 \
-                  -D4 -R150/250/10/40 -I0.5 -V
+    gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
 corresponding low-pass filter using a coarse grid interval as **grdfilter**
@@ -213,8 +212,7 @@ can compute the residuals, e.g.,
 
    ::
 
-    gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h \
-                  -D4 -R150/250/10/40 -I0.5 -V
+    gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual_pacific.nc grid will have the same 5 minute
 resolution as the original.
