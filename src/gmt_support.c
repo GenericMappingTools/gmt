@@ -9440,9 +9440,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	 */
 	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = gmt_M_type (GMT, GMT_IN, GMT_X), ytype = gmt_M_type (GMT, GMT_IN, GMT_Y);
 	enum GMT_profmode p_mode;
+	bool continuous = false;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
-	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step;
+	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x, last_y;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
@@ -9454,7 +9455,8 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
-	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
+	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
+	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
 	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profiles: Return distances along track\n");
 
 	n_cols = (get_distances) ? 3 :2;
@@ -9468,11 +9470,11 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	T->n_segments = 0;    /* Start working on first segment */
 
 	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
-		S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, n_cols, NULL, T->segment[T->n_segments]);	/* n_cols with 2 rows each */
+		S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, n_cols, NULL, NULL);	/* n_cols with 2 rows each */
 		SH = gmt_get_DS_hidden (S);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
-			if ((p[k] == '+') && (p[k+1] && strchr ("adilnor", p[k+1]))) s = k;
+			if ((p[k] == '+') && (p[k+1] && strchr ("acdilnor", p[k+1]))) s = k;
 			k++;
 		}
 		if (s) {
@@ -9481,13 +9483,14 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {	/* fabs is used for lengths since -<length> might have been given to indicate Flat Earth Distances */
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
-					case 'd':	/* Already processed up front to set n_cols*/		break;
+					case 'c':	/* Already processed up front */			break;
+					case 'd':	/* Already processed up front to set n_cols */		break;
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
 					case 'i':	step = fabs (atof (&p2[1]));
-								if (step > 2.0*orig_step)
-									GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output sampling interval in d exceeds grid interval and may lead to aliasing.\n");
-								p_mode |= GMT_GOT_INC;		break;
+							if (step > 2.0*orig_step)
+								GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output sampling interval in d exceeds grid interval and may lead to aliasing.\n");
+							p_mode |= GMT_GOT_INC;					break;
 					case 'l':	length = fabs (atof (&p2[1]));	p_mode |= GMT_GOT_LENGTH;	break;
 					case 'r':	r = fabs (atof (&p2[1]));	p_mode |= GMT_GOT_RADIUS;	break;
 					default:	error++;	break;
@@ -9615,7 +9618,31 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				S->data[GMT_Y][k] = y;
 			}
 		}
-		T->segment[T->n_segments++] = S;	/* Hook into table */
+		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
+			/* Need to append to previous segment after allocating more space */
+			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
+			uint64_t start = prev_S->n_rows, add = S->n_rows - 1, rec;
+			if (gmt_alloc_segment (GMT, prev_S, prev_S->n_rows + S->n_rows - 1, prev_S->n_columns, GMT_NO_STRINGS, false)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_make_profiles: Cannot reallocate the existing segment");
+				T->segment[T->n_segments++] = S;	/* Hook into table */
+			}
+			else {	/* Copy over but avoid repeating the joint */
+				gmt_M_memcpy (&(prev_S->data[GMT_X][start]), &(S->data[GMT_X][1]), add, double);
+				gmt_M_memcpy (&(prev_S->data[GMT_Y][start]), &(S->data[GMT_Y][1]), add, double);
+				gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
+				for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				gmt_free_segment (GMT, &S);	/* Done with this guy */
+				S = prev_S;
+			}
+		}
+		else {	/* Not continous, or first segment */
+			gmt_free_segment (GMT, &T->segment[T->n_segments]);	/* Done with this guy */
+			T->segment[T->n_segments++] = S;	/* Hook into table */
+		}
+
+		last_x = S->data[GMT_X][S->n_rows-1];
+		last_y = S->data[GMT_Y][S->n_rows-1];
+
 		if (T->n_segments == TH->n_alloc) {	/* Allocate more space */
 			size_t old_n_alloc = TH->n_alloc;
 			TH->n_alloc <<= 1;

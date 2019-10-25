@@ -130,32 +130,34 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
     Cartesian data) or a 2-character XY key that uses the :doc:`text`-style
     justification format to specify a point on the map as
-    [LCR][BMT]. In addition, you can use Z-, Z+ to mean the global
-    minimum and maximum locations in the grid (only available if only
-    one grid is given). Instead of two coordinates you can specify an
-    origin and one of **+a**, **+o**, or **+r**. You may append 
-    **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then we default to half the minimum grid interval.
+    [LCR][BMT]. Each line will be a separate segment unless **+c** is used
+    which will connect segments with shared joints into a single segment.
+    In addition to line coordinates, you can use Z-, Z+ to mean the global
+    minimum and maximum locations in the grid (only available if a
+    single grid is given via **-G**). You may append 
+    **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then
+    we default to half the minimum grid interval.  Instead of two coordinates
+    you can specify an origin and one of **+a**, **+o**, or **+r**. 
     The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile
     on the origin; both require **+l**. For circular sampling specify
     **+r** to define a circle of given radius centered on the origin;
-    this option requires either **+n** or **+i**.  The **+n**\ *np* sets
+    this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
     the desired number of points, while **+l**\ *length* gives the
     total length of the profile. Append **+d** to output the along-track
     distances after the coordinates.  Note: No track file will be read.
     Also note that only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
-    data you can prepend - (Flat Earth) or + (Geodesic) to *inc*, *length*, or *radius*
-    to change the mode of distance calculation [Great Circle].
+    data you can use **-j** to control distance calculation mode [Great Circle].
     Note: If **-C** is set and *spacing* is given the that sampling scheme
-    overrules any modifier in **-E**.
+    overrules any modifier set in **-E**.
 
 .. _-N:
 
