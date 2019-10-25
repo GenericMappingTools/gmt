@@ -180,6 +180,9 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	
 			if (strcmp (opt->arg, docname))	/* Gave classic name so change to what was given */
 				docname = opt->arg;
+			else
+				docname = gmt_get_full_name (API, opt->arg);
+				
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
