@@ -36,7 +36,8 @@ Required Arguments
     from the data file's third column (fourth if **-C** is used). Note: Not all the symbols that
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
-    be specified.
+    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
+    by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` unless they have **c**, **i**, or **p** appended.
 
 .. _-T:
 
