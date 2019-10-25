@@ -274,7 +274,7 @@ You have an ASCII table with 6 columns and you want to plot column 5 versus colu
 
    ::
 
-    gmt convert table.txt -o5,0 | plot ...
+    gmt convert table.txt -o5,0 | gmt plot ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
@@ -282,14 +282,14 @@ columns 4-6 and write ASCII with the command
 
    ::
 
-    gmt convert results.b -o8,4-6 -bi9s | plot ...
+    gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
 first column of a file right.txt:
 
    ::
 
-    gmt convert left.txt right.txt -A -o1,2 | plot ...
+    gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
 To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try

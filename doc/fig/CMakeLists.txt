@@ -33,4 +33,4 @@ endforeach (_fig ${_fig_fig})
 
 # Add build target
 add_custom_target (_docs_copy_fig DEPENDS ${_fig_fig_out})
-add_depend_to_target (docs_html_depends _docs_copy_fig)
+add_depend_to_target (docs_depends _docs_copy_fig)

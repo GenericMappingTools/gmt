@@ -74,9 +74,7 @@ tickmarks every 5 units::
 When GDAL support is built in: To create a sinusoidal projection of a
 remotely located Jessica Rabbit::
 
-    gmt grdimage -JI15c -Rd
-        http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg
-        -pdf jess
+    gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
 .. include:: explain_cpt.rst_
 

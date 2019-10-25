@@ -894,7 +894,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.spatial) {	/* Must add extra column to store distances and then compute them */
 		Ctrl->N.col = (int)D->n_columns;
 		gmt_adjust_dataset (GMT, D, D->n_columns + 1);
-		gmt_init_distaz (GMT, Ctrl->N.unit, Ctrl->N.mode, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, Ctrl->T.T.unit, Ctrl->T.T.distmode, GMT_MAP_DIST);
 		for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 			for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 				S = D->table[tbl]->segment[seg];

@@ -122,6 +122,16 @@ if (NOT GMT_DOCDIR)
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 endif (NOT GMT_DOCDIR)
 
+# Install path GMT_MANDIR
+if (NOT GMT_MANDIR)
+	# do not reset user setting
+	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+		set (GMT_MANDIR "${GMT_DATADIR}/man")
+	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+		set (GMT_MANDIR "${GMT_DOCDIR}/man")
+	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+endif (NOT GMT_MANDIR)
+
 # Install path for GMT binaries, headers and libraries
 include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR (lib/lib64)
 if (NOT GMT_LIBDIR)

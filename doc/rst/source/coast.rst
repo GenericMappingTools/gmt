@@ -45,8 +45,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 .. include:: oneliner_info.rst_
 
 To plot a green Africa with white outline on blue background, with

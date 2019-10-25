@@ -87,9 +87,17 @@
 # share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}]:
 #set (GMT_DOCDIR "share/doc/gmt")
 
+# Set manpage installation path [share/man or
+# share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}/man]:
+#set (GMT_MANDIR "share/doc/gmt/man")
+
 # Install documentation files from this external location instead of creating
 # new HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
 #set (GMT_INSTALL_EXTERNAL_DOC OFF)
+
+# Install manual pages from this external location instead of creating the
+# manpages from scratch [${GMT_SOURCE_DIR}/man_release]:
+#set (GMT_INSTALL_EXTERNAL_MAN OFF)
 
 ##
 ## Section 2: Build dependencies (should only be needed if CMake cannot

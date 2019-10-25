@@ -62,7 +62,7 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 Optionally install for building GMT documentations and running tests:
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the HTML documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need to download support data:
@@ -81,7 +81,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-single3 libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -133,7 +133,7 @@ Install the GMT dependencies with:
     sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw-libs-single lapack-devel openblas-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -367,7 +367,7 @@ cmake --build . --target install --config Release
 will install gmt executable, library, development headers and built-in data
 to the specified GMT install location.
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-and HTML documentations.
+UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
@@ -393,15 +393,16 @@ Then, you should now be able to run GMT programs.
 
 ## Building documentation
 
-The GMT documentation is available in HTML format and can be generated with:
+The GMT documentations are available in different formats and can be generated with:
 
 ```
-cmake --build . --target docs_html  # HTML documentation
+cmake --build . --target docs_man   # UNIX manual pages
+cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
 ```
 
 To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
 documentation builder. You can choose to install the documentation files
-from an external location instead of generating the HTML files from the sources.
+from an external location instead of generating the Manpages, and HTML files from the sources.
 This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 

@@ -318,8 +318,7 @@ origin.txt for a certain projection, try
 
    ::
 
-    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c \
-    --PROJ_LENGTH_UNIT=cm > subset2.txt
+    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
 
 To return all points in quakes.txt that are inside the grid topo.nc
 where the values are nonzero, try

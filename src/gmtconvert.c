@@ -760,10 +760,13 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		struct GMT_ORDER *Z = NULL;
 		uint64_t max_len = 0;
 		bool do_it = true;
+		char *way[3] = {"descending", "", "ascending"};
 		if (Ctrl->N.col >= D[GMT_OUT]->n_columns) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
 			do_it = false;
 		}
+		else
+			GMT_Report (API, GMT_MSG_VERBOSE, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
 		GMT->current.io.record_type[GMT_OUT] = GMT->current.io.record_type[GMT_IN];
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */

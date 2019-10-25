@@ -363,7 +363,7 @@ assuming the data are in the remote file mag_obs_1990.txt, try
 
    ::
 
-    gmt reenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
 
 To do the same problem but applying tension of 0.85, use
 
