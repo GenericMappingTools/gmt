@@ -9,7 +9,7 @@ particularly in the Earth and Ocean Sciences but the global collective
 of GMT users is incredibly diverse. Development has at times been
 rapid, and numerous releases have seen the light of day since the early
 versions. For a detailed history of the changes from release to release,
-see :doc:`/changelog`. For a nightly snapshot of ongoing
+see :doc:`/changes`. For a nightly snapshot of ongoing
 activity, see the `GMT repository on GitHub <https://github.com/GenericMappingTools/gmt>`__.
 For a historical perspective of the origins and development of GMT,
 see the video podcast `"20 Years with GMT – The Generic Mapping Tools" <https://doi.org/10.5446/19869>`__
