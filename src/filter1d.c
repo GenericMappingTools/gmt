@@ -385,7 +385,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	if (Ctrl->T.active)	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND, Ctrl->N.col);
-	if (Ctrl->N.spatial) Ctrl->T.T.spatial = Ctrl->N.spatial;	/* Obsolete -N settings propagated to -T */
+	if (Ctrl->N.spatial) {	/* Obsolete -N settings propagated to -T */
+		Ctrl->T.T.spatial = Ctrl->N.spatial;
+		Ctrl->T.T.unit = Ctrl->N.unit;
+		Ctrl->T.T.distmode = Ctrl->N.mode;
+	}
 	if (Ctrl->N.add_col) Ctrl->T.T.add = true;	/* Obsolete -N+a settings propagated to -T */
 	
 	/* Check arguments */
