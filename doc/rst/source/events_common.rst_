@@ -222,3 +222,11 @@ and can be selected or ignored as you wish via **-E**.  You can choose to specif
 of the three time histories.  By default the symbol size is constant, there is no intensity
 variation, and all symbols are opaque.  If trailing text is plotted (requires **-Et**) then
 only a transparency time-function is used.
+
+Sorting the data
+----------------
+
+While only the events that should be visible will be plotted at the given time set via **-T**,
+the order of plotting is simply given by the order of records in the file.  Thus, if the
+file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
+To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` **-N** option.
