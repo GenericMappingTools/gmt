@@ -1,32 +1,29 @@
 # 	README file for GMT Examples directory
-# 
+#
 # There are born-again shell (bash) and DOS (bat)
 # versions of all example scripts.
 # To run all bash scripts, run do_examples.sh.
 # To run all bat scripts, run do_examples.bat instead.
-# 
-# Example 27 shows usage of img2grd.  Again, since the user may
-# not have the img data installed the img2grd call is commented
-# out and the extracted img grid is supplied.
-# 
+#
 # It is possible that the output you may generate with these
 # script will differ in subtle ways from the figures shown
 # in the GMT documentation.  This is most likely caused by
 # different settings in the gmt.conf file that we used
 # to generate the plots.
-# 
+#
 # The DOS versions may differ in subtle ways from the UNIX
-# scripts since DOS is a brain-dead scripting language.  Example
-# 03 is only partly implemented in DOS.  Those who plan to use
-# the .bat files should seriously ask themselves why they have
-# not installed cygwin or SFU yet. (See Appendix L for more on
-# that).
+# scripts since DOS is a brain-dead scripting language.
+# Those who plan to use the .bat files should seriously ask
+# themselves why they have not installed
+# [cygwin](https://www.cygwin.com) or [git bash](https://git-scm.com/downloads).
+# See https://docs.generic-mapping-tools.org/latest/cookbook/non_unix_platforms.html
+# for more on that.
 #
 # Scripts that are known to fail can be excluded from the test
 # by adding the comment
+#
 #	# GMT_KNOWN_FAILURE
+#
 # to the script anywhere.
-# In addition, each script that fails should add a single line
-# to the file ../fail_count.txt so we may report a total.
 
 # P. Wessel, June 2019
