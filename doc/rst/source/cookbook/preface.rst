@@ -9,12 +9,11 @@ particularly in the Earth and Ocean Sciences but the global collective
 of GMT users is incredibly diverse. Development has at times been
 rapid, and numerous releases have seen the light of day since the early
 versions. For a detailed history of the changes from release to release,
-see file ``ChangeLog`` in the main GMT directory. For a nightly snapshot of ongoing
-activity, see the online page. For a historical perspective of the
-origins and development of GMT see the video podcast "20 Years with
-GMT – The Generic Mapping Tools" produced following a seminar given by
-Paul Wessel on the 20th anniversary of GMT; a link is available on the
-GMT website.
+see :doc:`/changelog`. For a nightly snapshot of ongoing
+activity, see the `GMT repository on GitHub <https://github.com/GenericMappingTools/gmt>`__.
+For a historical perspective of the origins and development of GMT,
+see the video podcast `"20 Years with GMT – The Generic Mapping Tools" <https://doi.org/10.5446/19869>`__
+produced following a seminar given by Paul Wessel on the 20th anniversary of GMT.
 
 The success of GMT is to a large degree due to the input of the user
 community. In fact, most of the capabilities and options in the
