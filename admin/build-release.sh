@@ -30,9 +30,11 @@ if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
-# 2. Make build dir and configure it
+# 2a. Make build dir and configure it
 rm -rf build
 mkdir build
+# 2b. Build list of external programs and shared libraries
+admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
 echo "build-release.sh: Configure and build tarballs"
 cmake -G Ninja ..
