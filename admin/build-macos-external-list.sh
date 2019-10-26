@@ -23,13 +23,13 @@ install (PROGRAMS)
 EOF
 awk '{printf "\t%s\n", $1}' /tmp/programs.lis
 cat << EOF
-	DESTINATION ${GMT_BINDIR}
+	DESTINATION \${GMT_BINDIR}
 	COMPONENT Runtime)
 
 install (PROGRAMS
 EOF
 awk '{printf "\t%s\n", $1}' /tmp/libraries.lis
 cat << EOF
-	DESTINATION ${GMT_LIBDIR}
+	DESTINATION \${GMT_LIBDIR}
 	COMPONENT Runtime)
 EOF
