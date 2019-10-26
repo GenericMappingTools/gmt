@@ -1,20 +1,26 @@
-#!/bin/bash
-# Build include file for cpack to build complete macOS Bundle
+#!/usr/bin/env bash
+#
+# Build include file for cpack to build a complete macOS Bundle.
 # List of executables whose shared libraries must also be included
 
-EXE="gs gm ffmpeg"
-# List of executables whose shared libraries have been included via GDAL
+# 1. List of executables whose shared libraries also are needed.
+#    Note: gs is just a link to gsc so we list both
+EXE="gs gsc gm ffmpeg"
+# 2. List of executables whose shared libraries have been included via GDAL
 which ogr2ogr > /tmp/raw.lis
 which gdal_translate >> /tmp/raw.lis
+# 3. Use otools -L to list shared libraries used but exclude system libraries
 for P in $EXE; do
 	path=`which $P`
 	echo $path >> /tmp/raw.lis
 	otool -L $path | egrep -v '/usr/lib|/System/Library' | tr ':' ' ' | awk '{print $1}' >> /tmp/raw.lis
 done
+# 4. sort into unique list, then split executables from libraries
 sort -u /tmp/raw.lis > /tmp/unique.lis
 grep dylib /tmp/unique.lis > /tmp/libraries.lis
 grep -v dylib /tmp/unique.lis > /tmp/programs.lis
 
+# 5. Build the include file for cpack
 cat << EOF
 # List of extra executables and shared libraries to include in the macOS installer
 # This file is prepared to use ${USER} installation paths.
