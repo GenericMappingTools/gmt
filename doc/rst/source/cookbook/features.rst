@@ -284,33 +284,19 @@ Command line history
 --------------------
 
 GMT programs "remember" the standardized command line options (See
-Chapter :doc:`options`) given during their previous invocations and this
-provides a shorthand notation for complex options. For example, if a
-basemap was created with an oblique Mercator projection, specified as
+Chapter :doc:`options`) given during their first invocations in a modern
+mode session, and afterwards we do not need to repeat them any further.
+For example, if a map was created with an Cartesian linear projection,
+then any subsequent :doc:`/plot` commands to plot symbols on the same map
+do not need to repeat the region and projection information, as shown here::
 
-    ::
+     gmt begin map
+       gmt basemap -R0/6.5/0/7 -Jx2c -B
+       gmt plot @Table_5_11.txt -Sc0.3c -Gred
+     gmt end show
 
-     -Joc170W/25:30S/33W/56:20N/1:500000
-
-then a subsequent :doc:`/plot` command to plot
-symbols only needs to state **-J**\ o in order to activate the same
-projection. In contrast, note that **-J** by itself will pick the most
-recently used projection. Previous commands are maintained in the file ``gmt.history``,
-of which there will be one in each directory you run the programs from.
-This is handy if you create separate directories for separate projects
-since chances are that data manipulations and plotting for each project
-will share many of the same options. Note that an option spelled out on
-the command line will always override the previous entry in the ``gmt.history`` file and, if
-execution is successful, will replace this entry as the previous option
-argument in the ``gmt.history`` file. If you call several GMT modules piped together
-then GMT cannot guarantee that the ``gmt.history`` file is processed in the intended
-order from left to right. The only guarantee is that the file will not
-be clobbered since GMT uses advisory file locking. The uncertainty in
-processing order makes the use of shorthands in pipes unreliable. We
-therefore recommend that you only use shorthands in single process
-command lines, and spell out the full command option when using chains
-of commands connected with pipes.  The history can be cleared by running
-**gmt clear history**.
+Thus, the chosen options remain in effect until you provide new option
+arguments on the command line. 
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
