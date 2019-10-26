@@ -19,7 +19,7 @@ cat << EOF
 # List of extra executables and shared libraries to include in the macOS installer
 # This file is prepared to use ${USER} installation paths.
 
-install (PROGRAMS)
+install (PROGRAMS
 EOF
 awk '{printf "\t%s\n", $1}' /tmp/programs.lis
 cat << EOF
