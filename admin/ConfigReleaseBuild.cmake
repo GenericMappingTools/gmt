@@ -19,3 +19,4 @@ set (GMT_ENABLE_OPENMP TRUE)
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
+set (EXTRA_INCLUDE_EXES "add_macOS_cpack.txt")
