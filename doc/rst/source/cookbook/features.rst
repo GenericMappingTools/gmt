@@ -286,17 +286,17 @@ Command line history
 GMT programs "remember" the standardized command line options (See
 Chapter :doc:`options`) given during their first invocations in a modern
 mode session, and afterwards we do not need to repeat them any further.
-For example, if a map was created with an oblique Mercator projection
-and a particular region, such as
-
-    ::
-
-     gmt coast -Gred -R170W/20N/150W/25N+r -Joc170W/25:30S/33W/56:20N/1:10000000 -Bafg -pdf map
-
+For example, if a map was created with an Cartesian linear projection,
 then any subsequent :doc:`/plot` commands to plot symbols on the same map
-do not need to repeat the region and projection information.  The chosen
-options thus remain in effect until you provide new option arguments on
-the command line. 
+do not need to repeat the region and projection information, as shown here::
+
+     gmt begin map
+       gmt basemap -R0/6.5/0/7 -Jx2c -B
+       gmt plot @Table_5_11.txt -Sc0.3c -Gred
+     gmt end show
+
+Thus, the chosen options remain in effect until you provide new option
+arguments on the command line. 
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
