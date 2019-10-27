@@ -14,6 +14,7 @@ set (COPY_DCW TRUE)
 set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
+set (GMT_PUBLIC_RELEASE TRUE)
 
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")

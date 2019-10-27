@@ -7,10 +7,13 @@
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
+	top=/opt/local
 elif [ `which cmake` = "/usr/local/bin/cmake" ]; then
 	distro=HomeBrew
+	top=/usr/local
 else
 	distro=Fink
+	/sw
 fi
 # 1a. List of executables whose shared libraries also are needed.
 EXEPLUSLIBS="gsc gm ffmpeg"
@@ -18,6 +21,8 @@ EXEPLUSLIBS="gsc gm ffmpeg"
 EXELINKS="gs"
 # 1c. List of executables whose shared libraries have been included via GDAL
 EXEONLY="ogr2ogr gdal_translate"
+# 1d. Shared dir needed
+EXESHARED="ghostscript "
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -68,5 +73,14 @@ EOF
 awk '{printf "\t%s\n", $1}' /tmp/libraries.lis
 cat << EOF
 	DESTINATION \${GMT_LIBDIR}
+	COMPONENT Runtime)
+	
+install (DIRECTORY
+EOF
+for P in $EXESHARED; do
+	echo "	$top/share/$P"
+done
+cat << EOF
+	DESTINATION \${GMT_DATADIR}
 	COMPONENT Runtime)
 EOF
