@@ -16,7 +16,7 @@ else
 	/sw
 fi
 # 1a. List of executables needed and whose shared libraries also are needed.
-EXEPLUSLIBS="gm ffmpeg"
+EXEPLUSLIBS="gs gm ffmpeg"
 # 1b. List of any symbolic links needed
 EXELINKS=gs
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
