@@ -15,14 +15,14 @@ else
 	distro=Fink
 	/sw
 fi
-# 1a. List of executables whose shared libraries also are needed.
-EXEPLUSLIBS="gsc gm ffmpeg"
-# 1b. List of symbolic links.
-EXELINKS="gs"
-# 1c. List of executables whose shared libraries have been included via GDAL
+# 1a. List of executables needed and whose shared libraries also are needed.
+EXEPLUSLIBS="gm ffmpeg"
+# 1b. List of any symbolic links needed
+EXELINKS=
+# 1c. List of executables whose shared libraries have already been included via other shared libraries
 EXEONLY="ogr2ogr gdal_translate"
-# 1d. Shared dir needed
-EXESHARED="ghostscript "
+# 1d. Shared directories to be added
+EXESHARED=
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -35,7 +35,6 @@ for P in ${EXEONLY} ${EXEPLUSLIBS}; do
 	fi
 done
 # 2b. Add the symbolic links to the list given their paths as is
-rm -f /tmp/raw.lis
 for P in $EXELINKS; do
 	which $P >> /tmp/raw.lis
 done
@@ -74,13 +73,16 @@ awk '{printf "\t%s\n", $1}' /tmp/libraries.lis
 cat << EOF
 	DESTINATION \${GMT_LIBDIR}
 	COMPONENT Runtime)
-	
-install (DIRECTORY
 EOF
+
+# Optionally add shared resources
+if [ ! "X$EXESHARED" = "X" ]; then
+	echo "install (DIRECTORY"
+fi
 for P in $EXESHARED; do
 	echo "	$top/share/$P"
 done
-cat << EOF
-	DESTINATION \${GMT_DATADIR}
-	COMPONENT Runtime)
-EOF
+if [ ! "X$EXESHARED" = "X" ]; then
+	echo "	DESTINATION \${GMT_DATADIR}"
+	echo "	COMPONENT Runtime)"
+fi
