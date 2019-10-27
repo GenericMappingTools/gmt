@@ -6,6 +6,7 @@ files and scripts useful for building the actual releases.**
 ## Contents
 
 - build-release.sh
+- build-macos-external-list.sh
 - ConfigReleaseBuild.cmake
 
 ## Do the release
