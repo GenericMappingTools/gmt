@@ -18,11 +18,11 @@ fi
 # 1a. List of executables needed and whose shared libraries also are needed.
 EXEPLUSLIBS="gm ffmpeg"
 # 1b. List of any symbolic links needed
-EXELINKS=
+EXELINKS=gs
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
 EXEONLY="ogr2ogr gdal_translate"
 # 1d. Shared directories to be added
-EXESHARED=
+EXESHARED="gdal ghostscript"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
