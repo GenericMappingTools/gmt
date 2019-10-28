@@ -92,7 +92,7 @@ fi
 cat << EOF
 
 install (DIRECTORY
-	admin/Licenses
-	DESTINATION Licenses
+	../../admin/Licenses
+	DESTINATION share
 	COMPONENT Runtime)
 EOF
