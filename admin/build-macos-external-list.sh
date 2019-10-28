@@ -17,7 +17,7 @@ else
 fi
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need someting not in your path
-EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate"
+EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need someting not in your path
 EXELINKS=
@@ -26,7 +26,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
