@@ -4,6 +4,9 @@
 #
 # Build include file for cpack to build a complete macOS Bundle.
 # List of executables whose shared libraries must also be included
+# Need to do stupid things like copying /opt/local/lib/proj6/share/proj
+# to /opt/local/share/proj6 and build gs from 9.50 tarball and place in
+# /opt.
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -26,7 +29,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
