@@ -3,6 +3,12 @@
 **The admin directory is just for the GMT developers to store configuration
 files and scripts useful for building the actual releases.**
 
+
+## Prerequisites
+
+IN addition to the packages required for building all of GMT (including documentation),
+you also need gnu-tar and coreutils.
+
 ## Contents
 
 - build-release.sh

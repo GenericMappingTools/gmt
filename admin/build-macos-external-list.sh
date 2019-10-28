@@ -16,13 +16,17 @@ else
 	/sw
 fi
 # 1a. List of executables needed and whose shared libraries also are needed.
-EXEPLUSLIBS="gs gm ffmpeg"
+#     Use full path if you need someting not in your path
+EXEPLUSLIBS="/opt/bin/gs gm ffmpeg"
 # 1b. List of any symbolic links needed
-EXELINKS=gs
+#     Use full path if you need someting not in your path
+EXELINKS=
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
+#     Use full path if you need someting not in your path
 EXEONLY="ogr2ogr gdal_translate"
 # 1d. Shared directories to be added
-EXESHARED="gdal ghostscript"
+#     Use full path if you need someting not in your path
+EXESHARED="gdal /opt/share/ghostscript"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -80,9 +84,13 @@ if [ ! "X$EXESHARED" = "X" ]; then
 	echo "install (DIRECTORY"
 fi
 for P in $EXESHARED; do
-	echo "	$top/share/$P"
+	if [ $P = `basename $P` ]; then
+		echo "	$top/share/$P"
+	else
+		echo "	$P"
+	fi
 done
 if [ ! "X$EXESHARED" = "X" ]; then
-	echo "	DESTINATION \${GMT_DATADIR}"
+	echo "	DESTINATION \${CMAKE_INSTALL_PREFIX}"
 	echo "	COMPONENT Runtime)"
 fi
