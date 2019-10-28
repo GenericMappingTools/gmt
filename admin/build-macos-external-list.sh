@@ -89,3 +89,10 @@ if [ ! "X$EXESHARED" = "X" ]; then
 	echo "	DESTINATION share"
 	echo "	COMPONENT Runtime)"
 fi
+cat << EOF
+
+install (DIRECTORY
+	admin/Licenses
+	DESTINATION Licenses
+	COMPONENT Runtime)
+EOF
