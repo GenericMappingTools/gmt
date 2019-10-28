@@ -17,13 +17,13 @@ else
 fi
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need someting not in your path
-EXEPLUSLIBS="/opt/bin/gs gm ffmpeg"
+EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate"
 # 1b. List of any symbolic links needed
 #     Use full path if you need someting not in your path
 EXELINKS=
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
 #     Use full path if you need someting not in your path
-EXEONLY="ogr2ogr gdal_translate"
+EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
 EXESHARED="gdal /opt/share/ghostscript"
@@ -43,17 +43,7 @@ for P in $EXELINKS; do
 	which $P >> /tmp/raw.lis
 done
 # 2c. Use otools -L to list shared libraries used but exclude system libraries
-for P in $EXEPLUSLIBS; do
-	path=`which $P`
-	otool -L $path | egrep -v '/usr/lib|/System/Library' | tr ':' ' ' | awk '{print $1}' > /tmp/dump.lis
-	while read file; do
-		if [ -L $file ]; then # A symlink
-			grealpath $file >> /tmp/raw.lis
-		else
-			echo $file >> /tmp/raw.lis
-		fi
-	done < /tmp/dump.lis
-done
+~/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
 # 4. sort into unique list then split executables from libraries
 sort -u /tmp/raw.lis > /tmp/final.lis
 grep dylib /tmp/final.lis > /tmp/libraries.lis
@@ -81,6 +71,7 @@ EOF
 
 # Optionally add shared resources
 if [ ! "X$EXESHARED" = "X" ]; then
+	echo ""
 	echo "install (DIRECTORY"
 fi
 for P in $EXESHARED; do
@@ -91,6 +82,6 @@ for P in $EXESHARED; do
 	fi
 done
 if [ ! "X$EXESHARED" = "X" ]; then
-	echo "	DESTINATION \${CMAKE_INSTALL_PREFIX}"
+	echo "	DESTINATION share"
 	echo "	COMPONENT Runtime)"
 fi
