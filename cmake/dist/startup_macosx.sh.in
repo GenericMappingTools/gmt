@@ -17,7 +17,7 @@ if [ "$1" = "GMT_PROMPT" ]; then
   unset DYLD_LIBRARY_PATH
   gmt
   echo -e "Note 1: Remember to add ${BUNDLE_RESOURCES}/bin to your PATH\nif you want to use GMT outside of the terminal or in scripts.\n"
-  echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see ${BUNDLE_RESOURCES}/licenses for details.\n"
+  echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see ${BUNDLE_RESOURCES}/Licenses for details.\n"
 
   _usershell=$(dscl . -read "/Users/$USER" UserShell)
   _usershell=${_usershell##* }
