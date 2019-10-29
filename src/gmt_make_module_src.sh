@@ -311,8 +311,8 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].mname))
-			printf ("%s\n", g_${L_TAG}_module[module_id].cname);
+		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].cname))
+			printf ("%s\n", g_${L_TAG}_module[module_id].mname);
 EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
