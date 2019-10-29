@@ -29,7 +29,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psscale"
 #define THIS_MODULE_MODERN_NAME	"colorbar"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
+#define THIS_MODULE_PURPOSE	"Plot gray scale or color scale bar"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")

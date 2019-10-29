@@ -6,7 +6,7 @@ sac
 
 .. only:: not man
 
-    Plot seismograms in SAC format on maps
+    Plot seismograms in SAC format
 
 Synopsis
 --------

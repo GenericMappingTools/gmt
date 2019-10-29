@@ -30,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"pstext"
 #define THIS_MODULE_MODERN_NAME	"text"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot or typeset text on maps"
+#define THIS_MODULE_PURPOSE	"Plot or typeset text"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYaefhptxy" GMT_OPT("Ec")

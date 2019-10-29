@@ -6,7 +6,7 @@ psimage
 
 .. only:: not man
 
-    Place images or EPS files on maps
+    Plot raster or EPS images
 
 Synopsis
 --------

@@ -6,7 +6,7 @@ meca
 
 .. only:: not man
 
-    Plot focal mechanisms on maps
+    Plot focal mechanisms
 
 Synopsis
 --------

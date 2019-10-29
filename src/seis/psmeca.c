@@ -25,7 +25,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_CLASSIC_NAME	"psmeca"
 #define THIS_MODULE_MODERN_NAME	"meca"
 #define THIS_MODULE_LIB		"seis"
-#define THIS_MODULE_PURPOSE	"Plot focal mechanisms on maps"
+#define THIS_MODULE_PURPOSE	"Plot focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipt" GMT_OPT("Hc")

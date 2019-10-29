@@ -339,21 +339,21 @@ Plotting
 --------
 
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`gmtlogo_classic`        | Plot the GMT logo on maps                                           |
+| :doc:`gmtlogo_classic`        | Plot the GMT logo                                                   |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`grdcontour_classic`     | Contouring of 2-D gridded data sets                                 |
+| :doc:`grdcontour_classic`     | Contouring of grids                                                 |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`grdimage_classic`       | Produce images from 2-D gridded data sets                           |
+| :doc:`grdimage_classic`       | Project and plot grids or images                                    |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`grdvector_classic`      | Plotting of 2-D gridded vector fields                               |
+| :doc:`grdvector_classic`      | Plotting of gridded vector fields                                   |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`grdview_classic`        | 3-D perspective imaging of 2-D gridded data sets                    |
+| :doc:`grdview_classic`        | 3-D perspective imaging of grids                                    |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psbasemap`              | Create a basemap plot                                               |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psclip`                 | Use polygon files to define clipping paths                          |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`pscoast`                | Plot (and fill) coastlines, borders, and rivers on maps             |
+| :doc:`pscoast`                | Plot (and fill) coastlines, borders, and rivers                     |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`pscontour`              | Contour or image raw table data by triangulation                    |
 +-------------------------------+---------------------------------------------------------------------+
@@ -361,23 +361,23 @@ Plotting
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`pshistogram`            | Plot a histogram                                                    |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`psimage`                | Plot Sun raster files on a map                                      |
+| :doc:`psimage`                | Plot raster or EPS images                                           |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`pslegend`               | Plot a legend on a map                                              |
+| :doc:`pslegend`               | Plot a legend                                                       |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`psmask`                 | Create overlay to mask out regions on maps                          |
+| :doc:`psmask`                 | Create overlay to mask out regions                                  |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psrose`                 | Plot sector or rose diagrams                                        |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`psscale`                | Plot gray scale or color scale on maps                              |
+| :doc:`psscale`                | Plot gray scale or color scale bar                                  |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`pssolar`                | Plot day-light terminators and other sunlight parameters            |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psternary`              | Plot data on ternary diagrams                                       |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`pstext`                 | Plot text strings on maps                                           |
+| :doc:`pstext`                 | Plot text strings                                                   |
 +-------------------------------+---------------------------------------------------------------------+
-| :doc:`pswiggle`               | Draw table data time-series along track on maps                     |
+| :doc:`pswiggle`               | Draw table data time-series along track                             |
 +-------------------------------+---------------------------------------------------------------------+
 | :doc:`psxy`                   | Plot symbols, polygons, and lines in 2-D                            |
 +-------------------------------+---------------------------------------------------------------------+
@@ -394,11 +394,11 @@ Filtering
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`dimfilter`      | Directional filtering of 2-D gridded files in the space/time domain |
+| :doc:`dimfilter`      | Directional filtering of grids in the space/time domain             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`filter1d`       | Time domain filtering of 1-D data tables                            |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdfilter`      | Filter 2-D gridded data sets in the space domain                    |
+| :doc:`grdfilter`      | Filter grid in the space domain                                     |
 +-----------------------+---------------------------------------------------------------------+
 
 Gridding
@@ -422,9 +422,9 @@ Sampling of 1-D and 2-D data
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtsimplify`    | Line reduction using the Douglas-Peucker algorithm                  |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdsample`      | Resample a 2-D gridded data set onto a new grid                     |
+| :doc:`grdsample`      | Resample a grid onto a new grid                                     |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (*x*,\ *y*) locations     |
+| :doc:`grdtrack`       | Sample grids at specified (*x*,\ *y*) locations                     |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sample1d`       | Resampling of 1-D table data sets                                   |
 +-----------------------+---------------------------------------------------------------------+
@@ -433,7 +433,7 @@ Projection and map-transformation
 ---------------------------------
 
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdproject`     | Project gridded data sets onto a new coordinate system              |
+| :doc:`grdproject`     | Project grids onto a new coordinate system                          |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
 +-----------------------+---------------------------------------------------------------------+
@@ -452,7 +452,7 @@ Information retrieval
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtset`         | Change selected parameters in current file                          |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdinfo`        | Get information about grid files                                    |
+| :doc:`grdinfo`        | Get information about grids                                         |
 +-----------------------+---------------------------------------------------------------------+
 
 Mathematical operations on tables or grids
@@ -488,19 +488,19 @@ Convert or extract subsets of data
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2kml`        | Create KML image quadtree from single grid                          |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grd2xyz`        | Conversion from 2-D grid file to table data                         |
+| :doc:`grd2xyz`        | Conversion from grid to table data                                  |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdblend`       | Blend several partially over-lapping grid files onto one grid       |
+| :doc:`grdblend`       | Blend several partially over-lapping grids onto one grid            |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdconvert`     | Converts grid files into other grid formats                         |
+| :doc:`grdconvert`     | Converts grids into other formats                                   |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdcut`         | Cut a sub-region from a grid file                                   |
+| :doc:`grdcut`         | Cut a sub-region from a grid                                        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdpaste`       | Paste together grid files along a common edge                       |
+| :doc:`grdpaste`       | Paste together grids along a common edge                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`splitxyz`       | Split *xyz* files into several segments                             |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`xyz2grd`        | Convert an equidistant table *xyz* file to a 2-D grid file          |
+| :doc:`xyz2grd`        | Convert an equidistant table *xyz* file to a grid                   |
 +-----------------------+---------------------------------------------------------------------+
 
 Trends in 1-D and 2-D data
@@ -522,25 +522,25 @@ Grid operations
 ---------------
 
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grd2cpt`        | Make color palette table from a grid files                          |
+| :doc:`grd2cpt`        | Make color palette table from a grid                                |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdclip`        | Limit the *z*-range in gridded data sets                            |
+| :doc:`grdclip`        | Limit the *z*-range in grids                                        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdedit`        | Modify header information in a 2-D grid file                        |
+| :doc:`grdedit`        | Modify header information in a grid                                 |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdfft`         | Perform operations on grid files in the frequency domain            |
+| :doc:`grdfft`         | Perform operations on grids in the frequency domain                 |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdfill`        | Interpolate across holes in a grid                                  |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdgradient`    | Compute directional gradient from grid files                        |
+| :doc:`grdgradient`    | Compute directional gradient from grids                             |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdhisteq`      | Histogram equalization for grid files                               |
+| :doc:`grdhisteq`      | Histogram equalization for grids                                    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdlandmask`    | Create masking grid files from shoreline data base                  |
+| :doc:`grdlandmask`    | Create masking grid from shoreline data base                        |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdmask`        | Reset grid nodes in/outside a clip path to constants                |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdmath`        | Mathematical operations on grid files                               |
+| :doc:`grdmath`        | Mathematical operations on grids                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdvolume`      | Calculate volumes under a surface within specified contour          |
 +-----------------------+---------------------------------------------------------------------+
@@ -568,7 +568,7 @@ geodesy
 +--------------------------------------------+-----------------------------------------------------------------------------------+
 | :doc:`/supplements/geodesy/gpsgridder`     | Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet |
 +--------------------------------------------+-----------------------------------------------------------------------------------+
-| :doc:`/supplements/geodesy/psvelo`         | Plot velocity vectors, crosses, and wedges on maps                                |
+| :doc:`/supplements/geodesy/psvelo`         | Plot velocity vectors, crosses, and wedges                                        |
 +--------------------------------------------+-----------------------------------------------------------------------------------+
 
 GSHHG
@@ -639,7 +639,7 @@ SEGY
 +-----------------------------------+------------------------------------+
 | :doc:`/supplements/segy/pssegy`   | Plot a SEGY file on a map          |
 +-----------------------------------+------------------------------------+
-| :doc:`/supplements/segy/segy2grd` | Converting SEGY data to a GMT grid |
+| :doc:`/supplements/segy/segy2grd` | Converting SEGY data to a grid     |
 +-----------------------------------+------------------------------------+
 
 seis
@@ -648,11 +648,11 @@ seis
 +----------------------------------+-----------------------------------------------------------+
 | :doc:`/supplements/seis/pscoupe` | Plot cross-sections of focal mechanisms                   |
 +----------------------------------+-----------------------------------------------------------+
-| :doc:`/supplements/seis/psmeca`  | Plot focal mechanisms on maps                             |
+| :doc:`/supplements/seis/psmeca`  | Plot focal mechanisms                                     |
 +----------------------------------+-----------------------------------------------------------+
-| :doc:`/supplements/seis/pspolar` | Plot polarities on the inferior focal half-sphere on maps |
+| :doc:`/supplements/seis/pspolar` | Plot polarities on the inferior focal half-sphere         |
 +----------------------------------+-----------------------------------------------------------+
-| :doc:`/supplements/seis/pssac`   | Plot seismograms in SAC format on maps                    |
+| :doc:`/supplements/seis/pssac`   | Plot seismograms in SAC format                            |
 +----------------------------------+-----------------------------------------------------------+
 
 spotter

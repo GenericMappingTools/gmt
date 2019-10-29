@@ -6,7 +6,7 @@ legend
 
 .. only:: not man
 
-    Plot legends on maps
+    Plot legends
 
 Synopsis
 --------

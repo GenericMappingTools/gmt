@@ -29,7 +29,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"pslegend"
 #define THIS_MODULE_MODERN_NAME	"legend"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot legends on maps"
+#define THIS_MODULE_PURPOSE	"Plot a legend"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpt" GMT_OPT("c")

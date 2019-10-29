@@ -6,7 +6,7 @@ pstext
 
 .. only:: not man
 
-    Plot or typeset text on maps
+    Plot or typeset text
 
 Synopsis
 --------

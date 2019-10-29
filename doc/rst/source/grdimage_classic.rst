@@ -6,7 +6,7 @@ grdimage
 
 .. only:: not man
 
-    Project grids or images and plot them on maps
+    Project and plot grids or images
 
 Synopsis
 --------

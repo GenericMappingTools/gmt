@@ -6,7 +6,7 @@ pslegend
 
 .. only:: not man
 
-    Plot legends on maps
+    Plot a legend
 
 Synopsis
 --------

@@ -6,7 +6,7 @@ pscoast
 
 .. only:: not man
 
-    Plot continents, shorelines, rivers, and borders on maps
+    Plot continents, shorelines, rivers, and borders
 
 Synopsis
 --------

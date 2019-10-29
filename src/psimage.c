@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psimage"
 #define THIS_MODULE_MODERN_NAME	"image"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Place images or EPS files on maps"
+#define THIS_MODULE_PURPOSE	"Plot raster or EPS images"
 #define THIS_MODULE_KEYS	"<I{,>X}"
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")

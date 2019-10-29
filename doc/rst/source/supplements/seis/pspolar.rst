@@ -6,7 +6,7 @@ pspolar
 
 .. only:: not man
 
-    Plot polarities on the inferior focal half-sphere on maps
+    Plot polarities on the inferior focal half-sphere
 
 Synopsis
 --------
