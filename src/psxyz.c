@@ -26,7 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psxyz"
-#define THIS_MODULE_MODERN_NAME	"xyz"
+#define THIS_MODULE_MODERN_NAME	"plot3d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
