@@ -42,8 +42,8 @@ struct Gmt_moduleinfo {
 
 static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"earthtide", "earthtide", "geodesy", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
-	{"gpsgridder", "gpsgridder", "geodesy", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
-	{"velo", "psvelo", "geodesy", "Plot velocity vectors, crosses, and wedges on maps", "<D{,>X}"},
+	{"gpsgridder", "gpsgridder", "geodesy", "Interpolate GPS strains using Green's functions for elastic deformation", "<D{,ND(,TG(,CD)=f,GG}"},
+	{"velo", "psvelo", "geodesy", "Plot velocity vectors, crosses, and wedges", "<D{,>X}"},
 	{"gshhg", "gshhg", "gshhg", "Extract data tables from binary GSHHS or WDBII data files", ">D}"},
 	{"img2grd", "img2grd", "img", "Extract a subset from an img file in Mercator or Geographic format", "<G{,GG}"},
 	{"mgd77convert", "mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
@@ -68,9 +68,9 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"segy2grd", "segy2grd", "segy", "Converting SEGY data to a GMT grid", "GG}"},
 	{"segyz", "pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X}"},
 	{"coupe", "pscoupe", "seis", "Plot cross-sections of focal mechanisms", "<D{,>X}"},
-	{"meca", "psmeca", "seis", "Plot focal mechanisms on maps", "<D{,>X}"},
-	{"polar", "pspolar", "seis", "Plot polarities on the inferior focal half-sphere on maps", "<D{,>X}"},
-	{"sac", "pssac", "seis", "Plot seismograms in SAC format on maps", ">X},RG-"},
+	{"meca", "psmeca", "seis", "Plot focal mechanisms", "<D{,>X}"},
+	{"polar", "pspolar", "seis", "Plot polarities on the inferior focal half-sphere", "<D{,>X}"},
+	{"sac", "pssac", "seis", "Plot seismograms in SAC format", ">X},RG-"},
 	{"backtracker", "backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},FD("},
 	{"gmtpmodeler", "gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,FD(,>D}"},
 	{"grdpmodeler", "grdpmodeler", "spotter", "Evaluate a plate motion model on a geographic grid", "<G{,FD(,GG),>DG"},
