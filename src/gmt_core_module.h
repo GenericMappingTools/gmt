@@ -95,7 +95,6 @@ EXTERN_MSC int GMT_psmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_movie (void *API, int mode, void *args);
 EXTERN_MSC int GMT_nearneighbor (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
-EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_project (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psconvert (void *API, int mode, void *args);
