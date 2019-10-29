@@ -6,7 +6,7 @@ plot
 
 .. only:: not man
 
-    Plot lines, polygons, and symbols on maps in 2-D
+    Plot lines, polygons, and symbols in 2-D
 
 Synopsis
 --------
