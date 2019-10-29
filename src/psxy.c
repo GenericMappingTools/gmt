@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psxy"
 #define THIS_MODULE_MODERN_NAME	"plot"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps"
+#define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps in 2-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpt" GMT_OPT("HMmc")
