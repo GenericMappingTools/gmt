@@ -25,7 +25,7 @@ EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/
 #     Use full path if you need something not in your path
 EXELINKS=
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
-#     Use full path if you need someting not in your path
+#     Use full path if you need something not in your path
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
