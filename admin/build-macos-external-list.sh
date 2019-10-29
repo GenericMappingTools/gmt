@@ -19,7 +19,7 @@ else
 	/sw
 fi
 # 1a. List of executables needed and whose shared libraries also are needed.
-#     Use full path if you need someting not in your path
+#     Use full path if you need something not in your path
 EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need someting not in your path
