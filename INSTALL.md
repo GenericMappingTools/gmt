@@ -40,41 +40,27 @@ animated GIFs.
 
 ### Application Bundle
 
-Application bundle is available from the [GMT main site](https://www.generic-mapping-tools.org).
+We provide macOS application bundle on the [GMT main site](https://www.generic-mapping-tools.org).
+The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
+
 Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
 and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
-your search path for executables. For that, just run GMT-6.x.x.app once and type:
+your search path for executables. For that, just run GMT-6.x.x.app once and type
+the command below to find out your GMT installation path:
 
-    echo ${BUNDLE_RESOURCES}/bin
+    echo ${BUNDLE_RESOURCES}
 
-in the terminal. Then prepend this directory (e.g. `/Applications/GMT-6.x.x.app/Contents/Resources/bin`)
-to your PATH environment variable, e.g., in `~/.bashrc`.
+Usually, you will see an output like `/Applications/GMT-6.x.x.app/Contents/Resources/`.
+Then change/set envrionment variables `PATH` and `PROJ_LIB`
+in your shell configuration file (e.g. `~/.bash_profile`), e.g.
+
+	export PATH=/Applications/GMT-6.x.x.app/Contents/Resources/bin:${PATH}
+	export PROJ_LIB=/Applications/GMT-6.x.x.app/Contents/Resources/share/proj6
+
 Note: The installer is always built for the latest macOS version only.
-
-While the installer comes with all GMT executables and needed libraries, there are some
-run-time dependencies on executables that you will need to install separately:
-
-- [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
-- [Ghostscript](https://www.ghostscript.com/) (Convert PostScript to PDF or raster images)
-- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
-- [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
-
-Install these via Fink, MacPorts, or Homebrew. If you do not use any of these, then
-we recommend installing [Homebrew](https://brew.sh/). Now, run either the fink, port,
-or brew command:
-
-    # For Fink users
-    fink install gdal ghostscript graphicsmagick ffmpeg
-
-    # For MacPorts users
-    sudo port install gdal +hdf5 +netcdf +openjpeg
-    sudo port install ghostscript graphicsmagick ffmpeg
-
-    # For Homebrew users
-    brew install gdal ghostscript graphicsmagick ffmpeg
 
 ### Install via Homebrew
 
