@@ -24,7 +24,7 @@ extern "C" {
 /* Prototypes of all modules in the GMT supplements library */
 EXTERN_MSC int GMT_earthtide (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
-EXTERN_MSC int GMT_velo (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psvelo (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gshhg (void *API, int mode, void *args);
 EXTERN_MSC int GMT_img2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77convert (void *API, int mode, void *args);
@@ -45,13 +45,13 @@ EXTERN_MSC int GMT_grdredpol (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdseamount (void *API, int mode, void *args);
 EXTERN_MSC int GMT_talwani2d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_talwani3d (void *API, int mode, void *args);
+EXTERN_MSC int GMT_pssegy (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);
-EXTERN_MSC int GMT_segyz (void *API, int mode, void *args);
-EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
-EXTERN_MSC int GMT_coupe (void *API, int mode, void *args);
-EXTERN_MSC int GMT_meca (void *API, int mode, void *args);
-EXTERN_MSC int GMT_polar (void *API, int mode, void *args);
-EXTERN_MSC int GMT_sac (void *API, int mode, void *args);
+EXTERN_MSC int GMT_pssegyz (void *API, int mode, void *args);
+EXTERN_MSC int GMT_pscoupe (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psmeca (void *API, int mode, void *args);
+EXTERN_MSC int GMT_pspolar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_pssac (void *API, int mode, void *args);
 EXTERN_MSC int GMT_backtracker (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtpmodeler (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdpmodeler (void *API, int mode, void *args);

@@ -49,7 +49,7 @@ while read program; do
 	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | awk '{print $0}' >> /tmp/KEYS.lis
 done < /tmp/tmp.lis
 # Prepend group+name so we can get a list sorted on group name then individual programs
-paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | awk '{printf "%s%s|%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
+paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | awk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
 paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
 awk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
 #rm -f /tmp/tmp.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
@@ -89,7 +89,7 @@ extern "C" {
 
 /* Prototypes of all modules in the GMT ${L_TAG} library */
 EOF
-gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $1;}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_H}
+gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_H}
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
