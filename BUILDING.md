@@ -48,6 +48,7 @@ Optionally install these for more capabilities within GMT:
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
+- [GLib](https://developer.gnome.org/glib/) GTHREAD support
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 
@@ -81,7 +82,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -108,7 +109,7 @@ You then can install the GMT dependencies with:
     sudo yum install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -133,7 +134,7 @@ Install the GMT dependencies with:
     sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -158,7 +159,7 @@ Install the gmt dependencies with:
     sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
 
     # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas
+    sudo pacman -S gdal pcre fftw lapack openblas glib2
 
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
@@ -203,7 +204,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     brew install cmake curl netcdf ghostscript
 
     # Install optional dependencies
-    brew install gdal pcre2 fftw
+    brew install gdal pcre2 fftw glib
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -543,6 +544,7 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
@@ -554,6 +556,7 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
