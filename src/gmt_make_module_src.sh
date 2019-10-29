@@ -40,18 +40,19 @@ else
 	echo "Error: Tag must be either core or supplements"
 	exit
 fi
-rm -f /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
+rm -f /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
 while read program; do
-	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/NAME.lis
+	grep "#define THIS_MODULE_MODERN_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/MNAME.lis
+	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/CNAME.lis
 	grep "#define THIS_MODULE_LIB" $program     | awk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
 	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | awk '{print $0}' >> /tmp/PURPOSE.lis
 	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | awk '{print $0}' >> /tmp/KEYS.lis
 done < /tmp/tmp.lis
 # Prepend group+name so we can get a list sorted on group name then individual programs
-paste /tmp/LIB.lis /tmp/NAME.lis | awk '{printf "%s%s|%s\n", $1, $2, $2}' > /tmp/SORT.txt
+paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | awk '{printf "%s%s|%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
 paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
 awk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
-#rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
+#rm -f /tmp/tmp.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
 
 # The output file produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
@@ -161,7 +162,8 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* name, library, and purpose for each module */
 struct Gmt_moduleinfo {
-	const char *name;             /* Program name */
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
 	const char *component;        /* Component (core, supplement, custom) */
 	const char *purpose;          /* Program purpose */
 	const char *keys;             /* Program option info for external APIs */
@@ -185,29 +187,29 @@ static struct Gmt_moduleinfo g_${L_TAG}_module[] = {
 #ifdef BUILD_SHARED_LIBS
 EOF
 
-# $1 = name, $2 = ${L_TAG}, $3 = tab, $4 = purpose, $5 = tab, $6 = keys
+# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
 gawk '
 	BEGIN {
 		FS = "\t";
 	}
-	{ printf "\t{\"%s\", \"%s\", %s, %s},\n", $1, $2, $4, $6;
+	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
 }' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #else
 EOF
-# $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose, $5 = tab, $6 = keys
+# $1 = mname, $2 = cname, $3 = core/supplement, $4 = Api_mode, $5 = purpose, $6 = tab, $7 = keys
 gawk '
 	BEGIN {
 		FS = "\t";
 	}
 	!/^[ \t]*#/ {
-		printf "\t{\"%s\", \"%s\", %s, %s, &GMT_%s},\n", $1, $2, $4, $6, $1;
+		printf "\t{\"%s\", \"%s\", \"%s\", %s, %s, &GMT_%s},\n", $1, $2, $3, $5, $7, $1;
 	}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #endif
 };
 EOF
@@ -217,16 +219,16 @@ else
 static struct Gmt_moduleinfo g_${L_TAG}_module[] = {
 EOF
 
-# $1 = name, $2 = ${L_TAG}, $3 = tab, $4 = purpose, $5 = tab, $6 = keys
+# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
 gawk '
 	BEGIN {
 		FS = "\t";
 	}
-	{ printf "\t{\"%s\", \"%s\", %s, %s},\n", $1, $2, $4, $6;
+	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
 }' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 EOF
 fi
@@ -260,7 +262,7 @@ EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	GMT_Message (V_API, GMT_TIME_NONE, "\n===  $LIB_STRING  ===\n");
-	while (g_${L_TAG}_module[module_id].name != NULL) {
+	while (g_${L_TAG}_module[module_id].cname != NULL) {
 		if (module_id == 0 || strcmp (g_${L_TAG}_module[module_id-1].component, g_${L_TAG}_module[module_id].component)) {
 			/* Start of new supplemental group */
 			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", g_${L_TAG}_module[module_id].component);
@@ -270,16 +272,16 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].name)) {
+		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].cname)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
-				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
+				g_${L_TAG}_module[module_id].mname, g_${L_TAG}_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
 		}
 EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
 		snprintf (message, GMT_LEN256, "%-16s %s\n",
-			g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
+			g_${L_TAG}_module[module_id].mname, g_${L_TAG}_module[module_id].purpose);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 EOF
 fi
@@ -305,16 +307,16 @@ else
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	while (g_${L_TAG}_module[module_id].name != NULL) {
+	while (g_${L_TAG}_module[module_id].cname != NULL) {
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].name))
-			printf ("%s\n", g_${L_TAG}_module[module_id].name);
+		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].mname))
+			printf ("%s\n", g_${L_TAG}_module[module_id].cname);
 EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		printf ("%s\n", g_${L_TAG}_module[module_id].name);
+		printf ("%s\n", g_${L_TAG}_module[module_id].mname);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -327,9 +329,9 @@ const char *gmt_${L_TAG}_module_keys (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
-	/* Match actual_name against g_module[module_id].name */
-	while (g_${L_TAG}_module[module_id].name != NULL &&
-	       strcmp (candidate, g_${L_TAG}_module[module_id].name))
+	/* Match actual_name against g_module[module_id].cname */
+	while (g_${L_TAG}_module[module_id].cname != NULL &&
+	       strcmp (candidate, g_${L_TAG}_module[module_id].cname))
 		++module_id;
 
 	/* Return Module keys or NULL */
@@ -341,9 +343,9 @@ const char *gmt_${L_TAG}_module_group (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
-	/* Match actual_name against g_module[module_id].name */
-	while (g_${L_TAG}_module[module_id].name != NULL &&
-	       strcmp (candidate, g_${L_TAG}_module[module_id].name))
+	/* Match actual_name against g_module[module_id].cname */
+	while (g_${L_TAG}_module[module_id].cname != NULL &&
+	       strcmp (candidate, g_${L_TAG}_module[module_id].cname))
 		++module_id;
 
 	/* Return Module keys or NULL */
@@ -362,9 +364,9 @@ void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 	gmt_M_unused(API);
 
 	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
-	/* Match actual_name against g_module[module_id].name */
-	while (g_${L_TAG}_module[module_id].name != NULL &&
-	       strcmp (&candidate[4], g_${L_TAG}_module[module_id].name))
+	/* Match actual_name against g_module[module_id].cname */
+	while (g_${L_TAG}_module[module_id].cname != NULL &&
+	       strcmp (&candidate[4], g_${L_TAG}_module[module_id].cname))
 		++module_id;
 
 	/* Return Module function or NULL */
