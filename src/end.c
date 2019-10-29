@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"end"
+#define THIS_MODULE_MODERN_NAME	"end"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Terminate GMT modern mode session and produce optional graphics"
 #define THIS_MODULE_KEYS	""

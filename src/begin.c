@@ -25,6 +25,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"begin"
+#define THIS_MODULE_MODERN_NAME	"begin"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Initiate a new GMT modern mode session"
 #define THIS_MODULE_KEYS	""

@@ -27,6 +27,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psternary"
+#define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
 #define THIS_MODULE_KEYS	"<D{,>X},>DM,C-(@<D{,MD),C-("

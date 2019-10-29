@@ -35,6 +35,7 @@
 #include "gmt_gsformats.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psconvert"
+#define THIS_MODULE_MODERN_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using Ghostscript"
 #define THIS_MODULE_KEYS	"<X{+,FI)"

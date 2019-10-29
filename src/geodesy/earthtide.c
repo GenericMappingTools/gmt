@@ -27,6 +27,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"earthtide"
+#define THIS_MODULE_MODERN_NAME	"earthtide"
 #define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
 #define THIS_MODULE_KEYS	">D},GG),>DL,>DS"

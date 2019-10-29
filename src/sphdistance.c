@@ -38,6 +38,7 @@
 #include "gmt_sph.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sphdistance"
+#define THIS_MODULE_MODERN_NAME	"sphdistance"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere"
 #define THIS_MODULE_KEYS	"<D{,ND(,QD(,GG},Q-("

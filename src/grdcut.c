@@ -28,6 +28,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
+#define THIS_MODULE_MODERN_NAME	"grdcut"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
 #define THIS_MODULE_KEYS	"<G{,GG}"

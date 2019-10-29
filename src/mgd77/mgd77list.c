@@ -36,6 +36,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77list"
+#define THIS_MODULE_MODERN_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
 #define THIS_MODULE_KEYS	">D}"

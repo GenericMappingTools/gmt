@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"splitxyz"
+#define THIS_MODULE_MODERN_NAME	"splitxyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Split xyz[dh] data tables into individual segments"
 #define THIS_MODULE_KEYS	"<D{,>D}"

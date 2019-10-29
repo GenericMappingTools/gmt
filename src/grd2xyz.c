@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2xyz"
+#define THIS_MODULE_MODERN_NAME	"grd2xyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert grid file to data table"
 #define THIS_MODULE_KEYS	"<G{+,>D}"

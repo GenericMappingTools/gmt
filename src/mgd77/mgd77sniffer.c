@@ -29,6 +29,7 @@ static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
 };
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77sniffer"
+#define THIS_MODULE_MODERN_NAME	"mgd77sniffer"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
 #define THIS_MODULE_KEYS	""

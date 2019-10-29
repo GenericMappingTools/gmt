@@ -25,6 +25,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssolar"
+#define THIS_MODULE_MODERN_NAME	"solar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
 #define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"

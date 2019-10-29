@@ -44,6 +44,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtselect"
+#define THIS_MODULE_MODERN_NAME	"gmtselect"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
 #define THIS_MODULE_KEYS	"<D{,CD(=,FD(,LD(=,>D},GG("

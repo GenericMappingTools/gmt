@@ -23,6 +23,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77header"
+#define THIS_MODULE_MODERN_NAME	"mgd77header"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Create MGD77 headers from A77 files"
 #define THIS_MODULE_KEYS	""

@@ -27,6 +27,7 @@
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdpmodeler"
+#define THIS_MODULE_MODERN_NAME	"grdpmodeler"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate motion model on a geographic grid"
 #define THIS_MODULE_KEYS	"<G{,FD(,GG),>DG"

@@ -29,6 +29,7 @@
 #include "okbfuns.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtgravmag3d"
+#define THIS_MODULE_MODERN_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
 #define THIS_MODULE_KEYS	"TD{,FD(,GG),>D}"

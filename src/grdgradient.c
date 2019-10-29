@@ -32,6 +32,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgradient"
+#define THIS_MODULE_MODERN_NAME	"grdgradient"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute directional gradients from a grid"
 #define THIS_MODULE_KEYS	"<G{,AG(,GG},SG)"

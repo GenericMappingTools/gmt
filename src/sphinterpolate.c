@@ -36,6 +36,7 @@
 #include "gmt_sph.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sphinterpolate"
+#define THIS_MODULE_MODERN_NAME	"sphinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Spherical gridding in tension of data on a sphere"
 #define THIS_MODULE_KEYS	"<D{,GG}"

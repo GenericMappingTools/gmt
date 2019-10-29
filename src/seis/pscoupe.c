@@ -24,6 +24,7 @@ PostScript code is written to stdout.
 #include "utilmeca.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pscoupe"
+#define THIS_MODULE_MODERN_NAME	"coupe"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>X}"

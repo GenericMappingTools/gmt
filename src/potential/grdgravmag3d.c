@@ -37,6 +37,7 @@
 #endif
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgravmag3d"
+#define THIS_MODULE_MODERN_NAME	"grdgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,GG}"

@@ -107,6 +107,7 @@
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"originater"
+#define THIS_MODULE_MODERN_NAME	"originater"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Associate seamounts with nearest hotspot point sources"
 #define THIS_MODULE_KEYS	"<D{,FD(,>D}"

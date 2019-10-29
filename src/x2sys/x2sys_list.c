@@ -29,6 +29,7 @@
 #include "x2sys.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_list"
+#define THIS_MODULE_MODERN_NAME	"x2sys_list"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
 #define THIS_MODULE_KEYS	">D}"

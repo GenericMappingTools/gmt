@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtwhich"
+#define THIS_MODULE_MODERN_NAME	"gmtwhich"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find full path to specified files"
 #define THIS_MODULE_KEYS	">D}"

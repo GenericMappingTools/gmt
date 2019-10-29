@@ -36,6 +36,7 @@
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"rotsmoother"
+#define THIS_MODULE_MODERN_NAME	"rotsmoother"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Get mean rotations and covariance matrices from set of finite rotations"
 #define THIS_MODULE_KEYS	"<D{,>D}"

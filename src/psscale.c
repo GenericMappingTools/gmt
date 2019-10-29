@@ -27,6 +27,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psscale"
+#define THIS_MODULE_MODERN_NAME	"scale"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("

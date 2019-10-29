@@ -40,6 +40,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdblend"
+#define THIS_MODULE_MODERN_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
 #define THIS_MODULE_KEYS	"<G{+,GG}"

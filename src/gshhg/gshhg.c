@@ -25,6 +25,7 @@
 #include "gmt_gshhg.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gshhg"
+#define THIS_MODULE_MODERN_NAME	"gshhg"
 #define THIS_MODULE_LIB		"gshhg"
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
 #define THIS_MODULE_KEYS	">D}"

@@ -79,6 +79,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"trend1d"
+#define THIS_MODULE_MODERN_NAME	"trend1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit a [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data"
 #define THIS_MODULE_KEYS	"<D{,>D}"

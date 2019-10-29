@@ -24,6 +24,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77track"
+#define THIS_MODULE_MODERN_NAME	"mgd77track"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
 #define THIS_MODULE_KEYS	">X}"

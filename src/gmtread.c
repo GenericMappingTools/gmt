@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtread"
+#define THIS_MODULE_MODERN_NAME	"gmtread"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
 #define THIS_MODULE_KEYS	"-T-,<?{,>?}"

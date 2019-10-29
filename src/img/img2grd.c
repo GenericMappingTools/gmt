@@ -57,6 +57,7 @@
 #include "common_byteswap.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"img2grd"
+#define THIS_MODULE_MODERN_NAME	"img2grd"
 #define THIS_MODULE_LIB		"img"
 #define THIS_MODULE_PURPOSE	"Extract a subset from an img file in Mercator or Geographic format"
 #define THIS_MODULE_KEYS	"<G{,GG}"

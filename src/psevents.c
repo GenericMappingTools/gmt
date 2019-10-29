@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psevents"
+#define THIS_MODULE_MODERN_NAME	"events"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot event symbols and labels for a moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X}"

@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"figure"
+#define THIS_MODULE_MODERN_NAME	"figure"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Set attributes for the current modern mode session figure"
 #define THIS_MODULE_KEYS	""

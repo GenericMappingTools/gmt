@@ -30,6 +30,7 @@
 EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfft"
+#define THIS_MODULE_MODERN_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Mathematical operations on grids in the wavenumber (or frequency) domain"
 #define THIS_MODULE_KEYS	"<G{+,GG},GDE"

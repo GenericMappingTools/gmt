@@ -35,6 +35,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"dimfilter"
+#define THIS_MODULE_MODERN_NAME	"dimfilter"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Directional filtering of grids in the space domain"
 #define THIS_MODULE_KEYS	"<G{,GG},>DQ"

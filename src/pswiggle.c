@@ -33,6 +33,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
+#define THIS_MODULE_MODERN_NAME	"wiggle"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
 #define THIS_MODULE_KEYS	"<D{,>X}"

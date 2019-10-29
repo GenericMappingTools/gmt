@@ -31,6 +31,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"blockmode"
+#define THIS_MODULE_MODERN_NAME	"blockmode"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"

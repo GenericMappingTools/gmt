@@ -28,6 +28,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"project"
+#define THIS_MODULE_MODERN_NAME	"project"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project data onto lines or great circles, generate tracks, or translate coordinates"
 #define THIS_MODULE_KEYS	"<D{,>D},G-("

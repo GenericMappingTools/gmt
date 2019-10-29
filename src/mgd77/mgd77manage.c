@@ -22,6 +22,7 @@
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77manage"
+#define THIS_MODULE_MODERN_NAME	"mgd77manage"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 #define THIS_MODULE_KEYS	""

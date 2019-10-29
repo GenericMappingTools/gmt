@@ -33,6 +33,7 @@
 #include "segy_io.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssegy"
+#define THIS_MODULE_MODERN_NAME	"segy"
 #define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Plot a SEGY file on a map"
 #define THIS_MODULE_KEYS	">X}"

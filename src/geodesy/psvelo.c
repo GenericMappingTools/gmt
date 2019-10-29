@@ -28,6 +28,7 @@ PostScript code is written to stdout.
 #include "utilvelo.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psvelo"
+#define THIS_MODULE_MODERN_NAME	"velo"
 #define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"

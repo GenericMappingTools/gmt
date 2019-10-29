@@ -27,6 +27,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_merge"
+#define THIS_MODULE_MODERN_NAME	"x2sys_merge"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Merge an updated COEs table (smaller) into the main table (bigger)"
 #define THIS_MODULE_KEYS	">D}"

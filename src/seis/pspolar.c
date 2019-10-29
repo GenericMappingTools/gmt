@@ -23,6 +23,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pspolar"
+#define THIS_MODULE_MODERN_NAME	"polar"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"

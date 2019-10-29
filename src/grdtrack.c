@@ -27,6 +27,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdtrack"
+#define THIS_MODULE_MODERN_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"

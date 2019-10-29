@@ -31,6 +31,7 @@
 #endif
 
 #define THIS_MODULE_CLASSIC_NAME	"docs"
+#define THIS_MODULE_MODERN_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Show HTML documentation of specified module"
 #define THIS_MODULE_KEYS	""

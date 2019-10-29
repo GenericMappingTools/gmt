@@ -65,6 +65,7 @@
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"rotconverter"
+#define THIS_MODULE_MODERN_NAME	"rotconverter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Manipulate total reconstruction and stage rotations"
 #define THIS_MODULE_KEYS	">D}"

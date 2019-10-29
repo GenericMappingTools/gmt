@@ -33,6 +33,7 @@
 #include "x2sys.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_put"
+#define THIS_MODULE_MODERN_NAME	"x2sys_put"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Update track index database from track bin file"
 #define THIS_MODULE_KEYS	""

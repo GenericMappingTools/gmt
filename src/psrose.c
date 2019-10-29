@@ -44,6 +44,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psrose"
+#define THIS_MODULE_MODERN_NAME	"rose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
 #define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("

@@ -20,6 +20,7 @@
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"polespotter"
+#define THIS_MODULE_MODERN_NAME	"polespotter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Find stage poles given fracture zones and abyssal hills"
 #define THIS_MODULE_KEYS	"AD(,CD),FD(,GG},LD)"

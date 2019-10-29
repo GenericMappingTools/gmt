@@ -34,6 +34,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gravfft"
+#define THIS_MODULE_MODERN_NAME	"gravfft"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Spectral calculations of gravity, isostasy, admittance, and coherence for grids"
 #define THIS_MODULE_KEYS	"<G{+,GG},DG(,GDC,GDI"

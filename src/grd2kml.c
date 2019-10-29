@@ -28,6 +28,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2kml"
+#define THIS_MODULE_MODERN_NAME	"grd2kml"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create KML image quadtree from single grid"
 #define THIS_MODULE_KEYS	"<G{,CC(,IG("

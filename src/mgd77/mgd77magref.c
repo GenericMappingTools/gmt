@@ -17,6 +17,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77magref"
+#define THIS_MODULE_MODERN_NAME	"mgd77magref"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Evaluate the IGRF or CM4 magnetic field models"
 #define THIS_MODULE_KEYS	"<D{,>D}"

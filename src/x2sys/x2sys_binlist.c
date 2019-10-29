@@ -30,6 +30,7 @@
 #include "x2sys.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_binlist"
+#define THIS_MODULE_MODERN_NAME	"x2sys_binlist"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Create bin index listing from track data files"
 #define THIS_MODULE_KEYS	">D}"

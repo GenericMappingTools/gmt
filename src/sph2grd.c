@@ -24,6 +24,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sph2grd"
+#define THIS_MODULE_MODERN_NAME	"sph2grd"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
 #define THIS_MODULE_KEYS	"<D{,GG}"

@@ -30,6 +30,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtconvert"
+#define THIS_MODULE_MODERN_NAME	"gmtconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert, paste, or extract columns from data tables"
 #define THIS_MODULE_KEYS	"<D{,>D}"

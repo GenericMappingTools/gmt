@@ -24,6 +24,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77convert"
+#define THIS_MODULE_MODERN_NAME	"mgd77convert"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Convert MGD77 data to other file formats"
 #define THIS_MODULE_KEYS	""

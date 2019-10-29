@@ -29,6 +29,7 @@
 #include <stdarg.h>
 
 #define THIS_MODULE_CLASSIC_NAME	"gmt2kml"
+#define THIS_MODULE_MODERN_NAME	"gmt2kml"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
 #define THIS_MODULE_KEYS	"<D{,>D},CC("

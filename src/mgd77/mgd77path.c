@@ -18,6 +18,7 @@
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77path"
+#define THIS_MODULE_MODERN_NAME	"mgd77path"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Return paths to MGD77 cruises and directories"
 #define THIS_MODULE_KEYS	">D}"

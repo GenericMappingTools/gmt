@@ -28,6 +28,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmask"
+#define THIS_MODULE_MODERN_NAME	"grdmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
 #define THIS_MODULE_KEYS	"<D{,GG}"

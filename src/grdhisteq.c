@@ -26,6 +26,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdhisteq"
+#define THIS_MODULE_MODERN_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
 #define THIS_MODULE_KEYS	"<G{,GG},DD)"

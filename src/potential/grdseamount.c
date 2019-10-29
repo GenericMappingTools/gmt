@@ -31,6 +31,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdseamount"
+#define THIS_MODULE_MODERN_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)"
 #define THIS_MODULE_KEYS	"<T{,GG},TD("

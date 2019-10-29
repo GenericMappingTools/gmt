@@ -34,6 +34,7 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"trend2d"
+#define THIS_MODULE_MODERN_NAME	"trend2d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data"
 #define THIS_MODULE_KEYS	"<D{,>D}"
