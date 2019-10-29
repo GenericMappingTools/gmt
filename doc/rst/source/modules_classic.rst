@@ -437,7 +437,7 @@ Projection and map-transformation
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`project`        | Project table data onto lines or great circles                      |
+| :doc:`project`        | Project table data onto lines or great circles, or generate tracks  |
 +-----------------------+---------------------------------------------------------------------+
 
 Information retrieval
@@ -528,7 +528,7 @@ Grid operations
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdedit`        | Modify header information in a grid                                 |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdfft`         | Perform operations on grids in the frequency domain                 |
+| :doc:`grdfft`         | Perform operations on grids in the spectral domain                  |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdfill`        | Interpolate across holes in a grid                                  |
 +-----------------------+---------------------------------------------------------------------+
@@ -563,13 +563,13 @@ Miscellaneous
 geodesy
 -------
 
-+--------------------------------------------+-----------------------------------------------------------------------------------+
-| :doc:`/supplements/geodesy/earthtide`      | Compute grids or time-series of solid Earth tides                                 |
-+--------------------------------------------+-----------------------------------------------------------------------------------+
-| :doc:`/supplements/geodesy/gpsgridder`     | Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet |
-+--------------------------------------------+-----------------------------------------------------------------------------------+
-| :doc:`/supplements/geodesy/psvelo`         | Plot velocity vectors, crosses, and wedges                                        |
-+--------------------------------------------+-----------------------------------------------------------------------------------+
++--------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/earthtide`      | Compute grids or time-series of solid Earth tides                       |
++--------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/gpsgridder`     | Interpolate GPS strains using Green's functions for elastic deformation |
++--------------------------------------------+-------------------------------------------------------------------------+
+| :doc:`/supplements/geodesy/psvelo`         | Plot velocity vectors, crosses, and wedges                              |
++--------------------------------------------+-------------------------------------------------------------------------+
 
 GSHHG
 -----

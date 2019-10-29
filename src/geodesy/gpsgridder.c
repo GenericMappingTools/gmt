@@ -31,7 +31,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gpsgridder"
 #define THIS_MODULE_MODERN_NAME	"gpsgridder"
 #define THIS_MODULE_LIB		"geodesy"
-#define THIS_MODULE_PURPOSE	"Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet"
+#define THIS_MODULE_PURPOSE	"Interpolate GPS strains using Green's functions for elastic deformation"
 #define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVbdefghinors" GMT_ADD_x_OPT

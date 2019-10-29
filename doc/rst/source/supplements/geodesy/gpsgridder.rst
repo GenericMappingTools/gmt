@@ -6,7 +6,7 @@ gpsgridder
 
 .. only:: not man
 
-    gpsgridder - Interpolate GPS strain vectors using Green's functions for elastic deformation
+    gpsgridder - Interpolate GPS strains using Green's functions for elastic deformation
 
 Synopsis
 --------

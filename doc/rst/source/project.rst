@@ -6,7 +6,7 @@ project
 
 .. only:: not man
 
-    project - Project data onto lines or great circles, generate tracks, or translate coordinates
+    project - Project data onto lines or great circles, or generate tracks
 
 Synopsis
 --------
