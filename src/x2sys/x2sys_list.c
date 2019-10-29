@@ -28,7 +28,7 @@
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
 
-#define THIS_MODULE_NAME	"x2sys_list"
+#define THIS_MODULE_CLASSIC_NAME	"x2sys_list"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
 #define THIS_MODULE_KEYS	">D}"
@@ -116,7 +116,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* 
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>[+p]] [-Qe|i] [-S<track>[+b]]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
@@ -327,7 +327,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -516,7 +516,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		sprintf (record, "Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		cmd = GMT_Create_Cmd (API, options);
-		sprintf (record, "Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+		sprintf (record, "Command: %s %s", THIS_MODULE_CLASSIC_NAME, cmd);	/* Build command line argument string */
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		gmt_M_free (GMT, cmd);
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, "");

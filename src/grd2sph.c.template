@@ -23,7 +23,7 @@
  
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grd2sph"
+#define THIS_MODULE_CLASSIC_NAME	"grd2sph"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute spherical harmonic coefficients from global grid"
 #define THIS_MODULE_KEYS	"<GI,>DO"
@@ -158,7 +158,7 @@ int GMT_grd2sph (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, NULL, THIS_MODULE_CLASSIC_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
