@@ -80,7 +80,7 @@ Required Arguments
 
 **-S**\ *search_radius*\ [*unit*]
     Sets the *search_radius* that determines which data points are
-    considered close to a node. Append the distance unit (see :ref:`Unit_attributes`).
+    considered close to a node. Append the distance unit (see `Units`_).
 
 Optional Arguments
 ------------------

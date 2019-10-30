@@ -193,7 +193,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *unit*
-    Append the distance unit (see :ref:`Unit_attributes`). [Default is **-Nk** (km)].
+    Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\ \|\ **i** is selected. 
 
 .. _-R:

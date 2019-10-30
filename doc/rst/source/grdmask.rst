@@ -47,7 +47,7 @@ polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
 a node is within a maximum distance from the nearest data point. If the
 distance specified is zero then only the nodes nearest each data point
-are considered "inside". 
+are considered "inside".
 
 Required Arguments
 ------------------
@@ -59,7 +59,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*]
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
+    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
 
 .. _-I:
 
@@ -82,7 +82,7 @@ Optional Arguments
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
     For Cartesian data, points are simply connected, unless you append
-    **x** or **y** to construct stair-case paths whose first move is along 
+    **x** or **y** to construct stair-case paths whose first move is along
     *x* or *y*, respectively.
 
 .. _-N:
@@ -103,11 +103,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\ [*unit*] \|\ *xlim*\ /*ylim* 
+**-S**\ *search\_radius*\ [*unit*] \|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
-    (see :ref:`Unit_attributes`). If *radius* is given as **z** then we instead read
+    (see `Units`_). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
     If **-S** is not set then we consider the input data to define
@@ -125,7 +125,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)]. 
+.. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -152,7 +152,7 @@ Optional Arguments
    adding **g** for geographic, **p** for periodic, or **n** for
    natural boundary conditions. For the latter two you may append **x**
    or **y** to specify just one direction, otherwise both are assumed.
-   [Default is geographic if grid is geographic]. 
+   [Default is geographic if grid is geographic].
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
