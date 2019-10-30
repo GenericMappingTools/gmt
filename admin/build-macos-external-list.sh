@@ -29,7 +29,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-1.3.33"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
