@@ -949,7 +949,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 GMT_LOCAL void embed_quotes (char *orig, char *dup) {
 	/* Add quotes around text strings with spaces in a -B option where the quotes have been lost.
 	 * Because the original quotes are gone there is no way to detect things like ...+t"Title with+u in it"
-	 * since now it is just +tTitle with+u in it and thre is no way to distinguish the two possibilities
+	 * since now it is just +tTitle with+u in it and there is no way to distinguish the two possibilities
 	 * +t"Title with"+u" in it" from +t"Title with +u in it".  We insist that +<code> must not have a space
 	 * before the <code> in order to be a modifier.  This will catch things like +t"Title with +u in it" and
 	 * treat the +u as part of the text.

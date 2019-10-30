@@ -19,7 +19,7 @@ struct LINK {
 };
 
 int used (struct LINK *list, char *name) {
-	/* Determine if this library has alredy been processed */
+	/* Determine if this library has already been processed */
 	struct LINK *this = list;
 	while (this && strcmp (name, this->name))
 		this = this->next;
@@ -35,7 +35,7 @@ struct LINK * last (struct LINK *list) {
 }
 
 void printlist (struct LINK *list) {
-	/* March through and print the entries except anyting in /Users, free up along the way */
+	/* March through and print the entries except anything in /Users, free up along the way */
 	struct LINK *this = list, *prt;
 	while (this->next) {
 		prt = this->next;
