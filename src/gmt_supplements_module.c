@@ -69,7 +69,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"segyz", "pssegyz", "segy", "Plot a SEGY file in 3-D", ">X}"},
 	{"coupe", "pscoupe", "seis", "Plot cross-sections of focal mechanisms", "<D{,>X}"},
 	{"meca", "psmeca", "seis", "Plot focal mechanisms", "<D{,>X}"},
-	{"polar", "pspolar", "seis", "Plot polarities on the inferior focal half-sphere", "<D{,>X}"},
+	{"polar", "pspolar", "seis", "Plot polarities on the lower hemisphere of the focal sphere", "<D{,>X}"},
 	{"sac", "pssac", "seis", "Plot seismograms in SAC format", ">X},RG-"},
 	{"backtracker", "backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},FD("},
 	{"gmtpmodeler", "gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,FD(,>D}"},

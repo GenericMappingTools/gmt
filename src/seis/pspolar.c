@@ -25,7 +25,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"pspolar"
 #define THIS_MODULE_MODERN_NAME	"polar"
 #define THIS_MODULE_LIB		"seis"
-#define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere"
+#define THIS_MODULE_PURPOSE	"Plot polarities on the lower hemisphere of the focal sphere"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
