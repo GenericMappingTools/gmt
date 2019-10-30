@@ -1,12 +1,11 @@
 .. index:: ! docs
+.. include:: module_core_purpose.rst_
 
 ****
 docs
 ****
 
-.. only:: not man
-
-    Show the HTML documentation for selected module
+|docs_purpose|
 
 Synopsis
 --------

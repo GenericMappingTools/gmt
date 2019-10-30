@@ -1,12 +1,11 @@
 .. index:: ! gmt2kml
+.. include:: module_core_purpose.rst_
 
 *******
 gmt2kml
 *******
 
-.. only:: not man
-
-    Convert GMT data table to Google Earth KML file
+|gmt2kml_purpose|
 
 Synopsis
 --------

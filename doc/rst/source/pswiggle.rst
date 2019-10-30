@@ -1,12 +1,11 @@
 .. index:: ! pswiggle
+.. include:: module_core_purpose.rst_
 
 ********
 pswiggle
 ********
 
-.. only:: not man
-
-    Plot z = f(x,y) anomalies along tracks
+|pswiggle_purpose|
 
 Synopsis
 --------

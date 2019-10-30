@@ -1,12 +1,11 @@
 .. index:: ! grdimage
+.. include:: module_core_purpose.rst_
 
 ********
 grdimage
 ********
 
-.. only:: not man
-
-    Project and plot grids or images
+|grdimage_purpose|
 
 Synopsis
 --------

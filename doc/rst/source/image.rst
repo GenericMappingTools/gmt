@@ -1,12 +1,11 @@
 .. index:: ! image
+.. include:: module_core_purpose.rst_
 
 *****
 image
 *****
 
-.. only:: not man
-
-    Plot raster or EPS images
+|image_purpose|
 
 Synopsis
 --------

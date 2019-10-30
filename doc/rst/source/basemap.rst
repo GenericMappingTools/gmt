@@ -1,12 +1,11 @@
 .. index:: ! basemap
+.. include:: module_core_purpose.rst_
 
 *******
 basemap
 *******
 
-.. only:: not man
-
-    Plot base maps and frames
+|basemap_purpose|
 
 Synopsis
 --------

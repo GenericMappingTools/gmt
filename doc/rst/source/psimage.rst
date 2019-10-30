@@ -1,12 +1,11 @@
 .. index:: ! psimage
+.. include:: module_core_purpose.rst_
 
 *******
 psimage
 *******
 
-.. only:: not man
-
-    Plot raster or EPS images
+|psimage_purpose|
 
 Synopsis
 --------

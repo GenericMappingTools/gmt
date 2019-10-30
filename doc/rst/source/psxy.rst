@@ -1,12 +1,11 @@
 .. index:: ! psxy
+.. include:: module_core_purpose.rst_
 
 ****
 psxy
 ****
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols in 2-D
+|psxy_purpose|
 
 Synopsis
 --------

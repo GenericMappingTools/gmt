@@ -1,12 +1,11 @@
 .. index:: ! colorbar
+.. include:: module_core_purpose.rst_
 
 ********
 colorbar
 ********
 
-.. only:: not man
-
-    Plot gray-scale or color-scale bar
+|colorbar_purpose|
 
 Synopsis
 --------

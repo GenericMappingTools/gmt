@@ -1,12 +1,11 @@
 .. index:: ! blockmode
+.. include:: module_core_purpose.rst_
 
 *********
 blockmode
 *********
 
-.. only:: not man
-
-    Block average (*x*,\ *y*,\ *z*) data tables by mode estimation
+|blockmode_purpose|
 
 Synopsis
 --------

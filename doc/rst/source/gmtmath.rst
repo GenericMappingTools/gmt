@@ -1,12 +1,11 @@
 .. index:: ! gmtmath
+.. include:: module_core_purpose.rst_
 
 *******
 gmtmath
 *******
 
-.. only:: not man
-
-    Reverse Polish Notation (RPN) calculator for data tables
+|gmtmath_purpose|
 
 Synopsis
 --------

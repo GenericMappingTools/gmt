@@ -1,12 +1,11 @@
 .. index:: ! filter1d
+.. include:: module_core_purpose.rst_
 
 ********
 filter1d
 ********
 
-.. only:: not man
-
-    Time domain filtering of 1-D data tables
+|filter1d_purpose|
 
 Synopsis
 --------

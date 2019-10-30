@@ -1,12 +1,11 @@
 .. index:: ! blockmean
+.. include:: module_core_purpose.rst_
 
 *********
 blockmean
 *********
 
-.. only:: not man
-
-    Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
+|blockmean_purpose|
 
 Synopsis
 --------

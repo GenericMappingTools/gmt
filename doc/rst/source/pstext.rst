@@ -1,12 +1,11 @@
 .. index:: ! pstext
+.. include:: module_core_purpose.rst_
 
 ******
 pstext
 ******
 
-.. only:: not man
-
-    Plot or typeset text
+|pstext_purpose|
 
 Synopsis
 --------

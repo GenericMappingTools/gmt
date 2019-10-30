@@ -1,12 +1,11 @@
 .. index:: ! psxyz
+.. include:: module_core_purpose.rst_
 
 *****
 psxyz
 *****
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols in 3-D
+|psxyz_purpose|
 
 Synopsis
 --------

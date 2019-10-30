@@ -1,12 +1,11 @@
 .. index:: ! nearneighbor
+.. include:: module_core_purpose.rst_
 
 ************
 nearneighbor
 ************
 
-.. only:: not man
-
-    nearneighbor - Grid table data using a "Nearest neighbor" algorithm
+|nearneighbor_purpose|
 
 Synopsis
 --------

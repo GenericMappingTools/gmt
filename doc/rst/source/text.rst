@@ -1,12 +1,11 @@
 .. index:: ! text
+.. include:: module_core_purpose.rst_
 
 ******
 text
 ******
 
-.. only:: not man
-
-    Plot or typeset text
+|text_purpose|
 
 Synopsis
 --------

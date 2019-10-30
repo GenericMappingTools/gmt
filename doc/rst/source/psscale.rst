@@ -1,12 +1,11 @@
 .. index:: ! psscale
+.. include:: module_core_purpose.rst_
 
 *******
 psscale
 *******
 
-.. only:: not man
-
-    Plot gray scale or color scale bar
+|psscale_purpose|
 
 Synopsis
 --------

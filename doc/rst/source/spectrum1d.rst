@@ -1,12 +1,11 @@
 .. index:: ! spectrum1d
+.. include:: module_core_purpose.rst_
 
 **********
 spectrum1d
 **********
 
-.. only:: not man
-
-    Compute auto- [and cross- ] spectra from one [or two] time-series
+|spectrum1d_purpose|
 
 Synopsis
 --------

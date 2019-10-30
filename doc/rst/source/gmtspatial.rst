@@ -1,12 +1,11 @@
 .. index:: ! gmtspatial
+.. include:: module_core_purpose.rst_
 
 **********
 gmtspatial
 **********
 
-.. only:: not man
-
-    Geospatial operations on points, lines and polygons
+|gmtspatial_purpose|
 
 Synopsis
 --------

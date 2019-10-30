@@ -1,12 +1,11 @@
 .. index:: ! gmtwhich
+.. include:: module_core_purpose.rst_
 
 ********
 gmtwhich
 ********
 
-.. only:: not man
-
-    Find path to specified files
+|gmtwhich_purpose|
 
 Synopsis
 --------

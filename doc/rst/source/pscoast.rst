@@ -1,12 +1,11 @@
 .. index:: ! pscoast
+.. include:: module_core_purpose.rst_
 
 *******
 pscoast
 *******
 
-.. only:: not man
-
-    Plot continents, shorelines, rivers, and borders
+|pscoast_purpose|
 
 Synopsis
 --------

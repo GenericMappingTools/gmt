@@ -1,12 +1,11 @@
 .. index:: ! gmtvector
+.. include:: module_core_purpose.rst_
 
 *********
 gmtvector
 *********
 
-.. only:: not man
-
-    Operations on Cartesian vectors in 2-D and 3-D
+|gmtvector_purpose|
 
 Synopsis
 --------

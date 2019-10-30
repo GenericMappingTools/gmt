@@ -1,12 +1,11 @@
 .. index:: ! project
+.. include:: module_core_purpose.rst_
 
 *******
 project
 *******
 
-.. only:: not man
-
-    project - Project data onto lines or great circles, or generate tracks
+|project_purpose|
 
 Synopsis
 --------

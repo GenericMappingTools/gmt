@@ -1,12 +1,11 @@
 .. index:: ! grdcut
+.. include:: module_core_purpose.rst_
 
 ******
 grdcut
 ******
 
-.. only:: not man
-
-    Extract subregion from a grid
+|grdcut_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! grdinfo
+.. include:: module_core_purpose.rst_
 
 *******
 grdinfo
 *******
 
-.. only:: not man
-
-    grdinfo - Extract information from grids
+|grdinfo_purpose|
 
 Synopsis
 --------

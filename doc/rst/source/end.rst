@@ -1,12 +1,11 @@
 .. index:: ! end
+.. include:: module_core_purpose.rst_
 
 ***
 end
 ***
 
-.. only:: not man
-
-    Terminate GMT modern mode session and produce optional graphics
+|end_purpose|
 
 Synopsis
 --------

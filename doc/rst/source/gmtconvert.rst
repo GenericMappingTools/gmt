@@ -1,12 +1,11 @@
 .. index:: ! gmtconvert
+.. include:: module_core_purpose.rst_
 
 **********
 gmtconvert
 **********
 
-.. only:: not man
-
-    Convert, Paste, and/or Extract columns from data tables
+|gmtconvert_purpose|
 
 Synopsis
 --------

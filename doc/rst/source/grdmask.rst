@@ -1,12 +1,11 @@
 .. index:: ! grdmask
+.. include:: module_core_purpose.rst_
 
 *******
 grdmask
 *******
 
-.. only:: not man
-
-    grdmask - Create mask grid from polygons or point coverage
+|grdmask_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! trend1d
+.. include:: module_core_purpose.rst_
 
 *******
 trend1d
 *******
 
-.. only:: not man
-
-    Fit [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data
+|trend1d_purpose|
 
 Synopsis
 --------
