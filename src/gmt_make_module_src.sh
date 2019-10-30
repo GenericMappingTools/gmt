@@ -237,11 +237,6 @@ if [ "$U_TAG" = "CORE" ]; then
 
 /* Function to exclude some special core modules from being reported by gmt --help|show-modules */
 GMT_LOCAL int skip_this_module (const char *name) {
-	if (!strncmp (name, "end", 3U)) return 1;	/* Skip the end module */
-	if (!strncmp (name, "docs", 4U)) return 1;	/* Skip the docs module */
-	if (!strncmp (name, "begin", 5U)) return 1;	/* Skip the begin module */
-	if (!strncmp (name, "clear", 5U)) return 1;	/* Skip the clear module */
-	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
 	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
 	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
 	return 0;	/* Display this one */
