@@ -4,9 +4,7 @@
 PostScriptLight
 ***************
 
-.. only:: not man
-
-    PSL 6.0 - A PostScript based plotting library
+PSL 6.0 - A PostScript based plotting library
 
 Description
 -----------
@@ -102,13 +100,13 @@ this diagram:
   ::
 
     9 ------------ 10 ----------- 11
-    
+
     |                             |
-    
+
     5              6              7
-    
+
     |                             |
-    
+
     1 ------------ 2 ------------ 3
 
 The box represents the text or image. E.g., to plot a text string with

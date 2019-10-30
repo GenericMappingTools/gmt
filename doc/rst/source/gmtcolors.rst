@@ -4,9 +4,7 @@
 gmtcolors
 *********
 
-.. only:: not man
-
-    Explanation of color codes in GMT
+Explanation of color codes in GMT
 
 Description
 -----------

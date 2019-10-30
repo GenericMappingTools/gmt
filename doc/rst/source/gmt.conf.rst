@@ -4,9 +4,7 @@
 gmt.conf
 ********
 
-.. only:: not man
-
-    Configuration for GMT
+Configuration for GMT
 
 Description
 -----------
