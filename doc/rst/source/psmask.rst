@@ -1,12 +1,11 @@
 .. index:: ! psmask
+.. include:: module_core_purpose.rst_
 
 ******
 psmask
 ******
 
-.. only:: not man
-
-    Clip or mask map areas with no data table coverage
+|psmask_purpose|
 
 Synopsis
 --------

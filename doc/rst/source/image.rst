@@ -1,12 +1,11 @@
 .. index:: ! image
+.. include:: module_core_purpose.rst_
 
 *****
 image
 *****
 
-.. only:: not man
-
-    Place images or EPS files on maps
+|image_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! segy2grd
+.. include:: ../module_supplements_purpose.rst_
 
 ********
 segy2grd
 ********
 
-.. only:: not man
-
-    segy2grd - Converting SEGY data to a GMT grid
+|segy2grd_purpose|
 
 Synopsis
 --------

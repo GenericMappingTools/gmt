@@ -1,12 +1,11 @@
 .. index:: ! gmtget
+.. include:: module_core_purpose.rst_
 
 ******
 gmtget
 ******
 
-.. only:: not man
-
-    Get individual GMT default parameters
+|gmtget_purpose|
 
 Synopsis
 --------

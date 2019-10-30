@@ -1,12 +1,11 @@
 .. index:: ! coupe
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 coupe
 *******
 
-.. only:: not man
-
-    Plot cross-sections of focal mechanisms
+|coupe_purpose|
 
 Synopsis
 --------

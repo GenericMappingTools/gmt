@@ -1,12 +1,11 @@
 .. index:: ! mgd77sniffer
+.. include:: ../module_supplements_purpose.rst_
 
 **************
 mgd77sniffer
 **************
 
-.. only:: not man
-
-    mgd77sniffer - Along-track quality control of MGD77 cruises
+|mgd77sniffer_purpose|
 
 Synopsis
 --------

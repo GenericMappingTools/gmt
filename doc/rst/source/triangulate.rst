@@ -1,12 +1,11 @@
 .. index:: ! triangulate
+.. include:: module_core_purpose.rst_
 
 ***********
 triangulate
 ***********
 
-.. only:: not man
-
-    triangulate - Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data
+|triangulate_purpose|
 
 Synopsis
 --------

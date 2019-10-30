@@ -1,12 +1,11 @@
 .. index:: ! x2sys_binlist
+.. include:: ../module_supplements_purpose.rst_
 
 ***************
 x2sys_binlist
 ***************
 
-.. only:: not man
-
-    x2sys_binlist - Create bin index listing from track data files
+|x2sys_binlist_purpose|
 
 Synopsis
 --------

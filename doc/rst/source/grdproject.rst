@@ -1,12 +1,11 @@
 .. index:: ! grdproject
+.. include:: module_core_purpose.rst_
 
 **********
 grdproject
 **********
 
-.. only:: not man
-
-    grdproject - Forward and inverse map transformation of grids
+|grdproject_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! dimfilter
+.. include:: module_core_purpose.rst_
 
 *********
 dimfilter
 *********
 
-.. only:: not man
-
-    dimfilter - Directional filtering of 2-D gridded files in the space (or time) domain
+|dimfilter_purpose|
 
 Synopsis
 --------

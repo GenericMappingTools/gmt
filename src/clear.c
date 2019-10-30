@@ -25,9 +25,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"clear"
+#define THIS_MODULE_CLASSIC_NAME	"clear"
+#define THIS_MODULE_MODERN_NAME	"clear"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Delete current defaults, or the cache, data or sessions directories"
+#define THIS_MODULE_PURPOSE	"Delete current default settings, or the cache, data or sessions directories"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
@@ -36,17 +37,17 @@ EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern,
 EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data|defaults|sessions [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data|sessions|settings [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose one of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t   defaults  Deletes a modern mode session\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
+	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,;");
@@ -149,7 +150,7 @@ int GMT_clear (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((error = parse (GMT, options)) != 0) Return (error);
 
@@ -181,9 +182,9 @@ int GMT_clear (void *V_API, int mode, void *args) {
 			if (clear_sessions (API))
 				error = GMT_RUNTIME_ERROR;
 		}
-		else if (!strcmp (opt->arg, "defaults") || !strcmp (opt->arg, "conf")) {	/* Clear the default settings in modern mode */
+		else if (!strcmp (opt->arg, "settings") || !strcmp (opt->arg, "defaults") || !strcmp (opt->arg, "conf")) {	/* Clear the default settings in modern mode */
 			if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Target \"defaults\" is only valid in a modern mode session\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Target \"%s\" is only valid in a modern mode session\n", opt->arg);
 			}
 			else if (clear_defaults (API))
 				error = GMT_RUNTIME_ERROR;

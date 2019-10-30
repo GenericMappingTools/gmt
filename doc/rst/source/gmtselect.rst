@@ -1,12 +1,11 @@
 .. index:: ! gmtselect
+.. include:: module_core_purpose.rst_
 
 *********
 gmtselect
 *********
 
-.. only:: not man
-
-    Select data table subsets based on multiple spatial criteria
+|gmtselect_purpose|
 
 Synopsis
 --------

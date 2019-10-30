@@ -1,12 +1,11 @@
 .. index:: ! mapproject
+.. include:: module_core_purpose.rst_
 
 **********
 mapproject
 **********
 
-.. only:: not man
-
-    mapproject - Forward and inverse map transformations, datum conversions and geodesy
+|mapproject_purpose|
 
 Synopsis
 --------

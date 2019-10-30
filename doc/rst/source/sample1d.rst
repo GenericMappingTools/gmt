@@ -1,12 +1,11 @@
 .. index:: ! sample1d
+.. include:: module_core_purpose.rst_
 
 ********
 sample1d
 ********
 
-.. only:: not man
-
-    Resample 1-D table data using splines
+|sample1d_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! grdvector
+.. include:: module_core_purpose.rst_
 
 *********
 grdvector
 *********
 
-.. only:: not man
-
-    Plot vector field from two component grids
+|grdvector_purpose|
 
 Synopsis
 --------

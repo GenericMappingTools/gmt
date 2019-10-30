@@ -1,12 +1,11 @@
 .. index:: ! pscoupe
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 pscoupe
 *******
 
-.. only:: not man
-
-    Plot cross-sections of focal mechanisms
+|pscoupe_purpose|
 
 Synopsis
 --------

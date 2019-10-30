@@ -1,12 +1,11 @@
 .. index:: ! grdpaste
+.. include:: module_core_purpose.rst_
 
 ********
 grdpaste
 ********
 
-.. only:: not man
-
-    grdpaste - Join two grids along their common edge
+|grdpaste_purpose|
 
 Synopsis
 --------

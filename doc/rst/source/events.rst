@@ -1,12 +1,11 @@
 .. index:: ! events
+.. include:: module_core_purpose.rst_
 
 ********
 events
 ********
 
-.. only:: not man
-
-    Plot event symbols and labels for a moment in time
+|events_purpose|
 
 Synopsis
 --------

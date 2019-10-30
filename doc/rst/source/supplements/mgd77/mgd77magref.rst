@@ -1,12 +1,11 @@
 .. index:: ! mgd77magref
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77magref
 ***********
 
-.. only:: not man
-
-    mgd77magref - Evaluate the IGRF or CM4 magnetic field models
+|mgd77magref_purpose|
 
 Synopsis
 --------

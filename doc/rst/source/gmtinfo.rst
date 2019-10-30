@@ -1,12 +1,11 @@
 .. index:: ! gmtinfo
+.. include:: module_core_purpose.rst_
 
 *******
 gmtinfo
 *******
 
-.. only:: not man
-
-    Get information about data tables
+|gmtinfo_purpose|
 
 Synopsis
 --------

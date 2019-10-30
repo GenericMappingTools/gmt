@@ -1,12 +1,11 @@
 .. index:: ! gmtconnect
+.. include:: module_core_purpose.rst_
 
 **********
 gmtconnect
 **********
 
-.. only:: not man
-
-    Connect individual lines whose end points match within tolerance
+|gmtconnect_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! psconvert
+.. include:: module_core_purpose.rst_
 
 *********
 psconvert
 *********
 
-.. only:: not man
-
-    Convert [E]PS file(s) to other formats using Ghostscript
+|psconvert_purpose|
 
 Synopsis
 --------

@@ -39,17 +39,17 @@ and boundary annotations.
   +-------------+----------------------------------------------------------------------+
   |             |   **CONTOURS**                                                       |
   +-------------+----------------------------------------------------------------------+
-  | grdcontour  | Contouring of 2-D gridded data sets                                  |
+  | grdcontour  | Contouring of grids                                                  |
   +-------------+----------------------------------------------------------------------+
   | contour     | Direct contouring/imaging of (*x,y,z*) data by optimal triangulation |
   +-------------+----------------------------------------------------------------------+
   |             |   **SURFACES**                                                       |
   +-------------+----------------------------------------------------------------------+
-  | grdimage    | Produce color images from 2-D gridded data                           |
+  | grdimage    | Project and plot grids or images                                     |
   +-------------+----------------------------------------------------------------------+
-  | grdvector   | Plot vector fields from 2-D gridded data                             |
+  | grdvector   | Plot vector fields from grids                                        |
   +-------------+----------------------------------------------------------------------+
-  | grdview     | 3-D perspective imaging of 2-D gridded data                          |
+  | grdview     | 3-D perspective imaging of grids                                     |
   +-------------+----------------------------------------------------------------------+
   |             |   **UTILITIES**                                                      |
   +-------------+----------------------------------------------------------------------+
@@ -61,7 +61,7 @@ and boundary annotations.
   +-------------+----------------------------------------------------------------------+
   | colorbar    | Plot gray scale or color scale bar                                   |
   +-------------+----------------------------------------------------------------------+
-  | text        | Plot text strings on maps                                            |
+  | text        | Plot text strings                                                    |
   +-------------+----------------------------------------------------------------------+
 
 Plotting lines and symbols, :doc:`/plot` is one of the most frequently

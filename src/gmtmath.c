@@ -30,7 +30,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"gmtmath"
+#define THIS_MODULE_CLASSIC_NAME	"gmtmath"
+#define THIS_MODULE_MODERN_NAME	"gmtmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
 #define THIS_MODULE_KEYS	"<D{,AD(=,TD(,>D}"
@@ -469,7 +470,7 @@ GMT_LOCAL bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DA
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] A B op C op ... = [outfile]\n\n",
@@ -5594,7 +5595,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (GMT_DATA_READ_ERROR);
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

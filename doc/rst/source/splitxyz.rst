@@ -1,12 +1,11 @@
 .. index:: ! splitxyz
+.. include:: module_core_purpose.rst_
 
 ********
 splitxyz
 ********
 
-.. only:: not man
-
-    Split xyz[dh] data tables into individual segments
+|splitxyz_purpose|
 
 Synopsis
 --------

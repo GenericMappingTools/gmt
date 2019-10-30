@@ -1,12 +1,11 @@
 .. index:: ! pssolar
+.. include:: module_core_purpose.rst_
 
 *******
 pssolar
 *******
 
-.. only:: not man
-
-    Calculate and plot the day-night terminator
+|pssolar_purpose|
 
 Synopsis
 --------

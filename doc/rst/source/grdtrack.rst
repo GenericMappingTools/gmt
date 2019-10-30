@@ -1,12 +1,11 @@
 .. index:: ! grdtrack
+.. include:: module_core_purpose.rst_
 
 ********
 grdtrack
 ********
 
-.. only:: not man
-
-    Sample grids at specified (x,y) locations
+|grdtrack_purpose|
 
 Synopsis
 --------

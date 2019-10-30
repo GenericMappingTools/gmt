@@ -1,12 +1,11 @@
 .. index:: ! greenspline
+.. include:: module_core_purpose.rst_
 
 ***********
 greenspline
 ***********
 
-.. only:: not man
-
-    Interpolate using Green's functions for splines in 1-3 dimensions
+|greenspline_purpose|
 
 Synopsis
 --------

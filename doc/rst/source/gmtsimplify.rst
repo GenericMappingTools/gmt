@@ -1,12 +1,11 @@
 .. index:: ! gmtsimplify
+.. include:: module_core_purpose.rst_
 
 ***********
 gmtsimplify
 ***********
 
-.. only:: not man
-
-    Line reduction using the Douglas-Peucker algorithm
+|gmtsimplify_purpose|
 
 Synopsis
 --------

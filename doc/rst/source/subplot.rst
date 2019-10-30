@@ -1,12 +1,11 @@
 .. index:: ! subplot
+.. include:: module_core_purpose.rst_
 
 *******
 subplot
 *******
 
-.. only:: not man
-
-    Manage modern mode figure subplot configuration and selection
+|subplot_purpose|
 
 The **subplot** module is used to split the current figure into a rectangular layout of subplots
 that each may contain a single self-contained figure.  A subplot setup is started with the **begin**

@@ -1,12 +1,11 @@
 .. index:: ! x2sys_merge
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 x2sys_merge
 ***********
 
-.. only:: not man
-
-    x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)
+|x2sys_merge_purpose|
 
 Synopsis
 --------

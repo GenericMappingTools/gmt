@@ -1,12 +1,11 @@
 .. index:: ! grdcontour
+.. include:: module_core_purpose.rst_
 
 **********
 grdcontour
 **********
 
-.. only:: not man
-
-    Make contour map using a grid
+|grdcontour_purpose|
 
 Synopsis
 --------

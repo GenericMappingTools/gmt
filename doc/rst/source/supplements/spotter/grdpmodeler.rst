@@ -1,12 +1,11 @@
 .. index:: ! grdpmodeler
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 grdpmodeler
 ***********
 
-.. only:: not man
-
-    grdpmodeler - Evaluate a plate motion model on a geographic grid
+|grdpmodeler_purpose|
 
 Synopsis
 --------

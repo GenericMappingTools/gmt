@@ -1,12 +1,11 @@
 .. index:: ! img2grd
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 img2grd
 *******
 
-.. only:: not man
-
-    Extract subset of img file in Mercator or Geographic format
+|img2grd_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! ternary
+.. include:: module_core_purpose.rst_
 
 *******
 ternary
 *******
 
-.. only:: not man
-
-    Plot data on ternary diagrams
+|ternary_purpose|
 
 Synopsis
 --------

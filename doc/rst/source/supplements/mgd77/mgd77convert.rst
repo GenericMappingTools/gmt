@@ -1,12 +1,11 @@
 .. index:: ! mgd77convert
+.. include:: ../module_supplements_purpose.rst_
 
 **************
 mgd77convert
 **************
 
-.. only:: not man
-
-    mgd77convert - Convert MGD77 data to other file formats
+|mgd77convert_purpose|
 
 Synopsis
 --------

@@ -1,13 +1,12 @@
 .. index:: ! pscontour
+.. include:: module_core_purpose.rst_
 
 
 *********
 pscontour
 *********
 
-.. only:: not man
-
-    Contour table data by direct triangulation [method]
+|pscontour_purpose|
 
 Synopsis
 --------

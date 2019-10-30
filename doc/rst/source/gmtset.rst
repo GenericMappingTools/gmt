@@ -1,12 +1,11 @@
 .. index:: ! gmtset
+.. include:: module_core_purpose.rst_
 
 ******
 gmtset
 ******
 
-.. only:: not man
-
-    Change individual GMT default parameters
+|gmtset_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! blockmedian
+.. include:: module_core_purpose.rst_
 
 ***********
 blockmedian
 ***********
 
-.. only:: not man
-
-    Block average (*x*,\ *y*,\ *z*) data tables by L1 norm
+|blockmedian_purpose|
 
 Synopsis
 --------

@@ -25,7 +25,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"splitxyz"
+#define THIS_MODULE_CLASSIC_NAME	"splitxyz"
+#define THIS_MODULE_MODERN_NAME	"splitxyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Split xyz[dh] data tables into individual segments"
 #define THIS_MODULE_KEYS	"<D{,>D}"
@@ -145,7 +146,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s]\n", GMT_V_OPT);
@@ -337,7 +338,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

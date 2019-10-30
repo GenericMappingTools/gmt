@@ -1,12 +1,11 @@
 .. index:: ! clear
+.. include:: module_core_purpose.rst_
 
 *****
 clear
 *****
 
-.. only:: not man
-
-    Delete current defaults, or the cache, data or sessions directories
+|clear_purpose|
 
 Synopsis
 --------

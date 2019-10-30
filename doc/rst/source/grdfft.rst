@@ -1,12 +1,11 @@
 .. index:: ! grdfft
+.. include:: module_core_purpose.rst_
 
 ******
 grdfft
 ******
 
-.. only:: not man
-
-    Mathematical operations on grids in the wavenumber (or frequency) domain
+|grdfft_purpose|
 
 Synopsis
 --------

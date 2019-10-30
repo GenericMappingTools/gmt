@@ -1,12 +1,11 @@
 .. index:: ! x2sys_get
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 x2sys_get
 *********
 
-.. only:: not man
-
-    x2sys_get - Get track listing from the x2sys track index databases
+|x2sys_get_purpose|
 
 Synopsis
 --------
