@@ -1,12 +1,11 @@
 .. index:: ! grdspotter
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 grdspotter
 **********
 
-.. only:: not man
-
-    grdspotter - Create CVA grid from a gravity or topography grid
+|grdspotter_purpose|
 
 Synopsis
 --------

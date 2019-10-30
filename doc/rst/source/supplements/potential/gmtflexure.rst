@@ -1,12 +1,11 @@
 .. index:: ! gmtflexure
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 gmtflexure
 **********
 
-.. only:: not man
-
-    flexure - Compute flexural deformation of 2-D loads, forces, bending and moments
+|gmtflexure_purpose|
 
 Synopsis
 --------

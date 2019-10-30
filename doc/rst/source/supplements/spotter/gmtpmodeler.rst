@@ -1,12 +1,11 @@
 .. index:: ! gmtpmodeler
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 gmtpmodeler
 ***********
 
-.. only:: not man
-
-    gmtpmodeler - Evaluate a plate motion model at given locations
+|gmtpmodeler_purpose|
 
 Synopsis
 --------

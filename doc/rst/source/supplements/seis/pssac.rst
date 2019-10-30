@@ -1,12 +1,11 @@
 .. index:: ! pssac
+.. include:: ../module_supplements_purpose.rst_
 
 *****
 pssac
 *****
 
-.. only:: not man
-
-    Plot seismograms in SAC format
+|pssac_purpose|
 
 Synopsis
 --------

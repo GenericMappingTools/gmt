@@ -1,12 +1,11 @@
 .. index:: ! mgd77manage
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77manage
 ***********
 
-.. only:: not man
-
-    mgd77manage - Manage the content of MGD77+ files
+|mgd77manage_purpose|
 
 Synopsis
 --------

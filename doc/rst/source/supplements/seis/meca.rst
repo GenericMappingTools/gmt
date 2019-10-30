@@ -1,12 +1,11 @@
 .. index:: ! meca
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 meca
 ******
 
-.. only:: not man
-
-    Plot focal mechanisms
+|meca_purpose|
 
 Synopsis
 --------

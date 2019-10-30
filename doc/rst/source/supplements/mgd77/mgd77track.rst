@@ -1,12 +1,11 @@
 .. index:: ! mgd77track
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 mgd77track
 **********
 
-.. only:: not man
-
-    mgd77track - Plot track-lines of MGD77 cruises
+|mgd77track_purpose|
 
 Synopsis
 --------

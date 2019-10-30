@@ -1,12 +1,11 @@
 .. index:: ! mgd77path
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 mgd77path
 *********
 
-.. only:: not man
-
-    mgd77path - Return paths to MGD77 cruises and directories
+|mgd77path_purpose|
 
 Synopsis
 -------------------

@@ -1,12 +1,11 @@
 .. index:: ! originater
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 originater
 **********
 
-.. only:: not man
-
-    originater - Associate seamounts with nearest hotspot point sources
+|originater_purpose|
 
 Synopsis
 --------

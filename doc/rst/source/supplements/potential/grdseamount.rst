@@ -1,12 +1,11 @@
 .. index:: ! grdseamount
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 grdseamount
 ***********
 
-.. only:: not man
-
-    grdseamount - Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
+|grdseamount_purpose|
 
 Synopsis
 --------

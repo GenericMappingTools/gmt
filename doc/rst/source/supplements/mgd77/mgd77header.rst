@@ -1,12 +1,11 @@
 .. index:: ! mgd77header
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77header
 ***********
 
-.. only:: not man
-
-    mgd77header - Generate MGD77 header from data records
+|mgd77header_purpose|
 
 Synopsis
 --------

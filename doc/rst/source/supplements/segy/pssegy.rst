@@ -1,12 +1,11 @@
 .. index:: ! pssegy
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 pssegy
 ******
 
-.. only:: not man
-
-    Plot a SEGY file on a map
+|pssegy_purpose|
 
 Synopsis
 --------

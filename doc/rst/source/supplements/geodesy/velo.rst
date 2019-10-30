@@ -1,12 +1,11 @@
 .. index:: ! velo
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 velo
 ******
 
-.. only:: not man
-
-    Plot velocity vectors, crosses, and wedges
+|velo_purpose|
 
 Synopsis
 --------

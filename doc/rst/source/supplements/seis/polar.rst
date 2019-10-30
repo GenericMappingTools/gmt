@@ -1,12 +1,11 @@
 .. index:: ! polar
+.. include:: ../module_supplements_purpose.rst_
 
 *****
 polar
 *****
 
-.. only:: not man
-
-    Plot polarities on the inferior focal half-sphere
+|polar_purpose|
 
 Synopsis
 --------

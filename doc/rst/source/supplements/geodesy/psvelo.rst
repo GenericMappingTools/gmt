@@ -1,12 +1,11 @@
 .. index:: ! psvelo
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 psvelo
 ******
 
-.. only:: not man
-
-    Plot velocity vectors, crosses, and wedges
+|psvelo_purpose|
 
 Synopsis
 --------
