@@ -1,0 +1,222 @@
+.. |basemap_purpose| replace:: Plot base maps and frames
+
+.. |begin_purpose| replace:: Initiate a new GMT modern mode session
+
+.. |blockmean_purpose| replace:: Block average (x,y,z) data tables by mean estimation
+
+.. |blockmedian_purpose| replace:: Block average (x,y,z) data tables by median estimation
+
+.. |blockmode_purpose| replace:: Block average (x,y,z) data tables by mode estimation
+
+.. |clear_purpose| replace:: Delete current default settings, or the cache, data or sessions directories
+
+.. |clip_purpose| replace:: Initialize or terminate polygonal clip paths
+
+.. |coast_purpose| replace:: Plot continents, countries, shorelines, rivers, and borders
+
+.. |colorbar_purpose| replace:: Plot gray scale or color scale bar
+
+.. |contour_purpose| replace:: Contour table data by direct triangulation
+
+.. |dimfilter_purpose| replace:: Directional filtering of grids in the space domain
+
+.. |docs_purpose| replace:: Show HTML documentation of specified module
+
+.. |end_purpose| replace:: Terminate GMT modern mode session and produce optional graphics
+
+.. |events_purpose| replace:: Plot event symbols and labels for a moment in time
+
+.. |figure_purpose| replace:: Set attributes for the current modern mode session figure
+
+.. |filter1d_purpose| replace:: Time domain filtering of 1-D data tables
+
+.. |fitcircle_purpose| replace:: Find mean position and great [or small] circle fit to points on sphere
+
+.. |gmt2kml_purpose| replace:: Convert GMT data table to Google Earth KML file
+
+.. |gmtconnect_purpose| replace:: Connect individual lines whose end points match within tolerance
+
+.. |gmtconvert_purpose| replace:: Convert, paste, or extract columns from data tables
+
+.. |gmtdefaults_purpose| replace:: List current GMT default settings
+
+.. |gmtget_purpose| replace:: Get individual GMT default settings
+
+.. |gmtinfo_purpose| replace:: Get information about data tables
+
+.. |gmtlogo_purpose| replace:: Plot the GMT logo
+
+.. |gmtmath_purpose| replace:: Reverse Polish Notation (RPN) calculator for data tables
+
+.. |gmtread_purpose| replace:: Read GMT objects into external API
+
+.. |gmtregress_purpose| replace:: Linear regression of 1-D data sets
+
+.. |gmtselect_purpose| replace:: Select data table subsets based on multiple spatial criteria
+
+.. |gmtset_purpose| replace:: Change individual GMT default settings
+
+.. |gmtsimplify_purpose| replace:: Line reduction using the Douglas-Peucker algorithm
+
+.. |gmtspatial_purpose| replace:: Geospatial operations on points, lines and polygons
+
+.. |gmtvector_purpose| replace:: Operations on Cartesian vectors in 2-D and 3-D
+
+.. |gmtwhich_purpose| replace:: Find full path to specified files
+
+.. |gmtwrite_purpose| replace:: Write GMT objects from external API
+
+.. |grd2cpt_purpose| replace:: Make linear or histogram-equalized color palette table from grid
+
+.. |grd2kml_purpose| replace:: Create KML image quadtree from single grid
+
+.. |grd2xyz_purpose| replace:: Convert grid to data table
+
+.. |grdblend_purpose| replace:: Blend several partially overlapping grids into one larger grid
+
+.. |grdclip_purpose| replace:: Clip the range of grid values
+
+.. |grdcontour_purpose| replace:: Make contour map using a grid
+
+.. |grdconvert_purpose| replace:: Convert between different grid formats
+
+.. |grdcut_purpose| replace:: Extract subregion from a grid
+
+.. |grdedit_purpose| replace:: Modify header or content of a grid
+
+.. |grdfft_purpose| replace:: Mathematical operations on grids in the spectral domain
+
+.. |grdfill_purpose| replace:: Interpolate across holes in a grid
+
+.. |grdfilter_purpose| replace:: Filter a grid in the space (or time) domain
+
+.. |grdgradient_purpose| replace:: Compute directional gradients from a grid
+
+.. |grdhisteq_purpose| replace:: Perform histogram equalization for a grid
+
+.. |grdimage_purpose| replace:: Project and plot grids or images
+
+.. |grdinfo_purpose| replace:: Extract information from grids
+
+.. |grdlandmask_purpose| replace:: Create a \"wet-dry\" mask grid from shoreline data base
+
+.. |grdmask_purpose| replace:: Create mask grid from polygons or point coverage
+
+.. |grdmath_purpose| replace:: Reverse Polish Notation (RPN) calculator for grids (element by element)
+
+.. |grdpaste_purpose| replace:: Join two grids along their common edge
+
+.. |grdproject_purpose| replace:: Forward and inverse map transformation of grids
+
+.. |grdsample_purpose| replace:: Resample a grid onto a new lattice
+
+.. |grdtrack_purpose| replace:: Sample grids at specified (x,y) locations
+
+.. |grdtrend_purpose| replace:: Fit trend surface to grids and compute residuals
+
+.. |grdvector_purpose| replace:: Plot vector field from two component grids
+
+.. |grdview_purpose| replace:: Create 3-D perspective image or surface mesh from a grid
+
+.. |grdvolume_purpose| replace:: Calculate grid volume and area constrained by a contour
+
+.. |greenspline_purpose| replace:: Interpolate using Green's functions for splines in 1-3 dimensions
+
+.. |histogram_purpose| replace:: Calculate and plot histograms
+
+.. |image_purpose| replace:: Plot raster or EPS images
+
+.. |inset_purpose| replace:: Manage figure inset setup and completion
+
+.. |kml2gmt_purpose| replace:: Extract GMT table data from Google Earth KML files
+
+.. |legend_purpose| replace:: Plot a legend
+
+.. |makecpt_purpose| replace:: Make GMT color palette tables
+
+.. |mapproject_purpose| replace:: Forward and inverse map transformations, datum conversions and geodesy
+
+.. |mask_purpose| replace:: Clip or mask map areas with no data table coverage
+
+.. |movie_purpose| replace:: Create animation sequences and movies
+
+.. |nearneighbor_purpose| replace:: Grid table data using a \"Nearest neighbor\" algorithm
+
+.. |plot3d_purpose| replace:: Plot lines, polygons, and symbols in 3-D
+
+.. |plot_purpose| replace:: Plot lines, polygons, and symbols in 2-D
+
+.. |project_purpose| replace:: Project data onto lines or great circles, or generate tracks
+
+.. |psbasemap_purpose| replace:: Plot base maps and frames
+
+.. |psclip_purpose| replace:: Initialize or terminate polygonal clip paths
+
+.. |pscoast_purpose| replace:: Plot continents, countries, shorelines, rivers, and borders
+
+.. |pscontour_purpose| replace:: Contour table data by direct triangulation
+
+.. |psconvert_purpose| replace:: Convert [E]PS file(s) to other formats using Ghostscript
+
+.. |psevents_purpose| replace:: Plot event symbols and labels for a moment in time
+
+.. |pshistogram_purpose| replace:: Calculate and plot histograms
+
+.. |psimage_purpose| replace:: Plot raster or EPS images
+
+.. |pslegend_purpose| replace:: Plot a legend
+
+.. |psmask_purpose| replace:: Clip or mask map areas with no data table coverage
+
+.. |psrose_purpose| replace:: Plot a polar histogram (rose, sector, windrose diagrams)
+
+.. |psscale_purpose| replace:: Plot gray scale or color scale bar
+
+.. |pssolar_purpose| replace:: Plot day-light terminators and other sunlight parameters
+
+.. |psternary_purpose| replace:: Plot data on ternary diagrams
+
+.. |pstext_purpose| replace:: Plot or typeset text
+
+.. |pswiggle_purpose| replace:: Plot z = f(x,y) anomalies along tracks
+
+.. |psxy_purpose| replace:: Plot lines, polygons, and symbols in 2-D
+
+.. |psxyz_purpose| replace:: Plot lines, polygons, and symbols in 3-D
+
+.. |rose_purpose| replace:: Plot a polar histogram (rose, sector, windrose diagrams)
+
+.. |sample1d_purpose| replace:: Resample 1-D table data using splines
+
+.. |solar_purpose| replace:: Plot day-light terminators and other sunlight parameters
+
+.. |spectrum1d_purpose| replace:: Compute auto- [and cross-] spectra from one [or two] time series
+
+.. |sph2grd_purpose| replace:: Compute grid from spherical harmonic coefficients
+
+.. |sphdistance_purpose| replace:: Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
+
+.. |sphinterpolate_purpose| replace:: Spherical gridding in tension of data on a sphere
+
+.. |sphtriangulate_purpose| replace:: Delaunay or Voronoi construction of spherical data
+
+.. |splitxyz_purpose| replace:: Split xyz[dh] data tables into individual segments
+
+.. |subplot_purpose| replace:: Manage modern mode figure subplot configuration and selection
+
+.. |surface_purpose| replace:: Grid table data using adjustable tension continuous curvature splines
+
+.. |ternary_purpose| replace:: Plot data on ternary diagrams
+
+.. |text_purpose| replace:: Plot or typeset text
+
+.. |trend1d_purpose| replace:: Fit [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data
+
+.. |trend2d_purpose| replace:: Fit [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data
+
+.. |triangulate_purpose| replace:: Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data
+
+.. |wiggle_purpose| replace:: Plot z = f(x,y) anomalies along tracks
+
+.. |xyz2grd_purpose| replace:: Convert data table to a grid
+

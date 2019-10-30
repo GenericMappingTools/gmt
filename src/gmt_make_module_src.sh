@@ -31,10 +31,10 @@ U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
 L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | awk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
 	LIB_STRING="GMT core: The main modules of the Generic Mapping Tools"
 else
 	echo "Error: Tag must be either core or supplements"
@@ -42,22 +42,41 @@ else
 fi
 rm -f /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
 while read program; do
-	grep "#define THIS_MODULE_MODERN_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/MNAME.lis
-	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/CNAME.lis
-	grep "#define THIS_MODULE_LIB" $program     | awk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
-	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | awk '{print $0}' >> /tmp/PURPOSE.lis
-	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | awk '{print $0}' >> /tmp/KEYS.lis
+	grep "#define THIS_MODULE_MODERN_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/MNAME.lis
+	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/CNAME.lis
+	grep "#define THIS_MODULE_LIB" $program     | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
+	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | gawk '{print $0}' >> /tmp/PURPOSE.lis
+	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | gawk '{print $0}' >> /tmp/KEYS.lis
 done < /tmp/tmp.lis
 # Prepend group+name so we can get a list sorted on group name then individual programs
-paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | awk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
+paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
 paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
-awk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
+gawk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
 #rm -f /tmp/tmp.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
 
-# The output file produced
+# The output files produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
 FILE_GMT_MODULE_H=gmt_${L_TAG}_module.h
+FILE_GMT_MODULE_R=module_${L_TAG}_purpose.rst_
+
 COPY_YEAR=$(date +%Y)
+
+#
+# Generate FILE_GMT_MODULE_R
+#
+# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
+
+if [ "$U_TAG" = "CORE" ]; then
+	RSTDIR=../doc/rst/source
+else
+	RSTDIR=../doc/rst/source/supplements
+fi
+gawk '
+	BEGIN {
+		FS = "\t";
+	}
+	{ printf ".. |%s_purpose| replace:: %s\n.. |%s_purpose| replace:: %s\n", $1, substr($5,2,length($5)-2), $2, substr($5,2,length($5)-2);
+}' /tmp/$LIB.txt | sort -u | gawk '{printf "%s\n\n", $0}' > ${RSTDIR}/${FILE_GMT_MODULE_R}
 
 #
 # Generate FILE_GMT_MODULE_H
