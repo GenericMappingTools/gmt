@@ -59,6 +59,7 @@ in your shell configuration file (e.g. `~/.bash_profile`), e.g.
 
 	export PATH=/Applications/GMT-6.x.x.app/Contents/Resources/bin:${PATH}
 	export PROJ_LIB=/Applications/GMT-6.x.x.app/Contents/Resources/share/proj6
+	export MAGICK_CONFIGURE_PATH=/Applications/GMT-6.x.x.app/Contents/Resources/lib/GraphicsMagick-1.3.33/config
 
 Note: The installer is always built for the latest macOS version only.
 

@@ -29,7 +29,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-1.3.33"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -52,7 +52,6 @@ build/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
 sort -u /tmp/raw.lis > /tmp/final.lis
 grep dylib /tmp/final.lis > /tmp/libraries.lis
 grep -v dylib /tmp/final.lis > /tmp/programs.lis
-
 # 5. Build the include file for cpack
 cat << EOF
 # List of extra executables and shared libraries to include in the macOS installer
@@ -94,5 +93,10 @@ cat << EOF
 install (DIRECTORY
 	../../admin/Licenses
 	DESTINATION share
+	COMPONENT Runtime)
+
+install (DIRECTORY
+	/opt/local/lib/GraphicsMagick-1.3.33
+	DESTINATION \${GMT_LIBDIR}
 	COMPONENT Runtime)
 EOF
