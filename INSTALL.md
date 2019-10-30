@@ -234,8 +234,14 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    by running the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc5 -c conda-forge/label/dev -c conda-forge
+   conda install gmt -c conda-forge
    ```
 
    NOTE: Currently conda-forge doesn't provide graphicsmagick on win-64 platform.
    Windows users need to download and install graphicsmagick separately.
+
+3. If you want to install GMT 5, use:
+
+   ```
+   conda install gmt=5 -c conda-forge
+   ```
