@@ -27,7 +27,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gshhg"
 #define THIS_MODULE_MODERN_NAME	"gshhg"
 #define THIS_MODULE_LIB		"gshhg"
-#define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
+#define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHG or WDBII data files"
 #define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:Vbdo"
