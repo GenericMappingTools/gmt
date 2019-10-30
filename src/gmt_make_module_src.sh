@@ -52,7 +52,7 @@ done < /tmp/tmp.lis
 paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
 paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
 gawk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
-#rm -f /tmp/tmp.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
+rm -f /tmp/tmp.lis /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
 
 # The output files produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
@@ -389,5 +389,5 @@ void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 #endif
 EOF
 fi
-#rm -f /tmp/$LIB.txt
+rm -f /tmp/$LIB.txt
 exit 0
