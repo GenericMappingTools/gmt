@@ -76,7 +76,7 @@ Optional Arguments
     column of *pointfile* must have each point's individual radius of
     influence. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances and append a distance unit
-    (see :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then
+    (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
@@ -151,7 +151,7 @@ Optional Arguments
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
-    :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then geographic
+    `Units`_). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points

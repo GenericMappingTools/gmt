@@ -184,7 +184,7 @@ Optional Arguments
     use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
     Because **+v** may take additional modifiers it must necessarily be given
     at the end of the pen specification.
-    See the :ref:`Vec_attributes` for more information.
+    See the `Vector Attributes`_ for more information.
 
 .. _-X:
 
@@ -233,7 +233,5 @@ If no transparency is appended then we will read it from the last column per dat
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. _Vec_attributes:
 
 .. include:: explain_vectors.rst_

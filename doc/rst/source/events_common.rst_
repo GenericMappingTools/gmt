@@ -136,7 +136,7 @@ Optional Arguments
 **-W**\ *pen*
     Specify symbol outline pen attributes [Default is no outline].
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -171,10 +171,8 @@ the symbol when the event starts and then keep the symbol visible on all frames 
 event ends (or never stop plotting them in the infinite length case).  However, to draw
 attention to the arrival of a new event we can temporarily change three aspects of
 the symbol: Its size, color intensity, and transparency.  You can think of these three
-attributes as functions of time.  For some option settings, Figure :ref:`Symbol size function <psevents_size>`
+attributes as functions of time.  For some option settings, figure below
 illustrates how the symbol size may vary through the timespan of the movie.
-
-.. _psevents_size:
 
 .. figure:: /_images/psevents_size.*
    :width: 400 px
@@ -187,10 +185,8 @@ illustrates how the symbol size may vary through the timespan of the movie.
    size during the fade and coda phases.
 
 Similarly, to draw attention to the newly arrived event you may want to whiten the color
-temporarily; this can be done via the **-Mi** option and Figure :ref:`Symbol intensity function <psevents_intensity>`
+temporarily; this can be done via the **-Mi** option and figure below
 illustrates how intensity may vary accordingly.
-
-.. _psevents_intensity:
 
 .. figure:: /_images/psevents_intensity.*
    :width: 400 px
@@ -204,10 +200,7 @@ illustrates how intensity may vary accordingly.
 Finally, for finite events you may wish to either fade them out completely or
 simply fade them to a constant but still visible transparency; this future stage
 is referred to as the coda and levels can be specified via the **-Mt** option.
-Figure :ref:`Symbol transparency function <psevents_transparency>`
-illustrates how transparency may vary through time.
-
-.. _psevents_transparency:
+Figure below illustrates how transparency may vary through time.
 
 .. figure:: /_images/psevents_transparency.*
    :width: 400 px

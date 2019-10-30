@@ -36,7 +36,7 @@ given point. Finally, you can use **-J** for oblique projections to determine
 the corresponding rectangular **-R** setting that will give a grid that fully
 covers the oblique domain.
 Complementary to **grdcut** there is :doc:`grdpaste`, which
-will join together two grid files along a common edge. 
+will join together two grid files along a common edge.
 
 Required Arguments
 ------------------
@@ -71,10 +71,10 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *lon/lat/radius*\ [*unit*]\ [**+n**]
-    Specify an origin and radius; append a distance unit (see :ref:`Unit_attributes`) and
+    Specify an origin and radius; append a distance unit (see `Units`_) and
     we determine the corresponding rectangular region so that all grid
     nodes on or inside the circle are contained in the subset. If
-    **+n** is appended we set all nodes outside the circle to NaN. 
+    **+n** is appended we set all nodes outside the circle to NaN.
 
 .. _-V:
 
