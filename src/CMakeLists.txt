@@ -254,44 +254,6 @@ if (OPENMP_FOUND AND NOT GMT_OPENMP)
 		CACHE INTERNAL "OPENMP config message")
 endif (OPENMP_FOUND AND NOT GMT_OPENMP)
 
-if (WIN32)
-	# find pthreads-win32
-	find_path (PTHREADS_INCLUDE_DIR pthread.h
-		HINTS ${PTHREADS_WIN32_ROOT}
-		PATH_SUFFIXES include)
-	find_library(PTHREADS_WIN32_LIBRARY
-		NAMES pthreadVC2
-		HINTS ${PTHREADS_WIN32_ROOT}
-		PATH_SUFFIXES lib)
-	if (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
-		set (Threads_FOUND TRUE)
-		set (CMAKE_THREAD_LIBS_INIT ${PTHREADS_WIN32_LIBRARY})
-		mark_as_advanced (
-			CMAKE_THREAD_LIBS_INIT
-			PTHREADS_INCLUDE_DIR
-			PTHREADS_WIN32_LIBRARY)
-		message (STATUS "Found pthreads-win32: ${PTHREADS_WIN32_LIBRARY}")
-	endif (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
-	set (Threads_FOUND FALSE)
-else (WIN32)
-	# find pthreads
-  set (CMAKE_THREAD_PREFER_PTHREAD TRUE)
-  find_package (Threads)
-endif (WIN32)
-
-# build pthreads example
-if (Threads_FOUND)
-	set (HAVE_PTHREAD TRUE CACHE INTERNAL "System has pthread.h")
-	add_executable (pthreads_example pthreads_example.c)
-	include_directories(${PTHREADS_INCLUDE_DIR})
-	target_link_libraries(pthreads_example ${CMAKE_THREAD_LIBS_INIT})
-	set (GMT_CONFIG_PTHREAD_MESSAGE "enabled"
-		CACHE INTERNAL "PTHREAD config message")
-else (Threads_FOUND)
-	set (GMT_CONFIG_PTHREAD_MESSAGE "disabled"
-		CACHE INTERNAL "PTHREAD config message")
-endif (Threads_FOUND)
-
 find_package(GLIB COMPONENTS gthread)
 if (GLIB_FOUND AND GMT_USE_THREADS)
 	set (HAVE_GLIB_GTHREAD TRUE CACHE INTERNAL "System has GLIB component gthread")
