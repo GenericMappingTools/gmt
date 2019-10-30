@@ -1,4 +1,4 @@
-. index:: ! grdconvert
+.. index:: ! grdconvert
 .. include:: module_core_purpose.rst_
 
 ***********
