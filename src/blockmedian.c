@@ -33,7 +33,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"blockmedian"
 #define THIS_MODULE_MODERN_NAME	"blockmedian"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L1 norm (spatial median)"
+#define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by median estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")

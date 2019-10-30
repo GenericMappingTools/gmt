@@ -6,7 +6,7 @@ hotspotter
 
 .. only:: not man
 
-    hotspotter - Create CVA image from seamount locations
+    hotspotter - Create CVA grid from seamount locations
 
 Synopsis
 --------

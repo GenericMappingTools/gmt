@@ -128,7 +128,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"hotspotter"
 #define THIS_MODULE_MODERN_NAME	"hotspotter"
 #define THIS_MODULE_LIB		"spotter"
-#define THIS_MODULE_PURPOSE	"Create CVA image from seamount locations"
+#define THIS_MODULE_PURPOSE	"Create CVA grid from seamount locations"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVbdeghirs" GMT_OPT("FHMm")

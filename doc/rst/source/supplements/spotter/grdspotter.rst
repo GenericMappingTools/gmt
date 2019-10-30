@@ -6,7 +6,7 @@ grdspotter
 
 .. only:: not man
 
-    grdspotter - Create CVA image from a gravity or topography grid
+    grdspotter - Create CVA grid from a gravity or topography grid
 
 Synopsis
 --------

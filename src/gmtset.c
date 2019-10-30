@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gmtset"
 #define THIS_MODULE_MODERN_NAME	"gmtset"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Change individual GMT default parameters"
+#define THIS_MODULE_PURPOSE	"Change individual GMT default settings"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V" GMT_SHORTHAND_OPTIONS

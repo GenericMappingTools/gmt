@@ -33,7 +33,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"blockmean"
 #define THIS_MODULE_MODERN_NAME	"blockmean"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L2 norm"
+#define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mean estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")

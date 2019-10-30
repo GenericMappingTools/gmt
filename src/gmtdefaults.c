@@ -29,7 +29,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gmtdefaults"
 #define THIS_MODULE_MODERN_NAME	"gmtdefaults"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"List current GMT default parameters"
+#define THIS_MODULE_PURPOSE	"List current GMT default settings"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
