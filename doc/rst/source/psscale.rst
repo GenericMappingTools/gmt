@@ -6,14 +6,14 @@ psscale
 
 .. only:: not man
 
-    psscale - Plot a gray or color scale-bar on maps
+    Plot a gray or color scale-bar on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale**
+**gmt psscale**
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *refpoint* ]
@@ -45,6 +45,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)
 (paper coordinates) with justification at top center and automatic annotation interval, do

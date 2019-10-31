@@ -6,14 +6,14 @@ psclip
 
 .. only:: not man
 
-    psclip - Initialize or terminate polygonal clip paths
+    Initialize or terminate polygonal clip paths
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
+**gmt psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
@@ -21,6 +21,7 @@ Synopsis
 [ |-P| ] [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bi| ]
@@ -42,18 +43,23 @@ Synopsis
 Examples
 --------
 
-To set up a complex clip
-area to which all subsequent plotting will be confined, run:
+.. include:: explain_example.rst_
+
+To see the effect of a simple clip path which result in some symbols
+being partly visible or missing altogether, try
 
    ::
 
-    gmt psclip my_region.xy -R0/40/0/40 -Jm0.3i -K > clip_mask_on.ps
+    gmt psclip -R0/6/0/6 -Jx2.5c -W1p,blue -P -K << EOF > clip.ps
+    0 0
+    5 1
+    5 5
+    EOF
+    gmt psxy @tut_data.txt -Gred -Sc2c -R -J -O -K >> clip.ps
+    gmt psclip -C -O -R -J -Baf >> clip.ps
 
-To deactivate the clipping in an existing plotfile, run:
-
-   ::
-
-    gmt psclip -C -O >> complex_plot.ps
+where we activate and deactivate the clip path.  Note we also draw the
+outline of the clip path to make it clear what is being clipped.
 
 See Also
 --------

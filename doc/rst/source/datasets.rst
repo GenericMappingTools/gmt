@@ -1,5 +1,7 @@
-#############
-GMT Data Sets
-#############
+Datasets
+########
 
-.. include:: GMT_Datasets.rst
+.. toctree::
+
+   datasets/gshhg
+   datasets/earth_relief

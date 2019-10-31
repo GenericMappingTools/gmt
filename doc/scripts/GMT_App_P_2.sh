@@ -8,7 +8,7 @@
 ps=GMT_App_P_2.ps
 
 # Make GMT shell functions accessible the the script
-. gmt_shell_functions.sh
+. ${GMT_SOURCE_DIR}/src/gmt_shell_functions.sh
 
 # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.
 gmt_init_tmpdir

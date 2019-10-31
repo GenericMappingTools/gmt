@@ -627,7 +627,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	struct GMT_OPTION *opt = NULL, *head = NULL;
 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Just need to check if a classic name was given... */
-		if (!strncmp (module, "ps", 2U)) {	/* Gave classic ps* name in modern mode */
+		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
@@ -646,10 +646,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 			return;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
-			if (head->arg[0] == '+' && head->arg[1] == '\0')	/* Gave + */
-				modern = 1;
-			else if (head->arg[0] == '-' && (head->arg[1] == '\0' || head->arg[1] == GMT_OPT_USAGE || head->arg[1] == GMT_OPT_SYNOPSIS))	/* Gave a single argument */
-				modern = 1;
+			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS) modern = 1;
 			if (modern) usage = true;
 		}
 	}
@@ -659,7 +656,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
-		sprintf (format, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
+		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
 			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
@@ -680,10 +677,11 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
-	GMT_Destroy_Options (API, &head);	/* Done with these here */
+	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
 }
 
-/* This was our effort to get PPID under Windows.  Remains as comments for now */
+/* Function to get PPID under Windows is a bit different */
 #ifdef _WIN32
 #include <TlHelp32.h>
 int winppid (int pidin) {
@@ -731,7 +729,7 @@ GMT_LOCAL char * api_get_ppid (struct GMTAPI_CTRL *API) {
 	int ppid = -1;
 	unsigned int k = 0;
 	static char *source[4] = {"GMT_SESSION_NAME", "parent", "app", "hardwired choice"};
-	char *str = NULL, string[8];
+	char *str = NULL, string[GMT_LEN8];
 	if ((str = getenv ("GMT_SESSION_NAME")) != NULL) {	/* GMT_SESSION_NAME was set in the environment */
 		char *tmp = strdup (str);	/* Duplicate the given string */
 		GMT_Report (API, GMT_MSG_DEBUG, "Obtained GMT_SESSION_NAME from the environment: %s\n", str);
@@ -764,7 +762,7 @@ GMT_LOCAL char * api_get_ppid (struct GMTAPI_CTRL *API) {
 		ppid = getppid(), k = 1; /* parent process id */
 #endif
 	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
-	sprintf (string, "%d", ppid);
+	snprintf (string, GMT_LEN8, "%d", ppid);
 	return (strdup (string));
 }
 
@@ -788,7 +786,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	struct GMT_CTRL *GMT = API->GMT;
 	unsigned int n_custom_libs = 0, k, e, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_LEN256] = {""}, plugindir[GMT_LEN256] = {""}, path[GMT_LEN256] = {""};
+	char text[PATH_MAX] = {""}, plugindir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	char *libname = NULL, **list = NULL;
 #ifdef WIN32
 	char *extension[1] = {".dll"};
@@ -835,7 +833,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 ) {
 			/* Running in build dir: search plugins in build-dir/src/plugins */
-			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_LEN256-1);
+			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", PATH_MAX-1);
 #ifdef XCODER
 			strcat (plugindir, "/Debug");	/* The Xcode plugin path for Debug */
 #endif
@@ -844,13 +842,13 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #endif
 		{
 		/* Set full path to the core library */
-		snprintf (plugindir, GMT_LEN256, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
+		snprintf (plugindir, PATH_MAX, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
 		if (!GMT->init.runtime_library) GMT->init.runtime_library = strdup (plugindir);
 
 #ifdef WIN32
-			snprintf (plugindir, GMT_LEN256, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
+			snprintf (plugindir, PATH_MAX, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
 #else
-			snprintf (plugindir, GMT_LEN256, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+			snprintf (plugindir, PATH_MAX, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
 #endif
 		}
 		if (!GMT->init.runtime_plugindir) GMT->init.runtime_plugindir = strdup (plugindir);
@@ -861,7 +859,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put supplements first if not first already */
 				k = 0;
 				while (list[k]) {
-					snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
+					snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
 					if (access (path, R_OK))
 						GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 					else {
@@ -894,7 +892,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these to the libs */
 					k = 0;
 					while (list[k]) {
-						snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
+						snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
 						if (access (path, R_OK)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 							GMT_Report (API, GMT_MSG_NORMAL, "Check that your GMT_CUSTOM_LIBS (in gmt.conf, perhaps) is correct\n");
@@ -4473,7 +4471,7 @@ GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAG
 		return -1;
 	}
 	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and another linefeed */
-	sprintf (dim, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
+	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
 	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
 	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
 	if (strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
@@ -5631,7 +5629,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		for (k = 0; gray && k < s_length; k++)
 			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
 		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
-			sprintf (tmp_file, "%s.cpt", *str);	/* Try this as a filename */
+			snprintf (tmp_file, GMT_LEN64, "%s.cpt", *str);	/* Try this as a filename */
 			if (!gmt_access (API->GMT, tmp_file, F_OK))
 				return 0;	/* Probably a process id temp file like 13223.cpt */
 		}
@@ -6060,7 +6058,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 			GMT_Report (API, GMT_MSG_DEBUG, "Must pass a session tag to be used for error log file name\n");
 			return_null (API, GMT_ARG_IS_NULL);
 		}
-		sprintf (file, "%s.log", API->session_tag);
+		snprintf (file, PATH_MAX, "%s.log", API->session_tag);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Unable to open error log file %s\n", file);
 			return_null (API, GMT_ERROR_ON_FOPEN);
@@ -7107,11 +7105,12 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	}
 	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
 		unsigned int first = 0;
-		first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[PATH_MAX] = {""}, *file = strdup (&input[first]);
+			char CPT_file[PATH_MAX] = {""}, *file = NULL;
+			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			file = strdup (&input[first]);
 			if ((c_err = api_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				gmt_M_str_free (file);
@@ -7140,6 +7139,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		else {	/* Not a CPT file but could be remote */
 			char file[PATH_MAX] = {""};
+			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
 			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 				strcat (file, ".grd");	/* Must supply the .grd */
@@ -10017,14 +10017,11 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	API = api_get_api_ptr (V_API);
 	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
-	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
-		sprintf (full_name, "gmt %s", mode_name);
-		mode_name = full_name;
-	}
-	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
+	snprintf (full_name, GMT_LEN32, "gmt %s", mode_name);
+	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", full_name, lib, GMT_version(), purpose);
 	GMT_Message (V_API, GMT_TIME_NONE, message);
 	gmtlib_set_KOP_strings (API);
-	return mode_name;
+	return full_name;
 }
 
 /* Module Extension: Allow listing and calling modules by name */
@@ -10539,18 +10536,23 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
 	}
 	/* 1l. Check if this is makecpt using -E or -S with no args */
-	else if (!strncmp (module, "makecpt", 7U) && ((opt = GMT_Find_Option (API, 'E', *head)) || (opt = GMT_Find_Option (API, 'S', *head)))) {
-		if (opt->arg[0] == '\0') {	/* Found the -E or -S option without arguments */
-			gmt_M_str_free (opt->arg);
-			if (opt->option == 'E')	/* Gave -E but we need to pass -E0 */
-				opt->arg = strdup ("0");
-			else	/* Replace -S with -Sr */
-				opt->arg = strdup ("r");
+	else if (!strncmp (module, "makecpt", 7U)) {
+		if (((opt = GMT_Find_Option (API, 'E', *head)) || (opt = GMT_Find_Option (API, 'S', *head)))) {
+			if (opt->arg[0] == '\0') {	/* Found the -E or -S option without arguments */
+				gmt_M_str_free (opt->arg);
+				if (opt->option == 'E')	/* Gave -E but we need to pass -E0 */
+					opt->arg = strdup ("0");
+				else	/* Replace -S with -Sr */
+					opt->arg = strdup ("r");
+			}
+			/* Then add implicit ? if no input file found */
+			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head)) == NULL) {	/* Must assume implicit input file is available */
+				new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "?");
+				*head = GMT_Append_Option (API, new_ptr, *head);
+			}
 		}
-		/* Then add implicit ? if no input file found */
-		if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head)) == NULL) {	/* Must assume implicit input file is available */
-			new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "?");
-			*head = GMT_Append_Option (API, new_ptr, *head);
+		else if (API->GMT->current.setting.run_mode == GMT_MODERN && (opt = GMT_Find_Option (API, 'H', *head)) == NULL) {	/* Modern mode, no -H */
+			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 		}
 	}
 	/* 1m. Check if this is the grdgradient module, where primary dataset output should be turned off if -Qc and no -G is set */
@@ -10565,7 +10567,12 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (gmt_no_pstext_input (API, opt->arg))
 			deactivate_input = true;	/* Turn off implicit input since none is in effect */
 	}
-
+	/* 1n. Check that in modern mode, grd2cpt requires -H to write out to stdout */
+	else if (!strncmp (module, "grd2cpt", 7U)) {
+		if (API->GMT->current.setting.run_mode == GMT_MODERN && (opt = GMT_Find_Option (API, 'H', *head)) == NULL) {	/* Modern mode, no -H */
+			deactivate_output = true;	/* Turn off implicit output since none is in effect */
+		}
+	}
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
@@ -10574,7 +10581,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		char txt[4] = {""};
 		for (k = 0; k < GMT_N_FAMILIES; k++) if (n_per_family[k] != GMT_NOTSET) {
-			(n_per_family[k] == GMTAPI_UNLIMITED) ? sprintf (txt, ">1") : sprintf (txt, "%d", n_per_family[k]);
+			(n_per_family[k] == GMTAPI_UNLIMITED) ? snprintf (txt, 4, ">1") : snprintf (txt, 4, "%d", n_per_family[k]);
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: For %s we expect %s input objects\n", GMT_family[k], txt);
 		}
 	}
@@ -11026,7 +11033,7 @@ int GMT_Option (void *V_API, const char *options) {
 				break;
 			case 'd':	/* Nodata flag -d, -di, -do */
 				if (p[1] == 'i') arg[k++] = 'k';
-				else if (p[1] == 'o') arg[k++] = 'l';
+				else if (p[1] == 'o') arg[k++] = 'm';
 				else arg[k++] = 'd';
 				break;
 			case 'j':	/* Spherical distance calculation mode */
@@ -11098,6 +11105,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
+	const char *module_name;
 	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -11119,6 +11127,11 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 			source_info_len = strlen (API->message);	/* Update length of message from 0 */
 		}
 	}
+	if (GMT && GMT->init.module_name)
+		module_name = ((GMT->current.setting.run_mode == GMT_MODERN)) ? gmtlib_get_active_name (API, GMT->init.module_name) : GMT->init.module_name;
+	else
+		module_name = API->session_tag;
+
 	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
 	source_info_len = strlen (API->message);
 	va_start (args, format);

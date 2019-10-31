@@ -27,12 +27,12 @@ font). On these 3 faces the brightness is a constant value of 1. On the
 other 3 faces of the cube, around the black corner, the white decimal
 numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 
-.. literalinclude:: /_verbatim/example_11.txt
+.. literalinclude:: /_verbatim/ex11.txt
    :language: bash
 
 .. _fig_ex11:
 
-.. figure:: /_images/example_11.*
+.. figure:: /_images/ex11.*
    :width: 500 px
    :align: center
 

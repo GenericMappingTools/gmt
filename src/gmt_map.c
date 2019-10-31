@@ -1709,7 +1709,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 /* This is new approach to get rid of those crossing lines for filled polygons,
  * i.e., issue # 949.  Also see comments further down.
  * P. Wessel, Dec 1 2016 */
-	if (GMT->current.map.coastline) {	/* Make data longitudes have no jumps [This is for pscoast] */
+	if (GMT->current.map.coastline && periodic) {	/* Make data longitudes have no jumps [This is for pscoast] */
 		for (i = 0; i < n; i++) {
 			if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
 				lon[i] += 360.0;
@@ -2168,7 +2168,12 @@ GMT_LOCAL void adjust_panel_for_gaps (struct GMT_CTRL *GMT, struct GMT_SUBPLOT *
 GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax) {
 	/* Set x/y parameters */
 	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
-
+	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
+	unsigned int no_scaling = P->no_scaling;
+	bool update_parameters = false;
+	double fw, fh, fx, fy, w, h;
+	
+	/* Set up the original min/max values, the rectangular map dimensionsm and the projection offset */
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projected values in meters: %g %g %g %g\n", xmin, xmax, ymin, ymax);
@@ -2177,10 +2182,30 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P->active && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
-		double fw, fh, fx, fy, w, h;
-		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
-		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */
+	if (!strncmp (GMT->init.module_name, "inset", 5U))
+		no_scaling = 1;	/* Dont scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
+
+	w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+
+	/* Check inset first since an inset may be inside a subplot but there are no subplots inside an inset */
+	if (I->active && no_scaling == 0) {	/* Must rescale to fit inside the inset dimensions and set dx,dy for centering */
+		fw = w / I->w;	fh = h / I->h;
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
+			if (fw > fh) {	/* Wider than taller given inset dims; adjust width to fit exactly and set dy for centering */
+				fx = fy = 1.0 / fw;	I->dx = 0.0;	I->dy = 0.5 * (I->h - h * fy);
+			}
+			else {	/* Taller than wider given inset dims; adjust height to fit exactly and set dx for centering */
+				fx = fy = 1.0 / fh;	I->dy = 0.0;	I->dx = 0.5 * (I->w - w * fx);
+			}
+		}
+		else {	/* Cartesian is scaled independently to fit the inset */
+			fx = 1.0 / fw;	fy = 1.0 / fh;	I->dx = I->dy = 0.0;
+		}
+		update_parameters = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for inset by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, I->dx, I->dy);
+	}
+	else if (P->active && no_scaling == 0)	{	/* Must rescale to fit inside subplot dimensions and set dx,dy for centering */
+		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps requested via subplot -C: shrink w/h and adjust origin */
 		fw = w / P->w;	fh = h / P->h;
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
 			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
@@ -2190,9 +2215,18 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 				fx = fy = 1.0 / fh;	P->dy = 0.0;	P->dx = 0.5 * (P->w - w * fx);
 			}
 		}
-		else {	/* Cartesian is scaled independently to fit the panel */
+		else {	/* Cartesian is scaled independently to fit the subplot fully */
 			fx = 1.0 / fw;	fy = 1.0 / fh;	P->dx = P->dy = 0.0;
 		}
+		update_parameters = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for subplot by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
+		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
+			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
+			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
+		}
+	}
+	if (update_parameters) {	/* Scale the parameters due to inset or subplot adjustments */
+		/* Update all projection parameters given the reduction factors fx, fy */
 		GMT->current.proj.scale[GMT_X] *= fx;
 		GMT->current.proj.scale[GMT_Y] *= fy;
 		GMT->current.proj.w_r *= fx;	/* Only matter for geographic where fx = fy anyway */
@@ -2200,12 +2234,6 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
-		//GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
-		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
-			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
-			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
-		}
 	}
 }
 
@@ -2221,7 +2249,7 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 	w = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
 	h = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 
-	if (GMT->current.proj.gave_map_width == 1)		/* Must rescale to given width */
+	if (GMT->current.proj.gave_map_width == 1)	/* Must rescale to given width */
 		factor = scl / w;
 	else if (GMT->current.proj.gave_map_width == 2)	/* Must rescale to given height */
 		factor = scl / h;
@@ -2364,8 +2392,8 @@ GMT_LOCAL double map_az_backaz_cartesian (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	dx = lonE - lonS;
-	dy = latE - latS;
+	dx = lonS - lonE;
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2386,8 +2414,8 @@ GMT_LOCAL double map_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE
 	}
 	gmt_geo_to_xy (GMT, lonE, latE, &xE, &yE);
 	gmt_geo_to_xy (GMT, lonS, latS, &xS, &yS);
-	dx = xE - xS;
-	dy = yE - yS;
+	dx = xS - xE;
+	dy = yS - yE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2406,9 +2434,9 @@ GMT_LOCAL double map_az_backaz_flatearth (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	gmt_M_set_delta_lon (lonS, lonE, dlon);
-	dx = dlon * cosd (0.5 * (latE + latS));
-	dy = latE - latS;
+	gmt_M_set_delta_lon (lonE, lonS, dlon);
+	dx = dlon * cosd (0.5 * (latS + latE));
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -6583,7 +6611,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item];
 	if (T->active && T->interval == 0.0) {
 		T->interval = d, T->generated = set_a = true;
-		sprintf (tmp, "a%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "a%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 		if (interval) T->type = 'i', T->flavor = 1;
 	}
@@ -6592,7 +6620,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+2];
 	if (T->active && T->interval == 0.0) {
 		T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
-		sprintf (tmp, "f%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "f%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 
@@ -6600,7 +6628,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
 		T->interval = set_a ? d : f, T->generated = true;
-		sprintf (tmp, "g%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
@@ -7841,6 +7869,8 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7876,8 +7906,16 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
+	
+/* Open MP does not work yet */
 
-	gmt_M_row_loop (GMT, O, row_out) {	/* Loop over the output grid row coordinates */
+/* The OpenMP loop below fails and yields nodes still set to NaN.  I cannot see any errors but obviously
+ * there is something that is not quite correct. */
+
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
+//#endif 
+	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -7896,15 +7934,15 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				}
 			}
 
-			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
+			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now the interpret the input grid at that projected output point */
 
 			z_int = gmt_bcr_get_z (GMT, I, x_proj, y_proj);
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (gmt_grdfloat)z_int;
 			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
-				O->data[ij_out] /= nz[ij_out];		/* Plain average */
-			else {						/* Weighted average between blockmean'ed and interpolated values */
+				O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			else {					/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (gmt_grdfloat) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
 			}
@@ -7913,7 +7951,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		}
 	}
 
-	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrama */
+	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrema */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g] due to resampling\n",
 			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
 		if (GMT->common.n.truncate) {
@@ -8040,6 +8078,8 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -8076,7 +8116,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* PART 2: Create weighted average of interpolated and observed points */
 
-	gmt_M_row_loop (GMT, O, row_out) {	/* Loop over the output grid row coordinates */
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz,b) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz,z_int_bg,nb)
+//#endif 
+	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -9560,7 +9603,7 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	sprintf (header, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
+	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }

@@ -166,7 +166,7 @@ rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
 shopt -s extglob
-GLOBIGNORE="!(*.bat|*.ps|*.sh)"
+GLOBIGNORE="!(*.bat|*.sh)"
 for file in "$src"/* ; do
   test -f "$file" && ln -s "$file" .
 done
@@ -191,8 +191,10 @@ export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 # Font lookup path for Ghostscript (invoked from gm compare and psconvert)
 export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
+# Disable gmt end show from displaying plots
+export GMT_END_SHOW=off
 # Start with proper GMT defaults
-gmt set -Du FORMAT_TIME_STAMP "Version 6"
+gmt set -Du FORMAT_TIME_STAMP "Version 6" GMT_GRAPHICS_FORMAT ps
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
 if [ ${modern} -gt 0 ]; then
 	export GMT_SESSION_NAME=\$\$
@@ -206,6 +208,6 @@ chmod 755 gmtest.sh
 
 . ./gmtest.sh
 # Modern mode needs to reestablish the $ps variable before exit
-if [ "X$script_mode" = "XM" ] && [ ! "X$ps" = "X" ]; then
+if [ "X$script_mode" = "XM" ] && [ "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi

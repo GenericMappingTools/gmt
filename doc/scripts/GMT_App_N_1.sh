@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 #
-#	Makes the inset for Appendix N(custom symbols)
-#	Note that this script also assembles App N tex
-#	file since the number of figures must be calculated.
-#	Dimensions are in inches
+#	Makes the inset for Appendix N (custom symbols)
 #
 grep -v '^#' "${GMT_SOURCE_DIR}"/share/custom/gmt_custom_symbols.conf | $AWK '{print $1}' > tt.lis
 n=`cat tt.lis | wc -l`
@@ -19,7 +16,6 @@ fs=9
 dy=0.15
 
 n_pages=`gmt math -Q $n $n_cols DIV CEIL $n_rows_p1 SUB 0 MAX $n_rows DIV CEIL 1 ADD =`
-touch GMT_Appendix_N_inc.tex
 
 p=0
 s=0
@@ -29,9 +25,8 @@ while [ $p -lt $n_pages ]; do
 		max_rows=$n_rows_p1
 	else
 		max_rows=$n_rows
-		echo "\GMTfig[h]{GMT_App_N_$p}{Additional custom plot symbols}" >> GMT_Appendix_N_inc.tex
 	fi
-	
+
 	n_rows_to_go=`gmt math -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
 	H=`gmt math -Q $n_rows_to_go 1 $dy ADD MUL =`
 	rm -f tt.lines tt.symbols tt.text tt.bars
@@ -72,15 +67,11 @@ EOF
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	gmt begin GMT_App_N_$p ps
+	gmt begin GMT_App_N_$p
 	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
 	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
-	gmt plot -Sri -Gblack tt.bars 
+	gmt plot -Sri -Gblack tt.bars
 	# Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure
 	sed -e 's/TRANSPARENT/TRANSP/' < tt.text | gmt text -F+f${fs}p,white
-	gmt end
+	gmt end show
 done
-
-if ! test -s GMT_Appendix_N_inc.tex ; then
-	rm -f GMT_Appendix_N_inc.tex
-fi

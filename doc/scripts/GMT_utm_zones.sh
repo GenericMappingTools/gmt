@@ -2,7 +2,7 @@
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 #
-gmt begin GMT_utm_zones ps
+gmt begin GMT_utm_zones
 gmt set MAP_FRAME_TYPE plain FORMAT_GEO_MAP dddF MAP_TITLE_OFFSET 0.25i MAP_ANNOT_OFFSET_PRIMARY 0.15i FONT_TITLE 24p FONT_ANNOT_PRIMARY 10p PS_MEDIA 11ix8.5i
 
 gmt coast -Rd -JQ9i -Groyalblue -Sazure -Dl -A2000 -Bx60f6 -By0 -BwsNe
@@ -103,4 +103,4 @@ EOF
 $AWK '{if ($1 < 0) printf "-180 %s %s\\232S\n", $1, -$1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM 
 $AWK '{if ($1 > 0) printf "-180 %s %s\\232N\n", $1,  $1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM
 echo "-180 0 0\\232" | gmt text -N -D-0.05i/0 -F+f10p+jRM
-gmt end
+gmt end show

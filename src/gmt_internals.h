@@ -50,6 +50,8 @@ struct GMT_XINGS {
 
 EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
 
+EXTERN_MSC void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
+EXTERN_MSC unsigned int gmtlib_char_count (char *txt, char c);
 EXTERN_MSC void gmt_check_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, struct GMT_OPTION *head);
 EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);
 EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module);
@@ -227,7 +229,6 @@ EXTERN_MSC void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID
 EXTERN_MSC void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list);
 EXTERN_MSC void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,

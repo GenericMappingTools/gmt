@@ -92,7 +92,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
-add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
+add_subdirectory (doc)        # doc must be processed *after* src
 if (EXISTS ${GMT_SOURCE_DIR}/test/)
 	add_subdirectory (test)
 endif (EXISTS ${GMT_SOURCE_DIR}/test/)
@@ -103,7 +103,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# Export git working tree
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
-	# Remove the test dir, so that it is not included in the final release tarball
+	# Remove some directories and files, so that they are not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
@@ -113,8 +113,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	add_custom_target (git_prune_files
 		COMMAND ${CMAKE_COMMAND} -E remove
 			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore
-			${GMT_RELEASE_PREFIX}/.travis.yml)
+			${GMT_RELEASE_PREFIX}/.gitignore)
 	add_depend_to_target (git_prune_dirs git_export_release)
 	add_depend_to_target (gmt_release git_prune_dirs)
 	add_depend_to_target (git_prune_files git_export_release)
@@ -182,6 +181,10 @@ endif (EXTRA_BUILD_DIRS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
+if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
+	set (GMT_DATA_SERVER ${GMT_DATA_URL})
+endif (GMT_DATA_URL)
+
 # Configuration done
 message(
 	"*\n"
@@ -190,7 +193,7 @@ message(
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
-	"*  Found GMT data server      : ${GMT_DATA_URL}\n"
+	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  Curl library               : ${CURL_LIBRARY}\n"
@@ -216,7 +219,7 @@ message(
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
-	"*  Found GhostScript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
+	"*  Found Ghostscript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
 	"*  Found GraphicsMagick (gm)  : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
 	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"

@@ -45,14 +45,14 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at
-scale 0.1 inch/degree, use
+scale 0.1 inch/degree, use::
 
-   ::
-
-    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,-
+    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- \
                 -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -pdf africa
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
@@ -69,10 +69,10 @@ gridded topography is only seen over land, using a Mercator map at scale
    ::
 
     gmt begin
-    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -Gc
-    gmt grdimage etopo5.nc -Ccolors.cpt
-    gmt coast -Q
-    gmt end
+      gmt coast -R-30/30/-40/40 -Jm0.1i -B -Gc
+      gmt grdimage @earth_relief_05m
+      gmt coast -Q
+    gmt end show
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
@@ -87,7 +87,7 @@ in your analysis, try
 
    ::
 
-    gmt pscoast -RIS -Dh -W -M > iceland.txt
+    gmt coast -RIS -Dh -W -M > iceland.txt
 
 **coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look

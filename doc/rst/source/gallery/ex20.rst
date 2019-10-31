@@ -77,10 +77,10 @@ option, however, they get the colors defined in ``bullseye.def``.
 
 Here is our final map script that produces the Figure:
 
-.. literalinclude:: /_verbatim/example_20.txt
+.. literalinclude:: /_verbatim/ex20.txt
    :language: bash
 
-.. figure:: /_images/example_20.*
+.. figure:: /_images/ex20.*
    :width: 500 px
    :align: center
 

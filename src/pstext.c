@@ -355,7 +355,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
@@ -546,7 +546,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				else if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.mode = PSTEXT_CLIPPLOT;
 				else if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
@@ -569,7 +569,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use font pen setting instead.\n");
 					Ctrl->S.active = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
-						gmt_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
+						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
 						n_errors++;
 					}
 				}
@@ -593,7 +593,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', "draws a box around the text with the specified pen [Default pen is %s]", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, "draws a box around the text with the specified pen [Default pen is %s]", 0);
 					n_errors++;
 				}
 				break;
@@ -913,6 +913,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
+		gmt_M_str_free (use_text);
 
 		Return (GMT_NOERROR);
 	}
@@ -939,6 +940,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			geometry = (Ctrl->F.mixed) ? GMT_IS_NONE : GMT_IS_POINT;
 			if (!Ctrl->F.mixed) cmode =  GMT_COL_FIX_NO_TEXT;
 			code = 1;
+			PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 		}
 		else if (Ctrl->F.get_text == GET_REC_NUMBER) {	/* Format record number into text */
 			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_DATA;
@@ -1315,6 +1317,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
+
+	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 
 	if (GMT->common.t.variable)	/* Reset the transparency */
 		PSL_settransparency (PSL, 0.0);

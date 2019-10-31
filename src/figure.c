@@ -37,13 +37,13 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <prefix> [<formats>] [<psconvertoptions] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <prefix> [<formats>] [<psconvertoptions] [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for the registered figure\'s name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<formats> contains one or more comma-separated formats [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
+	GMT_Message (API, GMT_TIME_NONE, "\t<formats> contains one or more comma-separated formats [%s].\n", gmt_session_format[API->GMT->current.setting.graphics_format]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from these valid extensions:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
@@ -59,7 +59,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -86,12 +86,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
+	gmt_filename_set (opt->arg);
 	
 	/* Gave a figure prefix so can go on to check optional items */
 	
 	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
 	
 	while (opt) {
+		gmt_filename_set (opt->arg);
 		arg_category = GMT_NOTSET;	/* We know noothing */
 		pos = 0;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what kind it is */
@@ -122,15 +124,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void reset_history (struct GMT_CTRL *GMT) {
-	/* Since figure switches to another plot (which may or may not have a history)
-	 * we must reset whatever history figure just read so it does not write any. */
-	unsigned int id;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wipe internal history from previous figure\n");
-	for (id = 0; id < GMT_N_UNIQUE; id++)
-		gmt_M_str_free (GMT->init.history[id]);
-}
-
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -138,7 +131,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	int error = 0;
 	char *arg = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -169,8 +162,14 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		error = GMT_RUNTIME_ERROR;
 		
 	if (options) GMT_Destroy_Cmd (API, &arg);
+
+	opt = options;
+	while (opt) {
+		gmt_filename_get (opt->arg);
+		opt = opt->next;
+	}
 	
-	reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
+	gmt_reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
 	
 	Return (error);
 }

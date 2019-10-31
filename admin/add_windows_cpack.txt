@@ -1,0 +1,50 @@
+# List of extra  files to include in the installer
+# This file is prepared to use JL's installation paths.
+
+SET (PATO_GDAL_BIN  "C:/programs/compa_libs/gdal_GIT/compileds/${VC}_${BITAGE}/bin")
+SET (PATO_PROJ_BIN  "C:/programs/compa_libs/proj5_GIT/compileds/${VC}_${BITAGE}/bin")
+SET (PATO_FFMPEG_BIN  "C:/programs/ImageMagick")
+
+install (PROGRAMS 
+	${PATO_GDAL_BIN}/gdaladdo.exe
+	${PATO_GDAL_BIN}/gdalbuildvrt.exe
+	${PATO_GDAL_BIN}/gdaldem.exe
+	${PATO_GDAL_BIN}/gdalenhance.exe
+	${PATO_GDAL_BIN}/gdalinfo.exe
+	${PATO_GDAL_BIN}/gdallocationinfo.exe
+	${PATO_GDAL_BIN}/gdalmanage.exe
+	${PATO_GDAL_BIN}/gdalserver.exe
+	${PATO_GDAL_BIN}/gdalsrsinfo.exe
+	${PATO_GDAL_BIN}/gdaltindex.exe
+	${PATO_GDAL_BIN}/gdaltransform.exe
+	${PATO_GDAL_BIN}/gdalwarp.exe
+	${PATO_GDAL_BIN}/gdal_contour.exe
+	${PATO_GDAL_BIN}/gdal_grid.exe
+	${PATO_GDAL_BIN}/gdal_rasterize.exe
+	${PATO_GDAL_BIN}/gdal_translate.exe
+	${PATO_GDAL_BIN}/gnmanalyse.exe
+	${PATO_GDAL_BIN}/gnmmanage.exe
+	${PATO_GDAL_BIN}/nearblack.exe
+	${PATO_GDAL_BIN}/ogr2ogr.exe
+	${PATO_GDAL_BIN}/ogrinfo.exe
+	${PATO_GDAL_BIN}/ogrlineref.exe
+	${PATO_GDAL_BIN}/ogrtindex.exe
+	${PATO_GDAL_BIN}/testepsg.exe
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (PROGRAMS 
+	${PATO_PROJ_BIN}/cct.exe
+	${PATO_PROJ_BIN}/cs2cs.exe
+	${PATO_PROJ_BIN}/geod.exe
+	${PATO_PROJ_BIN}/gie.exe
+	${PATO_PROJ_BIN}/nad2bin.exe
+	${PATO_PROJ_BIN}/proj.exe
+	${PATO_PROJ_BIN}/projinfo.exe
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (PROGRAMS 
+	${PATO_FFMPEG_BIN}/ffmpeg.exe
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)

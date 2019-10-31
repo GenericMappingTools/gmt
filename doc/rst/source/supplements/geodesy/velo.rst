@@ -41,14 +41,15 @@ Synopsis
 Examples
 --------
 
+.. include:: ../../oneliner_info.rst_
+
 The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig.
 
    ::
 
-    gmt velo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18
-        -B1g1 -Jx0.4/0.4 -A1c+p3p+e -V -pdf test
+    gmt velo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18 -B1g1 -Jx0.4/0.4 -A1c+p3p+e -V -pdf test
     #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
     #(deg) (deg) (mm/yr) (mm/yr)
     0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
@@ -65,8 +66,7 @@ gray wedges to represent the 2-sigma uncertainties.
 
    ::
 
-    gmt velo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i
-        -R240./243./32.5/34.75 -Baf -BWeSn -pdf test
+    gmt velo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i -R240./243./32.5/34.75 -Baf -BWeSn -pdf test
     #lon lat spin(rad/yr) spin_sigma (rad/yr)
     241.4806 34.2073 5.65E-08 1.17E-08
     241.6024 34.4468 -4.85E-08 1.85E-08

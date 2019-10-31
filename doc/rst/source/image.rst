@@ -36,27 +36,33 @@ Synopsis
 Examples
 --------
 
-To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
-accordingly), and outline with a thin, blue pen, use
+.. include:: explain_example.rst_
 
-   ::
+.. include:: oneliner_info.rst_
 
-    gmt image logo.jpg -Dx0/0+w1i -F+pthin,blue -pdf image
+To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+accordingly), use::
+
+    gmt image @needle.jpg -Dx0/0+w7c -pdf plot
+
+To plot the same file but reversing the bands, use::
+
+    gmt image @needle.jpg+b2,1,0 -Dx0/0+w7c -pdf plot
+
+To only plot its red band as gray shade, use::
+
+    gmt image @needle.jpg+b0 -Dx0/0+w7c -pdf plot
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
 location, and have its width scaled to 3 inches, while keeping the
-aspect ratio, use
-
-   ::
+aspect ratio, use::
 
     gmt image tiger.eps -Dx2i/1i+jTR+w3i -pdf image
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
-to be 1 cm wide, use
-
-   ::
+to be 1 cm wide, use::
 
     gmt image 1_bit.ras -Gbrown+b -Gred+f -Dx0/0+w1c+n5 -pdf image
 
@@ -67,4 +73,4 @@ See Also
 :doc:`gmtcolors`, :doc:`gmtlogo`
 :doc:`legend`, :doc:`colorbar`
 :doc:`plot`,
-:manpage:`psconvert(1)`
+:doc:`psconvert`

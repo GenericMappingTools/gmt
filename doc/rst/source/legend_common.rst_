@@ -72,6 +72,16 @@ Optional Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-S:
+
+**-S**\ *scale*
+    Scale all symbol sizes by a common *scale* [1].
+
+.. _-T:
+
+**-T**\ *file*
+    Modern mode only: Write hidden legend specification file to *file*.
+
 .. _-U:
 
 .. include:: explain_-U.rst_
@@ -200,8 +210,8 @@ Legend Codes
     (see :doc:`plot`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. If *dx1* is given
-    as **-** then it is automatically computed from the largest symbol size.
-    If *dx2* is given as **-** then it is automatically computed as three
+    as **-** then it is automatically computed from half the largest symbol size.
+    If *dx2* is given as **-** then it is automatically computed as 1.5
     times the largest symbol size.  Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned

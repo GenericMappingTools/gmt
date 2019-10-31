@@ -6,14 +6,14 @@ psbasemap
 
 .. only:: not man
 
-    psbasemap - Plot base maps and frames
+    Plot base maps and frames
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psbasemap** |-J|\ *parameters*
+**gmt psbasemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
@@ -40,12 +40,12 @@ Synopsis
 
 .. _-D:
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*][**+t**] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
     Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
-    upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
-    of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
+    upper right corners of the desired rectangle. (b) Give *xmin/xmax/ymin/ymax*
+    of bounding rectangle in projected coordinates and optionally append **+u**\ *unit* [Default coordinate unit is meter (e)].
     (c) Give the reference point on the map for the inset using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -66,6 +66,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given

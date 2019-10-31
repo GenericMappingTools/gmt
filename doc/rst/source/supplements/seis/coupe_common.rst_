@@ -65,184 +65,7 @@ Required Arguments
 
 .. _-S:
 
-**-S**
-  selects the meaning of the columns in the data file and the figure to be plotted.
-
-  **-Sa**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Focal mechanisms in Aki and Richards convention. The *scale* adjusts the
-     scaling of the radius of the "beach ball", which will be proportional to
-     the magnitude. The *scale* is the size for magnitude = 5 in
-     **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
-     to indicate that the size information is in units of cm, inches, meters,
-     or points, respectively). Use the **-T** option to render the beach ball
-     transparent by drawing only the nodal planes and the circumference. The
-     color or shade of the compressive quadrants can be specified with the
-     **-G** option. The color or shade of the extensive quadrants can be
-     specified with the **-E** option. Parameters are expected to be in the
-     following columns:
-
-      **1**,\ **2**:
-      longitude, latitude of event (**-:** option interchanges order)
-
-      **3**:
-      depth of event in kilometers
-
-      **4**,\ **5**,\ **6**:
-      strike, dip and rake
-
-      **7**:
-      magnitude
-
-      **8**,\ **9**:
-      not used; can be 0 0; allows use of the :doc:`meca` file format
-
-      **10**:
-      text string to appear above the beach ball [Default] or under (add **+u**).
-
-  **-Sc**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
-     of the radius of the "beach ball", which will be proportional to the
-     magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
-     dynes-cm.) in **PROJ_LENGTH_UNIT** (unless **c**, **i**, or
-     **p** is appended to indicate that the size information is in units of
-     cm, inches, meters, or points, respectively). Use the **-T** option to
-     render the beach ball transparent by drawing only the nodal planes and
-     the circumference. The color or shade of the compressive quadrants can
-     be specified with the **-G** option. The color or shade of the extensive
-     quadrants can be specified with the **-E** option. Parameters are
-     expected to be in the following columns:
-
-      **1**,\ **2**:
-      longitude, latitude of event (**-:** option interchanges order)
-
-      **3**:
-      depth of event in kilometers
-
-      **4**,\ **5**,\ **6**:
-      strike, dip, and slip of plane 1
-
-      **7**,\ **8**,\ **9**:
-      strike, dip, and slip of plane 2
-
-      **10**,\ **11**:
-      mantissa and exponent of moment in dyne-cm (if magnitude is uses
-      instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
-
-      **12**,\ **13**:
-      not used; can be 0 0; allows use of the :doc:`meca` file format
-
-      **14**:
-      text string to appear above the beach ball (default) or under (add **u**).
-
-  **-Sp**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Focal mechanisms given with partial data on both planes. *scale* adjusts
-     the scaling of the radius of the "beach ball", which will be
-     proportional to the magnitude. The *scale* is the size for magnitude = 5
-     in **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is
-     appended to indicate that the size information is in units of cm,
-     inches, meters, or points, respectively). The color or shade of the
-     compressive quadrants can be specified with the **-G** option. The color
-     or shade of the extensive quadrants can be specified with the **-E**
-     option. Parameters are expected to be in the following columns:
-
-      **1**,\ **2**:
-      longitude, latitude of event (**-:** option interchanges order)
-
-      **3**:
-      depth
-
-      **4**,\ **5**:
-      strike, dip of plane 1
-
-      **6**:
-      strike of plane 2
-
-      **7**:
-      must be -1/+1 for a normal/inverse fault
-
-      **8**:
-      magnitude
-
-      **9**,\ **10**:
-      not used; can be 0 0; allows use of the :doc:`meca` file format
-
-      **11**:
-      text string to appear above the beach ball (default) or under (add **+u**).
-
-  **-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
-     the scaling of the radius of the "beach ball", which will be
-     proportional to the magnitude. The *scale* is the size for magnitude = 5
-     (that is seismic scalar moment = 4E+23 dynes-cm) in
-     **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
-     to indicate that the size information is in units of cm, inches, meters,
-     or points, respectively). (**-T**\ *0* option overlays best double
-     couple transparently.)
-  **-Sd**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     to plot the only double couple part of moment tensor.
-  **-Sz**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     to plot anisotropic part
-     of moment tensor (zero trace). The color or shade of the compressive
-     quadrants can be specified with the **-G** option. The color or shade of
-     the extensive quadrants can be specified with the **-E** option.
-     Parameters are expected to be in the following columns:
-
-      **1**,\ **2**:
-      longitude, latitude of event (**-:** option interchanges order)
-
-      **3**:
-      depth of event in kilometers
-
-      **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**:
-      mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
-
-      **10**:
-      exponent
-
-      **11**,\ **12**:
-      Not used; can be 0 0; allows use of the :doc:`meca` file format
-
-      **13**:
-      Text string to appear above the beach ball (default) or under (add **+u**).
-
-  **-Sx**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     Principal axis. *scale* adjusts the scaling of the radius of the "beach
-     ball", which will be proportional to the magnitude. The *scale* is the
-     size for magnitude = 5 (that is seismic scalar moment = 4\*10e+23
-     dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, or
-     **p** is appended to indicate that the size information is in units of
-     cm, inches, meters, or points, respectively). (\ **-T**\ 0 option overlays
-     best double couple transparently.)
-  **-Sy**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     to plot the only double couple part of moment tensor.
-  **-St**\ *scale[/fontsize[/offset*\ [**+u**]]]
-     to plot anisotropic part
-     of moment tensor (zero trace). The color or shade of the compressive
-     quadrants can be specified with the **-G** option. The color or shade of
-     the extensive quadrants can be specified with the **-E** option.
-     Parameters are expected to be in the following columns:
-
-      **1**,\ **2**:
-      longitude, latitude of event (**-:** option interchanges order)
-
-      **3**:
-      depth of event in kilometers
-
-      **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**,\ **10**,\ **11**,\ **12**:
-      value (in 10\*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
-
-      **13**:
-      exponent
-
-      **14**,\ **15**:
-      longitude, latitude at which to place beach ball. Entries in these
-      columns are necessary with the **-C** option. Using 0,0 in columns 9
-      and 10 will plot the beach ball at the longitude, latitude given in
-      columns 1 and 2. The **-:** option will interchange the order of
-      columns (1,2) and (9,10).
-
-      **16**:
-      Text string to appear above the beach ball (optional).
+.. include:: explain_meca_-S.rst_
 
 Optional Arguments
 ------------------
@@ -261,7 +84,7 @@ Optional Arguments
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol[size[/fontsize[/offset*\ [**+u**]]]
+**-Fs**\ *symbol[size][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
    selects a symbol instead of mechanism. Choose from the following:
    (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
    (**t**) triangle, (**x**) cross. *size* is the symbol size in
@@ -278,23 +101,23 @@ Optional Arguments
     **4**:
       Text string to appear above the beach ball (default) or under (add **+u**).
 
-**-Fa**\ [*size*][/\ *P\_symbol*\ [/\ *T\_symbol*]]
+**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
 
-**-Fe**\ *color*
+**-Fe**\ *fill*
     Sets the color or fill pattern for the T axis symbol. [Default as set by |-E|]
 
-**-Fg**\ *color*
+**-Fg**\ *fill*
     Sets the color or fill pattern for the P axis symbol. [Default as set by |-G|]
 
 **-Fp**\ [*pen*]
     Draws the P axis outline using current pen (see |-W|), or sets pen attributes.
 
-**-Fr**\ [*color*]
+**-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
 
 **-Ft**\ [*pen*]
@@ -302,7 +125,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color*
+**-G**\ *fill*
     Sets color or fill pattern for compressional quadrants [Default is black].
 
 .. _-L:
@@ -328,13 +151,18 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*num_of_planes*]
+**-T**\ [*nplane*\ ][\ **/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
-    If *num_of_planes* is
+    If *nplane* is
+
     *0*: both nodal planes are plotted;
+
     *1*: only the first nodal plane is plotted;
-    *2*: only the second nodal plane is plotted
-    [Default: 0].
+
+    *2*: only the second nodal plane is plotted.
+
+    Append **/**\ *pen* to set the pen attributes for this feature.
+    Default pen is as set by **-W**. [Default: 0].
 
 .. _-U:
 

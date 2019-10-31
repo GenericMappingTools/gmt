@@ -1764,6 +1764,10 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	to_gdalread->M.active = true;		/* Metadata only */
+	if (HH->pocket) {	/* Have a band request. */
+		to_gdalread->B.active = true;
+		to_gdalread->B.bands = HH->pocket;		/* Band parsing and error testing is done in gmt_gdalread */
+	}
 
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file (metadata) with gdalread.\n");
@@ -2064,7 +2068,9 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	}
 	sscanf (HH->pocket, "%[^/]/%s", driver, type);
 	to_GDALW->driver = strdup(driver);
-	to_GDALW->P.ProjRefPROJ4 = NULL;
+	if (header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = header->ProjRefPROJ4;	to_GDALW->P.active = true;}
+	if (header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = header->ProjRefWKT;	to_GDALW->P.active = true;}
+	if (header->ProjRefEPSG)  to_GDALW->P.ProjRefEPSG  = header->ProjRefEPSG;	// Not yet used
 	to_GDALW->flipud = 0;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		to_GDALW->geog = 1;

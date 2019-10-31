@@ -3,7 +3,7 @@
 # Make an illustration of grid chunking
 #
 
-gmt begin GMT_chunking ps
+gmt begin GMT_chunking
 gmt set MAP_FRAME_PEN thick FONT_ANNOT_PRIMARY 9p
 
 n=1 # current cell number
@@ -34,4 +34,4 @@ for ((x=0;x<12;++x)); do
 done
 
 rm -f chunk.tmp
-gmt end
+gmt end show

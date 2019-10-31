@@ -1,8 +1,8 @@
 .. index:: ! gmtconvert
 
-*******
-convert
-*******
+**********
+gmtconvert
+**********
 
 .. only:: not man
 
@@ -53,7 +53,7 @@ list segment headers and no data records, (6) extract first and/or last
 data record for each segment, (7) reverse the order of items on output,
 (8) output only ranges of segment numbers, and (9) output only segments
 whose record count matches criteria.  Input (and hence output) may have multiple
-sub-headers, and ASCII tables may have regular headers as well. 
+sub-headers, and ASCII tables may have regular headers as well.
 
 Required Arguments
 ------------------
@@ -196,7 +196,7 @@ Optional Arguments
 **-T**\ [**h**\ \|\ **d**\ ]
     Suppress the writing of certain records on output.  Append **h** to
     suppress segment headers [Default] or **d** to suppress duplicate
-    data records.  Use **-Thd** to suppress both types of records. 
+    data records.  Use **-Thd** to suppress both types of records.
 
 .. _-V:
 
@@ -256,6 +256,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
    ::
@@ -272,7 +274,7 @@ You have an ASCII table with 6 columns and you want to plot column 5 versus colu
 
    ::
 
-    gmt convert table.txt -o5,0 | plot ...
+    gmt convert table.txt -o5,0 | gmt plot ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
@@ -280,14 +282,14 @@ columns 4-6 and write ASCII with the command
 
    ::
 
-    gmt convert results.b -o8,4-6 -bi9s | plot ...
+    gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
 first column of a file right.txt:
 
    ::
 
-    gmt convert left.txt right.txt -A -o1,2 | plot ...
+    gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
 To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try

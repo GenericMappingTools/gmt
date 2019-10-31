@@ -192,7 +192,8 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
-
+		else if (opt->arg[0] == '@') /* Giave @ without -G is likely a user mistake; remove it */
+			first = 1;
 		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
 			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
 		else
@@ -208,12 +209,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->C.active)	/* Just want a Yes */
 				strcpy (path, Yes);
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			if (Ctrl->G.active && Ctrl->G.mode == GMT_LOCAL_DIR && path[0] == '/' && (L = strrchr(path, '/'))) {
+			if (Ctrl->G.active && Ctrl->G.mode == GMT_LOCAL_DIR && (path[0] == '/' || path[1] == ':') && (L = strrchr(path, '/'))) {
 				/* File found on system but we want a copy in the current directory */
 				if (gmt_rename_file (GMT, path, &L[1], GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
+				strncpy (path, &L[1], PATH_MAX-1);	/* Report the file in the local directory now */
 			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Did not find.  Report no or be quiet */
 			if (Ctrl->C.active) {

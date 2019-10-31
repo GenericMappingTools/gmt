@@ -28,7 +28,7 @@ Description
 -----------
 
 **grdinterpolate** reads a single 3-D netCDF data cube (or a set of 2-D layers)
-and will interpolate along the 3rd dimension for one or more output levels.  The data cube must
+and interpolates along the 3rd dimension for one or more output levels.  The data cube must
 be organized with one or more layers representing the *x* and *y* dimensions
 while the 3rd dimension may represent distance or time; we refer to this
 dimension as the *level*.  The output layers may be written as a single 3-D cube
@@ -46,7 +46,7 @@ Required Arguments
 **-G**\ *outgrid*
     This is the output 3D data cube file.  If **-T** only selects a
     single layer then the data cube collapses to a regular 2-D grid file.
-    If **-Zo** is used then *outgrid* must contain a C format statement
+    If **-Zo** is used then *outgrid* must contain a C-format statement
     for a floating point number.
 
 .. _-T:
@@ -118,11 +118,11 @@ using a cubic spline, try
 
 To extract a single, new 2-D layer from the 3-D cube implied by the individual grids
 layers_*.nc, with individual layer values given via z.txt, for level 3400
-using a cubic spline, try
+using a linear spline, try
 
    ::
 
-    gmt grdinterpolate layers_*.nc -Ziz,txt -T3400 -Fc -Gtemp_3400.nc
+    gmt grdinterpolate layers_*.nc -Ziz,txt -T3400 -Fl -Gtemp_3400.nc
 
 To resample the the temperature.nc 3-D cube for all levels from
 1500 to 2500 in steps of 50, using an Akima spline, try
@@ -140,5 +140,7 @@ The same, but this time write individual 2-D grids per layer:
 See Also
 --------
 
-:doc:`gmt.conf`, :doc:`gmt`,
-:doc:`grdedit`, :doc:`grdcut`
+:doc:`gmt.conf`,
+:doc:`gmt`,
+:doc:`grdedit`,
+:doc:`grdcut`

@@ -6,14 +6,14 @@ pspolar
 
 .. only:: not man
 
-    pspolar - Plot polarities on the inferior focal half-sphere on maps
+    Plot polarities on the inferior focal half-sphere on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt pspolar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
@@ -22,7 +22,7 @@ pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
-[ |-K| ] [ |-L| ] [ |-N| ]
+[ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ *angle*/*form*/*justify*/*fontsize* ]

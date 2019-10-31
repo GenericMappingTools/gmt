@@ -39,10 +39,10 @@ The call to :doc:`grdimage </grdimage>` includes the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
-.. literalinclude:: /_verbatim/example_25.txt
+.. literalinclude:: /_verbatim/ex25.txt
    :language: bash
 
-.. figure:: /_images/example_25.*
+.. figure:: /_images/ex25.*
    :width: 500 px
    :align: center
 

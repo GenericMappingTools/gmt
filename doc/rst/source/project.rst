@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -97,7 +98,8 @@ degrees and *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*
 will be in km.
 
 Calculations of specific great-circle and geodesic distances or for
-back-azimuths or azimuths are better done using :doc:`mapproject`.
+back-azimuths or azimuths are better done using :doc:`mapproject` as
+**project** is strictly spherical.
 
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
@@ -231,6 +233,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_-ocols.rst_
+
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
@@ -241,6 +245,14 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To project the remote data sets ship_03.txt (lon,lat,depth) onto a great circle specified by
+the two points (330,-18) and (53,21) and sort the records on the projected distances along
+that circle and only output the distance and the depths, try::
+
+    gmt project @ship_03.txt -C330/-18 -T53/21 -S -Fpz -Q > ship_proj.txt
 
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
@@ -312,7 +324,7 @@ to make a file of flowlines in the hotspot reference frame. If you run:
 
    ::
 
-    gmt grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd -Retc -Ietc -Cflow.nc
+    gmt grd2xyz pacific_topo.nc | gmt project -T-75/68 -C0/-90 -Fxyq | gmt xyz2grd -Retc -Ietc -Cflow.nc
 
 then flow.nc is a file in the same area as pacific_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use

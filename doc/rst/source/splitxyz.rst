@@ -181,6 +181,10 @@ in same units as x,y and angles are counter-clockwise from horizontal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
 Suppose you want to make a wiggle plot of magnetic anomalies on segments
 oriented approximately east-west from a NGDC-supplied cruise called JA020015 in the
 region **-R**\ 300/315/12/20. You want to use a 100 km low-pass filter to

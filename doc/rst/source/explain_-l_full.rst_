@@ -1,0 +1,24 @@
+.. _-l_full:
+
+**-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*\ ][**+j**\ *just*][**+l**\ [*code*/]\ *txt*][**+n**\ *cols*][**+s**\ *size*\ ][**+v**\ [*pen*]][**+w**\ *width*][**+x**\ *scale*\ ]
+    [**beta version**] Add a map legend entry to the session legend information file for the
+    current plot.  Optionally append a text *label* to describe the entry.
+    Several modifiers allow further changes to the legend (to be built
+    when :doc:`legend` is called): Use **+d** to draw a horizontal line before the
+    legend entry is placed [no line], use **+f** to set the font used for the legend header [:ref:`FONT_TITLE <FONT_TITLE>`],
+    use **+g** to add some vertical space [0], use **+h** to add a legend header [no header],
+    **+j** to set placement of the legend [TR], use **+l** to set a line text; prepend
+    a horizontal justification code **L**, **C**, or **R** [**C**], use **+n** to change the number of columns used to
+    set the following legend items [1], use **+s** to override the size of the
+    current symbol for the legend or set a length if plotting a line or contour [same as plotted],
+    use **+v** to start and **+v**\ *pen* to stop drawing vertical line from
+    previous to current horizontal line [no vertical line], use **+w** to set legend width [auto],
+    and use **+x**\ *scale* to resize all symbol and length sizes in the legend.  Default pen is
+    given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`.  Note that **+h**, **+j**, **+w**, and **+x**
+    will only take effect if given on the very first **-l** option for a plot.  The **+n** modifier,
+    if used on the first **-l** option, affects the legend width (unless set via **+w**); otherwise it
+    just subdivides the available width among the specified columns.
+    The automatic legend has a fixed white background with a solid black pen outline and offset 0.2 cm from the map frame.
+    The modifiers largely reflect legend codes described in :doc:`legend`, which provide more details and
+    customization.  If **legend** is not called explicitly we will call it implicitly when finishing the plot
+    via :doc:`end`.

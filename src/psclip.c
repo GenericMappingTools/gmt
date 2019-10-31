@@ -50,6 +50,10 @@ struct PSCLIP_CTRL {
 	struct T {	/* -T */
 		bool active;
 	} T;
+	struct W {	/* -W<pen> */
+		bool active;
+		struct GMT_PEN pen;
+	} W;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -73,7 +77,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C[a|<n>] [-A[m|p|x|y]] [-K] [-O]  OR\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s <table> %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[-N] %s%s[-T] [%s] [%s]\n", API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[-N] %s%s[-T] [%s] [%s] [-W[<pen>]\n", API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -91,7 +95,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
-	GMT_Option (API, "U,V,X,bi2,c,di,e,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "U,V");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw clip path with given pen attributes [Default is no line].", 0);
+	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -151,6 +157,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 			case 'T':	/* Select map clip */
 				Ctrl->T.active = true;
 				break;
+			case 'W':		/* Set line attributes */
+				Ctrl->W.active = true;
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
+					n_errors++;
+				}
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -158,7 +171,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	if (!Ctrl->C.active) {
+	if (Ctrl->C.active) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error: Cannot use -W with -C\n");
+	}
+	else {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
@@ -255,10 +271,12 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1, eo_flag = 0;
 		bool duplicate;
 		uint64_t row, seg, n_new;
+		struct GMT_FILL no_fill;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
 		gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 #ifdef DEBUG
 		/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
@@ -287,6 +305,11 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 			}
 			DH = gmt_get_DD_hidden (D);
 			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
+			if (Ctrl->W.active) {
+				gmt_setpen (GMT, &Ctrl->W.pen);
+				gmt_setfill (GMT, &no_fill, true);
+			}
+				
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
@@ -302,6 +325,8 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 						gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max of x/y only */
 						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
+					if (Ctrl->W.active)
+						gmt_geo_polygons (GMT, S);
 
 					for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
 						gmt_geo_to_xy (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], &x0, &y0);

@@ -21,6 +21,7 @@ assignees: ''
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
     - [ ] `GMT_LIB_SOVERSION` is correctly set
     - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+    - [ ] update `GMT_VERSION_DOI`
 - [ ] freeze codes and commit all changes to GitHub
 
 **Release**:
@@ -35,8 +36,9 @@ assignees: ''
     ```
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
-- [ ] update README and VERSION files on the GMT FTP
+- [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make announcements
+- [ ] update links on the main site (News, Download & Documentation)
 
 **After release**:
 
@@ -50,7 +52,8 @@ assignees: ''
 - [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
 - [ ] update [fink package](https://github.com/fink/fink-distributions/blob/master/10.9-libcxx/stable/main/finkinfo/sci/) (@remkos)
-- [ ] update [macports ports](https://github.com/macports/macports-ports/tree/master/science)
+- [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@seisman)
+- [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
 
 ---
 

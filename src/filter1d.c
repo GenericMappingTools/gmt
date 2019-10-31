@@ -228,7 +228,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc< is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc> is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <inc>[<unit>] and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
@@ -385,7 +385,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	if (Ctrl->T.active)	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND, Ctrl->N.col);
-	if (Ctrl->N.spatial) Ctrl->T.T.spatial = Ctrl->N.spatial;	/* Obsolete -N settings propagated to -T */
+	if (Ctrl->N.spatial) {	/* Obsolete -N settings propagated to -T */
+		Ctrl->T.T.spatial = Ctrl->N.spatial;
+		Ctrl->T.T.unit = Ctrl->N.unit;
+		Ctrl->T.T.distmode = Ctrl->N.mode;
+	}
 	if (Ctrl->N.add_col) Ctrl->T.T.add = true;	/* Obsolete -N+a settings propagated to -T */
 	
 	/* Check arguments */
@@ -894,7 +898,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.spatial) {	/* Must add extra column to store distances and then compute them */
 		Ctrl->N.col = (int)D->n_columns;
 		gmt_adjust_dataset (GMT, D, D->n_columns + 1);
-		gmt_init_distaz (GMT, Ctrl->N.unit, Ctrl->N.mode, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, Ctrl->T.T.unit, Ctrl->T.T.distmode, GMT_MAP_DIST);
 		for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 			for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 				S = D->table[tbl]->segment[seg];

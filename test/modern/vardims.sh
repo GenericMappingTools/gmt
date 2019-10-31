@@ -10,4 +10,4 @@ gmt begin vardims ps
     gmt basemap -R10/15/10/15 -B+gpurple -c
     gmt basemap -R10/15/10/15 -B+gorange -c
   gmt subplot end
-gmt end
+gmt end show

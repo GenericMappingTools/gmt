@@ -14,7 +14,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] |-J|\ *parameters*
+**gmt pscontour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
@@ -50,6 +50,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the CPT topo.cpt on a Lambert

@@ -56,8 +56,6 @@
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 #define THIS_MODULE_NAME	"img2grd"
 #define THIS_MODULE_LIB		"img"
 #define THIS_MODULE_PURPOSE	"Extract a subset from an img file in Mercator or Geographic format"
@@ -480,6 +478,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
 				min = 2;
 				break;
+			case GMT_IMG_NLON_4M*GMT_IMG_NLAT_4M_72*GMT_IMG_ITEMSIZE:	/* Test grid only */
+				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
+				min = 4;
+				break;
 			default:
 				if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 				min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
@@ -746,7 +748,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		 * south and north boundaries in the specified -R setting.  Because this is only an issue in this program we replace
 		 * the given -R with the exact -R in the gmt.history file so that any subsequent module call using -R shorthand will
 		 * get the actual (exect) region and not the requested (initial, approximate) region. */
-		int id = gmtlib_get_option_id (0, "R");			/* The -R[P] item in the history array */
+		int id = gmt_get_option_id (0, "R");			/* The -R[P] item in the history array */
 		if (GMT->current.setting.run_mode == GMT_MODERN) id++;	/* Instead pick the -RG item under modern mode since this is not a plotting tool */
 		gmt_M_str_free (GMT->init.history[id]);			/* Free the previous history string set during parsing */
 		GMT->init.history[id] = strdup (exact_R);		/* Replace it with the exact region */

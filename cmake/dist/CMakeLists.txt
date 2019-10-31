@@ -46,7 +46,7 @@ if (APPLE)
 endif (APPLE)
 
 # Install components:
-set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG GDALDATA)
+set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG GDALDATA GHOSTSCRIPT)
 # set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
 set (CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime files")
 set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
@@ -59,6 +59,8 @@ set (CPACK_COMPONENT_GSHHG_DESCRIPTION
 	"Shoreline database files.")
 set (CPACK_COMPONENT_GDALDATA_DESCRIPTION
 	"GDAL & PROJ4 auxiliary files.")
+set (CPACK_COMPONENT_GHOSTSCRIPT_DESCRIPTION
+	"Ghostscript program.")
 
 # Create two installation types with pre-selected components:
 set (CPACK_ALL_INSTALL_TYPES Full Minimal)
@@ -68,6 +70,7 @@ set (CPACK_COMPONENT_DOCUMENTATION_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GSHHG_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_DCW_INSTALL_TYPES Full)
 set (CPACK_COMPONENT_GDALDATA_INSTALL_TYPES Full)
+set (CPACK_COMPONENT_GHOSTSCRIPT_INSTALL_TYPES Full)
 
 # Creates a single package with all (requested) components
 set (CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
@@ -213,15 +216,6 @@ if (APPLE)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}/plugins/supplements.so\" \"\")
 	endif ()
 	" COMPONENT Runtime)
-
-	# Workaround: move documentation:
-	install (CODE "
-	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
-		execute_process (COMMAND ${CMAKE_COMMAND} -E rename
-			\${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}
-			\${CMAKE_INSTALL_PREFIX}/../../../Documentation)
-	endif ()
-	" COMPONENT Documentation)
 endif (APPLE)
 
 # Linux, Cygwin & Co:

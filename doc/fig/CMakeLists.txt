@@ -16,7 +16,7 @@
 #-------------------------------------------------------------------------------
 
 # Figure files
-set (_fig_fig GMT4_mode.png GMT5_Summit_2016.jpg GMT5_mode.png GMT5_external.png
+set (_fig_fig GMT4_mode.png GMT6_Summit_2019.jpg GMT5_mode.png GMT5_external.png
 	GMT_Environment.png GMT_record.png gimp-sliders+panel.png hsv-cone.png
 	formatpicture.png rendering.png)
 
@@ -33,6 +33,4 @@ endforeach (_fig ${_fig_fig})
 
 # Add build target
 add_custom_target (_docs_copy_fig DEPENDS ${_fig_fig_out})
-add_depend_to_target (docs_html_depends _docs_copy_fig)
-add_depend_to_target (docs_pdf_depends _docs_copy_fig)
-add_depend_to_target (docs_man_depends _docs_copy_fig)
+add_depend_to_target (docs_depends _docs_copy_fig)

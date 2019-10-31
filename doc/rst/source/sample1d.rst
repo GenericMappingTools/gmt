@@ -140,6 +140,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To resample the file profiles.tdgmb, which contains
 (time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
 intervals using Akima's spline, use

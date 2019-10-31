@@ -6,22 +6,22 @@ psmeca
 
 .. only:: not man
 
-    psmeca - Plot focal mechanisms on maps
+    Plot focal mechanisms on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+**gmt psmeca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *<format><scale>*\ [/*fontsize*\ [/*offset*]][**+u**\ ]]
-[ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
+[ |-T|\ *nplane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -48,7 +48,7 @@ The following file should give a normal-faulting CMT mechanism:
 
    ::
 
-    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
+    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc2c -h1 << END > test.ps
     lon lat depth str dip slip st dip slip mant exp plon plat
     239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
     END

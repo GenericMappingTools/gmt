@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script that builds a GMT release and makes the compressed tarballs.
 # If run under macOS it also builds the macOS Bundle
 if [ $# -gt 0 ]; then
@@ -30,18 +30,20 @@ if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
-# 2. Make build dir and configure it
+# 2a. Make build dir and configure it
 rm -rf build
 mkdir build
+# 2b. Build list of external programs and shared libraries
+admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
-echo "build-release.sh: Configure and build tar balls"
+echo "build-release.sh: Configure and build tarballs"
 cmake -G Ninja ..
-# 3. Build the release and the tar balls
+# 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
 # 4. get the version string
 Version=`src/gmt --version`
-# 5. Remove the uncompressed tar ball
+# 5. Remove the uncompressed tarball
 rm -f gmt-${Version}-src.tar
 # 6. Install executables before building macOS Bundle
 cmake --build . --target install
@@ -50,15 +52,15 @@ if [ `uname` = "Darwin" ]; then
 	# 7. Build the macOS Bundle
 	cpack -G Bundle
 fi
-# 8. Report m5d hash
-echo "build-release.sh: Report m5d hash per file"
-md5 gmt-${Version}-*
+# 8. Report sha256 hash
+echo "build-release.sh: Report sha256sum per file"
+shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 rm -f ../cmake/ConfigUser.cmake
 if [ -f ../cmake/ConfigUser.cmake.orig ]; then
 	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
 fi
-# 10. Put the products on my ftp site
+# 10. Put the candidate products on my ftp site
 echo "Place gmt-${Version}-src.tar.* on the ftp site"
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
 	echo "Place gmt-${Version}-darwin-x86_64.dmg on the ftp site"

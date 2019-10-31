@@ -35,13 +35,13 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [show] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [show] [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V,;");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -85,7 +85,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *sho
 int GMT_end (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool show = false;
-	char *display = NULL, *task = "show";
+	char *display = NULL, *task = "show", *setting = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -113,7 +113,8 @@ int GMT_end (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the end main code ----------------------------*/
 
-	display = (show) ? task : NULL;
+	if (!((setting = getenv ("GMT_END_SHOW")) && !strcmp (setting, "off")))
+		display = (show) ? task : NULL;
 	
 	if (gmt_manage_workflow (API, GMT_END_WORKFLOW, display))
 		error = GMT_RUNTIME_ERROR;

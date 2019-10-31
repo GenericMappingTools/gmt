@@ -56,6 +56,7 @@ enum gmt_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_ANTARCTICA_SKIP		= 4,	/* Skip Antarctica coastlines */
 	GSHHS_ANTARCTICA_SKIP_INV	= 8,	/* Skip everything BUT Antarctica coastlines */
 	GSHHS_ANTARCTICA_ICE_ID		= 4,	/* The GSHHG ID of the Antarctica ice-coastline polygon */
+	GSHHS_ANTARCTICA_GROUND_ID	= 5,	/* The GSHHG ID of the Antarctica grounding-coastline polygon */
 	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
 struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */

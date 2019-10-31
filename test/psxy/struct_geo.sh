@@ -3,7 +3,7 @@
 ps=struct_geo.ps
 reg=-R0/10/0/10
 # Must temporarily change GMT_USERDIR to the gallery documentation dir
-export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/gallery/users_contrib_symbols
+export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/users_contrib_symbols/geology
 
 gmt psxy $reg -JM12c -T -K -P > $ps
 

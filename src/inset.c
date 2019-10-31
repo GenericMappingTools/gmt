@@ -22,7 +22,7 @@
  * Brief synopsis: gmt inset determines dimensions and offsets for a figure inset.
  * It has two modes of operation:
  *	1) Initialize a new inset, which determines dimensions and sets parameters:
- *	   gmt inset begin -D<params> [-F<panel>] [-V]
+ *	   gmt inset begin -D<params> [-F<panel>] [-M<margins>] [-N] [-V]
  *	   Sugsequent plot calls will be placed in the inset window.
  *	2) Exit inset mode, which resets plot origin and previous -R -J parameters:
  *	   gmt inset end [-V]
@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Manage figure inset setup and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"-JRV"
+#define THIS_MODULE_OPTIONS	"JRVXY"
 
 /* Control structure for inset */
 
@@ -48,7 +48,7 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
@@ -60,13 +60,15 @@ struct INSET_CTRL {
 		bool active;
 		double margin[4];
 	} M;
+	struct N {	/* -N  (no clip) */
+		bool active;
+	} N;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct INSET_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct INSET_CTRL);
-	for (unsigned int k = 0; k < 4; k++) C->M.margin[k] = 0.5 * GMT->session.u2u[GMT_CM][GMT_INCH];	/* 0.5 cm -> inches */
 	return (C);
 }
 
@@ -82,16 +84,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	gmt_mapinset_syntax (API->GMT, 'D', "Design a simple map inset as specified below:");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset.", 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for padding around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for space around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -132,6 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 				Ctrl->D.active = true;
 				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				break;
+
 			case 'F':
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
@@ -142,8 +146,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
-				if (opt->arg[0] == 0) {	/* Accept default margins */
-					for (k = 0; k < 4; k++) Ctrl->M.margin[k] = 0.5 * INSET_CM_TO_INCH;
+				if (opt->arg[0] == 0) {	/* Gave nothing */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: No margins given.\n");
+					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
 					k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->M.margin, 4);
@@ -162,6 +167,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 
+			case 'N':	/* Turn off clipping  */
+				Ctrl->N.active = true;
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -176,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 		}
 	}
-	else {	/* gmt inset end was given, when -D -F -M are not allowed */
+	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -D: Not valid for gmt inset end.\n");
 			n_errors++;
@@ -189,6 +198,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
+		if (Ctrl->N.active) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -N: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -197,12 +210,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
-
 int GMT_inset (void *V_API, int mode, void *args) {
 	int error = 0, fig, k;
 	bool exist;
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, ffile[PATH_MAX] = {""}, Bopts[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -262,11 +273,19 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
 		PSL_command (PSL, "V %% Begin inset\n");
 
-		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset background */
+		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
 		
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
+		
+		/* First get the -B options in place before inset was called */
+		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+		if ((fp = fopen (ffile, "r")) == NULL)
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", ffile);
+		fgets (Bopts, PATH_MAX, fp);
+		gmt_chop (Bopts);
+		fclose (fp);
 		
 		/* Write out the inset information file */
 		
@@ -283,49 +302,39 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		fprintf (fp, "# MARGINS: %g %g %g %g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
 		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
 		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
+		fprintf (fp, "# FRAME: %s\n", Bopts);
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Wrote inset settings to information file %s\n", file);
-		
+		gmt_reset_history (GMT);	/* Prevent gmt from copying previous -R -J history to this inset */
 	}
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
-		int id, j_id;
-		char line[GMT_LEN128] = {""}, str[3] = {"J"};
-			
-		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
-		
-		/* Extract previous -R -J from the inset information file */
-		if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
-			Return (GMT_ERROR_ON_FOPEN);
+
+		char tag[GMT_LEN16] = {""}, legend_justification[4] = {""};
+		double legend_width = 0.0, legend_scale = 1.0;
+
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+			char cmd[GMT_LEN64] = {""};
+			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
+			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current inset figure\n");
+				Return (error);
+			}
 		}
-		/* For now, skip the first 5 comments and get the 6th record which holds the REGION line */
-		for (k = 0; k < 6; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
-		id = gmtlib_get_option_id (0, "R");	/* Get index for the -RP history item */
-		if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
-		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Free what it was */
-		gmt_chop (line);
-		GMT->init.history[id] = strdup (&line[10]);	/* Put back the original figure region */
-		gmt_fgets (GMT, line, GMT_LEN128, fp);		/* Read the PROJ line */
-		fclose (fp);
-		gmt_chop (line);
-		j_id = gmtlib_get_option_id (0, "J");	/* Get the -J index */
-		if (GMT->init.history[j_id])	/* There is prior history for this -J (it should be) */
-			gmt_M_str_free (GMT->init.history[j_id]);	/* Remove it */
-		/* Must now search for actual option since -J only has the code (e.g., -JM) */
-		/* Continue looking for -J<code> */
-		str[1] = line[8];	/* This is the -J code */
-		id = gmtlib_get_option_id (j_id + 1, str);	/* Get the actual -J? code id */
-		if (GMT->init.history[id])	/* There is prior history for this -J (it should be) */
-			gmt_M_str_free (GMT->init.history[id]);	/* Remove it */
-		GMT->init.history[id] = strdup (&line[8]);	/* Insert the original code */
-		for (k = 8; isalpha (line[k]); k++);		/* Find end of code which may be 2 */
-		line[k] = '\0';
-		GMT->init.history[j_id] = strdup (&line[8]);	/* Insert the original code */
+
+		PSL_command (PSL, "PSL_inset_clip 1 eq {cliprestore /PSL_inset_clip 0 def} if\n");	/* Restore graphics state to what it was before the map inset */
+		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
+
+		/* Remove the inset history file */
+		gmt_history_tag (API, tag);
+		sprintf (ffile, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
+		gmt_remove_file (GMT, ffile);
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
+		gmt_reload_history (API->GMT);
 	}
 	
 	gmt_plotend (GMT);

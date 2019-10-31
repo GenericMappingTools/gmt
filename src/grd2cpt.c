@@ -37,7 +37,7 @@
 #define THIS_MODULE_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
-#define THIS_MODULE_KEYS	"<G{+,>C},H->"
+#define THIS_MODULE_KEYS	"<G{+,>C}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->RVh"
 
@@ -471,7 +471,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {
 		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt")) != NULL) *l = 0;	/* Strip off .cpt if used */
 	}
-	else {	/* No table specified; set default rainbow table */
+	else {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup (GMT->init.cpt[0]);
 	}
@@ -494,6 +494,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Pin = Ptrunc;
 	}
 	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
+
+	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
 
@@ -594,9 +596,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 		if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 		if (Ctrl->F.cat) Pout->categorical = 1;
-		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
+		if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 		free_them_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
@@ -725,12 +728,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
-
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
-	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);

@@ -95,7 +95,7 @@ Optional Arguments
 **-C**\ *cpt*
     Selects the master color table to use in the interpolation. Choose
     among the built-in tables (type **grd2cpt** to see the list) or give
-    the name of an existing CPT [Default gives a rainbow CPT].
+    the name of an existing CPT [Default gives the turbo CPT].
     Yet another option is to specify -Ccolor1,color2[,color3,...]
     to build a linear continuous CPT from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
@@ -242,6 +242,13 @@ aspects of the color changes by aliasing the signal.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To get a reasonable and symmetrical color table for the data in the region 0/60/0/60
+from the remote 5m relief file, using the geo color table, try::
+
+    gmt grd2cpt @earth_relief_05m -R0/60/0/60 -Cgeo -Su
+
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
@@ -259,6 +266,7 @@ file relief, run
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
+.. include:: explain_cpt.rst_
 
 See Also
 --------

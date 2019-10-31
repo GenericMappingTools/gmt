@@ -41,46 +41,42 @@ Synopsis
 Examples
 --------
 
-For a quick-and-dirty illuminated color map of the data in the file stuff.nc, with
-the maximum map dimension limited to be 6 inches, try
+.. include:: explain_example.rst_
 
-   ::
+.. include:: oneliner_info.rst_
 
-    gmt grdimage stuff.nc -JX6i+ -I+d -pdf quick
+For a quick-and-dirty illuminated color map of the data in the remote file
+@AK_gulf_grav.nc, try::
 
-To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
-on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
-24, and using 1 degree tickmarks:
+    gmt grdimage @AK_gulf_grav.nc -I+d -B -pdf quick
 
-   ::
+To gray-shade the file AK_gulf_grav.nc on a Lambert map at 1.5 cm/degree
+along the standard parallels 18 and 24, centered on (142W, 55N), try::
 
-    gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 -pdf hawaii_grav_image
+    gmt begin alaska_gray
+      gmt grd2cpt -Cgray @AK_gulf_grav.nc
+      grdimage @AK_gulf_grav.nc -Jl142W/55N/18/24/1.5c -B
+    gmt end show
 
-To create an illuminated color PostScript plot of the gridded data set
+To create an illuminated color plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
-inch/x-unit, tickmarks every 5 units:
-
-   ::
+inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
 
-To create an false color PostScript plot from the three grid files
+To create an false color plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
-tickmarks every 5 units:
-
-   ::
+tickmarks every 5 units::
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
 When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit
+remotely located Jessica Rabbit::
 
-   ::
+    gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
-    gmt grdimage -JI15c -Rd
-        http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg
-        -pdf jess
+.. include:: explain_cpt.rst_
 
 See Also
 --------

@@ -1,8 +1,8 @@
 .. index:: ! gmtspatial
 
-*******
-spatial
-*******
+**********
+gmtspatial
+**********
 
 .. only:: not man
 
@@ -45,7 +45,7 @@ Description
 **spatial** reads one or more data files (which may be multisegment
 files) that contains closed polygons and operates of these polygons in
 the specified way. Operations include area calculation, handedness
-reversals, and polygon intersections. 
+reversals, and polygon intersections.
 
 Required Arguments
 ------------------
@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+p**\ \|\ **n** ]
+**-E**\ **+p**\ \|\ **n**
     Reset the handedness of all polygons to match the given **+p**
     (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
@@ -126,7 +126,7 @@ Optional Arguments
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
-    between paris of polygons) crossovers [Default is both].
+    between pairs of polygons) crossovers [Default is both].
 
 .. _-N:
 
@@ -163,7 +163,7 @@ Optional Arguments
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
     To sort the segments based on their lengths or area, use **s** and
-    append **a** for ascending and **d** for descending order [ascending]. 
+    append **a** for ascending and **d** for descending order [ascending].
     By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
     as polygons, or append **+l** to consider all input as lines, even
@@ -193,14 +193,14 @@ Optional Arguments
     resulting in open polygons. If no argument is given to **-T** we
     create a clipping polygon from **-R** which then is required. Note
     that when the **-R** clipping is in effect we will also look for
-    polygons of length 4 or 5 that exactly match the **-R** clipping polygon. 
+    polygons of length 4 or 5 that exactly match the **-R** clipping polygon.
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
@@ -237,8 +237,13 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-Example
--------
+Examples
+--------
+
+To determine the centroid of the remote GSHHH high-resolution polygon for Australia,
+as well as the land area in km squared, try::
+
+    gmt spatial @GSHHS_h_Australia.txt -fg -Qk
 
 To turn all lines in the multisegment file lines.txt into closed polygons,
 run

@@ -31,6 +31,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -39,6 +40,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
@@ -49,13 +51,17 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
 To plot solid red circles (diameter = 0.2 cm) at the positions listed
-in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
+in the remote file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
 160E, 20S to 30N, with automatic tick-marks and gridlines, use
 
    ::
 
-    gmt plot DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg -pdf map
+    gmt plot @DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg -pdf map
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
@@ -71,6 +77,12 @@ sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
    ::
 
     gmt plot trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 -pdf map
+
+To plot a point with color dictated by the *t.cpt* file for the *z*-value 65, try
+
+   ::
+
+    echo 175 30 | gmt plot -R150/200/20/50 -JM15c -Sc0.5c -Zf65 -Ct.cpt -pdf map
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
@@ -136,7 +148,7 @@ See Also
           gmt plot -B t.txt -Gred -W2p -L+xr -X3.25i</br>
           gmt plot -B t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i</br>
           gmt plot -B t.txt -Gred -W2p -L+x4.5 -X3.25i</br>
-        gmt end</br>
+        gmt end show</br>
         </p>
     </div>
    </div>

@@ -19,6 +19,6 @@ l=`gmt convert -A dump.txt tmp -o2,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN
 gmt grd2xyz field_h.grd -s -o2 > tmp
 h=`gmt convert -A dump.txt tmp -o3,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
 echo $z $s $l $h
-if [ ! "$z $s $l $h" = "1 1 1 1"] ; then
+if [ ! "$z $s $l $h" = "1 1 1 1" ] ; then
  	echo "$z $s $l $h" > fail
 fi

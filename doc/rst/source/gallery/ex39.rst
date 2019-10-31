@@ -13,10 +13,10 @@ used here is :doc:`sph2grd </sph2grd>`.
 Note that we use a special format in :doc:`colorbar </colorbar>` so that the
 annotations will include the separators for the thousands.
 
-.. literalinclude:: /_verbatim/example_39.txt
+.. literalinclude:: /_verbatim/ex39.txt
    :language: bash
 
-.. figure:: /_images/example_39.*
+.. figure:: /_images/ex39.*
    :width: 500 px
    :align: center
 

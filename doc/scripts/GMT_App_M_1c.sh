@@ -2,8 +2,9 @@
 #
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
+#
 # Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 18 scientific colormaps
+# 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
 cat << EOF > tt.lis
@@ -40,7 +41,7 @@ let n2=n
 dy=0.75
 y0=`gmt math -Q $n2 $dy MUL 0.5 MUL =`
 
-gmt begin GMT_App_M_1c ps
+gmt begin GMT_App_M_1c
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0 
 
@@ -68,4 +69,4 @@ do
 	y=`gmt math -Q $y $dy ADD =`
 	y2=`gmt math -Q $y2 $dy ADD =`
 done
-gmt end
+gmt end show

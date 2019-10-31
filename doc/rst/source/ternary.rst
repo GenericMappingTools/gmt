@@ -46,14 +46,16 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
 To plot circles (diameter = 0.1 cm) on a 6-inch-wide ternary diagram at the positions listed
 in the file ternary.txt, with default annotations and gridline spacings, using the
-specified labeling, tru
+specified labeling, try::
 
-   ::
-
-    gmt ternary ternary.txt -R0/100/0/100/0/100 -JX6i -Xc -Baafg+l"Water component"+u" %"
-        -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %"
+    gmt ternary ternary.txt -R0/100/0/100/0/100 -JX6i -Xc -Baafg+l"Water component"+u" %" \
+        -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
         -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone -pdf map
 
 

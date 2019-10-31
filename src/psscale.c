@@ -1125,6 +1125,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			}
 
 			/* Now we place annotations */
+
+			PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
@@ -1170,6 +1172,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 			}
+			PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 		}
 
 		if (label[0]) {	/* Add label */
@@ -1391,6 +1394,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 			/* Finally plot annotations */
 
+			PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
@@ -1440,6 +1444,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
 			}
+			PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 		}
 
 		if (label[0]) {	/* Add label */
@@ -1631,10 +1636,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 1;	/* Do not rescale dimensions */
+		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.candy = 0;	/* Reset candy flag */
+		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
 	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */

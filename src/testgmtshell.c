@@ -32,7 +32,7 @@ int main (int argc, char *argv[]) {
 	int k, debug = 0;
 	char line[BUFSIZ] = {""};	/* Input line buffer */
 	char first[128] = {""}, module[32] = {""}, args[1024] = {""};
-	FILE *fp = stdin;
+	FILE *fp = NULL;
 	struct GMTAPI_CTRL *API = NULL;	/* GMT API control structure */
 
 	for (k = 1; k < argc; k++) {
@@ -45,6 +45,7 @@ int main (int argc, char *argv[]) {
 
 	/* 2. Loop over all commands and run them as is */
 	
+	if (fp == NULL) fp = stdin;
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 		k = sscanf (line, "%s %s %[^\n]", first, module, args);

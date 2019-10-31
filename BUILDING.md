@@ -30,6 +30,10 @@ For developers and advanced users:
 - [Packaging](#packaging)
 - [Updating the development source codes](#updating-the-development-source-codes)
 
+For package maintainers:
+
+- [Packaging GMT](#packaging-gmt)
+
 ## Build and runtime dependencies
 
 To build GMT, you must install:
@@ -52,14 +56,13 @@ For movie-making capabilities these executables are needed:
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
 - [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
-For viewing plots and documentation under Linux via gmt docs, your need xdg-open:
+For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 - xdg-open (Unified open for a variety of files)
 
 Optionally install for building GMT documentations and running tests:
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage, HTML and PDF documentation)
-- [TeXLive](https://www.tug.org/texlive/) (for building the PDF documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need to download support data:
@@ -78,7 +81,7 @@ Install the GMT dependencies with:
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
 
     # Install optional dependencies
-    sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -91,9 +94,6 @@ Install the GMT dependencies with:
 
     # to build the documentation
     sudo apt-get install python-sphinx
-
-    # to build the documentation in PDF format
-    sudo apt-get install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
 
 ### RHEL/CentOS
 
@@ -108,11 +108,11 @@ You then can install the GMT dependencies with:
     sudo yum install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo yum install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -124,9 +124,6 @@ You then can install the GMT dependencies with:
     # to build the documentation
     sudo yum install python-sphinx
 
-    # to build the documentation in PDF format
-    sudo yum install python3-sphinx-latex
-
 ### Fedora
 
 For Fedora, there are prepackaged development binaries available.
@@ -136,7 +133,7 @@ Install the GMT dependencies with:
     sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
 
     # Install optional dependencies
-    sudo dnf install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -151,9 +148,6 @@ Install the GMT dependencies with:
 
     # to build the documentation
     sudo dnf install python-sphinx
-
-    # to build the documentation in PDF format
-    sudo dnf install python-sphinx-latex
 
 ### Archlinux
 
@@ -209,7 +203,7 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
     brew install cmake curl netcdf ghostscript
 
     # Install optional dependencies
-    brew install gdal pcre fftw
+    brew install gdal pcre2 fftw
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -219,9 +213,6 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
 
     # to build the documentation
     brew install sphinx-doc
-
-    # to build the documentation in PDF format
-    brew cask install mactex-no-gui
 
 ### Windows
 
@@ -253,28 +244,29 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
     vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    # NOTE: clapack and openblas currently aren't available for x86-windows.
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
 
-After installing these dependency libraries, you need to add the bin path
-(i.e. `C:\vcpkg\installed\x64-windows\bin`) to the system PATH,
-to allow executables find the DLL shared libraries.
+After installing these dependency libraries, you also need to add
+vcpkg's bin path (i.e. `C:\vcpkg\installed\x64-windows\bin`) and
+GDAL's bin path (i.e. `C:\vcpkg\installed\x64-windows\tools\gdal`),
+to the system environmental variable `PATH`,
+so that GMT executables can find the DLL shared libraries and
+the GDAL tools (`gdal_translate` and `ogr2ogr`).
 
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from the [GMT website](https://www.generic-mapping-tools.org) and
-[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
+are available from the [GMT main site](https://www.generic-mapping-tools.org).
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
     git clone https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
-from any of the [GMT FTP sites](MIRRORS.md).
+from the [GMT main site](https://www.generic-mapping-tools.org).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
 
@@ -340,7 +332,7 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAK
 cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x86
 ```
 
-For advanced users, you can append the option ``-G Ninja`` to use the
+For advanced users, you can append the option `-G Ninja` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
@@ -357,7 +349,7 @@ cmake --build .
 cmake --build . --config Release
 ```
 
-which will compile all the programs. You can also append ``--parallel [<jobs>]``
+which will compile all the programs. You can also append **--parallel** [*jobs*]
 to enable parallel build, in which *jobs* is the maximum number of concurrent
 processes to use when building. If *jobs* is omitted the native build tool's
 default number is used.
@@ -379,13 +371,21 @@ UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
-Using ``sudo`` will often do the trick.
+Using `sudo` will often do the trick.
 
 ## Setting path
 
-Make sure you set the PATH to include the directory containing the GMT executables
-if this is not a standard directory like `/usr/local/bin`. Then, you should now be able to
-run GMT programs.
+Make sure you set the `PATH` to include the directory containing the GMT executables
+if this is not a standard directory like `/usr/local/bin`.
+
+For Linux/macOS users, open your SHELL configuration file (usually `~/.bashrc`)
+and add the line below to it.
+
+```
+export PATH=${PATH}:/path/to/gmt/bin
+```
+
+Then, you should now be able to run GMT programs.
 
 ---
 
@@ -396,17 +396,14 @@ run GMT programs.
 The GMT documentations are available in different formats and can be generated with:
 
 ```
-cmake --build . --target docs_man           # UNIX manual pages
-cmake --build . --target docs_html          # HTML manual, tutorial, cookbook, and API reference
-cmake --build . --target docs_pdf           # PDF tutorial, cookbook, and API reference
-cmake --build . --target docs_pdf_shrink    # Like docs_pdf but with reduced size
+cmake --build . --target docs_man   # UNIX manual pages
+cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
 ```
 
-To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/en/master/)
-documentation builder, and for PDFs you also need LaTeX. You can choose to install the
-documentation files from an external location instead of generating the
-Manpages, PDF, and HTML files from the sources. This is convenient if Sphinx
-and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
+To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
+documentation builder. You can choose to install the documentation files
+from an external location instead of generating the Manpages, and HTML files from the sources.
+This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 
 
@@ -484,3 +481,98 @@ cmake --build . --target install
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
 run cmake again manually.
+
+---
+
+## Packaging GMT
+
+**These recommendations are directed at package maintainers of GMT.**
+
+First split off DCW-GMT and GSHHG into separate architecture independent packages,
+e.g., `dcw-gmt` and `gshhg-gmt`, because they have a different development cycle.
+Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt/` or
+`/usr/share/gmt/{dcw,gshhg}/`. Then configure GMT as shown below.
+
+### DCW-GMT
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/dcw/
+- **Summary**: Digital Chart of the World (DCW) for GMT
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
+- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector basemap of the world,
+  available from the Princeton University Digital Map and Geospatial Information Center.
+  It contains more state boundaries (the largest 8 countries are now represented) than the original data source.
+  Information about DCW can be found on Wikipedia (https://en.wikipedia.org/wiki/Digital_Chart_of_the_World).
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GSHHG
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/gshhg/
+- **Summary**: Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
+- **Description**: GSHHG is a high-resolution shoreline data set amalgamated from
+  two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
+  and CIA World Data Bank II (WDBII). GSHHG contains vector descriptions at five different
+  resolutions of land outlines, lakes, rivers, and political boundaries.
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GMT
+
+- **Homepage**: https://www.generic-mapping-tools.org/
+- **Summary**: Generic Mapping Tools
+- **License**: GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
+- **Source**:
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
+- **Description**: GMT is an open-source collection of command-line tools for
+  manipulating geographic and Cartesian data sets (including filtering, trend fitting,
+  gridding, projecting, etc.) and producing PostScript illustrations ranging from simple
+  x–y plots via contour maps to artificially illuminated surfaces and 3D perspective views.
+  It supports many map projections and transformations and includes supporting data
+  such as coastlines, rivers, and political boundaries and optionally country polygons.
+- **Build dependencies**:
+    - cmake
+    - gcc
+    - curl
+    - netcdf
+    - gdal
+    - pcre
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt
+- **Runtime dependencies**:
+    - ghostscript (*required*)
+    - curl (*required*)
+    - netcdf (*required*)
+    - gdal
+    - pcre
+    - fftw
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt (at least the crude resolution GSHHG files are mandatory)
+- **CMake arguments**:
+    ```
+    -DCMAKE_C_FLAGS=-fstrict-aliasing
+    -DCMAKE_INSTALL_PREFIX=${prefix}
+    -DDCW_ROOT=${prefix}/share/gmt/dcw
+    -DGSHHG_ROOT=${prefix}/share/gmt/gshhg
+    -DNETCDF_ROOT=${prefix}
+    -DFFTW3_ROOT=${prefix}
+    -DGDAL_ROOT=${prefix}
+    -DPCRE_ROOT=${prefix}
+    -DGMT_INSTALL_MODULE_LINKS=off
+    -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
+    -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
+    ```
+
+Note that you have to configure and build out-of-source.
+It is safe to make a parallel build with `make -j`.
+It is expected that the GMT supplements plugin be distributed with the core programs.

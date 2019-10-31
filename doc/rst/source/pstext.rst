@@ -6,14 +6,14 @@ pstext
 
 .. only:: not man
 
-    pstext - Plot or typeset text on maps
+    Plot or typeset text on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pstext** [ *textfiles* ] |-J|\ *parameters*
+**gmt pstext** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
@@ -44,6 +44,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot just the red outlines of the (lon lat text strings) stored in the
 file text.txt on a Mercator plot with the given specifications, use

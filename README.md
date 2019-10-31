@@ -1,10 +1,10 @@
 # Generic Mapping Tools
 
-[![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
 [![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/latest?definitionId=2&branchName=master)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
+[![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
 ## What is GMT?
 
@@ -38,12 +38,12 @@ hobbyists.
 ## A reminder
 
 If you think it is appropriate, you may consider paying us back by including
-our latest EOS article in the reference list of your future publications that
+our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
-> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013),
-> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45),
-> 409-410, doi:[10.1002/2013EO450001](https://doi.org/10.1002/2013EO450001)
+> Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+> The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+> https://doi.org/10.1029/2019GC008515
 
 ## Install GMT
 
@@ -60,8 +60,6 @@ Note there are three GMT tar archives available (#3 is optional):
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
-Alternatively you may get GMT from any of the [FTP sites](MIRRORS.md).
-Try the site that is closest to you to minimize transmission times:
 
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
@@ -87,7 +85,7 @@ manipulation. Currently, the supplemental archive include these directories:
 Before running programs, there are a few things you should do/know:
 
     Read carefully the documentation for the gmt system. This can be
-    found as both PDF and HTML files in the doc/pdf|html directories.
+    found as HTML files in the doc/html directories.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms. Then, before running individual gmt programs, read

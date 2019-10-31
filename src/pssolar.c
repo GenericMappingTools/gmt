@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
-	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip path instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
@@ -145,7 +145,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute terminators\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X,b,c,o,p");
 	GMT_Option (API, "t,.");
 
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.clip = true;
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', " "); n_errors++;
+					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
 				}
 				break;
 			case 'I':		/* Infos -I[x/y][+d<date>][+z<TZ>] */
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
@@ -397,8 +397,15 @@ int GMT_solar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
-		return (GMT_NOT_A_VALID_MODULE);
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		bool print_postion = false;
+		if (API->error) return (API->error);    /* Set or get option list */
+		print_postion = (GMT_Find_Option (API, 'I', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!print_postion) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
 	}
 	return GMT_pssolar (V_API, mode, args);
 }

@@ -1,7 +1,7 @@
 .. index:: ! postscriptlight
 
 ***************
-postscriptlight
+PostScriptLight
 ***************
 
 .. only:: not man
@@ -99,15 +99,17 @@ corner to which the *x* and *y* coordinates of the subroutine call
 apply. Nine different values are possible, as shown schematically in
 this diagram:
 
-    9------------10----------- 11
+  ::
 
-    \|                         \|
-
-    5             6             7
-
-    \|                          \|
-
-    1------------ 2------------ 3
+    9 ------------ 10 ----------- 11
+    
+    |                             |
+    
+    5              6              7
+    
+    |                             |
+    
+    1 ------------ 2 ------------ 3
 
 The box represents the text or image. E.g., to plot a text string with
 its center at (*x*, *y*), you must use *justify* == 6. *justify* == 0
@@ -321,6 +323,11 @@ affect the current state of parameters such as line and fill attributes.
     PDF transparency, set *rgb*\ [3] to a value between 0 (opaque) and 1
     (fully transparent).
 
+**long PSL_setcurrentpoint** (**struct PSL_CTRL** *\*P*, **double**
+*x*, **double** *y*)
+
+    Sets the current point to the location given by (*x*, *y*).
+
 **long PSL_setimage** (**struct PSL_CTRL** *\*P*, **long**
 *image_no*, **char** *\*imagefile*, **unsigned char** *\*image*,
 **long** *dpi*, **long dim[3], **double** *f_rgb*\ [], **double** *b_rgb*\ [])
@@ -438,6 +445,14 @@ affect the current state of parameters such as line and fill attributes.
     PSL_MITER_DEFAULT (35) gives the default PS miter; other values
     are interpreted as the cutoff acute angle (in degrees) when mitering
     becomes active.
+
+**long PSL_settextmode** (**struct PSL_CTRL** *\*P*, **long** *mode*)
+
+    Changes between the two modes PSL_TXTMODE_MINUS and PSL_TXTMODE_HYPHEN.
+    When the minus mode is active we assume we are plotting annotation
+    strings with numbers and all hyphens are translated to minus codes
+    which differs based on char sets.  Likewise, in hyphen mode any
+    minus character is typeset as a hyphen in the current char set.
 
 **long PSL_settransparency** (**struct PSL_CTRL** *\*P*, **double**
 *\*transparency*)

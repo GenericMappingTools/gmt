@@ -23,7 +23,7 @@
  * Brief synopsis: Reads an existing CPT and desired output grid
  * and produces a GMT CPT.  Can be inverted [-I] or made to be
  * continuous [-Z].  Discrete color jumps in CPTs are handled
- * correctly.  Default color table is rainbow.
+ * correctly.  Default color table is GMT_DEFAULT_CPT_NAME.
  *
  */
 
@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
-#define THIS_MODULE_KEYS	">C},ED(,SD(,TD(,<D(,H->"
+#define THIS_MODULE_KEYS	">C},ED(,SD(,TD(,<D("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->Vbdhi"
 
@@ -587,7 +587,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
 
 	Return (GMT_NOERROR);
 }

@@ -6,14 +6,14 @@ grdimage
 
 .. only:: not man
 
-    grdimage - Project grids or images and plot them on maps
+    Project grids or images and plot them on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdimage** *grd_z* \| *img* \| *grd_r grd_g grd_b*
+**gmt grdimage** *grd_z* \| *img* \| *grd_r grd_g grd_b*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -43,6 +43,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 For a quick-and-dirty illuminated color map of the data in the file stuff.nc, with
 the maximum map dimension limited to be 6 inches, try

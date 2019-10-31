@@ -1,25 +1,21 @@
 # Citing GMT
 
 If you think it is appropriate, you may consider paying us back by including
-our latest EOS article in the reference list of your future publications that 
+our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
-> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013), 
-> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45), 
-> 409-410, doi:[10.1002/2013EO450001](https://doi.org/10.1002/2013EO450001)
+> Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+> The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+> https://doi.org/10.1029/2019GC008515
 
-Here is a Bibtex entry for LaTeX users:
+Here is a BibTeX entry for LaTeX users:
 
 ```
-@article{wesseletal2013,
-  title = {Generic {{Mapping Tools}}: {{Improved Version Released}}},
-  author = {Wessel, Paul and Smith, Walter H. F. and Scharroo, Remko and Luis, Joaquim and Wobbe, Florian},
-  year = {2013},
-  journal = {Eos, Transactions American Geophysical Union},
-  volume = {94},
-  number = {45},
-  pages = {409-410},
-  issn = {2324-9250},
-  doi = {10.1002/2013EO450001},
+@article{doi:10.1029/2019GC008515,
+  title = {The {Generic Mapping Tools} Version 6},
+  author = {Wessel, P. and Luis, J. and Uieda, L. and Scharroo, R. and Wobbe, F. and Smith, W.H.F. and Tian, D.},
+  year={2019},
+  journal = {Geochemistry, Geophysics, Geosystems},
+  doi = {10.1029/2019GC008515},
 }
 ```

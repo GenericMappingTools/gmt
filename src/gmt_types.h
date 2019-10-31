@@ -128,15 +128,22 @@ struct GMT_FIGURE {
 	char options[GMT_LEN256];	/* Optional arguments to psconvert (e.g., -A, -E, ...) */
 };
 
+struct GMT_INSET {
+	bool active;	/* true the first time we set up scaling for a map inset */
+	bool first;	/* true the first time we plot into the map inset */
+	double w, h;	/* Width and height of current inset */
+	double dx, dy;	/* offsets */
+};
+
 /*! For keeping track of GMT subplots under modern mode */
 struct GMT_SUBPLOT {
-	unsigned int active;		/* 1 if subplot is in effect */
-	unsigned int row, col;		/* Current panel position e.g., 0,0 */
-	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	unsigned int active;	/* 1 if subplot is in effect */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
-	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
-	unsigned int parallel;		/* 1 for axis-parallel annotations [0 for standard] */
-	int dir[2];			/* Cartesian axis direction: +1 or -1 [1/1] */
+	unsigned int no_scaling;	/* 1 when we are plotting a scale, bar, etc and not map and dont want to auto-scale plot */
+	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
+	int row, col;			/* Current panel position e.g., 0,0 */
+	int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	int dir[2];				/* Cartesian axis direction: +1 or -1 [1/1] */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
@@ -147,9 +154,9 @@ struct GMT_SUBPLOT {
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
-	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
-	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
-	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
+	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
+	char fill[GMT_LEN64];		/* Panel fill color */
+	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
@@ -321,6 +328,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	double *y;
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
+	struct GMT_INSET inset;		/* Current inset settings */
 };
 
 struct GMT_CURRENT {
@@ -404,7 +412,7 @@ struct GMT_SESSION {
 	char *DATADIR;			/* Path to one or more directories with data sets */
 	char *TMPDIR;			/* Path to the directory directory for isolation mode */
 	char *CUSTOM_LIBS;		/* Names of one or more comma-separated GMT-compatible shared libraries */
-	char *DATAURL;			/* URL where to get remote @files */
+	char *DATASERVER;		/* URL where to get remote @files */
 	char **user_media_name;		/* Length of array with custom media dimensions */
 	struct GMT_FONTSPEC *font;		/* Array with font names and height specification */
 	struct GMT_MEDIA *user_media;		/* Array with custom media dimensions */

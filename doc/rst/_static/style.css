@@ -1,0 +1,32 @@
+/* Set max width of the content */
+.wy-nav-content {
+    max-width: 1000px;
+}
+
+/* See https://github.com/GenericMappingTools/gmt/pull/1564 */
+.rst-content .highlighted{
+    padding:0 0px;
+}
+
+/* See https://github.com/GenericMappingTools/gmt/pull/1605 */
+.rst-content dl dt {
+    font-weight: normal;
+}
+
+/* https://github.com/readthedocs/sphinx_rtd_theme/pull/775 */
+.hlist {
+    width: 100%;
+}
+
+/* style for example gallery */
+.gmtgallary li {
+    list-style: none;
+    width: 180px;
+    display: inline-grid;
+    margin-right: 15px;
+}
+
+/* Set tab-width to 2 spaces */
+.highlight {
+    tab-size: 2;
+}

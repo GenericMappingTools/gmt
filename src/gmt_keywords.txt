@@ -59,9 +59,10 @@ FORMAT_TIME_STAMP		# How to format time for GMT time-stamps
 #-------------------------------------------------------
 GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
 GMT_AUTO_DOWNLOAD		# Download GMT-known files or not
-GMT_DATA_URL		# Where to download from [SOEST]
-GMT_DATA_URL_LIMIT		# Max file size to download remotely
+GMT_DATA_SERVER			# Where to download from [SOEST]
+GMT_DATA_SERVER_LIMIT		# Max file size to download remotely
 GMT_FFT				# Which FFT algorithm to use
+GMT_GRAPHICS_FORMAT		# Default graphics format in modern mode
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
 GMT_LANGUAGE			# Language used for annotations

@@ -228,6 +228,8 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To grid 5 by 5 minute gravity block means from the ASCII data in
 hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
 *convergence_limit* = 0.1 milligal, writing the result to a file called

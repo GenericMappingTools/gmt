@@ -56,9 +56,10 @@ struct GMT_GDALWRITE_CTRL {
 		float *cpt;
 	} C;
 	struct  GW_P {             /* Proj4/WKT string */
-		bool   active;
-		char  *ProjRefPROJ4;
-		char  *ProjRefWKT;
+		bool  active;
+		char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
+		char *ProjRefWKT;               /* To store a referencing system string in WKT format */
+		int   ProjRefEPSG;              /* To store a referencing system EPSG code */
 	} P;
 };
 

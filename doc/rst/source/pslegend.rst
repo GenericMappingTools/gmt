@@ -6,15 +6,15 @@ pslegend
 
 .. only:: not man
 
-    pslegend - Plot legends on maps
+    Plot legends on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pslegend** [ *specfile* ]
-|-D|\ *refpoint* ]
+**gmt pslegend** [ *specfile* ]
+|-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
@@ -37,13 +37,15 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
    ::
 
      gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2 \
-     -C0.1i/0.1i -B5f1 << EOF >> map.ps
+        -C0.1i/0.1i -B5f1 << EOF >> map.ps
      # Legend test for pslegend
      # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
      # H is header, L is label, S is symbol, T is paragraph text, M is map scale.

@@ -16,7 +16,7 @@
 #  Contact info: www.generic-mapping-tools.org
 #
 # gmt-config simply reports various paths and settings that are useful
-# to developers that need to include/link GMT5 resources.
+# to developers that need to include/link GMT resources.
 #--------------------------------------------------------------------*/
 #
 GMT_EXEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -35,7 +35,8 @@ else
 fi
 CONFIG_LIBS="-L$CONFIG_LIBDIR -lgmt"
 CONFIG_CC="@CMAKE_C_COMPILER@"
-CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
+CONFIG_DATADIR=$($GMT_EXEDIR/gmt --show-datadir)
+CONFIG_DATASERVER=$($GMT_EXEDIR/gmt --show-dataserver)
 CONFIG_PLUGINDIR=$($GMT_EXEDIR/gmt --show-plugindir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)
@@ -67,7 +68,7 @@ else
   CONFIG_LAPACK_ENABLED=no
 fi
 
-if [ "@CONFIG_OPENMP_MESSAGE@" == "enabled" ]; then
+if [ "@GMT_CONFIG_OPENMP_MESSAGE@" == "enabled" ]; then
   CONFIG_OPENMP_ENABLED=yes
 else
   CONFIG_OPENMP_ENABLED=no
@@ -92,6 +93,7 @@ Available values for OPTIONS include:
   --cc          C compiler
   --cflags      pre-processor and compiler flags
   --datadir     GMT's data directories
+  --dataserver  URL of the remote GMT data server
   --dcw         location of used DCW
   --dep-libs    dependent libraries
   --gshhg       location of used GSHHG
@@ -121,7 +123,8 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --libs        -> $CONFIG_LIBS
 
   --bits        -> $CONFIG_BITS
-  --datadir     -> $CONFIG_DATA
+  --datadir     -> $CONFIG_DATADIR
+  --dataserver  -> $CONFIG_DATASERVER
   --dcw         -> $CONFIG_DCW
   --dep-libs    -> ${CONFIG_DEP_LIBS//;/ }
   --gshhg       -> $CONFIG_GSHHG
@@ -161,7 +164,11 @@ for arg in "$@"; do
     ;;
 
     --datadir)
-    echo $CONFIG_DATA
+    echo $CONFIG_DATADIR
+    ;;
+
+    --dataserver)
+    echo $CONFIG_DATASERVER
     ;;
 
     --dcw)

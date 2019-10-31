@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Startup script for GMT.app in MacOSX.
+# Startup script for GMT.app in macOS.
 # Setup environment and start Terminal.
 
 if [ "$1" = "GMT_PROMPT" ]; then
@@ -10,16 +10,20 @@ if [ "$1" = "GMT_PROMPT" ]; then
   cd "${OLDPWD}"
 
   export PATH="${BUNDLE_RESOURCES}/@GMT_BINDIR@:${PATH}"
+  export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj6"
   function gmt () { "${BUNDLE_RESOURCES}/@GMT_BINDIR@/gmt" "$@"; }
   export -f gmt
   source "${BUNDLE_RESOURCES}/share/tools/gmt_functions.sh"
   unset DYLD_LIBRARY_PATH
   gmt
+  echo -e "Note 1: Remember to add ${BUNDLE_RESOURCES}/bin to your PATH\nif you want to use GMT outside of the terminal or in scripts.\n"
+  echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see ${BUNDLE_RESOURCES}/share/Licenses for details.\n"
+
   _usershell=$(dscl . -read "/Users/$USER" UserShell)
   _usershell=${_usershell##* }
   if [ ${_usershell} = ${_usershell%bash} ]; then
     # not using bash as default shell
-    echo -e "Warning: your default shell is ${_usershell}.  GMT module commands are only available in BASH.  Change your default shell or make sure ${BUNDLE_RESOURCES}/@GMT_BINDIR@ is in your PATH and use ${BUNDLE_RESOURCES}/share/tools/gmt5syntax to convert your old GMT scripts.\n"
+    echo -e "Warning: your default shell is ${_usershell}. GMT commands completions are only available in BASH.\n"
     exec ${_usershell}
   fi
   # bash: start interactive shell and source gmt completions
@@ -29,6 +33,8 @@ if [ "$1" = "GMT_PROMPT" ]; then
     test -f ~/.bashrc && source ~/.bashrc
     source "${BUNDLE_RESOURCES}/share/tools/gmt_completion.bash"
     unset DYLD_LIBRARY_PATH
+    # Assist modern mode scripts by setting a unique session name
+    export GMT_SESSION_NAME=$$
 EOF
   exec /bin/bash --rcfile "${_temp_bashrc}" -i
 fi

@@ -42,8 +42,8 @@ Required Arguments
 
 **-A**\ *mode*\ [*arg*]
     Specify the hole-filling algorithm to use.  Choose from **c** for constant
-    fill and append the constant value, **n** for nearest neighbor and optionally
-    append a search radius in pixels, or **s** for bicubic spline [NOT IMPLEMENTED YET].
+    fill (and append the constant value), **n** for nearest neighbor (and optionally
+    append a search radius in *pixels*), or **s** for minimum curvature splines.
 
 .. _-G:
 
@@ -84,6 +84,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To identify all regions with NaNs in the grid data.grd and create a listing of the
 bounding coordinates of rectangular regions that would cover these NaN areas, try

@@ -1,33 +1,71 @@
 # Configuration for Azure Pipelines
 ########################################################################################
 
-# Only build the master branch, tags, and PRs (on by default) to avoid building random
-# branches in the repository until a PR is opened.
+# Only build the master, 6.x and 5.4 branches, tags, and PRs (on by default)
+# to avoid building random branches in the repository until a PR is opened.
 trigger:
   branches:
     include:
     - master
-    - 6.0
+    - 6.?
     - 5.4
     - refs/tags/*
 
-# Scheduled build
-schedules:
-- cron: "0 0 * * *"
-  displayName: Scheduled daily build
-  branches:
-    include:
-    - master
-    - 6.0
-  always: true
-- cron: "0 0 1 * *"
-  displayName: Scheduled monthly build
-  branches:
-    include:
-    - 5.4
-  always: true
-
 jobs:
+
+# Linux - Compile only
+########################################################################################
+- job:
+  displayName: 'Linux | Compile only'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    BUILD_DOCS: false
+    DEPLOY_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
+# Linux - Build docs + Deploy docs + Package
+########################################################################################
+- job:
+  displayName: 'Linux | Build docs + Deploy docs + Package'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    BUILD_DOCS: true
+    DEPLOY_DOCS: true
+    PACKAGE: true
+    TEST: false
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
+# Linux - Test
+########################################################################################
+- job:
+  displayName: 'Linux | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    BUILD_DOCS: false
+    DEPLOY_DOCS: false
+    PACKAGE: false
+    TEST: true
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
 
 # Mac - Compile only
 ########################################################################################
@@ -40,6 +78,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: false
 
@@ -57,6 +96,7 @@ jobs:
 
   variables:
     BUILD_DOCS: true
+    DEPLOY_DOCS: false
     PACKAGE: true
     TEST: false
 
@@ -74,6 +114,7 @@ jobs:
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: true
 
@@ -88,10 +129,11 @@ jobs:
   timeoutInMinutes: 120
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: false
 
@@ -106,10 +148,11 @@ jobs:
   timeoutInMinutes: 120
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: true
+    DEPLOY_DOCS: false
     PACKAGE: true
     TEST: false
 
@@ -124,10 +167,11 @@ jobs:
   timeoutInMinutes: 360
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
 
   variables:
     BUILD_DOCS: false
+    DEPLOY_DOCS: false
     PACKAGE: false
     TEST: true
 

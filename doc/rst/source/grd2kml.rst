@@ -57,13 +57,13 @@ Optional Arguments
 
 **-C**\ *cpt*
     Name of the color palette table (CPT). Alternatively,
-    supply the name of a GMT color master dynamic CPT [rainbow] to
+    supply the name of a GMT color master dynamic CPT [turbo] to
     automatically determine a continuous CPT from
     the grid's z-range.  If the dynamic CPT has a default range then
     that range will be imposed instead.
     Another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
     to build a linear continuous CPT from those colors automatically, scaled to fit the data range.
-    In this case *color1* etc can be a r/g/b triplet, a color name,
+    In this case *color1*, etc., can be a *r/g/b* triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
 .. _-E:
@@ -154,6 +154,8 @@ illumination angle the automatic illumination can be used instead.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
 the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,

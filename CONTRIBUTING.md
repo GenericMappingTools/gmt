@@ -76,8 +76,9 @@ problem.
 ## Editing the Documentation
 
 If you're browsing the documentation and notice a typo or something that could be
-improved, please consider letting us know by [creating an issue](#reporting-a-bug) or
-submitting a fix (even better :star2:).
+improved, please consider letting us know. You can either
+[create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
+at the top right corner of the documentation, and submit a fix (even better :star2:).
 
 
 ## Contributing Code
@@ -136,7 +137,7 @@ Some things that will increase the chance that your pull request is accepted qui
   non-obvious things.
 * Include an example of new features in the gallery or tutorials.
 
-Pull requests will automatically have tests run by TravisCI.
+Pull requests will automatically have tests run by Azure Pipelines.
 Github will show the status of these checks on the pull request.
 Try to get them all passing (green).
 If you have any trouble, leave a comment in the PR or

@@ -6,14 +6,14 @@ pscoast
 
 .. only:: not man
 
-    pscoast - Plot continents, shorelines, rivers, and borders on maps
+    Plot continents, shorelines, rivers, and borders on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscoast** |-J|\ *parameters*
+**gmt pscoast** |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
@@ -48,6 +48,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in

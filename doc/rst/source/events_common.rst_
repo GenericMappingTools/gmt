@@ -36,7 +36,8 @@ Required Arguments
     from the data file's third column (fourth if **-C** is used). Note: Not all the symbols that
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
-    be specified.
+    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
+    by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` unless they have **c**, **i**, or **p** appended.
 
 .. _-T:
 
@@ -72,19 +73,19 @@ Optional Arguments
 
 .. _-E:
 
-**Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*]
+**-Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*]
     Sets the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
-    the event in time by *dt*\ ; or use **O** to only shift the start time, effectively shortening
+    the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
     the duration of the event), **+r** to indicate the
     duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
-    tp specify the duration of the decay phase, and **+f** to set the duration of the
-    fade phase.  These are all optional, and can be set separately for symbols and texts.
-    if neither **s** or **t** is given then we set the time knots for both features.
+    to specify the duration of the decay phase, and **+f** to set the duration of the
+    fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
+    If neither **s** or **t** is given then we set the time knots for both features.
 
 .. _-F:
 
-**-F**\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*] \|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*] \| **+z**\ [*format*]]
     By default, event label text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by specifying up to three
@@ -104,7 +105,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [*length*\ \|\ **t**\ ]
-    Specify the length of the event.  Append a *length* if all events have the same length,
+    Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
     or leave blank if lengths can be read from the input file after the *time* column.
 
@@ -113,7 +114,7 @@ Optional Arguments
 **-M**\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*]
     Sets the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
     the *rise* interval [1, 1, and 100, respectively].
-    Optionally, use **+c** to set the corresponding terminal value during the coda [100].
+    Optionally, use **+c** to set the corresponding terminal value during the coda [0, 0, 100, respectively].
 
 .. _-Q:
 
@@ -221,3 +222,11 @@ and can be selected or ignored as you wish via **-E**.  You can choose to specif
 of the three time histories.  By default the symbol size is constant, there is no intensity
 variation, and all symbols are opaque.  If trailing text is plotted (requires **-Et**) then
 only a transparency time-function is used.
+
+Sorting the data
+----------------
+
+While only the events that should be visible will be plotted at the given time set via **-T**,
+the order of plotting is simply given by the order of records in the file.  Thus, if the
+file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
+To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` **-N** option.

@@ -6,4 +6,4 @@ gmt begin inset ps
 		gmt text -F+f12p+cTR+tINSET
 	gmt inset end
 	gmt text -F+f18p+cBL+tMAP -Dj0.2i
-gmt end
+gmt end show
