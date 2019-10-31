@@ -4,9 +4,12 @@
 #
 # Build include file for cpack to build a complete macOS Bundle.
 # List of executables whose shared libraries must also be included
-# Need to do stupid things like copying /opt/local/lib/proj6/share/proj
-# to /opt/local/share/proj6 and build gs from 9.50 tarball and place in
-# /opt.
+#
+# Exceptions:
+# For now, need to do a few things manually first, like
+# 1. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
+# 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
+# 3. Place GraphicsMagick-1.3.33 lib/share files using that name instead of variable
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
