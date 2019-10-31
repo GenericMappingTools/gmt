@@ -53,8 +53,8 @@ the command below to find out your GMT installation path:
 
     echo ${BUNDLE_RESOURCES}
 
-Usually, you will see an output like `/Applications/GMT-6.x.x.app/Contents/Resources/`.
-Then change/set environment variables `PATH` and `PROJ_LIB`
+Usually, you will see a path like `/Applications/GMT-6.x.x.app/Contents/Resources/`.
+Then change/set environment variables `PATH`, `PROJ_LIB` and `MAGICK_CONFIGURE_PATH`
 in your shell configuration file (e.g. `~/.bash_profile`), e.g.
 
 	export PATH=/Applications/GMT-6.x.x.app/Contents/Resources/bin:${PATH}
