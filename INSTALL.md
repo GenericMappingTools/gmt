@@ -48,18 +48,8 @@ and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
-your search path for executables. For that, just run GMT-6.x.x.app once and type
-the command below to find out your GMT installation path:
-
-    echo ${BUNDLE_RESOURCES}
-
-Usually, you will see a path like `/Applications/GMT-6.x.x.app/Contents/Resources/`.
-Then change/set environment variables `PATH`, `PROJ_LIB` and `MAGICK_CONFIGURE_PATH`
-in your shell configuration file (e.g. `~/.bash_profile`), e.g.
-
-	export PATH=/Applications/GMT-6.x.x.app/Contents/Resources/bin:${PATH}
-	export PROJ_LIB=/Applications/GMT-6.x.x.app/Contents/Resources/share/proj6
-	export MAGICK_CONFIGURE_PATH=/Applications/GMT-6.x.x.app/Contents/Resources/lib/GraphicsMagick-1.3.33/config
+your search path for executables. For that, just run GMT-6.x.x.app once and follow
+the instructions at the end of the GMT splash screen.
 
 Note: The installer is always built for the latest macOS version only.
 
