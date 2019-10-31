@@ -10,6 +10,8 @@ and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases)
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
 for compiling GMT source package (either stable release or development version).
+Note: Distributions may not all update at the same time so check if GMT 6 is
+available first.
 
 ## Contents
 
