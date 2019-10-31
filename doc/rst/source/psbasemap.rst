@@ -1,12 +1,11 @@
 .. index:: ! psbasemap
+.. include:: module_core_purpose.rst_
 
 *********
 psbasemap
 *********
 
-.. only:: not man
-
-    Plot base maps and frames
+|psbasemap_purpose|
 
 Synopsis
 --------

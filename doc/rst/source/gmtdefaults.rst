@@ -1,12 +1,11 @@
 .. index:: ! gmtdefaults
+.. include:: module_core_purpose.rst_
 
 ***********
 gmtdefaults
 ***********
 
-.. only:: not man
-
-    List current GMT default parameters
+|gmtdefaults_purpose|
 
 Synopsis
 --------

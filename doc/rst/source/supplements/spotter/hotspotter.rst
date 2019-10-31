@@ -1,12 +1,11 @@
 .. index:: ! hotspotter
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 hotspotter
 **********
 
-.. only:: not man
-
-    hotspotter - Create CVA image from seamount locations
+|hotspotter_purpose|
 
 Synopsis
 --------

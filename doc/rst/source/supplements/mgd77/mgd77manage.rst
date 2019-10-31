@@ -1,12 +1,11 @@
 .. index:: ! mgd77manage
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77manage
 ***********
 
-.. only:: not man
-
-    mgd77manage - Manage the content of MGD77+ files
+|mgd77manage_purpose|
 
 Synopsis
 --------
@@ -194,7 +193,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *unit*
-    Append the distance unit (see :ref:`Unit_attributes`). [Default is **-Nk** (km)].
+    Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\ \|\ **i** is selected. 
 
 .. _-R:

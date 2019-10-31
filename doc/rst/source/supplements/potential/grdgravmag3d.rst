@@ -1,12 +1,11 @@
 .. index:: ! grdgravmag3d
+.. include:: ../module_supplements_purpose.rst_
 
 ************
 grdgravmag3d
 ************
 
-.. only:: not man
-
-    grdgravmag3d - Compute the gravity effect of a grid by the method of Okabe
+|grdgravmag3d_purpose|
 
 Synopsis
 --------

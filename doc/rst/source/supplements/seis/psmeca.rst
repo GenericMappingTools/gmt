@@ -1,12 +1,11 @@
 .. index:: ! psmeca
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 psmeca
 ******
 
-.. only:: not man
-
-    Plot focal mechanisms on maps
+|psmeca_purpose|
 
 Synopsis
 --------

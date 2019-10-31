@@ -1,12 +1,11 @@
 .. index:: ! fitcircle
+.. include:: module_core_purpose.rst_
 
 *********
 fitcircle
 *********
 
-.. only:: not man
-
-    find mean position and great [or small] circle fit to points on a sphere.
+|fitcircle_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! grdrotater
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 grdrotater
 **********
 
-.. only:: not man
-
-    grdrotater - Finite rotation reconstruction of geographic grid
+|grdrotater_purpose|
 
 Synopsis
 --------

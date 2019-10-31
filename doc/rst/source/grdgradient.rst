@@ -1,12 +1,11 @@
 .. index:: ! grdgradient
+.. include:: module_core_purpose.rst_
 
 ***********
 grdgradient
 ***********
 
-.. only:: not man
-
-    Compute directional derivative or gradient from a grid
+|grdgradient_purpose|
 
 Synopsis
 --------

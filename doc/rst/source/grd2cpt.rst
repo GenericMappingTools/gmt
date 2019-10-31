@@ -1,12 +1,11 @@
 .. index:: ! grd2cpt
+.. include:: module_core_purpose.rst_
 
 *******
 grd2cpt
 *******
 
-.. only:: not man
-
-    Make linear or histogram-equalized color palette table from grid
+|grd2cpt_purpose|
 
 Synopsis
 --------

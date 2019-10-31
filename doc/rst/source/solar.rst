@@ -1,12 +1,11 @@
 .. index:: ! solar
+.. include:: module_core_purpose.rst_
 
 *****
 solar
 *****
 
-.. only:: not man
-
-    Calculate and plot the day-night terminator
+|solar_purpose|
 
 Synopsis
 --------

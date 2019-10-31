@@ -1,12 +1,11 @@
 .. index:: ! plot
+.. include:: module_core_purpose.rst_
 
 ****
 plot
 ****
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols on maps
+|plot_purpose|
 
 Synopsis
 --------

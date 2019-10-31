@@ -1,12 +1,11 @@
 .. index:: ! nearneighbor
+.. include:: module_core_purpose.rst_
 
 ************
 nearneighbor
 ************
 
-.. only:: not man
-
-    nearneighbor - Grid table data using a "Nearest neighbor" algorithm
+|nearneighbor_purpose|
 
 Synopsis
 --------
@@ -81,7 +80,7 @@ Required Arguments
 
 **-S**\ *search_radius*\ [*unit*]
     Sets the *search_radius* that determines which data points are
-    considered close to a node. Append the distance unit (see :ref:`Unit_attributes`).
+    considered close to a node. Append the distance unit (see `Units`_).
 
 Optional Arguments
 ------------------

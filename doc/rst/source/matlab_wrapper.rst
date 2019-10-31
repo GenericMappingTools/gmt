@@ -1,4 +1,5 @@
 :tocdepth: 4
+:orphan:
 
 .. set default highlighting language for this document:
 
@@ -59,7 +60,7 @@ You can also build your own bundle (see CMakeLists.txt in main GMT directory).  
 with UNIX installations from fink or HomeBrew but fails for us if under MacPorts (then, MATLAB
 will complain about wrong shared HDF5 library and we crash).
 If you wish to help debug in XCode then see the gmt-mex wiki for more details.  While the latest
-2016a MATLAB version works with XCode 7, earlier versions may require 6.4 and you will have 
+2016a MATLAB version works with XCode 7, earlier versions may require 6.4 and you will have
 to install the older Xcode version.
 We used the 2016b MATLAB version to build the interface but 2015a,b should also work.  Older
 versions may also work but we have not attempted this since we only have access to these three.
@@ -96,7 +97,7 @@ command line. Things start to get interesting when we can send data *in* and *ou
 Here we just created a random data *100x3* matrix and told **GMT** to grid it using it's program
 *surface*. Note how the syntax follows closely the standard usage but we sent the data to be
 interpolated (the *t* matrix) as the second argument to the ``gmt()`` function. And on return we
-got the *G* variable that is a structure holding the grid and it's metadata. See the 
+got the *G* variable that is a structure holding the grid and it's metadata. See the
 :ref:`grid struct <grid-struct>` for the details of its members.
 
 Imagining that we want to plot that random data art, we can do it with a call to *grdimage*\ , like
@@ -184,7 +185,7 @@ documentation, has many (not so trivial) examples on usage of the MEX GMT API.
   pad             % A scalar pad. Optional and only when direction is to GMT. (new in 1.1)
   title           % Title (Optional)
   comment         % Remark (Optional)
-  command         % Command used to create the grid (Optional) 
+  command         % Command used to create the grid (Optional)
   datatype        % 'float' or 'double'
   x               % [1 x n_columns] vector with XX coordinates
   y               % [1 x n_rows]    vector with YY coordinates
@@ -209,7 +210,7 @@ Definition of the *grid structure* that holds a grid and its metadata.
   pad             % A scalar pad (optional). Use only when direction is to GMT and Image will be projected ([2]) (new in 1.1)
   title           % Title (Optional)
   comment         % Remark (Optional)
-  command         % Command used to create the image (Optional) 
+  command         % Command used to create the image (Optional)
   datatype        % 'uint8' or 'int8' (needs checking)
   x               % [1 x n_columns] vector with XX coordinates
   y               % [1 x n_rows]    vector with YY coordinates

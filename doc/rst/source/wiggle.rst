@@ -1,12 +1,11 @@
 .. index:: ! wiggle
+.. include:: module_core_purpose.rst_
 
 ********
 wiggle
 ********
 
-.. only:: not man
-
-    Plot z = f(x,y) anomalies along tracks
+|wiggle_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! backtracker
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 backtracker
 ***********
 
-.. only:: not man
-
-    backtracker - Generate forward and backward flowlines and hotspot tracks
+|backtracker_purpose|
 
 Synopsis
 --------

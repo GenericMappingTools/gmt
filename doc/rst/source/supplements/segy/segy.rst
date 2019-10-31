@@ -1,12 +1,11 @@
 .. index:: ! segy
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 segy
 ******
 
-.. only:: not man
-
-    segy - Plot a SEGY file on a map
+|segy_purpose|
 
 Synopsis
 --------

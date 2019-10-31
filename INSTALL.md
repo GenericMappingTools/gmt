@@ -10,6 +10,8 @@ and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases)
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
 for compiling GMT source package (either stable release or development version).
+Note: Distributions may not all update at the same time so check if GMT 6 is
+available first.
 
 ## Contents
 
@@ -40,41 +42,18 @@ animated GIFs.
 
 ### Application Bundle
 
-Application bundle is available from the [GMT main site](https://www.generic-mapping-tools.org).
+We provide macOS application bundle on the [GMT main site](https://www.generic-mapping-tools.org).
+The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
+
 Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
 and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
-your search path for executables. For that, just run GMT-6.x.x.app once and type:
+your search path for executables. For that, just run GMT-6.x.x.app once and follow
+the instructions at the end of the GMT splash screen.
 
-    echo ${BUNDLE_RESOURCES}/bin
-
-in the terminal. Then prepend this directory (e.g. `/Applications/GMT-6.x.x.app/Contents/Resources/bin`)
-to your PATH environment variable, e.g., in `~/.bashrc`.
 Note: The installer is always built for the latest macOS version only.
-
-While the installer comes with all GMT executables and needed libraries, there are some
-run-time dependencies on executables that you will need to install separately:
-
-- [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
-- [Ghostscript](https://www.ghostscript.com/) (Convert PostScript to PDF or raster images)
-- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
-- [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
-
-Install these via Fink, MacPorts, or Homebrew. If you do not use any of these, then
-we recommend installing [Homebrew](https://brew.sh/). Now, run either the fink, port,
-or brew command:
-
-    # For Fink users
-    fink install gdal ghostscript graphicsmagick ffmpeg
-
-    # For MacPorts users
-    sudo port install gdal +hdf5 +netcdf +openjpeg
-    sudo port install ghostscript graphicsmagick ffmpeg
-
-    # For Homebrew users
-    brew install gdal ghostscript graphicsmagick ffmpeg
 
 ### Install via Homebrew
 
@@ -84,17 +63,17 @@ You may need to update the formulas so for that you will do:
 
     brew update && brew upgrade
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
     brew install gmt
 
-If you want to install GMT 4 and GMT 5 alongside, do:
+If you want to install GMT 5 and GMT 6 alongside, do:
 
-    brew unlink gmt && brew install gmt4
+    brew unlink gmt && brew install gmt5
 
-and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc about gmtswitch):
+and to go from GMT 6 to GMT 5 (and vice-versa for 5 to 6, but see also the doc about gmtswitch):
 
-    brew unlink gmt && brew link gmt4
+    brew unlink gmt && brew link gmt5
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -248,8 +227,14 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    by running the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc5 -c conda-forge/label/dev -c conda-forge
+   conda install gmt -c conda-forge
    ```
 
    NOTE: Currently conda-forge doesn't provide graphicsmagick on win-64 platform.
    Windows users need to download and install graphicsmagick separately.
+
+3. If you want to install GMT 5, use:
+
+   ```
+   conda install gmt=5 -c conda-forge
+   ```

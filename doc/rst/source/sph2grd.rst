@@ -1,12 +1,11 @@
 .. index:: ! sph2grd
+.. include:: module_core_purpose.rst_
 
 *******
 sph2grd
 *******
 
-.. only:: not man
-
-    Compute grid from spherical harmonic coefficients
+|sph2grd_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! mgd77list
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 mgd77list
 *********
 
-.. only:: not man
-
-    mgd77list - Extract data from MGD77 files
+|mgd77list_purpose|
 
 Synopsis
 --------

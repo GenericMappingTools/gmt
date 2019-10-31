@@ -1,12 +1,11 @@
 .. index:: ! grdlandmask
+.. include:: module_core_purpose.rst_
 
 ***********
 grdlandmask
 ***********
 
-.. only:: not man
-
-    grdlandmask - Create a "wet-dry" mask grid from shoreline data base
+|grdlandmask_purpose|
 
 Synopsis
 --------

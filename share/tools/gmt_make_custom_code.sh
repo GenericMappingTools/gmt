@@ -55,7 +55,7 @@ L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 grep "#define THIS_MODULE_LIB" *.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
 rm -f /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
 while read program; do
-	grep "#define THIS_MODULE_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/NAME.lis
+	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | awk '{print $3}' | sed -e 's/"//g' >> /tmp/NAME.lis
 	grep "#define THIS_MODULE_LIB" $program     | awk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
 	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | awk '{print $0}' >> /tmp/PURPOSE.lis
 	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | awk '{print $0}' >> /tmp/KEYS.lis

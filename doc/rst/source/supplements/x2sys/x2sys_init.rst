@@ -1,12 +1,11 @@
 .. index:: ! x2sys_init
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 x2sys_init
 **********
 
-.. only:: not man
-
-    x2sys_init - Initialize a new x2sys track database
+|x2sys_init_purpose|
 
 Synopsis
 --------

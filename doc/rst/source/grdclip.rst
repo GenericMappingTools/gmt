@@ -1,12 +1,11 @@
 .. index:: ! grdclip
+.. include:: module_core_purpose.rst_
 
 *******
 grdclip
 *******
 
-.. only:: not man
-
-    Clip the range of grid values
+|grdclip_purpose|
 
 Synopsis
 --------

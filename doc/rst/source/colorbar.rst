@@ -1,12 +1,11 @@
 .. index:: ! colorbar
+.. include:: module_core_purpose.rst_
 
 ********
 colorbar
 ********
 
-.. only:: not man
-
-    Plot a gray or color scale-bar on maps
+|colorbar_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! plot3d
+.. include:: module_core_purpose.rst_
 
 ******
 plot3d
 ******
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols in 3-D
+|plot3d_purpose|
 
 Synopsis
 --------

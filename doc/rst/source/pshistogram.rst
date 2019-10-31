@@ -1,12 +1,11 @@
 .. index:: ! pshistogram
+.. include:: module_core_purpose.rst_
 
 ***********
 pshistogram
 ***********
 
-.. only:: not man
-
-    Calculate and plot histograms
+|pshistogram_purpose|
 
 Synopsis
 --------

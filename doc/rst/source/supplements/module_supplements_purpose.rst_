@@ -1,0 +1,114 @@
+.. |backtracker_purpose| replace:: Generate forward and backward flowlines and hotspot tracks
+
+.. |coupe_purpose| replace:: Plot cross-sections of focal mechanisms
+
+.. |earthtide_purpose| replace:: Compute grids or time-series of solid Earth tides
+
+.. |gmtflexure_purpose| replace:: Compute flexural deformation of 2-D loads, forces, and bending moments
+
+.. |gmtgravmag3d_purpose| replace:: Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe
+
+.. |gmtpmodeler_purpose| replace:: Evaluate a plate motion model at given locations
+
+.. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
+
+.. |gravfft_purpose| replace:: Spectral calculations of gravity, isostasy, admittance, and coherence for grids
+
+.. |grdflexure_purpose| replace:: Compute flexural deformation of 3-D surfaces for various rheologies
+
+.. |grdgravmag3d_purpose| replace:: Computes the gravity effect of one (or two) grids by the method of Okabe
+
+.. |grdpmodeler_purpose| replace:: Evaluate a plate motion model on a geographic grid
+
+.. |grdredpol_purpose| replace:: Compute the Continuous Reduction To the Pole, AKA differential RTP
+
+.. |grdrotater_purpose| replace:: Finite rotation reconstruction of geographic grid
+
+.. |grdseamount_purpose| replace:: Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
+
+.. |grdspotter_purpose| replace:: Create CVA grid from a gravity or topography grid
+
+.. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
+
+.. |hotspotter_purpose| replace:: Create CVA grid from seamount locations
+
+.. |img2grd_purpose| replace:: Extract a subset from an img file in Mercator or Geographic format
+
+.. |meca_purpose| replace:: Plot focal mechanisms
+
+.. |mgd77convert_purpose| replace:: Convert MGD77 data to other formats
+
+.. |mgd77header_purpose| replace:: Create MGD77 headers from A77 files
+
+.. |mgd77info_purpose| replace:: Extract information about MGD77 files
+
+.. |mgd77list_purpose| replace:: Extract data from MGD77 files
+
+.. |mgd77magref_purpose| replace:: Evaluate the IGRF or CM4 magnetic field models
+
+.. |mgd77manage_purpose| replace:: Manage the content of MGD77+ files
+
+.. |mgd77path_purpose| replace:: Return paths to MGD77 cruises and directories
+
+.. |mgd77sniffer_purpose| replace:: Along-track quality control of MGD77 cruises
+
+.. |mgd77track_purpose| replace:: Plot track-lines of MGD77 cruises
+
+.. |originater_purpose| replace:: Associate seamounts with nearest hotspot point sources
+
+.. |polar_purpose| replace:: Plot polarities on the lower hemisphere of the focal sphere
+
+.. |polespotter_purpose| replace:: Find stage poles given fracture zones and abyssal hills
+
+.. |pscoupe_purpose| replace:: Plot cross-sections of focal mechanisms
+
+.. |psmeca_purpose| replace:: Plot focal mechanisms
+
+.. |pspolar_purpose| replace:: Plot polarities on the lower hemisphere of the focal sphere
+
+.. |pssac_purpose| replace:: Plot seismograms in SAC format
+
+.. |pssegy_purpose| replace:: Plot a SEGY file in 2-D
+
+.. |pssegyz_purpose| replace:: Plot a SEGY file in 3-D
+
+.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+
+.. |rotconverter_purpose| replace:: Manipulate total reconstruction and stage rotations
+
+.. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
+
+.. |sac_purpose| replace:: Plot seismograms in SAC format
+
+.. |segy2grd_purpose| replace:: Converting SEGY data to a grid
+
+.. |segy_purpose| replace:: Plot a SEGY file in 2-D
+
+.. |segyz_purpose| replace:: Plot a SEGY file in 3-D
+
+.. |talwani2d_purpose| replace:: Compute geopotential anomalies over 2-D bodies by the method of Talwani
+
+.. |talwani3d_purpose| replace:: Compute geopotential anomalies over 3-D bodies by the method of Talwani
+
+.. |velo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+
+.. |x2sys_binlist_purpose| replace:: Create bin index listing from track data files
+
+.. |x2sys_cross_purpose| replace:: Calculate crossovers between track data files
+
+.. |x2sys_datalist_purpose| replace:: Extract content of track data files
+
+.. |x2sys_get_purpose| replace:: Get track listing from track index database
+
+.. |x2sys_init_purpose| replace:: Initialize a new x2sys track database
+
+.. |x2sys_list_purpose| replace:: Extract subset from crossover data base
+
+.. |x2sys_merge_purpose| replace:: Merge an updated COEs table (smaller) into the main table (bigger)
+
+.. |x2sys_put_purpose| replace:: Update track index database from track bin file
+
+.. |x2sys_report_purpose| replace:: Report statistics from crossover data base
+
+.. |x2sys_solve_purpose| replace:: Determine least-squares systematic correction from crossovers
+

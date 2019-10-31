@@ -1,12 +1,11 @@
 .. index:: ! grdfill
+.. include:: module_core_purpose.rst_
 
 *******
 grdfill
 *******
 
-.. only:: not man
-
-    Interpolate across holes in a grid
+|grdfill_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! psrose
+.. include:: module_core_purpose.rst_
 
 ******
 psrose
 ******
 
-.. only:: not man
-
-    Plot a polar histogram (rose, sector, windrose diagrams)
+|psrose_purpose|
 
 Synopsis
 --------

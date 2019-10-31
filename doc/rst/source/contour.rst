@@ -1,13 +1,12 @@
 .. index:: ! contour
+.. include:: module_core_purpose.rst_
 
 
 *********
 contour
 *********
 
-.. only:: not man
-
-    Contour table data by direct triangulation [method]
+|contour_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! x2sys_report
+.. include:: ../module_supplements_purpose.rst_
 
 **************
 x2sys_report
 **************
 
-.. only:: not man
-
-    x2sys_report - Report statistics from crossover data base
+|x2sys_report_purpose|
 
 Synopsis
 --------

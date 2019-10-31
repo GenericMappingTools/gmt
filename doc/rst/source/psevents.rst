@@ -1,12 +1,11 @@
 .. index:: ! psevents
+.. include:: module_core_purpose.rst_
 
 ********
 psevents
 ********
 
-.. only:: not man
-
-    Plot event symbols and labels for a moment in time
+|psevents_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! psimage
+.. include:: module_core_purpose.rst_
 
 *******
 psimage
 *******
 
-.. only:: not man
-
-    Place images or EPS files on maps
+|psimage_purpose|
 
 Synopsis
 --------

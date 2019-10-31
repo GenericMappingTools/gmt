@@ -6295,7 +6295,7 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 	double rgb[4];
 	char buffer[GMT_BUFSIZ] = {""}, color[GMT_LEN256] = {""}, *p = NULL;
 
-	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
+	if (!strchr (text, '@')) return;	/* Nothing to do since no escape sequence in string */
 
 	while ((p = strstr (text, "@;"))) {	/* Found a @; sequence */
 		i = (unsigned int)(p - text) + 2;	/* Position of first character after @; */

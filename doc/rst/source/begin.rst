@@ -1,12 +1,11 @@
 .. index:: ! begin
+.. include:: module_core_purpose.rst_
 
 *****
 begin
 *****
 
-.. only:: not man
-
-    Initiate a new GMT modern mode session
+|begin_purpose|
 
 Synopsis
 --------

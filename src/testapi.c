@@ -184,7 +184,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 #if 0
-	GMT = gmt_init_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_init_module (API, NULL, THIS_MODULE_CLASSIC_NAME, &GMT_cpy); /* Save current state */
 #endif
 	GMT = API->GMT;
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);

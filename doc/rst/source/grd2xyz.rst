@@ -1,12 +1,11 @@
 .. index:: ! grd2xyz
+.. include:: module_core_purpose.rst_
 
 *******
 grd2xyz
 *******
 
-.. only:: not man
-
-    Convert grid file to data table
+|grd2xyz_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! talwani2d
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 talwani2d
 *********
 
-.. only:: not man
-
-    talwani2d - Compute geopotential anomalies over 2-D bodies by the method of Talwani
+|talwani2d_purpose|
 
 Synopsis
 --------

@@ -7,10 +7,10 @@
 # Note:         Run with any argument to build movie; otherwise one frame is plotted only.
 
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 100
-        opt="-M100,ps -Fnone"
-        ps=anim_08.ps
+	opt="-M100,ps -Fnone"
+	ps=anim_08.ps
 else    # Make movie in MP4 format and a thumbnail animated GIF using every 5th frame
-        opt="-Fmp4 -A+l+s5"
+	opt="-Fmp4 -A+l+s5"
 fi
 # Test reading directly from URL
 # Note: The URL tends to change every few years...

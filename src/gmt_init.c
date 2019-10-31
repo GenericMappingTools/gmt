@@ -16082,7 +16082,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		if (item->just == 0) item->just = PSL_TR;	/* Default justification is top right corner */
 		gmt_just_to_code (API->GMT, item->just, justcode);
 		fprintf (fp, "# Auto-generated legend information file\n");
-		/* THe next two legend commends will be parsed by gmt legend and acted upon */
+		/* The next two legend comments will be parsed by gmt legend and acted upon */
 		fprintf (fp, "# LEGEND_JUSTIFICATION: %s\n", justcode);
 		fprintf (fp, "# LEGEND_SCALING: %g\n", item->scale);
 		if (item->width > 0.0)	/* Specified legend width directly */

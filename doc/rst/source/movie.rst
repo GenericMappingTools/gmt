@@ -1,12 +1,11 @@
 .. index:: ! movie
+.. include:: module_core_purpose.rst_
 
 *****
 movie
 *****
 
-.. only:: not man
-
-    Create animation sequences and movies
+|movie_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! grdinterpolate
+.. include:: module_core_purpose.rst_
 
 **************
 grdinterpolate
 **************
 
-.. only:: not man
-
-    Interpolate new layers from a 3-D netCDF data cube
+|grdinterpolate_purpose|
 
 Synopsis
 --------
@@ -72,7 +71,7 @@ Optional Arguments
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output. 
+    boundaries of the grid, only the common region will be output.
 .. include:: explain_-R.rst_
 
 .. _-V:

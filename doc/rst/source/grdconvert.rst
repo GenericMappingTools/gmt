@@ -1,12 +1,11 @@
-. index:: ! grdconvert
+.. index:: ! grdconvert
+.. include:: module_core_purpose.rst_
 
 ***********
 grdconvert
 ***********
 
-.. only:: not man
-
-    Convert between different grid formats
+|grdconvert_purpose|
 
 Synopsis
 --------

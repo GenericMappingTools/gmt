@@ -1,12 +1,11 @@
 .. index:: ! grd2kml
+.. include:: module_core_purpose.rst_
 
 *******
 grd2kml
 *******
 
-.. only:: not man
-
-    Create KML image quadtree from single grid
+|grd2kml_purpose|
 
 Synopsis
 --------

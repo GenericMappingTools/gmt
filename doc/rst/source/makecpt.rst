@@ -1,12 +1,11 @@
 .. index:: ! makecpt
+.. include:: module_core_purpose.rst_
 
 *******
 makecpt
 *******
 
-.. only:: not man
-
-    makecpt - Make GMT color palette tables
+|makecpt_purpose|
 
 Synopsis
 --------
