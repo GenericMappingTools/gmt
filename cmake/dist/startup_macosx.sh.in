@@ -10,12 +10,14 @@ if [ "$1" = "GMT_PROMPT" ]; then
   cd "${OLDPWD}"
 
   export PATH="${BUNDLE_RESOURCES}/@GMT_BINDIR@:${PATH}"
+  export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj6"
   function gmt () { "${BUNDLE_RESOURCES}/@GMT_BINDIR@/gmt" "$@"; }
   export -f gmt
   source "${BUNDLE_RESOURCES}/share/tools/gmt_functions.sh"
   unset DYLD_LIBRARY_PATH
   gmt
-  echo -e "Note: Remember to add ${BUNDLE_RESOURCES}/bin to your PATH\nif you want to use GMT outside of the terminal or in scripts.\n"
+  echo -e "Note 1: Remember to add ${BUNDLE_RESOURCES}/bin to your PATH\nif you want to use GMT outside of the terminal or in scripts.\n"
+  echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see ${BUNDLE_RESOURCES}/share/Licenses for details.\n"
 
   _usershell=$(dscl . -read "/Users/$USER" UserShell)
   _usershell=${_usershell##* }

@@ -367,7 +367,7 @@ Finally we show an example of a polygon file:
 
    ::
 
-    # @VGMT1.0 @GPOLYGON @N"Polygon name"|substrate|id @Tstring|string|integer
+    # @VGMT1.0 @GPOLYGON @Npolygonname|substrate|id @Tstring|string|integer
     # @R178.1/178.6/-48.7/-45.6
     # @Jj@Jp"+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs"
     # FEATURE_DATA
