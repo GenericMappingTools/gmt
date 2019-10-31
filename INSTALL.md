@@ -49,7 +49,7 @@ and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
-the instruction at the end of the GMT splash screen.
+the instructions at the end of the GMT splash screen.
 
 Note: The installer is always built for the latest macOS version only.
 
