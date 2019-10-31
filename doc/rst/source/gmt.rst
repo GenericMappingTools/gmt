@@ -64,6 +64,11 @@ Synopsis
     illustration(s) to the specified formats, then eliminates the temporary work
     directory.  The figures are placed in the current directory.
 
+For information on any module, please use our new mechanism to load module documentation
+in your browser via gmt :doc:`docs`, e.g.::
+
+    gmt docs grdimage
+
 If no module is given then several other options are available:
 
 **--help**
@@ -279,3 +284,8 @@ directories. For an explanation of the various GMT settings in this
 man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
+
+See Also
+--------
+
+:doc:`docs`
