@@ -332,6 +332,21 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_history_tag (API, tag);
 		sprintf (ffile, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
 		gmt_remove_file (GMT, ffile);
+		/* Restore the old frame B setting to what it was before inset begin was called, if any */
+		if ((fp = fopen (file, "r"))) {	/* There is a gmt.frame file */
+			while (fgets (Bopts, PATH_MAX, fp) && strstr (Bopts, "# FRAME") == NULL);	/* Wind to reading the frame setting */
+			fclose (fp);	/* Done reading the gmt.frame file */
+			if (strstr (Bopts, "# FRAME") && strlen (Bopts) > 8 && Bopts[9]) {	/* Got a previously saved -B frame setting */
+				sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+				if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
+					GMT_Report (API, GMT_MSG_NORMAL, "Cannot create frame file %s\n", ffile);
+					Return (GMT_ERROR_ON_FOPEN);
+				}
+				/* Restore the previous frame setting in gmt.frame (Bopts ends in \n since no chopping was done) */
+				fprintf (fp, "%s", &Bopts[9]);
+				fclose (fp);
+			}
+		}
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
