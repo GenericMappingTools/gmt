@@ -64,9 +64,6 @@
 /* compile with GLIB GThread support <glib.h> */
 #cmakedefine HAVE_GLIB_GTHREAD
 
-/* compile with WEBKIT support */
-#cmakedefine HAVE_WEBKIT
-
 /* shared library */
 #cmakedefine BUILD_SHARED_LIBS
 
