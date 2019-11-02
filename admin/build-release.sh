@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 # Script that builds a GMT release and makes the compressed tarballs.
 # If run under macOS it also builds the macOS Bundle
+reset_config() {
+	rm -f ${CMAKEDIR}/ConfigUser.cmake
+	if [ -f ${CMAKEDIR}/ConfigUser.cmake.orig ]; then
+		mv -f ${CMAKEDIR}/ConfigUser.cmake.orig ${CMAKEDIR}/ConfigUser.cmake
+	fi
+}
+
+CMAKEDIR=`pwd`/cmake
+
 if [ $# -gt 0 ]; then
 	echo "Usage: build-release.sh"
 	echo ""
@@ -30,6 +39,7 @@ if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
+trap reset_config SIGINT
 # 2a. Make build dir and configure it
 rm -rf build
 mkdir build
@@ -56,10 +66,7 @@ fi
 echo "build-release.sh: Report sha256sum per file"
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
-rm -f ../cmake/ConfigUser.cmake
-if [ -f ../cmake/ConfigUser.cmake.orig ]; then
-	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
-fi
+reset_config
 # 10. Put the candidate products on my ftp site
 echo "Place gmt-${Version}-src.tar.* on the ftp site"
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
