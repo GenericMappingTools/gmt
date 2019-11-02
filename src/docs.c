@@ -242,8 +242,14 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			}
 			else {	/* One of the fixed doc files */
 				snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-				if (remote || access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
+				if (!remote) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+				if (remote || access (&URL[8], R_OK)) { 	/* File does not exists, go to GMT documentation site */
 					snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+					if (remote)
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+					else
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No access, Now try URL path: %s\n", URL);
+				}
 			}
 
 			if (opt->next && opt->next->option != GMT_OPT_INFILE) {	/* If an option request was made we position the doc there */
