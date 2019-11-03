@@ -30,7 +30,6 @@
  *
  * For adding more HAVE_**** checks, see ConfigureChecks.cmake.
  *
- * Version: @GMT_VERSION_STRING@
  */
 
 #pragma once
