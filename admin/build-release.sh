@@ -9,6 +9,7 @@ reset_config() {
 }
 
 abort_build() {	# Called when we abort this script via Crtl-C
+	echo "build-release.sh: Detected Ctrl-C - aborting" >&2
 	reset_config
 	rm -rf ${TOPDIR}/build
 	exit -1
