@@ -7,8 +7,9 @@
 #
 # Exceptions:
 # For now (6.0.0), need to do a few things manually first, like
-# 1. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
-# 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
+# 1. Separate install command to avoid version number in GraphicsMagick directory name
+# 2. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
+# 3. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
 GM_VERSION=`gm help | egrep "[0-9]+\\.[0-9]+\\.[0-9]+" | awk '{print $2}'`
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
@@ -93,11 +94,13 @@ if [ ! "X$EXESHARED" = "X" ]; then
 fi
 cat << EOF
 
+# Place the licenses for runtime dependencies
 install (DIRECTORY
 	../../admin/Licenses
 	DESTINATION share
 	COMPONENT Runtime)
 
+# Place the GraphicsMagick config files
 install (DIRECTORY
 	/opt/local/lib/GraphicsMagick-${GM_VERSION}/config
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick
