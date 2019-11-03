@@ -241,14 +241,25 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				}
 			}
 			else {	/* One of the fixed doc files */
-				snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-				if (!remote) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
-				if (remote || access (&URL[8], R_OK)) { 	/* File does not exists, go to GMT documentation site */
-					snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
-					if (remote)
+				if (remote) {	/* Go directly to GMT server online */
+						snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
-					else
+				}
+				else {	/* Try local paths first */
+					snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+					if (access (&URL[8], R_OK)) { 	/* File does not exists, try GMT_DOC_DIR */
+						snprintf (URL, PATH_MAX, "file:///%s/html/%s", GMT_DOC_DIR, module);
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No access, Now try URL path: %s\n", URL);
+						if (access (&URL[8], R_OK)) { 	/* File does not exists, try GMT_SHARE_DIR */
+							snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", GMT_SHARE_DIR, module);
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No access, Now try URL path: %s\n", URL);
+							if (access (&URL[8], R_OK)) { 	/* File does not exists, give up and use remote link */
+								snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+								GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No local access,use server URL path: %s\n", URL);
+							}
+						}
+					}
 				}
 			}
 

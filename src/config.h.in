@@ -31,6 +31,7 @@
 #define GMT_VERSION_STRING "@GMT_VERSION_STRING@"
 #define GMT_LONG_VERSION_STRING "@GMT_LONG_VERSION_STRING@"
 
+/* URL to the docs on the GMT web server */
 #define GMT_DOC_URL "@GMT_DOC_URL@"
 
 /* path to executables/libs */
