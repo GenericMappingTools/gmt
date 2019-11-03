@@ -47,10 +47,10 @@ done
 for P in $EXELINKS; do
 	which $P >> /tmp/raw.lis
 done
-# 2c. Use otools -L recursively to list shared libraries used but exclude system libraries
+# 2c. Call otool -L recursively to list shared libraries used but exclude system libraries
 cc admin/otoolr.c -o build/otoolr
 build/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
-# 4. sort into unique list then split executables from libraries
+# 4. sort into unique list then separate executables from libraries
 sort -u /tmp/raw.lis > /tmp/final.lis
 grep dylib /tmp/final.lis > /tmp/libraries.lis
 grep -v dylib /tmp/final.lis > /tmp/programs.lis
