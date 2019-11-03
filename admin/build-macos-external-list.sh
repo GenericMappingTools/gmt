@@ -10,7 +10,6 @@
 # 1. Separate install command to avoid version number in GraphicsMagick directory name
 # 2. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
 # 3. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
-GM_VERSION=`gm help | egrep "[0-9]+\\.[0-9]+\\.[0-9]+" | awk '{print $2}'`
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -33,7 +32,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-${GM_VERSION}"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -102,7 +101,12 @@ install (DIRECTORY
 
 # Place the GraphicsMagick config files
 install (DIRECTORY
-	/opt/local/lib/GraphicsMagick-${GM_VERSION}/config
+	/opt/local/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick
+	COMPONENT Runtime)
+
+install (FILES
+	/opt/local/share/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config/log.mgk
+	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
 EOF
