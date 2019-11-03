@@ -6,10 +6,10 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now, need to do a few things manually first, like
+# For now (6.0.0), need to do a few things manually first, like
 # 1. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
 # 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
-# 3. Place GraphicsMagick-1.3.33 lib/share files using that name instead of variable
+GM_VERSION=`gm help | egrep "[0-9]+\\.[0-9]+\\.[0-9]+" | awk '{print $2}'`
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -32,7 +32,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-1.3.33"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-${GM_VERSION}"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -99,7 +99,7 @@ install (DIRECTORY
 	COMPONENT Runtime)
 
 install (DIRECTORY
-	/opt/local/lib/GraphicsMagick-1.3.33
-	DESTINATION \${GMT_LIBDIR}
+	/opt/local/lib/GraphicsMagick-${GM_VERSION}/config
+	DESTINATION \${GMT_LIBDIR}/GraphicsMagick
 	COMPONENT Runtime)
 EOF
