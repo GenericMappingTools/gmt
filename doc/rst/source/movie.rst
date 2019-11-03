@@ -122,7 +122,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format* [**+o**\ *options*\ ]
+**-F**\ *format*\ [**+o**\ *options*\ ]
     Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
     **webm** (WebM movie).  You may optionally add additional ffmpeg encoding settings for this format
     via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
@@ -157,7 +157,6 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *labelinfo*
-
     Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
@@ -330,35 +329,25 @@ to named files.
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
 frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
-and place a frame counter in the top left corner, try
-
-   ::
+and place a frame counter in the top left corner, try::
 
     gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
-as the center longitude:
-
-   ::
+as the center longitude::
 
     gmt begin
        gmt coast -Rg -JG${MOVIE_FRAME}/20/${MOVIE_WIDTH} -Gmaroon -Sturquoise -Bg -X0 -Y0
     gmt end
 
 As the automatic frame loop is executed the different frames will be produced with different
-longitudes.  The equivalent DOS batch script setup would be
-
-  ::
+longitudes.  The equivalent DOS batch script setup would be::
 
     gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
-Now, the globe.bat DOS script is simply
-
-   ::
+Now, the globe.bat DOS script is simply::
 
     gmt begin
        gmt coast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -Bg -X0 -Y0
@@ -375,7 +364,7 @@ all available cores.
 Longer Examples
 ---------------
 
-To explore more elaborate movies, see the Animations examples under our Gallery.
+To explore more elaborate movies, see the Animations examples under our :doc:`Gallery <gallery>`.
 
 Other Movie Formats
 -------------------
