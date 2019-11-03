@@ -8,8 +8,7 @@
 # Exceptions:
 # For now (6.0.0), need to do a few things manually first, like
 # 1. Separate install command to avoid version number in GraphicsMagick directory name
-# 2. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
-# 3. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
+# 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -32,7 +31,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
