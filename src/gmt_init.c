@@ -9468,7 +9468,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_TRANSPARENCY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
 			else
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
@@ -9759,11 +9759,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			ival = (int)atof (value);
 			limit = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
 			if (ival < limit) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, limit);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, limit);
 				GMT->current.setting.compatibility = 4;
 			}
 			else if (ival > GMT_MAJOR_VERSION) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, GMT_MAJOR_VERSION);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, GMT_MAJOR_VERSION);
 				GMT->current.setting.compatibility = GMT_MAJOR_VERSION;
 			}
 			else
@@ -9776,7 +9776,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_AUTO_DOWNLOAD: Expects either on or off\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_AUTO_DOWNLOAD: Expects either on or off - set to off\n");
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
@@ -10115,7 +10115,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_DIR_TMP:
 		case GMTCASE_DIR_USER:
 			/* Setting ignored, were active previously in GMT5 but no longer */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val]);
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val]);
 			break;
 
 		default:
