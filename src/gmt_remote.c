@@ -446,7 +446,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 GMT_LOCAL bool is_not_a_valid_grid (char *file, char *all_grid_files[], int N) {
 	/* Determine if file is among the valid datasets */
 	for (int k = 0; k < N; k++) {
-			if (!strncmp (all_grid_files[k], file, strlen (all_grid_files[k]))) return false;
+		if (!strncmp (all_grid_files[k], file, strlen (all_grid_files[k]))) return false;
 	}
 	return true;
 }
