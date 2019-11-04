@@ -71,6 +71,10 @@ struct sigaction cleanup_action, default_action;
 char *file_to_delete_if_ctrl_C;
 #endif
 
+static char *all_grid_files[GMT_N_DATASETS]= {
+#include <gmt_datasets.h>
+};
+
 GMT_LOCAL void delete_file_then_exit (int sig_no)
 {	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
 	gmt_M_unused (sig_no);
@@ -439,6 +443,15 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	return 0;
 }
 
+GMT_LOCAL bool is_not_a_valid_grid (char *file, char *all_grid_files[], int N) {
+	/* Determine if file is among the valid datasets */
+	for (int k = 0; k < N; k++) {
+		if (!strncmp (all_grid_files[k], file, strlen (all_grid_files[k]))) return false;
+	}
+	return true;
+}
+
+
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). Values for mode:
@@ -469,6 +482,11 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_remotedata (file)) {	/* A remote @earth_relief_xxm|s grid */
+		if (is_not_a_valid_grid (&file[1], all_grid_files, GMT_N_DATASETS)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file %s is not a recognized remote grid\n", file);
+			gmt_M_free (GMT, file);
+			return 1;
+		}
 		pos = 1;
 		is_data = true;
 	}
