@@ -102,10 +102,3 @@ provide us with enough information so that we can recreate the problem.
 In addition to the bug tracking feature (New Issues) on the website, you
 can also post general questions.  Note that GitHub registration
 is required to post on the site.
-
-## Ordering the GMT package on CD/DVD-Rs
-
-Should you or someone you know without net-access need to obtain GMT:
-Geoware makes and distributes CD/DVD-Rs with the GMT package and many
-useful data sets.  For more details and a full description of the data
-sets (up to 60 Gb of data!) visit http://www.geoware-online.com/.

@@ -8,14 +8,14 @@ if [ "$1" = "GMT_PROMPT" ]; then
   cd "${_rundir}/.."
   export BUNDLE_RESOURCES="${PWD}/Resources"
   cd "${OLDPWD}"
-
+  # Getting and setting terminal width so wide enough to not wrap the gmt splash screen
   dim=(`osascript -e 'tell application "Terminal" to get size of front window' | tr ',' ' '`)
   w=`echo "${dim[0]} 1.25" | awk '{print int($1*$2)}'`
   osascript << EOF
 tell application "Terminal" to set size of front window to {$w, ${dim[1]}}
 EOF
   export PATH="${BUNDLE_RESOURCES}/@GMT_BINDIR@:${PATH}"
-  export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj6"
+  export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj"
   export MAGICK_CONFIGURE_PATH=${BUNDLE_RESOURCES}/lib/GraphicsMagick-1.3.33/config
   
   function gmt () { "${BUNDLE_RESOURCES}/@GMT_BINDIR@/gmt" "$@"; }
@@ -23,7 +23,7 @@ EOF
   source "${BUNDLE_RESOURCES}/share/tools/gmt_functions.sh"
   unset DYLD_LIBRARY_PATH
   gmt
-  echo -e "Note 1: If you want to use GMT outside of this terminal or in scripts, then follow these steps:\n        a) export GMTHOME=${BUNDLE_RESOURCES}\n        b) add \$GMTHOME/bin to your path\n        c) export PROJ_LIB=\$GMTHOME/share/proj6\n        d) export MAGICK_CONFIGURE_PATH=\$GMTHOME/lib/GraphicsMagick-1.3.33/config"
+  echo -e "Note 1: If you want to use GMT outside of this terminal or in scripts, then follow these steps:\n        a) export GMTHOME=${BUNDLE_RESOURCES}\n        b) add \$GMTHOME/bin to your path\n        c) export PROJ_LIB=\$GMTHOME/share/proj\n        d) export MAGICK_CONFIGURE_PATH=\$GMTHOME/lib/GraphicsMagick/config"
   echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see\n        ${BUNDLE_RESOURCES}/share/Licenses for details.\n"
 
   _usershell=$(dscl . -read "/Users/$USER" UserShell)

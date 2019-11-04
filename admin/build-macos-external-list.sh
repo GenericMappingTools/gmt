@@ -6,10 +6,9 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now, need to do a few things manually first, like
-# 1. Copy /opt/local/lib/proj6/share/proj to /opt/local/share/proj6
+# For now (6.0.0), need to do a few things manually first, like
+# 1. Separate install command to avoid version number in GraphicsMagick directory name
 # 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
-# 3. Place GraphicsMagick-1.3.33 lib/share files using that name instead of variable
 
 if [ `which cmake` = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -32,7 +31,7 @@ EXELINKS=
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/share/proj6 /opt/local/share/GraphicsMagick-1.3.33"
+EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
@@ -48,10 +47,10 @@ done
 for P in $EXELINKS; do
 	which $P >> /tmp/raw.lis
 done
-# 2c. Use otools -L recursively to list shared libraries used but exclude system libraries
+# 2c. Call otool -L recursively to list shared libraries used but exclude system libraries
 cc admin/otoolr.c -o build/otoolr
 build/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
-# 4. sort into unique list then split executables from libraries
+# 4. sort into unique list then separate executables from libraries
 sort -u /tmp/raw.lis > /tmp/final.lis
 grep dylib /tmp/final.lis > /tmp/libraries.lis
 grep -v dylib /tmp/final.lis > /tmp/programs.lis
@@ -93,13 +92,20 @@ if [ ! "X$EXESHARED" = "X" ]; then
 fi
 cat << EOF
 
+# Place the licenses for runtime dependencies
 install (DIRECTORY
 	../../admin/Licenses
 	DESTINATION share
 	COMPONENT Runtime)
 
+# Place the GraphicsMagick config files
 install (DIRECTORY
-	/opt/local/lib/GraphicsMagick-1.3.33
-	DESTINATION \${GMT_LIBDIR}
+	/opt/local/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config
+	DESTINATION \${GMT_LIBDIR}/GraphicsMagick
+	COMPONENT Runtime)
+
+install (FILES
+	/opt/local/share/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config/log.mgk
+	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
 EOF

@@ -1,5 +1,6 @@
-/* Recursively find all shared libraries referenced by the executables given on the command line.
- * The output list needs to be run through sort -u.
+/* Recursively find all shared libraries referenced by the executables and
+ * shared libraries given on the command line.
+ * The output list must be run through sort -u to remove duplicates.
  * An example command line might be
  *
  * otoolr <builddir> /opt/local/bin/ffmpeg /opt/local/bin/gm ... | sort -u > t.lis
@@ -14,6 +15,7 @@
 #include <stdlib.h>
 
 struct LINK {
+	/* Struct with shared library name and pointer to next */
 	char name[256];
 	struct LINK *next;
 };
@@ -44,6 +46,8 @@ void printlist (struct LINK *list) {
 		this = prt;
 	}
 }
+
+/* Recursive function. Set verb = 1 for debugging */
 
 void get_list (char *top, char *name, int level, struct LINK *list) {
 	/* Recursive scanner of entries returned by otool -L */
@@ -90,8 +94,8 @@ void get_list (char *top, char *name, int level, struct LINK *list) {
 int main (int argc, char **argv) {
 	int k;
 	struct LINK *list = calloc (1, sizeof (struct LINK));
-	strcpy (list->name, "HEAD");
-	for (k = 2; k < argc; k++)	/* Try all the arguments (first is the builddir) */
+	strcpy (list->name, "HEAD");	/* Unused head of the linked list */
+	for (k = 2; k < argc; k++)	/* Try all the arguments (argv[1] is the builddir) */
 		get_list (argv[1], argv[k], 0, list);
 	printlist (list);
 }

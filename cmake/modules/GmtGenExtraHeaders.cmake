@@ -70,6 +70,9 @@ macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_cpt_masters.h)
 	list (REMOVE_DUPLICATES _file_lines)
 	list (LENGTH _file_lines GMT_N_CPT_MASTERS)
+	file2list (_file_lines ${GMT_SRC}/src/gmt_datasets.h)
+	list (REMOVE_DUPLICATES _file_lines)
+	list (LENGTH _file_lines GMT_N_DATASETS)
 
 	# count lines in generated headers
 	file2list (_file_lines gmt_keycases.h)

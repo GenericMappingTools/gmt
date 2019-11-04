@@ -67,17 +67,21 @@ For the latest GMT 6 version, use:
 
     brew install gmt
 
-If you want to install GMT 5 and GMT 6 alongside, do:
-
-    brew unlink gmt && brew install gmt5
-
-and to go from GMT 6 to GMT 5 (and vice-versa for 5 to 6, but see also the doc about gmtswitch):
-
-    brew unlink gmt && brew link gmt5
-
 You also need to install other GMT run-time dependencies separately:
 
     brew install ghostscript graphicsmagick ffmpeg
+
+If you want to install GMT 5 and GMT 6 alongside, do:
+
+    brew install gmt@5
+
+To go from GMT 6 to GMT 5 (but see also the doc about `gmtswitch`):
+
+    brew unlink gmt && brew link --force gmt@5
+    
+And to go from GMT 5 to GMT 6:
+
+    brew unlink gmt@5 && brew link gmt
 
 ### Install via MacPorts
 
