@@ -1484,7 +1484,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
-char *gs_BB = NULL, *proj4_cmd = NULL;
+	char *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
 	                              "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *device_options[N_GS_DEVICES] = {
