@@ -15680,7 +15680,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * convert the hidden PostScript figures to selected graphics.
 	 * If show is not NULL then we display them via gmt docs */
 
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
@@ -15750,12 +15750,14 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 			gmt_filename_get (fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
+			dir[0] = '\0';	/* No directory via D<dir> convert option */
 			if (fig[k].options[0]) {	/* Append figure-specific settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
+						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
 				if (not_PS && strchr (fig[k].options, 'A') == NULL)	/* Must always add -A if not PostScript */
@@ -15767,6 +15769,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
+						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
 				if (not_PS && strchr (API->GMT->current.setting.ps_convert, 'A') == NULL)	/* Must always add -A if not PostScript */
@@ -15785,7 +15788,10 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				char ext[GMT_LEN8] = {""};
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
 				gmt_str_tolower (ext);	/* In case it was PNG */
-				snprintf (cmd, GMT_BUFSIZ, "%s.%s", fig[k].prefix, ext);
+				if (dir[0])
+					snprintf (cmd, GMT_BUFSIZ, "%s/%s.%s", dir, fig[k].prefix, ext);
+				else
+					snprintf (cmd, GMT_BUFSIZ, "%s.%s", fig[k].prefix, ext);
 				gmt_filename_set (cmd);
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to call docs\n");
