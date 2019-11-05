@@ -154,13 +154,31 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 
 /* Specific colors for fonts, land, water, text etc */
 
-#define c_font		"51/51/51"
-#define c_grid		"150/160/163"
-#define c_land		"125/168/125"
-#define c_water		"189/224/223"
-#define c_gmt_fill	"238/86/52"
-#define c_gmt_outline	"112/112/112"
-#define c_gmt_shadow	"92/102/132"
+struct GMTLOGO_COLOR {
+	char c_font[GMT_LEN32];
+	char c_grid[GMT_LEN32];
+	char c_land[GMT_LEN32];
+	char c_water[GMT_LEN32];
+	char c_gmt_fill[GMT_LEN32];
+	char c_gmt_outline[GMT_LEN32];
+	char c_gmt_shadow[GMT_LEN32];
+};
+
+struct GMTLOGO_COLOR C[3] = {
+	{"51/51/51", "150/160/163", "125/168/125", "189/224/223", "238/86/52", "112/112/112", "92/102/132"},	/* Original */
+	{"black", "150/160/163", "255/117/24", "255/160/50", "black", "112/112/112", "92/102/132"},				/* Halloween */
+	{"51/51/51", "150/160/163", "0/255/62", "255/0/18", "white", "112/112/112", "92/102/132"}				/* Christmas */
+};
+
+int set_the_colors (void) {
+	/* Selects the color index based on what day of the year it is */
+	time_t now = time (NULL);		/* Current time */
+	struct tm *T = gmtime(&now);
+	int yday = T->tm_yday;			/* Day of year (1-366) */
+	if (yday >= 300 && yday <= 308) return 1;	/* Halloween */
+	if (yday >= 355 && yday <= 363) return 2;	/* Christmas */
+	return 0;	/* Default logo colors */
+}
 
 /* Control structure for gmtlogo */
 
@@ -307,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 
 int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
-	int error, fmode;
+	int error, fmode, select = set_the_colors ();
 
 	uint64_t par[4] = {0, 0, 0, 0};
 	
@@ -389,7 +407,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	if (Ctrl->S.mode == 2)
 		y = 0.0;
 	else {
-		sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
+		sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, C[select].c_font);	/* Create required font */
 		gmt_getfont (GMT, cmd, &F);
 		fmode = gmt_setfont (GMT, &F);
 		PSL_setfont (PSL, F.id);
@@ -404,11 +422,11 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */
 
-	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", c_grid, scale * 0.3, c_grid);
+	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", C[select].c_grid, scale * 0.3, C[select].c_grid);
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, c_water, c_land, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, C[select].c_water, C[select].c_land, pars);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling pscoast with args %s\n", cmd);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=false", scale * 1.55, pars);
@@ -424,12 +442,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	GMT_Put_Matrix (API, M, GMT_FLOAT, 0, gmt_letters);	/* Hook in our static float matrix */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
-		file, scale * 1.55, c_gmt_shadow);
+		file, scale * 1.55, C[select].c_gmt_shadow);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Init_VirtualFile (API, 0, file);	/* Reset since we are reading it a 2nd time */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi --GMT_HISTORY=false",
-		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
+		file, scale * 2.47, C[select].c_gmt_fill, scale * 0.3, C[select].c_gmt_outline, scale * 0.483, scale * 0.230);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Close_VirtualFile (API, file);
