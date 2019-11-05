@@ -1,32 +1,30 @@
-# Template for macOS steps in Azure Pipelines
+# Template for Linux steps in Azure Pipelines
 
 steps:
 
 - bash: |
     set -x -e
-    brew update
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
+    sudo apt-get update
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
+        libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl
   displayName: Install dependencies
 
 - bash: |
     set -x -e
-    brew install graphicsmagick || true
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        graphicsmagick gdal-bin
   displayName: Install dependencies for running tests
   condition: eq(variables['TEST'], true)
 
 - bash: |
     set -x -e
-    pip3 install --user sphinx
-    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
+    sudo apt-get install -y --no-install-recommends --no-install-suggests \
+        python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg
+    pip3 install --user sphinx==1.8.5
+    echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    set -x -e
-    # we need the GNU tar
-    brew install gnu-tar
-  displayName: Install dependencies for packaging
-  condition: eq(variables['PACKAGE'], true)
 
 - bash: |
     echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
@@ -67,11 +65,11 @@ steps:
     # Download remote files before testing, see #939.
     curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
-    # run all jobs and rerun if failed
-    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
+    # run all jobs, and rerun failed jobs
+    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
   env:
-    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
+    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose
@@ -83,7 +81,7 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: BuildDirectory-macOS
+    artifactName: BuildDirectory-Linux
   displayName: Publish build directory
   condition: failed()
 
@@ -100,26 +98,24 @@ steps:
 - bash: |
     cd build
     cmake --build . --target docs_depends
+    cmake --build . --target animation
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
+- bash: bash ci/deploy-gh-pages.sh
+  displayName: Deploy documentations
+  env:
+    HTML_BUILDDIR: "build/doc/rst/html"
+    GITHUB_TOKEN: $(github.token)
+  # only deploy if on master and 6.0 branches
+  condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
+
 - bash: |
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
-    cpack -G Bundle
-    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
+    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz
   displayName: Package GMT
-  condition: eq(variables['PACKAGE'], true)
-
-# Publish the macOS bundle
-- bash: |
-    cp build/gmt-*.dmg ${BUILD_ARTIFACTSTAGINGDIRECTORY}/gmt-${BUILD_SOURCEBRANCHNAME}-$(date +%Y%m%d)-nightly.dmg
-  displayName: Copy macOS bundle
-  condition: eq(variables['PACKAGE'], true)
-- publish: $(Build.ArtifactStagingDirectory)/
-  artifact: GMT-macOS-bundle
-  displayName: Publish macOS Bundle
   condition: eq(variables['PACKAGE'], true)
