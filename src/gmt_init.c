@@ -15680,7 +15680,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * convert the hidden PostScript figures to selected graphics.
 	 * If show is not NULL then we display them via gmt docs */
 
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, legend_justification[4] = {""}, mark;
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
@@ -15739,7 +15739,14 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
 			gmt_filename_set (fig[k].prefix);
-			snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			if ((c = strrchr (fig[k].prefix, '/'))) {	/* Must pass any leading directory in the file name via -D and file prefix via -F */
+				char *file_only = &c[1];	/* The file name */
+				c[0] = '\0';		/* Temporarily chop off the file to yield directory only */
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -D%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix, file_only);
+				c[0] = '/';		/* Restore last slash */
+			}
+			else	/* Place products in current directory */
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			gmt_filename_get (fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
