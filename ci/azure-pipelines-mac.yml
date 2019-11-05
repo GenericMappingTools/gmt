@@ -22,13 +22,6 @@ steps:
   condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: |
-    set -x -e
-    # we need the GNU tar
-    brew install gnu-tar
-  displayName: Install dependencies for packaging
-  condition: eq(variables['PACKAGE'], true)
-
-- bash: |
     echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
     echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
   displayName: Set install location and coastline location
@@ -53,11 +46,8 @@ steps:
 - bash: |
     set -x -e
     gmt --version
-    gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
-    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    export GMT_END_SHOW=off && gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 # Run the full tests
@@ -99,27 +89,9 @@ steps:
 
 - bash: |
     cd build
-    cmake --build . --target docs_depends
+    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    cd build
-    cmake --build . --target gmt_release
-    cmake --build . --target gmt_release_tar
-    cpack -G Bundle
-    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz gmt-*.dmg
-  displayName: Package GMT
-  condition: eq(variables['PACKAGE'], true)
-
-# Publish the macOS bundle
-- bash: |
-    cp build/gmt-*.dmg ${BUILD_ARTIFACTSTAGINGDIRECTORY}/gmt-${BUILD_SOURCEBRANCHNAME}-$(date +%Y%m%d)-nightly.dmg
-  displayName: Copy macOS bundle
-  condition: eq(variables['PACKAGE'], true)
-- publish: $(Build.ArtifactStagingDirectory)/
-  artifact: GMT-macOS-bundle
-  displayName: Publish macOS Bundle
-  condition: eq(variables['PACKAGE'], true)

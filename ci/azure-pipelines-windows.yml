@@ -59,8 +59,6 @@ steps:
     set -x -e
     choco install graphicsmagick
     echo "##vso[task.prependpath]C:\\Program Files\\GraphicsMagick-1.3.32-Q8"
-    choco install ffmpeg
-    echo "##vso[task.prependpath]C:\\ProgramData\\chocolatey\\lib\\ffmpeg\\tools"
   displayName: Install dependencies for testing
   condition: eq(variables['TEST'], true)
 
@@ -101,11 +99,8 @@ steps:
 
 - script: |
     gmt --version
-    bash %INSTALLDIR%/bin/gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
-    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    setx GMT_END_SHOW off && gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 - bash: |
@@ -146,22 +141,9 @@ steps:
 - bash: |
     set -x -e
     cd build
-    cmake --build . --target docs_depends
+    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_man_depends
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    set -x -e
-    cd build
-    cmake --build . --target gmt_release
-    cmake --build . --target gmt_release_tar
-    # Don't use cpack here. Chocolatey also provides a cpack command.
-    cmake --build . --target package
-    # get sha256 hash value
-    CertUtil -hashfile gmt-*.tar.gz sha256
-    CertUtil -hashfile gmt-*.tar.xz sha256
-    CertUtil -hashfile gmt-*.exe    sha256
-  displayName: Package GMT
-  condition: eq(variables['PACKAGE'], true)

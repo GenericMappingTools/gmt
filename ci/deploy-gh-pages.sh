@@ -21,6 +21,8 @@ HTML_SRC=${BUILD_SOURCESDIRECTORY}/${HTML_BUILDDIR:-doc/_build/html}
 # Only deploy master and 6.x branches
 if [[ "${BUILD_SOURCEBRANCHNAME}" =~ ^6\.[0-9]+$ ]]; then
     VERSION=${BUILD_SOURCEBRANCHNAME}
+elif [[ "${BUILD_SOURCEBRANCHNAME}" == "5.4" ]]; then
+    VERSION=${BUILD_SOURCEBRANCHNAME}
 elif [[ "${BUILD_SOURCEBRANCHNAME}" == "master" ]]; then
     VERSION=dev
 else
@@ -53,7 +55,7 @@ cp -Rf ${HTML_SRC}/ ${VERSION}/
 touch .nojekyll
 
 # Always link /latest to the 6.x branch docs
-if [[ "${VERSION}" != "dev" ]]; then
+if [[ "${VERSION}" != "dev" && "${VERSION}" != "5.4" ]]; then
     echo -e "Setup link from ${VERSION} to 'latest'"
     rm -f latest
     ln -sf ${VERSION} latest

@@ -20,7 +20,7 @@ steps:
 - bash: |
     set -x -e
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg
+        python3-pip python3-setuptools python3-wheel graphicsmagick
     pip3 install --user sphinx==1.8.5
     echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
@@ -51,11 +51,8 @@ steps:
 - bash: |
     set -x -e
     gmt --version
-    gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
-    gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    export GMT_END_SHOW=off && gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 # Run the full tests
@@ -97,7 +94,8 @@ steps:
 
 - bash: |
     cd build
-    cmake --build . --target docs_depends
+    cmake --build . --target docs_html_depends
+    cmake --build . --target docs_man_depends
     cmake --build . --target animation
     cmake --build . --target docs_html
     cmake --build . --target docs_man
