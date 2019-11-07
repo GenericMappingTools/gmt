@@ -600,7 +600,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+		if (!write)
+			gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 		free_them_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
@@ -732,7 +733,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
-	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) 
+		gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
