@@ -939,6 +939,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
+		if (!Ctrl->S.active)	/* Since we are painting wet areas we must now reset them to white */
+			gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);		/* Default Ocean color = white */
+		fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* If lake not set then use ocean */
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
