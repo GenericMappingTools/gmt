@@ -7662,7 +7662,7 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
 	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
@@ -7683,8 +7683,8 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	else
 		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
 		
-	if (gmtlib_write_cpt (GMT, file, GMT_IS_FILE, P->cpt_flags, P) != GMT_NOERROR)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to save current CPT file to %s !\n", file);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Save current CPT file to %s !\n", file);
 }
@@ -7789,7 +7789,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		gmt_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
+		gmt_save_current_cpt (GMT, P, P->cpt_flags);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
