@@ -47,9 +47,20 @@ GMT allows several ways to represent a color:
 List Of Colors
 --------------
 
+The chart below lists the 663 unique color names that can be used in GMT.
+
+.. _RGBchart:
+
+.. figure:: /_images/GMT_RGBchart_a4.*
+   :width: 100%
+   :align: center
+
+   The 663 unique color names that can be used in GMT.
+   Lower, upper, or mixed cases, as well as the british spelling of grey are allowed
+
+
 The following list contains the named colors that can be used in GMT
 and their equivalent color codes.
-
 
 +-----+-----+-----+----------------------+
 | *R* | *G* | *B* | *Name*               |

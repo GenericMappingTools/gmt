@@ -296,7 +296,7 @@ do not need to repeat the region and projection information, as shown here::
      gmt end show
 
 Thus, the chosen options remain in effect until you provide new option
-arguments on the command line. 
+arguments on the command line.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -613,8 +613,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
        from 0–100%.
 
-    #. Name. Specify one of 663 valid color names. Use **man
-       gmtcolors** to list all valid names. A very small yet versatile
+    #. Name. Specify one of 663 valid color names. See :doc:`/gmtcolors` for
+       a list of all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
        [light\ \|\ dark]{*red, orange, yellow, green, cyan, blue,
        magenta, gray\ \|\ grey, brown*\ }. The color names are
@@ -2282,7 +2282,7 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray 
+    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and
