@@ -9618,7 +9618,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				S->data[GMT_Y][k] = y;
 			}
 		}
-		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
+		if (continuous && T->n_segments && gmt_same_longitude (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
 			/* Need to append to previous segment after allocating more space */
 			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
 			uint64_t start = prev_S->n_rows, add = S->n_rows - 1, rec;
