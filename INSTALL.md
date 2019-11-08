@@ -78,7 +78,7 @@ If you want to install GMT 5 and GMT 6 alongside, do:
 To go from GMT 6 to GMT 5 (but see also the doc about `gmtswitch`):
 
     brew unlink gmt && brew link --force gmt@5
-    
+
 And to go from GMT 5 to GMT 6:
 
     brew unlink gmt@5 && brew link gmt
@@ -110,19 +110,23 @@ or:
 Installation of GMT through [Fink](http://www.finkproject.org/) is quite easy.
 All required packages will also be installed.
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
-    sudo fink install gmt5
-
-For the legacy GMT 4 version use:
-
-    sudo fink install gmt
-
-The two versions cannot live side by side.
+	sudo fink install gmt6
 
 You also need to install other GMT run-time dependencies separately:
 
-    fink install ghostscript graphicsmagick ffmpeg
+    sudo fink install graphicsmagick ffmpeg
+
+For legacy GMT 5 version, use:
+
+	sudo fink install gmt5
+
+For legacy GMT 4 version, use:
+
+    sudo fink install gmt
+
+These three GMT versions cannot live side by side.
 
 ## Linux
 

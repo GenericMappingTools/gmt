@@ -242,10 +242,10 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
 
     # Build and install libraries
     # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install

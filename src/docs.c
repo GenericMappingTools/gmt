@@ -45,7 +45,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, cookbook, gallery, settings, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, colors, cookbook, gallery, settings, and tutorial.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
@@ -70,7 +70,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
-	static const char *known_group[2] = {"core", "other"}, *known_doc[6] = {"cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt"};
+	static const char *known_group[2] = {"core", "other"}, *known_doc[7] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -187,23 +187,26 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
-			if (!strcmp (t, "cookbook")) {
+			if (!strcmp (t, "colors")) {
 				docname = known_doc[0];	group   = known_group[0];	/* Pretend it is in the core */
 			}
+			else if (!strcmp (t, "cookbook")) {
+				docname = known_doc[1];	group   = known_group[0];	/* Pretend it is in the core */
+			}
 			else if (!strcmp (t, "api")) {
-				docname = known_doc[1]; group   = known_group[0];	/* Pretend it is in the core */
+				docname = known_doc[2]; group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "tutorial")) {
-				docname = known_doc[2];	group   = known_group[0];	/* Pretend it is in the core */
-			}
-			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[3];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
+			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt")) {
+			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
 				docname = known_doc[5];	group   = known_group[0];	/* Pretend it is in the core */
+			}
+			else if (!strcmp (t, "gmt")) {
+				docname = known_doc[6];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (gmt_get_ext (docname)) {
 				group = known_group[1];

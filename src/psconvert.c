@@ -1452,6 +1452,17 @@ char *noquote_name (char *file) {
 		return strdup (file);
 }
 
+GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
+	struct stat S;
+	int err = stat (dir, &S);
+	if (err && errno == ENOENT && gmt_mkdir (dir)) {	/* Does not exist - try to create it */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create directory %s.\n", dir);
+		return (GMT_RUNTIME_ERROR);
+	}
+	return (GMT_NOERROR);
+}
+
+
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
@@ -1583,6 +1594,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Selecting ppmraw device since GDAL not available.\n");
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
+	}
+
+	if (Ctrl->D.active && (error = make_dir_if_needed (API, Ctrl->D.dir))) {	/* Specified output directory; create if it does not exists */
+		Return (error);
 	}
 
 	/* Parameters for all the formats available */
