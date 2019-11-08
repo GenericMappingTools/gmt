@@ -49,15 +49,19 @@ List Of Colors
 
 The chart below lists the 663 unique color names that can be used in GMT.
 
+**Download PDF versions:**
+:download:`A4 size </_images/GMT_RGBchart_a4.pdf>`,
+:download:`US letter size </_images/GMT_RGBchart_letter.pdf>`,
+:download:`Tabloid size </_images/GMT_RGBchart_tabloid.pdf>`
+
 .. _RGBchart:
 
-.. figure:: /_images/GMT_RGBchart_a4.*
+.. figure:: /_images/GMT_RGBchart.*
    :width: 100%
    :align: center
 
    The 663 unique color names that can be used in GMT.
    Lower, upper, or mixed cases, as well as the british spelling of grey are allowed
-
 
 The following list contains the named colors that can be used in GMT
 and their equivalent color codes.
@@ -302,14 +306,14 @@ For more information on the use of color, read Chapter :ref:`Color Space` of the
 See Also
 --------
 
-:doc:`gmt.conf` , :doc:`gmtlogo` ,
-:doc:`grdcontour` ,
-:doc:`grdvector` , :doc:`grdview`
-:doc:`basemap` ,
-:doc:`coast` , :doc:`contour`,
-:doc:`histogram` ,
-:doc:`image` , :doc:`legend` ,
-:doc:`mask` , :doc:`rose` ,
-:doc:`text` , :doc:`wiggle` ,
-:doc:`plot` , :doc:`plot3d`
+:doc:`gmt.conf`, :doc:`gmtlogo`,
+:doc:`grdcontour`,
+:doc:`grdvector`, :doc:`grdview`,
+:doc:`basemap`,
+:doc:`coast`, :doc:`contour`,
+:doc:`histogram`,
+:doc:`image`, :doc:`legend`,
+:doc:`mask`, :doc:`rose`,
+:doc:`text`, :doc:`wiggle`,
+:doc:`plot`, :doc:`plot3d`
 
