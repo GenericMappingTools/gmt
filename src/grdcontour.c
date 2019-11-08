@@ -1119,7 +1119,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Free the P object unless it was an input memory object */
 		ptr = cptfile;	/* To avoid warning message from gmt_M_file_is_memory */
 		if (!gmt_M_file_is_memory (ptr) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
-			Return (API->error);
+			bailout (API->error);
 		}
 		if (is_continuous) {	/* More bad news */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
@@ -1135,15 +1135,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdview %s\n", cmd1);
 		if ((API->error = GMT_Call_Module (API, "grdview", GMT_MODULE_CMD, cmd1))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdview\n");
-			Return (API->error);
+			GMT_Report (API, GMT_MSG_NORMAL, "The call to grdview failed\n");
+			bailout (API->error);
 		}
 		/* Required options for grdcontour */
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");	/* If classic mode then we need to say we this is an overlay */
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
 		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
-			Return (API->error);
+			GMT_Report (API, GMT_MSG_NORMAL, "The call to grdcontour failed\n");
+			bailout (API->error);
 		}
 		bailout (GMT_NOERROR);	/* And we made it to the end, so get out of here */
 	}
