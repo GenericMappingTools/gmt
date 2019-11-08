@@ -728,7 +728,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
-	struct GMT_FILL fill[6];	/* Colors for (0) water, (1) land, (2) lakes, (3) islands in lakes, (4) lakes in islands in lakes, (5) riverlakes */
+	struct GMT_FILL fill[6], no_fill;	/* Colors for (0) water, (1) land, (2) lakes, (3) islands in lakes, (4) lakes in islands in lakes, (5) riverlakes */
 	struct GMT_SHORE c;
 	struct GMT_BR b, r;
 	struct GMT_GSHHS_POL *p = NULL;
@@ -762,13 +762,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	/* Check and interpret the command line arguments */
 
+	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 	if (GMT->current.setting.run_mode == GMT_MODERN && !Ctrl->D.active)
 		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
-	fill[0] = Ctrl->S.fill;
-	fill[1] = fill[3] = Ctrl->G.fill;
-	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : Ctrl->S.fill;
+	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;
+	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;
+	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];
 	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
@@ -938,6 +939,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
+		if (!Ctrl->S.active)	/* Since we are painting wet areas we must now reset them to white */
+			gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);		/* Default Ocean color = white */
+		fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* If lake not set then use ocean */
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
@@ -1051,7 +1055,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			np_new = gmt_prep_shore_polygons (GMT, &p, np, donut_hell, sample_step[donut_hell], bin_trouble);
 
 			if (clipping) {
-				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
+				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++)
+					recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
@@ -1062,7 +1067,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 			else if (recursive) {	/* Must avoid pointing anything but the polygons inside */
 
-				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, fill);
+				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++)
+					recursive_path (GMT, PSL, -1, np_new, p, k, fill);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
