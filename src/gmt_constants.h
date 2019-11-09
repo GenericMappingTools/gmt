@@ -155,6 +155,7 @@ enum GMT_swap_direction {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
+#define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
