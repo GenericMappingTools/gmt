@@ -421,10 +421,6 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
-				if (GMT->common.n.active) {	/* User changed BC/method via -n */
-					strcat (cmd, " -n");
-					strcat (cmd, GMT->common.n.string);
-				}
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				strcat (cmd, " --GMT_HISTORY=false");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
