@@ -383,34 +383,34 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {	/* parse format */
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 13;
+						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 11;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 9;
+						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 7;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 10;
+						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 8;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						break;
 					case 'y':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					default:
@@ -523,15 +523,16 @@ int GMT_meca (void *V_API, int mode, void *args) {
 
 int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
-	int i, n, ix = 0, iy = 1, last = 0, form = 0, new_fmt;
+	int i, n, ix = 0, iy = 1, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
+	int n_scanned = 0;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
-	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2];
+	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2] = {0.0};
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
+	char string[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
 
 	st_me meca;
 	struct MOMENT moment;
@@ -583,19 +584,9 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
-	if (Ctrl->S.readmode == READ_CMT)
-		last = 11;
-	else if (Ctrl->S.readmode == READ_AKI)
-		last = 7;
-	else if (Ctrl->S.readmode == READ_PLANES)
-		last = 8;
-	else if (Ctrl->S.readmode == READ_AXIS)
-		last = 13;
-	else if (Ctrl->S.readmode == READ_TENSOR)
-		last = 10;
-
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
 
+	/* Because psmeca reads optional columns we cannot insist records are all the same, hence GMT_COL_VAR below */
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -629,18 +620,29 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* In new (psmeca) input format, third column is depth.
 		   Skip record when depth is out of range. Also read an extra column. */
-
 		new_fmt = Ctrl->O2.active ? 0 : 1;
 		if (new_fmt) {
 			depth = in[GMT_Z];
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
 			if (Ctrl->Z.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 		}
-		if (In->text)
-			strncpy (event_title, In->text, GMT_BUFSIZ-1);
+
+		/* Must examine the trailing text for optional columns: newX, newY and title */
+		if (In->text) {
+			n_scanned = sscanf (In->text, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
+			if (n_scanned >= 2) { /* Got new x,y coordinates */
+				if (ix == GMT_X) {
+					gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X]);
+					gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y]);
+				}
+				else {
+					gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_Y]);
+					gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_X]);
+				}
+			}
+		}
 
 		/* Gather and transform the input records, depending on type */
-
 		if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = in[2+new_fmt];
 			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
@@ -754,8 +756,6 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			xynew[ix] = in[last-1+new_fmt];
-			xynew[iy] = in[last+new_fmt];
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				gmt_setpen (GMT, &Ctrl->C.pen);
 				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
