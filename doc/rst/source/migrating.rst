@@ -41,3 +41,11 @@ There are several ways to address this problem:
    maybe it is worth the effort to migrate the script code to the stricter default
    GMT 6 syntax by starting each GMT command with gmt.  If so, consider to simplify
    the script (if a plotting script) by rewriting it in GMT modern mode.
+
+If your script is particularly old (GMT 3) it may also use a deprecated syntax that
+GMT no longer recognizes.  If that is the case then you should consult the documentation for
+the old version (if you have access to it) and compare with the new documentation to
+determine the required changes.  Error messages issued by GMT may help in that regard.
+Also note that GMT may issue compatibility warnings when it detects deprecated
+syntax.  In those instances the obsolete syntax will be correctly parsed, but you
+may wish to take the opportunity and update the syntax when these issues are reported.
