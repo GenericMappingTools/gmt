@@ -523,7 +523,7 @@ int GMT_meca (void *V_API, int mode, void *args) {
 
 int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
-	int i, n, ix = 0, iy = 1, form = 0, new_fmt;
+	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
 	int n_scanned = 0;
 	bool transparence_old = false, not_defined = false;
@@ -630,13 +630,13 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		if (In->text) {
 			n_scanned = sscanf (In->text, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 			if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
-				if (ix == GMT_X) {	/* Expect lon lat but whatch for junk */
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
+					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
+					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
+				}
+				else {	/* Expect lon lat but watch for junk */
 					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
 					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
-				}
-				else {	/* Expect lat lon but watch for junk */
-					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
-					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
 				}
 				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y])) {	/* Got part of a title, presumably */
 					xynew[GMT_X] = 0.0;	 /* revert to 0 if newX and newY are not given */
@@ -766,7 +766,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
+			if (fabs (xynew[GMT_X]) > EPSIL || fabs (xynew[GMT_Y]) > EPSIL) {
 				gmt_setpen (GMT, &Ctrl->C.pen);
 				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 				gmt_setfill (GMT, &Ctrl->G.fill, true);
