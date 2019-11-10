@@ -178,6 +178,12 @@ else (EXTRA_BUILD_DIRS)
 	set (PROTO "none")
 endif (EXTRA_BUILD_DIRS)
 
+if (GMT_INSTALL_MODULE_LINKS)
+	set (LINKS "yes")
+else (GMT_INSTALL_MODULE_LINKS)
+	set (LINKS "no")
+endif (GMT_INSTALL_MODULE_LINKS)
+
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
@@ -219,6 +225,7 @@ message(
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
+	"*  Build module links         : ${LINKS}\n"
 	"*  Found Ghostscript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
 	"*  Found GraphicsMagick (gm)  : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
