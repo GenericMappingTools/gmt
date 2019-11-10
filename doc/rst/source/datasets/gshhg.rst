@@ -1,14 +1,19 @@
-The GMT High-Resolution Coastline Data
-======================================
+The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)
+====================================================================================
 
-Starting with version 3.0, GMT use a completely new coastline database
-and the :doc:`/coast` utility was been
-completely rewritten to handle the new file format. Many users have
-asked us why it has taken so long for GMT to use a high-resolution
-coastline database; after all, such data have been available in the
-public domain for years. To answer such questions we will take you along
-the road that starts with these public domain data sets and ends up with
-the database used by GMT.
+.. figure:: /_images/gshhg.jpg
+   :height: 916 px
+   :width: 1803 px
+   :align: center
+   :scale: 35 %
+
+GMT uses the :doc:`/coast` utility to access a version of the GSHHG data
+specially formatted for GMT.  The GSHHG data have strengths and weaknesses.
+It is global and open source, but is based on relatively old datasets and
+hence may not be accurate enough for very large-scale mapping projects.
+The current GSHHG version used by GMT is 2.3.7.  Below is a mostly technical
+description of how the GSHHG data set was assembled, processed, and formatted
+to meet the requirements of GMT.
 
 Selecting the right data
 ------------------------

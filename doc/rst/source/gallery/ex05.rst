@@ -12,7 +12,7 @@ contains the surface given by the function
 grid file to :doc:`grdview </grdview>` and requesting that artificial
 shading be derived from the  horizontal gradients in the direction of
 the artificial light source (set by **-I**).
-The :doc:`makecpt` command creates a simple color scheme for a constant
+The :doc:`makecpt </makecpt>` command creates a simple color scheme for a constant
 gray level of 128. Thus, variations in shade are entirely due to
 variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
