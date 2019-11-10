@@ -630,18 +630,20 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		if (In->text) {
 			n_scanned = sscanf (In->text, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 			if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
+				unsigned int type;
 				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
-					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
-					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
 				}
 				else {	/* Expect lon lat but watch for junk */
-					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
-					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
 				}
 				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y])) {	/* Got part of a title, presumably */
 					xynew[GMT_X] = 0.0;	 /* revert to 0 if newX and newY are not given */
 					xynew[GMT_Y] = 0.0;
-					strncpy (event_title, In->text, GMT_BUFSIZ-1);
+					if (!(strchr ("XY", Xstring[0]) && strchr ("XY", Ystring[0])))	/* Old meca format with X Y placeholders */
+						strncpy (event_title, In->text, GMT_BUFSIZ-1);
 				}
 				else if (n_scanned == 2)	/* Got no title */
 					event_title[0] = '\0';
