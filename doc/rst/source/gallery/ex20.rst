@@ -68,7 +68,7 @@ The following recipe is used when designing a new symbol.
 #. Given proper definition files we may now use them with
    :doc:`plot </plot>` or :doc:`plot3d </plot3d>`.
 
-We are now ready to give it a try. Based on the hotspot locations in the
+We are now ready to give it a try. Based on the hotspot locations in the remote
 file ``hotspots.txt`` (with a 3rd column giving the desired symbol sizes in inches) we
 lay down a world map and overlay red volcano symbols using our
 custom-built volcano symbol and :doc:`plot </plot>`. We

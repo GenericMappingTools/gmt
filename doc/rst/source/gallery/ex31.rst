@@ -14,17 +14,10 @@ includes the following steps:
 
 -  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
 
--  replace the default Helvetica font in the GMT-PostScript-File with sed;
-
--  create a PostScript-File with outlined fonts (optional);
-
--  convert GMT's PostScript output to PDF or any image format (optional).
-
 The script produces the plot in Figure. All
 standard fonts have been substituted by the free OpenType fonts Linux
-Libertine (title) and Linux Biolinum (annotations). Uncomment the
-appropriate lines in the script to make a PostScript-file with
-outlined fonts or to convert to a PDF-file.
+Libertine (title) and Linux Biolinum (annotations).  Remote files with the locations
+and names of the cities are used, with awk providing help in data preparation.
 
 .. literalinclude:: /_verbatim/ex31.txt
    :language: bash
