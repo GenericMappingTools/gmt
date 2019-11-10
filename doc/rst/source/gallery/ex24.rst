@@ -6,8 +6,8 @@
 Although we are not seismologists, we have yet another example involving
 seismicity. We use seismicity data for the Australia/New Zealand region
 to demonstrate how we can extract subsets of data using geospatial
-criteria. In particular, we wish to plot the epicenters given in the
-file ``oz_quakes.d`` as red or green circles. Green circles should only be used for
+criteria. In particular, we wish to plot the epicenters given in the remote
+file ``oz_quakes_24.txt`` as red or green circles. Green circles should only be used for
 epicenters that satisfy the following three criteria:
 
 #. They are located in the ocean and not on land
