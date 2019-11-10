@@ -638,8 +638,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 					if (gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_Y]) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
 					if (gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_X]) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
 				}
-				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y]))	/* Got part of a title, presumably */
+				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y])) {	/* Got part of a title, presumably */
+					xynew[GMT_X] = 0.0;	 /* revert to 0 if newX and newY are not given */
+					xynew[GMT_Y] = 0.0;
 					strncpy (event_title, In->text, GMT_BUFSIZ-1);
+				}
 				else if (n_scanned == 2)	/* Got no title */
 					event_title[0] = '\0';
 			}
