@@ -24,8 +24,8 @@ There are several ways to address this problem:
 
      $(gmt --show-sharedir)/tools/gmt_links.sh
 
-   which will report the status of any existing links.  Add the argument create
-   or delete to make actual changes.
+   which will report the status of any existing links.  Add the argument *create*
+   or *delete* to make actual changes.
 
 #. If your default shell is bash or similar then you can call another share/tools
    script called gmt_functions.sh.  It will instead create bash functions with the
@@ -39,8 +39,8 @@ There are several ways to address this problem:
 
 #. Finally, if the old script is important and is expected to be used in the future,
    maybe it is worth the effort to migrate the script code to the stricter default
-   GMT 6 syntax by starting each GMT command with gmt.  If so, consider to simplify
-   the script (if a plotting script) by rewriting it in GMT modern mode.
+   GMT 6 syntax by starting each GMT command with gmt.  If so, also consider to simplify
+   the script (assuming if is a plotting script) by rewriting it in GMT modern mode.
 
 If your script is particularly old (GMT 3) it may also use a deprecated syntax that
 GMT no longer recognizes.  If that is the case then you should consult the documentation for
