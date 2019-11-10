@@ -586,7 +586,6 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
 
-	/* Because psmeca reads optional columns we cannot insist records are all the same, hence GMT_COL_VAR below */
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
