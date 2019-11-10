@@ -5,9 +5,13 @@ Many longtime GMT users have older scripts written in GMT 4 and even in GMT 5
 that may not work immediately in GMT 6.  This reason is not that the syntax
 of the commands cannot be recognized ("GMT 6 shall be compatible with GMT 4 
 and GMT 5 syntax"), but because the old scripts do not call the GMT module via
-the only installed program called :doc:`gmt`.
+the only installed program called :doc:`gmt`.  Because of problems with "namespace
+pollution" (there are many open source programs called surface and triangulate and
+it is not possible to place them all in /usr/local/bin, for instance) the Linux
+distributions usually will only build the gmt executable and we access all modules
+via this single program, using the syntax **gmt module** [*options*].
 
-There are several ways to address this problem:
+There are several ways to address the lack of using the gmt program:
 
 #. If you are building GMT from source (either from a checked-out GitHub repo or
    the source distributed via the tarballs, you can edit a parameter in the file
