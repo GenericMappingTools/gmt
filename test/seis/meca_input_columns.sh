@@ -13,10 +13,18 @@ gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c >> $ps << EOF
 EOF
 
 gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c >> $ps << EOF
-239.384 34.556 12.   180     18   -88  5 0 0 10 km
+239.384 34.556 12.   180     18   -88  5 Title
 EOF
 
-gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 Long Title
+EOF
+
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 0 0 Long Title
+EOF
+
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X-20c -Y5c -C1p >> $ps << EOF
 239.384 34.556 12.   180     18   -88  5
 EOF
 
@@ -24,16 +32,28 @@ gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
 239.384 34.556 12.   180     18   -88  5 0 0
 EOF
 
-gmt psmeca -R -J -Ba0 -Sa1c -K -O -X-20c -Y5c -C1p >> $ps << EOF
-239.384 34.556 12.   180     18   -88  5 0 0 10 km
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 Title
 EOF
 
 gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 Long Title
+EOF
+
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 0 0 Long Title
+EOF
+
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X-20c -Y5c -C1p >> $ps << EOF
 239.384 34.556 12.   180     18   -88  5 239.8 34.7
 EOF
 
 gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
-239.384 34.556 12.   180     18   -88  5 239.8 34.7 10 km
+239.384 34.556 12.   180     18   -88  5 239.8 34.7 Title
+EOF
+
+gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
+239.384 34.556 12.   180     18   -88  5 239.8 34.7 Long Title
 EOF
 
 gmt psxy -R -J -T -O >> $ps
