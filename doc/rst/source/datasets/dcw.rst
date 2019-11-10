@@ -28,7 +28,12 @@ with a region rounded to the nearest 2 degrees in longitude and latitude, you ca
 
 If we in addition want to paint the landmass of France red, we run::
 
-    gmt coast -RFR+r2 -Glightgray -B -EFR+gred -pdf france 
+    
+To access states without countries you must use the *country.state* syntax.  See the
+:doc:`coast` documentation for details.  For instance, to make a map of the US and show Texas
+and Mississippi as red states, try::
+
+    gmt coast -RUS+r2 -Glightgray -B -EUS.TX,US.MS+gred -pdf us
 
 Notes:
 ------
