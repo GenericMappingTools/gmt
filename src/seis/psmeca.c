@@ -629,16 +629,24 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		/* Must examine the trailing text for optional columns: newX, newY and title */
 		if (In->text) {
 			n_scanned = sscanf (In->text, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
-			if (n_scanned >= 2) { /* Got new x,y coordinates */
-				if (ix == GMT_X) {
+			if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
+				if (ix == GMT_X) {	/* Expect lon lat */
 					gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X]);
 					gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y]);
 				}
-				else {
+				else {	/* Expect lat lon */
 					gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_Y]);
 					gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_X]);
 				}
+				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y]))
+					strncpy (event_title, In->text, GMT_BUFSIZ-1);
+				else if (n_scanned == 2)	/* Got no title */
+					event_title[0] = '\0';
 			}
+			else if (n_scanned == 1)	/* Only got event title */
+				strncpy (event_title, In->text, GMT_BUFSIZ-1);
+			else	/* Got no title */
+				event_title[0] = '\0';
 		}
 
 		/* Gather and transform the input records, depending on type */
