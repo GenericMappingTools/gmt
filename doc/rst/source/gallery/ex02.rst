@@ -32,7 +32,7 @@ data we use the slopes in the north-south direction to
 modulate the color image via the **-I** option. Then, we place a color legend to the right of the
 image with :doc:`colorbar </colorbar>`. We repeat these steps for the
 Geosat geoid grid. Again, the labeling of the two plots with a)
-and b) is automatically done by :doc:`subplot`.
+and b) is automatically done by :doc:`subplot </subplot>`.
 
 .. figure:: /_images/ex02.*
    :width: 500 px

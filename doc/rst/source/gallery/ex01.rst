@@ -15,7 +15,7 @@ the continents in light brown in the background. This is how it is done:
 .. literalinclude:: /_verbatim/ex01.txt
    :language: bash
 
-The first command sets up a 2 by 1 :doc:`subplot` layout. The subplot determines
+The first command sets up a 2 by 1 :doc:`subplot </subplot>` layout. The subplot determines
 the size of what map can fit so we use ? when specifying map widths in the
 commands below.  This initial setup is followed by
 two sequences of :doc:`coast </coast>`, :doc:`grdcontour </grdcontour>`,
@@ -27,7 +27,7 @@ positive contours only and draw with a solid pen [Default]. The **-T**
 option causes tick marks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. The labeling of the two plots with a)
-and b) is automatically done by :doc:`subplot`. You can find this illustration as
+and b) is automatically done by :doc:`subplot </subplot>`. You can find this illustration as
 
 .. figure:: /_images/ex01.*
    :width: 500 px

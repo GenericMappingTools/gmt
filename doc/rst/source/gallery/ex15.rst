@@ -24,7 +24,7 @@ land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
 :doc:`plot </plot>`. This point was extracted from the
 grid files using :doc:`grdinfo </grdinfo>`.  Placement of the four
-panels is simplified via :doc:`subplot`.
+panels is simplified via :doc:`subplot </subplot>`.
 
 .. literalinclude:: /_verbatim/ex15.txt
    :language: bash
