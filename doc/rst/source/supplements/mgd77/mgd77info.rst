@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77info** *NGDC-ids*
+**gmt mgd77info** *GEODAS-ids*
 [ |-C|\ [**m**\ \|\ **e**] ]
 [ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]

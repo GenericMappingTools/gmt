@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77header** *NGDC-id.a77*
+**gmt mgd77header** *GEODAS-id.a77*
 [ |-H|\ *headervalues.txt* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **t** ]
 [ |SYN_OPT-V| ]

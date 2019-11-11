@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
+**gmt mgd77convert** *GEODAS-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
 |-T|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
 [ |-C| ]
 [ |-D| ]
@@ -62,7 +62,7 @@ Optional Arguments
 .. _-C:
 
 **-C**
-    Convert from NGDC two-file data sets \*.h77, \*.a77 to single file
+    Convert from NCEI two-file data sets \*.h77, \*.a77 to single file
     \*.mgd77. No other options (except **-V**) are allowed. Give one or
     more names of \*.h77 files, \*.a77 files, or just the file prefixes.
 
@@ -124,7 +124,7 @@ overwriting any existing table, try
 
     gmt mgd77convert 01010047 -Fc -Tt+f -V
 
-To recover the original NGDC MGD77 version of 01020051.nc and ignore any
+To recover the original NCEI MGD77 version of 01020051.nc and ignore any
 E77 corrections, use
 
    ::
@@ -135,7 +135,7 @@ File Formats
 ------------
 
 **mgd77convert** handles four different formats.
-(1) NGDC has now started to use the new tab-delimited version of the
+(1) NCEI has now started to use the new tab-delimited version of the
 MGD77 data format, called MGD77T.  In addition to all the info in old
 MGD77 files it contains a few more quality flags for grav, mag,
 and bathymetry.  (2) The MGD77+ netCDF format was developed to
@@ -144,9 +144,9 @@ information of the original MGD77 file and if you convert back and forth
 you end up with the original. However, file sizes are typically ~30% of
 the original ASCII format and is much faster to operate on. (3) The MGD77 ASCII
 tables are the traditional standard for distribution of underway
-geophysical data to and from the NGDC data center, now superseded by MGD77T.
+geophysical data to and from the NCEI data center, now superseded by MGD77T.
 Normally, only the ship-operations people and the cruise PI might be involved
-in *making* an MGD77 ASCII file for transmission to NGDC; users are more interested
+in *making* an MGD77 ASCII file for transmission to NCEI; users are more interested
 in *reading* such files. (4) The plain ASCII tab-separated dump is available
 for users who need to manually edit the content of a MGD77 file.
 This is usually easier to do when the columns are tab-separated than when
@@ -173,4 +173,4 @@ References
 ncBrowse, see `<http://www.epic.noaa.gov/java/ncBrowse/>`_
 ncView, see `<http://meteora.ucsd.edu/~pierce/ncview_home_page/>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
-`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<http://www.NCEI.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

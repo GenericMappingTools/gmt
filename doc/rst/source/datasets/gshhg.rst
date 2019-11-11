@@ -27,7 +27,7 @@ data is far superior to the WDB data as far as data quality goes, but as
 noted it lacks lakes, not to mention rivers and borders. We decided to
 use the WVS whenever possible and supplement it with WDB data. We got
 these data over the Internet; they are also available on CD-ROM from the
-National Geophysical Data Center in Boulder, Colorado [1]_.
+National Centers for Environmental Information in Boulder, Colorado [1]_.
 
 Format required by GMT
 ----------------------
@@ -327,7 +327,7 @@ We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
 .. [1]
-   `National Geophysical Data Center, Boulder, Colorado <http://www.ngdc.noaa.gov/>`_
+   `National Centers for Environmental Information, Boulder, Colorado <http://www.ncei.noaa.gov/>`_
 
 .. [2]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction

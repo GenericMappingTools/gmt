@@ -154,7 +154,7 @@ Paul Wessel.
    For data bases, see `<http://topex.ucsd.edu/marine_grav/mar_grav.html>`_.
 
 .. [24]
-   The ASCII MGD77 data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
+   The ASCII MGD77 data are available on CD-ROM from NCEI (`<http://www.ncei.noaa.gov/>`_).
 
 .. [25]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
