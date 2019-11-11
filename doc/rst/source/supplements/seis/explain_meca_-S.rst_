@@ -13,9 +13,11 @@
     render the beach ball transparent by drawing only the nodal planes and
     the circumference. The color or shade of the compressive quadrants can
     be specified with the **-G** option. The color or shade of the extensive
-    quadrants can be specified with the **-E** option. Append **+u** to have
-    the text appear below the beach ball (default is above). Parameters are
-    expected to be in the following columns:
+    quadrants can be specified with the **-E** option. Append **+f**\ *font*
+    to change the font of the text string; append **+j**\ *justify* to change
+    the text location relative to the beachball (default is above the beachball);
+    append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -46,10 +48,11 @@
     Use the **-T** option to render the beach ball transparent by drawing
     only the nodal planes and the circumference. The color or shade of the
     compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E**
-    option. Append **+u** to have the text appear below the beach ball
-    (default is above). Parameters are expected to be in the following
-    columns:
+    or shade of the extensive quadrants can be specified with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -87,10 +90,11 @@
     double couple part of moment tensor. Use **-Sz** to plot the anisotropic
     part of moment tensor (zero trace). The color or shade of the
     compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E**
-    option. Append **+u** to have the text appear below the beach ball
-    (default is above). Parameters are expected to be in the following
-    columns:
+    or shade of the extensive quadrants can be specified with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -120,9 +124,11 @@
     proportional to the magnitude. *scale* is the size for magnitude = 5
     The color or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option. Append **+u** to have the text appear below the
-    beach ball (default is above). Parameters are expected to be in the
-    following columns:
+    with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -162,9 +168,11 @@
     moment tensor. Use **-St** to plot zero trace moment tensor. The color
     or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option. Append **+u** to have the text appear below the
-    beach ball (default is above). Parameters are expected to be in the
-    following columns:
+    with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)

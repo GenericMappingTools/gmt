@@ -304,7 +304,6 @@ set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
 set (COPY_GSHHG true)
 set (COPY_DCW true)
-set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
@@ -571,7 +570,6 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     -DFFTW3_ROOT=${prefix}
     -DGDAL_ROOT=${prefix}
     -DPCRE_ROOT=${prefix}
-    -DGMT_INSTALL_MODULE_LINKS=off
     -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
     -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
     ```

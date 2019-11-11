@@ -26,7 +26,7 @@ amounts (in red) are not very prevalent, that color spans a long range.
 
 For this image it is appropriate to use the **-I** option in
 :doc:`colorbar </colorbar>` so the legend gets shaded,
-similar to the geoid grid. See Appendix [app:M] to learn more about
+similar to the geoid grid. See :doc:`/cookbook/cpts` to learn more about
 CPTs and ways to draw color legends.
 
 .. literalinclude:: /_verbatim/ex17.txt

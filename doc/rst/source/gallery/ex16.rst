@@ -51,7 +51,8 @@ always do the "best" thing but it offers great flexibility through its
 combinations of tools. We illustrate all four solutions using a CPT
 that contains color fills, predefined patterns for interval (900,925)
 and NaN, an image pattern for interval (875,900), and a "skip slice"
-request for interval (700,725).
+request for interval (700,725).  Again, we use :doc:`subplot </subplot>` to set up
+and place the four panels, and place the colorbar beneath the subplot.
 
 .. literalinclude:: /_verbatim/ex16.txt
    :language: bash

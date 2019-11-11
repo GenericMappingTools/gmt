@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77sniffer** *NGDC-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
+**gmt mgd77sniffer** *GEODAS-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
 [ |-D|\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
 [ |-E| ]
@@ -95,7 +95,7 @@ Optional Arguments
     divided into (1) a header containing information
     globally applicable to the cruise and (2) individual
     error records summarizing all errors encountered in each cruise
-    record. mgd77sniffer writes E77 directly to <ngdc\_id.e77> file
+    record. mgd77sniffer writes E77 directly to <geodas\_id.e77> file
     handle. See **E77 ERROR FORMAT** below for additional details.
 
     **-DE** Same as **-De** but no regression tests will be carried out.
@@ -340,7 +340,7 @@ E77 Error Format
 ----------------
 
 **Header**
-    Information pertaining to an entire cruise, such as NGDC and survey
+    Information pertaining to an entire cruise, such as NCEI and survey
     institution identification codes, cruise examination time, two-way
     travel time corrector information, data precision warnings, as well
     as systematic scales, DC shifts and correlation coefficients from

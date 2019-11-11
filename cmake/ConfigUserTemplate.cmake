@@ -49,8 +49,8 @@
 #set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES OFF)
 
 # Install convenience links for GMT modules. Disable to install only the main
-# gmt program and access modules as "gmt modulename options" [TRUE]:
-#set (GMT_INSTALL_MODULE_LINKS FALSE)
+# gmt program and access modules as "gmt modulename options" [FALSE]:
+#set (GMT_INSTALL_MODULE_LINKS TRUE)
 
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
