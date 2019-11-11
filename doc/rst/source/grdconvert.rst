@@ -156,7 +156,7 @@ fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 +----------+---------------------------------------------------------------+
 | **rb**   | SUN rasterfile format (8-bit standard)                        |
 +----------+---------------------------------------------------------------+
-| **rf**   | GEODAS grid format GRD98 (NGDC)                               |
+| **rf**   | GEODAS grid format GRD98 (NCEI)                               |
 +----------+---------------------------------------------------------------+
 | **sf**   | Golden Software Surfer format 6 (32-bit float)                |
 +----------+---------------------------------------------------------------+

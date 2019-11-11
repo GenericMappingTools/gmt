@@ -223,7 +223,7 @@ scanline-oriented data raw.b, use
     gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
-scanline-oriented data topo30.b on the NGDC global relief Data CD-ROM,
+scanline-oriented data topo30.b on the NCEI global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun), use
 

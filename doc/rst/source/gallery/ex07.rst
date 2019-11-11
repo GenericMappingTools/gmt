@@ -27,4 +27,4 @@ Here a simple one-liner creates a simple legend in the upper-right corner.
    A typical location map.
 
 .. [1]
-   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
+   These data are available on CD-ROM from NCEI (www.ncei.noaa.gov).

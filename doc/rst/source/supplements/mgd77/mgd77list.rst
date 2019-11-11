@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
+**gmt mgd77list** *GEODAS-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
 [ |-A|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ] ]
 [ |-D|\ **A**\ \|\ **a**\ *startdate* ]
 [ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
@@ -51,7 +51,7 @@ your own custom columns, see :doc:`mgd77manage`). The user may extract any
 combination of these parameters, any of 8 computed quantities (distance,
 heading, course-change, velocity, Carter correction, Eotvos correction
 and gravity and magnetic global reference fields), calendar sub-units of
-time (year, month, day, hour, min, sec), the NGDC id, and finally a
+time (year, month, day, hour, min, sec), the GEODAS id, and finally a
 preset weight (see **-W**). A sub-section can be specified by passing
 time- or distance-intervals along track or by selecting a geographical
 region. Finally, each output record may be required to pass any number
@@ -81,7 +81,7 @@ Required Arguments
     **id**
         The survey ID string (leg name).
     **ngdcid**
-        The 8-character NGDC cruise ID string (usually the file prefix).
+        The 8-character NGDC (now NCEI) cruise ID string (usually the file prefix).
     **time**
         Choose between Absolute calendar time (**atime**, the default) in
         the format dictated by the GMT parameters :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and
@@ -139,7 +139,7 @@ Required Arguments
         Seismic Shot Point Number string.
     **nqc**
         Navigation Quality Code (5 = suspected, by source institution, 6 =
-        suspected, by NGDC, 9 = no problems identified).
+        suspected, by NCEI, 9 = no problems identified).
 
     In addition, the following derived navigational quantities can be requested:
 
@@ -579,7 +579,7 @@ allowed. All correction records are of the form
 
 *cruiseID observation correction*
 
-where *cruiseID* is a NGDC prefix, *observation* is one of the
+where *cruiseID* is a NCEI prefix, *observation* is one of the
 abbreviations for geophysical observations listed under **-F** above,
 and *correction* consists of one or more *term*\ s that will be summed
 up and then **subtracted** from the observation before output. Each

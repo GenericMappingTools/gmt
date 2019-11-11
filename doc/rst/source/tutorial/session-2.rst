@@ -285,11 +285,11 @@ in which we want to plot the epicenters of several earthquakes over
 the background of a coastline basemap.  We want the symbols to have a
 size that reflects the magnitude of the earthquakes, and that their
 color should reflect the depth of the hypocenter.  The first few
-lines in the tut_quakes.ngdc looks like this:
+lines in the remote tut_quakes.ngdc looks like this:
 
    ::
 
-    Historical Tsunami Earthquakes from the NGDC Database
+    Historical Tsunami Earthquakes from the NCEI Database
     Year  Mo  Da  Lat+N  Long+E  Dep  Mag
     1987  01  04  49.77  149.29  489  4.1
     1987  01  09  39.90  141.68  067  6.8
