@@ -141,6 +141,10 @@ if (NOT GMT_INCLUDEDIR)
 	set (GMT_INCLUDEDIR include/gmt${GMT_INSTALL_NAME_SUFFIX})
 endif(NOT GMT_INCLUDEDIR)
 
+if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
+	set (GMT_DATA_SERVER ${GMT_DATA_URL})
+endif (GMT_DATA_URL)
+
 # use, i.e. don't skip the full RPATH for the build tree
 set (CMAKE_SKIP_BUILD_RPATH FALSE)
 
