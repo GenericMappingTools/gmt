@@ -187,10 +187,6 @@ endif (GMT_INSTALL_MODULE_LINKS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
-if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
-	set (GMT_DATA_SERVER ${GMT_DATA_URL})
-endif (GMT_DATA_URL)
-
 # Configuration done
 message(
 	"*\n"
