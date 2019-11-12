@@ -337,7 +337,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c fil
 
 # Legacy modules for which to install compatibility links via
 # install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
+set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator)
 
 # libpslib
 set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
