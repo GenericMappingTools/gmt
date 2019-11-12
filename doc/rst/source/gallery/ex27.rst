@@ -13,10 +13,10 @@ non-Mercator map then you must extract a geographic grid using
 desired map projection. However, if you want to make a Mercator map then
 you can save time and preserve data quality by avoiding to re-project
 the data set twice since it is already in a Mercator projection. This
-example shows how this is accomplished. We use the **-M** option in
+example shows how this is accomplished. We have used the **-M** option in
 :doc:`img2grd </supplements/img/img2grd>`\  [1]_ to pull out the grid
 in Mercator units (i.e., do *not* invert the Mercator projection) and
-then simply plot the grid using a linear projection with a suitable
+then simply plot this remote grid using a linear projection with a suitable
 scale (here 0.25 inches per degrees of longitude). To overlay basemaps
 and features that has geographic longitude/latitude coordinates we must
 remember two key issues:

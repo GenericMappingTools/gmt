@@ -16,7 +16,8 @@ and then pass these locations to
 points within 200 km of Pratt. We then mask out all the data outside
 this radius and use :doc:`grdvolume </grdvolume>` to
 determine the combined area and (gravimetric) volumes of the chosen seamounts. Our
-illustration is presented in Figure.
+illustration is presented in Figure 18 which also shows the automatic labeling
+offered by :doc:`subplot </subplot>`.
 
 .. literalinclude:: /_verbatim/ex18.txt
    :language: bash

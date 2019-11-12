@@ -52,6 +52,7 @@ Quick links
    changes
    deprecated_defaults
    switching
+   migrating
 
 .. toctree::
    :maxdepth: 1

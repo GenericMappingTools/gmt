@@ -15,8 +15,13 @@
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
+if ! [ -x "$(command -v gmt)" ]; then
+  echo 'Error: gmt is not found in your search PATH.' >&2
+  exit 1
+fi
+
 gmt_modules=`gmt --show-modules`
-compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
+compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 for module in ${gmt_modules} ${compat_modules}; do
 	eval "function ${module} () { gmt ${module} \"\$@\"; }"

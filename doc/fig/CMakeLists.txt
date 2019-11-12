@@ -17,8 +17,8 @@
 
 # Figure files
 set (_fig_fig GMT4_mode.png GMT6_Summit_2019.jpg GMT5_mode.png GMT5_external.png
-	GMT_Environment.png GMT_record.png gimp-sliders+panel.png hsv-cone.png
-	formatpicture.png rendering.png)
+	GMT_Environment.png GMT_record.png dcw-figure.png dem.jpg gimp-sliders+panel.png
+	gshhg.jpg hsv-cone.png formatpicture.png rendering.png)
 
 # Copy figures without converting
 FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)

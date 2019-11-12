@@ -6674,6 +6674,26 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 }
 
 /*! . */
+GMT_LOCAL unsigned int n_trailing_chars (struct GMT_CTRL *GMT, char *text) {
+	/* Try to determine if there are trailing text that is not a valid unit for a number.
+	 * We do not try to scan for leading chars since Jan-01-2001T might be caught. */
+	unsigned int n = 0, p, n_periods = 0;	/* n is number of traiing characters after last digit (or period) */
+	int k, last;
+	gmt_M_unused (GMT);
+	if (!text || !text[0]) return 0;
+	k = last = (int)strlen(text) - 1;
+	while (k >= 0 && !isdigit (text[k])) {	/* Count how many non-digits at the end of this text */
+		if (text[k] == '.') p = k, n_periods++;	/* But be aware of a trailing single period in a number before unit (e.g., 30.k) */
+		k--, n++;	/* Count trailing letters */
+	}
+	if (n_periods == 1 && p && isdigit (text[p-1]) && n <= 2)	/* May be OK if a valid unit (or nothing) afterwards and a digit before */
+		n--;	/* Let the period be part of the number */
+	if (n == 1 && !strchr (GMT_LEN_UNITS GMT_DIM_UNITS GMT_WESN_UNITS, text[last]))	/* Single trailing text letter but not recognized as a unit */
+		n = 2;	/* To ensure it is seen as text */
+	return (n);
+}
+
+/*! . */
 int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool cmd, double *val) {
 	/* Version of gmt_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from gmt_scanf in that if the expectation is GMT_IS_UNKNOWN it will
@@ -6699,10 +6719,15 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 		}
 		if (len > 1) {		/* Arguments of at least 2 characters can be many things */
 			char c = s[len-1];	/* Trailing letter */
-			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or junk */
+			unsigned int nt = (cmd) ? 0 : n_trailing_chars (GMT, s);
+			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or it will fail as junk */
 				expectation = GMT_IS_ARGTIME;
 			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
+			else if (nt > 1) {	/* No number has 2 or more letters at the end so return as NaN */
+				*val = GMT->session.d_NaN;
+				return GMT_IS_NAN;
+			}
 			else if (!((s[0] >= 0 && isdigit (s[0])) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */

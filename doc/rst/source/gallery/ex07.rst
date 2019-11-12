@@ -8,10 +8,10 @@ of interest. This map will typically also contain certain features and
 labels. This example will present a location map for the equatorial
 Atlantic ocean, where fracture zones and mid-ocean ridge segments have
 been plotted. We also would like to plot earthquake locations and
-available isochrons. We have obtained one file, ``quakes.xym``, which contains the
+available isochrons. We have obtained one file, ``quakes_07.txt``, which contains the
 position and magnitude of available earthquakes in the region. We choose
 to use magnitude/100 for the symbol-size in inches. The digital fracture
-zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
+zone traces (``fz_07.txt``) and isochrons (0 isochron as ``ridge_07.txt``, the rest as ``isochron_07.txt``) were
 digitized from available maps [1]_. We create the final location map
 with the following script:
 
@@ -27,4 +27,4 @@ Here a simple one-liner creates a simple legend in the upper-right corner.
    A typical location map.
 
 .. [1]
-   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
+   These data are available on CD-ROM from NCEI (www.ncei.noaa.gov).

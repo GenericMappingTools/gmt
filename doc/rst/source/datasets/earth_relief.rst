@@ -1,6 +1,12 @@
 Global Earth Relief Grids
 =========================
 
+.. figure:: /_images/dem.jpg
+   :height: 888 px
+   :width: 1774 px
+   :align: center
+   :scale: 40 %
+
 In addition to the GSHHS coastlines, rivers, and borders data built into some
 modules (:doc:`/coast`, :doc:`/gmtselect`, :doc:`/grdlandmask`), we offer several
 remote global data grids that you can access via our *remote file* mechanism.
@@ -84,7 +90,7 @@ the file sizes of the netCDF-4 compressed short int grids, making the files much
 than their original source files without any loss of precision.  To improve download speed,
 the SRTM tiles are stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your server directory they are converted to short int compressed netCDF4
-grids. This step uses our GDAL bridge and thus requires that you have built GMT with GDAL support
+grids for easier access. This step uses our GDAL bridge and thus requires that you have built GMT with GDAL support
 *and* that your GDAL distribution was built with openjpeg support.
 
 Data Space Concerns
@@ -94,7 +100,7 @@ There are several ways you can control the amount of space taken up by your own 
 
 #. You can set an upper file size limit for download via the GMT default setting
    :ref:`GMT_DATA_SERVER_LIMIT <GMT_DATA_SERVER_LIMIT>`; the default is unlimited.
-#. You can remove the entire server directory via gmt :doc:`/clear`.
+#. You can remove the entire server directory via gmt :doc:`/clear` data.
 #. You can be clever and set up a crontab job that deletes data files you have not
    touched in, say, 6 months (or some other interval).
 

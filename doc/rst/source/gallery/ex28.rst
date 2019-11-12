@@ -15,7 +15,7 @@ on the same map you simply have to specify the region using the UTM
 meters but supply the actual UTM projection parameters. Make sure you
 use the same scale with both the linear and UTM projection.
 
-Our script illustrates how we would plot a UTM grid (with coordinates in
+Our script illustrates how we would plot a remote UTM grid (with coordinates in
 meters) of elevations near Kilauea volcano on the Big Island of Hawaii
 and overlay geographical information (with longitude, latitude
 coordinates). We first lay down the UTM grid using the linear

@@ -12388,6 +12388,9 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n_slashes;
 	size_t len;
+	/* If geographic is already set we just return true */
+
+	if (gmt_M_is_geographic (GMT, GMT_IN)) return true;
 	/* First deal with all the modules that only involve geographic data */
 	if (!strncmp (module, "grdlandmask", 11U)) return true;
 	if (!strncmp (module, "pscoast", 7U)) return true;
