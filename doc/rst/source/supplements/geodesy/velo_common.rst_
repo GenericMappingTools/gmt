@@ -137,7 +137,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *fill*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
     **-E** is not specified, the uncertainty regions will be transparent.]
