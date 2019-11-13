@@ -28,6 +28,6 @@ cat << EOF > test.csv
 1800 2600 0.00228223 -5.6886e-07 0 0 0
 EOF
 gmt begin geodesy_06 ps 
-  gmt velo -JX6.5i/9i -R0/2100/0/2700 -B test.csv -A+pthicker+ea -Se600/0/8 -Gblack -W0.1p,black
-  gmt velo test.csv -A+pthicker+ea+n0.5i -Se600/0/8 -Gorange -W0.1p,orange
+  gmt velo -JX6.5i/9i -R0/2100/0/2700 -B test.csv -A+pthicker+ea -Se600c/0/8 -Gblack -W0.1p,black
+  gmt velo test.csv -A+pthicker+ea+n1c -Se600c/0/8 -Gorange -W0.1p,orange
 gmt end show
