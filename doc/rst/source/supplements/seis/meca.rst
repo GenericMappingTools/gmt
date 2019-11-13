@@ -15,7 +15,7 @@ Synopsis
 **gmt meca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 |-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
-[ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
+[ |-C|\ [*pen*\ ][\ **+s**\ *size*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
