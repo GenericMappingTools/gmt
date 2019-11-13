@@ -16,9 +16,8 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
-[ |-E|\ *color* ]
-[ |-F|\ *color* ]
-[ |-G|\ *color* ]
+[ |-E|\ *fill* ]
+[ |-G|\ *fill* ]
 [ |-K| ]
 [ |-L| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
