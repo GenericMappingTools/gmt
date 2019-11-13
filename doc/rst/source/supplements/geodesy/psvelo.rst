@@ -22,7 +22,7 @@ Synopsis
 [ |-K| ]
 [ |-L| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *symbol*/*scale*\ [/*args* ] ]
+[ |-S|\ *symbol*/*args*\ [**+f**\ *font* ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -47,7 +47,7 @@ The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig::
 
-    gmt psvelo << END -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18 \
+    gmt psvelo << END -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39+f18p \
         -B1g1 -Jx0.4/0.4 -A1c+p3p+e -P -V > test.ps
     #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
     #(deg) (deg) (mm/yr) (mm/yr)
