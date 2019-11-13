@@ -322,7 +322,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
-	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
+	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
@@ -478,17 +478,14 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
-					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.S.v.h_length) {
-						hl = hypot (plot_x-plot_vx,plot_y-plot_vy) * 0.6;
-						hw = hl * Ctrl->A.S.v.h_width/Ctrl->A.S.v.h_length;
-						vw = hl * Ctrl->A.S.v.v_width/Ctrl->A.S.v.h_length;
-						if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2./PSL_DOTS_PER_INCH;
-					}
-					else {
-						hw = Ctrl->A.S.v.h_width;
-						hl = Ctrl->A.S.v.h_length;
-						vw = Ctrl->A.S.v.v_width;
-					}
+					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
+					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
+						GMT_Report (API, GMT_MSG_VERBOSE, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
+					hw = s * Ctrl->A.S.v.h_width;
+					hl = s * Ctrl->A.S.v.h_length;
+					vw = s * Ctrl->A.S.v.v_width;
+					if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
