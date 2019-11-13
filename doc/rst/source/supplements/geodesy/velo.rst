@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-L| ]
 [ |-N| ]
-[ |-S|\ *symbol*/*args*\ [**+f**\ *font* ] ]
+[ |-S|\ *symbol*/*args*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

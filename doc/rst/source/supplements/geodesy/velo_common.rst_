@@ -29,7 +29,7 @@ Required Arguments
 
 Selects the meaning of the columns in the data file and the figure to be plotted.
 
-    **-Se**\ *velscale/confidence*\ [**+f**\ *font* ]
+    **-Se**\ *velscale/confidence*\ [**+f**\ *font*]
 
         Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the
         velocity arrows. This scaling gives inches (unless **c**, **i**,
@@ -63,7 +63,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
             **3**,\ **4**:
             eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-    **-Sr**\ *velscale/confidence*\ [**+f**\ *font* ]
+    **-Sr**\ *velscale/confidence*\ [**+f**\ *font*]
 
         Velocity ellipses in rotated convention. *velscale* sets the scaling of
         the velocity arrows. This scaling gives inches (unless **c**, **i**,
