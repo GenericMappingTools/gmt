@@ -51,7 +51,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *fill*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of extensive quadrants. Usually white. Set the color
     [Default is white].
 
@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
     shaded. Set the color [Default is black].
