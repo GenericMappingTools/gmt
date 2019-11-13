@@ -18,9 +18,9 @@ Synopsis
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
 [ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ *pointsize*] ]
-[ |-E|\ *color* ]
-[ |-F|\ *color* ]
-[ |-G|\ *color* ]
+[ |-E|\ *fill* ]
+[ |-F|\ *fill* ]
+[ |-G|\ *fill* ]
 [ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
