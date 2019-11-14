@@ -156,7 +156,7 @@ If you already installed the GMT packages provided by Fedora,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+    dnf remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### RHEL/CentOS
 
@@ -193,8 +193,7 @@ If you already installed the GMT packages provided by EPEL,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    yum uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
-
+    yum remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### Ubuntu/Debian
 
