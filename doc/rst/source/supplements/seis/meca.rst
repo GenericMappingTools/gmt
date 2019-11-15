@@ -15,7 +15,7 @@ Synopsis
 **gmt meca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 |-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
-[ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
+[ |-C|\ [*pen*\ ][\ **+s**\ *size*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
@@ -43,12 +43,10 @@ Examples
 
 .. include:: ../../oneliner_info.rst_
 
-The following file should give a normal-faulting CMT mechanism:
+The following file should give a normal-faulting CMT mechanism::
 
-   ::
-
-    gmt meca -R239/240/34/35.2 -Jm4c -Sc2c -h1 -pdf test << END
-    #lon lat depth str dip slip st dip slip mant exp plon plat
+    gmt meca -R239/240/34/35.2 -Jm4c -Sc2c -pdf test << END
+    # lon lat depth str dip slip st dip slip mant exp plon plat
     239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
     END
 

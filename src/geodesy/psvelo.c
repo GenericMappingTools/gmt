@@ -83,8 +83,9 @@ struct PSVELO_CTRL {
 		unsigned int readmode;
 		unsigned int n_cols;
 		double scale, wedge_amp, conrad;
-		double fontsize, confidence;
+		double confidence;
 		struct GMT_FILL fill;
+		struct GMT_FONT font;
 	} S;
 	struct W {	/* -W<pen> */
 		bool active;
@@ -111,7 +112,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.wedge_amp = 1.e7;
 	C->S.conrad = 1.0;
-	C->S.fontsize = DEFAULT_FONTSIZE;
+	C->S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
+	C->S.font.size = 9;
 	C->W.pen = GMT->current.setting.map_default_pen;
 	return (C);
 }
@@ -127,7 +129,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s] [-D<sigscale>]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L] [-N] %s%s[-S<symbol><scale>[/<args>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -148,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and scale (plus optional args; see documentation). Choose between:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and scale (plus optional font; see documentation). Choose between:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e  Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r  Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     n  Anisotropy : in X,Y,Vx,Vy.\n");
@@ -172,7 +174,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_set;
 	int n;
 	bool no_size_needed, got_A = false;
-	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
+	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
@@ -237,6 +239,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
+				if ((c = strstr (opt->arg, "+f"))) {	/* Gave font directly */
+					n_errors += gmt_getfont (GMT, &c[2], &(Ctrl->S.font));
+					c[0] = '\0';	/* Temporarily chop off the font specification */
+				}
  				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
 					strncpy (txt, &opt->arg[1], GMT_LEN256);
 					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;
@@ -244,7 +250,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
-					if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+					if (txt_b[0]) Ctrl->S.font.size = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				}
 				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
@@ -278,6 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 						n_errors++;
 						break;
 				}
+				if (c) c[0] = '+';	/* Restore font specification */
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
@@ -322,7 +329,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
-	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
+	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
@@ -478,17 +485,14 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
-					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.S.v.h_length) {
-						hl = hypot (plot_x-plot_vx,plot_y-plot_vy) * 0.6;
-						hw = hl * Ctrl->A.S.v.h_width/Ctrl->A.S.v.h_length;
-						vw = hl * Ctrl->A.S.v.v_width/Ctrl->A.S.v.h_length;
-						if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2./PSL_DOTS_PER_INCH;
-					}
-					else {
-						hw = Ctrl->A.S.v.h_width;
-						hl = Ctrl->A.S.v.h_length;
-						vw = Ctrl->A.S.v.v_width;
-					}
+					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
+					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
+						GMT_Report (API, GMT_MSG_VERBOSE, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
+					hw = s * Ctrl->A.S.v.h_width;
+					hl = s * Ctrl->A.S.v.h_length;
+					vw = s * Ctrl->A.S.v.v_width;
+					if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
@@ -515,16 +519,16 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
-					if (Ctrl->S.fontsize > 0.0 && station_name)	/* 1 inch = 2.54 cm */
-						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
+					if (Ctrl->S.font.size > 0.0 && station_name)	/* 1 inch = 2.54 cm */
+						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
 				}
 				else {
 					gmt_setfill (GMT, &Ctrl->G.fill, 1);
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, PSL_CIRCLE);
 					justify = PSL_TC;
-					if (Ctrl->S.fontsize > 0.0 && station_name) {
-						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
+					if (Ctrl->S.font.size > 0.0 && station_name) {
+						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
 					}
 					/*  1 inch = 2.54 cm */
 				}

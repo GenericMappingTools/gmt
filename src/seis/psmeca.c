@@ -46,7 +46,7 @@ PostScript code is written to stdout.
 
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct C {	/* -C[<pen>][+s<pointsize>] */
+	struct C {	/* -C[<pen>][+s<size>] */
 		bool active;
 		double size;
 		struct GMT_PEN pen;
@@ -171,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -213,7 +213,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes are set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A line is plotted between both positions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Append +s<pointsize> to change the size of the circle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Append +s<size> to change the size of the circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for extensive parts [default is white].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");

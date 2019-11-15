@@ -16,13 +16,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
-[ |-E|\ *color* ]
-[ |-F|\ *color* ]
-[ |-G|\ *color* ]
+[ |-E|\ *fill* ]
+[ |-G|\ *fill* ]
 [ |-K| ]
 [ |-L| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *symbol*/*scale*\ [/*args* ] ]
+[ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -45,11 +44,9 @@ Examples
 
 The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
-fits inside a rectangle of dimension Esig by Nsig.
+fits inside a rectangle of dimension Esig by Nsig::
 
-   ::
-
-    gmt psvelo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18 \
+    gmt psvelo << END -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2i/0.39+f18p \
         -B1g1 -Jx0.4/0.4 -A1c+p3p+e -P -V > test.ps
     #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
     #(deg) (deg) (mm/yr) (mm/yr)
@@ -63,11 +60,9 @@ fits inside a rectangle of dimension Esig by Nsig.
 
 This example should plot some residual rates of rotation in the Western
 Transverse Ranges, California. The wedges will be dark gray, with light
-gray wedges to represent the 2-sigma uncertainties.
+gray wedges to represent the 2-sigma uncertainties::
 
-   ::
-
-    gmt psvelo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i \
+    gmt psvelo << END -Sw0.4i/1.e7 -W0.75p -Gdarkgray -Elightgray -D2 -Jm2.2i \
         -R240./243./32.5/34.75 -Baf -BWeSn -P > test.ps
     #lon lat spin(rad/yr) spin_sigma (rad/yr)
     241.4806 34.2073 5.65E-08 1.17E-08

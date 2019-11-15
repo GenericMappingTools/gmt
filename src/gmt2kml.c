@@ -396,8 +396,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				k = 0;
 				if ((c = strstr (opt->arg, "+f"))) 	/* Polygon fill */
 					ind = F_ID, k = 0, c[0] = '\0';
-				else if ((c = strstr (opt->arg, "+n")))	/* Label color */
+				else if ((c = strstr (opt->arg, "+n"))) {	/* Label color */
 					ind = N_ID, k = 0, c[0] = '\0';
+					if (opt->arg[0] == '\0')
+						Ctrl->N.mode = NO_LABEL;	/* Another way of turning off labels */
+				}
 				else if (gmt_M_compat_check (GMT, 5)) {	/* Old style -Gf or -Gn OK */
 					GMT_Report (API, GMT_MSG_COMPAT, "-Gf or -Gn is deprecated, use -G[<fill>][+f|n] instead\n");
 					if (opt->arg[0] == 'f')	/* Polygon fill */
@@ -1072,7 +1075,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
 				kml_print (API, Out, N++, "<Folder>");
-				if (label)
+				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
+				else if (label)
 					kml_print (API, Out, N, "<name>%s</name>", label);
 				else
 					kml_print (API, Out, N, "<name>%s Set %d</name>", name[Ctrl->F.mode], set_nr);

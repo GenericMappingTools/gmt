@@ -14681,6 +14681,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				if ((pch = strstr(item, "+to")) != NULL) {
 					if (pch[3] == ' ' || pch[3] == '\t' || pch[3] == '+' || pch[3] == 'E' || pch[3] == 'e' || isdigit(pch[3]))
 						two = true;
+					else if (pch[3] == '\0') {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "There is no destiny referencing system after the '+to' keyword.\n");
+						error = 1;
+						break;
+					}
 				}
 
 				if (!two) {		/* A single CRS */
@@ -14688,9 +14693,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					error = parse_proj4 (GMT, item, dest);
 				}
 				else {
+					size_t len, k = 3;
+					len = strlen(pch);
 					pch[0] = '\0';
 					error  = parse_proj4 (GMT, item, source);
-					error += parse_proj4 (GMT, &pch[3], dest);
+					if (pch[3] == ' ' || pch[3] == '\t')
+						while (pch[k] && isspace(pch[k])) k++;
+					if (k == len) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "There is no destiny referencing system after the '+to' keyword.\n");
+						error = 1;
+						break;
+					}
+					error += parse_proj4 (GMT, &pch[k], dest);
 				}
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);

@@ -148,7 +148,7 @@ The Common GMT Options
 
 |SYN_OPT-B|
 **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters* **-K** **-O**
+**-Jz**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |SYN_OPT-U|
 |SYN_OPT-V|
