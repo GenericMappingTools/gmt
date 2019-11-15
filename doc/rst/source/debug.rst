@@ -105,6 +105,16 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    :width: 500 px
    :align: center
 
+#. The tool bar below the code has a a pause-pay button (continue to next stop point), a step-over button (execute
+   next step but do not go *into* a function, thestep-into button (execute next step which may be going into a function)
+   and the step-out button.  Step into the GMT_Call_Module function using the step-into button, then scroll down to
+   around line 10094 and place a stop point there like I did.  You are now about to call your actual C function that
+   correspond to the module (here pstext).
+
+.. figure:: /_images/xcode-7.*
+   :width: 500 px
+   :align: center
+
 
 
 See Also
