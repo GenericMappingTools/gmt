@@ -12643,7 +12643,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (options && gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
-		char r_code[GMT_LEN256] = {""};
+		char r_code[GMT_LEN512] = {""};
 		bool add_R = true;
 		unsigned int E_flags;
 		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
