@@ -446,28 +446,25 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size (in measure_unit).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the format code for your input file:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a  Focal mechanism in Aki & Richard's convention:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike dip rake mag newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike dip rake mag [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c  Focal mechanisms in Global CMT convention\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 rake1 strike2 dip2 rake2 moment newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 rake1 strike2 dip2 rake2 moment [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d  Best double couple defined from seismic moment tensor (Global CMT, with zero trace):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p  Focal mechanism defined with:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 strike2 fault mag newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 strike2 fault mag [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      fault = -1/+1 for a normal/inverse fault\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m  Seismic moment tensor (Global CMT, with zero trace):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t  Zero trace moment tensor defined from principal axis:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge P_value P_azim P_plunge exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x  Principal axis:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge P_value P_azim P_plunge exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   y  Best double couple defined from principal axis:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge P_value P_azim P_plunge exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Anisotropic part of seismic moment tensor (Global CMT, with zero trace):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX] [newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +f<font>+j<justify>+o<dx>[/<dy>] to change the label font, location and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Append +u to plot it under.\n");
@@ -708,19 +705,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {	/* parse format */
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 13;
+						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 11;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 9;
+						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 7;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 10;
+						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 8;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_TENSOR;
 						break;
 					case 'y':
@@ -728,21 +725,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_TENSOR;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_DC;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						Ctrl->S.zerotrace = true;
 						break;
@@ -860,12 +857,13 @@ int GMT_coupe (void *V_API, int mode, void *args) {
 int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
+	int n_scanned = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
-	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
+	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y, *in = NULL;
 
-	char event_title[GMT_BUFSIZ] = {""};
+	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
 
 	st_me meca, mecar;
 	struct MOMENT moment;
@@ -958,10 +956,35 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_rec++;
 		size = Ctrl->S.scale;
 
-		if (In->text)
+		/* Must examine the trailing text for optional columns: newX, newY and title */
+		/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
+		if (In->text) {
+			n_scanned = sscanf (In->text, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
+			if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
+				unsigned int type;
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
+					if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
+				}
+				else {	/* Expect lon lat but watch for junk */
+					if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
+					if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
+				}
+				if (gmt_M_is_dnan (xynew[GMT_X]) || gmt_M_is_dnan (xynew[GMT_Y])) {	/* Got part of a title, presumably */
+					xynew[GMT_X] = 0.0;	 /* revert to 0 if newX and newY are not given */
+					xynew[GMT_Y] = 0.0;
+					if (!(strchr ("XY", Xstring[0]) && strchr ("XY", Ystring[0])))	/* Old meca format with X Y placeholders */
 			strncpy (event_title, In->text, GMT_BUFSIZ-1);
-		else
-			sprintf (event_title,"\n");
+				}
+				else if (n_scanned == 2)	/* Got no title */
+					event_title[0] = '\0';
+			}
+			else if (n_scanned == 1)	/* Only got event title */
+				strncpy (event_title, In->text, GMT_BUFSIZ-1);
+			else	/* Got no title */
+				event_title[0] = '\0';
+		}
+
 		depth = in[2];
 
 		if (!dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
