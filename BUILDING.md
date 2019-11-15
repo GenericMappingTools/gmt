@@ -113,7 +113,7 @@ You then can install the GMT dependencies with:
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -138,7 +138,7 @@ Install the GMT dependencies with:
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     sudo dnf install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs

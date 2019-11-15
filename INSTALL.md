@@ -135,6 +135,8 @@ The GMT binary packages provided by the Fedora official repositories are usually
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow Fedora users access the latest GMT releases in an easy way.
 
+**NOTE: The RPM repository provides GMT packages for Fedora 29 or newer only!**
+
 Fedora users can add the GMT official RPM repository and install gmt by:
 
 	# enable the RPM repository
@@ -148,7 +150,7 @@ Fedora users can add the GMT official RPM repository and install gmt by:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     dnf install GraphicsMagick ffmpeg gdal
 
 **Note**:
@@ -185,7 +187,7 @@ For RHEL/CentOS, run:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     yum install GraphicsMagick ffmpeg gdal
 
 **Note**:
