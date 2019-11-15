@@ -22,10 +22,10 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 
 #. You will need to make some changes to your *cmake/ConfigUser.cmake* file. Scroll down to the
    section that says "# Extra debugging for developers:" and uncomment the ~6 lines that has
-   the if test on "Xcode".  This will pass a few flags that are using when debugging via Xcode.
+   the if-test on "Xcode".  This will pass a few flags that are used when debugging via Xcode.
    Also uncomment the two "add_definitions" lines that contain the word "DEBUG" in it somewhere.
 
-#. You will need to build GMT again.  I recommend you do this into another build directory (I
+#. You will need to build GMT again.  I recommend you do this in a separate build directory (I
    call mine xbuild, and while at it I use rbuild for "Release Builds" and dbuild for regular
    debug command line builds, and build for the final build for the releases).  If you are in
    the xbuild directory, these two command will do the build::
@@ -41,27 +41,28 @@ Applications).  Xcode may change as versions change; the images below is for Xco
       :width: 90%
       :align: center
 
-#. Pull down the tab that says "@ ALL_BUILDS" and select "gmt" about 35 lines down, then in the
+#. Pull down the tab that says "@ ALL_BUILD" and select "gmt" about 35 lines down, then in the
    left sidebar open the folder called gmt->Source Files and select gmt.c. Now you may wish
-   to drag the window to be a bit wider so the lines down wrap around so much.  After that step
+   to drag the window to be a bit wider so the lines don't wrap around so much.  After that step
    your screen may look more like this:
 
    .. figure:: /_images/xcode-2.*
       :width: 90%
       :align: center
 
-#. Scroll down to the part around line 119 and click the line number to place a stop point:
+#. Scroll down to the part around line 119 and click the line number to place a stop point; it
+   will add a blue fat arrow at that line:
 
    .. figure:: /_images/xcode-3.*
       :width: 90%
       :align: center
 
    This is *usually* the first stop you want in Xcode.  The exception would be if you are debugging
-   gmt.c itself or you need to examine the code that creates the session with GMT_Create_Session
-   further up.
+   gmt.c itself or you need to examine the code that creates the session via a call to GMT_Create_Session
+   earlier in the program.
 
-#. Now we need to specify a particular command we wish to debug.  Let's pretend that :doc:`pstext`
-   has a bug when we run the command::
+#. Now we need to specify the particular command we wish to debug.  Let's pretend that :doc:`pstext`
+   crashes when we run the command::
 
     gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p > text.ps
 
@@ -75,44 +76,45 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
    calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
-   place the path to that program under Value.  Likewise, if the module needs to find a particular environmental
+   place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
    setting like $X2SYS_HOME, then you must set those here as well.
 
-#. Data files your command is reading must be placed in the xbuild/src/Debug subdirectory or you must
-   change the command you pasted in above to use the full path instead.  In other words, when Xcode runs
-   your command your current directory becomes xbuild/src/Debug.
+#. Any data files your command will read must either be placed in the xbuild/src/Debug subdirectory or you must
+   change the command you pasted above to use the full path instead.  In other words, when Xcode runs
+   your command, your current directory becomes xbuild/src/Debug.
 
-#. Click close and and hit the "Play" button next to the green circle in the top left corner.  It may do some
+#. Click close and hit the "Play" button next to the green circle in the top left corner.  It may do some
    building and indexing before it starts and then stops at your highlighted line, opening up a display console
-   below:
+   below the source code:
 
    .. figure:: /_images/xcode-5.*
       :width: 90%
       :align: center
    
-   You will see the current line is highlighted light greenish and the code is stopped.  below is a new window that
+   You will see the current line is highlighted light greenish and the execution is stopped.  Below the code is a new window that
    lists some of the variables in the current scope.  You can examine that window to see what the variables are set
    to, you can type "print variable" in the lldb command window on the right (e.g., "print argc"), or you can place
-   the cursor over a variable and a pop-up box will display its value.  Below I placed to cursor on the variable
+   the cursor over a variable and a pop-up box will display its value.  Below I placed the cursor on the variable
    "module" on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).
 
    .. figure:: /_images/xcode-6.*
       :width: 90%
       :align: center
 
-#. The tool bar below the code has a pause-play button (continue to next stop point), a step-over button (execute
+#. The tool bar below the source code has a pause-play button (continue to next stop point), a step-over button (execute
    next step but do not go *into* a function, the step-into button (execute next step which may be going into a function)
-   and the step-out button.  Step into the GMT_Call_Module function using the step-into button, then scroll down to
-   around line 10094 and place a stop point there like I did.  Press the pause-play button and you are now about to
-   call your actual C function that correspond to the module (here pstext).
+   and the step-out button (finish running current function then step back out).  Step into the GMT_Call_Module function
+   using the step-into button, then scroll down to around line 10094 and place another stop point there like I did.  Press
+   the pause-play button and you are now about to call your actual C function that correspond to the module (here pstext):
 
    .. figure:: /_images/xcode-7.*
       :width: 90%
       :align: center
 
-#. Click the step-into button and you now find yourself at the first executable line of code in GMT_pstext, the underlying
+#. Click the step-into button and find yourself at the first executable line of code in GMT_pstext, the underlying
    C function at the heart of the pstext module.  You can now step your way down the code, using step-over to avoid going
-   into the details of GMT sub-functions, or step-into if that is the problem.
+   into the details of GMT sub-functions (or step-into it if that is the problem), set stop points and push pause-play to
+   advance to the next stop point, examine variables, and so on.
 
    .. figure:: /_images/xcode-8.*
       :width: 90%
