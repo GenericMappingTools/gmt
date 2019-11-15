@@ -772,7 +772,8 @@ Specifying area fill attributes
 -------------------------------
 
 Many plotting programs will allow the user to draw filled polygons or
-symbols. The fill specification may take two forms:
+symbols. The fill specification may take two forms (note: not all modules
+use **-G** for this task and some have several options specifying different fills):
 
 **-G**\ *fill*
     In the first case we may specify a *gray* shade (0–255), RGB color

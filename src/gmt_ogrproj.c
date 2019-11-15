@@ -40,6 +40,10 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating source SRS failed.\n%s\n", pSrcSRS);
 		return NULL;
 	}
+#if GDAL_VERSION_MAJOR >= 3
+	OSRSetAxisMappingStrategy(hSrcSRS, OAMS_TRADITIONAL_GIS_ORDER);		/* Set the data axis to CRS axis mapping strategy. */
+#endif
+
 	/* ------------------- Set the Target projection ---------------------------- */
 	CPLErrorReset();
 	hDstSRS = OSRNewSpatialReference(NULL);
@@ -48,6 +52,9 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		OSRDestroySpatialReference(hSrcSRS);	/* It was just created above */
 		return NULL;
 	}
+#if GDAL_VERSION_MAJOR >= 3
+	OSRSetAxisMappingStrategy(hDstSRS, OAMS_TRADITIONAL_GIS_ORDER);		/* Set the data axis to CRS axis mapping strategy. */
+#endif
 	/* -------------------------------------------------------------------------- */
 
 	hCT = OCTNewCoordinateTransformation(hSrcSRS, hDstSRS);

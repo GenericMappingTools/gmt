@@ -299,7 +299,7 @@ find_package (DCW)
 if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
 		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
+		"Obtain dcw-gmt-<version>.tar.gz from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 if (DO_API_TESTS)
@@ -337,7 +337,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c fil
 
 # Legacy modules for which to install compatibility links via
 # install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
+set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator)
 
 # libpslib
 set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
@@ -451,7 +451,7 @@ set_target_properties (pslib
 	SOVERSION ${GMT_LIB_SOVERSION}
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-# If a renaming of the gmtpslpsl dll has been set in ConfigUser.cmake
+# If a renaming of the psl dll has been set in ConfigUser.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
 endif (WIN32 AND PSL_DLL_RENAME)

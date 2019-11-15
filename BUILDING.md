@@ -39,12 +39,12 @@ For package maintainers:
 To build GMT, you must install:
 
 - [CMake](https://cmake.org/) (>=2.8.5)
-- [Ghostscript](https://www.ghostscript.com/)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
 Optionally install these for more capabilities within GMT:
 
+- [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
@@ -79,10 +79,10 @@ For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
+    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev ghostscript
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -106,10 +106,10 @@ You can add this repository by telling yum:
 You then can install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo yum install cmake libcurl-devel netcdf-devel ghostscript
+    sudo yum install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -131,10 +131,10 @@ For Fedora, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
+    sudo dnf install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
@@ -156,10 +156,10 @@ For Archlinux, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
+    sudo pacman -S base-devel cmake libcurl-gnutls netcdf
 
     # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas glib2
+    sudo pacman -S gdal pcre fftw lapack openblas glib2 ghostscript
 
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
@@ -179,10 +179,10 @@ For FreeBSD, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf print/ghostscript9
+    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf
 
     # install optional dependencies
-    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas
+    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas print/ghostscript9
 
     # to enable movie-making
     sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
@@ -201,10 +201,10 @@ Install the gmt dependencies with:
 For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
-    brew install cmake curl netcdf ghostscript
+    brew install cmake curl netcdf
 
     # Install optional dependencies
-    brew install gdal pcre2 fftw glib
+    brew install gdal pcre2 fftw glib ghostscript
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg

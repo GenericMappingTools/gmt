@@ -10,8 +10,6 @@ and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases)
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
 for compiling GMT source package (either stable release or development version).
-Note: Distributions may not all update at the same time so check if GMT 6 is
-available first.
 
 ## Contents
 
@@ -53,7 +51,8 @@ If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
 the instructions at the end of the GMT splash screen.
 
-Note: The installer is always built for the latest macOS version only.
+**Note**: The installer is always built for the latest macOS version only,
+and works for macOS Sierra (10.12) or higher.
 
 ### Install via Homebrew
 
@@ -157,7 +156,7 @@ If you already installed the GMT packages provided by Fedora,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+    dnf remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### RHEL/CentOS
 
@@ -194,8 +193,7 @@ If you already installed the GMT packages provided by EPEL,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    yum uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
-
+    yum remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### Ubuntu/Debian
 

@@ -50,7 +50,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -77,9 +77,9 @@ Required Arguments
     to compute the height of each subplot.  All subplots must share the same region and projection and you specify
     a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
 
-    Optionally, you may draw or paint the figure rectangle behind the subplots, and even expand it via **+c**.  This
-    is most useful if you supply **-B+n** to subplot begin, meaning no ticks or annotations will take place in the
-    subplots.
+    Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
+    subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
+    useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
 
 Optional Arguments
 ------------------

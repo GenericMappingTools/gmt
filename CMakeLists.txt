@@ -100,24 +100,21 @@ add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
 if (GIT_FOUND AND HAVE_GIT_VERSION)
-	# Export git working tree
+	# Export git working tree, and remove some directories and files
+	# so that they are not included in the final release tarball
 	add_custom_target (git_export_release
-		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
-	# Remove some directories and files, so that they are not included in the final release tarball
-	add_custom_target (git_prune_dirs
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test)
-	add_custom_target (git_prune_files
+		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
+		COMMAND ${CMAKE_COMMAND} -E remove_directory
+			${GMT_RELEASE_PREFIX}/.git
+			${GMT_RELEASE_PREFIX}/.github
+			${GMT_RELEASE_PREFIX}/admin
+			${GMT_RELEASE_PREFIX}/ci
+			${GMT_RELEASE_PREFIX}/test
 		COMMAND ${CMAKE_COMMAND} -E remove
 			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore)
-	add_depend_to_target (git_prune_dirs git_export_release)
-	add_depend_to_target (gmt_release git_prune_dirs)
-	add_depend_to_target (git_prune_files git_export_release)
-	add_depend_to_target (gmt_release git_prune_files)
+			${GMT_RELEASE_PREFIX}/.gitignore
+	)
+	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
@@ -186,10 +183,6 @@ endif (GMT_INSTALL_MODULE_LINKS)
 
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
-
-if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
-	set (GMT_DATA_SERVER ${GMT_DATA_URL})
-endif (GMT_DATA_URL)
 
 # Configuration done
 message(
