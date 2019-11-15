@@ -35,7 +35,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 
 #. After this step you can launch the Xcode application and then use the File->Open menu to
    open the project file xbuild/GMT.xcodeproj.  After it opens it may looks something like
-   this:
+   this (click on the figure to enlarge it):
 
    .. figure:: /_images/xcode-1.*
       :width: 90%
