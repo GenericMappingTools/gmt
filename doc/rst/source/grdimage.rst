@@ -30,7 +30,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
-[ **-tr** ]
+[ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
 .. include:: grdimage_common.rst_
