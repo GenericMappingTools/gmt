@@ -37,27 +37,24 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    open the project file xbuild/GMT.xcodeproj.  After it opens it may looks something like
    this:
 
-.. figure:: /_images/xcode-1.*
-   :width: 500 px
-   :align: center
-
+   .. figure:: /_images/xcode-1.*
+      :width: 500 px
+      :align: center
 
 #. Pull down the tab that says "@ ALL_BUILDS" and select "gmt" about 35 lines down, then in the
    left sidebar open the folder called gmt->Source Files and select gmt.c. Now you may wish
    to drag the window to be a bit wider so the lines down wrap around so much.  After that step
    your screen may look more like this:
 
-.. figure:: /_images/xcode-2.*
-   :width: 500 px
-   :align: center
-
+   .. figure:: /_images/xcode-2.*
+      :width: 500 px
+      :align: center
 
 #. Scroll down to the part around line 119 and click the line number to place a stop point:
 
-.. figure:: /_images/xcode-3.*
-   :width: 500 px
-   :align: center
-
+   .. figure:: /_images/xcode-3.*
+      :width: 500 px
+      :align: center
 
    This is *usually* the first stop you want in Xcode.  The exception would be if you are debugging
    gmt.c itself or you need to examine the code that creates the session with GMT_Create_Session
@@ -72,10 +69,9 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    then make sure "Arguments" is highlighted in blue in the top table, then click the "+" symbol beneath the
    section that says "Arguments Passed on Launch" and paste in hour command; it should result in this display:
 
-.. figure:: /_images/xcode-4.*
-   :width: 500 px
-   :align: center
-
+   .. figure:: /_images/xcode-4.*
+      :width: 500 px
+      :align: center
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
    calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
@@ -90,20 +86,19 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    building and indexing before it starts and then stops at your highlighted line, opening up a display console
    below:
 
-.. figure:: /_images/xcode-5.*
-   :width: 500 px
-   :align: center
-
-
+   .. figure:: /_images/xcode-5.*
+      :width: 500 px
+      :align: center
+   
    You will see the current line is highlighted light greenish and the code is stopped.  below is a new window that
    lists some of the variables in the current scope.  You can examine that window to see what the variables are set
    to, you can type "print variable" in the lldb command window on the right (e.g., "print argc"), or you can place
    the cursor over a variable and a pop-up box will display its value.  Below I placed to cursor on the variable
    "module" on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).
 
-.. figure:: /_images/xcode-6.*
-   :width: 500 px
-   :align: center
+   .. figure:: /_images/xcode-6.*
+      :width: 500 px
+      :align: center
 
 #. The tool bar below the code has a a pause-pay button (continue to next stop point), a step-over button (execute
    next step but do not go *into* a function, thestep-into button (execute next step which may be going into a function)
@@ -111,9 +106,17 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    around line 10094 and place a stop point there like I did.  You are now about to call your actual C function that
    correspond to the module (here pstext).
 
-.. figure:: /_images/xcode-7.*
-   :width: 500 px
-   :align: center
+   .. figure:: /_images/xcode-7.*
+      :width: 500 px
+      :align: center
+
+#. Click the step-into button and you now find yourself at the first executable line of code in GMT_pstext, the underlying
+   C function at the heart of the pstext module.  You can now step your way down the code, using step-over to avoid going
+   into the details of GMT sub-functions, or step-into if that is the problem.
+
+   .. figure:: /_images/xcode-8.*
+      :width: 500 px
+      :align: center
 
 
 
