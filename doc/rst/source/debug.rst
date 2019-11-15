@@ -22,7 +22,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 
 #. You will need to make some changes to your *cmake/ConfigUser.cmake* file. Scroll down to the
    section that says "# Extra debugging for developers:" and uncomment the ~6 lines that has
-   the if test on "Xcode".  This will pas a few flags that are using when debugging via Xcode.
+   the if test on "Xcode".  This will pass a few flags that are using when debugging via Xcode.
    Also uncomment the two "add_definitions" lines that contain the word "DEBUG" in it somewhere.
 
 #. You will need to build GMT again.  I recommend you do this into another build directory (I
@@ -38,7 +38,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    this:
 
    .. figure:: /_images/xcode-1.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
 #. Pull down the tab that says "@ ALL_BUILDS" and select "gmt" about 35 lines down, then in the
@@ -47,13 +47,13 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    your screen may look more like this:
 
    .. figure:: /_images/xcode-2.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
 #. Scroll down to the part around line 119 and click the line number to place a stop point:
 
    .. figure:: /_images/xcode-3.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
    This is *usually* the first stop you want in Xcode.  The exception would be if you are debugging
@@ -65,12 +65,12 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 
     gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p > text.ps
 
-   Copy that command minus the initial "gmt " part.  Now pull down the menu item "Product->Scheme->New Scheme",
+   Copy that command minus the initial "gmt " part.  Now pull down the menu item "Product->Scheme->Edit Scheme",
    then make sure "Arguments" is highlighted in blue in the top table, then click the "+" symbol beneath the
-   section that says "Arguments Passed on Launch" and paste in hour command; it should result in this display:
+   section that says "Arguments Passed on Launch" and paste in our command; it should result in this display:
 
    .. figure:: /_images/xcode-4.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
@@ -82,12 +82,12 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    change the command you pasted in above to use the full path instead.  In other words, when Xcode runs
    your command your current directory becomes xbuild/src/Debug.
 
-#. Clock close and and hit the "Play" button next to the green circle in the top left corner.  It may do some
+#. Click close and and hit the "Play" button next to the green circle in the top left corner.  It may do some
    building and indexing before it starts and then stops at your highlighted line, opening up a display console
    below:
 
    .. figure:: /_images/xcode-5.*
-      :width: 500 px
+      :width: 90%
       :align: center
    
    You will see the current line is highlighted light greenish and the code is stopped.  below is a new window that
@@ -97,17 +97,17 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    "module" on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).
 
    .. figure:: /_images/xcode-6.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
-#. The tool bar below the code has a a pause-pay button (continue to next stop point), a step-over button (execute
-   next step but do not go *into* a function, thestep-into button (execute next step which may be going into a function)
+#. The tool bar below the code has a pause-play button (continue to next stop point), a step-over button (execute
+   next step but do not go *into* a function, the step-into button (execute next step which may be going into a function)
    and the step-out button.  Step into the GMT_Call_Module function using the step-into button, then scroll down to
-   around line 10094 and place a stop point there like I did.  You are now about to call your actual C function that
-   correspond to the module (here pstext).
+   around line 10094 and place a stop point there like I did.  Press the pause-play button and you are now about to
+   call your actual C function that correspond to the module (here pstext).
 
    .. figure:: /_images/xcode-7.*
-      :width: 500 px
+      :width: 90%
       :align: center
 
 #. Click the step-into button and you now find yourself at the first executable line of code in GMT_pstext, the underlying
@@ -115,18 +115,5 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    into the details of GMT sub-functions, or step-into if that is the problem.
 
    .. figure:: /_images/xcode-8.*
-      :width: 500 px
+      :width: 90%
       :align: center
-
-
-
-See Also
---------
-
-:doc:`begin`,
-:doc:`clear`,
-:doc:`docs`,
-:doc:`end`,
-:doc:`figure`,
-:doc:`gmt`,
-:doc:`subplot`
