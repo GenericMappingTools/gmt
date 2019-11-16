@@ -190,8 +190,8 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 	/* Algorithm 1: Replace NaNs with a constant value */
 	uint64_t node;
 	
-	for (unsigned int row = limit[YLO]; row < limit[YHI]; row++) {
-		for (unsigned int col = limit[XLO]; col < limit[XHI]; col++) {
+	for (unsigned int row = limit[YLO]; row <= limit[YHI]; row++) {
+		for (unsigned int col = limit[XLO]; col <= limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
 			if (gmt_M_is_fnan (G->data[node]))
 				G->data[node] = value;
