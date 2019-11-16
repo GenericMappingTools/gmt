@@ -88,11 +88,7 @@ if (UNIX AND DO_ANIMATIONS)
 	foreach (_num 01 02 03 04 05 06 07 08)
 		add_custom_command (
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${BASH} animate anim${_num}/anim_${_num}.sh
+			COMMAND ${BASH} animate anim${_num}/anim_${_num}.sh
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/anim${_num}/anim_${_num}.sh)
 		add_custom_command (
@@ -107,7 +103,8 @@ if (UNIX AND DO_ANIMATIONS)
 	# copy video files from anim 04, 06, 07, 08
 	foreach (_num 04 06 07 08)
 		add_custom_command (
-			OUTPUT ${RST_BINARY_DIR}/_static/anim_${_num}.mp4
+			OUTPUT
+			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
 			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
