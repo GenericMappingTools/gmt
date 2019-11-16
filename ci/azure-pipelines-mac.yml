@@ -47,8 +47,28 @@ steps:
   displayName: Download coastlines
   condition: ne(variables['CACHE_COASTLINE_RESTORED'], true)
 
-- bash: ci/build-gmt.sh
+- bash: ci/config-gmt-unix.sh
+  displayName: Configure GMT
+
+- bash: |
+    mkdir -p build
+    cd build
+    cmake -G Ninja ..
+    cmake --build .
   displayName: Compile GMT
+
+- bash: |
+    cd build
+    cmake --build . --target docs_depends
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    cd build
+    cmake --build . --target install
+  displayName: Install GMT
 
 - bash: |
     set -x -e
@@ -96,14 +116,6 @@ steps:
     CODECOV_TOKEN: $(codecov.token)
   condition: and(eq(variables['TEST'], true), succeededOrFailed())
   displayName: Upload test coverage
-
-- bash: |
-    cd build
-    cmake --build . --target docs_depends
-    cmake --build . --target docs_html
-    cmake --build . --target docs_man
-  displayName: Build documentations
-  condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: |
     cd build
