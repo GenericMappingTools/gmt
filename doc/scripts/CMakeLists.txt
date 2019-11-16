@@ -74,32 +74,16 @@ foreach (_fig ${_scripts_ps2png})
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
 	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
-	if (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			set GMT_USERDIR=${GMT_BINARY_DIR}/share
-			COMMAND
-			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	else (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	endif (WIN32)
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+		COMMAND ${CMAKE_COMMAND} -E env
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+		-A -P -E150 -Tg -Qg4 -Qt4
+		-D${RST_BINARY_DIR}/_images
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gmt_for_img_convert ${_fig})
 endforeach (_fig ${_scripts_ps2png})
 
 # Convert PS to PDF
@@ -107,30 +91,15 @@ foreach (_fig ${_scripts_ps2pdf})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
 	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
-	if (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
-			COMMAND
-			set GMT_USERDIR=${GMT_BINARY_DIR}/share
-			COMMAND
-			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	else (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	endif (WIN32)
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
+		COMMAND ${CMAKE_COMMAND} -E env
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
+		-D${RST_BINARY_DIR}/_images
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gmt_for_img_convert ${_fig})
 endforeach (_fig ${_scripts_ps})
 
 foreach (_script ${_scr_nostrip})
