@@ -98,6 +98,15 @@ steps:
     cmake --build .
   displayName: Compile GMT
 
+- bash: |
+    set -x -e
+    cd build
+    cmake --build . --target docs_depends
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables['BUILD_DOCS'], true)
+
 - script: |
     cd build
     cmake --build . --target install
@@ -146,15 +155,6 @@ steps:
     artifactName: BuildDirectory-Windows
   displayName: Publish build directory
   condition: failed()
-
-- bash: |
-    set -x -e
-    cd build
-    cmake --build . --target docs_depends
-    cmake --build . --target docs_html
-    cmake --build . --target docs_man
-  displayName: Build documentations
-  condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: |
     set -x -e
