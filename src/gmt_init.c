@@ -12596,17 +12596,16 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	return true;
 }
 
-/* The way we avoid applying -B settings mroe than once per subplot panel is to write
- * an empty file called gmt.B.<fig>.<row>.<col> after applying -B and once that file
+/* The way we avoid applying -B settings more than once per subplot panel is to write
+ * an empty file called gmt.B.<fig>.<row>.<col> after applying -B, and once that file
  * exist we do not apply -B again. */
 
 void panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) {
-	/* Mark that -B options have been applied for this subplot panels */
+	/* Mark that -B options have been applied for this subplot panel */
 	char Bfile[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
 	if ((fp = fopen (Bfile, "w"))) fclose (fp);
-
 }
 
 bool panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
