@@ -12596,6 +12596,30 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	return true;
 }
 
+/* The way we avoid applying -B settings mroe than once per subplot panel is to write
+ * an empty file called gmt.B.<fig>.<row>.<col> after applying -B and once that file
+ * exist we do not apply -B again. */
+
+void panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) {
+	/* Mark that -B options have been applied for this subplot panels */
+	char Bfile[PATH_MAX] = {""};
+	FILE *fp = NULL;
+	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
+	if ((fp = fopen (Bfile, "w"))) fclose (fp);
+
+}
+
+bool panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
+	/* Determine if -B options have been applied to this panel before */
+	char Bfile[PATH_MAX] = {""};
+	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
+	if (access (Bfile, F_OK) == 0) {	/* Return true if file is found */
+		GMT_Report (API, GMT_MSG_DEBUG, "B already set for fig %d subplot panel (%d, %d)\n", fig, row, col);
+		return true;
+	}
+	return false;
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -12844,9 +12868,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
 		if (GMT->current.ps.active && !exceptionp && (P = gmt_subplot_info (API, fig))) {	/* Yes, so set up current panel settings */
-			bool frame_set = false, x_set = false, y_set = false;
+			bool frame_set = false, x_set = false, y_set = false, B_set;
 			char *c = NULL;
-			if (exceptionb == 0 && P->first == 1) {
+			int row = 0, col = 0;
+			get_current_panel (API, fig, &row, &col, NULL, NULL, NULL);
+			B_set = panel_B_get (API, fig, row, col);
+			if (exceptionb == 0 && P->first == 1 && !B_set) {
 				/* Examine all -B settings and add/merge the panel settings */
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */
@@ -12920,6 +12947,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
+				panel_B_set (API, fig, row, col);
 			}
 			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
 				/* Set -X -Y for absolute positioning */
