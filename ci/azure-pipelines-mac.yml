@@ -47,7 +47,7 @@ steps:
   displayName: Download coastlines
   condition: ne(variables['CACHE_COASTLINE_RESTORED'], true)
 
-- bash: ci/build-gmt.sh
+- bash: ci/config-gmt-unix.sh
   displayName: Compile GMT
 
 - bash: |
