@@ -182,8 +182,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 		char p[GMT_BUFSIZ] = {""};
 		while (gmt_getmodopt (GMT, 0, c, "bfr", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +f, +r */
 			switch (p[0]) {
-				case 'b':	/* Background color */
-					if (p[1] == '-') {	/* Transparent */
+				case 'b':	/* Background color. Giving no argument means transparent [also checking for obsolete -] */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
 						fill->b_rgb[0] = fill->b_rgb[1] = fill->b_rgb[2] = -1,	fill->b_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to transparent!\n");
 					}
@@ -195,8 +195,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
 					}
 					break;
-				case 'f':	/* Foreround color */
-					if (p[1] == '-') {	/* Transparent */
+				case 'f':	/* Foreround color. Giving no argument means transparent [also checking for obsolete -] */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
 						fill->f_rgb[0] = fill->f_rgb[1] = fill->f_rgb[2] = -1,	fill->f_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to transparent!\n");
 					}
