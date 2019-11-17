@@ -800,8 +800,8 @@ use **-G** for this task and some have several options specifying different fill
     predefined bit-image patterns). For these patterns and other 1-bit
     images one may specify alternative background and foreground colors
     (by appending **+b**\ *color* and/or **+f**\ *color*) that will replace
-    the default white and black pixels, respectively. Setting one of the
-    fore- or background colors to - yields a *transparent* image where
+    the default white and black pixels, respectively. Excluding *color* from
+    a fore- or background specification yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
 Due to PostScript implementation limitations the raster images used

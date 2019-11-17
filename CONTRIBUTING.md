@@ -57,7 +57,8 @@ read it carefully.
 ## How Can I Talk to You?
 
 Discussion often happens in the issues and pull requests.
-We don't have a good solution for a user forum yet but we're working on it.
+For general questions, you can post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/).
 
 
 ## Reporting a Bug
