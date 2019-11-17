@@ -1,12 +1,11 @@
 .. index:: ! psscale
+.. include:: module_core_purpose.rst_
 
 *******
 psscale
 *******
 
-.. only:: not man
-
-    Plot a gray or color scale-bar on maps
+|psscale_purpose|
 
 Synopsis
 --------

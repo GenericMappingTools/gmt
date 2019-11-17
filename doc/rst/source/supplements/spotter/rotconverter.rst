@@ -1,12 +1,11 @@
 .. index:: ! rotconverter
+.. include:: ../module_supplements_purpose.rst_
 
 **************
 rotconverter
 **************
 
-.. only:: not man
-
-    rotconverter - Manipulate total reconstruction and stage rotations
+|rotconverter_purpose|
 
 Synopsis
 --------

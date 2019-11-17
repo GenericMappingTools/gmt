@@ -49,8 +49,8 @@
 #set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES OFF)
 
 # Install convenience links for GMT modules. Disable to install only the main
-# gmt program and access modules as "gmt modulename options" [TRUE]:
-#set (GMT_INSTALL_MODULE_LINKS FALSE)
+# gmt program and access modules as "gmt modulename options" [FALSE]:
+#set (GMT_INSTALL_MODULE_LINKS TRUE)
 
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
@@ -164,10 +164,6 @@
 # If pkg-config is not installed (e.g. on Windows) you need to specify these:
 #set (GLIB_INCLUDE_DIR c:/path/to/glib-dev/include/glib-2.0)
 #set (GLIB_LIBRARIES c:/path/to/glib-dev/lib/glib-2.0.lib)
-
-# Set location of pthreads-win32 (only Windows); needs GMT_USE_THREADS:
-#set (PTHREADS_WIN32_ROOT c:/prefix/of/pthreads-win32)
-#set (GMT_USE_THREADS TRUE)
 
 # Set LAPACK location. Use this when want to link with LAPACK and it's not found automatically
 #set (LAPACK_LIBRARY "V:/lapack-3.5.0/build/lib/liblapack.lib")

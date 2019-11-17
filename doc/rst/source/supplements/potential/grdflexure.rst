@@ -1,12 +1,11 @@
 .. index:: ! grdflexure
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 grdflexure
 **********
 
-.. only:: not man
-
-    grdflexure - Compute flexural deformation of 3-D surfaces for various rheologies
+|grdflexure_purpose|
 
 Synopsis
 --------

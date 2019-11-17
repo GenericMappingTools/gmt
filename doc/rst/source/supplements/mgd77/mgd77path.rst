@@ -1,19 +1,18 @@
 .. index:: ! mgd77path
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 mgd77path
 *********
 
-.. only:: not man
-
-    mgd77path - Return paths to MGD77 cruises and directories
+|mgd77path_purpose|
 
 Synopsis
 -------------------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77path** *NGDC-ids* [ |-A|\ [**c**] ] [ |-D| ]
+**gmt mgd77path** *GEODAS-ids* [ |-A|\ [**c**] ] [ |-D| ]
 [ |-I|\ *ignore* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]

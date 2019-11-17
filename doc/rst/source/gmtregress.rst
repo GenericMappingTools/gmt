@@ -1,12 +1,11 @@
 .. index:: ! gmtregress
+.. include:: module_core_purpose.rst_
 
 **********
 gmtregress
 **********
 
-.. only:: not man
-
-    Linear regression of 1-D data sets
+|gmtregress_purpose|
 
 Synopsis
 --------

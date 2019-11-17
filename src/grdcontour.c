@@ -26,7 +26,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdcontour"
+#define THIS_MODULE_CLASSIC_NAME	"grdcontour"
+#define THIS_MODULE_MODERN_NAME	"grdcontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
 #define THIS_MODULE_KEYS	"<G{,AD)=t,CC(,DDD,>X},G?(=1@<G{,AD)=t,CC(,DD),G?(=1"
@@ -177,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
@@ -950,7 +951,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 GMT_LOCAL void embed_quotes (char *orig, char *dup) {
 	/* Add quotes around text strings with spaces in a -B option where the quotes have been lost.
 	 * Because the original quotes are gone there is no way to detect things like ...+t"Title with+u in it"
-	 * since now it is just +tTitle with+u in it and thre is no way to distinguish the two possibilities
+	 * since now it is just +tTitle with+u in it and there is no way to distinguish the two possibilities
 	 * +t"Title with"+u" in it" from +t"Title with +u in it".  We insist that +<code> must not have a space
 	 * before the <code> in order to be a modifier.  This will catch things like +t"Title with +u in it" and
 	 * treat the +u as part of the text.
@@ -1120,7 +1121,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Free the P object unless it was an input memory object */
 		ptr = cptfile;	/* To avoid warning message from gmt_M_file_is_memory */
 		if (!gmt_M_file_is_memory (ptr) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
-			Return (API->error);
+			bailout (API->error);
 		}
 		if (is_continuous) {	/* More bad news */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
@@ -1136,22 +1137,22 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdview %s\n", cmd1);
 		if ((API->error = GMT_Call_Module (API, "grdview", GMT_MODULE_CMD, cmd1))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdview\n");
-			Return (API->error);
+			GMT_Report (API, GMT_MSG_NORMAL, "The call to grdview failed\n");
+			bailout (API->error);
 		}
 		/* Required options for grdcontour */
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");	/* If classic mode then we need to say we this is an overlay */
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
 		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
-			Return (API->error);
+			GMT_Report (API, GMT_MSG_NORMAL, "The call to grdcontour failed\n");
+			bailout (API->error);
 		}
 		bailout (GMT_NOERROR);	/* And we made it to the end, so get out of here */
 	}
 	
 	/* NOT -N, so parse the command-line arguments as a normal module would */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

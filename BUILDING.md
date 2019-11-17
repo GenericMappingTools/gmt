@@ -39,15 +39,16 @@ For package maintainers:
 To build GMT, you must install:
 
 - [CMake](https://cmake.org/) (>=2.8.5)
-- [Ghostscript](https://www.ghostscript.com/)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
 Optionally install these for more capabilities within GMT:
 
+- [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
+- [GLib](https://developer.gnome.org/glib/) GTHREAD support
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 
@@ -78,10 +79,10 @@ For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
+    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev ghostscript
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -105,14 +106,14 @@ You can add this repository by telling yum:
 You then can install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo yum install cmake libcurl-devel netcdf-devel ghostscript
+    sudo yum install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -130,14 +131,14 @@ For Fedora, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
+    sudo dnf install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     sudo dnf install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -155,10 +156,10 @@ For Archlinux, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
+    sudo pacman -S base-devel cmake libcurl-gnutls netcdf
 
     # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas
+    sudo pacman -S gdal pcre fftw lapack openblas glib2 ghostscript
 
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
@@ -178,10 +179,10 @@ For FreeBSD, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf print/ghostscript9
+    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf
 
     # install optional dependencies
-    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas
+    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas print/ghostscript9
 
     # to enable movie-making
     sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
@@ -200,10 +201,10 @@ Install the gmt dependencies with:
 For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
-    brew install cmake curl netcdf ghostscript
+    brew install cmake curl netcdf
 
     # Install optional dependencies
-    brew install gdal pcre2 fftw
+    brew install gdal pcre2 fftw glib ghostscript
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -241,10 +242,10 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
 
     # Build and install libraries
     # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
@@ -303,7 +304,6 @@ set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
 set (COPY_GSHHG true)
 set (COPY_DCW true)
-set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
@@ -543,6 +543,7 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
@@ -554,6 +555,7 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
@@ -568,7 +570,6 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     -DFFTW3_ROOT=${prefix}
     -DGDAL_ROOT=${prefix}
     -DPCRE_ROOT=${prefix}
-    -DGMT_INSTALL_MODULE_LINKS=off
     -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
     -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
     ```

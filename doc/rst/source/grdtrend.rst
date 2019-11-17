@@ -1,12 +1,11 @@
 .. index:: ! grdtrend
+.. include:: module_core_purpose.rst_
 
 ********
 grdtrend
 ********
 
-.. only:: not man
-
-    Fit trend surface to grids and compute residuals
+|grdtrend_purpose|
 
 Synopsis
 --------

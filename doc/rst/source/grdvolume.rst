@@ -1,12 +1,11 @@
 .. index:: ! grdvolume
+.. include:: module_core_purpose.rst_
 
 *********
 grdvolume
 *********
 
-.. only:: not man
-
-    Calculate grid volume and area constrained by a contour
+|grdvolume_purpose|
 
 Synopsis
 --------

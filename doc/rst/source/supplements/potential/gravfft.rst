@@ -1,12 +1,11 @@
 .. index:: ! gravfft
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 gravfft
 *******
 
-.. only:: not man
-
-    gravfft - Spectral calculations of gravity, isostasy, admittance, and coherence for grids
+|gravfft_purpose|
 
 Synopsis
 --------

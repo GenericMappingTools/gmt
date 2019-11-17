@@ -16,6 +16,11 @@
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
+if ! [ -x "$(command -v gmt)" ]; then
+  echo 'Error: gmt is not found in your search PATH.' >&2
+  exit 1
+fi
+
 inc=`gmt-config --includedir`
 share=`gmt --show-sharedir`
 bin=`gmt --show-bindir`
@@ -24,7 +29,7 @@ lib=`gmt --show-plugindir`
 cwd=`pwd`
 
 gmt_modules=`gmt --show-modules`
-compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
+compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 # 2. Remove include directory
 cd $inc
@@ -41,7 +46,7 @@ else
 fi
 
 # 3. Remove share directory
-for dir in conf cpt custom doc localization man mgd77 mgg postscriptlight spotter tools x2sys; do
+for dir in cpt custom doc localization man mgd77 mgg spotter tools x2sys; do
 	printf "Remove: %s/%s\n" $share $dir
 	rm -rf $share/$dir
 done

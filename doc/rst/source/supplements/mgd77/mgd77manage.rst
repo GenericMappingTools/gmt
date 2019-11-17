@@ -1,19 +1,18 @@
 .. index:: ! mgd77manage
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77manage
 ***********
 
-.. only:: not man
-
-    mgd77manage - Manage the content of MGD77+ files
+|mgd77manage_purpose|
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77manage** *NGDC-ids*
+**gmt mgd77manage** *GEODAS-ids*
 [ |-A|\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**]\ ] 
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
@@ -91,7 +90,7 @@ Optional Arguments
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
-    :doc:`mgd77sniffer` with the name *NGDC_ID*.e77 in the current
+    :doc:`mgd77sniffer` with the name *GEODAS_ID*.e77 in the current
     directory or in $MGD77_HOME/E77; this file will examined and used
     to make modifications to the header values, specify a systematic
     correction for certain columns (such as scale and offset), specify
@@ -194,7 +193,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *unit*
-    Append the distance unit (see :ref:`Unit_attributes`). [Default is **-Nk** (km)].
+    Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\ \|\ **i** is selected. 
 
 .. _-R:
@@ -277,7 +276,7 @@ ideas and steps you need to take to maintain your files.
 
 **2. Introduction**
 
-Our starting point is the MGD77 ASCII data files distributed from NGDC
+Our starting point is the MGD77 ASCII data files distributed from NCEI
 on CD-ROMS, DVD-ROMS, and via FTP. Using Geodas to install the files
 locally we choose the "Carter corrected depth" option which will fill in
 the depth column using the two-way travel-times and the Carter tables if

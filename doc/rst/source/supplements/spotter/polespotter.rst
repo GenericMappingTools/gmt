@@ -1,12 +1,11 @@
 .. index:: ! polespotter
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 polespotter
 ***********
 
-.. only:: not man
-
-    polespotter - Find rotation poles given FZs and abyssal hills
+|polespotter_purpose|
 
 Synopsis
 --------

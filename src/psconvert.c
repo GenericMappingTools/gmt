@@ -34,7 +34,8 @@
 #include "gmt_dev.h"
 #include "gmt_gsformats.h"
 
-#define THIS_MODULE_NAME	"psconvert"
+#define THIS_MODULE_CLASSIC_NAME	"psconvert"
+#define THIS_MODULE_MODERN_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using Ghostscript"
 #define THIS_MODULE_KEYS	"<X{+,FI)"
@@ -519,7 +520,7 @@ GMT_LOCAL double smart_ceil (double x) {
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
@@ -1451,6 +1452,17 @@ char *noquote_name (char *file) {
 		return strdup (file);
 }
 
+GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
+	struct stat S;
+	int err = stat (dir, &S);
+	if (err && errno == ENOENT && gmt_mkdir (dir)) {	/* Does not exist - try to create it */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create directory %s.\n", dir);
+		return (GMT_RUNTIME_ERROR);
+	}
+	return (GMT_NOERROR);
+}
+
+
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
@@ -1529,7 +1541,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1582,6 +1594,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Selecting ppmraw device since GDAL not available.\n");
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
+	}
+
+	if (Ctrl->D.active && (error = make_dir_if_needed (API, Ctrl->D.dir))) {	/* Specified output directory; create if it does not exists */
+		Return (error);
 	}
 
 	/* Parameters for all the formats available */

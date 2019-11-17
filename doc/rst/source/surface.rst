@@ -1,12 +1,11 @@
 .. index:: ! surface
+.. include:: module_core_purpose.rst_
 
 *******
 surface
 *******
 
-.. only:: not man
-
-    Grid table data using adjustable tension continuous curvature splines
+|surface_purpose|
 
 Synopsis
 --------

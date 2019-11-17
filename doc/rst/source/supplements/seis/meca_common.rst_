@@ -36,13 +36,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*pen*\ ][\ **+s**\ *pointsize*]
+**-C**\ [*pen*\ ][\ **+s**\ *size*]
     Offsets focal mechanisms to the longitude, latitude specified in the
     last two columns of the input file before the (optional) text
     string. A small circle is plotted at the initial location and a line
     connects the beachball to the circle. Specify *pen* and optionally append
-    **+s**\ *pointsize* to change the line style and/or size of the circle.
-    [Defaults: *pen* as given by **-W**; *pointsize* is 0].
+    **+s**\ *size* to change the line style and/or size of the circle.
+    [Defaults: *pen* as given by **-W**; *size* is 0].
 
 .. _-D:
 
@@ -51,7 +51,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *fill*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of extensive quadrants. Usually white. Set the color
     [Default is white].
 
@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
     shaded. Set the color [Default is black].

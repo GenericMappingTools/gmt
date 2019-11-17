@@ -1,12 +1,11 @@
 .. index:: ! gmtlogo
+.. include:: module_core_purpose.rst_
 
 *******
 gmtlogo
 *******
 
-.. only:: not man
-
-    Place the GMT graphics logo on a map
+|gmtlogo_purpose|
 
 Synopsis
 --------

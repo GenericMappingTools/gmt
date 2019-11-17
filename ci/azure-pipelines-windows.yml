@@ -7,19 +7,23 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: CacheBeta@0
   inputs:
-    key: $(Agent.OS) | vcpkg | 20191017
+    key: $(Agent.OS) | vcpkg | 20191107
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
 
 - bash: |
     set -x -e
+    # Update vcpkg and checkout specific tag
+    cd ${VCPKG_INSTALLATION_ROOT}
+    git pull
+    git checkout 2019.10
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     cat ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     # install libraries
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet ${WIN_PLATFORM}
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
   displayName: Install dependencies via vcpkg
   env:
     WIN_PLATFORM: "x64-windows"
@@ -92,8 +96,21 @@ steps:
     call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
     cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_C_COMPILER=cl.exe -DCMAKE_BUILD_TYPE=Release
     cmake --build .
-    cmake --build . --target install
   displayName: Compile GMT
+
+- bash: |
+    set -x -e
+    cd build
+    cmake --build . --target docs_depends
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables['BUILD_DOCS'], true)
+
+- script: |
+    cd build
+    cmake --build . --target install
+  displayName: Install GMT
 
 - script: |
     gmt --version
@@ -138,15 +155,6 @@ steps:
     artifactName: BuildDirectory-Windows
   displayName: Publish build directory
   condition: failed()
-
-- bash: |
-    set -x -e
-    cd build
-    cmake --build . --target docs_depends
-    cmake --build . --target docs_html
-    cmake --build . --target docs_man
-  displayName: Build documentations
-  condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: |
     set -x -e

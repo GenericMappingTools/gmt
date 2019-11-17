@@ -1,12 +1,11 @@
 .. index:: ! project
+.. include:: module_core_purpose.rst_
 
 *******
 project
 *******
 
-.. only:: not man
-
-    project - Project data onto lines or great circles, generate tracks, or translate coordinates
+|project_purpose|
 
 Synopsis
 --------

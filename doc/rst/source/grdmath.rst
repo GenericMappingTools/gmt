@@ -1,12 +1,11 @@
 .. index:: ! grdmath
+.. include:: module_core_purpose.rst_
 
 *******
 grdmath
 *******
 
-.. only:: not man
-
-    grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)
+|grdmath_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! clip
+.. include:: module_core_purpose.rst_
 
 ******
 clip
 ******
 
-.. only:: not man
-
-    Initialize or terminate polygonal clip paths
+|clip_purpose|
 
 Synopsis
 --------

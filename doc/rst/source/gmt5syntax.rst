@@ -4,9 +4,7 @@
 gmt5syntax
 **********
 
-.. only:: not man
-
-    Convert old GMT script to use new 'gmt <module>' syntax
+Convert old GMT script to use new 'gmt <module>' syntax
 
 Synopsis
 --------

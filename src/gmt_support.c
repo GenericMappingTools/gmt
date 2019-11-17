@@ -182,8 +182,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 		char p[GMT_BUFSIZ] = {""};
 		while (gmt_getmodopt (GMT, 0, c, "bfr", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +f, +r */
 			switch (p[0]) {
-				case 'b':	/* Background color */
-					if (p[1] == '-') {	/* Transparent */
+				case 'b':	/* Background color. Giving no argument means transparent [also checking for obsolete -] */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
 						fill->b_rgb[0] = fill->b_rgb[1] = fill->b_rgb[2] = -1,	fill->b_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to transparent!\n");
 					}
@@ -195,8 +195,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
 					}
 					break;
-				case 'f':	/* Foreround color */
-					if (p[1] == '-') {	/* Transparent */
+				case 'f':	/* Foreround color. Giving no argument means transparent [also checking for obsolete -] */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
 						fill->f_rgb[0] = fill->f_rgb[1] = fill->f_rgb[2] = -1,	fill->f_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to transparent!\n");
 					}
@@ -6295,7 +6295,7 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 	double rgb[4];
 	char buffer[GMT_BUFSIZ] = {""}, color[GMT_LEN256] = {""}, *p = NULL;
 
-	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
+	if (!strchr (text, '@')) return;	/* Nothing to do since no escape sequence in string */
 
 	while ((p = strstr (text, "@;"))) {	/* Found a @; sequence */
 		i = (unsigned int)(p - text) + 2;	/* Position of first character after @; */
@@ -7660,7 +7660,7 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
 	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
@@ -7681,8 +7681,8 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	else
 		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
 		
-	if (gmtlib_write_cpt (GMT, file, GMT_IS_FILE, P->cpt_flags, P) != GMT_NOERROR)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to save current CPT file to %s !\n", file);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Save current CPT file to %s !\n", file);
 }
@@ -7787,7 +7787,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		gmt_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
+		gmt_save_current_cpt (GMT, P, P->cpt_flags);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
@@ -9618,7 +9618,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				S->data[GMT_Y][k] = y;
 			}
 		}
-		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_X][0], last_x) && doubleAlmostEqual (S->data[GMT_Y][0], last_y)) {
+		if (continuous && T->n_segments && doubleAlmostEqual (S->data[GMT_Y][0], last_y) && gmt_same_longitude (S->data[GMT_X][0], last_x)) {
 			/* Need to append to previous segment after allocating more space */
 			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
 			uint64_t start = prev_S->n_rows, add = S->n_rows - 1, rec;
@@ -9637,6 +9637,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		}
 		else {	/* Not continous, or first segment */
 			gmt_free_segment (GMT, &T->segment[T->n_segments]);	/* Done with this guy */
+			if (continuous) gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);	/* Avoid jumps in longitude due to joining */
 			T->segment[T->n_segments++] = S;	/* Hook into table */
 		}
 

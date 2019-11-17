@@ -1,12 +1,11 @@
 .. index:: ! sphinterpolate
+.. include:: module_core_purpose.rst_
 
 **************
 sphinterpolate
 **************
 
-.. only:: not man
-
-    Spherical gridding in tension of data on a sphere
+|sphinterpolate_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! figure
+.. include:: module_core_purpose.rst_
 
 ******
 figure
 ******
 
-.. only:: not man
-
-    Set attributes for the current modern mode session figure
+|figure_purpose|
 
 Synopsis
 --------

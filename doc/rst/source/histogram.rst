@@ -1,12 +1,11 @@
 .. index:: ! histogram
+.. include:: module_core_purpose.rst_
 
 ***********
 histogram
 ***********
 
-.. only:: not man
-
-    Calculate and plot histograms
+|histogram_purpose|
 
 Synopsis
 --------

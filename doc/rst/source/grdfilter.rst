@@ -1,12 +1,11 @@
 .. index:: ! grdfilter
+.. include:: module_core_purpose.rst_
 
 *********
 grdfilter
 *********
 
-.. only:: not man
-
-    Filter a grid in the space (or time) domain
+|grdfilter_purpose|
 
 Synopsis
 --------

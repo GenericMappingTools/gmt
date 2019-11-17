@@ -4,8 +4,6 @@
 img2google
 **********
 
-.. only:: not man
-
 img2google - Create Google Earth KML overlay tiles from bathymetry
 Mercator img grid
 

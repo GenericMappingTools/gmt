@@ -296,7 +296,7 @@ do not need to repeat the region and projection information, as shown here::
      gmt end show
 
 Thus, the chosen options remain in effect until you provide new option
-arguments on the command line. 
+arguments on the command line.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -613,8 +613,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
        from 0–100%.
 
-    #. Name. Specify one of 663 valid color names. Use **man
-       gmtcolors** to list all valid names. A very small yet versatile
+    #. Name. Specify one of 663 valid color names. See :doc:`/gmtcolors` for
+       a list of all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
        [light\ \|\ dark]{*red, orange, yellow, green, cyan, blue,
        magenta, gray\ \|\ grey, brown*\ }. The color names are
@@ -772,7 +772,8 @@ Specifying area fill attributes
 -------------------------------
 
 Many plotting programs will allow the user to draw filled polygons or
-symbols. The fill specification may take two forms:
+symbols. The fill specification may take two forms (note: not all modules
+use **-G** for this task and some have several options specifying different fills):
 
 **-G**\ *fill*
     In the first case we may specify a *gray* shade (0–255), RGB color
@@ -799,8 +800,8 @@ symbols. The fill specification may take two forms:
     predefined bit-image patterns). For these patterns and other 1-bit
     images one may specify alternative background and foreground colors
     (by appending **+b**\ *color* and/or **+f**\ *color*) that will replace
-    the default white and black pixels, respectively. Setting one of the
-    fore- or background colors to - yields a *transparent* image where
+    the default white and black pixels, respectively. Excluding *color* from
+    a fore- or background specification yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
 Due to PostScript implementation limitations the raster images used
@@ -1971,7 +1972,7 @@ should contact the GMT team.
 +----------+---------------------------------------------------------------+
 | rb       | SUN raster file format (8-bit standard)                       |
 +----------+---------------------------------------------------------------+
-| rf       | GEODAS grid format GRD98 (NGDC)                               |
+| rf       | GEODAS grid format GRD98 (NCEI)                               |
 +----------+---------------------------------------------------------------+
 | sf       | Golden Software Surfer format 6 (32-bit float)                |
 +----------+---------------------------------------------------------------+
@@ -2282,7 +2283,7 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray 
+    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and

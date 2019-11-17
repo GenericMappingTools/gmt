@@ -24,7 +24,7 @@ include (ManageString)
 include (GmtHelperMacros)
 
 if (UNIX AND NOT APPLE)
-        set (LINUX TRUE)
+	set (LINUX TRUE)
 else (UNIX AND NOT APPLE)
 	set (LINUX FALSE)
 endif (UNIX AND NOT APPLE)
@@ -49,6 +49,7 @@ else (NOT OGR2OGR)
 	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
 	set (GMT_CONFIG_OGR2OGR_MESSAGE "yes (${answer})" CACHE INTERNAL "OGR2OGR config message")
 endif (NOT OGR2OGR)
+
 # Find executable needed by psconvert
 find_program (GDAL_TRANSLATE gdal_translate)
 if (NOT GDAL_TRANSLATE)
@@ -59,6 +60,7 @@ else (NOT GDAL_TRANSLATE)
 	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
 	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "yes (${answer})" CACHE INTERNAL "GDAL_TRANSLATE config message")
 endif (NOT GDAL_TRANSLATE)
+
 # Find executables needed by movie
 find_program (GM gm)
 if (NOT GM)
@@ -67,8 +69,10 @@ if (NOT GM)
 else (NOT GM)
 	execute_process(COMMAND gm help OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
+	set (GMT_CONFIG_GM_VERSION "${answer}" CACHE INTERNAL "GM version message")
 	set (GMT_CONFIG_GM_MESSAGE "yes (${answer})" CACHE INTERNAL "GM config message")
 endif (NOT GM)
+
 find_program (FFMPEG ffmpeg)
 if (NOT FFMPEG)
 	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")
@@ -76,10 +80,12 @@ if (NOT FFMPEG)
 else (NOT FFMPEG)
 	execute_process(COMMAND ffmpeg -version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
+	set (GMT_CONFIG_FFMPEG_VERSION "${answer}" CACHE INTERNAL "FFMPEG version message")
 	set (GMT_CONFIG_FFMPEG_MESSAGE "yes (${answer})" CACHE INTERNAL "FFMPEG config message")
 endif (NOT FFMPEG)
+
+# Find executable needed by docs
 if (LINUX)
-	# Find executable needed by docs
 	find_program (XDGOPEN xdg-open)
 	if (NOT XDGOPEN)
 		message (WARNING "Cannot find program xdg-open - gmt docs will be unable to open the documentation")
@@ -87,25 +93,24 @@ if (LINUX)
 	else (NOT XDGOPEN)
 		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
 	endif (NOT XDGOPEN)
-	# Find executable needed by psconvert
+else (LINUX)
+	set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
+endif (LINUX)
+
+# Find executable needed by psconvert
+if (WIN32)
+	set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
+else (WIN32)
 	find_program (GS gs)
 	if (NOT GS)
 		message (WARNING "Cannot find ghostscript program gs - gmt psconvert will be unable to convert PostScript to other formats")
 		set (GMT_CONFIG_GS_MESSAGE "no" CACHE INTERNAL "GS config message")
 	else (NOT GS)
 		execute_process(COMMAND gs --version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set (GMT_CONFIG_GS_VERSION "${answer}" CACHE INTERNAL "GS version message")
 		set (GMT_CONFIG_GS_MESSAGE "yes (${answer})" CACHE INTERNAL "GS config message")
 	endif (NOT GS)
-else (LINUX)
-	if (WIN32)
-		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
-		set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
-	else ()
-		execute_process(COMMAND gs --version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
-		set (GMT_CONFIG_GS_MESSAGE "yes (${answer})" CACHE INTERNAL "GS config message")
-		set (GMT_CONFIG_OPEN_MESSAGE "yes" CACHE INTERNAL "OPEN config message")
-	endif ()
-endif (LINUX)
+endif (WIN32)
 
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
@@ -216,6 +221,7 @@ endif (NOT DEFINED GMT_EXCLUDE_ZLIB)
 if (ZLIB_FOUND)
 	set (HAVE_ZLIB TRUE CACHE INTERNAL "System has ZLIB")
 	include_directories (${ZLIB_INCLUDE_DIRS})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${ZLIB_LIBRARY})
 endif (ZLIB_FOUND)
 
 
@@ -253,44 +259,6 @@ if (OPENMP_FOUND AND NOT GMT_OPENMP)
 	set (GMT_CONFIG_OPENMP_MESSAGE "disabled (GMT_OPENMP not set)"
 		CACHE INTERNAL "OPENMP config message")
 endif (OPENMP_FOUND AND NOT GMT_OPENMP)
-
-if (WIN32)
-	# find pthreads-win32
-	find_path (PTHREADS_INCLUDE_DIR pthread.h
-		HINTS ${PTHREADS_WIN32_ROOT}
-		PATH_SUFFIXES include)
-	find_library(PTHREADS_WIN32_LIBRARY
-		NAMES pthreadVC2
-		HINTS ${PTHREADS_WIN32_ROOT}
-		PATH_SUFFIXES lib)
-	if (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
-		set (Threads_FOUND TRUE)
-		set (CMAKE_THREAD_LIBS_INIT ${PTHREADS_WIN32_LIBRARY})
-		mark_as_advanced (
-			CMAKE_THREAD_LIBS_INIT
-			PTHREADS_INCLUDE_DIR
-			PTHREADS_WIN32_LIBRARY)
-		message (STATUS "Found pthreads-win32: ${PTHREADS_WIN32_LIBRARY}")
-	endif (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
-	set (Threads_FOUND FALSE)
-else (WIN32)
-	# find pthreads
-  set (CMAKE_THREAD_PREFER_PTHREAD TRUE)
-  find_package (Threads)
-endif (WIN32)
-
-# build pthreads example
-if (Threads_FOUND)
-	set (HAVE_PTHREAD TRUE CACHE INTERNAL "System has pthread.h")
-	add_executable (pthreads_example pthreads_example.c)
-	include_directories(${PTHREADS_INCLUDE_DIR})
-	target_link_libraries(pthreads_example ${CMAKE_THREAD_LIBS_INIT})
-	set (GMT_CONFIG_PTHREAD_MESSAGE "enabled"
-		CACHE INTERNAL "PTHREAD config message")
-else (Threads_FOUND)
-	set (GMT_CONFIG_PTHREAD_MESSAGE "disabled"
-		CACHE INTERNAL "PTHREAD config message")
-endif (Threads_FOUND)
 
 find_package(GLIB COMPONENTS gthread)
 if (GLIB_FOUND AND GMT_USE_THREADS)
@@ -331,7 +299,7 @@ find_package (DCW)
 if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
 		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
+		"Obtain dcw-gmt-<version>.tar.gz from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 if (DO_API_TESTS)
@@ -369,7 +337,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c fil
 
 # Legacy modules for which to install compatibility links via
 # install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
+set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator)
 
 # libpslib
 set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
@@ -483,7 +451,7 @@ set_target_properties (pslib
 	SOVERSION ${GMT_LIB_SOVERSION}
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-# If a renaming of the gmtpslpsl dll has been set in ConfigUser.cmake
+# If a renaming of the psl dll has been set in ConfigUser.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
 endif (WIN32 AND PSL_DLL_RENAME)

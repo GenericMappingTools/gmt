@@ -1,12 +1,11 @@
 .. index:: ! sphtriangulate
+.. include:: module_core_purpose.rst_
 
 **************
 sphtriangulate
 **************
 
-.. only:: not man
-
-    Delaunay or Voronoi construction of spherical lon,lat data
+|sphtriangulate_purpose|
 
 Synopsis
 --------

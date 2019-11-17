@@ -3,7 +3,7 @@
 (30) Trigonometric functions plotted in graph mode
 --------------------------------------------------
 
-Finally, we end with a simple mathematical illustration of sine and
+Next, we continue with a simple mathematical illustration of sine and
 cosine, highlighting the *graph* mode for linear projections and the new
 curved vectors for angles.
 

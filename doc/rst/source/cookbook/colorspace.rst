@@ -44,29 +44,17 @@ level will turn it into brown.
    value increases to the right and saturation increases up, so the pure
    color is on the top right.
 
-
 Is chocolate your favorite color, but you do not know the RGB equivalent
-values? Then look them up in Figure :ref:`RGB chart <RGBchart>` or type
-``man gmtcolors`` for a full list. It's 210/105/30. But GMT makes it easy
-on you: you can specify pen, fill, and palette colors by any of the more
-than 500 unique colors found in that file.
+values? Then look them up in :doc:`/gmtcolors` for a full list.
+It's 210/105/30. But GMT makes it easy
+on you: you can specify pen, fill, and palette colors by any of the
+unique colors found in that file.
 
 Are you very web-savvy and work best with hexadecimal color codes as
 they are used in HTML? Even that is allowed in GMT. Just start with a
 hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
-
-.. _RGBchart:
-
-.. figure:: /_images/GMT_RGBchart_a4.*
-   :width: 700 px
-   :align: center
-
-   The 663 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
-   the british spelling of grey are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
-   found in the GMT documentation directory.
-
 
 HSV color system
 ----------------

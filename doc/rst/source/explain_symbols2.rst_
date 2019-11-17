@@ -138,7 +138,7 @@
         is set by **-W**, with vector head outlines defaulting to half of arc width.
 	The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
-        in columns 4-6. See :ref:`Vec_attributes` for specifying attributes.
+        in columns 4-6. See `Vector Attributes`_ for specifying attributes.
 
     **-SM**
         Same as **-Sm** but switches to straight angle symbol if angles subtend
@@ -354,7 +354,7 @@
         if not specified on the command-line, should be  present in column 6.
         The *size* is the length of the vector head. Vector width is set by **-W**,
 	with head outline pen width defaulting to half of stem pen width.
-        See :ref:`Vec_attributes` for specifying attributes. But also be aware
+        See `Vector Attributes`_ for specifying attributes. But also be aware
         that using color via a CPT implies a shift of columns 4 and on to accommodate
         the color fill determined by the z-value in new 4rd column (See **-C** option).
 
@@ -362,7 +362,7 @@
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
-        unchanged.) See :ref:`Vec_attributes` for specifying attributes.
+        unchanged.) See `Vector Attributes`_ for specifying attributes.
 
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
@@ -397,7 +397,7 @@
     **-S=**
         geovector. Azimuth (in degrees east from north) and length (in km)
         must be found in columns 4 and 5. The *size* is the length of the
-        vector head. Vector width is set by **-W**. See :ref:`Vec_attributes`
+        vector head. Vector width is set by **-W**. See `Vector Attributes`_
         for specifying attributes. Note: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units, see UNITS.

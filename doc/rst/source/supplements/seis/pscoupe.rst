@@ -1,12 +1,11 @@
 .. index:: ! pscoupe
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 pscoupe
 *******
 
-.. only:: not man
-
-    Plot cross-sections of focal mechanisms
+|pscoupe_purpose|
 
 Synopsis
 --------
@@ -17,9 +16,9 @@ Synopsis
 |SYN_OPT-R| |-A|\ *parameters*
 |-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
-[ |-E|\ *color* ]
+[ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
-[ |-G|\ *color* ]
+[ |-G|\ *fill* ]
 [ |-K| ]
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]

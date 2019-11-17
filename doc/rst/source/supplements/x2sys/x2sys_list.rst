@@ -1,12 +1,11 @@
 .. index:: ! x2sys_list
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 x2sys_list
 **********
 
-.. only:: not man
-
-    x2sys_list - Extract subset from crossover data base
+|x2sys_list_purpose|
 
 Synopsis
 --------

@@ -12,7 +12,6 @@ set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (COPY_GSHHG TRUE)
 set (COPY_DCW TRUE)
 
-set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 
@@ -44,15 +43,6 @@ echo ""
 echo "Using the following cmake configuration:"
 cat cmake/ConfigUser.cmake
 echo ""
-
-mkdir -p build && cd build
-
-# Configure
-cmake -G Ninja ..
-
-# Build and install
-cmake --build .
-cmake --build . --target install
 
 # Turn off exit on failure.
 set +e

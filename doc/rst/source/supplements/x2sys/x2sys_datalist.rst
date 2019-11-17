@@ -1,12 +1,11 @@
 .. index:: ! x2sys_datalist
+.. include:: ../module_supplements_purpose.rst_
 
 ****************
 x2sys_datalist
 ****************
 
-.. only:: not man
-
-    x2sys_datalist - Extract content of track data files
+|x2sys_datalist_purpose|
 
 Synopsis
 --------

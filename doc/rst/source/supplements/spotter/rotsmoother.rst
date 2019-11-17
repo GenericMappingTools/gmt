@@ -1,12 +1,11 @@
 .. index:: ! rotsmoother
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 rotsmoother
 ***********
 
-.. only:: not man
-
-    rotsmoother - Get mean rotations and covariance matrices from set of finite rotations
+|rotsmoother_purpose|
 
 Synopsis
 --------

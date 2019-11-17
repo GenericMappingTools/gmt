@@ -7,10 +7,10 @@
 # Note:         Run with any argument to build movie; otherwise 300th frame is plotted only.
 
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 300
-        opt="-M300,ps -Fnone"
+	opt="-M300,ps -Fnone"
 	ps=anim_06.ps
 else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
-        opt="-Fmp4 -A+l+s5"
+	opt="-Fmp4 -A+l+s5"
 fi
 rate=6			# Frames per seconds
 frames=`gmt math -Q 60 $rate MUL =`

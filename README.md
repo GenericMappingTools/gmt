@@ -94,18 +94,11 @@ Before running programs, there are a few things you should do/know:
 ## Software support
 
 You haven't bought anything so you cannot expect full service.  However, if
-you find a bug in any of the programs, please report it to us
-(https://github.com/GenericMappingTools/gmt) rather than trying to fix it yourself so that
-we, and through us, other users may benefit from your find.  Make sure you
+you find a bug in any of the programs, please report it to us by
+[opening a issue](https://github.com/GenericMappingTools/gmt/issues/)
+rather than trying to fix it yourself so that we, and through us,
+other users may benefit from your find.  Make sure you
 provide us with enough information so that we can recreate the problem.
 
-In addition to the bug tracking feature (New Issues) on the website, you
-can also post general questions.  Note that GitHub registration
-is required to post on the site.
-
-## Ordering the GMT package on CD/DVD-Rs
-
-Should you or someone you know without net-access need to obtain GMT:
-Geoware makes and distributes CD/DVD-Rs with the GMT package and many
-useful data sets.  For more details and a full description of the data
-sets (up to 60 Gb of data!) visit http://www.geoware-online.com/.
+For general questions, please post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/).

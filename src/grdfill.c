@@ -26,7 +26,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdfill"
+#define THIS_MODULE_CLASSIC_NAME	"grdfill"
+#define THIS_MODULE_MODERN_NAME	"grdfill"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate across holes in a grid"
 #define THIS_MODULE_KEYS	"<G{,>G}"
@@ -77,7 +78,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-A<mode><options>] [-G<outgrid>] [-L[p]]\n\t[%s] [%s] [%s] [%s]\n\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
@@ -189,8 +190,8 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 	/* Algorithm 1: Replace NaNs with a constant value */
 	uint64_t node;
 	
-	for (unsigned int row = limit[YLO]; row < limit[YHI]; row++) {
-		for (unsigned int col = limit[XLO]; col < limit[XHI]; col++) {
+	for (unsigned int row = limit[YLO]; row <= limit[YHI]; row++) {
+		for (unsigned int col = limit[XLO]; col <= limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
 			if (gmt_M_is_fnan (G->data[node]))
 				G->data[node] = value;
@@ -495,7 +496,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

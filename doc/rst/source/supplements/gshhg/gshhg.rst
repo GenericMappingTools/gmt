@@ -1,12 +1,11 @@
 .. index:: ! gshhg
+.. include:: ../module_supplements_purpose.rst_
 
 *****
 gshhg
 *****
 
-.. only:: not man
-
-    gshhg - Extract data tables from binary GSHHG or WDBII data files
+|gshhg_purpose|
 
 Synopsis
 --------

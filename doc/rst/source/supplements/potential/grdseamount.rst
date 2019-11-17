@@ -1,12 +1,11 @@
 .. index:: ! grdseamount
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 grdseamount
 ***********
 
-.. only:: not man
-
-    grdseamount - Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
+|grdseamount_purpose|
 
 Synopsis
 --------
@@ -85,7 +84,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *unit*
-    Append the unit used for horizontal distances in the input file (see :ref:`Unit_attributes`).
+    Append the unit used for horizontal distances in the input file (see `Units`_).
     Does not apply for geographic data (|SYN_OPT-f|) which we convert to km.
 
 .. _-E:

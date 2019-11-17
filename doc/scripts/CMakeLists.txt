@@ -39,7 +39,6 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_tut_11.sh GMT_tut_12.sh GMT_tut_13.sh GMT_tut_14.sh GMT_tut_15.sh
 	GMT_tut_16.sh GMT_tut_17.sh GMT_tut_18.sh GMT_tut_19.sh)
 
-
 # Scripts that are not used in the documentation (but the figures are)
 # do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
@@ -61,69 +60,46 @@ set (_scr_test GMT_RGBchart.sh)
 
 set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 
-set (_scripts_ps ${_scr_nostrip} ${_scr_strip} ${_scr_other}
-	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
-string (REPLACE ".sh" ".ps" _scripts_ps "${_scripts_ps}")
+set (_scripts_ps2png ${_scr_nostrip} ${_scr_strip} ${_scr_other} GMT_-U.ps GMT_RGBchart.ps)
+string (REPLACE ".sh" ".ps" _scripts_ps2png "${_scripts_ps2png}")
+set (_scripts_ps2pdf GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
 
 set (_scripts_pdf)
 set (_scripts_png)
 set (_scripts_txt)
 set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
-# Convert figures to PDF and PNG
-foreach (_fig ${_scripts_ps})
-	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+# Convert PS to PNG
+foreach (_fig ${_scripts_ps2png})
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
-	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
-	if (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
-			COMMAND
-			set GMT_USERDIR=${GMT_BINARY_DIR}/share
-			COMMAND
-			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			set GMT_USERDIR=${GMT_BINARY_DIR}/share
-			COMMAND
-			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	else (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${_fig})
-	endif (WIN32)
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+		COMMAND ${CMAKE_COMMAND} -E env
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+		-A -P -E150 -Tg -Qg4 -Qt4
+		-D${RST_BINARY_DIR}/_images
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gmt_for_img_convert ${_fig})
+endforeach (_fig ${_scripts_ps2png})
+
+# Convert PS to PDF
+foreach (_fig ${_scripts_ps2pdf})
+	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
+	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
+		COMMAND ${CMAKE_COMMAND} -E env
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
+		-D${RST_BINARY_DIR}/_images
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gmt_for_img_convert ${_fig})
 endforeach (_fig ${_scripts_ps})
 
 foreach (_script ${_scr_nostrip})
@@ -153,7 +129,7 @@ endforeach (_script)
 
 # Add build target
 add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
-add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png})
+add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png} ${_scripts_pdf})
 add_depend_to_target (docs_depends _docs_html_scripts_fig _docs_scripts_verbatim)
 
 # run tests

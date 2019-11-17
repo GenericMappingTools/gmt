@@ -1,12 +1,11 @@
 .. index:: ! pslegend
+.. include:: module_core_purpose.rst_
 
 ********
 pslegend
 ********
 
-.. only:: not man
-
-    Plot legends on maps
+|pslegend_purpose|
 
 Synopsis
 --------

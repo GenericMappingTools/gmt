@@ -11132,7 +11132,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	else
 		module_name = API->session_tag;
 
-	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
+	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", module_name, GMT_class[level]);
 	source_info_len = strlen (API->message);
 	va_start (args, format);
 	/* append format to the message: */

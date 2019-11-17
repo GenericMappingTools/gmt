@@ -11,6 +11,7 @@ assignees: ''
 
 **Before release**:
 
+- [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] update changelog
@@ -36,6 +37,7 @@ assignees: ''
     ```
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
+- [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make announcements
 - [ ] update links on the main site (News, Download & Documentation)

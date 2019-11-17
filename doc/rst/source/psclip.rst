@@ -1,12 +1,11 @@
 .. index:: ! psclip
+.. include:: module_core_purpose.rst_
 
 ******
 psclip
 ******
 
-.. only:: not man
-
-    Initialize or terminate polygonal clip paths
+|psclip_purpose|
 
 Synopsis
 --------

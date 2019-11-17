@@ -1,12 +1,11 @@
 .. index:: ! sac
+.. include:: ../module_supplements_purpose.rst_
 
 *****
 sac
 *****
 
-.. only:: not man
-
-    Plot seismograms in SAC format on maps
+|sac_purpose|
 
 Synopsis
 --------

@@ -13,9 +13,11 @@
     render the beach ball transparent by drawing only the nodal planes and
     the circumference. The color or shade of the compressive quadrants can
     be specified with the **-G** option. The color or shade of the extensive
-    quadrants can be specified with the **-E** option. Append **+u** to have
-    the text appear below the beach ball (default is above). Parameters are
-    expected to be in the following columns:
+    quadrants can be specified with the **-E** option. Append **+f**\ *font*
+    to change the font of the text string; append **+j**\ *justify* to change
+    the text location relative to the beachball (default is above the beachball);
+    append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -30,10 +32,9 @@
     magnitude
 
     **8**,\ **9**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using 0,0 in columns 8
-    and 9 will plot the beach ball at the longitude, latitude given in
-    columns 1 and 2. The **-:** option will interchange the order of
+    longitude, latitude at which to place beachball if **-C** is used (optional).
+    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (8,9).
 
     **10**:
@@ -47,10 +48,11 @@
     Use the **-T** option to render the beach ball transparent by drawing
     only the nodal planes and the circumference. The color or shade of the
     compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E**
-    option. Append **+u** to have the text appear below the beach ball
-    (default is above). Parameters are expected to be in the following
-    columns:
+    or shade of the extensive quadrants can be specified with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -68,10 +70,9 @@
     mantissa and exponent of moment in dyne-cm
 
     **12**,\ **13**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using (0,0) in columns
-    12 and 13 will plot the beach ball at the longitude, latitude given
-    in columns 1 and 2. The **-:** option will interchange the order of
+    longitude, latitude at which to place beachball if **-C** is used (optional).
+    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (12,13).
 
     **14**:
@@ -89,10 +90,11 @@
     double couple part of moment tensor. Use **-Sz** to plot the anisotropic
     part of moment tensor (zero trace). The color or shade of the
     compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E**
-    option. Append **+u** to have the text appear below the beach ball
-    (default is above). Parameters are expected to be in the following
-    columns:
+    or shade of the extensive quadrants can be specified with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -107,10 +109,9 @@
     exponent
 
     **11**,\ **12**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using (0,0) in columns
-    11 and 12 will plot the beach ball at the longitude, latitude given
-    in columns 1 and 2. The **-:** option will interchange the order of
+    longitude, latitude at which to place beachball if **-C** is used (optional).
+    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (11,12).
 
     **13**:
@@ -123,9 +124,11 @@
     proportional to the magnitude. *scale* is the size for magnitude = 5
     The color or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option. Append **+u** to have the text appear below the
-    beach ball (default is above). Parameters are expected to be in the
-    following columns:
+    with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -146,10 +149,9 @@
     magnitude
 
     **9**,\ **10**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using (0,0) in columns
-    9 and 10 will plot the beach ball at the longitude, latitude given
-    in columns 1 and 2. The **-:** option will interchange the order of
+    longitude, latitude at which to place beachball if **-C** is used (optional).
+    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (9,10).
 
     **11**:
@@ -166,9 +168,11 @@
     moment tensor. Use **-St** to plot zero trace moment tensor. The color
     or shade of the compressive quadrants can be specified with the **-G**
     option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option. Append **+u** to have the text appear below the
-    beach ball (default is above). Parameters are expected to be in the
-    following columns:
+    with the **-E** option.
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball
+    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
     longitude, latitude of event (**-:** option interchanges order)
@@ -183,10 +187,9 @@
     exponent
 
     **14**,\ **15**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using (0,0) in columns
-    14 and 15 will plot the beach ball at the longitude, latitude given
-    in columns 1 and 2. The **-:** option will interchange the order of
+    longitude, latitude at which to place beachball if **-C** is used (optional).
+    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (14,15).
 
     **16**:

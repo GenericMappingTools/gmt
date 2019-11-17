@@ -1,12 +1,11 @@
 .. index:: ! coupe
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 coupe
 *******
 
-.. only:: not man
-
-    Plot cross-sections of focal mechanisms
+|coupe_purpose|
 
 Synopsis
 --------
@@ -17,9 +16,9 @@ Synopsis
 |SYN_OPT-R| |-A|\ *parameters*
 |-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
-[ |-E|\ *color* ]
+[ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
-[ |-G|\ *color* ]
+[ |-G|\ *fill* ]
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]

@@ -1,12 +1,11 @@
 .. index:: ! mask
+.. include:: module_core_purpose.rst_
 
 ******
 mask
 ******
 
-.. only:: not man
-
-    Clip or mask map areas with no data table coverage
+|mask_purpose|
 
 Synopsis
 --------

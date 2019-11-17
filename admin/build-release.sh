@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 # Script that builds a GMT release and makes the compressed tarballs.
 # If run under macOS it also builds the macOS Bundle
+reset_config() {
+	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
+	if [ -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ]; then # Restore what we had
+		mv -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ${TOPDIR}/cmake/ConfigUser.cmake
+	fi
+}
+
+abort_build() {	# Called when we abort this script via Crtl-C
+	echo "build-release.sh: Detected Ctrl-C - aborting" >&2
+	reset_config
+	rm -rf ${TOPDIR}/build
+	exit -1
+}
+
+TOPDIR=`pwd`
+
 if [ $# -gt 0 ]; then
 	echo "Usage: build-release.sh"
 	echo ""
@@ -30,6 +46,7 @@ if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
+trap abort_build SIGINT
 # 2a. Make build dir and configure it
 rm -rf build
 mkdir build
@@ -56,10 +73,7 @@ fi
 echo "build-release.sh: Report sha256sum per file"
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
-rm -f ../cmake/ConfigUser.cmake
-if [ -f ../cmake/ConfigUser.cmake.orig ]; then
-	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
-fi
+reset_config
 # 10. Put the candidate products on my ftp site
 echo "Place gmt-${Version}-src.tar.* on the ftp site"
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then

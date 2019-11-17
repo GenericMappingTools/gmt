@@ -1,12 +1,11 @@
 .. index:: ! coast
+.. include:: module_core_purpose.rst_
 
 *****
 coast
 *****
 
-.. only:: not man
-
-    Plot continents, shorelines, rivers, and borders on maps
+|coast_purpose|
 
 Synopsis
 --------
