@@ -44,32 +44,7 @@ Required Arguments
     Name of one or more tables with geographical (lon, lat) coordinates and optionally
     a third column with ages in Myr.  If no file is given then we read from standard input.
 
-.. _-E:
-
-**-E**\ *rotfile*
-    Give file with rotation parameters. This file must contain one
-    record for each rotation; each record must be of the following
-    format:
-
-    *lon lat tstart [tstop] angle* [ *khat a b c d e f g df* ]
-
-    where *tstart* and *tstop* are in Myr and *lon lat angle* are in
-    degrees. *tstart* and *tstop* are the ages of the old and young ends
-    of a stage. If *tstop* is not present in the record then a total
-    reconstruction rotation is expected and *tstop* is implicitly set to
-    0 and should not be specified for any of the records in the file. If
-    a covariance matrix **C** for the rotation is available it must be
-    specified in a format using the nine optional terms listed in
-    brackets. Here, **C** = (*g*/*khat*)\*[ *a b d; b c e; d e f* ]
-    which shows **C** made up of three row vectors. If the degrees of
-    freedom (*df*) in fitting the rotation is 0 or not given it is set
-    to 10000. Blank lines and records whose first column contains # will
-    be ignored. You may prepend a leading + to the filename to indicate
-    you wish to invert the rotations.
-    Alternatively, give the filename composed of two plate IDs
-    separated by a hyphen (e.g., PAC-MBL) and we will instead extract
-    that rotation from the GPlates rotation database. We return an error
-    if the rotation cannot be found.
+.. include:: explain_rots.rst_
 
 .. _-S:
 

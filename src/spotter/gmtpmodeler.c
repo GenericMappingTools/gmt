@@ -282,7 +282,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		p[0].lon = Ctrl->E.rot.lon; p[0].lat = Ctrl->E.rot.lat; p[0].omega = Ctrl->E.rot.w;
 		if (gmt_M_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
 			Ctrl->T.active = true;
-			Ctrl->T.value = p[0].t_start = 1.0;
+			Ctrl->T.value = Ctrl->N.t_upper = p[0].t_start = 1.0;
 		}
 		spotter_setrot (GMT, &(p[0]));
 	}
