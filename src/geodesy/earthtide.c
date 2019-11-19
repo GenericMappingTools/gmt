@@ -1378,7 +1378,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'T':	/* Select time range for time-series tide estimates */
 				Ctrl->T.active = true;
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}

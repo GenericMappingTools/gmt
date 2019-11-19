@@ -206,7 +206,7 @@ typedef struct sac_head {
 } SACHEAD;
 
 /*******************************************************************************
-						  SAC Enumerated tyep
+						  SAC Enumerated type
 
 	Definitions of constants for SAC enumerated data values.
 
