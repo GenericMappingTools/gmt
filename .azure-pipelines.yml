@@ -11,6 +11,11 @@ trigger:
     - 5.4
     - refs/tags/*
 
+# Global variables
+variables:
+  # disable auto-display of GMT plots
+  GMT_END_SHOW: off
+
 jobs:
 
 # Linux - Compile only
