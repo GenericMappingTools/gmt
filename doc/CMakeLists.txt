@@ -33,7 +33,7 @@ install (FILES
 
 # reST documentation
 add_subdirectory (rst)
-set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/_source)
+set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/source)
 add_subdirectory (fig)
 
 # Add tests and make verbatim copies from scripts
