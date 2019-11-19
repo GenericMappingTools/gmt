@@ -97,15 +97,24 @@ if (SPHINX_FOUND)
 	endif (GIT_FOUND AND HAVE_GIT_VERSION)
 endif (SPHINX_FOUND)
 
-# Install targets
-if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install html (if available)
-	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
-		DESTINATION ${GMT_DOCDIR}/html
-		COMPONENT Documentation
-		OPTIONAL)
-endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+# Install HTML documentation
+if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+	# Install documentation from external location
+	set (_doc_source ${GMT_INSTALL_EXTERNAL_DOC})
+	set (_doc_dest ${GMT_DOCDIR})
+else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+	# Install html from build tree
+	set (_doc_source ${CMAKE_CURRENT_BINARY_DIR}/html)
+	set (_doc_dest ${GMT_DOCDIR}/html)
+endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
+install (DIRECTORY ${_doc_source}/
+	DESTINATION ${_doc_dest}
+	COMPONENT Documentation
+	USE_SOURCE_PERMISSIONS
+	OPTIONAL)
+
+# Install man (if available)
 if (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 	# Install manpages from external location
 	set (_man_source ${GMT_INSTALL_EXTERNAL_MAN})
@@ -114,7 +123,6 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 	set (_man_source ${CMAKE_CURRENT_BINARY_DIR}/man)
 endif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 
-# Install man (if available)
 install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MANDIR}/man1
 	COMPONENT Runtime
