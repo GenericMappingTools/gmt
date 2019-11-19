@@ -38,7 +38,7 @@ For package maintainers:
 
 To build GMT, you must install:
 
-- [CMake](https://cmake.org/) (>=2.8.5)
+- [CMake](https://cmake.org/) (>=2.8.7)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
