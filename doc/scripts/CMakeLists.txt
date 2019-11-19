@@ -137,14 +137,6 @@ if (DO_TESTS)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
 
-	# Workaround cmake bug 3957: CRLF line ending
-	if (CYGWIN_INSTALL_PATH)
-		find_program (D2U d2u
-			${CYGWIN_INSTALL_PATH}/bin)
-		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
-	endif (CYGWIN_INSTALL_PATH)
-
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
