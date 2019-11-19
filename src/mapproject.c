@@ -1117,8 +1117,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		else {			/* Want nearest point coordinates */
 			fmt[0] = GMT_X;
 			fmt[1] = GMT_Y;
-			ecol_type[MP_COL_XN] = GMT_IS_LON;	/* Must change these from floats to geo */
-			ecol_type[MP_COL_YN] = GMT_IS_LAT;
+			ecol_type[MP_COL_XN] = (proj_type == GMT_GEO2CART) ? GMT_IS_FLOAT : (gmt_M_is_geographic (GMT, GMT_IN) ? GMT_IS_LON : GMT_IS_FLOAT);	/* Must change these from floats to geo */
+			ecol_type[MP_COL_YN] = (proj_type == GMT_GEO2CART) ? GMT_IS_FLOAT : (gmt_M_is_geographic (GMT, GMT_IN) ? GMT_IS_LAT : GMT_IS_FLOAT);	/* Must change these from floats to geo */
 		}
 	}
 	if (Ctrl->Z.formatted) ecol_type[MP_COL_CT] = GMT_IS_DURATION;
