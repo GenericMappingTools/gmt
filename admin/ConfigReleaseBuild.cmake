@@ -15,8 +15,10 @@ set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 set (GMT_PUBLIC_RELEASE TRUE)
 
-set (CPACK_BUNDLE_APPLE_CERT_APP "Developer ID Application: University of Hawaii (B8Y298FMLQ)")
-set (CPACK_BUNDLE_APPLE_CODESIGN_PARAMETER "--deep -f --options runtime")
+if ($ENV{USER} STREQUAL "pwessel")	# Only do this if Paul is running it
+	set (CPACK_BUNDLE_APPLE_CERT_APP "Developer ID Application: University of Hawaii (B8Y298FMLQ)")
+	set (CPACK_BUNDLE_APPLE_CODESIGN_PARAMETER "--deep -f --options runtime")
+endif
 
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
