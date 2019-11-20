@@ -40,15 +40,6 @@ add_subdirectory (fig)
 add_subdirectory (scripts)
 add_subdirectory (examples)
 
-if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install documentation files from external location
-
-	install (DIRECTORY ${GMT_INSTALL_EXTERNAL_DOC}/
-		DESTINATION ${GMT_DOCDIR}
-		COMPONENT Documentation
-		USE_SOURCE_PERMISSIONS)
-endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-
 if (NOT WIN32)
 	# Do not install .bat files
 	set (_exclude_bat "*.bat")
