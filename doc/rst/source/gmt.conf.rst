@@ -1152,8 +1152,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 **PS_MEDIA**
     Sets the physical format of the current plot paper [a4 (or letter)].
-    The following formats (and their widths and heights in points) are
-    recognized:
+    The setting only applies to PostScript plots (i.e., classic mode or when using
+    modern mode and selecting PostScript outout).  The following formats (and their
+    widths and heights in points) are recognized:
 
     Media width height
 
