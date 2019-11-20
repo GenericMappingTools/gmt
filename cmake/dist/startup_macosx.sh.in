@@ -17,10 +17,9 @@ EOF
   export PATH="${BUNDLE_RESOURCES}/@GMT_BINDIR@:${PATH}"
   export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj"
   export MAGICK_CONFIGURE_PATH=${BUNDLE_RESOURCES}/lib/GraphicsMagick-1.3.33/config
-  
+
   function gmt () { "${BUNDLE_RESOURCES}/@GMT_BINDIR@/gmt" "$@"; }
   export -f gmt
-  source "${BUNDLE_RESOURCES}/share/tools/gmt_functions.sh"
   unset DYLD_LIBRARY_PATH
   gmt
   echo -e "Note 1: If you want to use GMT outside of this terminal or in scripts, then follow these steps:\n        a) export GMTHOME=${BUNDLE_RESOURCES}\n        b) add \$GMTHOME/bin to your path\n        c) export PROJ_LIB=\$GMTHOME/share/proj\n        d) export MAGICK_CONFIGURE_PATH=\$GMTHOME/lib/GraphicsMagick/config"
