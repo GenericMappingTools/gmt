@@ -31,6 +31,14 @@ LANG=C
 export PATH="@GMT_BINARY_DIR@/src:$PATH" # for gmt_shell_functions.sh
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 
+# gmt wrapper (Needed by Windows)
+function gmt()
+{
+  "@GMT_BINARY_DIR@/src/gmt" "$@"
+}
+# export function definitions to subshells
+export -f gmt
+
 # Create a temporary directory exec_dir in the build dir
 # Then copy all of its contents (except files excluded by GLOBIGNORE)
 # Run remainder of this GMT script there

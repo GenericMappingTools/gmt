@@ -64,7 +64,7 @@ add_custom_target (_docs_html_examples_fig DEPENDS ${_examples_png})
 add_depend_to_target (docs_depends _docs_html_examples_fig _docs_examples_verbatim)
 
 # Animations
-if (UNIX AND DO_ANIMATIONS)
+if (DO_ANIMATIONS AND BASH)
 	configure_file (animate.in animate @ONLY)
 
 	foreach (_num 01 02 03 04 05 06 07 08)
@@ -102,7 +102,7 @@ if (UNIX AND DO_ANIMATIONS)
 			COMMENT "Removing animation ${_num}")
 		add_depend_to_target (spotless _anim_clean${_num})
 	endforeach ()
-endif (UNIX AND DO_ANIMATIONS)
+endif (DO_ANIMATIONS AND BASH)
 
 # run examples (test)
 if (DO_EXAMPLES AND BASH)
