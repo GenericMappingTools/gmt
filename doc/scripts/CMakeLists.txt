@@ -143,25 +143,3 @@ if (DO_TESTS)
 			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job)
 endif (DO_TESTS)
-
-if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install pdf figures (if found) when there is no external location
-	foreach (_fig ${_install_pdf})
-		install (FILES ${RST_BINARY_DIR}/_images/${_fig}
-			DESTINATION ${GMT_DOCDIR}/pdf
-			COMPONENT Documentation
-			OPTIONAL)
-	endforeach (_fig ${_install_pdf})
-endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-
-# Install target for release documentation
-if (GIT_FOUND AND HAVE_GIT_VERSION)
-	foreach (_fig ${_install_pdf})
-		add_custom_target (_${_fig}_release
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${RST_BINARY_DIR}/_images/${_fig}
-			${GMT_RELEASE_PREFIX}/doc_release/pdf/${_fig}
-			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} git_export_release)
-		add_depend_to_target (gmt_release _${_fig}_release)
-	endforeach (_fig ${_install_pdf})
-endif (GIT_FOUND AND HAVE_GIT_VERSION)
