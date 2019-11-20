@@ -105,25 +105,12 @@ if (UNIX AND DO_ANIMATIONS)
 endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
-
-if (DO_EXAMPLES) # AND UNIX)
+if (DO_EXAMPLES AND BASH)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
-
 	foreach (_job ${_examples})
-		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job ${_examples})
-elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
-	# only supporting examples with installed GMT in %path%
-	string (REPLACE ".sh" ".bat" _examples_win "${_examples}")
-	foreach (_job ${_examples_win})
-		get_filename_component (_job_path
-			${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
-		add_test (NAME ${_job}
-			WORKING_DIRECTORY ${_job_path}
-			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
-	endforeach (_job ${_examples_win})
-endif (DO_EXAMPLES) # AND UNIX)
+endif (DO_EXAMPLES AND BASH)
