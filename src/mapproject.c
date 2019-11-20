@@ -74,11 +74,11 @@ enum GMT_mp_Zcodes {	/* Support for -Z parsing */
 };
 
 enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
-	MP_COL_AZ = 0,	/* Azimuth between to points */
+	MP_COL_AZ = 0,		/* Azimuth between to points */
 	MP_COL_DS,		/* Distance between to points */
 	MP_COL_CS,		/* Cumulative distance since start of segment */
-	MP_COL_XN,		/* Longitude of nearest point in -L check */
-	MP_COL_YN,		/* Latitude of nearest point in -L check */
+	MP_COL_XN,		/* Longitude (or x) of nearest point in -L check */
+	MP_COL_YN,		/* Latitude (or y) of nearest point in -L check */
 	MP_COL_DT,		/* Incremental time between two points */
 	MP_COL_CT,		/* Cumulative time since start of segment */
 	MP_COL_AT,		/* Absolute time at present record */
@@ -1114,11 +1114,14 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active)	{	/* Possibly adjust output types */
 		if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
 			fmt[0] = fmt[1] = GMT_Z;	/* These are just regular floating points */
-		else {			/* Want nearest point coordinates */
+		else {			/* Want nearest point coordinates; set correct output column type */
 			fmt[0] = GMT_X;
 			fmt[1] = GMT_Y;
-			ecol_type[MP_COL_XN] = GMT_IS_LON;	/* Must change these from floats to geo */
-			ecol_type[MP_COL_YN] = GMT_IS_LAT;
+			/* Only select lon, lat if input data is geographic and proj_type is not GMT_GEO2CART */
+			if (gmt_M_is_geographic (GMT, GMT_IN) && proj_type != GMT_GEO2CART) {
+				ecol_type[MP_COL_XN] = GMT_IS_LON;
+				ecol_type[MP_COL_YN] = GMT_IS_LAT;
+			}
 		}
 	}
 	if (Ctrl->Z.formatted) ecol_type[MP_COL_CT] = GMT_IS_DURATION;

@@ -118,7 +118,7 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    setx GMT_END_SHOW off && gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 - bash: |
@@ -138,7 +138,7 @@ steps:
 
 - script: |
     cd doc/examples
-    set GMT_END_SHOW=off && call do_examples.bat
+    call do_examples.bat
   displayName: Run DOS batch examples
   condition: eq(variables['TEST'], true)
   enabled: false
@@ -163,9 +163,6 @@ steps:
     cmake --build . --target gmt_release_tar
     # Don't use cpack here. Chocolatey also provides a cpack command.
     cmake --build . --target package
-    # get sha256 hash value
-    CertUtil -hashfile gmt-*.tar.gz sha256
-    CertUtil -hashfile gmt-*.tar.xz sha256
-    CertUtil -hashfile gmt-*.exe    sha256
+    cmake -E sha256sum gmt-*.tar.gz gmt-*.tar.xz gmt-*.exe
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)
