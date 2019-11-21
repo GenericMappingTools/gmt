@@ -27,38 +27,20 @@ foreach (_ps ${_examples})
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
 	list (APPEND _examples_png ${RST_BINARY_DIR}/_images/${_png_fig})
 
-	if (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			set GMT_USERDIR=${GMT_BINARY_DIR}/share
-			COMMAND
-			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
-	else (WIN32)
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
-	endif (WIN32)
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+		COMMAND ${CMAKE_COMMAND} -E env
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+		-A -P -E150 -Tg -Qg4 -Qt4
+		-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
+		-D${RST_BINARY_DIR}/_images
+		${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 endforeach (_ps ${_examples})
 
 # List of job scripts and convert to verbatim
-
 file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.sh")
 
 set (_examples_txt)
@@ -103,8 +85,7 @@ if (UNIX AND DO_ANIMATIONS)
 	# copy video files from anim 04, 06, 07, 08
 	foreach (_num 04 06 07 08)
 		add_custom_command (
-			OUTPUT
-			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
+			OUTPUT ${RST_BINARY_DIR}/_static/anim_${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
 			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
@@ -128,15 +109,6 @@ endif (UNIX AND DO_ANIMATIONS)
 if (DO_EXAMPLES) # AND UNIX)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
-
-	# Workaround cmake bug 3957: CRLF line ending
-	find_package (UnixCommands)
-	if (CYGWIN_INSTALL_PATH)
-		find_program (D2U d2u
-			${CYGWIN_INSTALL_PATH}/bin)
-		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
-	endif (CYGWIN_INSTALL_PATH)
 
 	foreach (_job ${_examples})
 		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want

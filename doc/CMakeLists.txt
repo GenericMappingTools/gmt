@@ -33,21 +33,12 @@ install (FILES
 
 # reST documentation
 add_subdirectory (rst)
-set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/_source)
+set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/source)
 add_subdirectory (fig)
 
 # Add tests and make verbatim copies from scripts
 add_subdirectory (scripts)
 add_subdirectory (examples)
-
-if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install documentation files from external location
-
-	install (DIRECTORY ${GMT_INSTALL_EXTERNAL_DOC}/
-		DESTINATION ${GMT_DOCDIR}
-		COMPONENT Documentation
-		USE_SOURCE_PERMISSIONS)
-endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 if (NOT WIN32)
 	# Do not install .bat files

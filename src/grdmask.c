@@ -406,6 +406,15 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	D = Din;	/* The default is to work with the input data as is */
 	DH = gmt_get_DD_hidden (D);
 	
+	if (!Ctrl->S.active) {	/* Make sure we were given at least one polygon */
+		for (tbl = n_pol = 0; tbl < D->n_tables; tbl++)
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
+				if (D->table[tbl]->segment[seg]->n_rows > 2) n_pol++;		/* Count polytons */
+		if (n_pol == 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Without -S, we expect to read polygons but none found\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		uint64_t n_new;
 		if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) {
@@ -599,6 +608,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					}
 					GMT_Report (API, GMT_MSG_DEBUG, "Polygon %d scanning row %05d\n", n_pol, row);
 				}
+			}
+			else {	/* 2 or fewer points in the "polygon" */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " is not a polygon - skipped\n", seg);
 			}
 		}
 	}

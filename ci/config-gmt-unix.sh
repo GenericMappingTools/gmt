@@ -44,14 +44,5 @@ echo "Using the following cmake configuration:"
 cat cmake/ConfigUser.cmake
 echo ""
 
-mkdir -p build && cd build
-
-# Configure
-cmake -G Ninja ..
-
-# Build and install
-cmake --build .
-cmake --build . --target install
-
 # Turn off exit on failure.
 set +e
