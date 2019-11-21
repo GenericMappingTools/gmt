@@ -38,6 +38,11 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/source/_verbatim
 		DEPENDS _docs_copy_rst_tree_source)
 
+	add_custom_target (_docs_rst_mkdir_images
+		COMMAND ${CMAKE_COMMAND} -E make_directory
+		${CMAKE_CURRENT_BINARY_DIR}/source/_images
+		DEPENDS _docs_copy_rst_tree_source)
+
 	# clean target
 	add_custom_target (_rst_clean
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
