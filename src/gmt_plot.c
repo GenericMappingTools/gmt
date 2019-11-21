@@ -6731,6 +6731,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (gmt_M_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 	GMT->current.ps.memory = false;
+	gmt_M_memcpy (media_size, GMT->current.setting.ps_page_size, 2, double);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running in PS mode %s\n", ps_mode[GMT->current.setting.run_mode]);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
@@ -6749,7 +6750,6 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
 		if (wants_PS) {	/* Requesting a PostScript file in modern mode */
-			gmt_M_memcpy (media_size, GMT->current.setting.ps_page_size, 2, double);
 			if (media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must specify a paper size when requesting a PostScript file\n");
 				if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
@@ -6766,16 +6766,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing to PostScript landscape orientation based on plot and paper dimensions but cannot not sure.  Use PS_PAGE_ORIENTATION to correct any error\n");
 			}
 		}
-		else {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
-			if (!(doubleAlmostEqual (GMT->current.setting.ps_page_size[0], GMT_PAPER_DIM) || doubleAlmostEqual (GMT->current.setting.ps_page_size[1], GMT_PAPER_DIM))) {
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Modern mode ignores PS_MEDIA setting for non-PostScript output.\n");
-					GMT->current.setting.ps_page_size[0] = GMT->current.setting.ps_page_size[1] = GMT_PAPER_DIM;	/* Max area in points */
-			}
-			gmt_M_memcpy (media_size, GMT->current.setting.ps_page_size, 2, double);
-			if (!O_active) {
-				if (!(GMT->common.X.active || GMT->common.Y.active))
-					GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
-			}
+		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
+			if (!(GMT->common.X.active || GMT->common.Y.active))
+				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
@@ -6800,25 +6793,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 		}
 	}
-	else {	/* Classic mode */
-		gmt_M_memcpy (media_size, GMT->current.setting.ps_page_size, 2, double);
-		if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
-			k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
-			if (O_active && k == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
+		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
+		if (O_active && k == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+		}
+		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
+			write_to_mem = 2;
+			GMT->current.ps.memory = true;
+			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16-1);
+		}
+		else {
+			if ((fp = PSL_fopen (PSL, &(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
+				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
 			}
-			if (gmt_M_file_is_memory (&(Out->arg[k]))) {
-				write_to_mem = 2;
-				GMT->current.ps.memory = true;
-				strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16-1);
-			}
-			else {
-				if ((fp = PSL_fopen (PSL, &(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-					GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
-				}
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opened PS file %s\n", &(Out->arg[k]));
-			}
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opened PS file %s\n", &(Out->arg[k]));
 		}
 	}
 
