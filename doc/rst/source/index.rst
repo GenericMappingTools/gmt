@@ -73,4 +73,5 @@ Quick links
    Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
+   Debugging GMT <debug>
 

@@ -249,12 +249,13 @@
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
-#if ( CMAKE_GENERATOR STREQUAL "Xcode" )
-##	So Xcode can find the supplemental plug-ins during debug sessions
-#	add_definitions(-DXCODER)
-#   add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
-#	message("Add Xcode definition for GMT")
-#endif()
+if ( CMAKE_GENERATOR STREQUAL "Xcode" )
+#	So Xcode can find the supplemental plug-ins during debug sessions
+	add_definitions(-DXCODER)			# Handle a debug plugin directory
+	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
+	message("Add Xcode definition for GMT")
+endif()
+# Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
