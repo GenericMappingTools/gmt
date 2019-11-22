@@ -69,28 +69,28 @@ if (UNIX AND DO_ANIMATIONS)
 
 	foreach (_num 01 02 03 04 05 06 07 08)
 		add_custom_command (
-			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
-			COMMAND ${BASH} animate anim${_num}/anim_${_num}.sh
+			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
+			COMMAND ${BASH} animate anim${_num}/anim${_num}.sh
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/anim${_num}/anim_${_num}.sh)
+			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/anim${_num}/anim${_num}.sh)
 		add_custom_command (
-			OUTPUT ${RST_BINARY_DIR}/_images/anim_${_num}.gif
+			OUTPUT ${RST_BINARY_DIR}/_images/anim${_num}.gif
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
-			${RST_BINARY_DIR}/_images/anim_${_num}.gif
-			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
-		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim_${_num}.gif)
+			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
+			${RST_BINARY_DIR}/_images/anim${_num}.gif
+			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif)
+		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim${_num}.gif)
 	endforeach ()
 
 	# copy video files from anim 04, 06, 07, 08
 	foreach (_num 04 06 07 08)
 		add_custom_command (
-			OUTPUT ${RST_BINARY_DIR}/_static/anim_${_num}.mp4
+			OUTPUT ${RST_BINARY_DIR}/_static/anim${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
-		list (APPEND _animations ${RST_BINARY_DIR}/_static/anim_${_num}.mp4)
+			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.mp4
+			${RST_BINARY_DIR}/_static/anim${_num}.mp4
+			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif)
+		list (APPEND _animations ${RST_BINARY_DIR}/_static/anim${_num}.mp4)
 	endforeach ()
 	add_custom_target (animation DEPENDS ${_animations})
 

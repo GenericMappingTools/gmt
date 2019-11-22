@@ -56,6 +56,7 @@ steps:
   displayName: Compile GMT
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target docs_depends
     cmake --build . --target animation
