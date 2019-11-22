@@ -119,6 +119,7 @@ steps:
   displayName: Upload test coverage
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
