@@ -1,4 +1,4 @@
-.. _anim_04:
+.. _anim04:
 
 (4) Flying over topography
 --------------------------
@@ -17,7 +17,7 @@ image sequence into a MPEG-4 movie. Note: At the moment,
 view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
 
-.. literalinclude:: /_verbatim/anim_04.txt
+.. literalinclude:: /_verbatim/anim04.txt
    :language: bash
 
 
@@ -25,14 +25,14 @@ expect to add this functionality in a future version.
 
 .. only:: html
 
-   .. image:: /_images/anim_04.png
+   .. image:: /_images/anim04.png
       :width: 0 px
 
 .. raw:: html
 
    <div class="figure align-center">
-     <video width="720" height="480" poster="../_images/anim_04.png" controls>
-       <source src="../_static/anim_04.mp4" type="video/mp4">
+     <video width="720" height="480" poster="../_images/anim04.png" controls>
+       <source src="../_static/anim04.mp4" type="video/mp4">
        Your browser does not support the video tag.
      </video>
      <p class="caption">Flying over topography.</p>
