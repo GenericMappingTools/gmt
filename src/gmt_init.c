@@ -2352,8 +2352,6 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0 && !GMT_keywords_updated[case_val])
 			{k++; continue;}	/* If equal to default, skip it */
-		if ((case_val == GMTCASE_PS_MEDIA || case_val == GMTCASE_PAPER_MEDIA) && GMT->current.setting.run_mode == GMT_MODERN && GMT->current.ps.crop_to_fit)
-			{k++; continue;}	/* Unless ps format is requested we do not honor PS_MEDIA requests */
 		if (!header) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
 			header = true;
