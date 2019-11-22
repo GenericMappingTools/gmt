@@ -107,7 +107,7 @@ char *get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 		if (opt->option == GMT_OPT_INFILE) {	/* Valid "file" argument */
 			pos = strlen (opt->arg) - 3;
 			gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29 */
-			while (pos > 0 && gmt_session_format[code] && (!strchr (opt->arg, '.') || strcmp (&opt->arg[pos], gmt_session_format[code])))	/* See if we end in .ext */
+			while (pos > 0 && gmt_session_format[code] && (opt->arg[pos-1] != '.' || strcmp (&opt->arg[pos], gmt_session_format[code])))	/* See if we end in .ext */
 				code++;
 			c = NULL;
 			if (pos > 0 && gmt_session_format[code]) {	/* Yes, ends with .ext */
