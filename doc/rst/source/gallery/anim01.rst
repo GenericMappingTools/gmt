@@ -1,4 +1,4 @@
-.. _anim_01:
+.. _anim01:
 
 (1) Animation of the sine function
 ----------------------------------
@@ -12,7 +12,7 @@ angles) we dim the older circles to a dark red color. We add a label
 that indicates the current angle value. Once the 18 frames are completed
 we convert them to a single animated GIF file.
 
-.. literalinclude:: /_verbatim/anim_01.txt
+.. literalinclude:: /_verbatim/anim01.txt
    :language: bash
 
 Make sure you understand the purpose of all the steps in our script. In
@@ -21,7 +21,7 @@ use for the map projection, the region, the spacing around the frame,
 etc. so that the final result gave a reasonable layout. Do this planning
 on a single PostScript plot before running a lengthy animation script.
 
-.. figure:: /_images/anim_01.*
+.. figure:: /_images/anim01.*
    :width: 400 px
    :align: center
 
