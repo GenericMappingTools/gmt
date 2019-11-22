@@ -1010,7 +1010,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		else if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
+		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
 			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "FFmpeg %s found.\n", version);
