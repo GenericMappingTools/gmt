@@ -1,4 +1,4 @@
-.. _anim_03:
+.. _anim03:
 
 (3) Orbiting a static map
 -------------------------
@@ -10,10 +10,10 @@ image sequence. No additional
 information is plotted on the image. As before we produce an animated
 GIF image.
 
-.. literalinclude:: /_verbatim/anim_03.txt
+.. literalinclude:: /_verbatim/anim03.txt
    :language: bash
 
-.. figure:: /_images/anim_03.*
+.. figure:: /_images/anim03.*
    :width: 400 px
    :align: center
 

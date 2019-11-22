@@ -8,7 +8,7 @@
 
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 300
 	opt="-M300,ps -Fnone"
-	ps=anim_06.ps
+	ps=anim06.ps
 else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
 	opt="-Fmp4 -A+l+s5"
 fi
@@ -73,5 +73,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C7.2ix4.8ix100 -Iinit.sh -Tframe_times.txt -D$rate -Nanim_06 -Z $opt
+gmt movie main.sh -Sbpre.sh -C7.2ix4.8ix100 -Iinit.sh -Tframe_times.txt -D$rate -Nanim06 -Z $opt
 rm -rf init.sh main.sh pre.sh
