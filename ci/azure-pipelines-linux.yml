@@ -126,6 +126,7 @@ steps:
   condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar

@@ -45,15 +45,15 @@ if (SPHINX_FOUND)
 
 	# clean target
 	add_custom_target (_rst_clean
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/_doctrees
-		${CMAKE_CURRENT_BINARY_DIR}/_extensions
-		${CMAKE_CURRENT_BINARY_DIR}/_static
-		${CMAKE_CURRENT_BINARY_DIR}/_templates
-		${CMAKE_CURRENT_BINARY_DIR}/source
-		${CMAKE_CURRENT_BINARY_DIR}/themes
-		${CMAKE_CURRENT_BINARY_DIR}/html
-		${CMAKE_CURRENT_BINARY_DIR}/man
+		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_doctrees
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_extensions
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_static
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_templates
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/source
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/themes
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/html
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Removing rst tree")
 	# register with spotless target
 	add_depend_to_target (spotless _rst_clean)
