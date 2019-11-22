@@ -15719,6 +15719,21 @@ GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fm
 	return (n);
 }
 
+GMT_LOCAL bool check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
+	char file[PATH_MAX] = {""};
+	FILE *fp;
+	snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, ID);	/* Current half-baked PostScript file */
+	if ((fp = fopen (file, "r")) == NULL) {	/* This is an unmitigated disaster */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open half-baked PostScript file %s\n", file);
+		return false;
+	}
+	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Skip first line */
+	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Get second line */
+	fclose (fp);
+	if (strstr (file, "32767 32767")) return true;	/* Max paper size means auto-sized media */
+	return false;
+}
+
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
@@ -15726,7 +15741,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
-	bool not_PS;
+	bool not_PS, auto_size;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
 	unsigned int pos = 0;
 	double legend_width = 0.0, legend_scale = 1.0;
@@ -15795,31 +15810,34 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
 			dir[0] = '\0';	/* No directory via D<dir> convert option */
-			if (fig[k].options[0]) {	/* Append figure-specific settings */
+			auto_size = check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size enabled */
+			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
+					if (!auto_size && p[0] == 'A') continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && strchr (fig[k].options, 'A') == NULL)	/* Must always add -A if not PostScript */
+				if (not_PS && auto_size && strchr (fig[k].options, 'A') == NULL)	/* Must always add -A if not PostScript unless when media size is given */
 					strcat (cmd, " -A");
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+					if (!auto_size && p[0] == 'A') continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && strchr (API->GMT->current.setting.ps_convert, 'A') == NULL)	/* Must always add -A if not PostScript */
+				if (not_PS && auto_size && strchr (API->GMT->current.setting.ps_convert, 'A') == NULL)	/* Must always add -A if not PostScript unless when media size is given */
 					strcat (cmd, " -A");
 			}
-			else if (not_PS)
+			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
 			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
