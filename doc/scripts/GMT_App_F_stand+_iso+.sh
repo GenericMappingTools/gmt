@@ -258,7 +258,8 @@ EOF
 EOF
 gmt end
 
-gmt set -Du	# Must do this here instead so that the figures above are cropped
+# Must do this here instead so that the figures above are cropped
+gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
 gmt begin GMT_App_F_stand+_iso+
 	gmt image stand+.png -Dx0/0+r600
 	gmt image iso+.png -Dx0/0+r600 -X3.2i
