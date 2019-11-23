@@ -16,7 +16,7 @@ if ($? == 1) then
   exit 1
 endif
 
-set gmt_modules = (`gmt --show-modules`)
+set gmt_modules = (`gmt --show-classic`)
 set compat_modules = (minmax gmtstitch gmtdp grdreformat ps2raster originator)
 
 foreach module ( $gmt_modules $compat_modules )
