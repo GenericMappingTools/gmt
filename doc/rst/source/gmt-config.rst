@@ -11,11 +11,7 @@ gmt-config
 Synopsis
 --------
 
-.. include:: common_SYN_OPTs.rst_
-
 **gmt-config** [ *options* ]
-
-|No-spaces|
 
 Description
 -----------
@@ -95,18 +91,14 @@ Optional Arguments
 **--version**
     The library version
 
-
 Examples
 --------
-
 
 To Determine the compiler flags that is required for an external to to find the GMT function prototypes, try::
 
     gmt-config --cflags
 
-
 See Also
 --------
 
 :doc:`gmt`
-
