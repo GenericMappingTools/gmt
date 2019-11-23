@@ -462,7 +462,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
-	bool is_srtm = false, is_data = false;
+	bool is_srtm = false, is_data = false, is_url = false;
 	size_t len, fsize;
 	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
@@ -498,6 +498,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			c[0] = '\0';
 	}
 	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
+		is_url = true;
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 			c[0] = '\0';
@@ -618,6 +619,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
 			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+		}
+		else if (is_url) {	/* Plaec in current dir */
+			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 		}
 		else {	/* Goes to cache */
 			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
