@@ -20,7 +20,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt clear cleans up by removing files or dirs.
- *	gmt clear [all | cache | defaults | data | sessions ]
+ *	gmt clear [all | cache | data | sessions | settings ]
  */
 
 #include "gmt_dev.h"
@@ -51,7 +51,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -66,7 +66,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No target specified\n");
 		n_errors++;
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -158,7 +158,7 @@ int GMT_clear (void *V_API, int mode, void *args) {
 
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_INFILE) continue;	/* action target will appear as file name */
-		
+
 		n_given++;
 		if (!strcmp (opt->arg, "all")) {	/* Clear all */
 			if (clear_cache (API))
@@ -198,6 +198,6 @@ int GMT_clear (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No clear target given\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-		
+
 	Return (error);
 }

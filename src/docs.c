@@ -85,7 +85,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (RegO == ERROR_SUCCESS)		/* User has postscript viewer installed */
 		ps_viewer = (char *)file_viewer;
 	else
-		ps_viewer = "cmd /c start gsview64c";	/* No previewer. Resort to this. */
+		ps_viewer = "cmd /c start gswin64c";	/* No previewer. Resort to this. */
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
 	bool together = true;	/* Can call file_viewer once with all files */

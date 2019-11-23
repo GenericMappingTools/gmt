@@ -8,7 +8,7 @@
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
-	ps=anim_02.ps
+	ps=anim02.ps
 else	# Make animated GIF
 	opt="-A+l"
 fi	
@@ -30,5 +30,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C3.5ix4.167ix72 -Nanim_02 -Tangles.txt -Sbpre.sh -D6 -Z $opt
+gmt movie main.sh -C3.5ix4.167ix72 -Nanim02 -Tangles.txt -Sbpre.sh -D6 -Z $opt
 rm -rf main.sh pre.sh

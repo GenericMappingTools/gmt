@@ -14,14 +14,14 @@ Quick links
 
    - :doc:`std_opts`
    - :doc:`proj_codes`
-   - :doc:`GMT Defaults <gmt.conf>`
+   - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`GMT Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript_fonts>`
    - :doc:`Built-in CPTs </cookbook/cpts>`
    - :doc:`Octal Codes of Characters </cookbook/octal_codes>`
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
-   - :ref:`Grid File Format Specifications <tbl-grdformats>`
+   - :ref:`Grid Format Specifications <tbl-grdformats>`
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
@@ -73,4 +73,5 @@ Quick links
    Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
+   Debugging GMT <debug>
 

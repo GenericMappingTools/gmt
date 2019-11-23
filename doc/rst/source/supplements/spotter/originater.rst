@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt originater** [ *tables* ] |-E|\ *rotfile*\ [**+i**]
-|-F|\ *hs_file*\ [**+d**] 
+|-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
 [ |-N|\ *upper_age* ]
@@ -51,8 +51,6 @@ radius, crustal_age) files.
 
 Required Arguments
 ------------------
-
-.. _-E:
 
 .. include:: explain_rots.rst_
 
