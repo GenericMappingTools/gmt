@@ -5,6 +5,8 @@
 # To run all bash scripts, run do_examples.sh.
 # To run all bat scripts, run do_examples.bat instead.
 #
+# To run all the animation scripts, run do_animations.sh.
+#
 # It is possible that the output you may generate with these
 # script will differ in subtle ways from the figures shown
 # in the GMT documentation.  This is most likely caused by
