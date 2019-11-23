@@ -72,7 +72,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot, unless PS */
 	if ((opt = options)) {	/* Gave possibly a replacement session name and possibly more */
 		if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name */
 	}
@@ -85,8 +84,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
 				n_errors++;
 			}
-			else if (!strcmp (p, "ps"))	/* Need to honor PS_MEDIA setting */
-				GMT->current.ps.crop_to_fit = false;
 		}
 	}
 	
