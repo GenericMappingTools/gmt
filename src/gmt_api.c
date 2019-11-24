@@ -10048,7 +10048,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	int status = GMT_NOERROR;
 	unsigned int lib;
 	struct GMTAPI_CTRL *API = NULL;
-	char gmt_module[GMT_LEN32] = "GMT_";
+	char gmt_module[GMT_LEN64] = "GMT_";
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -10064,7 +10064,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {
-			snprintf (gmt_module, GMT_LEN32, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
+			snprintf (gmt_module, GMT_LEN64, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
 			*(void **) (&l_func) = api_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
 			(*l_func) (V_API);	/* Run this function */
@@ -10074,7 +10074,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 
 	/* Here we call a named module */
 
-	strncat (gmt_module, module, GMT_LEN32-5);		/* Concatenate GMT_-prefix and module name to get function name */
+	strncat (gmt_module, module, GMT_LEN64-5);		/* Concatenate GMT_-prefix and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
 		*(void **) (&p_func) = api_get_module_func (API, gmt_module, lib);
 		if (p_func) break;	/* Found it in this shared library */
@@ -10082,8 +10082,8 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
 		status = GMT_NOT_A_VALID_MODULE;	/* Most likely, but we will try again: */
 		if (strncasecmp (module, "gmt", 3)) {	/* For any module not already starting with "gmt..." */
-			char gmt_module[GMT_LEN32] = "gmt";
-			strncat (gmt_module, module, GMT_LEN32-4);	/* Prepend "gmt" to module and try again */
+			char gmt_module[GMT_LEN64] = "gmt";
+			strncat (gmt_module, module, GMT_LEN64-4);	/* Prepend "gmt" to module and try again */
 			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix this time */
 		}
 	}
