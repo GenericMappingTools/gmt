@@ -81,7 +81,7 @@ eps    Encapsulated PostScript
 jpg    Joint Photographic Experts Group Format
 pdf    Portable Document Format [Default]
 png    Portable Network Graphics
-PNG    Portable Network Graphics (with transparentcy layer)
+PNG    Portable Network Graphics (with transparency layer)
 ppm    Portable Pixel Map
 ps     Plain PostScript
 tif    Tagged Image Format File
