@@ -12657,8 +12657,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
 	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && strstr (E->arg, "+g") == NULL && strstr (E->arg, "+p") == NULL) { /* Determine if need for RJ */
-		if (!((opt = GMT_Find_Option (API, 'G', *options)) || (opt = GMT_Find_Option (API, 'M', *options)) || (opt = GMT_Find_Option (API, 'W', *options))))
+		if (!((opt = GMT_Find_Option (API, 'G', *options)) || (opt = GMT_Find_Option (API, 'M', *options)) || (opt = GMT_Find_Option (API, 'W', *options)))) {
 			required = "";
+			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
+		}
 	}
 	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options)) && strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
 		required = "JR";
@@ -12669,16 +12671,25 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		char r_code[GMT_LEN512] = {""};
 		bool add_R = true;
 		unsigned int E_flags;
+		GMT_Report (API, GMT_MSG_DEBUG, "Given -E, determine if -R is needed for pscoast.\n");
 		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
 		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
 			int id = gmt_get_option_id (0, "R");		/* The -RP history item */
+			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, explore if there is a grid or plot region already.\n");
 			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
-			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
+			if (GMT->init.history[id]) {	/* There is history for -R so -R will be added below */
+				GMT_Report (API, GMT_MSG_DEBUG, "Given -E, found there is a grid or plot region already.\n");
+				add_R = false;
+			}
 		}
-		if (E_flags & 2) add_R = false;	/* No -R should be set since we want a country code listing only */
+		if (E_flags & 2) {	/* No -R should be set since we want a country code listing only */
+			add_R = false;
+			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, no -R needed for country code listing request\n");
+		}
 		if (add_R) {	/* Need to add a specific -R option that carries the information set via -E */
 			if ((opt = GMT_Make_Option (API, 'R', r_code)) == NULL) return NULL;	/* Failure to make -R option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
+			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, add equivalent -R%s for pscoast.\n", opt->arg);
 		}
 	}
 	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
