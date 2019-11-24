@@ -140,9 +140,15 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
-			/* Print all modules and exit */
+			/* Print all modern modules and exit */
 			else if (!strncmp (argv[arg_n], "--show-modules", 8U)) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_LIST, NULL);
+				status = GMT_NOERROR;
+			}
+
+			/* Print all classic modules and exit */
+			else if (!strncmp (argv[arg_n], "--show-classic", 8U)) {
+				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_CLASSIC, NULL);
 				status = GMT_NOERROR;
 			}
 
@@ -294,11 +300,12 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell]\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
+			fprintf (stderr, "  --show-classic    Show all classic module names.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
 			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
-			fprintf (stderr, "  --show-modules    Show all module names.\n");
+			fprintf (stderr, "  --show-modules    Show all modern module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 			fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");

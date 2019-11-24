@@ -20,7 +20,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        30-October-2019
+ * Date:        23-November-2019
  * Version:     6 API
  */
 
@@ -29,7 +29,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 222
+#define GMT_N_API_ENUMS 223
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -152,12 +152,13 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_LOG_ONCE", 1},
 	{"GMT_LOG_SET", 2},
 	{"GMT_LONG", 6},
+	{"GMT_MODULE_CLASSIC", -5},
 	{"GMT_MODULE_CMD", 0},
 	{"GMT_MODULE_EXIST", -3},
 	{"GMT_MODULE_LIST", -4},
 	{"GMT_MODULE_PURPOSE", -2},
-	{"GMT_MODULE_SYNOPSIS", -5},
-	{"GMT_MODULE_USAGE", -6},
+	{"GMT_MODULE_SYNOPSIS", -6},
+	{"GMT_MODULE_USAGE", -7},
 	{"GMT_MSG_COMPAT", 3},
 	{"GMT_MSG_DEBUG", 6},
 	{"GMT_MSG_LONG_VERBOSE", 5},

@@ -246,6 +246,19 @@ GMT_LOCAL int skip_this_module (const char *name) {
 	return 0;	/* Display this one */
 }
 
+/* Function to exclude modern mode modules from being reported by gmt --show-classic */
+GMT_LOCAL int skip_modern_module (const char *name) {
+	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;		/* Skip the clear module */
+	if (!strncmp (name, "inset", 5U)) return 1;		/* Skip the inset module */
+	if (!strncmp (name, "movie", 5U)) return 1;		/* Skip the movie module */
+	if (!strncmp (name, "docs", 4U)) return 1;		/* Skip the docs module */
+	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
+	return 0;	/* Display this one */
+}
+
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmt_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
@@ -275,6 +288,17 @@ void gmt_core_module_list_all (void *V_API) {
 	while (g_core_module[module_id].cname != NULL) {
 		if (API->external || !skip_this_module (g_core_module[module_id].cname))
 			printf ("%s\n", g_core_module[module_id].mname);
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
+void gmt_core_module_classic_all (void *V_API) {
+	unsigned int module_id = 0;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	while (g_core_module[module_id].cname != NULL) {
+		if (API->external || !(skip_this_module (g_core_module[module_id].cname) || skip_modern_module (g_core_module[module_id].cname)))
+			printf ("%s\n", g_core_module[module_id].cname);
 		++module_id;
 	}
 }
