@@ -132,7 +132,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
+	if ((error = gmt_report_usage (API, options, 1, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
@@ -144,6 +144,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {	/* Start with default params using SI settings */
+		gmt_conf (GMT);		/* Get SI defaults */
 		if (Ctrl->D.mode == 'u')
 			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
