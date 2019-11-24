@@ -2430,8 +2430,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
 				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
 				strcat (out_file, ".ps");
-				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", ps_names[0], out_file);
-				if (gmt_rename_file (GMT, ps_names[0], out_file, GMT_COPY_FILE))
+				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
+				if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
