@@ -15015,6 +15015,16 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case '>':	/* Registered output file; nothing to do here */
 			break;
 
+		case '=':	/* List of input files? */
+			if (item[0] == '\0') {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c requires a file argument\n", option);
+				error++;
+			}
+			else if (!gmt_M_file_is_memory (item) && gmt_access (GMT, item, F_OK)) {	/* File does not exist */
+				error++;
+			}
+			break;
+
 		default:	/* Here we end up if an unrecognized option is passed (should not happen, though) */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c is not a recognized common option\n", option);
 			return (1);
