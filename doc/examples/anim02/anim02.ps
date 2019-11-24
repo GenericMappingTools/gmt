@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
-%%BoundingBox: 0 0 252 300
-%%HiResBoundingBox: 0 0 252.0000 300.0240             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%BoundingBox: 0 0 252 301
+%%HiResBoundingBox: 0 0 252.0000 300.0240
+%%Title: GMT v6.0.1_3015954_2019.11.23 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:27 2018
+%%CreationDate: Sat Nov 23 22:46:38 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -336,9 +335,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +591,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +634,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -648,21 +642,16 @@ end
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [252 300.024] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 4200 def
 /PSL_page_ysize 5000 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -670,11 +659,9 @@ gsave
 FQ
 O0
 420 360 TM
-
 % PostScript produced by:
 %@GMT: gmt grdimage @tut_relief.nc -I -JM7.62 -Cmain.cpt -BWSne -B1 -X0.35i -Y0.3i --FONT_ANNOT_PRIMARY=9p -R-108/-103/35/40
 %@PROJ: merc -108.00000000 -103.00000000 35.00000000 40.00000000 -278298.727 278298.727 4139372.762 4838471.398 +proj=merc +lon_0=-105.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 25.2 21.6 216 271.301
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -11584,7 +11571,6 @@ N -83 4605 M 0 -4688 D S
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
 %@GMT: gmt psxy -Sc0.8i -Gwhite -Wthin -R-108/-103/35/40 -JM7.62
 %@PROJ: merc -108.00000000 -103.00000000 35.00000000 40.00000000 -278298.727 278298.727 4139372.762 4838471.398 +proj=merc +lon_0=-105.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
@@ -11611,7 +11597,6 @@ PSL_cliprestore
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
 %@GMT: gmt psxy -Sv0.1i+e -Gred -Wthick -R-108/-103/35/40 -JM7.62
 %@PROJ: merc -108.00000000 -103.00000000 35.00000000 40.00000000 -278298.727 278298.727 4139372.762 4838471.398 +proj=merc +lon_0=-105.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
@@ -11626,6 +11611,7 @@ clipsave
 -3600 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {17 W 0 A [] 0 B} def
 17 W
 V
 {1 0 0 C} FS
@@ -11635,6 +11621,8 @@ V 3060 527 T 180 R
 N 0 0 M 324 0 D S
 U
 V 2616 527 T 180 R
+PSL_vecheadpen
+17 W
 0 0 M
 -120 32 D
 0 -64 D
@@ -11643,15 +11631,12 @@ U
 U
 PSL_cliprestore
 %%EndObject
-
 grestore
 PSL_movie_completion /PSL_movie_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF
