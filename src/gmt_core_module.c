@@ -297,7 +297,7 @@ void gmt_core_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].cname != NULL) {
-		if (API->external || !skip_this_module (g_core_module[module_id].cname) || !skip_modern_module (g_core_module[module_id].cname))
+		if (API->external || !(skip_this_module (g_core_module[module_id].cname) || skip_modern_module (g_core_module[module_id].cname)))
 			printf ("%s\n", g_core_module[module_id].cname);
 		++module_id;
 	}
