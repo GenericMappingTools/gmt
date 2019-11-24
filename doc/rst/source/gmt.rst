@@ -85,6 +85,9 @@ If no module is given then several other options are available:
 **--show-citation**
     Show the citation for the latest GMT publication.
 
+**--show-classic**
+    List classic module names on stdout and exit.
+
 **--show-cores**
     Show number of available cores.
 
@@ -98,7 +101,7 @@ If no module is given then several other options are available:
     Show the DOI of the current release.
 
 **--show-modules**
-    List module names on stdout and exit.
+    List modern module names on stdout and exit.
 
 **--show-library**
     Show the path of the shared GMT library.

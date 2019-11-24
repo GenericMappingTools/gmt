@@ -49,8 +49,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics (opaque background).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (transparent background).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (with transparency layer).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
@@ -93,32 +93,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 char *get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
 	/* Extract session arguments (including optional graphics format) from options:
 	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-V<arg>]  */
-	char buffer[GMT_LEN256] = {""}, *c;
+	char buffer[GMT_LEN256] = {""};
 	bool space = false;
-	unsigned int n = 0, code = 0;
+	unsigned int n = 0;
 	size_t len = 0;
-	int pos = 0;
 	*error = GMT_NOERROR;
 	if (opt == NULL) return NULL;	/* Go with the default settings */
 	while (opt && n < 3) {
 		if (opt->option == GMT_OPT_INFILE) {	/* Valid "file" argument */
-			pos = strlen (opt->arg) - 3;
 			gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29 */
-			while (pos > 0 && gmt_session_format[code] && (!strchr (opt->arg, '.') || strcmp (&opt->arg[pos], gmt_session_format[code])))	/* See if we end in .ext */
-				code++;
-			c = NULL;
-			if (pos > 0 && gmt_session_format[code]) {	/* Yes, ends with .ext */
-				c = strstr (opt->arg, gmt_session_format[code]);	/* Find start of extension */
-				c--;	/* Go back to the period */
-				c[0] = '\0';	/* Chop off extension */
-			}
 			if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
 			len += strlen (opt->arg);
 			strncat (buffer, opt->arg, GMT_LEN256-len);
 			space = true;
 			gmt_filename_get (opt->arg);	/* Undo ASCII 29 */
 			n++;
-			if (c) c[0] = '.';	/* Restore extension */
 		}
 		else if (opt->option != 'V') {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized argument -%c%s\n", opt->option, opt->arg);

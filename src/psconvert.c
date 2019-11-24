@@ -709,16 +709,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					char *ext = NULL;
 					Ctrl->F.file = strdup (opt->arg);
-					if (!gmt_M_file_is_memory (Ctrl->F.file) && (ext = strchr (Ctrl->F.file, '.'))) {	/* Make sure file name has no graphics file format extension */
-						unsigned int kk = 0;
-						ext++;	/* Skip the period */
-						while (gmt_session_format[kk] && strcmp (ext, gmt_session_format[kk]))
-							kk++;	/* Not matching that format, go to next */
-						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
-							gmt_chop_ext (Ctrl->F.file);
-					}
 					gmt_filename_get (Ctrl->F.file);
 				}
 				else
@@ -2439,8 +2430,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
 				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
 				strcat (out_file, ".ps");
-				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", ps_names[0], out_file);
-				if (gmt_rename_file (GMT, ps_names[0], out_file, GMT_COPY_FILE))
+				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
+				if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}

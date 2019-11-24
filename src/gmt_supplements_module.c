@@ -123,6 +123,16 @@ void gmt_supplements_module_list_all (void *V_API) {
 	}
 }
 
+/* Produce single list on stdout of all GMT supplements module names for gmt --show-classic [i.e., classic mode names] */
+void gmt_supplements_module_classic_all (void *V_API) {
+	unsigned int module_id = 0;
+	gmt_M_unused(V_API);
+	while (g_supplements_module[module_id].cname != NULL) {
+		printf ("%s\n", g_supplements_module[module_id].cname);
+		++module_id;
+	}
+}
+
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_supplements_module_keys (void *API, char *candidate) {
 	int module_id = 0;

@@ -113,8 +113,10 @@ cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
 EXTERN_MSC void gmt_${L_TAG}_module_show_all (void *API);
-/* List all modules in the GMT ${L_TAG} library to stdout */
+/* List all modern modules in the GMT ${L_TAG} library to stdout */
 EXTERN_MSC void gmt_${L_TAG}_module_list_all (void *API);
+/* List all classic modules in the GMT ${L_TAG} library to stdout */
+EXTERN_MSC void gmt_${L_TAG}_module_classic_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
 EXTERN_MSC const char * gmt_${L_TAG}_module_keys (void *API, char *candidate);
 /* Function returns name of group that module belongs to (core, spotter, etc.) */
@@ -260,6 +262,19 @@ GMT_LOCAL int skip_this_module (const char *name) {
 	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
 	return 0;	/* Display this one */
 }
+
+/* Function to exclude modern mode modules from being reported by gmt --show-classic */
+GMT_LOCAL int skip_modern_module (const char *name) {
+	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;		/* Skip the clear module */
+	if (!strncmp (name, "inset", 5U)) return 1;		/* Skip the inset module */
+	if (!strncmp (name, "movie", 5U)) return 1;		/* Skip the movie module */
+	if (!strncmp (name, "docs", 4U)) return 1;		/* Skip the docs module */
+	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
+	return 0;	/* Display this one */
+}
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -331,6 +346,37 @@ EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
 		printf ("%s\n", g_${L_TAG}_module[module_id].mname);
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-classic [i.e., classic mode names] */
+void gmt_${L_TAG}_module_classic_all (void *V_API) {
+	unsigned int module_id = 0;
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+EOF
+else
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+	gmt_M_unused(V_API);
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
+	while (g_${L_TAG}_module[module_id].cname != NULL) {
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+		cat << EOF >> ${FILE_GMT_MODULE_C}
+		if (API->external || !(skip_this_module (g_${L_TAG}_module[module_id].cname) || skip_modern_module (g_${L_TAG}_module[module_id].cname)))
+			printf ("%s\n", g_${L_TAG}_module[module_id].cname);
+EOF
+else
+		cat << EOF >> ${FILE_GMT_MODULE_C}
+		printf ("%s\n", g_${L_TAG}_module[module_id].cname);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
