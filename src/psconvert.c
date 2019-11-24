@@ -711,6 +711,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
 					char *ext = NULL;
 					Ctrl->F.file = strdup (opt->arg);
+#if 0
 					if (!gmt_M_file_is_memory (Ctrl->F.file) && (ext = strchr (Ctrl->F.file, '.'))) {	/* Make sure file name has no graphics file format extension */
 						unsigned int kk = 0;
 						ext++;	/* Skip the period */
@@ -719,6 +720,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
 							gmt_chop_ext (Ctrl->F.file);
 					}
+#endif
 					gmt_filename_get (Ctrl->F.file);
 				}
 				else
