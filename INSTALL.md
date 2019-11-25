@@ -224,6 +224,21 @@ Install other GMT dependencies (some are optional) via:
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
 
+## Archlinux
+
+Install GMT6 via
+
+    sudo pacman -Syyuu
+    sudo pacman -S base-devel
+
+    # lost depedencies in PKGBUILD of aur repo
+    sudo pacman -S python-sphinx ghostscript
+
+    git clone https://aur.archlinux.org/gmt.git
+    cd gmt
+    makepkg -sc
+    sudo pacman -U *.pkg.tar.xz
+
 ## Cross Platform Install Instructions
 
 ### Install via conda
