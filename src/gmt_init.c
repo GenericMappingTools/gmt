@@ -15503,12 +15503,13 @@ int gmt_message (struct GMT_CTRL *GMT, char *format, ...) {
 /*! . */
 int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...) {
 	char message[GMT_BUFSIZ];
+	const char *module_name;
 	size_t source_info_len;
 	va_list args;
 	if (level > GMT->current.setting.verbose)
 		return 0;
-	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			GMT->init.module_name, source_line);
+	module_name = ((GMT->current.setting.run_mode == GMT_MODERN)) ? gmtlib_get_active_name (GMT->parent, GMT->init.module_name) : GMT->init.module_name;
+	snprintf (message, GMT_BUFSIZ, "%s (%s): ", module_name, source_line);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */
