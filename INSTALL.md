@@ -228,16 +228,28 @@ include the supplements. If you need them you will need to
 
 Install GMT6 via
 
-    sudo pacman -Syyuu
+    # Full update system packages first
+    sudo pacman -Syu
+
+    # Install tools for building packages
     sudo pacman -S base-devel
 
-    # lost depedencies in PKGBUILD of aur repo
+    # Install lost build depedencies in PKGBUILD of aur repo
     sudo pacman -S python-sphinx ghostscript
 
     git clone https://aur.archlinux.org/gmt.git
+
+    # Optional recommended packages
+    git clone https://aur.archlinux.org/gmt-coast.git
+    git clone https://aur.archlinux.org/gmt-cpt-city.git
+    git clone https://aur.archlinux.org/gmt-dcw.git
+
+    # use makepkg to build packages and use pacman to install
     cd gmt
     makepkg -sc
     sudo pacman -U *.pkg.tar.xz
+
+**Note**: Since some build depedencies in PKGBUILD of AUR repo are lost, binary packages of gmt are still not available in [ArchlinuxCN repo](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror) yet.
 
 ## Cross Platform Install Instructions
 
