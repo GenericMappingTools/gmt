@@ -686,7 +686,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		 * Perhaps this needs to be more nuanced beyond PS vs no-PS if other modules end up needed the same treatment */
 		GMT->current.ps.active = true;	/* Briefly pretend we are a PS-producing module */
 		gmt_set_missing_options (GMT, "RJ");
-		GMT->current.ps.active = true;	/* Come to our senses */
+		GMT->current.ps.active = false;	/* Come to our senses */
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Syntax error: -Z requires -G+i\n");
