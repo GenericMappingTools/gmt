@@ -11730,7 +11730,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	/* Reset all the common.?.active settings to false */
 
 	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
-	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
+	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;	GMT->current.setting.map_logo = false;
 	GMT->common.X.active = GMT->common.Y.active = false;
 	GMT->common.R.active[RSET] = GMT->common.R.active[ISET] = GMT->common.R.active[GSET] = GMT->common.R.active[FSET] = GMT->common.J.active = false;
 	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = false;
