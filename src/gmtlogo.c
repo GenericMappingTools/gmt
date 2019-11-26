@@ -203,7 +203,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", name, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s] %s[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s]\n\t[%s] [%s] %s[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -310,7 +310,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	int error, fmode;
 
 	uint64_t par[4] = {0, 0, 0, 0};
-	
+
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
 
@@ -433,7 +433,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Close_VirtualFile (API, file);
-	
+
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_INV);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */
