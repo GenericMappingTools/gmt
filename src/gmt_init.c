@@ -6513,7 +6513,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
 			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
-				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col of desired panel.\n");
+				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col or index of desired panel.\n");
 			break;
 
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
