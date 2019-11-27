@@ -95,7 +95,7 @@ any number of records that each holds the full pathname of an
 alternative directory. Comment lines (#) and blank lines are allowed.
 The desired file is then sought for in the alternate directories.
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: coast_notes.rst_
 

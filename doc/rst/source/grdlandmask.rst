@@ -146,7 +146,7 @@ nodes based on the low resolution data:
 
     gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
  
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 See Also
 --------
