@@ -77,11 +77,10 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [*color*\ ][**+b**\ \|\ **+f**\ \|\ **+t**]
-    Change certain pixel values to another color or make them transparent.
-    For 1-bit images you can specify an alternate *color* for the background (**+b**)
-    or the foreground (**+f**) pixels, or give no color to make those pixels
-    transparent.  Alternatively, for color images you can select a single *color*
-    that should be made transparent instead.
+    Change some pixels to given <color> depending on selected modifier (repeatable).
+    Append +b for replacing background and +f for foreground color (1-bit images only).
+    If no color was given we make those pixels transparent [Default is black and white].
+    Append +t to indicate the given <color> should be made transparent [no transparency].
 
 .. _-I:
 

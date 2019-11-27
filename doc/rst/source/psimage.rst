@@ -41,27 +41,29 @@ Examples
 
 .. include:: explain_example.rst_
 
-To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
-accordingly), and outline with a thin, blue pen, use
+To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+accordingly), use::
 
-   ::
+    gmt psimage @needle.jpg -Dx0/0+w7c > image.ps
 
-    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue > image.ps
+To plot the same file but reversing the bands, use::
 
-To include an Encapsulated PostScript file tiger.eps with its upper
+    gmt psimage @needle.jpg+b2,1,0 -Dx0/0+w7c > image.ps
+
+To only plot its red band as gray shade, use::
+
+    gmt psimage @needle.jpg+b0 -Dx0/0+w7c > image.ps
+
+To include an Encapsulated PostScript file gallo.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
 location, and have its width scaled to 3 inches, while keeping the
-aspect ratio, use
+aspect ratio, use::
 
-   ::
-
-    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i > image.ps
+    gmt psimage @gallo.eps -Dx2i/1i+jTR+w3i > image.ps
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
-to be 1 cm wide, use
-
-   ::
+to be 1 cm wide, use::
 
     gmt psimage 1_bit.ras -Gbrown+b -Gred+f -Dx0/0+w1c+n5 > image.ps
 

@@ -52,12 +52,12 @@ To only plot its red band as gray shade, use::
 
     gmt image @needle.jpg+b0 -Dx0/0+w7c -pdf plot
 
-To include an Encapsulated PostScript file tiger.eps with its upper
+To include an Encapsulated PostScript file gallo.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
 location, and have its width scaled to 3 inches, while keeping the
 aspect ratio, use::
 
-    gmt image tiger.eps -Dx2i/1i+jTR+w3i -pdf image
+    gmt image @gallo.eps -Dx2i/1i+jTR+w3i -pdf image
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
