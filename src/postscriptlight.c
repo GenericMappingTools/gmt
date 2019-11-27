@@ -3158,6 +3158,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		fclose (in);
 		PSL->internal.N_FONTS = i;
 	}
+	else {
+		PSL_message (PSL, PSL_MSG_NORMAL, "ERROR: Unable to find PSL_custom_fonts.txt - was told to look in %s (?)\n", PSL->internal.SHAREDIR);
+		PSL_exit (EXIT_FAILURE);
+	}
+	
 	/* Final allocation of font array */
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 	return PSL_NO_ERROR;
