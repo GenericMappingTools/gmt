@@ -64,7 +64,8 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 	MOVIE_LABEL_IS_ELAPSED,
 	MOVIE_LABEL_IS_COL_C,
-	MOVIE_LABEL_IS_COL_T};
+	MOVIE_LABEL_IS_COL_T,
+	MOVIE_LABEL_IS_STRING};
 
 /* Control structure for movie */
 
@@ -111,12 +112,12 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} I;
-	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
+	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
 		unsigned int n_tags;
 		struct MOVIE_TAG {
 			struct GMT_FONT font;
-			char format[GMT_LEN64];
+			char format[GMT_LEN128];
 			char fill[GMT_LEN64];
 			char pen[GMT_LEN64];
 			char placement[3];
@@ -432,6 +433,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w; first word is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
@@ -663,6 +665,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					case 'c':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_C;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
 					case 't':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_T;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
 					case 'e':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_ELAPSED;	break;
+					case 's':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_STRING;	strncpy (Ctrl->L.tag[T].format, &opt->arg[1], GMT_LEN128); break;
 					case 'f': case '\0': Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
 					default:	/* Not recognized */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Select -Lf, -Lc<col> or -Lt<col>\n");
@@ -1450,6 +1453,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					else	/* Plot as is */
 						strcpy (string, L_txt);
 				}
+				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
+					strcpy (string, Ctrl->L.tag[T].format);
 				strcat (label, string);
 				/* Set MOVIE_LABEL_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
