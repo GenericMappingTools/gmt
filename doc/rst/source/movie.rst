@@ -316,7 +316,7 @@ issues with your use of variables and options until this works.  You can then tr
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
-Color table usage
+Color Table Usage
 -----------------
 
 Because **movie** launches individual frame plots as separate sessions running in parallel, we cannot
@@ -370,11 +370,25 @@ Other Movie Formats
 -------------------
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
-tool ffmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
+tool FFmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
 If you wish to run ffmpeg with other options, select mp4 and run **movie** with long verbose (**-Vl**).
 At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.
+
+Manipulating Multiple Movies
+----------------------------
+
+If you are making a series of similar movies, you can use ffmpeg to paste and stitch them into a single movie.
+Assume we have four movies called movie_1.mp4, movie_2.mp4, movie_3.mp4, and movie_4.mp4, and you wish to combine
+them into a 2x2 panel showing the four movies simultaneously.  You would first combine movies (1,2) and (3,4)
+horizontally, then combine the two resulting strips vertically::
+
+    ffmpeg -i movie_1.mp4 -i movie_2.mp4 -filter_complex hstack=inputs=2 top.mp4
+    ffmpeg -i movie_3.mp4 -i movie_4.mp4 -filter_complex hstack=inputs=2 bottom.mp4
+    ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
+
+For more information on such manipulations, see the FFmpeg documentation.
 
 See Also
 --------
