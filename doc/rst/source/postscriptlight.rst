@@ -276,8 +276,8 @@ One function provide the functionality for memory output.
     processed before the next call to **PSL_beginplot** or **PSL_endsession**
     either of which will destroy the memory pointed to.
 
-`Changing Settings <#toc6>`_
-----------------------------
+Changing Settings
+-----------------
 
 The following functions are used to change various PSL settings and
 affect the current state of parameters such as line and fill attributes.
@@ -491,8 +491,8 @@ affect the current state of parameters such as line and fill attributes.
     the value that corresponds to the font size (in points) given by
     *fontsize*.
 
-`Plotting Lines And Polygons <#toc7>`_
---------------------------------------
+Plotting Lines And Polygons
+---------------------------
 
 Here are functions used to plot lines and closed polygons, which may
 optionally be filled. The attributes used for drawing and filling are
@@ -559,8 +559,8 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     Draws a line segment between the two points (plot coordinates) using
     the current pen attributes.
 
-`Plotting Symbols <#toc8>`_
----------------------------
+Plotting Symbols
+----------------
 
 Here are functions used to plot various geometric symbols or constructs.
 
@@ -632,8 +632,8 @@ Here are functions used to plot various geometric symbols or constructs.
     Finally, *trim1* and *trim2* adjust the start and end location of
     the vector.
 
-`Plotting Images <#toc9>`_
---------------------------
+Plotting Images
+---------------
 
 Here are functions used to read and plot various images.
 
@@ -907,8 +907,8 @@ Here are functions used to activate and deactivate clipping regions.
     will undo all levels of text-based clipping, and PSL_ALL_CLIP_POL
     will undo all levels of polygon-based clipping.
 
-`Miscellaneous Functions <#toc12>`_
------------------------------------
+Miscellaneous Functions
+-----------------------
 
 Here are functions used to issue comments or to pass custom PostScript
 commands directly to the output PostScript file. In C these functions
