@@ -80,16 +80,15 @@
 
 **-Sm\|d\|z**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 
-    Seismic moment tensor (Global CMT, with zero trace). *scale* adjusts
+    Seismic moment tensor. *scale* adjusts
     the scaling of the radius of the "beach ball", which will be
     proportional to the magnitude. *scale* is the size for magnitude = 5
     (that is scalar seismic moment = 4.0E23 dynes-cm).
     **-T**\ *0* option overlays best double couple transparently.
-    Use **-Sm** to plot the Global CMT
-    seismic moment tensor with zero trace. Use **-Sd** to plot only the
-    double couple part of moment tensor. Use **-Sz** to plot the anisotropic
-    part of moment tensor (zero trace). The color or shade of the
-    compressive quadrants can be specified with the **-G** option. The color
+    Use **-Sm** to plot the full seismic moment tensor (i.e. isotropic + double couple + CLVD parts).
+    Use **-Sd** to plot only the double couple part of moment tensor.
+    Use **-Sz** to plot the anisotropic part of moment tensor (zero trace, i.e. double couple + CLVD parts).
+    The color or shade of the compressive quadrants can be specified with the **-G** option. The color
     or shade of the extensive quadrants can be specified with the **-E** option.
     Append **+f**\ *font* to change the font of the text string;
     append **+j**\ *justify* to change the text location relative to the beachball

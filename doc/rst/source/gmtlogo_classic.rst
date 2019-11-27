@@ -33,18 +33,12 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
+To plot the GMT logo of a 2 inch width as a stand-alone plot, use::
 
-To plot the GMT logo of a 2 inch width as a stand-alone plot, use
-
-   ::
-
-    gmt logo -P -Dx0/0+w2i > logo.ps
+    gmt logo -P > logo.ps
 
 To append a GMT logo overlay in the upper right corner of the current map, but
-scaled up to be 3 inches wide and offset by 0.1 inches from the border, try
-
-   ::
+scaled up to be 3 inches wide and offset by 0.1 inches from the border, try::
 
     gmt logo -O -K -R -J -DjTR+o0.1i/0.1i+w3i >> bigmap.ps
 
