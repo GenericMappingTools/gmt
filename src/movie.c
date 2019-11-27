@@ -99,9 +99,11 @@ struct MOVIE_CTRL {
 		char *format[MOVIE_N_FORMATS];
 		char *options[MOVIE_N_FORMATS];
 	} F;
-	struct MOVIE_G {	/* -G<canvasfill> */
+	struct MOVIE_G {	/* -G<canvasfill>[+p<pen>] */
 		bool active;
+		unsigned int mode;
 		char *fill;
+		char pen[GMT_LEN64];
 	} G;
 	struct MOVIE_H {	/* -H<factor> */
 		bool active;
@@ -379,7 +381,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>[+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -425,7 +427,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNG frames - requires -M.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is no video products; just create the PNG frames].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].  Append +p<pen> to draw canvas outline [none]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase <dpu> by <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the movie_init.sh script [none].\n");
@@ -632,10 +634,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 
 			case 'G':	/* Canvas fill */
 				Ctrl->G.active = true;
-				if (gmt_getfill (GMT, opt->arg, &fill))
-					n_errors++;
-				else
-					Ctrl->G.fill = strdup (opt->arg);
+				if ((c = strstr (opt->arg, "+p"))) {	/* Gave outline modifier */
+					if (c[2] && gmt_getpen (GMT, &c[2], &pen)) {	/* Bad pen */
+						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", 0);
+						n_errors++;
+					}
+					else	/* Pen is valid, just copy verbatim */
+						strncpy (Ctrl->G.pen, &c[2], GMT_LEN64);
+					c[0] = '\0';	/* Chop off options */
+					Ctrl->G.mode |= 1;
+				}
+				if (opt->arg[0]) {	/* Gave fill argument */
+					if (gmt_getfill (GMT, opt->arg, &fill))	/* Bad fill */
+						n_errors++;
+					else {	/* Fill is valid, just copy verbatim */
+						Ctrl->G.fill = strdup (opt->arg);
+						Ctrl->G.mode |= 2;
+					}
+				}
+				if (c) c[0] = '+';	/* Now we can restore the optional text we chopped off */
 				break;
 
 			case 'H':	/* RIP at a higher dpu, then downsample in gs to improve sub-pixeling */
@@ -1474,10 +1491,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
-		else
-			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+		extra[0] = '\0';	/* Reset */
+		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
+			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
+		}
 		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
 		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
@@ -1577,11 +1596,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	extra[0] = '\0';	/* Reset */
-	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
-	else
-		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+	sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
+		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
+	}
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
 		strcat (extra, ",Mb../movie_background.ps");
 		layers = true;
