@@ -25,13 +25,13 @@
 
 /*!
  * \file gmt_dcw.h
- * \brief Definitions for using the DCW 
+ * \brief Definitions for using the DCW
  */
 
 #ifndef GMT_DCW_H
 #define GMT_DCW_H
 
-#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
+#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,
