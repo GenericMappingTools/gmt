@@ -6030,7 +6030,7 @@ GMT_LOCAL void explain_R_geo (struct GMT_CTRL *GMT) {
 	gmt_message (GMT, "\t   Append +r if -R specifies the coordinates of the lower left and\n");
 	gmt_message (GMT, "\t     upper right corners of a rectangular area.\n");
 	if (GMT->current.setting.run_mode == GMT_MODERN)
-	gmt_message (GMT, "\t   Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable).\n");
+		gmt_message (GMT, "\t   Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable).\n");
 	gmt_message (GMT, "\t   Use -R<gridfile> to use its limits (and increments if applicable).\n");
 	gmt_message (GMT, "\t   Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
 	gmt_message (GMT, "\t   Derive region from closed polygons from the Digital Chart of the World (DCW):\n");
@@ -6039,7 +6039,8 @@ GMT_LOCAL void explain_R_geo (struct GMT_CTRL *GMT) {
 	gmt_message (GMT, "\t     To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
 	gmt_message (GMT, "\t     To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
 	gmt_message (GMT, "\t     Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
-	gmt_message (GMT, "\t     to round region to these multiples; use +R to extend region by those increments instead [0].\n");
+	gmt_message (GMT, "\t     to round region to these multiples; use +R to extend region by those increments instead,\n");
+	gmt_message (GMT, "\t     or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
 }
 
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
@@ -7538,6 +7539,28 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -%c\n", option);
 	return (error);
+}
+
+unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {
+	/* If given +e|r|R<incs> we must parse and get the mode and 1, 2, or 4 increments */
+	unsigned int n_errors = 0, k;
+	if (arg == NULL || arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do */
+	k = (arg[0] == '+') ? 1 : 0;	/* We may get +r or e, for instance, depending on upstream strtok */
+	if (strchr ("erR", arg[k])) {	/* Want to extend the final region before reporting */
+		int j = GMT_Get_Values (GMT->parent, &arg[k+1], inc, 4);;
+		*mode = (arg[k] == 'e') ? GMT_REGION_ROUND_EXTEND : ((arg[k] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
+		if (j == 1)	/* Same increments in all directions */
+			inc[XHI] = inc[YLO] = inc[YHI] = inc[XLO];
+		else if (j == 2) {	/* Separate increments in x and y */
+			inc[YLO] = inc[YHI] = inc[XHI];
+			inc[XHI] = inc[XLO];
+		}
+		else if (j != 4) {	/* The only other option is 4 but somehow we failed */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, arg[k]);
+			n_errors++;
+		}
+	}
+	return (n_errors);
 }
 
 /*! If region is given then we must have w < e and s < n */
