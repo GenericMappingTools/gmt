@@ -26,7 +26,7 @@ Description
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
 *above*. You can also specify one or more intervals where all values should be
-set to IT(between), or replace individual values.  Such operations are useful
+set to *between*, or replace individual values.  Such operations are useful
 when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
 range of data values is required, or for reclassification of data values.
