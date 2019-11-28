@@ -42,8 +42,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To see the effect of a simple clip path which result in some symbols
 being partly visible or missing altogether, try
 

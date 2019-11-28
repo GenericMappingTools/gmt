@@ -48,8 +48,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at

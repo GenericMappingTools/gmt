@@ -156,8 +156,6 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To obtain all the information about the remote data set in file earth_relief_10m::
 
     gmt grdinfo -L1 -L2 -M @earth_relief_10m
