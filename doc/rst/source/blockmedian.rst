@@ -184,28 +184,21 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To find 5 by 5 minute block medians from the ASCII data in ship_15.txt
-and output a binary table with double precision triplets, run
+and output a binary table with double precision triplets, run::
 
-   ::
 
     gmt blockmedian @ship_15.txt -R245/255/20/30 -I5m -bo3d > ship_5x5.b
 
 To compute the shape of a data distribution per bin via a
 box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
 quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
-mars370.txt and send output to an ASCII table, run
-
-   ::
+mars370.txt and send output to an ASCII table, run::
 
     gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
 
 To determine the median and L1 scale (MAD) on the median per 10 minute bin and save these to two separate grids
-called field_z.nc and field_s.nc, run
-
-   ::
+called field_z.nc and field_s.nc, run::
 
     gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 

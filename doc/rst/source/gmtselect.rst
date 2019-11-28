@@ -334,7 +334,7 @@ and 5th column values are all negative, try
     gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
 
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 
