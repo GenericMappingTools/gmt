@@ -45,6 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
+EXTERN_MSC unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]);
 EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag);
@@ -342,6 +343,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]);
 EXTERN_MSC void gmt_rgb_to_hsv (double rgb[], double hsv[]);
 EXTERN_MSC void gmt_hsv_to_rgb (double rgb[], double hsv[]);
 EXTERN_MSC void gmt_rgb_to_xyz (double rgb[], double xyz[]);

@@ -19,7 +19,8 @@
     NA (North America), or SA (South America).  Use **+r** to modify the bounding box coordinates from the polygon(s):
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
     region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
-    outward by adding these increments instead [no extension].
+    outward by adding these increments instead, or **+e** which is like **+r** but
+    it ensures that the bounding box extends by at least 0.25 times the increment [no extension].
     Alternatively for grid creation, give **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*, where
     *code* is a 2-character combination of **L**, **C**, **R** (for left, center, or right)
     and **T**, **M**, **B** for top, middle, or bottom. e.g., **BL** for lower left.  This

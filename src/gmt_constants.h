@@ -231,6 +231,9 @@ enum GMT_swap_direction {
 #define GMT_SUBPLOT_ACTIVE	1
 #define GMT_PANEL_NOTSET	2
 
+/* Fraction of increment to force outward region expansion */
+#define GMT_REGION_INCFACTOR 0.25
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
@@ -250,6 +253,12 @@ enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
+
+/*! Return codes from parsing region modifiers +r,+R,+e */
+enum GMT_enum_region {
+	GMT_REGION_ADD = 1,
+	GMT_REGION_ROUND,
+	GMT_REGION_ROUND_EXTEND};
 
 /*! Return codes from gmt_get_refpoint */
 enum GMT_enum_refpoint {
