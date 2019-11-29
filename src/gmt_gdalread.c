@@ -538,8 +538,18 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		Ctrl->ColorMap[j++] = -1;
 	}
 	else {
-		Ctrl->ColorMap = NULL;
-		Ctrl->nIndexedColors  = 0;
+		/* Before giving up, check if band is a 1-bit type */
+		const char *pszNBits = GDALGetMetadataItem(hBand, "NBITS", "IMAGE_STRUCTURE");
+		if (pszNBits && !strcmp(pszNBits, "1")) {
+			Ctrl->nIndexedColors = 2;
+			Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+			Ctrl->ColorMap[0] = Ctrl->ColorMap[1] = Ctrl->ColorMap[2] = 0;		Ctrl->ColorMap[3] = 1;
+			Ctrl->ColorMap[4] = Ctrl->ColorMap[5] = Ctrl->ColorMap[6] = 255;	Ctrl->ColorMap[7] = 1;
+		}
+		else {
+			Ctrl->ColorMap = NULL;
+			Ctrl->nIndexedColors  = 0;
+		}
 	}
 
 	/* ------------------------------------------------------------------------- */
