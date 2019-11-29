@@ -880,8 +880,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 			else {	/* Geographic ellipse */
 				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
 				for (rec = 0; rec < P.n_used; rec++) {
-					p_data[rec].a[4] = S->coord[GMT_X][rec];
-					p_data[rec].a[5] = S->coord[GMT_Y][rec];
+					p_data[rec].a[4] = S->data[GMT_X][rec];
+					p_data[rec].a[5] = S->data[GMT_Y][rec];
 				}
 				z_header = strdup (S->header);
 				gmt_free_segment (GMT, &S);
