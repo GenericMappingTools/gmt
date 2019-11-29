@@ -17,6 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
+[ |-J|\ *parameters* ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
 [ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
@@ -109,6 +110,16 @@ Optional Arguments
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is divided
     by the grid spacing multiplier.
+
+.. _-J:
+
+**-J**\ *parameters*
+
+.. |Add_-J| replace::
+    Select the data map projection. This projection is only used to add a referencing info
+    to the grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.
+.. include:: explain_-J.rst_
+
 
 .. _-L:
 

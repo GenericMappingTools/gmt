@@ -16087,6 +16087,25 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	return (answer);
 }
 
+void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]) {
+	/* Extend the region outward according to mode */
+	gmt_M_unused (GMT);
+	if (mode == 0) return;	/* Do nothing */
+	if (mode == GMT_REGION_ADD) {	/* Extend the region by increments */
+		wesn[XLO] -= inc[XLO];
+		wesn[YLO] -= inc[YLO];
+		wesn[XHI] += inc[XHI];
+		wesn[YHI] += inc[YHI];
+	}
+	else {	/* Make region be in multiples of increments, possibly with adjustment */
+		double adjust = (mode == GMT_REGION_ROUND_EXTEND) ? GMT_REGION_INCFACTOR : 0.0;
+		wesn[XLO] = floor ((wesn[XLO] - adjust * inc[XLO]) / inc[XLO]) * inc[XLO];
+		wesn[YLO] = floor ((wesn[YLO] - adjust * inc[YLO]) / inc[YLO]) * inc[YLO];
+		wesn[XHI] = ceil  ((wesn[XHI] + adjust * inc[XHI]) / inc[XHI]) * inc[XHI];
+		wesn[YHI] = ceil  ((wesn[YHI] + adjust * inc[YHI]) / inc[YHI]) * inc[YHI];
+	}
+}
+
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

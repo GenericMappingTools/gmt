@@ -58,6 +58,7 @@ steps:
   displayName: Compile GMT
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target docs_depends
     cmake --build . --target docs_html
@@ -77,7 +78,7 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    export GMT_END_SHOW=off && gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 # Run the full tests
@@ -118,6 +119,7 @@ steps:
   displayName: Upload test coverage
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar

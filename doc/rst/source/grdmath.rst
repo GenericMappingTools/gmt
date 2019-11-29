@@ -729,7 +729,7 @@ Notes On Operators
 
 .. include:: explain_sto_rcl_clr.rst_
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 

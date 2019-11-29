@@ -8,10 +8,10 @@
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
-	ps=anim_01.ps
+	ps=anim01.ps
 else	# Make animated GIF
 	opt="-A+l"
-fi	
+fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 gmt math -T0/360/20 T SIND = sin_point.txt
@@ -34,4 +34,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C4ix2ix125 -Tsin_point.txt -Z -Nanim_01 -D5 $opt
+gmt movie main.sh -Sbpre.sh -C4ix2ix125 -Tsin_point.txt -Z -Nanim01 -D5 $opt
+rm -rf main.sh pre.sh

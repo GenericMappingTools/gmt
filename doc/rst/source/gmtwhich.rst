@@ -63,7 +63,7 @@ Optional Arguments
 
 **-G**\ [**c**\ \|\ **l**\ \|\ **u**]
     If a file argument is a downloadable file (either a complete URL, a @file for
-    downloading from the GMT Site Cache, or @earth_relief_*.grd) we will try
+    downloading from the GMT data server, or @earth_relief_xxy) we will try
     to download the file if it is not found in your local data or cache dirs.
     By default [**-Gl**] we download to the current directory. Append **c** to place
     in the user cache directory or **u** user data directory instead.
@@ -78,31 +78,22 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
-To see the path to the file myjunk.txt, use
-
-   ::
+To see the path to the file myjunk.txt, use::
 
     gmt which myjunk.txt
 
-To download the 10 arc-minute global relief file from the GMT data site, use
+To download the 10 arc-minute global relief file from the GMT data server, use::
 
-   ::
-
-    gmt which -Gu @earth_relief_10m.grd
+    gmt which -Gu @earth_relief_10m
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_USER_DIR.  To obtain a GMT example or test file from the
-GMT cache site, try
-
-   ::
+be placed in the user's GMT_USERDIR.  To obtain a GMT example or test file from the
+GMT data server, try::
 
     gmt which -Gc @hotspots.txt
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_CACHE_DIR directory.
-
+be placed in the user's GMT_CACHEDIR directory.
 
 See Also
 --------

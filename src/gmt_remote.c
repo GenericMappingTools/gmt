@@ -247,15 +247,15 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
 		time_spent = (long)(end - begin);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to download file %s\n", url);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to download file %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {
 			fclose (urlfile.fp);
 			urlfile.fp = NULL;
 		}
 		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT data server may be down - delay checking hash file for 24 hours\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT data server may be down - delay checking hash file for 24 hours\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
 			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
 #ifdef WIN32
 				_utime (orig, NULL);
@@ -340,7 +340,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmthash_get_url (GMT, url, hashpath, NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Failed to get remote file %s\n", url);
 			if (!access (hashpath, F_OK)) gmt_remove_file (GMT, hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
 			GMT->current.io.internet_error = true;				/* No point trying again */
@@ -462,7 +462,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
-	bool is_srtm = false, is_data = false;
+	bool is_srtm = false, is_data = false, is_url = false;
 	size_t len, fsize;
 	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
@@ -498,6 +498,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			c[0] = '\0';
 	}
 	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
+		is_url = true;
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 			c[0] = '\0';
@@ -515,7 +516,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
 	if (hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to obtain remote file %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to obtain remote file %s\n", file);
 		gmt_M_free (GMT, file);
 		return 1;
 	}
@@ -618,6 +619,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
 			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+		}
+		else if (is_url) {	/* Plaec in current dir */
+			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 		}
 		else {	/* Goes to cache */
 			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))

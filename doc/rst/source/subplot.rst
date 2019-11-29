@@ -188,7 +188,7 @@ Optional Arguments
 ------------------
 
 *row,col*
-    Sets the current subplot until further notice.  Note: First *row* or *col is 0, not 1. If not given we go to the next subplot by order
+    Sets the current subplot until further notice.  Note: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
     specified via **-A**.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional

@@ -25,11 +25,11 @@ Optional Arguments
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
     Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
     (inches, cm, etc.).
-    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+    By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    Add **+o** to offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
 
 .. _-F:
@@ -55,6 +55,9 @@ Optional Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
 .. _-S:
 
 **-S**\ [\ **l**\ \|\ **n**\ \|\ **u**\ ]
@@ -62,9 +65,6 @@ Optional Arguments
     Append **l** (or skip **-S** entirely) to plot the text label "The Generic Mapping Tools"
     beneath the logo.  Append **n** to skip the label placement, and append
     **u** to place the URL to the GMT site instead [plot the label].
-
-.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rz.rst_
 
 .. _-U:
 

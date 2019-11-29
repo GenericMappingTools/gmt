@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s [%s] [%s]\n", name, GMT_J_OPT, GMT_A_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+f] [-E%s] [-G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+f] [-E%s] [-G[<fill>|c]]\n", GMT_Rgeoz_OPT, DCW_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<feature>[/<pen>]] %s\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
@@ -515,7 +515,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
 		else if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->S.active || Ctrl->W.active)
 			n_errors++;	/* Tried to make a plot but forgot -J */
-		else if (!Ctrl->Q.active)
+		else if (!Ctrl->Q.active && Ctrl->E.active)
 			Ctrl->E.info.region = true;
 	}
 

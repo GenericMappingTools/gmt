@@ -23,7 +23,8 @@ Description
 -----------
 
 **set** will adjust individual GMT defaults settings in the
-current directory's :doc:`gmt.conf` file. If no such file exists one will
+current directory's :doc:`gmt.conf` file (under classic mode) or in the
+current session directory (modern mode). If no such file exists one will
 be created. The main purpose of **set** is temporarily to change
 certain parameters inside a shell script, e.g., set the map frame type to
 plain, run the script, and reset to fancy.  Only parameters that differ

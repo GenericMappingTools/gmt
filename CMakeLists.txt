@@ -41,7 +41,7 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 2.8.5)
+cmake_minimum_required (VERSION 2.8.7)
 
 # Use NEW behavior with newer CMake releases
 foreach(p
@@ -104,15 +104,14 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# so that they are not included in the final release tarball
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-			${GMT_RELEASE_PREFIX}/.git
-			${GMT_RELEASE_PREFIX}/.github
-			${GMT_RELEASE_PREFIX}/admin
-			${GMT_RELEASE_PREFIX}/ci
-			${GMT_RELEASE_PREFIX}/test
-		COMMAND ${CMAKE_COMMAND} -E remove
-			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore
+		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
@@ -212,6 +211,7 @@ message(
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
 	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
+	"*  Build generator            : ${CMAKE_GENERATOR}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"

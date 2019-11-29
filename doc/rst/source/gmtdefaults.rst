@@ -21,7 +21,7 @@ Description
 
 **defaults** lists all the GMT parameter defaults if the option
 **-D** is used. There are three ways to change some of the settings: (1)
-Use the command :doc:`gmtset`, (2) use any text editor to edit the file
+Use the command :doc:`gmtset`, (2) in classic mode you may use any text editor to edit the file
 :doc:`gmt.conf` in your home, ~/.gmt or current directory (if you do not
 have this file, run :doc:`gmtset` **-D** to get one with the system default
 settings), or (3) override any parameter by specifying one
@@ -42,8 +42,8 @@ Optional Arguments
 
 .. _-D:
 
-**-D**
-    Print the system GMT defaults to standard output. Append **u**
+**-D**\ [**u**\ \|\ **s**]
+    Print the system GMT defaults settings to standard output. Append **u**
     for US defaults or **s** for SI defaults. [**-D** alone gives the
     version selected at compile time; If **-D** is omitted, the user's
     currently active defaults are printed.]
@@ -51,7 +51,8 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 Your currently active defaults come from the :doc:`gmt.conf` file in
-the current working directory, if present; else from the
+the current working directory (in classic mode) or in your session directory
+(in modern mode), if present; else from the
 :doc:`gmt.conf` file in your home directory, if present; else from the
 file **~/.gmt/gmt.conf** if present; else from the system defaults
 set at the time GMT was compiled.

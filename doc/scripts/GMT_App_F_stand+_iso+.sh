@@ -5,7 +5,7 @@
 # To show both ISOLatin1+ and Standard+ on the same figure we must
 # make them separately then rasterize them and then plot those images
 # since we cannot have two different character sets active in one PS.
-
+rm -f gmt.conf	# We cannot have that set yet, will do later.
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 cat << EOF > tt.txt
@@ -258,6 +258,8 @@ EOF
 EOF
 gmt end
 
+# Must do this here instead so that the figures above are cropped
+gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
 gmt begin GMT_App_F_stand+_iso+
 	gmt image stand+.png -Dx0/0+r600
 	gmt image iso+.png -Dx0/0+r600 -X3.2i
