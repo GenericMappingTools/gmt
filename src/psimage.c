@@ -55,6 +55,7 @@ struct PSIMAGE_CTRL {
 	struct PSIMG_G {	/* -G<rgb>[+b|+f|+t] */
 		bool active;
 		double rgb[3][4];
+		int index;	/* For 1-bit images, which index do we change */
 	} G;
 	struct PSIMG_I {	/* -I */
 		bool active;
@@ -74,7 +75,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = -2;	/* All turned off */
+	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = C->G.index = -2;	/* All turned off */
 	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
@@ -254,6 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				if (p) p[0] = '+';	/* Restore modifier */
+				Ctrl->G.index = (Ctrl->G.index == -2) ? ind : -1;	/* -1 means we are setting both fore and background colors */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				Ctrl->I.active = true;
@@ -485,8 +487,20 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		/* Handle transparent images */
 		if (I->colormap != NULL) {	/* Image has a color map */
 			/* Convert colormap from integer to unsigned char and count colors */
-			for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
+			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
+			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G */
+				if (Ctrl->G.index == -1) {	/* Set both fore and backtround color */
+					for (n = 0; n < 4; n++) colormap[n] = gmt_M_u255(Ctrl->G.rgb[PSIMG_BGD][n]);
+					for (n = 0; n < 4; n++) colormap[n+4] = gmt_M_u255(Ctrl->G.rgb[PSIMG_FGD][n]);
+				}
+				else if (Ctrl->G.rgb[Ctrl->G.index][0] == -1) { /* Set transparency for this color */
+					has_trans = true; r = colormap[4*Ctrl->G.index]; g = colormap[1+4*Ctrl->G.index]; b = colormap[2+4*Ctrl->G.index];
+					gmt_M_rgb_copy (Ctrl->G.rgb[PSIMG_TRA],Ctrl->G.rgb[Ctrl->G.index]);
+				}
+				else
+					for (n = 0; n < 4; n++) colormap[n+4*Ctrl->G.index] = gmt_M_u255(Ctrl->G.rgb[Ctrl->G.index][n]);
+			}
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */
