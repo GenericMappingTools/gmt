@@ -483,6 +483,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		n_total_read++;	/* Successfully read an input record */
 		
 		if (Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Plot event symbols */
+			t_end = DBL_MAX;	/* Infinite duration until overridden below */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];		/* Earliest time to plot anything at all for this event */
 			if (Ctrl->T.now < t_rise) goto Do_txt;	/* This event is still in the future so we skip it */
@@ -556,12 +557,15 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		}
 
 Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing text strings */
+			t_end = DBL_MAX;	/* Infinite duration until overridden below */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE];	/* Earliest time to plot anything at all for this event */
 			if (Ctrl->T.now < t_rise) continue;	/* This event is still in the future */
 			/* Compute the last time we need to plot the event [infinity] */
-			if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the label during this fixed interval given via -L or -Et+l */
-				t_end = t_event + ((Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] > 0.0) ? Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] : Ctrl->L.length);
+			if (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] > 0.0)	/* Overriding with specific label duration */
+				t_end = t_event + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH];
+			else if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the label during this fixed interval given via -L or -Et+l */
+				t_end = t_event + Ctrl->L.length;
 			else if (Ctrl->L.mode == PSEVENTS_VAR_DURATION)	/* Only show the label during its individual interval read from file */
 				t_end = t_event + in[d_in];
 			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the label until its end time read from file */
