@@ -402,7 +402,7 @@ int GMT_events (void *V_API, int mode, void *args) {
 int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
 	
-	bool do_coda = false;
+	bool do_coda, finite_duration;
 	
 	int error;
 	
@@ -460,6 +460,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	if (Ctrl->S.mode) t_in++, d_in++;	/* Must allow for size in input before time and length */
 	/* Determine if there is a coda phase where symbols remain visible after the event ends: */
 	do_coda = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] > 0.0 || !gmt_M_is_zero (Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2]) || Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] < 100.0);
+	finite_duration = (Ctrl->L.mode != PSEVENTS_INFINITE);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -532,11 +533,11 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 				out[t_col] = 0.0;
 			}
-			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
+			else if (finite_duration && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
 				out[s_col] = size;
 				out[i_col] = out[t_col] = 0.0;	/* No intensity or transparency during normal phase */
 			}
-			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
+			else if (finite_duration && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[s_col] = size * (x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2]);	/* Reduction of size down to coda size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
@@ -589,9 +590,9 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);		/* Magnification of opacity */
 			}
-			else if (!do_coda && Ctrl->T.now < t_end)	/* We are within the plateau, decay or normal phases, keep everything constant */
+			else if (finite_duration && Ctrl->T.now < t_end)	/* We are within the plateau, decay or normal phases, keep everything constant */
 				out[GMT_Z] = 0.0;	/* No transparency during these  phases */
-			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
+			else if (finite_duration && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 			}
