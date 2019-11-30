@@ -17,6 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
+[ |-D|\ *breakline_file*]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
 [ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
@@ -109,6 +110,14 @@ Optional Arguments
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is divided
     by the grid spacing multiplier.
+
+.. _-D:
+
+**-D**\ *breakline*\
+    Use xyz data in the <breakline> file as a 'soft breakline'. A 'soft breakline'
+    is a line whose vertices will be used to constrain the nearest grid nodes without
+    any further interpolation. A coastline or a lake shore are good examples of
+    'soft breaklines'. Multi-segments files are accepted.
 
 .. _-L:
 

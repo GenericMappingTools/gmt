@@ -262,10 +262,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					case 'f': Ctrl->I.mode = BEST_FOR_FFT; break;
 					case 's': Ctrl->I.mode = BEST_FOR_SURF; break;
 					case 'b': Ctrl->I.mode = BOUNDBOX; break;
-					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;	/* -I- is backwards compatible */
+					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS;
+						if (opt->arg[1]) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");					
+							n_errors++;
+						}
+						break;	/* -I- is backwards compatible */
 					default: j = 0;	break;
 				}
-				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
+						n_errors++;
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. No increment given.\n");					
+				}
+				else
+					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'L':	/* Detect limiting range */
 				Ctrl->L.active = true;
@@ -323,6 +333,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		Ctrl->D.inc[GMT_Y] = Ctrl->D.inc[GMT_X];
 		Ctrl->D.ncol = 2;
 	}
+	if (Ctrl->I.active && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {	/* SHould have increments */
+		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] <= 0.0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. Must specify positive increment for column %d.\n", k);
+			n_errors++;
+		}
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Syntax error: -D requires -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2,
 	                                   "Syntax error: -Ip requires -C\n");
@@ -330,10 +346,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	                                   "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 ,
 	                                   "Syntax error -T option: Must specify a positive increment\n");
-	for (k = 0; Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && k < Ctrl->I.ncol; k++) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0,
-		                                   "Syntax error -I option: Must specify positive increment(s)\n");
-	}
 	n_errors += gmt_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

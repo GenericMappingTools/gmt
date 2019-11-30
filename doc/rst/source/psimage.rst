@@ -61,11 +61,11 @@ aspect ratio, use::
 
     gmt psimage @gallo.eps -Dx2i/1i+jTR+w3i > image.ps
 
-To replicate the 1-bit raster image template 1_bit.ras, colorize it
-(brown background and red foreground), and setting each of 5 by 5 tiles
-to be 1 cm wide, use::
+To replicate the 1-bit remote raster image vader1.png, colorize it
+(dark gray background and yellow foreground), and setting each of 6 by 12 tiles
+to be 2.5 cm wide, use::
 
-    gmt psimage 1_bit.ras -Gbrown+b -Gred+f -Dx0/0+w1c+n5 > image.ps
+    gmt psimage @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -P > image.ps
 
 See Also
 --------

@@ -185,26 +185,18 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To find 5 by 5 minute block mode from the ASCII data in ship_15.txt
-and output a binary table with double precision triplets, run
-
-   ::
+and output a binary table with double precision triplets, run::
 
     gmt blockmedian @ship_15.txt -R245/255/20/30 -I5m -bo3d > ship_5x5.b
 
 To determine the most frequently occurring values per 2x2 block using histogram binning, with
-data representing integer counts, try
-
-   ::
+data representing integer counts, try::
 
     gmt blockmode @ship_15.txt -R245/255/20/30 -I2  -r -C -D
 
 To determine the mode and L1 scale (MAD) on the mode per 10 minute bin and save these to two separate grids
-called field_z.nc and field_s.nc, run
-
-   ::
+called field_z.nc and field_s.nc, run::
 
     gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 
