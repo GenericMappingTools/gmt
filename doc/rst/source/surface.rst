@@ -18,6 +18,7 @@ Synopsis
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-J|\ *parameters* ]
+[ |-D|\ *breakline_file*]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
 [ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
@@ -120,6 +121,13 @@ Optional Arguments
     to the grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.
 .. include:: explain_-J.rst_
 
+.. _-D:
+
+**-D**\ *breakline*\
+    Use xyz data in the <breakline> file as a 'soft breakline'. A 'soft breakline'
+    is a line whose vertices will be used to constrain the nearest grid nodes without
+    any further interpolation. A coastline or a lake shore are good examples of
+    'soft breaklines'. Multi-segments files are accepted.
 
 .. _-L:
 
