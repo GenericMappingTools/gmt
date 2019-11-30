@@ -115,8 +115,8 @@ Optional Arguments
 
 **-D**\ *breakline*\
     Use xyz data in the <breakline> file as a 'soft breakline'. A 'soft breakline'
-    is a line whose vertices will be used to fill the grid nodes that the fell in
-    without any interpolation. A coastline or a lake shore are good examples of
+    is a line whose vertices will be used to constrain the nearest grid nodes without
+    any further interpolation. A coastline or a lake shore are good examples of
     'soft breaklines'. Multi-segments files are accepted.
 
 .. _-L:
