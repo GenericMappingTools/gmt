@@ -35,8 +35,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 .. include:: oneliner_info.rst_
 
 To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
