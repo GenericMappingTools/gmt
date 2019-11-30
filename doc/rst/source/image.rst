@@ -63,7 +63,7 @@ To replicate the 1-bit remote raster image vader1.png, colorize it
 (dark gray background and yellow foreground), and setting each of 6 by 12 tiles
 to be 2.5 cm wide, use::
 
-    gmt image @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -ps image
+    gmt image @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -pdf image
 
 See Also
 --------
