@@ -23,8 +23,8 @@ end point of a segment:
     Further append **l**\ \|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
-    **+g**-\ \|\ *fill* turns off vector head fill (if -) or sets the vector
-    head fill [Default fill is used, which may be no fill].
+    **+g**\ [fill*] sets the vector head fill [Default fill is used, which may be no fill].
+    Turn off vector head fill by not appending a *fill*.
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
     is controlled by :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` [0].
@@ -48,8 +48,8 @@ end point of a segment:
     small circles.  Only needed for great circles if **+q** is given. If no
     pole is appended then we default to the north pole.
 
-    **+p**\ [-][*pen*] sets the vector pen attributes. If *pen* has a
-    leading - then the head outline is not drawn. [Default pen is half the width of stem pen, and
+    **+p**\ [*pen*] sets the vector pen attributes. If no *pen* is appended
+    then the head outline is not drawn. [Default pen is half the width of stem pen, and
     head outline is drawn]
 
     **+q** means the input *angle*, *length* data instead represent the *start* and *stop*
