@@ -122,7 +122,7 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged). Specify *size* as a geographical diameter.
-        For allowable geographical units, see UNITS [Default is k for km]. To instead
+        For allowable geographical units, see `Units`_ [Default is k for km]. To instead
         specify a diameter in plot units, you must append the desired unit.
         Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
