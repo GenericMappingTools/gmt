@@ -138,8 +138,8 @@ Optional Arguments
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
     Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 3-4.
-    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either xmin, xmax, or x0, or
-    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
+    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
+    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
 
 .. _-N:

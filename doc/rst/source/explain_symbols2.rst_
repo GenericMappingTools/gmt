@@ -68,7 +68,7 @@
 	For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
 	The diameter is excepted to be given in column 4.  Alternatively, append
 	the desired diameter to **-SE-** and this fixed diameter is used instead.
-	For allowable geographical units, see UNITS [Default is k for km].
+	For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront.  Supply distance gap between symbols and symbol size. If *gap* is
@@ -113,7 +113,7 @@
 	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
 	An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
-	For allowable geographical units, see UNITS [Default is k for km].
+	For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sk**
         **k**\ ustom symbol. Append <name>/*size*, and we will look for a
@@ -379,7 +379,7 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged). Specify *size* as a geographical diameter.
-        For allowable geographical units, see UNITS [Default is k for km]. To instead
+        For allowable geographical units, see `Units`_ [Default is k for km]. To instead
         specify a diameter in plot units, you must append the desired unit.
         Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
@@ -400,7 +400,7 @@
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
         for specifying attributes. Note: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
-        not available. For allowable geographical units, see UNITS.
+        not available. For allowable geographical units, see `Units`_.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
