@@ -4307,7 +4307,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	if (GMT->current.proj.three_D && axis != GMT_Z) {
 		/* Because perspective is now done in PostScript we must sometimes reverse the label orientations
-		 * so they don't appear upside down when viewed from certaint quadrants */
+		 * so they don't appear upside down when viewed from certain quadrants */
 		switch (GMT->current.proj.z_project.quadrant) {
 			case 1: x_angle_add = 180.0; lx_just = PSL_TC; break;
 			case 3: y_angle_add = 180.0; ly_just = PSL_TC; break;
