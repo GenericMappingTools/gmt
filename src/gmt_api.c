@@ -7550,7 +7550,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	struct GMT_RECORD *record;
 	
 	if (S->rec >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
-		S->status = GMT_IS_USED;	/* Mark as finished reading this guy */
+		S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 		if (api_next_data_object (API, S->family, GMT_IN) == EOF) {	/* That was the last source, return */
 			*n_fields = EOF;				/* EOF is ONLY returned when we reach the end of the LAST data file */
 			GMT->current.io.status = GMT_IO_EOF;
@@ -7605,7 +7605,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	uint64_t col;
 	
 	if (S->rec == S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
-		S->status = GMT_IS_USED;	/* Mark as read */
+		S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 		if (api_next_data_object (API, S->family, GMT_IN) == EOF) {	/* That was the last source, return */
 			*n_fields = EOF;				/* EOF is ONLY returned when we reach the end of the LAST data file */
 			GMT->current.io.status = GMT_IO_EOF;
@@ -7694,7 +7694,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 			*n_fields = GMT_IO_NEXT_FILE;
 			break;
 		case GMT_IO_EOF:	/* End of entire data set */
-			S->status = GMT_IS_USED;	/* Mark this dataset as finished */
+			S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 			record = NULL;	/* No more to return anyway */
 			*n_fields = EOF;
 			break;
@@ -10379,7 +10379,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN256] = {""}, type = 0;
-	char *module = NULL, argument[GMT_LEN256] = {""}, strip_colon_opt = 0;
+	char module[GMT_LEN32] = {""}, argument[GMT_LEN256] = {""}, strip_colon_opt = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
@@ -10394,18 +10394,16 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		*n = UINT_MAX;
 		return NULL;
 	}
-	module = calloc (strlen (module_name) + 4, sizeof(char));	/* Allow space for any "gmt" prefix added to module in api_get_module_keys */
-	strcpy (module, module_name);			/* This string can grow by 3 if need be */
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	(void) gmt_current_name (module_name, module);
+	gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* Detect and set modern mode if modern mode session dir is found */
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = api_get_module_keys (V_API, module)) == NULL) {	/* Gave an unknown module */
 		if (GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL))	/* List the available modules */
 			return_null (NULL, GMT_NOT_A_VALID_MODULE);
-		gmt_M_str_free (module);
 		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module code */
 	}
-
-	API = api_get_api_ptr (V_API);
-	API->error = GMT_NOERROR;
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 
@@ -10552,7 +10550,6 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 		}
 	}
-	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
 	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

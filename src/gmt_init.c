@@ -12213,11 +12213,13 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 			is_PS = API->GMT->current.ps.active;
 			is_oneliner = API->GMT->current.ps.oneliner;
 			API->GMT->current.ps.active = API->GMT->current.ps.oneliner = false;	/* To avoid gmtinfo from ending things */
+			API->allow_reuse = true;	/* So that we do not flag the input file as used after reading it in gmtinfo */
 			if (GMT_Call_Module (API, "gmtinfo", GMT_MODULE_OPT, head) != GMT_OK)	/* Get the data domain via gmtinfo */
 				return (API->error);
 			/* Restore these settings to what they were before */
 			API->GMT->current.ps.active = is_PS;
 			API->GMT->current.ps.oneliner = is_oneliner;
+			API->allow_reuse = false;	/* Rest to normal behavior */
 			if (GMT_Destroy_Options (API, &head))	/* Free the temporary option list */
 				return (API->error);
 
