@@ -23,6 +23,7 @@ Synopsis
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -148,6 +149,8 @@ Optional Arguments
     input only, and **-Wo** for weighted output only. [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_

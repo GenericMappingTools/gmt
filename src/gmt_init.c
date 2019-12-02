@@ -12134,7 +12134,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
 			if (gmt_access (API->GMT, opt->arg, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)
+			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, opt->arg, NULL)) == NULL)
 				return API->error;	/* Failure to read grid header */
 			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
 			HH = gmt_get_H_hidden (G->header);
@@ -12232,15 +12232,17 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 		        return API->error;	/* Failure to make new output option or append to the list */
 
 			/* Since we will be calling another module (gmtinfo), we must prevent it from ending the session prematurely.
-			 * Thus we temporarily unset any PS and oneliner values before calling it, then reset afterwrds */
+			 * Thus we temporarily unset any PS and oneliner values before calling it, set allow_reuse, then reset afterwards */
 			is_PS = API->GMT->current.ps.active;
 			is_oneliner = API->GMT->current.ps.oneliner;
 			API->GMT->current.ps.active = API->GMT->current.ps.oneliner = false;	/* To avoid gmtinfo from ending things */
+			API->allow_reuse = true;	/* So that we do not flag the input file as used after reading it in gmtinfo */
 			if (GMT_Call_Module (API, "gmtinfo", GMT_MODULE_OPT, head) != GMT_OK)	/* Get the data domain via gmtinfo */
 				return (API->error);
 			/* Restore these settings to what they were before */
 			API->GMT->current.ps.active = is_PS;
 			API->GMT->current.ps.oneliner = is_oneliner;
+			API->allow_reuse = false;	/* Rest to normal behavior */
 			if (GMT_Destroy_Options (API, &head))	/* Free the temporary option list */
 				return (API->error);
 

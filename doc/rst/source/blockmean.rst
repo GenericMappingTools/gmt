@@ -19,8 +19,10 @@ Synopsis
 [ |-C| ]
 [ |-E|\ [**+p**\ \|\ **P**] ]
 [ |-G|\ [*grdfile*] ]
+[ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -107,7 +109,7 @@ Optional Arguments
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
     Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
-    to report the sum of weights [Default (or **-Sm** reports mean value]. 
+    to report the sum of weights [Default (or **-Sm** reports mean value].
 
 .. _-V:
 
@@ -126,15 +128,17 @@ Optional Arguments
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
-   
- 
+
+
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
    The **-Sn** option will work with only 2 input columns (x and y).
 
 .. include:: explain_-bo.rst_
- 
+
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
 
@@ -150,7 +154,7 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 .. include:: explain_-ocols.rst_
 
-.. |Add_nodereg| replace:: 
+.. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
     **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
     (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)

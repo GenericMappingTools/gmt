@@ -393,7 +393,7 @@ struct GMT_SESSION {
 	char unit_name[4][GMT_LEN8];	/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
-	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
+	unsigned int n_shorthands;			/* Length of array with shorthand information */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid read header functions */
 	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid update header functions */
