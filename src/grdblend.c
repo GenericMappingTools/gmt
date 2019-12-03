@@ -192,7 +192,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 }
 
 GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
-	int type, status, not_supported;
+	int type, status, not_supported = 0;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
 	struct GRDBLEND_INFO *B = NULL;
