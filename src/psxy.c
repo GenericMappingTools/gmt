@@ -852,7 +852,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int n_total_read = 0, j, geometry, icol, tcol;
+	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;

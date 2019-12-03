@@ -6677,7 +6677,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 GMT_LOCAL unsigned int n_trailing_chars (struct GMT_CTRL *GMT, char *text) {
 	/* Try to determine if there are trailing text that is not a valid unit for a number.
 	 * We do not try to scan for leading chars since Jan-01-2001T might be caught. */
-	unsigned int n = 0, p, n_periods = 0;	/* n is number of trailing characters after last digit (or period) */
+	unsigned int n = 0, p = 0, n_periods = 0;	/* n is number of trailing characters after last digit (or period) */
 	int k, last;
 	gmt_M_unused (GMT);
 	if (!text || !text[0]) return 0;
