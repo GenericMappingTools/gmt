@@ -12078,7 +12078,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
 	bool set[2] = {false, false};
 	unsigned int side, item;
-	double mag, inc, range[2] = {0.0, 0.0}, s;
+	double mag, inc, range[2] = {0.0, 0.0};
 	range[GMT_X] = wesn[XHI] - wesn[XLO];
 	range[GMT_Y] = wesn[YHI] - wesn[YLO];
 	if (geo) {	/* Special checks due to periodicity */
@@ -12091,14 +12091,19 @@ GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range 
 			set[GMT_Y] = true;
 		}
 	}
+	else {			/* Add a tinny pad so that the rounding algorithm always round to next fifth of decade */
+		double dx, dy;
+		dx = range[GMT_X] * 0.001;		dy = range[GMT_Y] * 0.001;
+		wesn[0] -= dx;	wesn[1] += dx;	wesn[2] -= dy;	wesn[3] += dy;
+	}
 	for (side = GMT_X, item = XLO; side <= GMT_Y; side++) {
 		if (set[side]) continue;	/* Done above */
 		mag = rint (log10 (range[side])) - 1.0;
 		inc = pow (10.0, mag);
 		if ((range[side] / inc) > 10.0) inc *= 2.0;	/* Factor of 2 in the rounding */
 		if ((range[side] / inc) > 10.0) inc *= 2.5;	/* Factor of 5 in the rounding */
-		s = 1.0;
 		if (geo) {	/* Use arc integer minutes or seconds if possible */
+			double s = 1;
 			if (inc < 1.0 && inc > 0.05) {	/* Nearest arc minute */
 				s = 60.0; inc = 1.0;
 				if ((s * range[side] / inc) > 10.0) inc *= 2.0;	/* 2 arcmin */
@@ -12109,9 +12114,17 @@ GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range 
 				if ((s * range[side] / inc) > 10.0) inc *= 2.0;	/* 2 arcsec */
 				if ((s * range[side] / inc) > 10.0) inc *= 2.5;	/* 5 arcsec */
 			}
+			wesn[item] = (floor (s * wesn[item] / inc) * inc) / s;	item++;
+			wesn[item] = (ceil  (s * wesn[item] / inc) * inc) / s;	item++;
 		}
-		wesn[item] = (floor (s * wesn[item] / inc) * inc) / s;	item++;
-		wesn[item] = (ceil  (s * wesn[item] / inc) * inc) / s;	item++;
+		else {
+			/* Round BB to the next fifth of a decade. */
+			double x, one_fifth_dec = inc / 5;					/* One fifth of a decade */
+			x = (floor(wesn[item] / inc) * inc);
+			wesn[item] = x - ceil((x - wesn[item]) / one_fifth_dec) * one_fifth_dec;	item++;
+			x = (ceil(wesn[item] / inc) * inc);
+			wesn[item] = x - floor((x - wesn[item]) / one_fifth_dec) * one_fifth_dec;	item++;
+		}
 	}
 }
 
