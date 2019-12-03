@@ -9443,7 +9443,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	bool continuous = false;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
-	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x, last_y;
+	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x = 0, last_y = 0;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};

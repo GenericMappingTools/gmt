@@ -4174,12 +4174,12 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	 */
 
 	int i, j, k = 0, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
-	int n_slashes = 0, last_pos, error = 0;
+	int n_slashes = 0, last_pos = 0, error = 0;
 	unsigned int mod_flag = 0;
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char, *d = NULL;
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL;
 	char txt_arr[11][GMT_LEN256];
 
 	if (args == NULL) {

@@ -474,7 +474,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 
 int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
-	int error = 0, RG_id;
+	int error = 0, RG_id = 0;
 	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
