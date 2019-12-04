@@ -7102,6 +7102,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
 				}
