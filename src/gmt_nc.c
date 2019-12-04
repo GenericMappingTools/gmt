@@ -1887,6 +1887,8 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		first_col = first_row = 0;
 		last_col  = header->n_columns - 1;
 		last_row  = header->n_rows - 1;
+		level_min = DBL_MAX;
+		level_max = -DBL_MAX;
 		
 		/* Adjust first_row */
 		if (HH->row_order == k_nc_start_south)
@@ -1899,8 +1901,6 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 			goto nc_err;
 
 		/* Get stats */
-		level_min = DBL_MAX;
-		level_max = -DBL_MAX;
 		adj_nan_value = !isnan (header->nan_value);
 		dim[0]    = height,    dim[1]    = width;
 
