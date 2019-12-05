@@ -11082,7 +11082,8 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
-	const char *module_name, not_used[GMT_LEN32];
+	const char *module_name;
+	char not_used[GMT_LEN32];
 	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
