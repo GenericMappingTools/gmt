@@ -104,6 +104,13 @@ There are several ways you can control the amount of space taken up by your own 
 #. You can be clever and set up a crontab job that deletes data files you have not
    touched in, say, 6 months (or some other interval).
 
+Offline Usage
+-------------
+
+If you anticipate to be without an Internet connection (or a very slow one), you can download
+all the remote files prior to loosing connection, using the shell script gmt_getremote.sh in
+share/tools.  It also allows you to download all the cache files used for examples.
+
 Data References
 ---------------
 
