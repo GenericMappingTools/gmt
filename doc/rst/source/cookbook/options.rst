@@ -791,7 +791,7 @@ Plot positioning and layout: The **-X** **-Y** options
 
 The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
 inches (Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`, :ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new
-plots [15]_ and (0,0) for overlays (**-O**)). By default, all
+plots [15]_ and (0,0) for overlays. By default, all
 translations are relative to the previous origin (see Figure
 :ref:`Plot positioning <XY_options>`). Supply
 offset as **c** to center the plot in that direction relative to the
@@ -799,9 +799,7 @@ page margin. Absolute translations (i.e., relative to a fixed point
 (0,0) at the lower left corner of the paper) can be achieve by
 prepending "a" to the offsets. Subsequent overlays will be co-registered
 with the previous plot unless the origin is shifted using these options.
-The offsets are measured in the current coordinates system (which can be
-rotated using the initial **-P** option; subsequent **-P** options for
-overlays are ignored).
+The offsets are measured in the current coordinates system.
 
 .. _XY_options:
 
