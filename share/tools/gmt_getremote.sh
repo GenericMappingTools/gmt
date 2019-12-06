@@ -42,7 +42,7 @@ fi
 
 if [ ${cache} -eq 1 ]; then
 	echo "Download all cache files from ${SERVER} not in ~/.gmt/cache (be patient)" >&2
-	awk 'NF==3 && $1!~/earth/ {print "@"$1}' /tmp/gmt_hash_server.txt | xargs gmt which -Gc
+	awk 'NF==3 && $1!~/^earth_relief/ {print "@"$1}' /tmp/gmt_hash_server.txt | xargs gmt which -Gc
 fi
 if [ ${data} -eq 1 ]; then
 	echo "Download all remote DEM grids from ${SERVER} not in ~/gmt/server (be very patient)" >&2
