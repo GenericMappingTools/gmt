@@ -82,7 +82,7 @@ Optional Arguments
     to specify the duration of the decay phase, and **+f** to set the duration of the
     fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
     If neither **s** or **t** is given then we set the time knots for both features. Note that **+l** is
-    restricted to *-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
+    restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
 
 .. _-F:
 
