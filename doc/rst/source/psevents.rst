@@ -13,7 +13,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psevents** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
-[ |-A|\ *magnify*\ [**+c**\ *magnify2*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
