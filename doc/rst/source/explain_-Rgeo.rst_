@@ -9,7 +9,7 @@
     Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
     **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]] instead:
     Append one or more comma-separated countries using the 2-character
-    ISO 3166-1 alpha-2 convention.  To select a state of a country
+    `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_.  To select a state of a country
     (if available), append .state, e.g, US.TX for Texas.  To specify a
     whole continent, prepend = to any of the continent codes AF (Africa),
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
