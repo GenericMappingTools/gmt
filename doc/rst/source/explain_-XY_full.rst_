@@ -16,5 +16,5 @@
     the last use of that option in a previous GMT command will be used.
     Note that **-X** and **-Y** can also access the previous plot dimensions
     *w* and *h* and construct offsets that involves them.  For instance, to move the origin
-    up 2 cm beyond the height of the previous plot, use **-Yh**\ +2c.
-    To move the origin half the width to the right, use **-Xw**\ /2.
+    up 2 cm beyond the height of the previous plot, use **-Y**\ *h*\ +2c.
+    To move the origin half the width to the right, use **-X**\ *w*\ /2.
