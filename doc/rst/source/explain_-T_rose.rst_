@@ -1,5 +1,5 @@
 **-Td**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]
-    **-Td** draws a map directional rose on the map at the location defined by
+    Draws a map directional rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
     (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
@@ -26,7 +26,7 @@
 
 **-Tm**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
 
-    **-Tm** draws a map magnetic rose on the map at the location defined by
+    Draw a map magnetic rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
     (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
