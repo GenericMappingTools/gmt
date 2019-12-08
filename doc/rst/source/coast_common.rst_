@@ -166,7 +166,7 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Dumps a single multisegment ASCII (or binary, see
+    Dump a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
     occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
     Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
