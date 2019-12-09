@@ -3,12 +3,12 @@
 Description
 -----------
 
-Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from files [or standard
+Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from *table* [or standard
 input] and plots how the symbol for each event should look for the specified *now* time.
 The reason they may differ is that events may have different lengths and we may
 wish to accentuate the symbol attributes in ways to draw attention to an event when
 it first happens and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. This module is typically used in conjunction with movie scripts
+on more recent events. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call it over a time-sequence and
 thus plot symbols as events unfold.
 
@@ -42,7 +42,7 @@ Required Arguments
 .. _-T:
 
 **-T**\ *now*
-    Sets the current plot time.  If absolute times are used you must also use **-fT**.
+    Set the current plot time.  If absolute times are used you must also use **-fT**.
 
 Optional Arguments
 ------------------
@@ -62,7 +62,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*\ ]]
-    Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
+    Offset the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
     **-Dj** to offset the text away from the point instead (i.e., the
     text justification will determine the direction of the shift). Using
@@ -74,7 +74,7 @@ Optional Arguments
 .. _-E:
 
 **-Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Sets the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
+    Set the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
     the duration of the event), **+r** to indicate the
@@ -94,7 +94,7 @@ Optional Arguments
     to set the font (size,fontname,color), **+a** to set the angle, and **+j** to set the justification.
     Normally, the text to be plotted is the trailing text.  Instead, use **+r** to use the
     record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires **-C**)
-    to a string using the supplied *format* [use FORMAT_FLOAT_MAP].
+    to a string using the supplied *format* [use F:ref:`FORMAT_FLOAT_MAP <FORMAT_FLOAT_MAP>`].
 
 .. _-G:
 
@@ -108,20 +108,22 @@ Optional Arguments
 **-L**\ [*length*\ \|\ **t**\ ]
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
-    or leave blank if lengths can be read from the input file after the *time* column.
+    or leave blank if lengths can be read from the input file after the *time* column.  If **-L** is not
+    given we assume events have an infinite duration.
 
 .. _-M:
 
 **-M**\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*]
-    Sets the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
-    the *rise* interval [1, 1, and 100, respectively].
-    Optionally, use **+c** to set the corresponding terminal value during the coda [0, 0, 100, respectively].
+    Modify the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
+    the *rise* interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
+    Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
+    during the coda [0, 0, 100, respectively].
 
 .. _-Q:
 
 **-Q**\ *prefix*
-    Save the intermediate event symbols and labels to permanent files instead of removing when done.
-    Files will be called *prefix*\ _symbols.txt and *prefix*\ _labels.txt.
+    Save the intermediate event symbols and labels to permanent files instead of removing them when done.
+    Files will be named *prefix*\ _symbols.txt and *prefix*\ _labels.txt.
 
 .. _-U:
 
@@ -170,7 +172,7 @@ its length exceeds the temporal extent of the time we are plotting.  In a movie,
 a basic representation of these events as points on a map would be to start plotting
 the symbol when the event starts and then keep the symbol visible on all frames until the
 event ends (or never stop plotting them in the infinite length case).  However, to draw
-attention to the arrival of a new event we can temporarily change three aspects of
+attention to the arrival of a new event we can temporarily change three attributes of
 the symbol: Its size, color intensity, and transparency.  You can think of these three
 attributes as functions of time.  For some option settings, figure below
 illustrates how the symbol size may vary through the timespan of the movie.
@@ -207,8 +209,8 @@ Figure below illustrates how transparency may vary through time.
    :width: 400 px
    :align: center
 
-   Here we show how a symbol may go from being invisible to reach full opaqueness
-   at the event begin time, then finally fade to a near-invisible stage after reaching
+   Here we show how a symbol may go from being invisible to reaching full opaqueness
+   at the event begin time, finally fading to a near-invisible stage after reaching
    its length.
 
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
