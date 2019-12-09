@@ -24,7 +24,7 @@
     refers to, and the grid dimensions *nx* and *ny* with grid spacings via
     **-I** is used to create the corresponding region.
     Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
+    **-R** settings (and grid spacing and registration, if applicable) are copied from
     the grid. Appending **+u**\ *unit* expects projected (Cartesian)
     coordinates compatible with chosen **-J** and we inversely project
     to determine actual rectangular geographic region.
