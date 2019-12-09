@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\ \|\ **c**
+**-G**\ *fill*\ \|\ **c** :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or use **-Gc** for clipping [Default is no fill].
 
@@ -199,7 +199,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *fill*\ \|\ **c**
+**-S**\ *fill*\ \|\ **c** :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
     or pattern; or use **-Sc** for clipping [Default is no fill].
 
