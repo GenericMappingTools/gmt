@@ -20,7 +20,7 @@ Synopsis
 Description
 -----------
 
-The **begin** module instructs GMT to begin a new modern session.  If your script only makes
+The **begin** module instructs GMT to begin a new modern mode session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
 and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
 you will instead use :doc:`figure` to name the figure(s) you wish to make.  The session
@@ -29,7 +29,7 @@ that may run concurrently.  Thus, unlike classic mode, you can run multiple mode
 simultaneously without having destructive interference in updating the history of common
 options.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
-:doc:`psconvert` *options* that will override the default settings provided via
+:doc:`psconvert` *options* (without their leading hyphens) that will override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control the verbosity.
 
 Optional Arguments
@@ -38,8 +38,8 @@ Optional Arguments
 .. _begin-prefix:
 
 *prefix*
-    Name-stem used to construct the single final figure name.  The extension is appended
-    automatically from your *formats* selection(s) [gmtsession].  If your script only
+    Name-stem used to construct the single final figure name [gmtsession].  The extension is appended
+    automatically from your *formats* selection(s).  If your script only
     performs calculations or needs to make several figures then you will not use this argument.
     While not recommended, if your *prefix* has spaces in it then you must enclose your
     prefix in single or double quotes.
@@ -49,7 +49,7 @@ Optional Arguments
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable
     :ref:`graphics formats <tbl-formats>`
-    (default is configurable via setting :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` [pdf]).
+    (default format is configurable via setting :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` [pdf]).
 
 .. _begin-options:
 
@@ -58,6 +58,7 @@ Optional Arguments
     can be passed to :doc:`psconvert` when preparing a session figure [**A**].
     The valid subset of options are
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    Note that the leading hyphens should not be given.
     See the :doc:`psconvert` documentation for details on these options.
 
 .. _-V:
@@ -92,7 +93,7 @@ Examples
 
 To initiate a new modern session that will produce a single
 map called Figure_2 saved as both a PDF vector graphics file
-and an opaque PNG raster image, we would run::
+and an opaque PNG raster image, we would start our script thus::
 
     gmt begin Figure_2 pdf,png
 
@@ -106,7 +107,7 @@ be called gmtsession.pdf (assuming :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMA
 
 To set up proceedings for a jpg figure with 0.5c white margin, we would run::
 
-    gmt begin 'My Figure4' pdf,png A+m0.5c
+    gmt begin 'My Figure4' jpg A+m0.5c
 
 .. include:: explain_postscript.rst_
 
