@@ -13,7 +13,7 @@ Introduction
 
 GMT is a collection of public-domain Unix tools that allows you to
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
-projecting, etc.) and produce PostScript illustrations ranging from
+projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
 and 3-D perspective views in black/white or full color. Linear, log10,
 and power scaling is supported in addition to over 30 common map
@@ -61,10 +61,10 @@ Synopsis
 
 **gmt end** [**show**]
     Terminates a GMT modern mode session and automatically converts the registered
-    illustration(s) to the specified formats, then eliminates the temporary work
+    illustration(s) to their specified formats, then eliminates the temporary work
     directory.  The figures are placed in the current directory.
 
-For information on any module, please use our new mechanism to load module documentation
+For information on any module, load the module documentation
 in your browser via gmt :doc:`docs`, e.g.::
 
     gmt docs grdimage
@@ -142,7 +142,7 @@ Custom Modules
 
 The **gmt** program can also load custom modules from shared libraries
 built as specified in the GMT API documentation.  This way your modules
-can benefit form the GMT infrastructure and extend GMT in specific ways.
+can benefit from the GMT infrastructure and extend GMT in specific ways.
 
 The Common GMT Options
 ----------------------
