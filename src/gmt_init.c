@@ -15000,6 +15000,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					GMT->common.t.value = 0.0;
 					error++;
 				}
+				else if (GMT->common.t.value <= 1.0) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value * 100.0);
+				}
 				GMT->common.t.active = true;
 			}
 			else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Modules psxy, psxyz, and pstext can do variable transparency */
