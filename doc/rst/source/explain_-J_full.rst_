@@ -71,10 +71,10 @@ projection names stands for Equal-Area and Conformal, respectively):
 
         **-Jo**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/width*
             Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
-        **-Jo**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale*
+        **-Jo**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/width*
             Set projection center *lon0/lat0*, another point on the oblique
             equator *lon1/lat1*, and *scale*.
-        **-Joc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale*
+        **-Joc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ \|\ **C**\ *lon0/lat0/lonp/latp/width*
             Set projection center *lon0/lat0*, pole of oblique projection
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
