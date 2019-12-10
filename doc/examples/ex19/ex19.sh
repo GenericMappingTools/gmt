@@ -12,7 +12,7 @@ gmt begin ex19
 	gmt subplot begin 3x1 -Fs6.5i/0 -M0 -Bbltr -Rd -JI0/6.5i
 		#   First make a worldmap with graded blue oceans and rainbow continents
 		gmt grdimage lat.nc -Clat.cpt -nl -c0,0
-		gmt coast -Dc -A5000 -Gc
+		gmt coast -Dc -A5000 -G
 		gmt grdimage lon.nc -Clon.cpt -nl
 		gmt coast -Q
 		gmt coast -Dc -A5000 -Wthinnest
@@ -26,7 +26,7 @@ gmt begin ex19
 		gmt image -DjCM+w3i @GMT_covertext.eps
 		#   Finally repeat 1st plot but exchange the colors
 		gmt grdimage lon.nc -Clon.cpt -nl -c2,0
-		gmt coast -Dc -A5000 -Gc
+		gmt coast -Dc -A5000 -G
 		gmt grdimage lat.nc -Clat.cpt -nl
 		gmt coast -Q
 		gmt coast -Dc -A5000 -Wthinnest
