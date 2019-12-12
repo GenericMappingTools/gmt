@@ -477,6 +477,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		gmt_M_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 		switch (z_type) {
+			case NC_UBYTE:  header->type = GMT_GRID_IS_NB; HH->orig_datatype = GMT_UCHAR; break;
 			case NC_BYTE:   header->type = GMT_GRID_IS_NB; HH->orig_datatype = GMT_CHAR; break;
 			case NC_SHORT:  header->type = GMT_GRID_IS_NS; HH->orig_datatype = GMT_SHORT; break;
 			case NC_INT:    header->type = GMT_GRID_IS_NI; HH->orig_datatype = GMT_INT; break;
@@ -1425,6 +1426,7 @@ int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	switch (z_type) {
+		case NC_UBYTE:  header->type = old ? GMT_GRID_IS_CB : GMT_GRID_IS_NB; HH->orig_datatype = GMT_UCHAR;  break;
 		case NC_BYTE:   header->type = old ? GMT_GRID_IS_CB : GMT_GRID_IS_NB; HH->orig_datatype = GMT_CHAR;   break;
 		case NC_SHORT:  header->type = old ? GMT_GRID_IS_CS : GMT_GRID_IS_NS; HH->orig_datatype = GMT_SHORT;  break;
 		case NC_INT:    header->type = old ? GMT_GRID_IS_CI : GMT_GRID_IS_NI; HH->orig_datatype = GMT_INT;    break;
