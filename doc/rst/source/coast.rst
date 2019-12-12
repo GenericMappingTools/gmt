@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
+[ |-C|\ *fill*\ [**+l**\ \|\ **+r**\ ] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]
@@ -64,7 +64,7 @@ gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use::
 
     gmt begin
-      gmt coast -R-30/30/-40/40 -Jm0.1i -B -Gc
+      gmt coast -R-30/30/-40/40 -Jm0.1i -B -G
       gmt grdimage @earth_relief_05m
       gmt coast -Q
     gmt end show

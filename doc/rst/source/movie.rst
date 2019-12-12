@@ -52,7 +52,7 @@ Required Arguments
 ------------------
 
 *mainscript*
-    Name of a stand-alone GMT modern script that makes the frame-dependent plot.  The
+    Name of a stand-alone GMT modern mode script that makes the frame-dependent plot.  The
     script may access frame variables, such as frame number and others, and may be
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
@@ -61,9 +61,9 @@ Required Arguments
 
 .. _-C:
 
-**-C**\ *papersize*
+**-C**\ *canvassize*
     Specify the canvas size used when composing the movie frames. You can choose from a
-    set of known preset formats or you can set a custom layout.  The named 16:9 ratio
+    set of preset formats or specify a custom layout.  The named 16:9 ratio
     formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are
     (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
@@ -76,12 +76,12 @@ Required Arguments
     Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
-    where *dpu* is the dots-per-unit pixel density.
+    where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
 
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of a sub-directory with frame images as well as the final movie file.
+    Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
     Note: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
 
@@ -89,18 +89,19 @@ Required Arguments
 
 **-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
-    one record per frame (i.e., row).  The values in the columns will be available to the
+    one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
-    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to also split the trailing
-    string into individual words that can be accessed via **MOVIE_WORD0**, **MOVIE_WORD1**, etc. The number of records equals
-    the number of frames. Note that the *background* script is allowed to create the *timefile*,
-    hence we check of its existence both before and after the background script has run.  Normally,
+    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
+    string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
+    etc. The number of records equals
+    the number of frames. Note that the *background* script is allowed to create *timefile*,
+    hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
     number via **+s**\ *first*.  Note: All frames are still included; this modifier only affects
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
-    will want to have the same tag width for all names [automatic].
+    must use the same tag width for all names.
 
 
 Optional Arguments
@@ -130,7 +131,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set the canvas color or fill before plotting commences [none].
 
 .. _-H:
@@ -145,7 +146,7 @@ Optional Arguments
     the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
-    result to avoid aliasing [no downsampling].
+    result to avoid aliasing [no downsampling].  This effect is called `sub-pixel rendering <https://en.wikipedia.org/wiki/Subpixel_rendering>`.
 
 .. _-I:
 
@@ -167,7 +168,6 @@ Optional Arguments
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
-    The label font is controlled via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
@@ -183,7 +183,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*frame*],[*format*]
-    In addition to making the animation sequence, select a single frame for a cover page.  This frame will
+    In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
 
@@ -220,7 +220,7 @@ Optional Arguments
 
 **-W**\ *workdir*
     By default, all temporary files and frame PNG file are built in the subdirectory *prefix* set via **-N**.
-    You can override that by giving another *workdir* as a relative or full directory path.
+    You can override that selection by giving another *workdir* as a relative or full directory path.
 
 .. _-Z:
 
@@ -235,6 +235,7 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
+    The parallel processing does not depend on OpenMP.
 
 .. include:: explain_help.rst_
 
@@ -251,12 +252,12 @@ and those that change with the frame number.  The constants are accessible by al
 **MOVIE_NFRAMES**\ : The total number of frames.
 Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
-**MOVIE_FRAME**\ : The current frame number (an integer),
+**MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
 **MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** with the **+w** modifier then
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested by **-T+w** then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -311,7 +312,7 @@ require the frame number you will need to make a file that you can pass to **-T*
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
-To test your movie, start by using options **-Q -M** to ensure your cover page looks correct.
+To test your movie, start by using options **-F**\ none **-Q -M** to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very

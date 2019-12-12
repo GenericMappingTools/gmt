@@ -48,10 +48,10 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**l**\ \|\ **r**/]\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-C**\ *fill*\ [**+l**\ \|\ **+r**\ ] :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
-    separate fills by prepending **l/** for lakes and **r/** for
+    separate fills by appending **+l** for lakes or **+r** for
     river-lakes, repeating the **-C** option as needed.
 
 .. _-D:
@@ -109,9 +109,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\ \|\ **c**
+**-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
-    or pattern; or use **-Gc** for clipping [Default is no fill].
+    or pattern; or give no argument for clipping [Default is no fill].
 
 .. _-I:
 
@@ -199,9 +199,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *fill*\ \|\ **c**
+**-S**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
-    or pattern; or use **-Sc** for clipping [Default is no fill].
+    or pattern; or give no argument for clipping [Default is no fill].
 
 .. _-T:
 

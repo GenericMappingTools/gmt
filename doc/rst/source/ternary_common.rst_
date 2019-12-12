@@ -3,7 +3,7 @@
 Description
 -----------
 
-Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
+Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *table* [or standard input] and
 plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
 given, then we will interpret the fourth column of the input data
@@ -132,7 +132,3 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_distunits.rst_
-
-.. include:: explain_vectors.rst_

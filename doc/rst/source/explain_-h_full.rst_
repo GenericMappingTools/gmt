@@ -5,7 +5,8 @@
     header records is :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` [1]. Use **-hi** if only
     the primary input data should have header records [Default will write out header
     records if the input data have them]. Blank lines and lines starting
-    with # are always skipped. For output you may request additional headers
+    with # are always skipped; to use another leading character for indicating header records,
+    please see :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>`. For output you may request additional headers
     to be written via the option modifiers, and use **+d** to remove existing
     header records. Append **+c** to issue a header comment with column names to the output [none].
     Append **+r** to add a *remark* comment to the output [none].
