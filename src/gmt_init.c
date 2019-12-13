@@ -365,8 +365,8 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	{   0, 'R', "region",        "",        "",                                        "r",        "rect"},
 	{   0, 'U', "timestamp",     "",        "",                                        "c,j,o",    "command,justify,offset"},
 	{   0, 'V', "verbose",       "",        "",                                        "",         ""},
-	{   0, 'X', "xoffset",       "a,c,r",   "absolute,center,relative",                "",         ""},
-	{   0, 'Y', "yoffset",       "a,c,r",   "absolute,center,relative",                "",         ""},
+	{   0, 'X', "xshift",        "a,c,r",   "absolute,center,relative",                "",         ""},
+	{   0, 'Y', "yshift",        "a,c,r",   "absolute,center,relative",                "",         ""},
 	{   0, 'a', "aspatial",      "",        "",                                        "",         ""},
 	{   0, 'b', "binary",        "",        "",                                        "B,L",      "big-endian,little-endian"},
 	{   0, 'd', "nodata",        "i,o",     "in,out",                                  "",         ""},
@@ -374,16 +374,15 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        ""},
 	{   0, 'g', "gap",           "",        "",                                         "",        ""},
 	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", "columns,delete,remark,title"},
-	{ ',', 'i', "input",         "",        "",                                         "l,o,s",   "log,offset,scale"},
+	{ ',', 'i', "read-columns",  "",        "",                                         "l,o,s",   "log,offset,scale"},
 	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t",     "clip,threshold"},
-	{ ',', 'o', "output",        "",        "",                                         "",        ""},
+	{ ',', 'o', "write-columns", "",        "",                                         "",        ""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     "view,world"},
 	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        ""},
 	{   0, 's', "skip",           "",       "",                                         "a,r",     "any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        ""},
 	{   0, 'x', "cores",         "",        "",                                         "",        ""},
-	{   0, ':', "latlon",        "i,o",     "in,out",                                   "",        ""},
-	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
+\	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
 };
 
 /* Local variables to gmt_init.c */
