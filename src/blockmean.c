@@ -39,17 +39,6 @@
 
 #include "block_subs.h"
 
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = {
-	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
-	{ 0, 'G', "gridfile", "", "", "", "" },
-	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
-	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
-};
-
 enum Block_Modes {
 	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
 	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compabitibility; assumes input weights are already set to 1/s^2 */

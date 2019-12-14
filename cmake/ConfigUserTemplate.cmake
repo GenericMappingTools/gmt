@@ -244,6 +244,9 @@
 # before docs_depends [TRUE].
 #set (GMT_DOCS_DEPEND_ON_GMT FALSE)
 
+# For testing of upcoming long-option syntax, set the following to true:
+#set (USE_LONG_OPTIONS TRUE)
+
 #
 # Debugging
 #

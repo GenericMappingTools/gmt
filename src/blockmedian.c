@@ -39,18 +39,6 @@
 
 #include "block_subs.h"
 
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = {
-	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l", "lower" },
-	{ 0, 'G', "gridfile", "", "", "", "" },
-	{ 0, 'Q', "quicker", "", "", "", "" },
-	{ 0, 'T', "quantile", "", "", "", "" },
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
-	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
-};
-
 /* Note: For external calls to block* we do not allow explicit -G options; these should be added by examining -A which
  * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
  * -Az is the default and -G is required to set file name format.  */
