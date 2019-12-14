@@ -1,12 +1,11 @@
 .. index:: ! psevents
+.. include:: module_core_purpose.rst_
 
 ********
 psevents
 ********
 
-.. only:: not man
-
-    Plot event symbols and labels for a moment in time
+|psevents_purpose|
 
 Synopsis
 --------
@@ -14,11 +13,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psevents** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
-[ |-A|\ *magnify*\ [**+c**\ *magnify2*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
-[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
+[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
 [ |-K| ]

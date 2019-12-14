@@ -25,7 +25,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"psxyz"
+#define THIS_MODULE_CLASSIC_NAME	"psxyz"
+#define THIS_MODULE_MODERN_NAME	"plot3d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
@@ -142,7 +143,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deall
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psxyz synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
@@ -606,7 +607,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
@@ -867,7 +868,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (!Ctrl->W.active)	/* No outline of QR code */
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
-		outline_active =  Ctrl->W.active;
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)
@@ -885,6 +885,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
+		else if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.size > 0.0)) {
+			/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
+			gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		}
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1580,6 +1584,17 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
+		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
+			if (polygon) {	/* Place a rectangle in the legend */
+				int symbol = S.symbol;
+				S.symbol = PSL_RECT;
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				S.symbol = symbol;
+			}
+			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		}
+		
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 

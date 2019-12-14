@@ -1,12 +1,11 @@
 .. index:: ! filter1d
+.. include:: module_core_purpose.rst_
 
 ********
 filter1d
 ********
 
-.. only:: not man
-
-    Time domain filtering of 1-D data tables
+|filter1d_purpose|
 
 Synopsis
 --------
@@ -188,14 +187,14 @@ Optional Arguments
 Examples
 --------
 
-To filter the data set in the file cruise.gmtd containing evenly spaced
-gravity, magnetics, topography, and distance (in m) with a 10 km
-Gaussian filter, removing outliers, and output a filtered value every 2
-km between 0 and 100 km:
+.. include:: explain_example.rst_
+
+To filter the remote CO2 data set in the file MaunaLoa_CO2.txt (year, CO2)
+with a 5 year Gaussian filter, try
 
    ::
 
-    gmt filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered_cruise.gmtd
+    gmt filter1d @MaunaLoa_CO2.txt -Fg5 > CO2_trend.txt
 
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using :doc:`sample1d`. To find the median depth in a 50

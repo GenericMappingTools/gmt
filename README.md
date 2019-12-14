@@ -1,6 +1,5 @@
 # Generic Mapping Tools
 
-[![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
 [![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/latest?definitionId=2&branchName=master)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
@@ -61,8 +60,6 @@ Note there are three GMT tar archives available (#3 is optional):
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
-Alternatively you may get GMT from any of the [FTP sites](MIRRORS.md).
-Try the site that is closest to you to minimize transmission times:
 
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
@@ -97,18 +94,11 @@ Before running programs, there are a few things you should do/know:
 ## Software support
 
 You haven't bought anything so you cannot expect full service.  However, if
-you find a bug in any of the programs, please report it to us
-(https://github.com/GenericMappingTools/gmt) rather than trying to fix it yourself so that
-we, and through us, other users may benefit from your find.  Make sure you
+you find a bug in any of the programs, please report it to us by
+[opening a issue](https://github.com/GenericMappingTools/gmt/issues/)
+rather than trying to fix it yourself so that we, and through us,
+other users may benefit from your find.  Make sure you
 provide us with enough information so that we can recreate the problem.
 
-In addition to the bug tracking feature (New Issues) on the website, you
-can also post general questions.  Note that GitHub registration
-is required to post on the site.
-
-## Ordering the GMT package on CD/DVD-Rs
-
-Should you or someone you know without net-access need to obtain GMT:
-Geoware makes and distributes CD/DVD-Rs with the GMT package and many
-useful data sets.  For more details and a full description of the data
-sets (up to 60 Gb of data!) visit http://www.geoware-online.com/.
+For general questions, please post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/).

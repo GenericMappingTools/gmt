@@ -85,4 +85,4 @@ gmt begin ex50
 	3.25 9 @~c@~@+2@+(z,@~n=4@~)
 	EOF
 	rm -f p.txt
-gmt end
+gmt end show

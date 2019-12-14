@@ -1,12 +1,11 @@
 .. index:: ! movie
+.. include:: module_core_purpose.rst_
 
 *****
 movie
 *****
 
-.. only:: not man
-
-    Create animation sequences and movies
+|movie_purpose|
 
 Synopsis
 --------
@@ -53,7 +52,7 @@ Required Arguments
 ------------------
 
 *mainscript*
-    Name of a stand-alone GMT modern script that makes the frame-dependent plot.  The
+    Name of a stand-alone GMT modern mode script that makes the frame-dependent plot.  The
     script may access frame variables, such as frame number and others, and may be
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
@@ -62,9 +61,9 @@ Required Arguments
 
 .. _-C:
 
-**-C**\ *papersize*
+**-C**\ *canvassize*
     Specify the canvas size used when composing the movie frames. You can choose from a
-    set of known preset formats or you can set a custom layout.  The named 16:9 ratio
+    set of preset formats or specify a custom layout.  The named 16:9 ratio
     formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are
     (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
@@ -77,12 +76,12 @@ Required Arguments
     Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
-    where *dpu* is the dots-per-unit pixel density.
+    where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
 
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of a sub-directory with frame images as well as the final movie file.
+    Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
     Note: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
 
@@ -90,18 +89,19 @@ Required Arguments
 
 **-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
-    one record per frame (i.e., row).  The values in the columns will be available to the
+    one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
-    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to also split the trailing
-    string into individual words that can be accessed via **MOVIE_WORD0**, **MOVIE_WORD1**, etc. The number of records equals
-    the number of frames. Note that the *background* script is allowed to create the *timefile*,
-    hence we check of its existence both before and after the background script has run.  Normally,
+    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
+    string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
+    etc. The number of records equals
+    the number of frames. Note that the *background* script is allowed to create *timefile*,
+    hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
     number via **+s**\ *first*.  Note: All frames are still included; this modifier only affects
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
-    will want to have the same tag width for all names [automatic].
+    must use the same tag width for all names.
 
 
 Optional Arguments
@@ -123,7 +123,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format* [**+o**\ *options*\ ]
+**-F**\ *format*\ [**+o**\ *options*\ ]
     Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
     **webm** (WebM movie).  You may optionally add additional ffmpeg encoding settings for this format
     via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
@@ -131,7 +131,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set the canvas color or fill before plotting commences [none].
 
 .. _-H:
@@ -146,7 +146,7 @@ Optional Arguments
     the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
-    result to avoid aliasing [no downsampling].
+    result to avoid aliasing [no downsampling].  This effect is called `sub-pixel rendering <https://en.wikipedia.org/wiki/Subpixel_rendering>`.
 
 .. _-I:
 
@@ -158,17 +158,16 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *labelinfo*
-
     Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
+    **s**\ *string* uses the fixed text *string* as the label,
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
-    The label font is controlled via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
@@ -184,7 +183,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*frame*],[*format*]
-    In addition to making the animation sequence, select a single frame for a cover page.  This frame will
+    In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
 
@@ -220,8 +219,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *workdir*
-    In addition to the current directory, the *prefix* directory, and any directories specified via the
-    GMT defaults setting :ref:`DIR_DATA <DIR_DATA>`, add *workdir* as a place to scan for data files needed by the scripts.
+    By default, all temporary files and frame PNG file are built in the subdirectory *prefix* set via **-N**.
+    You can override that selection by giving another *workdir* as a relative or full directory path.
 
 .. _-Z:
 
@@ -236,6 +235,7 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
+    The parallel processing does not depend on OpenMP.
 
 .. include:: explain_help.rst_
 
@@ -252,12 +252,12 @@ and those that change with the frame number.  The constants are accessible by al
 **MOVIE_NFRAMES**\ : The total number of frames.
 Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
-**MOVIE_FRAME**\ : The current frame number (an integer),
+**MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
 **MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** with the **+w** modifier then
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested by **-T+w** then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -266,8 +266,7 @@ Data Files
 The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
-require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting
-or specified via **-W**.
+require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting.
 
 Your Canvas
 -----------
@@ -313,13 +312,13 @@ require the frame number you will need to make a file that you can pass to **-T*
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
-To test your movie, start by using options **-Q -M** to ensure your cover page looks correct.
+To test your movie, start by using options **-F**\ none **-Q -M** to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
-Color table usage
+Color Table Usage
 -----------------
 
 Because **movie** launches individual frame plots as separate sessions running in parallel, we cannot
@@ -334,31 +333,23 @@ Examples
 
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
 frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
-and place a frame counter in the top left corner, try
-
-   ::
+and place a frame counter in the top left corner, try::
 
     gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
-as the center longitude:
-
-   ::
+as the center longitude::
 
     gmt begin
        gmt coast -Rg -JG${MOVIE_FRAME}/20/${MOVIE_WIDTH} -Gmaroon -Sturquoise -Bg -X0 -Y0
     gmt end
 
 As the automatic frame loop is executed the different frames will be produced with different
-longitudes.  The equivalent DOS batch script setup would be
-
-  ::
+longitudes.  The equivalent DOS batch script setup would be::
 
     gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf
 
-Now, the globe.bat DOS script is simply
-
-   ::
+Now, the globe.bat DOS script is simply::
 
     gmt begin
        gmt coast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -Bg -X0 -Y0
@@ -375,17 +366,31 @@ all available cores.
 Longer Examples
 ---------------
 
-To explore more elaborate movies, see the Animations examples under our Gallery.
+To explore more elaborate movies, see the Animations examples under our :doc:`Gallery <gallery>`.
 
 Other Movie Formats
 -------------------
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
-tool ffmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
+tool FFmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
 If you wish to run ffmpeg with other options, select mp4 and run **movie** with long verbose (**-Vl**).
 At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.
+
+Manipulating Multiple Movies
+----------------------------
+
+If you are making a series of similar movies, you can use ffmpeg to paste and stitch them into a single movie.
+Assume we have four movies called movie_1.mp4, movie_2.mp4, movie_3.mp4, and movie_4.mp4, and you wish to combine
+them into a 2x2 panel showing the four movies simultaneously.  You would first combine movies (1,2) and (3,4)
+horizontally, then combine the two resulting strips vertically::
+
+    ffmpeg -i movie_1.mp4 -i movie_2.mp4 -filter_complex hstack=inputs=2 top.mp4
+    ffmpeg -i movie_3.mp4 -i movie_4.mp4 -filter_complex hstack=inputs=2 bottom.mp4
+    ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
+
+For more information on such manipulations, see the FFmpeg documentation.
 
 See Also
 --------

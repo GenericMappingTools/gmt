@@ -1,12 +1,11 @@
 .. index:: ! grdinfo
+.. include:: module_core_purpose.rst_
 
 *******
 grdinfo
 *******
 
-.. only:: not man
-
-    grdinfo - Extract information from grids
+|grdinfo_purpose|
 
 Synopsis
 --------
@@ -157,17 +156,13 @@ Optional Arguments
 Examples
 --------
 
-To obtain all the information about the data set in file hawaii\_topo.nc:
+To obtain all the information about the remote data set in file earth_relief_10m::
 
-   ::
+    gmt grdinfo -L1 -L2 -M @earth_relief_10m
 
-    gmt grdinfo -L1 -L2 -M hawaii_topo.nc
+Get the grid spacing in earth_relief_10m::
 
-Get the grid spacing in hawaii\_topo.nc:
-
-   ::
-
-    dx=`gmt grdinfo -Cn -o7 hawaii_topo.nc`
+    dx=`gmt grdinfo -Cn -o7 @earth_relief_10m`
 
 See Also
 --------

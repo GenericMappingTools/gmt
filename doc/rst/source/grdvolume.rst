@@ -1,12 +1,11 @@
 .. index:: ! grdvolume
+.. include:: module_core_purpose.rst_
 
 *********
 grdvolume
 *********
 
-.. only:: not man
-
-    Calculate grid volume and area constrained by a contour
+|grdvolume_purpose|
 
 Synopsis
 --------
@@ -105,11 +104,12 @@ Optional Arguments
 Examples
 --------
 
-To determine the volume in km^3 under the surface hawaii_topo.nc (height in km), use
+.. include:: explain_example.rst_
 
-   ::
+To determine area (in km^2), volume (in km^3), and mean height (in km) of all land areas
+(above zero contour) in the Hawaiian Islands from the remote grid @earth_relief_05m (height in m), use::
 
-    gmt grdvolume hawaii_topo.nc -Sk
+    gmt grdvolume @earth_relief_05m -R190/210/15/25 -C0 -Sk -Z0.001
 
 To find the volume between the surface peaks.nc and the contour z = 250 m in meters, use
 

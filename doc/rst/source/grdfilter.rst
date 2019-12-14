@@ -1,12 +1,11 @@
 .. index:: ! grdfilter
+.. include:: module_core_purpose.rst_
 
 *********
 grdfilter
 *********
 
-.. only:: not man
-
-    Filter a grid in the space (or time) domain
+|grdfilter_purpose|
 
 Synopsis
 --------
@@ -22,6 +21,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -83,6 +83,9 @@ Required Arguments
     diameter *width*. This gives an isotropic filter; append /*width2*
     for a rectangular filter (requires **-Dp** or **-D0**).  By default we
     perform low-pass filtering; append **+h** to select high-pass filtering.
+    For isotropic filters, *width* may be a grid for variable filter width,
+    in which case the grid must have the same registration and dimensions as
+    the output filtered grid.
     Some filters allow for optional arguments and modifiers.
 
     Convolution filters (and their codes) are:
@@ -168,7 +171,8 @@ Optional Arguments
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
-    the input grid]. 
+    the input grid]. Alternatively, use **-r**\ [**g**\ \|\ **p**\ ] to
+    set the registration explicitly.
 
 .. _-V:
 
@@ -177,6 +181,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
 
@@ -187,8 +194,10 @@ Optional Arguments
 Examples
 --------
 
-Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry
-from 140E to 260E and 0N to 50N, and you want to find the medians of
+.. include:: explain_example.rst_
+
+The @earth_relief_05m.nc is a remote file of 5 minute bathymetry
+and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. Using spherical distance
@@ -196,8 +205,7 @@ calculations, you need:
 
    ::
 
-    gmt grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 \
-                  -D4 -R150/250/10/40 -I0.5 -V
+    gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
 corresponding low-pass filter using a coarse grid interval as **grdfilter**
@@ -206,8 +214,7 @@ can compute the residuals, e.g.,
 
    ::
 
-    gmt grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm600+h \
-                  -D4 -R150/250/10/40 -I0.5 -V
+    gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual_pacific.nc grid will have the same 5 minute
 resolution as the original.

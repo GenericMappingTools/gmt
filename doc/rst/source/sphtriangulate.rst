@@ -1,12 +1,11 @@
 .. index:: ! sphtriangulate
+.. include:: module_core_purpose.rst_
 
 **************
 sphtriangulate
 **************
 
-.. only:: not man
-
-    Delaunay or Voronoi construction of spherical lon,lat data
+|sphtriangulate_purpose|
 
 Synopsis
 --------
@@ -141,12 +140,21 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
+To create a spherical triangulation from the remote data set hotspots.txt and
+then plot it on a sphere, try::
+
+    gmt sphtriangulate @hotspots.txt -Qd -T | gmt plot -Rg -JG-120/-30/7i -Bafg -W3p -pdf map
+
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via :doc:`plot`, use
 
    ::
 
-    gmt sphtriangulate testdata.txt -Qv | plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
+    gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.txt and save the area of each triangle

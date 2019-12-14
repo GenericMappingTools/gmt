@@ -26,13 +26,13 @@
 
 OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, const char *pSrcSRS, const char *pDstSRS) {
     /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination Referencing
-	   System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?). 
+	   System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?).
 
 	   The caller to this function is responsible to free the GDAL object created here with a call to
 	   OCTDestroyCoordinateTransformation(hCT);
 	*/
-	OGRSpatialReferenceH hSrcSRS, hDstSRS; 
-	OGRCoordinateTransformationH hCT; 
+	OGRSpatialReferenceH hSrcSRS, hDstSRS;
+	OGRCoordinateTransformationH hCT;
 
 	/* ------------------ Set the Source projection ----------------------------- */
 	hSrcSRS = OSRNewSpatialReference(NULL);
@@ -40,6 +40,9 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating source SRS failed.\n%s\n", pSrcSRS);
 		return NULL;
 	}
+#if GDAL_VERSION_MAJOR >= 3
+	OSRSetAxisMappingStrategy(hSrcSRS, OAMS_TRADITIONAL_GIS_ORDER);		/* Set the data axis to CRS axis mapping strategy. */
+#endif
 	/* ------------------- Set the Target projection ---------------------------- */
 	CPLErrorReset();
 	hDstSRS = OSRNewSpatialReference(NULL);
@@ -48,6 +51,9 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		OSRDestroySpatialReference(hSrcSRS);	/* It was just created above */
 		return NULL;
 	}
+#if GDAL_VERSION_MAJOR >= 3
+	OSRSetAxisMappingStrategy(hDstSRS, OAMS_TRADITIONAL_GIS_ORDER);		/* Set the data axis to CRS axis mapping strategy. */
+#endif
 	/* -------------------------------------------------------------------------- */
 
 	hCT = OCTNewCoordinateTransformation(hSrcSRS, hDstSRS);
@@ -67,15 +73,15 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 
 int gmt_ogrproj(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS, int n_pts,
                 double *xi, double *yi, double *zi, bool insitu, double *xo, double *yo, double *zo) {
-    /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination 
-	   Referencing System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?). 
+    /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination
+	   Referencing System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?).
 	   n_pts is the number of points to be transformed.
 	   xi,yi,zi are pointers to arrays of n_pts points. If only 2D transform is wanted, passs zi = NULL.
 	   insitu, is a boolean stating if the transformed points will overwrite the input data in xi,yi,zi (true)
 	   or, when false, the output is stored in xo,yo,zo. In this later case, it's user responsibility
 	   to allocate the xo,yo[,zo] arrays with same size as xi,yi[,zi].
 	*/
-	OGRCoordinateTransformationH hCT = gmt_OGRCoordinateTransformation(GMT, pSrcSRS, pDstSRS); 
+	OGRCoordinateTransformationH hCT = gmt_OGRCoordinateTransformation(GMT, pSrcSRS, pDstSRS);
 
 	if (insitu)
 		OCTTransform(hCT, n_pts, xi, yi, zi);

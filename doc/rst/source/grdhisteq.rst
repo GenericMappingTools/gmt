@@ -1,12 +1,11 @@
 .. index:: ! grdhisteq
+.. include:: module_core_purpose.rst_
 
 *********
 grdhisteq
 *********
 
-.. only:: not man
-
-    Perform histogram equalization for a grid
+|grdhisteq_purpose|
 
 Synopsis
 --------
@@ -112,12 +111,12 @@ Optional Arguments
 Examples
 --------
 
-To find the height intervals that divide the file heights.nc into 16
-divisions of equal area:
+.. include:: explain_example.rst_
 
-   ::
+To find the height intervals that divide the selected region of the remote file
+earth_relief_05m into 16 divisions of equal area::
 
-    gmt grdhisteq heights.nc -C16 -D > levels.d
+    gmt grdhisteq -C16 -D @earth_relief_05m -R0/20/0/20 > levels.txt
 
 To make the poorly distributed intensities in the file raw_intens.nc
 suitable for use with :doc:`grdimage` or :doc:`grdview`, run

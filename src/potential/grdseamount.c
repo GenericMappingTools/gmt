@@ -30,7 +30,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdseamount"
+#define THIS_MODULE_CLASSIC_NAME	"grdseamount"
+#define THIS_MODULE_MODERN_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)"
 #define THIS_MODULE_KEYS	"<T{,GG},TD("
@@ -146,7 +147,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/*
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M<list>] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
@@ -499,7 +500,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != GMT_NOERROR) Return (error);

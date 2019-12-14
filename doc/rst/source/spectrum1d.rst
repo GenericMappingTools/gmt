@@ -1,12 +1,11 @@
 .. index:: ! spectrum1d
+.. include:: module_core_purpose.rst_
 
 **********
 spectrum1d
 **********
 
-.. only:: not man
-
-    Compute auto- [and cross- ] spectra from one [or two] time-series
+|spectrum1d_purpose|
 
 Synopsis
 --------
@@ -170,6 +169,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
 its power spectrum, in mGal\*\*2-km, to the file data.xpower, use

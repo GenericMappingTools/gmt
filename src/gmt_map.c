@@ -1709,7 +1709,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 /* This is new approach to get rid of those crossing lines for filled polygons,
  * i.e., issue # 949.  Also see comments further down.
  * P. Wessel, Dec 1 2016 */
-	if (GMT->current.map.coastline) {	/* Make data longitudes have no jumps [This is for pscoast] */
+	if (GMT->current.map.coastline && periodic) {	/* Make data longitudes have no jumps [This is for pscoast] */
 		for (i = 0; i < n; i++) {
 			if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
 				lon[i] += 360.0;
@@ -2392,8 +2392,8 @@ GMT_LOCAL double map_az_backaz_cartesian (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	dx = lonE - lonS;
-	dy = latE - latS;
+	dx = lonS - lonE;
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2414,8 +2414,8 @@ GMT_LOCAL double map_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE
 	}
 	gmt_geo_to_xy (GMT, lonE, latE, &xE, &yE);
 	gmt_geo_to_xy (GMT, lonS, latS, &xS, &yS);
-	dx = xE - xS;
-	dy = yE - yS;
+	dx = xS - xE;
+	dy = yS - yE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -2434,9 +2434,9 @@ GMT_LOCAL double map_az_backaz_flatearth (struct GMT_CTRL *GMT, double lonE, dou
 		gmt_M_double_swap (lonS, lonE);
 		gmt_M_double_swap (latS, latE);
 	}
-	gmt_M_set_delta_lon (lonS, lonE, dlon);
-	dx = dlon * cosd (0.5 * (latE + latS));
-	dy = latE - latS;
+	gmt_M_set_delta_lon (lonE, lonS, dlon);
+	dx = dlon * cosd (0.5 * (latS + latE));
+	dy = latS - latE;
 	az = (dx == 0.0 && dy == 0.0) ? GMT->session.d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -6611,7 +6611,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item];
 	if (T->active && T->interval == 0.0) {
 		T->interval = d, T->generated = set_a = true;
-		sprintf (tmp, "a%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "a%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 		if (interval) T->type = 'i', T->flavor = 1;
 	}
@@ -6620,7 +6620,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+2];
 	if (T->active && T->interval == 0.0) {
 		T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
-		sprintf (tmp, "f%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "f%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 
@@ -6628,7 +6628,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
 		T->interval = set_a ? d : f, T->generated = true;
-		sprintf (tmp, "g%g", T->interval); strcat (string, tmp);
+		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
@@ -9603,7 +9603,7 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	sprintf (header, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
+	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }

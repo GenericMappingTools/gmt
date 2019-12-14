@@ -72,6 +72,7 @@
  * PSL_makecolor	   : Returns string with PostScript command to set a new color
  * PSL_makepen		   : Returns string with PostScript command to set a new pen
  * PSL_setcolor		   : Sets the pen color or pattern
+ * PSL_setcurrentpoint     : Sets the current point
  * PSL_setdefaults	   : Change several PSL session default values
  * PSL_setdash		   : Specify pattern for dashed line
  * PSL_setfill		   : Sets the fill color or pattern
@@ -3157,6 +3158,10 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		fclose (in);
 		PSL->internal.N_FONTS = i;
 	}
+	else {
+		PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "No PSL_custom_fonts.txt found\n");
+	}
+	
 	/* Final allocation of font array */
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 	return PSL_NO_ERROR;
@@ -3848,6 +3853,14 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	return (PSL_NO_ERROR);
 }
 
+int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
+	/* Set the current point only */
+	PSL->internal.ix = psl_ix (PSL, x);
+	PSL->internal.iy = psl_iy (PSL, y);
+	PSL_command (PSL, "%d %d M\n", PSL->internal.ix, PSL->internal.iy);
+	return (PSL_NO_ERROR);
+}
+
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
 	/* Updates the current PDF transparency only */
 	if (transparency < 0.0 || transparency > 1.0) {
@@ -4304,7 +4317,6 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
 	if (PSL->internal.call_level == 1)
 		PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
-
 	PSL->internal.overlay = overlay;
 	memcpy (PSL->init.page_size, page_size, 2 * sizeof(double));
 

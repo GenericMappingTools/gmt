@@ -3,5 +3,5 @@
 gmt begin viewpluscpt ps
 	gmt grdview @earth_relief_01m -RMG+r2 -Cgeo -I+ -Qi
 	gmt coast -Wthin -N1/thick,red -BWSne -B
-	gmt colorbar -DJTC -B -C
-gmt end
+	gmt colorbar -DJTC -B
+gmt end show

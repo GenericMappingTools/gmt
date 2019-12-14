@@ -1,15 +1,14 @@
 .. index:: ! grdtrend
+.. include:: module_core_purpose.rst_
 
 ********
 grdtrend
 ********
 
-.. only:: not man
+|grdtrend_purpose|
 
-    Fit trend surface to grids and compute residuals
-
-`Synopsis`
-----------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -106,11 +105,12 @@ using the reported coefficients.
 Examples
 --------
 
-To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:
+.. include:: explain_example.rst_
 
-   ::
+To remove a planar trend from the remote grid earth_relief_05m for the region
+around Hawaii and write the result to hawaii_residual.nc::
 
-    gmt grdtrend hawaii_topo.nc -N3 -Dhawaii_residual.nc
+    gmt grdtrend @earth_relief_05m -R180/240/10/40 -N3 -Dhawaii_residual.nc
 
 To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the
 result in hawaii_trend.nc and the weights used in hawaii_weight.nc,

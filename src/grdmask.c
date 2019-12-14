@@ -27,7 +27,8 @@
  
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdmask"
+#define THIS_MODULE_CLASSIC_NAME	"grdmask"
+#define THIS_MODULE_MODERN_NAME	"grdmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
 #define THIS_MODULE_KEYS	"<D{,GG}"
@@ -79,7 +80,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
@@ -271,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 
 int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
-	bool wrap_180, replicate_x, replicate_y;
+	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
 	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
@@ -305,7 +306,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -405,6 +406,15 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	D = Din;	/* The default is to work with the input data as is */
 	DH = gmt_get_DD_hidden (D);
 	
+	if (!Ctrl->S.active) {	/* Make sure we were given at least one polygon */
+		for (tbl = n_pol = 0; tbl < D->n_tables; tbl++)
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
+				if (D->table[tbl]->segment[seg]->n_rows > 2) n_pol++;		/* Count polytons */
+		if (n_pol == 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Without -S, we expect to read polygons but none found\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		uint64_t n_new;
 		if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) {
@@ -428,6 +438,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 
 	if (Ctrl->S.mode == GRDMASK_N_CART_MASK) radius = 1;	/* radius not used in this case and this avoids another if test */
+	worry_about_jumps = (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_grd_is_global (GMT, Grid->header));
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
@@ -551,6 +562,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
 
+				if (worry_about_jumps) gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);	/* Since many segments may have been read we cannot be sure there are no junps */
+
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 					
@@ -595,6 +608,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					}
 					GMT_Report (API, GMT_MSG_DEBUG, "Polygon %d scanning row %05d\n", n_pol, row);
 				}
+			}
+			else {	/* 2 or fewer points in the "polygon" */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " is not a polygon - skipped\n", seg);
 			}
 		}
 	}

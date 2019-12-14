@@ -1,12 +1,11 @@
 .. index:: ! psrose
+.. include:: module_core_purpose.rst_
 
 ******
 psrose
 ******
 
-.. only:: not man
-
-    Plot a polar histogram (rose, sector, windrose diagrams)
+|psrose_purpose|
 
 Synopsis
 --------
@@ -50,6 +49,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot a half circle rose diagram of the data in the file
 fault_segments.az_r (containing pairs of (azimuth, length in meters),

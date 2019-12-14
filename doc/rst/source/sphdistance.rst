@@ -1,12 +1,11 @@
 .. index:: ! sphdistance
+.. include:: module_core_purpose.rst_
 
 ***********
 sphdistance
 ***********
 
-.. only:: not man
-
-    Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
+|sphdistance_purpose|
 
 Synopsis
 --------
@@ -147,6 +146,18 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To compute a distance grid of the distances between a set of points in the
+remote file hotspots.txt and then contour them on a sphere with a 200 km interval
+and annotations every 1000 km, try::
+
+    gmt begin map
+      gmt sphtriangulate @hotspots.txt -Qv -D > t.txt 
+      gmt sphdistance -Rg -I1 -Qt.txt -Gt.nc -Lk
+      gmt grdcontour t.nc -JG-140/30/7i -C200 -A1000 -Bafg
+    gmt end show
 
 To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid, use

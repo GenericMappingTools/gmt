@@ -1,12 +1,11 @@
 .. index:: ! grdproject
+.. include:: module_core_purpose.rst_
 
 **********
 grdproject
 **********
 
-.. only:: not man
-
-    grdproject - Forward and inverse map transformation of grids
+|grdproject_purpose|
 
 Synopsis
 --------
@@ -133,11 +132,14 @@ Optional Arguments
 Examples
 --------
 
-To transform the geographical grid dbdb5.nc onto a pixel Mercator grid at 300 dpi, run
+.. include:: explain_example.rst_
+
+To transform a chunk of the geographical remote grid earth_relief_05m onto a pixel Mercator grid at 300 dpi
+given a scale of 0.25 inches per degree, run
 
    ::
 
-    gmt grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r -Gdbdb5_merc.nc
+    gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
 
 To inversely transform the file topo_tm.nc back onto a geographical grid, use
 

@@ -27,7 +27,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"psbasemap"
+#define THIS_MODULE_CLASSIC_NAME	"psbasemap"
+#define THIS_MODULE_MODERN_NAME	"basemap"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot base maps and frames"
 #define THIS_MODULE_KEYS	">X},>DA@AD)"
@@ -80,7 +81,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* D
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psbasemap synopsis and optionally full usage information */
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	bool classic = (API->GMT->current.setting.run_mode == GMT_CLASSIC);
 	
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -265,7 +266,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -326,7 +327,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
-	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset);
+	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

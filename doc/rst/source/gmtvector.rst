@@ -1,22 +1,21 @@
 .. index:: ! gmtvector
+.. include:: module_core_purpose.rst_
 
-******
-vector
-******
+*********
+gmtvector
+*********
 
-.. only:: not man
-
-    Operations on Cartesian vectors in 2-D and 3-D
+|gmtvector_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ] 
-[ |-C|\ [**i**\ \|\ **o**] ] 
+**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
+[ |-C|\ [**i**\ \|\ **o**] ]
 [ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
-[ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
+[ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -47,7 +46,7 @@ vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via **-S**. The output vectors
 will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
-which requests (x, y[, z]) Cartesian coordinates. 
+which requests (x, y[, z]) Cartesian coordinates.
 
 Required Arguments
 ------------------
@@ -111,21 +110,21 @@ Optional Arguments
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
     vectors), **p**\ *az* for the pole to the great circle specified by
-    input vector and the circle's *az* (no second vector used), **s** for vector sum, 
+    input vector and the circle's *az* (no second vector used), **s** for vector sum,
     **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
     by the rotations implied by the input records, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
-    **-E**, and **-N**. 
+    **-E**, and **-N**.
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 or 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 or 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -155,6 +154,13 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To determine the mean location of all points in the remote geographic file @ship_15.txt
+as well as the 95% confidence ellipse around that point, try::
+
+    gmt vector @ship_15.txt -Am -fg
 
 Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the

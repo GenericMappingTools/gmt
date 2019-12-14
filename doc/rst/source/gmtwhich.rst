@@ -1,12 +1,11 @@
 .. index:: ! gmtwhich
+.. include:: module_core_purpose.rst_
 
-*****
-which
-*****
+********
+gmtwhich
+********
 
-.. only:: not man
-
-    Find full path to specified files
+|gmtwhich_purpose|
 
 Synopsis
 --------
@@ -20,16 +19,18 @@ Synopsis
 Description
 -----------
 
-**which** reports the full paths to the files given on the command
+**which** reports the paths to the files given on the command
 line. We look for the file in (1) the current directory,
 (2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
 (4) in $GMT_CACHEDIR (if defined). If
-found we print the full path name to the file, just the directory (see
+found we print the path name to the file, just the directory (see
 **-D**), or a confirmation (see **-C**). The $GMT_USERDIR and
 $GMT_DATADIR environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
-be searched recursively.) 
+be searched recursively.)  If the file is in the current directory then
+we just return the relative path (i.e., the file name); otherwise we
+return the full path.
 
 Required Arguments
 ------------------
@@ -56,13 +57,13 @@ Optional Arguments
 
 **-D**
     Instead of reporting the paths, print the directories that contains
-    the files. 
+    the files.
 
 .. _-G:
 
 **-G**\ [**c**\ \|\ **l**\ \|\ **u**]
-    If a file argument is a downloadable file (either a full URL, a @file for
-    downloading from the GMT Site Cache, or @earth_relief_*.grd) we will try
+    If a file argument is a downloadable file (either a complete URL, a @file for
+    downloading from the GMT data server, or @earth_relief_xxy) we will try
     to download the file if it is not found in your local data or cache dirs.
     By default [**-Gl**] we download to the current directory. Append **c** to place
     in the user cache directory or **u** user data directory instead.
@@ -77,29 +78,22 @@ Optional Arguments
 Examples
 --------
 
-To see the full path to the file myjunk.txt, use
-
-   ::
+To see the path to the file myjunk.txt, use::
 
     gmt which myjunk.txt
 
-To download the 10 arc-minute global relief file from the GMT data site, use
+To download the 10 arc-minute global relief file from the GMT data server, use::
 
-   ::
-
-    gmt which -Gu @earth_relief_10m.grd
+    gmt which -Gu @earth_relief_10m
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_USER_DIR.  To obtain a GMT example or test file from the
-GMT cache site, try
-
-   ::
+be placed in the user's GMT_USERDIR.  To obtain a GMT example or test file from the
+GMT data server, try::
 
     gmt which -Gc @hotspots.txt
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_CACHE_DIR directory.
-
+be placed in the user's GMT_CACHEDIR directory.
 
 See Also
 --------

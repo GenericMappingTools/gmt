@@ -6,7 +6,7 @@ if [ $GDAL -eq 0 ]; then exit; fi
 	
 ps=withgdal.ps
 
-# RGB image. The +b0,1,2 also tests the bands request option
+# RGB image. The +b2,1,0 also tests the bands request option
 gmt psimage @needle.jpg+b0,1,2 -Dx0/0+w7c -P -Y15c -K > $ps
 
 # Same image as above but as idexed

@@ -76,7 +76,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *color*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets color or fill pattern for extensive quadrants [Default is white].
 
 .. _-F:
@@ -84,7 +84,7 @@ Optional Arguments
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol[size][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Fs**\ *symbol*\ [*size*\ ][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
    selects a symbol instead of mechanism. Choose from the following:
    (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
    (**t**) triangle, (**x**) cross. *size* is the symbol size in
@@ -108,10 +108,10 @@ Optional Arguments
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
 
-**-Fe**\ *fill*
+**-Fe**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or fill pattern for the T axis symbol. [Default as set by |-E|]
 
-**-Fg**\ *fill*
+**-Fg**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or fill pattern for the P axis symbol. [Default as set by |-G|]
 
 **-Fp**\ [*pen*]
@@ -125,7 +125,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets color or fill pattern for compressional quadrants [Default is black].
 
 .. _-L:

@@ -1,13 +1,12 @@
 .. index:: ! contour
+.. include:: module_core_purpose.rst_
 
 
 *********
 contour
 *********
 
-.. only:: not man
-
-    Contour table data by direct triangulation [method]
+|contour_purpose|
 
 Synopsis
 --------
@@ -46,19 +45,22 @@ Synopsis
 Examples
 --------
 
-To make a raw contour plot from the file topo.xyz and drawing the
-contours (pen = 2) given in the CPT topo.cpt on a Lambert
-map at 0.5 inch/degree along the standard parallels 18 and 24, use
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
+To make a raw contour plot from the remote file Table_5.11.txt and draw the
+contours every 25 and annotate every 50, using the default Cartesian projection, try
 
    ::
 
-    gmt contour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p -pdf topo
+    gmt contour @Table_5_11.txt -Wthin -C25 -A50 -B -pdf map
 
-To use the same data but only contour the values 250 and 700, use
+To use the same data but only contour the values 750 and 800, use
 
    ::
 
-    gmt contour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -C250,700 -W0.5p -pdf topo
+    gmt contour @Table_5_11.txt -A750,800 -W0.5p -B -pdf map
 
 To create a color plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and

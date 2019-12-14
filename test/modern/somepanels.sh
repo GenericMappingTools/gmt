@@ -9,4 +9,4 @@ gmt begin somepanels ps
     gmt basemap -R300/500/-10/0 -c1,0
     gmt basemap -Bafg -R300/500/-100/0 -c5
   gmt subplot end
-gmt end
+gmt end show

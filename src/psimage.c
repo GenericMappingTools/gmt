@@ -25,9 +25,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"psimage"
+#define THIS_MODULE_CLASSIC_NAME	"psimage"
+#define THIS_MODULE_MODERN_NAME	"image"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Place images or EPS files on maps"
+#define THIS_MODULE_PURPOSE	"Plot raster or EPS images"
 #define THIS_MODULE_KEYS	"<I{,>X}"
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
@@ -54,6 +55,7 @@ struct PSIMAGE_CTRL {
 	struct PSIMG_G {	/* -G<rgb>[+b|+f|+t] */
 		bool active;
 		double rgb[3][4];
+		int index;	/* For 1-bit images, which index do we change */
 	} G;
 	struct PSIMG_I {	/* -I */
 		bool active;
@@ -73,7 +75,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = -2;	/* All turned off */
+	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = C->G.index = -2;	/* All turned off */
 	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
@@ -89,7 +91,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psimage synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>]\n", name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
@@ -253,6 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				if (p) p[0] = '+';	/* Restore modifier */
+				Ctrl->G.index = (Ctrl->G.index == -2) ? ind : -1;	/* -1 means we are setting both fore and background colors */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				Ctrl->I.active = true;
@@ -398,7 +401,7 @@ int GMT_image (void *V_API, int mode, void *args) {
 }
 
 int GMT_psimage (void *V_API, int mode, void *args) {
-	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0;
+	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
 	unsigned int row, col;
 	size_t n;
 	bool free_GMT = false, did_gray = false;
@@ -432,7 +435,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -442,7 +445,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
 	file = strdup (Ctrl->In.file);
-	if ((c = strstr (file, "=gd"))) c[0] = '\0';	/* Chop off unnecessary =gd mandate */
+	if ((c = strstr (file, "=gd"))) {
+		is_gdal = true;
+		c[0] = '\0';	/* Chop off unnecessary =gd mandate */
+	}
 	is_eps = file_is_eps (GMT, &file);	/* Determine if this is an EPS file or other */
 	if (is_eps < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
@@ -467,6 +473,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input raster via GDAL\n");
+		if (is_gdal) {	/* Need full name since there may be band requests */
+			gmt_M_str_free (file);
+			file = strdup (Ctrl->In.file);
+		}
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, NULL)) == NULL) {
 			gmt_M_str_free (file);
@@ -477,8 +487,20 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		/* Handle transparent images */
 		if (I->colormap != NULL) {	/* Image has a color map */
 			/* Convert colormap from integer to unsigned char and count colors */
-			for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
+			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
+			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G */
+				if (Ctrl->G.index == -1) {	/* Set both fore and backtround color */
+					for (n = 0; n < 4; n++) colormap[n] = gmt_M_u255(Ctrl->G.rgb[PSIMG_BGD][n]);
+					for (n = 0; n < 4; n++) colormap[n+4] = gmt_M_u255(Ctrl->G.rgb[PSIMG_FGD][n]);
+				}
+				else if (Ctrl->G.rgb[Ctrl->G.index][0] == -1) { /* Set transparency for this color */
+					has_trans = true; r = colormap[4*Ctrl->G.index]; g = colormap[1+4*Ctrl->G.index]; b = colormap[2+4*Ctrl->G.index];
+					gmt_M_rgb_copy (Ctrl->G.rgb[PSIMG_TRA],Ctrl->G.rgb[Ctrl->G.index]);
+				}
+				else
+					for (n = 0; n < 4; n++) colormap[n+4*Ctrl->G.index] = gmt_M_u255(Ctrl->G.rgb[Ctrl->G.index][n]);
+			}
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */

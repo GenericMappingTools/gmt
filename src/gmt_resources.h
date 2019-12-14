@@ -181,9 +181,10 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE	= -6,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS	= -5,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modules */
+	GMT_MODULE_USAGE	= -7,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS	= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC	= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
 	GMT_MODULE_EXIST	= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
 	GMT_MODULE_PURPOSE	= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
 	GMT_MODULE_OPT		= -1,	/* Gave linked list of option structures to GMT_Call_Module */

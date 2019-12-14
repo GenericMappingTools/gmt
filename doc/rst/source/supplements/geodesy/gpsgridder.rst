@@ -1,12 +1,11 @@
 .. index:: ! gpsgridder
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 gpsgridder
 **********
 
-.. only:: not man
-
-    gpsgridder - Interpolate GPS strain vectors using Green's functions for elastic deformation
+|gpsgridder_purpose|
 
 Synopsis
 --------

@@ -39,9 +39,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdblend"
+#define THIS_MODULE_CLASSIC_NAME	"grdblend"
+#define THIS_MODULE_MODERN_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
+#define THIS_MODULE_PURPOSE	"Blend several partially overlapping grids into one larger grid"
 #define THIS_MODULE_KEYS	"<G{+,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVfnr"
@@ -191,7 +192,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 }
 
 GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
-	int type, status, not_supported;
+	int type, status, not_supported = 0;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
 	struct GRDBLEND_INFO *B = NULL;
@@ -420,10 +421,6 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
-				if (GMT->common.n.active) {	/* User changed BC/method via -n */
-					strcat (cmd, " -n");
-					strcat (cmd, GMT->common.n.string);
-				}
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				strcat (cmd, " --GMT_HISTORY=false");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
@@ -602,7 +599,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* De
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u][+n|p]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
@@ -780,7 +777,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

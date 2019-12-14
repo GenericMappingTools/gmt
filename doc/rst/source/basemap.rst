@@ -1,12 +1,11 @@
 .. index:: ! basemap
+.. include:: module_core_purpose.rst_
 
 *******
 basemap
 *******
 
-.. only:: not man
-
-    Plot base maps and frames
+|basemap_purpose|
 
 Synopsis
 --------
@@ -36,6 +35,8 @@ Synopsis
 Examples
 --------
 
+.. include:: oneliner_info.rst_
+
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
 in several different ways depending on the projection. Also note the use
@@ -50,6 +51,16 @@ Linear x-y plot
 To make a linear x/y frame with all axes, but with only left and bottom
 axes annotated, using xscale = yscale = 1.0, ticking every 1 unit and
 annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", use
+
+   ::
+
+    gmt begin linear
+      gmt basemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn
+    gmt end show
+
+As mentioned above, such simple modern mode script can take advantage of the one-liner
+format.  We repeat the same example using the one-liner format and then only show this
+format for the remaining examples:
 
    ::
 
@@ -292,8 +303,8 @@ define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 
     gmt basemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -pdf stereo2
 
-`Miscellaneous Map Projections <#toc33>`_
------------------------------------------
+Miscellaneous Map Projections
+-----------------------------
 
 Hammer [equal-area]
 ~~~~~~~~~~~~~~~~~~~
@@ -323,7 +334,7 @@ following sequence of commands:
    ::
 
     gmt begin
-    gmt basemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn 
+    gmt basemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn
     gmt basemap -Bx30g30 -By15g15 -Bwesn -X2.8i
     gmt basemap -Bx30g30 -By15g15 -BwEsn -X1.6i
     gmt end show

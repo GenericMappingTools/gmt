@@ -34,7 +34,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grd2cpt"
+#define THIS_MODULE_CLASSIC_NAME	"grd2cpt"
+#define THIS_MODULE_MODERN_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
 #define THIS_MODULE_KEYS	"<G{+,>C}"
@@ -137,7 +138,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n", name);
@@ -461,7 +462,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -494,6 +495,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Pin = Ptrunc;
 	}
 	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
+
+	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
 
@@ -594,9 +597,11 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 		if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 		if (Ctrl->F.cat) Pout->categorical = 1;
-		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
+		if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (!write)
+			gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 		free_them_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
@@ -725,12 +730,11 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
-
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
-	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write) 
+		gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);

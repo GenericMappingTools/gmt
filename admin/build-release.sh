@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 # Script that builds a GMT release and makes the compressed tarballs.
 # If run under macOS it also builds the macOS Bundle
+reset_config() {
+	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
+	if [ -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ]; then # Restore what we had
+		mv -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ${TOPDIR}/cmake/ConfigUser.cmake
+	fi
+}
+
+abort_build() {	# Called when we abort this script via Crtl-C
+	echo "build-release.sh: Detected Ctrl-C - aborting" >&2
+	reset_config
+	rm -rf ${TOPDIR}/build
+	exit -1
+}
+
+TOPDIR=`pwd`
+
 if [ $# -gt 0 ]; then
 	echo "Usage: build-release.sh"
 	echo ""
@@ -30,9 +46,12 @@ if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
-# 2. Make build dir and configure it
+trap abort_build SIGINT
+# 2a. Make build dir and configure it
 rm -rf build
 mkdir build
+# 2b. Build list of external programs and shared libraries
+admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
 echo "build-release.sh: Configure and build tarballs"
 cmake -G Ninja ..
@@ -50,15 +69,12 @@ if [ `uname` = "Darwin" ]; then
 	# 7. Build the macOS Bundle
 	cpack -G Bundle
 fi
-# 8. Report m5d hash
+# 8. Report sha256 hash
 echo "build-release.sh: Report sha256sum per file"
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
-rm -f ../cmake/ConfigUser.cmake
-if [ -f ../cmake/ConfigUser.cmake.orig ]; then
-	mv ../cmake/ConfigUser.cmake.orig ../cmake/ConfigUser.cmake
-fi
-# 10. Put the products on my ftp site
+reset_config
+# 10. Put the candidate products on my ftp site
 echo "Place gmt-${Version}-src.tar.* on the ftp site"
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
 	echo "Place gmt-${Version}-darwin-x86_64.dmg on the ftp site"

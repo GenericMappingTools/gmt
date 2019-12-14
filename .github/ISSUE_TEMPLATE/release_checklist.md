@@ -11,6 +11,7 @@ assignees: ''
 
 **Before release**:
 
+- [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] update changelog
@@ -36,6 +37,7 @@ assignees: ''
     ```
 - [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
+- [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make announcements
 - [ ] update links on the main site (News, Download & Documentation)
@@ -52,7 +54,8 @@ assignees: ''
 - [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
 - [ ] update [fink package](https://github.com/fink/fink-distributions/blob/master/10.9-libcxx/stable/main/finkinfo/sci/) (@remkos)
-- [ ] update [macports ports](https://github.com/macports/macports-ports/tree/master/science)
+- [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@seisman)
+- [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
 
 ---
 

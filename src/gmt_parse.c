@@ -281,7 +281,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
+		snprintf (file, PATH_MAX, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
 			return (-1);
@@ -309,9 +309,16 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
-				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					gmt_M_str_free (GMT->init.history[id]);
-					GMT->init.history[id] = strdup (&str[1]);
+				if (remember) {
+					if (str[1] == 'Z' || str[1] == 'z') {
+						int z_id = gmt_get_option_id (0, "Z");
+						gmt_M_str_free (GMT->init.history[z_id]);
+						GMT->init.history[z_id] = strdup (&str[1]);
+					}
+					else {
+						gmt_M_str_free (GMT->init.history[id]);
+						GMT->init.history[id] = strdup (&str[1]);
+					}
 				}
 				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
 			}
@@ -581,7 +588,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 				this_arg = &args[arg][first_char];
 			}
 			else {
-				sprintf (buffer, ">%s", &args[arg][first_char]);
+				snprintf (buffer, GMT_LEN1024, ">%s", &args[arg][first_char]);
 				this_arg = buffer;
 			}
 			append = 0;
@@ -621,7 +628,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		struct GMT_OPTION *opt = NULL;
 		for (opt = head; opt; opt = opt->next) {	/* Loop over all options */
 			if (opt->option == 'O' || opt->option == 'K') break;	/* Cannot be a one-liner if -O or -K are involved */
-			sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png, which would be parse into -p and ng, are reunited to png */
+			snprintf (figure, GMT_LEN512, "%c%s", opt->option, opt->arg);	/* So -png, which would be parse into -p and ng, are reunited to png */
 			if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop of more than one format for the id test */
 			if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
 			if (opt->next && opt->next->option == GMT_OPT_INFILE) 	/* Found a -ext[,ext,ext,...] <prefix> pair */
@@ -724,17 +731,17 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
 		else if (opt->option == '=' && opt->arg[0]) {		/* Start of long list of file args initially given via -=<list> */
-			sprintf (buffer, "=%s", opt->arg);
+			snprintf (buffer, GMT_BUFSIZ, "=%s", opt->arg);
 			skip_infiles = true;
 		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (skip_infiles) continue;
-			sprintf (buffer, "%s", opt->arg);
+			snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 		}
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
-			sprintf (buffer, "-%c%s", opt->option, opt->arg);
+			snprintf (buffer, GMT_BUFSIZ, "-%c%s", opt->option, opt->arg);
 		else							/* Regular -? commandline argument without argument */
-			sprintf (buffer, "-%c", opt->option);
+			snprintf (buffer, GMT_BUFSIZ, "-%c", opt->option);
 
 		txt[arg] = gmt_M_memory (G, NULL, strlen (buffer)+1, char);	/* Get memory for this item */
 
@@ -793,29 +800,29 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
 		else if (opt->option == '=' && opt->arg[0]) {		/* Special list file, add it but not the files that follow */
-			sprintf (buffer, "=%s", opt->arg);
+			snprintf (buffer, GMT_BUFSIZ, "=%s", opt->arg);
 			skip_infiles = true;
 		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (skip_infiles) continue;
 			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				sprintf (buffer, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
+				snprintf (buffer, GMT_BUFSIZ, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
 			else if (gmt_M_file_is_remotedata (opt->arg) && (c = strstr (opt->arg, ".grd"))) {
 				c[0] = '\0';
-				sprintf (buffer, "%s", opt->arg);
+				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 				c[0] = '.';
 			}
 			else
-				sprintf (buffer, "%s", opt->arg);
+				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 		}
 		else if (opt->arg && opt->arg[0]) {			/* Regular -?arg commandline option with argument for some ? */
 			if (strchr (opt->arg, ' '))	/* Has a space in the argument, e.g., a title or similar */
-				sprintf (buffer, "-%c\"%s\"", opt->option, opt->arg);
+				snprintf (buffer, GMT_BUFSIZ, "-%c\"%s\"", opt->option, opt->arg);
 			else
-				sprintf (buffer, "-%c%s", opt->option, opt->arg);
+				snprintf (buffer, GMT_BUFSIZ, "-%c%s", opt->option, opt->arg);
 		}
 		else							/* Regular -? commandline argument without argument */
-			sprintf (buffer, "-%c", opt->option);
+			snprintf (buffer, GMT_BUFSIZ, "-%c", opt->option);
 
 		inc = strlen (buffer);
 		if (!first) inc++;	/* Count the space between args */

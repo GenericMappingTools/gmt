@@ -28,7 +28,8 @@ static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
 #include "mgd77defaults.h"
 };
 
-#define THIS_MODULE_NAME	"mgd77sniffer"
+#define THIS_MODULE_CLASSIC_NAME	"mgd77sniffer"
+#define THIS_MODULE_MODERN_NAME	"mgd77sniffer"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
 #define THIS_MODULE_KEYS	""
@@ -368,12 +369,12 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s] [%s]\n\n"
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s] [%s]\n\n",
 	 	GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -516,10 +517,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t\tL --> d[depth] excessive\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tO --> d[mtf1] excessive\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tetc.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\nEXAMPLES:\n\tAlong-track excessive value and gradient checking:\n\t\tmgd77sniffer 08010001\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tmgd77sniffer 08010001 -Ds\n");
+	GMT_Message (API, GMT_TIME_NONE, "\nEXAMPLES:\n\tAlong-track excessive value and gradient checking:\n\t\tgmt mgd77sniffer 08010001\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tgmt mgd77sniffer 08010001 -Ds\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTo compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tmgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\tgmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
 	return (GMT_MODULE_USAGE);
 }
 
@@ -605,7 +606,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
@@ -939,6 +940,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	if (custom_limit_file) {
 		if ((custom_fp = gmt_fopen (GMT, custom_limit_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not open custom limit file %s\n", custom_limit_file);
+			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (API->error);
 	 	}
 		else {
@@ -956,6 +958,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error in custom limits file [%s]\n", custom_limit_line);
+					gmt_fclose (GMT, custom_fp);
+					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (API->error);
 				}
 			}

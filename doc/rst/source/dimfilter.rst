@@ -1,12 +1,11 @@
 .. index:: ! dimfilter
+.. include:: module_core_purpose.rst_
 
 *********
 dimfilter
 *********
 
-.. only:: not man
-
-    dimfilter - Directional filtering of 2-D gridded files in the space (or time) domain
+|dimfilter_purpose|
 
 Synopsis
 --------
@@ -179,8 +178,10 @@ Optional Arguments
 Examples
 --------
 
-Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry
-from 140E to 260E and 0N to 50N, and you want to find the medians of
+.. include:: explain_example.rst_
+
+We have the remote file @earth_relief_05m which is a file of 5 minute bathymetry,
+and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. To prevent the medians from being
@@ -190,8 +191,7 @@ distance calculations, you need:
 
    ::
 
-    gmt dimfilter north_pacific_dbdb5.nc -Gfiltered_pacific.nc -Fm600 -D4 \
-        -Nl6 -R150/250/10/40 -I0.5 -V
+    gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
 
 Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features

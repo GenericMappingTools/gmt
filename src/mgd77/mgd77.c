@@ -3980,6 +3980,7 @@ int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format) {
 void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	/* Initialize MGD77 control system */
 	int i, k;
+	char *name = gmt_putusername(GMT);
 
 	gmt_M_memset (F, 1, struct MGD77_CONTROL);		/* Initialize structure */
 	MGD77_Path_Init (GMT, F);
@@ -3999,7 +4000,8 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;
 	gmt_M_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1U << i;
-	strncpy (F->user, gmt_putusername(GMT), MGD77_COL_ABBREV_LEN);
+	strncpy (F->user, name, MGD77_COL_ABBREV_LEN);
+	gmt_M_str_free (name);
 	F->desired_column = gmt_M_memory (GMT, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
 	F->verbose_level = 0;
 	F->verbose_dest = 2;

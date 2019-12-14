@@ -1,12 +1,11 @@
 .. index:: ! trend1d
+.. include:: module_core_purpose.rst_
 
 *******
 trend1d
 *******
 
-.. only:: not man
-
-    Fit a [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data
+|trend1d_purpose|
 
 Synopsis
 --------
@@ -183,6 +182,8 @@ kept low.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To remove a linear trend from data.xy by ordinary least squares, use:
 

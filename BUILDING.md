@@ -30,20 +30,25 @@ For developers and advanced users:
 - [Packaging](#packaging)
 - [Updating the development source codes](#updating-the-development-source-codes)
 
+For package maintainers:
+
+- [Packaging GMT](#packaging-gmt)
+
 ## Build and runtime dependencies
 
 To build GMT, you must install:
 
-- [CMake](https://cmake.org/) (>=2.8.5)
-- [Ghostscript](https://www.ghostscript.com/)
+- [CMake](https://cmake.org/) (>=2.8.7)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
 Optionally install these for more capabilities within GMT:
 
+- [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
+- [GLib](https://developer.gnome.org/glib/) GTHREAD support
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 
@@ -74,10 +79,10 @@ For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
+    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev ghostscript
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -101,14 +106,14 @@ You can add this repository by telling yum:
 You then can install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo yum install cmake libcurl-devel netcdf-devel ghostscript
+    sudo yum install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -126,14 +131,14 @@ For Fedora, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
+    sudo dnf install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     sudo dnf install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -151,10 +156,10 @@ For Archlinux, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
+    sudo pacman -S base-devel cmake libcurl-gnutls netcdf
 
     # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas
+    sudo pacman -S gdal pcre fftw lapack openblas glib2 ghostscript
 
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
@@ -174,10 +179,10 @@ For FreeBSD, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf print/ghostscript9
+    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf
 
     # install optional dependencies
-    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas
+    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas print/ghostscript9
 
     # to enable movie-making
     sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
@@ -196,10 +201,10 @@ Install the gmt dependencies with:
 For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
-    brew install cmake curl netcdf ghostscript
+    brew install cmake curl netcdf
 
     # Install optional dependencies
-    brew install gdal pcre fftw
+    brew install gdal pcre2 fftw glib ghostscript
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -237,31 +242,32 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
 
     # Build and install libraries
     # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    # NOTE: clapack and openblas currently aren't available for x86-windows.
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
 
-After installing these dependency libraries, you need to add the bin path
-(i.e. `C:\vcpkg\installed\x64-windows\bin`) to the system PATH,
-to allow executables find the DLL shared libraries.
+After installing these dependency libraries, you also need to add
+vcpkg's bin path (i.e. `C:\vcpkg\installed\x64-windows\bin`) and
+GDAL's bin path (i.e. `C:\vcpkg\installed\x64-windows\tools\gdal`),
+to the system environmental variable `PATH`,
+so that GMT executables can find the DLL shared libraries and
+the GDAL tools (`gdal_translate` and `ogr2ogr`).
 
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from the [GMT website](https://www.generic-mapping-tools.org) and
-[GitHub Release Page](https://github.com/GenericMappingTools/gmt/releases)
+are available from the [GMT main site](https://www.generic-mapping-tools.org).
 
 If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
 
     git clone https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
-from any of the [GMT FTP sites](MIRRORS.md).
+from the [GMT main site](https://www.generic-mapping-tools.org).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
 
@@ -298,7 +304,6 @@ set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
 set (COPY_GSHHG true)
 set (COPY_DCW true)
-set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
@@ -370,9 +375,17 @@ Using `sudo` will often do the trick.
 
 ## Setting path
 
-Make sure you set the PATH to include the directory containing the GMT executables
-if this is not a standard directory like `/usr/local/bin`. Then, you should now be able to
-run GMT programs.
+Make sure you set the `PATH` to include the directory containing the GMT executables
+if this is not a standard directory like `/usr/local/bin`.
+
+For Linux/macOS users, open your SHELL configuration file (usually `~/.bashrc`)
+and add the line below to it.
+
+```
+export PATH=${PATH}:/path/to/gmt/bin
+```
+
+Then, you should now be able to run GMT programs.
 
 ---
 
@@ -468,3 +481,99 @@ cmake --build . --target install
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
 run cmake again manually.
+
+---
+
+## Packaging GMT
+
+**These recommendations are directed at package maintainers of GMT.**
+
+First split off DCW-GMT and GSHHG into separate architecture independent packages,
+e.g., `dcw-gmt` and `gshhg-gmt`, because they have a different development cycle.
+Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt/` or
+`/usr/share/gmt/{dcw,gshhg}/`. Then configure GMT as shown below.
+
+### DCW-GMT
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/dcw/
+- **Summary**: Digital Chart of the World (DCW) for GMT
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-x.x.x.tar.gz
+- **Description**: DCW-GMT is an enhancement to the original 1:1,000,000 scale vector basemap of the world,
+  available from the Princeton University Digital Map and Geospatial Information Center.
+  It contains more state boundaries (the largest 8 countries are now represented) than the original data source.
+  Information about DCW can be found on Wikipedia (https://en.wikipedia.org/wiki/Digital_Chart_of_the_World).
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GSHHG
+
+- **Homepage**: https://www.soest.hawaii.edu/pwessel/gshhg/
+- **Summary**: Global Self-consistent Hierarchical High-resolution Geography (GSHHG)
+- **License**: LGPL-3+
+- **Source**:
+  - https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-x.x.x.tar.gz
+  - ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-x.x.x.tar.gz
+- **Description**: GSHHG is a high-resolution shoreline data set amalgamated from
+  two databases: Global Self-consistent Hierarchical High-resolution Shorelines (GSHHS)
+  and CIA World Data Bank II (WDBII). GSHHG contains vector descriptions at five different
+  resolutions of land outlines, lakes, rivers, and political boundaries.
+  This data is for use by GMT, the Generic Mapping Tools.
+
+### GMT
+
+- **Homepage**: https://www.generic-mapping-tools.org/
+- **Summary**: Generic Mapping Tools
+- **License**: GPL-3+, LGPL-3+, or Restrictive depending on LICENSE_RESTRICTED setting
+- **Source**:
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.xz
+  - ftp://ftp.soest.hawaii.edu/gmt/gmt-6.x.x-src.tar.gz
+- **Description**: GMT is an open-source collection of command-line tools for
+  manipulating geographic and Cartesian data sets (including filtering, trend fitting,
+  gridding, projecting, etc.) and producing PostScript illustrations ranging from simple
+  x–y plots via contour maps to artificially illuminated surfaces and 3D perspective views.
+  It supports many map projections and transformations and includes supporting data
+  such as coastlines, rivers, and political boundaries and optionally country polygons.
+- **Build dependencies**:
+    - cmake
+    - gcc
+    - curl
+    - netcdf
+    - gdal
+    - pcre
+    - fftw
+    - glib2
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt
+- **Runtime dependencies**:
+    - ghostscript (*required*)
+    - curl (*required*)
+    - netcdf (*required*)
+    - gdal
+    - pcre
+    - fftw
+    - glib2
+    - lapack
+    - openblas
+    - dcw-gmt
+    - gshhg-gmt (at least the crude resolution GSHHG files are mandatory)
+- **CMake arguments**:
+    ```
+    -DCMAKE_C_FLAGS=-fstrict-aliasing
+    -DCMAKE_INSTALL_PREFIX=${prefix}
+    -DDCW_ROOT=${prefix}/share/gmt/dcw
+    -DGSHHG_ROOT=${prefix}/share/gmt/gshhg
+    -DNETCDF_ROOT=${prefix}
+    -DFFTW3_ROOT=${prefix}
+    -DGDAL_ROOT=${prefix}
+    -DPCRE_ROOT=${prefix}
+    -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
+    -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
+    ```
+
+Note that you have to configure and build out-of-source.
+It is safe to make a parallel build with `make -j`.
+It is expected that the GMT supplements plugin be distributed with the core programs.

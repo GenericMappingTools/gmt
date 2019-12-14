@@ -5,6 +5,10 @@
 # GMT modules:  coast, plot, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance
 # Unix progs:   rm
 #
+
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 gmt begin ex35
 	# Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 	# gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | $AWK '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
@@ -20,4 +24,4 @@ gmt begin ex35
 	gmt coast -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t"Distances from GSHHG crude coastlines"
 	# cleanup
 	rm -f tt.pol tt.nc
-gmt end
+gmt end show

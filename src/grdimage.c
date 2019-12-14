@@ -27,9 +27,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdimage"
+#define THIS_MODULE_CLASSIC_NAME	"grdimage"
+#define THIS_MODULE_MODERN_NAME	"grdimage"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
+#define THIS_MODULE_PURPOSE	"Project and plot grids or images"
 #define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
@@ -131,7 +132,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* De
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->external) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", name, GMT_J_OPT, GMT_B_OPT); 
@@ -371,7 +372,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					Ctrl->I.file = strdup (opt->arg);
 				else if (gmt_M_file_is_cache (opt->arg))	/* Got a remote file */
 					Ctrl->I.file = strdup (opt->arg);
-				else if (opt->arg[0] && !gmt_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
+				else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
 					Ctrl->I.constant = true;
 				}
@@ -631,7 +632,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1043,6 +1044,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->D.active) {	/* Already got an image with colors but need to set up a colormap of 256 entries */
 			uint64_t cpt_len[1] = {256};
+			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
@@ -1063,6 +1065,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				do_indexed = true;	/* Now it will be RGB */
 				gray_only = false;	/* True technocolor, baby */
 			}
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Indexed image without colormap. Can't proceed.\n");
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -1176,9 +1182,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	for (try = 0, done = false; !done && try < 2; try++) {
 		if (rgb_from_z && !Ctrl->Q.active) {	/* Got a single grid and need to look up color via the CPT */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Basic z(x,y) with optional illumination and no colormasking.\n");
-#ifdef _OPENMP
-#pragma omp parallel for private(row,byte,kk,col,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
-#endif 
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row,byte,kk,col,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
+//#endif 
 			for (row = 0; row < n_rows; row++) {	/* March along scanlines */
 				byte = colormask_offset + row * n_columns * step;
 				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */

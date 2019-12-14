@@ -1,12 +1,11 @@
 .. index:: ! grdblend
+.. include:: module_core_purpose.rst_
 
 ********
 grdblend
 ********
 
-.. only:: not man
-
-    Blend several partially over-lapping grids into one large grid
+|grdblend_purpose|
 
 Synopsis
 --------
@@ -154,6 +153,8 @@ data grid, see grdmath's TAPER operator.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To create a grid file from the four grid files piece\_?.nc, giving them each the different
 weights, make the blendfile like this

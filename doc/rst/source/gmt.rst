@@ -13,7 +13,7 @@ Introduction
 
 GMT is a collection of public-domain Unix tools that allows you to
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
-projecting, etc.) and produce PostScript illustrations ranging from
+projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
 and 3-D perspective views in black/white or full color. Linear, log10,
 and power scaling is supported in addition to over 30 common map
@@ -26,65 +26,67 @@ Synopsis
 **gmt** is the main program that can start any of the modules:
 
 **gmt** *module* *module-options*
-
-Starts a given GMT *module* with the *module-options*
-that pertain to that particular module.  A few special commands
-are also available:
+    Starts a given GMT *module* with the *module-options*
+    that pertain to that particular module.  A few special commands
+    are also available:
 
 **gmt clear** *items*
-
-Deletes current defaults, or the cache, data or sessions directories.
-Choose between **defaults** (deletes the current gmt.conf file used for the
-current modern session), **cache** (deletes the user's cache directory
-and all of its content), **data** (deletes the user's data download directory
-and all of its content), or **all** (does all of the above).
+    Deletes current defaults, or the cache, data or sessions directories.
+    Choose between **defaults** (deletes the current gmt.conf file used for the
+    current modern session), **cache** (deletes the user's cache directory
+    and all of its content), **data** (deletes the user's data download directory
+    and all of its content), or **all** (does all of the above).
 
 **gmt begin** [*session-prefix*] [*format*] [*options*]
+    Initializes a new GMT session under *modern* mode [Default is *classic* mode].
+    All work is performed in a temporary work directory.
+    The optional *session-prefix* assigns a name to the session, and this may be used
+    as figure name for single-figure sessions [gmtsession].  Likewise, the optional
+    *format* can be used to override the default graphics format [PDF].
 
-Initializes a new GMT session under *modern* mode [Default is *classic* mode].
-All work is performed in a temporary work directory.
-The optional *session-prefix* assigns a name to the session, and this may be used
-as figure name for single-figure sessions [gmtsession].  Likewise, the optional
-*format* can be used to override the default graphics format [PDF].
-
-**gmt figure** [*prefix*] [*format(s)*] [*options*]
-
-Specifies the desired name, output format(s) and any custom arguments that should
-be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
-will be directed to this current figure until another **gmt figure** command is issued
-or the session ends.  The *prefix* is used to build final figure names when extensions
-are automatically appended. The *format* setting is a comma-separated list of desired
-extensions (e.g., pdf,png).
+**gmt figure** *prefix* [*format(s)*] [*options*]
+    Specifies the desired name, output format(s) and any custom arguments that should
+    be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
+    will be directed to this current figure until another **gmt figure** command is issued
+    or the session ends.  The *prefix* is used to build final figure names when extensions
+    are automatically appended. The *format* setting is a comma-separated list of desired
+    extensions (e.g., pdf,png).
 
 **gmt inset** [*arguments*]
-
-Allows users to place a map inset by temporarily changing where plotting takes place
-as well as the region and projection, then resets to previous stage.
+    Allows users to place a map inset by temporarily changing where plotting takes place
+    as well as the region and projection, then resets to previous stage.
 
 **gmt subplot** [*arguments*]
-
-Allows users to create a matrix of panels with automatic labeling and advancement.
+    Allows users to create a matrix of panels with automatic labeling and advancement.
 
 **gmt end** [**show**]
+    Terminates a GMT modern mode session and automatically converts the registered
+    illustration(s) to their specified formats, then eliminates the temporary work
+    directory.  The figures are placed in the current directory.
 
-Terminates a GMT modern mode session and automatically converts the registered
-illustration(s) to the specified formats, then eliminates the temporary work
-directory.  The figures are placed in the current directory.
+For information on any module, load the module documentation
+in your browser via gmt :doc:`docs`, e.g.::
 
-If no module is given then
-several other options are available:
+    gmt docs grdimage
+
+If no module is given then several other options are available:
 
 **--help**
     List and description of GMT modules.
 
-**--new-script**
-    Write a GMT modern mode script template to stdout.
+**--new-script**\ [=\ *L*]
+    Write a GMT modern mode script template to stdout. Optionally append the desired
+    scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
+    closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
 **--show-bindir**
     Show directory of executables and exit.
 
 **--show-citation**
     Show the citation for the latest GMT publication.
+
+**--show-classic**
+    List classic module names on stdout and exit.
 
 **--show-cores**
     Show number of available cores.
@@ -99,7 +101,7 @@ several other options are available:
     Show the DOI of the current release.
 
 **--show-modules**
-    List module names on stdout and exit.
+    List modern module names on stdout and exit.
 
 **--show-library**
     Show the path of the shared GMT library.
@@ -128,21 +130,19 @@ distribution, you may still need to source the gmt completion file from
 ``~/.bash_completion`` or ``~/.bashrc``.  For more information see Section
 :ref:`command-line-completion` in the CookBook.
 
-GMT Overview
-------------
+GMT Modules
+-----------
 
-The following is a summary of all the programs supplied with GMT and
-a very short description of their purpose. Detailed information about
-each program can be found in the separate manual pages.
-
-.. include:: explain_gmt_modules.rst_
+Run **gmt --help** to print the list of all core and supplementals modules
+within GMT, and a very short description of their purpose.
+Detailed information about each program can be found in the separate manual pages.
 
 Custom Modules
 --------------
 
 The **gmt** program can also load custom modules from shared libraries
 built as specified in the GMT API documentation.  This way your modules
-can benefit form the GMT infrastructure and extend GMT in specific ways.
+can benefit from the GMT infrastructure and extend GMT in specific ways.
 
 The Common GMT Options
 ----------------------
@@ -151,7 +151,7 @@ The Common GMT Options
 
 |SYN_OPT-B|
 **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters* **-K** **-O**
+**-Jz**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |SYN_OPT-U|
 |SYN_OPT-V|
@@ -169,7 +169,7 @@ The Common GMT Options
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
-**-r**
+|SYN_OPT-r|
 |SYN_OPT-s|
 |SYN_OPT-t|
 |SYN_OPT-x|
@@ -235,6 +235,8 @@ programs. No space between the option flag and the associated arguments.
 .. |Add_-j| unicode:: 0x20 .. just an invisible code
 .. include:: explain_distcalc_full.rst_
 
+.. include:: explain_-l_full.rst_
+
 .. include:: explain_-n_full.rst_
 
 .. include:: explain_-ocols_full.rst_
@@ -285,3 +287,8 @@ directories. For an explanation of the various GMT settings in this
 man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
+
+See Also
+--------
+
+:doc:`docs`

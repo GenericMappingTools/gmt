@@ -1,12 +1,11 @@
 .. index:: ! grdvector
+.. include:: module_core_purpose.rst_
 
 *********
 grdvector
 *********
 
-.. only:: not man
-
-    Plot vector field from two component grids
+|grdvector_purpose|
 
 Synopsis
 --------
@@ -36,6 +35,10 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
 
 To draw the vector field given by the files r.nc and theta.nc on a
 linear plot with scale 5 cm per data unit, using vector rather than

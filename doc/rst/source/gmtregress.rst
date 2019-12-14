@@ -1,12 +1,11 @@
 .. index:: ! gmtregress
+.. include:: module_core_purpose.rst_
 
-*******
-regress
-*******
+**********
+gmtregress
+**********
 
-.. only:: not man
-
-    Linear regression of 1-D data sets
+|gmtregress_purpose|
 
 Synopsis
 --------
@@ -67,9 +66,9 @@ Optional Arguments
     Instead of determining a best-fit regression we explore the full range of regressions.
     Examine all possible regression lines with slope angles between *min* and *max*,
     using steps of *inc* degrees [-90/+90/1].  For each slope the optimum intercept
-    is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.  
+    is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.
     For each segment we report the four columns *angle*, *E*, *slope*, *intercept*, for
-    the range of specified angles. The best model parameters within this range 
+    the range of specified angles. The best model parameters within this range
     are written into the segment header and reported in verbose mode (**-V**).
 
 .. _-C:
@@ -102,7 +101,7 @@ Optional Arguments
 
 **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
-    absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
+    absolute residuals), **2** (Least-squares; the mean of the squared residuals),
     **r** (LMS; The least median of the squared residuals), or **w** (RLS; Reweighted Least Squares: the
     mean of the squared residuals after outliers identified via LMS have been removed) [Default is **2**].
     Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
@@ -184,21 +183,28 @@ coefficient of determination (R).
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To return the coordinates on the best-fit orthogonal regression line through the data in the
+remote file hertzsprung-russell.txt, try::
+
+    gmt regress @hertzsprung-russell.txt -Eo -Fxm
+
 To do a standard least-squares regression on the *x-y* data in points.txt and return
-x, y, and model prediction with 99% confidence intervals, try 
+x, y, and model prediction with 99% confidence intervals, try
 
    ::
 
     gmt regress points.txt -Fxymc -C99 > points_regressed.txt
 
-To just get the slope for the above regression, try 
+To just get the slope for the above regression, try
 
    ::
 
     slope=`gmt regress points.txt -Fp -o5`
 
 To do a reweighted least-squares regression on the data rough.txt and return
-x, y, model prediction and the RLS weights, try 
+x, y, model prediction and the RLS weights, try
 
    ::
 
@@ -206,14 +212,14 @@ x, y, model prediction and the RLS weights, try
 
 To do an orthogonal least-squares regression on the data crazy.txt but first take
 the logarithm of both x and y, then return x, y, model prediction and the normalized
-residuals (z-scores), try 
+residuals (z-scores), try
 
    ::
 
     gmt regress crazy.txt -Eo -Fxymz -i0-1l > points_regressed.txt
 
 To examine how the orthogonal LMS misfits vary with angle between 0 and 90
-in steps of 0.2 degrees for the same file, try 
+in steps of 0.2 degrees for the same file, try
 
    ::
 

@@ -157,9 +157,9 @@ struct GMT_SUBPLOT {
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
-	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
-	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
-	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
+	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
+	char fill[GMT_LEN64];		/* Panel fill color */
+	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
@@ -396,7 +396,7 @@ struct GMT_SESSION {
 	char unit_name[4][GMT_LEN8];	/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
-	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
+	unsigned int n_shorthands;			/* Length of array with shorthand information */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid read header functions */
 	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid update header functions */

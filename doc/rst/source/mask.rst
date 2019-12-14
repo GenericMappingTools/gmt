@@ -1,12 +1,11 @@
 .. index:: ! mask
+.. include:: module_core_purpose.rst_
 
 ******
 mask
 ******
 
-.. only:: not man
-
-    Clip or mask map areas with no data table coverage
+|mask_purpose|
 
 Synopsis
 --------
@@ -46,6 +45,18 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
+To make a mask that has a 5 degree radius around points spaced every 10 degree
+along the prime meridian, and just paint those areas yellow we try::
+
+    gmt begin mask
+      gmt math -T-90/90/10 -N2/1 0 = | gmt mask -Gyellow -I30m -R-75/75/-90/90 -JQ0/7i \
+        -S5d -T -Bafg10 -BWSne+t"Mask for points with r = 5 degrees"
+    gmt end show
 
 To make an overlay that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:

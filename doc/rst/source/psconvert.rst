@@ -1,12 +1,11 @@
 .. index:: ! psconvert
+.. include:: module_core_purpose.rst_
 
 *********
 psconvert
 *********
 
-.. only:: not man
-
-    Convert [E]PS file(s) to other formats using GhostScript
+|psconvert_purpose|
 
 Synopsis
 --------
@@ -38,7 +37,7 @@ Description
 -----------
 
 **psconvert** converts one or more PostScript files to other formats
-(BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using GhostScript. Input file
+(BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using Ghostscript. Input file
 names are read from the command line or from a file that lists them. The
 size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
@@ -77,7 +76,7 @@ Optional Arguments
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
     The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
     but you can append a new unit and/or impose different width and height. What happens
-    here is that GhostScript will do the re-interpolation work and the final image will
+    here is that Ghostscript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and
     the new width are only imposed if the original figure width exceeds it. Append
     /\ *new_height* to also also impose a maximum height in addition to the width.
@@ -95,7 +94,7 @@ Optional Arguments
 
 **-C**\ *gs_option*
     Specify a single, custom option that will be passed on to
-    GhostScript as is. Repeat to add several options [none].
+    Ghostscript as is. Repeat to add several options [none].
 
 .. _-D:
 
@@ -108,7 +107,7 @@ Optional Arguments
 
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
-    Note: GhostScript limits the final width and height pixel dimensions
+    Note: Ghostscript limits the final width and height pixel dimensions
     of a raster to be less than or equal to 65536.
 
 .. _-F:
@@ -122,13 +121,13 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *ghost_path*
-    Full path to your GhostScript executable. NOTE: For Unix systems
-    this is generally not necessary. Under Windows, the GhostScript path
+    Full path to your Ghostscript executable. NOTE: For Unix systems
+    this is generally not necessary. Under Windows, the Ghostscript path
     is now fetched from the registry. If this fails you can still add
     the GS path to system's path or give the full path here. (e.g.,
     **-G**\ c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because
     of the poor decision of embedding the bits on the gs exe name we
-    cannot satisfy both the 32 and 64 bits GhostScript executable names.
+    cannot satisfy both the 32 and 64 bits Ghostscript executable names.
     So in case of 'get from registry' failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
 
@@ -147,13 +146,13 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Enforce gray-shades by using ICC profiles.  GhostScript versions
-    >= 9.00 change gray-shades by using ICC profiles.  GhostScript 9.05
+    Enforce gray-shades by using ICC profiles.  Ghostscript versions
+    >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
     and above provide the '-dUseFastColor=true' option to prevent that
     and that is what **psconvert** does by default, unless option **-I** is
-    set.  Note that for GhostScript >= 9.00 and < 9.05 the gray-shade
+    set.  Note that for Ghostscript >= 9.00 and < 9.05 the gray-shade
     shifting is applied to all but PDF format.  We have no solution to
-    offer other than upgrade GhostScript.
+    offer other than upgrade Ghostscript.
 
 .. _-L:
 
@@ -181,7 +180,7 @@ Optional Arguments
 .. _-S:
 
 **-S**
-    Print to standard error the GhostScript command after it has been executed.
+    Print to standard error the Ghostscript command after it has been executed.
     This option also prevent all intermediate files from being removed.
 
 .. _-T:
@@ -218,7 +217,7 @@ Optional Arguments
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
     than the algorithm will fail miserably as those whites will be eaten
-    by the GhostScript. In that case you really must use **-B** or use a
+    by the Ghostscript. In that case you really must use **-B** or use a
     slightly off-white color.
 
     Together with **-V** it prints on screen the gdal_translate
@@ -350,6 +349,8 @@ the **-Qp** option to activate, since most users are unaware of GeoPDFs anyway.
 Examples
 --------
 
+.. include:: explain_example.rst_
+
 To convert the file psfile.ps to PNG using a tight BoundingBox:
 
    ::
@@ -405,14 +406,14 @@ To create a simple KML file for use in Google Earth, try
     gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
     gmt psconvert tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
-(These commands assume that GhostScript can be found in your system's path.)
+(These commands assume that Ghostscript can be found in your system's path.)
 
-GhostScript Options
+Ghostscript Options
 -------------------
 
 Most of the conversions done in **psconvert** are handled by
-GhostScript. On most Unixes this program is available as **gs**; for
-Windows there is a version called **gswin32c**. GhostScript accepts a
+Ghostscript. On most Unixes this program is available as **gs**; for
+Windows there is a version called **gswin32c**. Ghostscript accepts a
 rich selection of command-line options that modify its behavior. Many of
 these are set indirectly by the options available above. However,
 hard-core usage may require some users to add additional options to

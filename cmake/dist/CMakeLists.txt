@@ -108,15 +108,12 @@ if (WIN32 AND NOT CYGWIN)
 	# By default, do not warn when built on machines using only VS Express:
 	#set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
 
-	# Install MSVC runtime DLLs:
+	# Set the runtime libraries to COMPONENT Runtime
+	set (CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Runtime")
+	# Install the MSVC OpenMP runtime libraries
+	set (CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
+	# Install MSVC runtime DLLs
 	include (InstallRequiredSystemLibraries)
-
-	# InstallRequiredSystemLibraries installs the runtime libraries without
-	# specifying COMPONENT Runtime. We have to do it manually here:
-	set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
-	install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-		DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
-		COMPONENT Runtime)
 
 	set (CPACK_GENERATOR ZIP NSIS)
 	set (CPACK_NSIS_DISPLAY_NAME
@@ -138,11 +135,6 @@ if (WIN32 AND NOT CYGWIN)
 	install (PROGRAMS startup_win.bat
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
-
-	if (OMP_DLL_LOC)
-		# Install vcomp120.dll
-		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-	endif (OMP_DLL_LOC)
 
 	if (WIN32 AND GMTMEX_PATH)
 		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake

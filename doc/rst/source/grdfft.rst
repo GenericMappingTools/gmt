@@ -1,12 +1,11 @@
 .. index:: ! grdfft
+.. include:: module_core_purpose.rst_
 
 ******
 grdfft
 ******
 
-.. only:: not man
-
-    Mathematical operations on grids in the wavenumber (or frequency) domain
+|grdfft_purpose|
 
 Synopsis
 --------
@@ -202,6 +201,13 @@ white radial spectrum as well.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To obtain the normalized radial spectrum from the remote data grid @white_noise.nc,
+after removing the mean, let us try::
+
+    gmt grdfft @white_noise.nc -Er+n -N+a > spectrum.txt
 
 To upward continue the sea-level magnetic anomalies in the file
 mag_0.nc to a level 800 m above sealevel:

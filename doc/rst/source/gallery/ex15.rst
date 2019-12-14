@@ -5,7 +5,7 @@
 
 This example demonstrates some off the
 different ways one can use to grid data in GMT, and how to deal with
-unconstrained areas. We first convert a large ASCII file to binary with
+unconstrained areas. We first convert a large remote ASCII file to binary with
 :doc:`gmtconvert </gmtconvert>` since the binary file
 will read and process much faster. Our lower left plot illustrates the
 results of gridding using a nearest neighbor technique
@@ -23,7 +23,8 @@ simply employ :doc:`coast </coast>` to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
 :doc:`plot </plot>`. This point was extracted from the
-grid files using :doc:`grdinfo </grdinfo>`.
+grid files using :doc:`grdinfo </grdinfo>`.  Placement of the four
+panels is simplified via :doc:`subplot </subplot>`.
 
 .. literalinclude:: /_verbatim/ex15.txt
    :language: bash

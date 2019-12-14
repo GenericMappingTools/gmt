@@ -1,12 +1,11 @@
 .. index:: ! nearneighbor
+.. include:: module_core_purpose.rst_
 
-**************
+************
 nearneighbor
-**************
+************
 
-.. only:: not man
-
-    nearneighbor - Grid table data using a "Nearest neighbor" algorithm
+|nearneighbor_purpose|
 
 Synopsis
 --------
@@ -45,7 +44,7 @@ is computed as a weighted mean of the nearest point from each sector
 inside the search radius. The weighting function used is w(r) = 1 / (1 +
 d ^ 2), where d = 3 \* r / search_radius and r is distance from the
 node. This weight is modulated by the weights of the observation points [if
-supplied]. 
+supplied].
 
 Required Arguments
 ------------------
@@ -53,7 +52,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *out_grdfile*
-    Give the name of the output grid file. 
+    Give the name of the output grid file.
 
 .. _-I:
 
@@ -70,7 +69,7 @@ Required Arguments
     of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the
-    more distant points are ignored. 
+    more distant points are ignored.
 
 .. _-R:
 
@@ -81,7 +80,7 @@ Required Arguments
 
 **-S**\ *search_radius*\ [*unit*]
     Sets the *search_radius* that determines which data points are
-    considered close to a node. Append the distance unit (see :ref:`Unit_attributes`).
+    considered close to a node. Append the distance unit (see `Units`_).
 
 Optional Arguments
 ------------------
@@ -94,7 +93,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *empty*
-    Set the value assigned to empty nodes [NaN]. 
+    Set the value assigned to empty nodes [NaN].
 
 .. _-V:
 
@@ -106,9 +105,9 @@ Optional Arguments
 **-W**
    Input data have a 4th column containing observation point weights.
    These are multiplied with the geometrical weight factor to determine
-   the actual weights used in the calculations. 
+   the actual weights used in the calculations.
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns]. 
+.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -130,7 +129,7 @@ Optional Arguments
    adding **g** for geographic, **p** for periodic, or **n** for
    natural boundary conditions. For the latter two you may append **x**
    or **y** to specify just one direction, otherwise both are assumed.
-   [Default is geographic if grid is geographic]. 
+   [Default is geographic if grid is geographic].
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
@@ -146,21 +145,27 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To grid the data in the remote file @ship_15.txt at 5x5 arc minutes using
+a search radius of 15 arch minutes, and plot the resulting grid using
+default projection and colors, try::
+
+    gmt begin map
+      gmt nearneighbor @ship_15.txt -R245/255/20/30 -I5m -Ggrid.nc -S15m
+      gmt grdimage grid.nc -B
+    gmt end show
+
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
 using a 0.5 min grid, a 5 km search radius, using an octant search with
-100% sector coverage, and set empty nodes to -9999:
+100% sector coverage, and set empty nodes to -9999::
 
-   ::
-
-    gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m \
-                     -E-9999 -Gbathymetry.nc -S5k -N8+m8
+    gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc -S5k -N8+m8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant
 search, and set nodes to NaN only when fewer than two quadrants contain
-at least one value:
-
-   ::
+at least one value::
 
     gmt nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4
 

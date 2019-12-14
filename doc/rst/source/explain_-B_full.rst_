@@ -23,12 +23,12 @@
     Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
     specified pole [regular gridlines]. Ignored if gridlines are not
     requested (below) and disallowed for the oblique Mercator projection.
-    To add a plot title (**+t**\ *title*). The Frame setting is optional but
+    To add a plot title, append **+t**\ *title*. The Frame setting is optional but
     can be invoked once to override the above defaults.
 
     The Axes parameters are specified by
 
-    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][\ **+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][\ **+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+s**\ \|\ **S**\ *seclabel*][**+u**\ *unit*]
 
     but you may also split this into two separate invocations for clarity, i.e.,
 
@@ -42,7 +42,7 @@
     or labels for the various axes then you must repeat the **B** option for
     each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
     to give settings for the vertical axis.).  To add a label to an axis,
-    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
+    just append **+l**\ *label* (Cartesian projections only). Use **+L** (or **+S**) to
     force a horizontal label for *y*-axes (useful for very short labels).
     For Cartesian axes you may specify an alternate via **+s** which is used for
     right or upper axis axis label (with any **+l** label used for left and bottom axes).
@@ -63,14 +63,15 @@
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 
-    [**a**\ \|\ **f**\ \|\ **g**]\ *stride*\ [**+**\ \|\ **-**\ *phase*][**u**].
+    [**a**\ \|\ **f**\ \|\ **g**]\ *stride*\ [*±phase*][**u**].
 
     The leading **a** is used to specify the annotation and major tick
     spacing [Default], **f** for minor tick spacing, and **g** for
     gridline spacing. *stride* is the desired stride interval. The
     optional *phase* shifts the annotation interval by that amount
     (positive or negative). The optional *unit* indicates the unit of
-    the *stride* and can be any of the ones listed below:
+    the *stride* and are particularly important for time-axes as they
+    can be any of the ones listed below:
 
     - **Y** (year, plot with 4 digits)
     - **y** (year, plot with 2 digits)
@@ -91,11 +92,11 @@
     - **S** (second, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
     - **s** (second, plot with 2 digits).
 
-    Note for geographic axes **m** and **s** instead mean arc minutes and arc seconds.
+    For geographic axes **d**, **m** and **s** instead mean arc degrees, minutes and seconds,
+    while for Cartesian axes no unit is given.
     All entities that are language-specific are under control
-    by :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`. Alternatively, for linear maps, we can omit *stride*, thus setting
-    *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
-    automatically determined intervals,
+    of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`. Alternatively, we can omit *stride*, thus setting
+    *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at automatically determined intervals,
 
     - **ag** plots both annotations and grid lines with the same spacing,
     - **afg** adds suitable minor tick intervals,
@@ -133,8 +134,8 @@
        = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
 
     Finally, if your axis is in radians you can use multiples or fractions of **pi** to
-    set such annotation intervals.  The format is [*n*]\ **pi**\ [*m*], for an optional
-    integer *n* and optional *m* fractions 2, 3, or 4.
+    set such annotation intervals.  The format is [*s*]\ **pi**\ [*f*], for an optional
+    integer scale *s* and optional integer fraction *f*.
 
     These GMT parameters can affect the appearance of the map boundary:
     :ref:`MAP_ANNOT_MIN_ANGLE <MAP_ANNOT_MIN_ANGLE>`, :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>`,

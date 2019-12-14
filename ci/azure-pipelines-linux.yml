@@ -20,8 +20,8 @@ steps:
 - bash: |
     set -x -e
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        python3-pip python3-setuptools python3-wheel
-    pip3 install --user sphinx
+        python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg
+    pip3 install --user sphinx==1.8.5
     echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
   condition: eq(variables['BUILD_DOCS'], true)
@@ -45,15 +45,39 @@ steps:
   displayName: Download coastlines
   condition: ne(variables['CACHE_COASTLINE_RESTORED'], true)
 
-- bash: ci/build-gmt.sh
+- bash: ci/config-gmt-unix.sh
+  displayName: Configure GMT
+
+- bash: |
+    mkdir -p build
+    cd build
+    cmake -G Ninja ..
+    cmake --build .
   displayName: Compile GMT
 
 - bash: |
     set -x -e
+    cd build
+    cmake --build . --target docs_depends
+    cmake --build . --target animation
+    cmake --build . --target docs_html
+    cmake --build . --target docs_man
+  displayName: Build documentations
+  condition: eq(variables['BUILD_DOCS'], true)
+
+- bash: |
+    cd build
+    cmake --build . --target install
+  displayName: Install GMT
+
+- bash: |
+    set -x -e
     gmt --version
+    gmt-config --all
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
+    gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
   displayName: Check a few simple commands
 
 # Run the full tests
@@ -61,13 +85,13 @@ steps:
     set -x -e
     cd build
     # Download remote files before testing, see #939.
-    curl http://www.soest.hawaii.edu/gmt/data/gmt_md5_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # run all jobs, and rerun failed jobs
-    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
+    ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
   env:
-    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
+    CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
   condition: eq(variables['TEST'], true)
 
 # Publish the whole build directory for debugging purpose
@@ -93,19 +117,19 @@ steps:
   condition: and(eq(variables['TEST'], true), succeededOrFailed())
   displayName: Upload test coverage
 
-- bash: |
-    cd build
-    cmake --build . --target docs_html_depends
-    cmake --build . --target docs_man_depends
-    cmake --build . --target docs_html
-    cmake --build . --target docs_man
-  displayName: Build documentations
-  condition: eq(variables['BUILD_DOCS'], true)
+- bash: bash ci/deploy-gh-pages.sh
+  displayName: Deploy documentations
+  env:
+    HTML_BUILDDIR: "build/doc/rst/html"
+    GITHUB_TOKEN: $(github.token)
+  # only deploy if on master and 6.0 branches
+  condition: and(eq(variables['DEPLOY_DOCS'], true), in(variables['Build.SourceBranchName'], 'master', '6.0'))
 
 - bash: |
+    set -x -e
     cd build
     cmake --build . --target gmt_release
     cmake --build . --target gmt_release_tar
-    md5sum gmt-*.tar.gz gmt-*.tar.xz
+    shasum -a 256 gmt-*.tar.gz gmt-*.tar.xz
   displayName: Package GMT
   condition: eq(variables['PACKAGE'], true)

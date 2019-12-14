@@ -1,12 +1,11 @@
 .. index:: ! grd2kml
+.. include:: module_core_purpose.rst_
 
 *******
 grd2kml
 *******
 
-.. only:: not man
-
-    Create KML image quadtree from single grid
+|grd2kml_purpose|
 
 Synopsis
 --------
@@ -63,7 +62,7 @@ Optional Arguments
     that range will be imposed instead.
     Another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
     to build a linear continuous CPT from those colors automatically, scaled to fit the data range.
-    In this case *color1* etc can be a r/g/b triplet, a color name,
+    In this case *color1*, etc., can be a *r/g/b* triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
 .. _-E:
@@ -154,6 +153,8 @@ illumination angle the automatic illumination can be used instead.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
 the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,

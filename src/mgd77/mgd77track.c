@@ -23,9 +23,10 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
-#define THIS_MODULE_NAME	"mgd77track"
+#define THIS_MODULE_CLASSIC_NAME	"mgd77track"
+#define THIS_MODULE_MODERN_NAME	"mgd77track"
 #define THIS_MODULE_LIB		"mgd77"
-#define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
+#define THIS_MODULE_PURPOSE	"Plot track-lines of MGD77 cruises"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
@@ -147,7 +148,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* 
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	char day_marker_size[8], dist_marker_size[8];
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	
 	if (API->GMT->current.setting.proj_length_unit == GMT_CM) {
@@ -592,7 +593,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 
 	/* Parse the command-line arguments */
 

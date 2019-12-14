@@ -1,12 +1,11 @@
 .. index:: ! greenspline
+.. include:: module_core_purpose.rst_
 
 ***********
 greenspline
 ***********
 
-.. only:: not man
-
-    Interpolate using Green's functions for splines in 1-3 dimensions
+|greenspline_purpose|
 
 Synopsis
 --------
@@ -291,16 +290,20 @@ using a minimum cubic spline, try
 
    ::
 
-    gmt math -T0/10/1 0 1 NRAND = 1D.txt
-    gmt plot -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
-    gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | plot -R -J -O -Wthin >> 1D.ps
+    gmt begin 1D
+      gmt math -T0/10/1 0 1 NRAND = 1D.txt
+      gmt plot -R0/10/-5/5 -JX6i/3i -B -Sc0.1 -Gblack 1D.txt
+      gmt greenspline 1D.txt -R0/10 -I0.1 -Sc | gmt plot -Wthin
+    gmt end show
 
 To apply a spline in tension instead, using a tension of 0.7, try
 
    ::
 
-    gmt plot -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
-    gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V | plot -R -J -O -Wthin >> 1Dt.ps
+    gmt begin 1Dt
+      gmt plot -R0/10/-5/5 -JX6i/3i -B -Sc0.1 -Gblack 1D.txt
+      gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 | gmt plot -Wthin
+    gmt end show
 
 2-d Examples
 ------------
@@ -311,9 +314,11 @@ Reference and Cookbook example 16, try
 
    ::
 
-    gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
-    gmt plot -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table_5.11 -K > 2D.ps
-    gmt grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
+    gmt begin 2D
+      gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
+      gmt plot -R0/6.5/-0.2/6.5 -JX6i -B -Sc0.1 -Gblack @Table_5_11.txt
+      gmt grdcontour -C25 -A50 S1987.nc
+    gmt end show
 
 To use Cartesian splines in tension but only evaluate the solution where
 the input mask grid is not NaN, try
@@ -327,7 +332,7 @@ of the surface slope in the NW direction, try
 
    ::
 
-    gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.txt) and the
@@ -347,23 +352,23 @@ a measure of uranium oxide concentrations (in percent), try
 
    ::
 
-    gmt greenspline table_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
 
 2-d Spherical Surface Examples
 ------------------------------
 
 To recreate Parker's [1994] example on a global 1x1 degree grid,
-assuming the data are in file mag_obs_1990.txt, try
+assuming the data are in the remote file mag_obs_1990.txt, try
 
    ::
 
-    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
 
 To do the same problem but applying tension of 0.85, use
 
    ::
 
-    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc @mag_obs_1990.txt
 
 Considerations
 --------------

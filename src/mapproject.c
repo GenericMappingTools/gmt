@@ -38,7 +38,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"mapproject"
+#define THIS_MODULE_CLASSIC_NAME	"mapproject"
+#define THIS_MODULE_MODERN_NAME	"mapproject"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformations, datum conversions and geodesy"
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
@@ -73,11 +74,11 @@ enum GMT_mp_Zcodes {	/* Support for -Z parsing */
 };
 
 enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
-	MP_COL_AZ = 0,	/* Azimuth between to points */
+	MP_COL_AZ = 0,		/* Azimuth between to points */
 	MP_COL_DS,		/* Distance between to points */
 	MP_COL_CS,		/* Cumulative distance since start of segment */
-	MP_COL_XN,		/* Longitude of nearest point in -L check */
-	MP_COL_YN,		/* Latitude of nearest point in -L check */
+	MP_COL_XN,		/* Longitude (or x) of nearest point in -L check */
+	MP_COL_YN,		/* Latitude (or y) of nearest point in -L check */
 	MP_COL_DT,		/* Incremental time between two points */
 	MP_COL_CT,		/* Cumulative time since start of segment */
 	MP_COL_AT,		/* Absolute time at present record */
@@ -185,7 +186,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* 
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s [-C[<dx></dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]]", GMT_DIM_UNITS_DISPLAY);
@@ -685,7 +686,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		 * Perhaps this needs to be more nuanced beyond PS vs no-PS if other modules end up needed the same treatment */
 		GMT->current.ps.active = true;	/* Briefly pretend we are a PS-producing module */
 		gmt_set_missing_options (GMT, "RJ");
-		GMT->current.ps.active = true;	/* Come to our senses */
+		GMT->current.ps.active = false;	/* Come to our senses */
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Syntax error: -Z requires -G+i\n");
@@ -777,7 +778,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1113,11 +1114,14 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active)	{	/* Possibly adjust output types */
 		if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
 			fmt[0] = fmt[1] = GMT_Z;	/* These are just regular floating points */
-		else {			/* Want nearest point coordinates */
+		else {			/* Want nearest point coordinates; set correct output column type */
 			fmt[0] = GMT_X;
 			fmt[1] = GMT_Y;
-			ecol_type[MP_COL_XN] = GMT_IS_LON;	/* Must change these from floats to geo */
-			ecol_type[MP_COL_YN] = GMT_IS_LAT;
+			/* Only select lon, lat if input data is geographic and proj_type is not GMT_GEO2CART */
+			if (gmt_M_is_geographic (GMT, GMT_IN) && proj_type != GMT_GEO2CART) {
+				ecol_type[MP_COL_XN] = GMT_IS_LON;
+				ecol_type[MP_COL_YN] = GMT_IS_LAT;
+			}
 		}
 	}
 	if (Ctrl->Z.formatted) ecol_type[MP_COL_CT] = GMT_IS_DURATION;

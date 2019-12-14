@@ -1,12 +1,11 @@
 .. index:: ! histogram
+.. include:: module_core_purpose.rst_
 
 ***********
 histogram
 ***********
 
-.. only:: not man
-
-    Calculate and plot histograms
+|histogram_purpose|
 
 Synopsis
 --------
@@ -48,12 +47,16 @@ Synopsis
 Examples
 --------
 
-To draw a histogram of the data v3206.t containing seafloor depths,
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
+To draw a histogram of the remote data v3206_06.t containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
 
-    gmt histogram v3206.t -JXh -T250 -F -W0.5p -V -pdf plot
+    gmt histogram  @v3206_06.txt -F -T250 -W0.25p -B -pdf plot
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -63,8 +66,7 @@ bars, run:
 
    ::
 
-    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c
-                  -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
+    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
 
 Since no y-range was specified, **histogram** will calculate *ymax* in even
 increments of 100.

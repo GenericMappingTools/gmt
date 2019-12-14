@@ -1,12 +1,11 @@
 .. index:: ! grd2cpt
+.. include:: module_core_purpose.rst_
 
 *******
 grd2cpt
 *******
 
-.. only:: not man
-
-    Make linear or histogram-equalized color palette table from grid
+|grd2cpt_purpose|
 
 Synopsis
 --------
@@ -241,6 +240,13 @@ aspects of the color changes by aliasing the signal.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To get a reasonable and symmetrical color table for the data in the region 0/60/0/60
+from the remote 5m relief file, using the geo color table, try::
+
+    gmt grd2cpt @earth_relief_05m -R0/60/0/60 -Cgeo -Su
 
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something

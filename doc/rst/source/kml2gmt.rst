@@ -1,12 +1,11 @@
 .. index:: ! kml2gmt
+.. include:: module_core_purpose.rst_
 
 *******
 kml2gmt
 *******
 
-.. only:: not man
-
-    kml2gmt - Extract GMT table data from Google Earth KML files
+|kml2gmt_purpose|
 
 Synopsis
 --------
@@ -95,6 +94,8 @@ plotted by :doc:`plot` and the holes will be honored.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To extract the lon,lat values from the KML file google.kml, try
 

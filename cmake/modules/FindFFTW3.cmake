@@ -52,12 +52,22 @@ find_library (FFTW3F_LIBRARY
 	/usr/local
 )
 
+get_filename_component (_fftw3_libname ${FFTW3F_LIBRARY} NAME)
 get_filename_component (_fftw3_libpath ${FFTW3F_LIBRARY} PATH)
 
-# threaded single precision
-find_library (FFTW3F_THREADS_LIBRARY
-	NAMES fftw3f_threads
-	HINTS ${_fftw3_libpath})
+# find single precision threaded library
+# the threaded functions may in the fftw3f library or the a separated fftw3f_threads library
+if (FFTW3F_LIBRARY)
+	include (CheckLibraryExists)
+	check_library_exists (${FFTW3F_LIBRARY} fftwf_plan_with_nthreads ${_fftw3_libpath} _fftw3_library_have_threads)
+	if (_fftw3_library_have_threads)
+		set (FFTW3F_THREADS_LIBRARY ${FFTW3F_LIBRARY} CACHE INTERNAL "FFTW3 threads support")
+	else (_fftw3_library_have_threads)
+		find_library (FFTW3F_THREADS_LIBRARY
+			NAMES fftw3f_threads
+			HINTS ${_fftw3_libpath})
+	endif (_fftw3_library_have_threads)
+endif (FFTW3F_LIBRARY)
 
 if (FFTW3F_LIBRARY)
 	# test if FFTW >= 3.3
@@ -93,4 +103,5 @@ set (FFTW3F_LIBRARIES ${FFTW3F_LIBRARY})
 if (FFTW3F_THREADS_LIBRARY)
 	list (APPEND FFTW3F_LIBRARIES ${FFTW3F_THREADS_LIBRARY})
 endif (FFTW3F_THREADS_LIBRARY)
+list (REMOVE_DUPLICATES FFTW3F_LIBRARIES)
 set (FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})

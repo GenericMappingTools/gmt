@@ -1,12 +1,11 @@
 .. index:: ! segyz
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 segyz
 *******
 
-.. only:: not man
-
-    segyz - Create imagemasked postscript from SEGY file
+|segyz_purpose|
 
 Synopsis
 --------
@@ -36,6 +35,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: ../../oneliner_info.rst_
 
 To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at ±3 and with wiggle trace and positive

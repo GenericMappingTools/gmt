@@ -1,12 +1,11 @@
 .. index:: ! grdmath
+.. include:: module_core_purpose.rst_
 
 *******
 grdmath
 *******
 
-.. only:: not man
-
-    grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)
+|grdmath_purpose|
 
 Synopsis
 --------
@@ -730,7 +729,7 @@ Notes On Operators
 
 .. include:: explain_sto_rcl_clr.rst_
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 
@@ -755,6 +754,8 @@ is required that the optional comment flag (:) must be followed by a space.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To compute all distances to north pole:
 

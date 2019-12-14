@@ -1,19 +1,18 @@
 .. index:: ! mgd77header
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 mgd77header
 ***********
 
-.. only:: not man
-
-    mgd77header - Generate MGD77 header from data records
+|mgd77header_purpose|
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77header** *NGDC-id.a77*
+**gmt mgd77header** *GEODAS-id.a77*
 [ |-H|\ *headervalues.txt* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **t** ]
 [ |SYN_OPT-V| ]

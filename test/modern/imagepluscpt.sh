@@ -3,5 +3,5 @@
 gmt begin imagepluscpt ps
 	gmt grdimage @earth_relief_01m -RMG+r2 -Cgeo -I+
 	gmt coast -Wthin -N1/thick,red -BWSne -B
-	gmt colorbar -DJTC -B -C
-gmt end
+	gmt colorbar -DJTC -B
+gmt end show

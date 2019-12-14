@@ -1,12 +1,11 @@
 .. index:: ! gmtselect
+.. include:: module_core_purpose.rst_
 
-******
-select
-******
+*********
+gmtselect
+*********
 
-.. only:: not man
-
-    Select data table subsets based on multiple spatial criteria
+|gmtselect_purpose|
 
 Synopsis
 --------
@@ -77,7 +76,7 @@ Optional Arguments
     column of *pointfile* must have each point's individual radius of
     influence. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances and append a distance unit
-    (see :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then
+    (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
@@ -139,7 +138,7 @@ Optional Arguments
     **z** select records NOT within the range specified by **-Z**.
 
 .. _-J:
- 
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
@@ -152,7 +151,7 @@ Optional Arguments
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
-    :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then geographic
+    `Units`_). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
@@ -171,11 +170,11 @@ Optional Arguments
 
     **-N**\ *ocean/land/lake/island/pond*.
 
-    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land]. 
+    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 
 .. _-R:
 
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. 
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
 .. include:: explain_-R.rst_
 
 .. _-V:
@@ -201,7 +200,7 @@ Optional Arguments
     record with *z* value NOT in the given range.  Finally, if **+c** is not used
     then it is automatically incremented for each new **-Z** option, starting with 2.
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
@@ -278,6 +277,17 @@ and include the new boundary points at the segment ends you must use
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To only return the data points from the remote file @ship_15.txt that lie
+within the region between longitudes 246 and 247 and latitudes 20 and 21, try::
+
+    gmt select @ship_15.txt -R246/247/20/21
+
+To return all the points *except* those inside that square, use::
+
+    gmt select @ship_15.txt -R246/247/20/21 -Ir
+
 To extract the subset of data set that is within 300 km of any of the
 points in pts.txt but more than 100 km away from the lines in lines.txt, run
 
@@ -307,8 +317,7 @@ origin.txt for a certain projection, try
 
    ::
 
-    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c \
-    --PROJ_LENGTH_UNIT=cm > subset2.txt
+    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
 
 To return all points in quakes.txt that are inside the grid topo.nc
 where the values are nonzero, try
@@ -325,7 +334,7 @@ and 5th column values are all negative, try
     gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
 
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 

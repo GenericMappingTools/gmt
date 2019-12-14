@@ -1,12 +1,11 @@
 .. index:: ! psxyz
+.. include:: module_core_purpose.rst_
 
 *****
 psxyz
 *****
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols in 3-D
+|psxyz_purpose|
 
 Synopsis
 --------
@@ -51,6 +50,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot blue columns (width = 1.25 cm) at the positions listed in the
 file heights.xyz on a 3-D projection of the space (0-10), (0-10),

@@ -2,7 +2,7 @@
 # Testing various ways of extracting and plotting IMG grids
 
 ps=imgtrack.ps
-IMG=@topo.8.2.img
+IMG=@topo.8.4.img
 # Sample an img file along a track directly
 gmt makecpt -Crainbow -T-8000/0 > t.cpt
 gmt grdtrack -G${IMG},1,1 -R180/200/40/50 -EBL/TR > m.txt

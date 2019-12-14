@@ -21,4 +21,4 @@ gmt begin ex20
 	END
 	gmt plot cities.txt -Sk@bullseye
 	rm -f cities.txt
-gmt end
+gmt end show

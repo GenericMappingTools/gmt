@@ -36,5 +36,5 @@ gmt begin ex42
 	0 5.2 BEDMAP
 	0 9.65 GSHHG
 	EOF
-gmt end
+gmt end show
 

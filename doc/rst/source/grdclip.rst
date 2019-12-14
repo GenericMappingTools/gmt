@@ -1,12 +1,11 @@
 .. index:: ! grdclip
+.. include:: module_core_purpose.rst_
 
 *******
 grdclip
 *******
 
-.. only:: not man
-
-    Clip the range of grid values
+|grdclip_purpose|
 
 Synopsis
 --------
@@ -27,7 +26,7 @@ Description
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
 *above*. You can also specify one or more intervals where all values should be
-set to IT(between), or replace individual values.  Such operations are useful
+set to *between*, or replace individual values.  Such operations are useful
 when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
 range of data values is required, or for reclassification of data values.
@@ -82,11 +81,13 @@ Optional Arguments
 Examples
 --------
 
-To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
+.. include:: explain_example.rst_
+
+To set all values > 0 to NaN and all values < 0 to 0 in the remote file AFR.nc:
 
    ::
 
-    gmt grdclip data.nc -Gnew_data.nc -Sa70/NaN -Sb0/0 -V
+    gmt grdclip @AFR.nc -Gnew_AFR.nc -Sa0/NaN -Sb0/0 -V
 
 To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
 exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try

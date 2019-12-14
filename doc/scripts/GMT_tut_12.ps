@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdcontour
+%%Title: GMT v6.0.0_018e7ad_2019.10.04 [64-bit] Document from grdcontour
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:46 2018
+%%CreationDate: Fri Oct  4 21:33:00 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,7 +658,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -672,7 +668,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt grdcontour ship.nc -JM6i -Ba -C250 -A1000 -R245/255/20/30
+%@GMT: gmt grdcontour ship.nc -JM6i -B -C250 -A1000 -R245/255/20/30
 %@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: 72 72 432 474.909
 %%BeginObject PSL_Layer_1
@@ -10067,38 +10063,64 @@ N 7200 6277 M 83 0 D S
 N 0 7915 M -83 0 D S
 N 7200 7915 M 83 0 D S
 83 W
-N -42 0 M 0 1534 D S
-N 7242 0 M 0 1534 D S
+N -42 0 M 0 764 D S
+N 7242 0 M 0 764 D S
 1 A
-N -42 1534 M 0 1555 D S
-N 7242 1534 M 0 1555 D S
+N -42 764 M 0 770 D S
+N 7242 764 M 0 770 D S
 0 A
-N -42 3089 M 0 1580 D S
-N 7242 3089 M 0 1580 D S
+N -42 1534 M 0 774 D S
+N 7242 1534 M 0 774 D S
 1 A
-N -42 4669 M 0 1608 D S
-N 7242 4669 M 0 1608 D S
+N -42 2308 M 0 781 D S
+N 7242 2308 M 0 781 D S
 0 A
-N -42 6277 M 0 1638 D S
-N 7242 6277 M 0 1638 D S
+N -42 3089 M 0 787 D S
+N 7242 3089 M 0 787 D S
+1 A
+N -42 3876 M 0 793 D S
+N 7242 3876 M 0 793 D S
+0 A
+N -42 4669 M 0 801 D S
+N 7242 4669 M 0 801 D S
+1 A
+N -42 5470 M 0 807 D S
+N 7242 5470 M 0 807 D S
+0 A
+N -42 6277 M 0 815 D S
+N 7242 6277 M 0 815 D S
+1 A
+N -42 7092 M 0 823 D S
+N 7242 7092 M 0 823 D S
 N 0 -42 M 720 0 D S
 N 0 7957 M 720 0 D S
-1 A
-N 720 -42 M 1440 0 D S
-N 720 7957 M 1440 0 D S
 0 A
-N 2160 -42 M 1440 0 D S
-N 2160 7957 M 1440 0 D S
+N 720 -42 M 720 0 D S
+N 720 7957 M 720 0 D S
 1 A
-N 3600 -42 M 1440 0 D S
-N 3600 7957 M 1440 0 D S
+N 1440 -42 M 720 0 D S
+N 1440 7957 M 720 0 D S
 0 A
-N 5040 -42 M 1440 0 D S
-N 5040 7957 M 1440 0 D S
+N 2160 -42 M 720 0 D S
+N 2160 7957 M 720 0 D S
 1 A
+N 2880 -42 M 720 0 D S
+N 2880 7957 M 720 0 D S
+0 A
+N 3600 -42 M 720 0 D S
+N 3600 7957 M 720 0 D S
+1 A
+N 4320 -42 M 720 0 D S
+N 4320 7957 M 720 0 D S
+0 A
+N 5040 -42 M 720 0 D S
+N 5040 7957 M 720 0 D S
+1 A
+N 5760 -42 M 720 0 D S
+N 5760 7957 M 720 0 D S
+0 A
 N 6480 -42 M 720 0 D S
 N 6480 7957 M 720 0 D S
-0 A
 8 W
 N -83 0 M 7366 0 D S
 N -83 -83 M 7366 0 D S

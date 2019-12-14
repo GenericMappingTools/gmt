@@ -25,6 +25,9 @@
 #include "gmt_internals.h"
 #include "gmt_remote.h"
 #include <curl/curl.h>
+#ifdef WIN32
+#include <sys/utime.h>
+#endif
 
 #ifdef	__APPLE__
 	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
@@ -68,6 +71,10 @@ struct sigaction cleanup_action, default_action;
 char *file_to_delete_if_ctrl_C;
 #endif
 
+static char *all_grid_files[GMT_N_DATASETS]= {
+#include <gmt_datasets.h>
+};
+
 GMT_LOCAL void delete_file_then_exit (int sig_no)
 {	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
 	gmt_M_unused (sig_no);
@@ -99,7 +106,7 @@ GMT_LOCAL void turn_off_ctrl_C_check () {
 #endif
 }
 
-struct FtpFile {
+struct FtpFile {	/* Needed for argument to libcurl */
 	const char *filename;
 	FILE *fp;
 };
@@ -135,7 +142,7 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 			char name[GMT_LEN32] = {""}, *c = NULL;
 			if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for this message */
 			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
-			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
+			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
 			match = k;
 			if (c) c[0] = '.';	/* Restore extension */
@@ -188,12 +195,16 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 	return action;
 }
 
-/* Deal with MD5 values of cache/data files */
+/* Deal with hash values of cache/data files */
 
-GMT_LOCAL int gmtmd5_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
+#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
+
+GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig) {
 	int curl_err = 0;
+	long time_spent;
 	CURL *Curl = NULL;
-	struct FtpFile ftpfile = {NULL, NULL};
+	struct FtpFile urlfile = {NULL, NULL};
+	time_t begin, end;
 
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", url);
@@ -215,54 +226,77 @@ GMT_LOCAL int gmtmd5_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
 		return 1;
 	}
-	ftpfile.filename = file;	/* Set pointer to local filename */
+ 	if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, GMT_HASH_TIME_OUT)) {	/* Set a max timeout */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to time out after %ld seconds\n", GMT_HASH_TIME_OUT);
+		return 1;
+	}
+	urlfile.filename = file;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
 		return 1;
 	}
 	/* Set a pointer to our struct to pass to the callback */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &ftpfile)) {
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", file);
 		return 1;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (file);
+	begin = time (NULL);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to down file %s\n", url);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-		if (ftpfile.fp != NULL) {
-			fclose (ftpfile.fp);
-			ftpfile.fp = NULL;
+		end = time (NULL);
+		time_spent = (long)(end - begin);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to download file %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+		if (urlfile.fp != NULL) {
+			fclose (urlfile.fp);
+			urlfile.fp = NULL;
+		}
+		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT data server may be down - delay checking hash file for 24 hours\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
+#ifdef WIN32
+				_utime (orig, NULL);
+#else
+				utimes (orig, NULL);
+#endif
+				GMT->current.io.hash_refreshed = GMT->current.io.internet_error = true;
+			}
 		}
 		return 1;
 	}
 	curl_easy_cleanup (Curl);
-	if (ftpfile.fp) /* close the local file */
-		fclose (ftpfile.fp);
+	if (urlfile.fp) /* close the local file */
+		fclose (urlfile.fp);
 	turn_off_ctrl_C_check ();
 	return 0;
 }
 
-struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
-	/* Read contents of the MD5 file into an array of structs */
+struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
+	/* Read contents of the hash file into an array of structs */
 	int k;
 	FILE *fp = NULL;
-	struct GMT_MD5 *L = NULL;
-	char line[GMT_LEN128] = {""};
+	struct GMT_DATA_HASH *L = NULL;
+	char line[GMT_LEN256] = {""};
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
-	if (fgets (line, GMT_LEN128, fp) == NULL) {	/* Try to get first record */
+	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of records to follow */
-	L = gmt_M_memory (GMT, NULL, *n, struct GMT_MD5);
+	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
+		fclose (fp);
+		return NULL;
+	}
+	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
 	for (k = 0; k < *n; k++) {
-		if (fgets (line, GMT_LEN128, fp) == NULL) break;	/* Next record */
-		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].md5, &L[k].size);
+		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
+		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].hash, &L[k].size);
 	}
 	fclose (fp);
 	if (k != *n) {
@@ -273,16 +307,16 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	return (L);	
 };
 
-GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
+GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	/* This function is called every time we are about to access a @remotefile.
-	 * First we check that we have gmt_md5_server.txt in the server directory.
+	 * First we check that we have gmt_hash_server.txt in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
-	 * If we do find the MD5 file then we get its creation time [st_mtime] as
+	 * If we do find the hash file then we get its creation time [st_mtime] as
 	 * well as the current system time.  If the file is < 1 day old we are done.
-	 * If the file is older we rename it to *.old and download the latest MD5 file.
+	 * If the file is older we rename it to *.old and download the latest hash file.
 	 * Next, we load the contents of both files and do a double loop to find the
 	 * entries for each old file in the new list, for all files.  If the old file
-	 * is no longer in the list then we delete the data file.  If the MD5 code for
+	 * is no longer in the list then we delete the data file.  If the hash code for
 	 * a file has changed then we delete the local file so that the new versions
 	 * will be downloaded from the server.  Otherwise we do nothing.
 	 * The result of this is that any file(s) that have changed will be removed
@@ -290,39 +324,41 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	 */
 	struct stat buf;
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
-	char md5path[PATH_MAX] = {""}, old_md5path[PATH_MAX] = {""}, url[PATH_MAX] = {""};
+	char hashpath[PATH_MAX] = {""}, old_hashpath[PATH_MAX] = {""}, new_hashpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	
-	if (GMT->current.io.md5_refreshed) return;	/* Already been here */
+	if (GMT->current.io.hash_refreshed) return 0;	/* Already been here */
 	
-	snprintf (md5path, PATH_MAX, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
+	snprintf (hashpath, PATH_MAX, "%s/server/gmt_hash_server.txt", GMT->session.USERDIR);
 
-	if (access (md5path, R_OK)) {    /* Not found locally so need to download the first time */
+	if (access (hashpath, R_OK)) {    /* Not found locally so need to download the first time */
 		char serverdir[PATH_MAX] = {""};
 		snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);
 		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT server directory : %s\n", serverdir);
-			return;
+			return 1;
 		}
-		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATASERVER);
+		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmtmd5_get_url (GMT, url, md5path)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
-			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);	/* Remove MD5 file just in case it got corrupted or zero size */
+		if (gmthash_get_url (GMT, url, hashpath, NULL)) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Failed to get remote file %s\n", url);
+			if (!access (hashpath, F_OK)) gmt_remove_file (GMT, hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
+			GMT->current.io.internet_error = true;				/* No point trying again */
+			return 1;
 		}
-		GMT->current.io.md5_refreshed = true;	/* Done our job */
-		return;
+		GMT->current.io.hash_refreshed = true;	/* Done our job */
+		return 0;
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", md5path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", hashpath);
 		
-	GMT->current.io.md5_refreshed = true;	/* Done our job */
+	GMT->current.io.hash_refreshed = true;	/* Done our job */
 
-	/* Here we have the existing MD5 file and its path is in md5path */
+	/* Here we have the existing hash file and its path is in hashpath */
 
-	if (stat (md5path, &buf)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get information about %s - abort\n", md5path);
-		return;
+	if (stat (hashpath, &buf)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get information about %s - abort\n", hashpath);
+		return 1;
 	}
 	/*  Get its modification (creation) time */
 #ifdef __APPLE__
@@ -331,31 +367,40 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	mod_time = buf.st_mtime;
 #endif
 
-	if ((right_now - mod_time) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new MD5 file */
+	if ((right_now - mod_time) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new hash file */
 		bool found;
 		int nO, nN, n, o;
-		struct GMT_MD5 *O = NULL, *N = NULL;
+		struct GMT_DATA_HASH *O = NULL, *N = NULL;
 
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", md5path);
-		strcpy (old_md5path, md5path);	/* Duplicate path name */
-		strcat (old_md5path, ".old");	/* Append .old to the copied path */
-		if (gmt_rename_file (GMT, md5path, old_md5path, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", md5path, old_md5path);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", md5path, old_md5path);
-			return;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", hashpath);
+		strcpy (new_hashpath, hashpath);	/* Duplicate path name */
+		strcat (new_hashpath, ".new");		/* Append .new to the copied path */
+		strcpy (old_hashpath, hashpath);	/* Duplicate path name */
+		strcat (old_hashpath, ".old");		/* Append .old to the copied path */
+		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);	/* Set remote path to new hash file */
+		if (gmthash_get_url (GMT, url, new_hashpath, hashpath)) {	/* Get the new hash file from server */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
+			if (!access (new_hashpath, F_OK)) gmt_remove_file (GMT, new_hashpath);	/* Remove hash file just in case it got corrupted or zero size */
+			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
-		snprintf (url, PATH_MAX, "%s/gmt_md5_server.txt", GMT->session.DATASERVER);	/* Set remote path to new MD5 file */
-		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", md5path);
-			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
-			return;	/* Unable to update the file (no Internet?) - skip the tests */
+		if (!access (old_hashpath, F_OK))
+			remove (old_hashpath);	/* Remove old hash file if it exists */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, old_hashpath);
+		if (gmt_rename_file (GMT, hashpath, old_hashpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, old_hashpath);
+			return 1;
 		}
-		if ((N = md5_load (GMT, md5path, &nN)) == 0) {	/* Read in the new array of MD5 structs, will return 0 if mismatch of entries */
-			gmt_remove_file (GMT, md5path);		/* Remove corrupted MD5 file */
-			return;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", new_hashpath, hashpath);
+		if (gmt_rename_file (GMT, new_hashpath, hashpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", new_hashpath, hashpath);
+			return 1;
+		}
+		if ((N = hash_load (GMT, hashpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
+			gmt_remove_file (GMT, hashpath);		/* Remove corrupted hash file */
+			return 1;
 		}
 			
-		O = md5_load (GMT, old_md5path, &nO);	/* Read in the old array of MD5 structs */
+		O = hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
 			/* Here the file was found locally and the full path is in the url */
@@ -363,8 +408,8 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			for (n = 0; !found && n < nN; n++) {	/* Loop over items in new file */
 				if (!strcmp (N[n].name, O[o].name)) {	/* File is in the current hash table */
 					found = true;	/* We will exit this loop regardless of what happens next below */
-					if (strcmp (N[n].md5, O[o].md5)) {	/* New MD5 differs from entry in MD5 old file */
-						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s have different MD5 hash codes - must download new copy.\n", N[n].name);
+					if (strcmp (N[n].hash, O[o].hash)) {	/* New hash differs from entry in hash old file */
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s have different hash codes - must download new copy.\n", N[n].name);
 						gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
 					}
 					else {	/* Do size check */
@@ -387,15 +432,25 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 				gmt_remove_file (GMT, url);
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove outdated file %s.\n", old_md5path);
-		gmt_remove_file (GMT, old_md5path);	/* Finally remove the outdated MD5 file */
-		gmt_M_free (GMT, O);	/* Free old md5 table structures */
-		gmt_M_free (GMT, N);	/* Free new md5 table structures */
-		/* We now have an updated MD5 file and any out-of-date file has been removed so it can be downloaded again */
+		gmt_M_free (GMT, O);	/* Free old hash table structures */
+		gmt_M_free (GMT, N);	/* Free new hash table structures */
+		/* We now have an updated hash file */
+		if (!access (old_hashpath, F_OK))
+			remove (old_hashpath);	/* Remove old hash file if it exists */
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", md5path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", hashpath);
+	return 0;
 }
+
+GMT_LOCAL bool is_not_a_valid_grid (char *file, char *all_grid_files[], int N) {
+	/* Determine if file is among the valid datasets */
+	for (int k = 0; k < N; k++) {
+		if (!strncmp (all_grid_files[k], file, strlen (all_grid_files[k]))) return false;
+	}
+	return true;
+}
+
 
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
@@ -407,25 +462,31 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
-	bool is_srtm = false, is_data = false;
+	bool is_srtm = false, is_data = false, is_url = false;
 	size_t len, fsize;
 	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	char srtmdir[PATH_MAX] = {""}, serverdir[PATH_MAX] = {""}, *srtm_local = NULL;
-	struct FtpFile ftpfile = {NULL, NULL};
+	struct FtpFile urlfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 	
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return 0;   /* Not allowed to use remote copying */
-
-	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
+	if (GMT->current.io.internet_error) return 0;   			/* Not able to use remote copying in this session */
 	
+	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
+
 	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
 	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_remotedata (file)) {	/* A remote @earth_relief_xxm|s grid */
+		if (is_not_a_valid_grid (&file[1], all_grid_files, GMT_N_DATASETS)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file %s is not a recognized remote grid\n", file);
+			gmt_M_free (GMT, file);
+			return 1;
+		}
 		pos = 1;
 		is_data = true;
 	}
@@ -437,6 +498,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			c[0] = '\0';
 	}
 	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
+		is_url = true;
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 			c[0] = '\0';
@@ -453,8 +515,34 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return (pos);
 	}
 
-	md5_refresh (GMT);	/* Watch out for changes on the server once a day */
+	if (hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to obtain remote file %s\n", file);
+		gmt_M_free (GMT, file);
+		return 1;
+	}
 
+	/* Any old files have now been replaced.  Now we can check if the file exists already */
+	
+	if (kind != GMT_URL_QUERY) {	/* Regular file, see if we have it already */
+		bool found;
+		if (kind == GMT_DATA_FILE) {	/* Special remote data est @earth_relief_xxm|s request */
+			if (strstr (file, ".grd"))	/* User specified the extension */
+				found = (!gmt_access (GMT, &file[pos], F_OK));
+			else {	/* Must append the extension .grd */
+				char *tmpfile = malloc (strlen (file) + 5);
+				sprintf (tmpfile, "%s.grd", &file[pos]);
+				found = (!gmt_access (GMT, tmpfile, F_OK));
+				gmt_M_str_free (tmpfile);
+			}
+		}
+		else 
+			found = (!gmt_access (GMT, &file[pos], F_OK));
+		if (found) {	/* Got it already */
+			gmt_M_free (GMT, file);
+			return (pos);
+		}
+	}
+	
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
@@ -532,6 +620,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
 			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
 		}
+		else if (is_url) {	/* Plaec in current dir */
+			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
+		}
 		else {	/* Goes to cache */
 			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", user_dir[to]);
@@ -550,7 +641,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
-	ftpfile.filename = local_path;	/* Set pointer to local filename */
+	urlfile.filename = local_path;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
@@ -559,7 +650,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return 0;
 	}
 	/* Set a pointer to our struct to pass to the callback */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &ftpfile)) {
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
@@ -572,17 +663,20 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			if (ftpfile.fp != NULL) {
-				fclose (ftpfile.fp);
-				ftpfile.fp = NULL;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			if (urlfile.fp != NULL) {
+				fclose (urlfile.fp);
+				urlfile.fp = NULL;
 			}
 			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 		}
+		else if (curl_err == CURLE_COULDNT_CONNECT)
+			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
 	}
 	curl_easy_cleanup (Curl);
-	if (ftpfile.fp) /* close the local file */
-		fclose (ftpfile.fp);
+	if (urlfile.fp) /* close the local file */
+		fclose (urlfile.fp);
 	turn_off_ctrl_C_check ();
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');

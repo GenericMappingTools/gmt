@@ -5,6 +5,10 @@
 # GMT modules:	set, coast, plot, text, legend
 # Unix progs:	awk, cat, rm
 #
+
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 gmt begin ex31
 	# create file PSL_custom_fonts.txt in current working directory
 	# and add PostScript font names of Linux Biolinum and Libertine
@@ -18,8 +22,8 @@ gmt begin ex31
 	capitals=`gmt which -G @europe-capitals-ru.csv`
 	# common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p \
-	MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \
-	FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
 
 	# map of countries
 	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
@@ -57,5 +61,5 @@ gmt begin ex31
 	# plot legend
 	gmt legend -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite legend.txt
 
-	rm -f PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps
-gmt end
+	rm -f PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps europe-capitals-ru.csv
+gmt end show

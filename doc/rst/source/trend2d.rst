@@ -1,12 +1,11 @@
 .. index:: ! trend2d
+.. include:: module_core_purpose.rst_
 
 *******
 trend2d
 *******
 
-.. only:: not man
-
-    Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data
+|trend2d_purpose|
 
 Synopsis
 --------
@@ -183,6 +182,8 @@ kept low.
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To remove a planar trend from data.xyz by ordinary least squares, use
 

@@ -1225,7 +1225,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 						strcpy (unit, "seconds"); break;
 				}
 				gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
-				sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
+				snprintf (string[i], GMT_GRID_UNIT_LEN80, "time [%s since %s %s]", unit, date, clock);
 				/* Warning for non-double grids */
 				if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Use double precision output grid to avoid loss of significance of time coordinate.\n");
@@ -1821,10 +1821,14 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
 	size_t k, n_slash = 0;
 	unsigned int uerr = 0;
+	bool old = false;
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
-	if (n_slash > 4)	/* Pretty sure this is the old syntax */
-		/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+	if (!(input[0] == '+' && (strstr (input, "+x") || strstr (input, "+y") || strstr (input, "+z") || strstr (input, "+s") || \
+	    strstr (input, "+o") || strstr (input, "+n") || strstr (input, "+t") || strstr (input, "+r")))) {	/* Cannot be new syntax */
+		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
+	}
+	if (old)	/* Old syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmt_decode_grd_h_info_old (GMT, input, h);
 	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		char word[GMT_LEN256] = {""};
@@ -1984,12 +1988,12 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			if (gmtlib_file_is_srtmlist (API, argv[i])) {	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				sprintf (file, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
+				snprintf (file, GMT_LEN64, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
 				txt = file;
 			}
 			else if (gmt_M_file_is_remotedata (argv[i]) && (c = strstr (argv[i], ".grd"))) {
 				c[0] = '\0';
-				sprintf (file, "%s", argv[i]);
+				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';
 				txt = file;
 			}
@@ -2366,6 +2370,10 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_72*GMT_IMG_ITEMSIZE:
 			lat = GMT_IMG_MAXLAT_72;
 			min = 2;
+			break;
+		case GMT_IMG_NLON_4M*GMT_IMG_NLAT_4M_72*GMT_IMG_ITEMSIZE:	/* Test grids only */
+			lat = GMT_IMG_MAXLAT_72;
+			min = 4;
 			break;
 		default:
 			if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);

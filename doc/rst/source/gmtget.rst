@@ -1,12 +1,11 @@
 .. index:: ! gmtget
+.. include:: module_core_purpose.rst_
 
-***
-get
-***
+******
+gmtget
+******
 
-.. only:: not man
-
-    Get individual GMT default parameters
+|gmtget_purpose|
 
 Synopsis
 --------
@@ -47,19 +46,15 @@ Optional Arguments
     returns all selected parameter values on one line separated by
     spaces]
 
-Example
--------
+Examples
+--------
 
-To list the value of the parameter PS_COMMENTS:
-
-   ::
+To list the value of the parameter PS_COMMENTS::
 
     gmt get PS_COMMENTS
 
 To get both the values of the parameter
-MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try
-
-   ::
+MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try::
 
     gmt get MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
 

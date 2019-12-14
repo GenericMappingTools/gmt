@@ -1,12 +1,11 @@
 .. index:: ! sample1d
+.. include:: module_core_purpose.rst_
 
 ********
 sample1d
 ********
 
-.. only:: not man
-
-    Resample 1-D table data using splines
+|sample1d_purpose|
 
 Synopsis
 --------
@@ -139,6 +138,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To resample the file profiles.tdgmb, which contains
 (time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant

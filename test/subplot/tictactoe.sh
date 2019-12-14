@@ -7,4 +7,4 @@ gmt begin tictactoe ps
         gmt coast -Rg -JG120/30/? -Gred -Bg -c1,1
         gmt coast -Rg -JG210/30/? -Gred -Bg -c2,2
     gmt subplot end
-gmt end
+gmt end show

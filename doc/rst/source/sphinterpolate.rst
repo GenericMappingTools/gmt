@@ -1,15 +1,14 @@
 .. index:: ! sphinterpolate
+.. include:: module_core_purpose.rst_
 
 **************
 sphinterpolate
 **************
 
-.. only:: not man
+|sphinterpolate_purpose|
 
-    Spherical gridding in tension of data on a sphere
-
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -129,12 +128,20 @@ Optional Arguments
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+To interpolate data from the remote file mars370d.txt using the piecewise
+method for a 1x1 global grid, then plot it, try::
+
+    gmt begin mars
+      gmt sphinterpolate @mars370d.txt -Rg -I1 -Qp -Gmars.nc
+      gmt grdimage mars.nc -JH0/4.5i -B30g30
+    gmt end
+
 To interpolate the points in the file testdata.txt on a global 1x1
-degree grid with no tension, use
+degree grid with no tension, use::
 
-  ::
-
-    sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+    gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 
 See Also
 --------
@@ -147,8 +154,8 @@ See Also
 :doc:`surface`,
 :doc:`triangulate`
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, *AMC Trans. Math. Software*,

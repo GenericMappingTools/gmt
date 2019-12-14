@@ -1,13 +1,12 @@
 .. index:: ! pscontour
+.. include:: module_core_purpose.rst_
 
 
 *********
 pscontour
 *********
 
-.. only:: not man
-
-    Contour table data by direct triangulation [method]
+|pscontour_purpose|
 
 Synopsis
 --------
@@ -50,6 +49,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the CPT topo.cpt on a Lambert

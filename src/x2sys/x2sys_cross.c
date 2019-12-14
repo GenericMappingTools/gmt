@@ -31,7 +31,8 @@
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
 
-#define THIS_MODULE_NAME	"x2sys_cross"
+#define THIS_MODULE_CLASSIC_NAME	"x2sys_cross"
+#define THIS_MODULE_MODERN_NAME	"x2sys_cross"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Calculate crossovers between track data files"
 #define THIS_MODULE_KEYS	"<D{,>D}"
@@ -112,7 +113,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/*
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
@@ -422,7 +423,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -924,7 +925,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						sprintf (line, "Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						cmd = GMT_Create_Cmd (API, options);
-						sprintf (line, "Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+						sprintf (line, "Command: %s %s", THIS_MODULE_CLASSIC_NAME, cmd);	/* Build command line argument string */
 						gmt_M_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						sprintf (line, "%s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",

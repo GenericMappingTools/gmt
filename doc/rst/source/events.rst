@@ -1,12 +1,11 @@
 .. index:: ! events
+.. include:: module_core_purpose.rst_
 
 ********
 events
 ********
 
-.. only:: not man
-
-    Plot event symbols and labels for a moment in time
+|events_purpose|
 
 Synopsis
 --------
@@ -17,7 +16,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
-[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
+[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-L|\ [*length*\ \|\ **t**\ ] ]
@@ -56,8 +55,8 @@ color, we may try
     gmt begin layer
       gmt convert "https://earthquake.usgs.gov/fdsnws/event/1/query.csv?starttime=2018-01-01%2000:00:00&endtime=2018-12-31%2000:00:00&minmagnitude=5&orderby=time-asc" \
          -i2,1,3,4+s50,0 -hi1 > q.txt
-      gmt makecpt -Cred,green,blue -T0,70,300,10000 > q.cpt
-      gmt events -Rg -JG200/5/6i -Baf q.txt -SE- -Cq.cpt --TIME_UNIT=d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
+      gmt makecpt -Cred,green,blue -T0,70,300,10000
+      gmt events -Rg -JG200/5/6i -Baf q.txt -SE- -C --TIME_UNIT=d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
     gmt end show
 
 See Also

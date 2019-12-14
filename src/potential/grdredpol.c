@@ -32,7 +32,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdredpol"
+#define THIS_MODULE_CLASSIC_NAME	"grdredpol"
+#define THIS_MODULE_MODERN_NAME	"grdredpol"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the Continuous Reduction To the Pole, AKA differential RTP"
 #define THIS_MODULE_KEYS	"<G{,EG(,GG},ZG)"
@@ -221,11 +222,11 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 
 	upper_ny = Ctrl->S.n_rows+i_data_start;
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
-		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
-		jee = Ctrl->S.n_columns + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
+		jww = j_data_start-j;		/* Minimum Outside xmin and approaching West border  */
+		jee = Ctrl->S.n_columns + j_data_start + j-1;	/* Minimum Outside xmax and approaching East border  */
 		if (Ctrl->M.mirror) {
-			jwe = j_data_start+j;			/* Minimum Inside xmin and aproaching center  */
-			jew = Ctrl->S.n_columns + j_data_start - j-1;	/* Minimum Inside xmax and aproching center  */
+			jwe = j_data_start+j;			/* Minimum Inside xmin and approaching center  */
+			jew = Ctrl->S.n_columns + j_data_start - j-1;	/* Minimum Inside xmax and approaching center  */
 		}
 		else {
 			jwe = j_data_start;			/* West border */
@@ -241,10 +242,10 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 
 	upper_nx = Ctrl->S.n_columns + nc;
 	for (i = 0; i < i_data_start; i++) {	/* ROWS */
-		iss = Ctrl->S.n_rows+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
+		iss = Ctrl->S.n_rows+i_data_start+i;	/* Minimum Outside ymin and approaching South border  */
 		if (Ctrl->M.mirror) {
-			ins = 2*i_data_start - i;		/* Maximum Inside ymax and aproaching North border */
-			isn = Ctrl->S.n_rows+i_data_start-2-i;	/* Minimum Inside ymin and aproaching center  */
+			ins = 2*i_data_start - i;		/* Maximum Inside ymax and approaching North border */
+			isn = Ctrl->S.n_rows+i_data_start-2-i;	/* Minimum Inside ymin and approaching center  */
 		}
 		else {
 			ins = i_data_start;			/* North border */
@@ -1023,7 +1024,7 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei<dip_grd>] [-Ee<dec_grd>] [-F<m>/<n>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filterfile>]\n\t[%s] [%s]\n\n",
@@ -1212,7 +1213,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

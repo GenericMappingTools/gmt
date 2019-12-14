@@ -1,19 +1,18 @@
 .. index:: ! mgd77info
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 mgd77info
 *********
 
-.. only:: not man
-
-    mgd77info - Extract information about MGD77 files
+|mgd77info_purpose|
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77info** *NGDC-ids*
+**gmt mgd77info** *GEODAS-ids*
 [ |-C|\ [**m**\ \|\ **e**] ]
 [ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]

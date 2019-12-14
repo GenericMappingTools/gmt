@@ -1,12 +1,11 @@
 .. index:: ! rose
+.. include:: module_core_purpose.rst_
 
 ******
 rose
 ******
 
-.. only:: not man
-
-    Plot a polar histogram (rose, sector, windrose diagrams)
+|rose_purpose|
 
 Synopsis
 --------
@@ -48,19 +47,16 @@ Synopsis
 Examples
 --------
 
-To plot a half circle rose diagram of the data in the file
-fault_segments.az_r (containing pairs of (azimuth, length in meters),
-using a 10 degree bin sector width, on a circle of diameter = 6 inch, grid
-going out to radius = 150 km in steps of 25 km with a 30 degree sector
-interval, radial direction annotated every 50 km, using a light blue
-shading outlined by a solid red pen (width = 0.75 points), draw the mean
-azimuth, and shown in Portrait orientation, use:
+.. include:: explain_example.rst_
 
-   ::
+.. include:: oneliner_info.rst_
 
-    gmt rose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
-               -Byg30 -B+t"Rose diagram" -JX6i -A10+r -Glightblue
-               -W0.75p,red -Z0.001 -Em -T -: -pdf half_rose
+To plot a half circle rose diagram of the data in the remote data file
+azimuth_lengths.txt (containing pairs of (azimuth, length in meters)),
+using a 5 degree bin sector width, on a circle of diameter = 10 cm, using a light blue
+shading, try::
+
+    gmt rose @azimuth_lengths.txt -: -A5 -JX10c -F -L -Glightblue -R0/1/0/180 -Bxaf+l"Fault length" -Byg30 -S -pdf half_rose
 
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =

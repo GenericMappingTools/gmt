@@ -25,13 +25,13 @@
 
 /*!
  * \file gmt_dcw.h
- * \brief Definitions for using the DCW 
+ * \brief Definitions for using the DCW
  */
 
 #ifndef GMT_DCW_H
 #define GMT_DCW_H
 
-#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
+#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,
@@ -50,9 +50,8 @@ struct GMT_DCW_ITEM {	/* One set of codes with their color/fill */
 
 struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	bool region;		/* Determine region from polygons instead of -R */
-	bool adjust;		/* Round/adjust the region from polygons using the incs */
-	bool extend;		/* Extend region rather than quantize it */
 	double inc[4];		/* Increments for rounded region */
+	unsigned int adjust;		/* Round/adjust the region from polygons using the incs */
 	unsigned int mode;	/* 1 get countries, 2 get countries and states */
 	unsigned int n_items;	/* Number of items (times) -F was given */
 	struct GMT_DCW_ITEM **item;	/* Pointer to array of n_items items */

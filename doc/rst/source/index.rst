@@ -1,154 +1,77 @@
-.. GMT documentation master file
+.. GMT documentation front page
 
-Quick Reference (Modern Mode)
-=============================
+The Generic Mapping Tools Documentation
+=======================================
 
-+-----------------+-----------------+-------------------+-------------------+---------------------+
-| .. toctree::    | .. toctree::    | .. toctree::      | .. toctree::      | .. toctree::        |
-|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1   |    :maxdepth: 1     |
-|                 |                 |                   |                   |                     |
-|    quick_ref    |    std_opts     |    Defaults       |    proj_codes_GMT |    proj_codes_PROJ4 |
-+-----------------+-----------------+-------------------+-------------------+---------------------+
+Welcome to the GMT Docs! Here you'll find resources for using GMT and examples of what
+it can do.
 
-Quick Reference (Classic Mode)
-==============================
+Quick links
+-----------
 
-+----------------------+---------------------+
-| .. toctree::         | .. toctree::        |
-|    :maxdepth: 1      |    :maxdepth: 1     |
-|                      |                     |
-|    quick_ref_classic |    std_opts_classic |
-+----------------------+---------------------+
+.. hlist::
+   :columns: 3
 
-Session Management
-==================
+   - :doc:`std_opts`
+   - :doc:`proj_codes`
+   - :doc:`Default Settings (gmt.conf) <gmt.conf>`
+   - :doc:`GMT Colors <gmtcolors>`
+   - :doc:`35 Postscript Fonts </cookbook/postscript_fonts>`
+   - :doc:`Built-in CPTs </cookbook/cpts>`
+   - :doc:`Octal Codes of Characters </cookbook/octal_codes>`
+   - :ref:`Pen Syntax <-Wpen_attrib>`
+   - :ref:`Fill Syntax <-Gfill_attrib>`
+   - :ref:`Grid Format Specifications <tbl-grdformats>`
 
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |
-|                 |                 |                 |                 |                 |                 |                 |
-|    begin        |    end          |    docs         |    figure       |    inset        |    subplot      |    clear        |
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
-
+.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
    :hidden:
 
-
-Data Processing Man pages
-=========================
-
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    B            |    P            |    GR           |
-|    C            |    R            |    Scripts      |
-|    D            |    S            |                 |
-|    F            |    T            |                 |
-|    G            |    V            |                 |
-|    I            |    W            |                 |
-|    K            |    X            |                 |
-|    M            |                 |                 |
-|    N            |                 |                 |
-+-----------------+-----------------+-----------------+
-
-Plotting Man pages
-==================
-
-+-----------------+-----------------+
-| .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |
-|    PS           |    PS_classic   |
-+-----------------+-----------------+
-
-Supplements (Modern Mode)
-=========================
-
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    SUP_GEODESY  |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_GSHHS    |    SUP_SPOTTER  |    SUP_SEIS     |
-|    SUP_IMG      |                 |    SUP_X2SYS    |
-|    SUP_MGD77    |                 |                 |
-+-----------------+-----------------+-----------------+
-
-Supplements (Classic Mode)
-==========================
-
-+-----------------------+----------------------+----------------------+------------------------+
-| .. toctree::          | .. toctree::         | .. toctree::         | .. toctree::           |
-|    :maxdepth: 2       |    :maxdepth: 2      |    :maxdepth: 2      |    :maxdepth: 2        |
-|                       |                      |                      |                        |
-|    SUP_GEODESY_classic|    SUP_MGD77_classic |    SUP_SEGY_classic  |    SUP_SEIS_classic    |
-+-----------------------+----------------------+----------------------+------------------------+
-
-Gallery
-=======
-
-+----------------------------+
-| .. toctree::               |
-|    :maxdepth: 2            |
-|                            |
-|    Gallery                 |
-|    Users_contrib_script    |
-|    Users_contrib_symbols   |
-+----------------------------+
-
-Documentations
-==============
-
-**Modern mode**
+   std_opts
+   proj_codes
+   gmt.conf
+   gmtcolors
 
 .. toctree::
    :maxdepth: 1
+   :caption: Getting started
 
+   gallery
    tutorial
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference documentation
+
+   modules
    cookbook
-
-**Classic mode**
-
-.. toctree::
-   :maxdepth: 1
-
-   tutorial_classic
-   cookbook_classic
-
-GMT Data Sets
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    datasets        |
-+--------------------+
-
-The Software
-============
-
-+-----------------+-------------------+---------------------+
-| .. toctree::    | .. toctree::      | .. toctree::        |
-|    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1     |
-|                 |                   |                     |
-|    changes      |    compatibility  |    switching        |
-+-----------------+-------------------+---------------------+
-
-API Reference
-=============
+   datasets
 
 .. toctree::
    :maxdepth: 1
+   :caption: Resources
 
-   api
-   ml_wrapper
-   jl_wrapper
-
-.. Include an hidden page with option's examples that can be referenced by individual programs
+   users_contrib_scripts
+   users_contrib_symbols
+   changes
+   deprecated_defaults
+   switching
+   migrating
 
 .. toctree::
-   :hidden:
+   :maxdepth: 1
+   :caption: Classic Mode
 
-   examples_options
+   std_opts_classic
+   modules_classic
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Developer Resources
+
+   Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
+   Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+   GMT C API <api>
+   PostScriptLight C API <postscriptlight>
+   Debugging GMT <debug>
+

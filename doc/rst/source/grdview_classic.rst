@@ -1,12 +1,11 @@
 .. index:: ! grdview
+.. include:: module_core_purpose.rst_
 
 *******
 grdview
 *******
 
-.. only:: not man
-
-    Create 3-D perspective image or surface mesh from a grid
+|grdview_purpose|
 
 Synopsis
 --------
@@ -40,6 +39,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To make a mesh plot from the file hawaii_grav.nc and drawing the
 contours given in the CPT hawaii.cpt on a Lambert map at

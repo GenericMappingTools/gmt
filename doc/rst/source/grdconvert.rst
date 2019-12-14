@@ -1,12 +1,11 @@
 .. index:: ! grdconvert
+.. include:: module_core_purpose.rst_
 
 ***********
 grdconvert
 ***********
 
-.. only:: not man
-
-    Convert between different grid formats
+|grdconvert_purpose|
 
 Synopsis
 --------
@@ -27,12 +26,12 @@ Description
 
 **grdconvert** reads a grid file in one format and writes it out using
 another format. As an option the user may select a subset of the data to
-be written and to specify scaling, translation, and NaN-value. 
+be written and to specify scaling, translation, and NaN-value.
 
 Required Arguments
 ------------------
 
-*ingrdfile* [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+*ingrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
     The grid file to be read. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
@@ -49,10 +48,10 @@ Required Arguments
     *id=gd* forces a read via GDAL.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-**-G**\ *outgrdfile* [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
+**-G**\ *outgrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
-    below), you may optionally append  any of **+s**\ *scale*, 
+    below), you may optionally append  any of **+s**\ *scale*,
     **+o**\ *offset*, and **+n**\ *invalid*.  These modifiers are
     particularly practical when storing the data as integers, by
     first removing an offset and then scaling down the values.
@@ -88,7 +87,7 @@ Optional Arguments
     Suppress the writing of the GMT header structure. This is useful
     when you want to write a native grid to be used by external tools
     that do not recognize GMT headers. It
-    only applies to native grids and is ignored for netCDF output. 
+    only applies to native grids and is ignored for netCDF output.
 
 .. _-R:
 
@@ -157,7 +156,7 @@ fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 +----------+---------------------------------------------------------------+
 | **rb**   | SUN rasterfile format (8-bit standard)                        |
 +----------+---------------------------------------------------------------+
-| **rf**   | GEODAS grid format GRD98 (NGDC)                               |
+| **rf**   | GEODAS grid format GRD98 (NCEI)                               |
 +----------+---------------------------------------------------------------+
 | **sf**   | Golden Software Surfer format 6 (32-bit float)                |
 +----------+---------------------------------------------------------------+
@@ -181,7 +180,7 @@ numerous third-party programs and are platform-independent. Some
 disk-space can be saved by storing the data as bytes or shorts in stead
 of integers. Use the *scale* and *offset* parameters to make this work
 without loss of data range or significance. For more details, see
-:ref:`App-file-formats` and :ref:`Write-grids-images`.
+:ref:`GMT File Formats` and :ref:`Write-grids-images`.
 
 **Multi-variable grid files**
 
@@ -226,12 +225,14 @@ note that it is not possible for GMT to determine uniquely if a
 4-byte grid is float or int; in such cases it is best to use the *=ID*
 mechanism to specify the file format. In all cases a native grid is
 considered to be signed (i.e., there are no provision for unsigned short
-ints or unsigned bytes). For header and grid details, see :ref:`App-file-formats`. 
+ints or unsigned bytes). For header and grid details, see :ref:`GMT File Formats`.
 
 .. include:: explain_float.rst_
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To extract the second layer from a 3-dimensional grid named temp from a
 COARDS-compliant netCDF file climate.nc:
@@ -241,11 +242,11 @@ COARDS-compliant netCDF file climate.nc:
     gmt grdconvert climate.nc?temp[1] -Gtemp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
-netCDF file data.nc:
+remote netCDF file AFR.nc:
 
    ::
 
-    gmt grdconvert data.nc -Gras_data.b4=bf -V
+    gmt grdconvert @AFR.nc -GAFR_bin.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do

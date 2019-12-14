@@ -82,4 +82,6 @@ gmt begin ex22
 	# OK, now we can actually run gmt legend.  We center the legend below the map.
 	# Trial and error shows that 1.7i is a good legend height:
 	gmt legend -DJBC+o0/0.4i+w7i/1.7i -F+p+glightyellow neis.legend
-gmt end
+
+	rm neis.legend usgs_quakes_22.txt
+gmt end show

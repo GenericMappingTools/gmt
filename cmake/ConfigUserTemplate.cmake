@@ -49,8 +49,8 @@
 #set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES OFF)
 
 # Install convenience links for GMT modules. Disable to install only the main
-# gmt program and access modules as "gmt modulename options" [TRUE]:
-#set (GMT_INSTALL_MODULE_LINKS FALSE)
+# gmt program and access modules as "gmt modulename options" [FALSE]:
+#set (GMT_INSTALL_MODULE_LINKS TRUE)
 
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
@@ -165,10 +165,6 @@
 #set (GLIB_INCLUDE_DIR c:/path/to/glib-dev/include/glib-2.0)
 #set (GLIB_LIBRARIES c:/path/to/glib-dev/lib/glib-2.0.lib)
 
-# Set location of pthreads-win32 (only Windows); needs GMT_USE_THREADS:
-#set (PTHREADS_WIN32_ROOT c:/prefix/of/pthreads-win32)
-#set (GMT_USE_THREADS TRUE)
-
 # Set LAPACK location. Use this when want to link with LAPACK and it's not found automatically
 #set (LAPACK_LIBRARY "V:/lapack-3.5.0/build/lib/liblapack.lib")
 #set (BLAS_LIBRARY "V:/lapack-3.5.0/build/lib/libblas.lib")
@@ -256,12 +252,13 @@
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
-#if ( CMAKE_GENERATOR STREQUAL "Xcode" )
-##	So Xcode can find the supplemental plug-ins during debug sessions
-#	add_definitions(-DXCODER)
-#   add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
-#	message("Add Xcode definition for GMT")
-#endif()
+if ( CMAKE_GENERATOR STREQUAL "Xcode" )
+#	So Xcode can find the supplemental plug-ins during debug sessions
+	add_definitions(-DXCODER)			# Handle a debug plugin directory
+	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
+	message("Add Xcode definition for GMT")
+endif()
+# Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build

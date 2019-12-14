@@ -57,7 +57,8 @@ read it carefully.
 ## How Can I Talk to You?
 
 Discussion often happens in the issues and pull requests.
-We don't have a good solution for a user forum yet but we're working on it.
+For general questions, you can post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/).
 
 
 ## Reporting a Bug
@@ -76,8 +77,9 @@ problem.
 ## Editing the Documentation
 
 If you're browsing the documentation and notice a typo or something that could be
-improved, please consider letting us know by [creating an issue](#reporting-a-bug) or
-submitting a fix (even better :star2:).
+improved, please consider letting us know. You can either
+[create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
+at the top right corner of the documentation, and submit a fix (even better :star2:).
 
 
 ## Contributing Code

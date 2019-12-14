@@ -1,12 +1,11 @@
 .. index:: ! clip
+.. include:: module_core_purpose.rst_
 
 ******
 clip
 ******
 
-.. only:: not man
-
-    Initialize or terminate polygonal clip paths
+|clip_purpose|
 
 Synopsis
 --------
@@ -22,6 +21,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bi| ]
@@ -41,18 +41,21 @@ Synopsis
 Examples
 --------
 
-To set up a complex clip
-area to which all subsequent plotting will be confined, run:
+To see the effect of a simple clip path which result in some symbols
+being partly visible or missing altogether, try::
 
-   ::
+    gmt begin clip
+      gmt clip -R0/6/0/6 -Jx2.5c -W1p,blue << EOF
+    0 0
+    5 1
+    5 5
+    EOF
+      gmt plot @tut_data.txt -Gred -Sc2c
+      gmt clip -C -B
+    gmt end show
 
-    gmt clip my_region.xy -R0/40/0/40 -Jm0.3i
-
-To deactivate the clipping in an existing plotfile, run:
-
-   ::
-
-    gmt clip -C
+where we activate and deactivate the clip path.  Note we also draw the
+outline of the clip path to make it clear what is being clipped.
 
 See Also
 --------

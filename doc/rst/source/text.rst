@@ -1,12 +1,11 @@
 .. index:: ! text
+.. include:: module_core_purpose.rst_
 
 ******
 text
 ******
 
-.. only:: not man
-
-    Plot or typeset text on maps
+|text_purpose|
 
 Synopsis
 --------
@@ -41,6 +40,10 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
 
 To plot just the red outlines of the (lon lat text strings) stored in the
 file text.txt on a Mercator plot with the given specifications, use

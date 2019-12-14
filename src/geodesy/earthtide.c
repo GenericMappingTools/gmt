@@ -26,7 +26,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"earthtide"
+#define THIS_MODULE_CLASSIC_NAME	"earthtide"
+#define THIS_MODULE_MODERN_NAME	"earthtide"
 #define THIS_MODULE_LIB		"geodesy"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
 #define THIS_MODULE_KEYS	">D},GG),>DL,>DS"
@@ -291,7 +292,7 @@ GMT_LOCAL void sprod(double *x, double *y, double *scal, double *r1, double *r2)
 
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL double enorm8(double *a) {
-	/* compute euclidian norm of a vector (of length 3) */
+	/* compute euclidean norm of a vector (of length 3) */
 	return sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
 }
 
@@ -452,7 +453,7 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 		0.,0.,1.,0.,0.,.01,0.,0. };
 
 	int i, j;
-	double h, t2, t3, t4, cosphi2, sinphi2, sin_tf, cos_tf;
+	double h, t2, t3, cosphi2, sinphi2, sin_tf, cos_tf;
 	double p, s, de, dn, dr, pr, ps, zla, tau, zns, rsta, cosla, sinla, thetaf, cosphi, sinphi;
 
 	/* ** note, following table is derived from dehanttideinelMJD.f (2000oct30 16:10) */
@@ -493,7 +494,6 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	/* *** v.dehant 2 */
 	t2 = t * t;
 	t3 = t * t2;
-	t4 = t2 * t2;
 	s = 218.31664563 + 481267.88194 * t - .0014663889 * t2 + 1.85139e-6 * t3;
 	tau = fhr * 15. + 280.4606184 + t * 36000.7700536 + t * 3.8793e-4 * t - t3 * 2.58e-8 - s;
 	pr = t * 1.396971278f + t * 3.08889e-4f * t + t3 * 2.1e-8f + t2 * 7e-9f;
@@ -1262,7 +1262,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 /* ------------------------------------------------------------------------------------------------------- */
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[<unit>][+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
@@ -1377,7 +1377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'T':	/* Select time range for time-series tide estimates */
 				Ctrl->T.active = true;
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -1448,7 +1448,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

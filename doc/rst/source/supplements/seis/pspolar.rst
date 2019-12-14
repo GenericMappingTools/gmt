@@ -1,12 +1,11 @@
 .. index:: ! pspolar
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 pspolar
 *******
 
-.. only:: not man
-
-    Plot polarities on the inferior focal half-sphere on maps
+|pspolar_purpose|
 
 Synopsis
 --------
@@ -19,10 +18,10 @@ Synopsis
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
 [ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ *pointsize*] ]
-[ |-E|\ *color* ]
-[ |-F|\ *color* ]
-[ |-G|\ *color* ]
-[ |-K| ] [ |-L| ] [ |-N| ]
+[ |-E|\ *fill* ]
+[ |-F|\ *fill* ]
+[ |-G|\ *fill* ]
+[ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ *angle*/*form*/*justify*/*fontsize* ]

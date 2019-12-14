@@ -1,12 +1,11 @@
 .. index:: ! wiggle
+.. include:: module_core_purpose.rst_
 
 ********
 wiggle
 ********
 
-.. only:: not man
-
-    Plot z = f(x,y) anomalies along tracks
+|wiggle_purpose|
 
 Synopsis
 --------
@@ -44,6 +43,15 @@ Synopsis
 Examples
 --------
 
+.. include:: explain_example.rst_
+
+.. include:: oneliner_info.rst_
+
+To demonstrate a basic wiggle plot we create some synthetic data with
+:doc:`gmtmath` and pipe it through **wiggle**::
+
+    gmt math -T-8/6/0.01 -N3/0 -C2 T 3 DIV 2 POW NEG EXP T PI 2 MUL MUL COS MUL 50 MUL = | gmt wiggle -R-10/10/-3/3 -JM6i -B -Z100i -DjRM+w100+lnT -Tfaint -Gred+p -W1p -BWSne -pdf map
+
 To plot the magnetic anomaly stored in the file track.xym along track @
 500 nTesla/cm (after removing a mean value of 32000 nTesla), using a
 15-cm-wide Polar Stereographic map ticked every 5 degrees in Portrait
@@ -52,7 +60,7 @@ points, use
 
    ::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5
+    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
                  -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
@@ -62,7 +70,7 @@ and obtain
 
    ::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5
+    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
               -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 Bugs
@@ -81,8 +89,7 @@ this). Then if these numbers jump around a lot, you may do this:
 
    ::
 
-    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0
-    --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
+    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 which performs a 5-point boxcar filter, and plot this data set instead.
 

@@ -14,7 +14,7 @@ The different bands in the columns indicate how commonly the languages are used,
 languages threatened by extinction.  We use :doc:`gmtmath </gmtmath>` to sum up the total languages per continent.
 The script also shows how to effectively use transparency of the boxes around the numbers
 and in the shade surrounding the legend.
-Our script that produces Figure ex_10 reads:
+Our script that produces Figure 10 reads:
 
 .. literalinclude:: /_verbatim/ex10.txt
    :language: bash

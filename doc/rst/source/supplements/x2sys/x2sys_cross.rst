@@ -1,12 +1,11 @@
 .. index:: ! x2sys_cross
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 x2sys_cross
 ***********
 
-.. only:: not man
-
-    x2sys_cross - Calculate crossovers between track data files
+|x2sys_cross_purpose|
 
 Synopsis
 --------

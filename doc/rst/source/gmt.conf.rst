@@ -4,9 +4,7 @@
 gmt.conf
 ********
 
-.. only:: not man
-
-    Configuration for GMT
+Configuration for GMT
 
 Description
 -----------
@@ -377,6 +375,14 @@ fonts can be found in the :doc:`gmt` man page.
     files from the remote server selected via **GMT_DATA_SERVER**.  Default
     is *on* but you can turn this off by setting it to *off*.
 
+.. _GMT_COMPATIBILITY:
+
+**GMT_COMPATIBILITY**
+    Determines if this GMT version should be able to parse command-line
+    options for a prior major release.  Specify either 4 or 5. If 4 is
+    set we will parse obsolete GMT 4 options and issue warnings; if 5
+    is set then parsing GMT 4 only syntax will result in errors [4].
+
 .. _GMT_DATA_SERVER:
 
 **GMT_DATA_SERVER**
@@ -388,14 +394,6 @@ fonts can be found in the :doc:`gmt` man page.
     Upper limit on the size of remote file to download [unlimited].  Give
     the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
     or giga-bytes.
-
-.. _GMT_COMPATIBILITY:
-
-**GMT_COMPATIBILITY**
-    Determines if this GMT version should be able to parse command-line
-    options for a prior major release.  Specify either 4 or 5. If 4 is
-    set we will parse obsolete GMT 4 options and issue warnings; if 5
-    is set then parsing GMT 4 only syntax will result in errors [4].
 
 .. _GMT_EXPORT_TYPE:
 
@@ -1153,9 +1151,12 @@ fonts can be found in the :doc:`gmt` man page.
 .. _PS_MEDIA:
 
 **PS_MEDIA**
-    Sets the physical format of the current plot paper [a4 (or letter)].
-    The following formats (and their widths and heights in points) are
-    recognized:
+    *Classic mode:* Sets the physical size of the current plotting paper [a4 or letter].
+    *Modern mode:* If user selects PostScript output then the above applies as well.
+    For other graphics formats (PDF and rasters), the media size is determined automatically
+    by cropping to fit the plot exactly (but see :ref:`PS_CONVERT <PS_CONVERT>`).  However,
+    if a specific media size is desired then the **PS_MEDIA** may be specified as well.
+    The following formats (and their widths and heights in points) are recognized:
 
     Media width height
 

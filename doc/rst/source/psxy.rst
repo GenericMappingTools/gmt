@@ -1,12 +1,11 @@
 .. index:: ! psxy
+.. include:: module_core_purpose.rst_
 
 ****
 psxy
 ****
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols on maps
+|psxy_purpose|
 
 Synopsis
 --------
@@ -54,6 +53,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To plot solid red circles (diameter = 0.2 cm) at the positions listed
 in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to

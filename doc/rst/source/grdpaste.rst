@@ -1,12 +1,11 @@
 .. index:: ! grdpaste
+.. include:: module_core_purpose.rst_
 
 ********
 grdpaste
 ********
 
-.. only:: not man
-
-    grdpaste - Join two grids along their common edge
+|grdpaste_purpose|
 
 Synopsis
 --------
@@ -61,6 +60,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
 180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and

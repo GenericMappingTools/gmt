@@ -72,7 +72,7 @@
 #
 #---------------------------------------------------
 
-gmt begin GMT_App_J_1 ps
+gmt begin GMT_App_J_1
 RJ="-R-0.6/0.6/-0.1/1.1 -JX4i/2i"
 echo "-0.5	0" > tt.tmp
 gmt math -T-0.5/0.5/0.01 1 = >> tt.tmp
@@ -90,4 +90,4 @@ gmt text -F+f9p,Times-Roman+j << END
 0.2	0.2	RM	Gaussian
 0.2	0.1	RM	Cosine
 END
-gmt end
+gmt end show

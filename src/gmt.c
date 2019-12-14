@@ -140,9 +140,15 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
-			/* Print all modules and exit */
+			/* Print all modern modules and exit */
 			else if (!strncmp (argv[arg_n], "--show-modules", 8U)) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_LIST, NULL);
+				status = GMT_NOERROR;
+			}
+
+			/* Print all classic modules and exit */
+			else if (!strncmp (argv[arg_n], "--show-classic", 8U)) {
+				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_CLASSIC, NULL);
 				status = GMT_NOERROR;
 			}
 
@@ -211,24 +217,39 @@ int main (int argc, char *argv[]) {
 
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
-				unsigned int type = 0;
+				unsigned int type = 0;	/* Default is bash */
 				time_t right_now = time (NULL);
-				char *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
+				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
 				char *comment[3] = {"#", "#", "REM"};
+				char *name = gmt_putusername (NULL);
+				
 				strftime (stamp, GMT_LEN32, "%FT%T", localtime (&right_now));
-				if ((txt = getenv ("shell")) == NULL) txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+				if ((s = strchr (argv[arg_n], '=')) && s[1]) {	/* Gave a specific script language name */
+					if ((strstr (&s[1], shell[0]) || strstr (&s[1], shell[1]) || strstr (&s[1], shell[2]) || strstr (&s[1], "dos")))
+						txt = &s[1];
+					else
+						fprintf (stderr, "gmt: ERROR: --new-script language %s not recognized; default to bash\n\n", &s[1]);
+				}
+				else if ((txt = getenv ("shell")) == NULL) /* Likely not in a csh-type environment, try the Bourne shell environment variable SHELL */
+					txt = getenv ("SHELL");	/* Here txt is either a shell path or NULL */
+				if (txt && (!strcmp (txt, "batch") || !strcmp (txt, "dos"))) {	/* User asked for batch */
+					type = 2;		/* Select batch */
+					txt = shell[type];	/* Since user may have typed dos instead of batch */
+					printf ("@echo off\n");	/* Turn of the default echo-ing of commands */
+				}
 #ifdef WIN32
-				if (txt == NULL) {	/* Assume batch if no shell setting exist udner Windows */
-					type = 2;
-					printf ("@echo off\n");
+				else if (txt == NULL) {	/* Assume batch if no shell setting exist under Windows */
+					type = 2;		/* Select batch */
+					printf ("@echo off\n");	/* Turn of the default echo-ing of commands */
 				}
 #endif
-				if (type == 0 && txt && strstr (txt, "csh"))	/* Got csh or tcsh */
-					type = 1;
-				if (type < 2)
-					printf ("#!/usr/bin/env %s\n", shell[type]);
-				printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
-				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], gmt_putusername(NULL), comment[type]);
+				if (type == 0 && txt && (strstr (txt, "csh") || strstr (txt, "tcsh")))	/* Got csh or tcsh */
+					type = 1;	/* Select csh */
+				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
+					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
+					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
+				}
+				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
 				switch (type) {
 					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
 					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
@@ -237,6 +258,7 @@ int main (int argc, char *argv[]) {
 						break;
 				}
 				printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
+				gmt_M_str_free (name);
 				status = GMT_NOERROR;
 			}
 
@@ -269,19 +291,21 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 			fprintf (stderr, "and volunteers from around the world.\n\n");
 
-			fprintf (stderr, "GMT is distributed under the GNU LGP License (http://www.gnu.org/licenses/lgpl.html).\n\n");
+			fprintf (stderr, "GMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
-			fprintf (stderr, "  --new-script      Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "  --new-script[=L]  Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell]\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
+			fprintf (stderr, "  --show-classic    Show all classic module names.\n");
 			fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
 			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
-			fprintf (stderr, "  --show-modules    Show all module names.\n");
+			fprintf (stderr, "  --show-modules    Show all modern module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 			fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");

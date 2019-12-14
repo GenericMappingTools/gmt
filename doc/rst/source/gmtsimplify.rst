@@ -1,12 +1,11 @@
 .. index:: ! gmtsimplify
+.. include:: module_core_purpose.rst_
 
-********
-simplify
-********
+***********
+gmtsimplify
+***********
 
-.. only:: not man
-
-    Line reduction using the Douglas-Peucker algorithm
+|gmtsimplify_purpose|
 
 Synopsis
 --------
@@ -46,7 +45,7 @@ Required Arguments
 
 **-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
-    data are not Cartesian then append a suitable distance unit (see :ref:`Unit_attributes`).
+    data are not Cartesian then append a suitable distance unit (see `Units`_).
 
 Optional Arguments
 ------------------
@@ -59,12 +58,12 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
- 
+
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
 
@@ -94,6 +93,13 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
+
+To reduce the remote high-resolution GSHHG polygon for Australia down to
+a tolerance of 500 km, use::
+
+    gmt simplify @GSHHS_h_Australia.txt -T500k
 
 To reduce the geographic line segment.txt using a tolerance of 2 km, run
 

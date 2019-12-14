@@ -6,6 +6,9 @@
 # Unix progs:   grep, awk, sed
 #
 
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 # Data from Table 7 in Rousseeuw and Leroy, 1987.
 gmt begin ex43
 
@@ -45,9 +48,9 @@ gmt begin ex43
 	30	-10
 	30	-2.5
 	0	-2.5
-	
+
 	EOF
 	$AWK '{print NR, $6, $7}' A.txt | gmt plot -Sb1ub0 -W0.25p -C
 	gmt basemap -Bafg100 -Bx+l"Animal index number" -By+l"z-zcore" -BWSne
 	rm -f *.txt
-gmt end
+gmt end show

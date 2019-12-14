@@ -1,12 +1,11 @@
 .. index:: ! x2sys_solve
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 x2sys_solve
 ***********
 
-.. only:: not man
-
-    x2sys_solve - Determine least-squares systematic correction from crossovers
+|x2sys_solve_purpose|
 
 Synopsis
 --------

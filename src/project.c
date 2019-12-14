@@ -27,12 +27,13 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"project"
+#define THIS_MODULE_CLASSIC_NAME	"project"
+#define THIS_MODULE_MODERN_NAME	"project"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Project data onto lines or great circles, generate tracks, or translate coordinates"
+#define THIS_MODULE_PURPOSE	"Project data onto lines or great circles, or generate tracks"
 #define THIS_MODULE_KEYS	"<D{,>D},G-("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghis" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
 
 #define PROJECT_N_FARGS	7
 
@@ -315,12 +316,12 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+h]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -372,7 +373,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
-	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,s,:,.");
+	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -645,7 +646,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -879,8 +880,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 			else {	/* Geographic ellipse */
 				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
 				for (rec = 0; rec < P.n_used; rec++) {
-					p_data[rec].a[4] = S->coord[GMT_X][rec];
-					p_data[rec].a[5] = S->coord[GMT_Y][rec];
+					p_data[rec].a[4] = S->data[GMT_X][rec];
+					p_data[rec].a[5] = S->data[GMT_Y][rec];
 				}
 				z_header = strdup (S->header);
 				gmt_free_segment (GMT, &S);

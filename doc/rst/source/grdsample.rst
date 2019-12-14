@@ -1,12 +1,11 @@
 .. index:: ! grdsample
+.. include:: module_core_purpose.rst_
 
 *********
 grdsample
 *********
 
-.. only:: not man
-
-    grdsample - Resample a grid onto a new lattice
+|grdsample_purpose|
 
 Synopsis
 --------
@@ -130,11 +129,13 @@ such as
 Examples
 --------
 
-To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:
+.. include:: explain_example.rst_
+
+To resample a sub-region of the 5 x 5 minute remote grid earth_relief_05m onto a 1 minute grid:
 
    ::
 
-    gmt grdsample hawaii_5by5_topo.nc -I1m -Ghawaii_1by1_topo.nc
+    gmt grdsample @earth_relief_05m -R0/20/0/20 -I1m -Gtopo_1m.nc 
 
 To translate the gridline-registered file surface.nc to pixel
 registration while keeping the same region and grid interval:

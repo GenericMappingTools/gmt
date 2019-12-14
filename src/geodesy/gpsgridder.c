@@ -28,9 +28,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"gpsgridder"
+#define THIS_MODULE_CLASSIC_NAME	"gpsgridder"
+#define THIS_MODULE_MODERN_NAME	"gpsgridder"
 #define THIS_MODULE_LIB		"geodesy"
-#define THIS_MODULE_PURPOSE	"Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet"
+#define THIS_MODULE_PURPOSE	"Interpolate GPS strains using Green's functions for elastic deformation"
 #define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVbdefghinors" GMT_ADD_x_OPT
@@ -133,7 +134,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* 
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-Fd|f<val>] [-I<dx>[/<dy>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>]\n", GMT_Rgeo_OPT);
@@ -478,7 +479,7 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 	get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
 
 	dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
-	dr2 = dx2 + dy2;				/* Origial radius squared */
+	dr2 = dx2 + dy2;				/* Original radius squared */
 	dr2_fudge = dr2 + par[1];	/* Fudged radius squared (par[1] holds delta_r^2) */
 	if (dr2 == 0.0)	/* Since r will be fudged away from origin we decide dr2_fudge should fall along N45E trend */
 		dx2_fudge = dy2_fudge = dxdy_fudge = 0.5 * par[1];	/* Squared quantities */
@@ -553,7 +554,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

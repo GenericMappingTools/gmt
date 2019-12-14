@@ -25,4 +25,4 @@ gmt begin ex39
 	echo 4 4.5 L = 180 | gmt text -R0/6/0/6 -Jx1i -Dj0.2i -F+f16p+jLM -N
 	echo 3.75 5.4 Venus Spherical Harmonic Model | gmt text -F+f24p+jCM -N
 	rm -f v?.nc
-gmt end
+gmt end show

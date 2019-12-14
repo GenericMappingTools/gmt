@@ -1,12 +1,11 @@
 .. index:: ! x2sys_init
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 x2sys_init
 **********
 
-.. only:: not man
-
-    x2sys_init - Initialize a new x2sys track database
+|x2sys_init_purpose|
 
 Synopsis
 --------
@@ -290,7 +289,7 @@ to find it.
     and **-N** will default to great circle distance calculation in km
     and speed in m/s. There are also format definition files for plain x,y[,z]
     and lon,lat[,z] tracks. To initiate new track databases to be used
-    with MGD77 data from NGDC, try
+    with MGD77 data from NCEI, try
 
       ::
 

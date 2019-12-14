@@ -1,12 +1,11 @@
-.. index:: ! gmt connect
+.. index:: ! gmtconnect
+.. include:: module_core_purpose.rst_
 
-*******
-connect
-*******
+**********
+gmtconnect
+**********
 
-.. only:: not man
-
-    Connect individual lines whose end points match within tolerance
+|gmtconnect_purpose|
 
 Synopsis
 --------
@@ -42,7 +41,7 @@ the remaining endpoints no longer pass the tolerance test; the resulting
 segments are then written out to standard output or specified output
 file. If it is not clear what the separation tolerance should be then
 use **-L** to get a list of all separation distances and analyze them to
-determine a suitable cutoff. 
+determine a suitable cutoff.
 
 Required Arguments
 ------------------
@@ -103,7 +102,7 @@ Optional Arguments
 
 **-T**\ [*cutoff*\ [*unit*][**+s**\ *sdist*]]
     Specifies the separation tolerance in the data coordinate units [0]; for geographic data
-    append distance unit (see :ref:`Unit_attributes`). If two lines have end-points that
+    append distance unit (see `Units`_). If two lines have end-points that
     are closer than the *cutoff* they will be joined. Optionally, append
     /*sdist* which adds the extra requirement that a link will only be made
     if the *second* closest connection exceeds the *sdist* distance. The latter
@@ -116,7 +115,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
@@ -151,6 +150,8 @@ Optional Arguments
 
 Examples
 --------
+
+.. include:: explain_example.rst_
 
 To combine the digitized segment lines segment\_\*.txt (whose Cartesian
 coordinates are in cm) into as few complete lines as possible, assuming

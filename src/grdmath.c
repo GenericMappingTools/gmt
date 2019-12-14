@@ -27,7 +27,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdmath"
+#define THIS_MODULE_CLASSIC_NAME	"grdmath"
+#define THIS_MODULE_MODERN_NAME	"grdmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
@@ -160,7 +161,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s]\n\t[%s]\n\t[-D<resolution>][+f] [%s]\n\t[-M] [-N] [-S] [%s] [%s] [%s] [%s]\n\t[%s]"
 		" [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t%s [%s]", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
@@ -2363,7 +2364,7 @@ GMT_LOCAL void grd_HSV2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
 		error++;
 	}
@@ -2410,7 +2411,7 @@ GMT_LOCAL void grd_HSV2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
 		error++;
 	}
@@ -2455,7 +2456,7 @@ GMT_LOCAL void grd_HSV2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument v to HSV2XYZ must be a 0 <= v <= 1!\n");
 		error++;
 	}
@@ -4163,7 +4164,7 @@ GMT_LOCAL void grd_RGB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
 		error++;
 	}
@@ -4208,7 +4209,7 @@ GMT_LOCAL void grd_RGB2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2LAB must be a 0 <= g <= 255!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2LAB must be a 0 <= b <= 255!\n");
 		error++;
 	}
@@ -4252,7 +4253,7 @@ GMT_LOCAL void grd_RGB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
 		error++;
 	}
-	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 255.0)) {
+	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
 		error++;
 	}
@@ -6195,7 +6196,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return1 (API->error);

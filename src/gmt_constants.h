@@ -86,7 +86,7 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (~1 meter) */
+#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -155,6 +155,7 @@ enum GMT_swap_direction {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
+#define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
@@ -230,6 +231,9 @@ enum GMT_swap_direction {
 #define GMT_SUBPLOT_ACTIVE	1
 #define GMT_PANEL_NOTSET	2
 
+/* Fraction of increment to force outward region expansion */
+#define GMT_REGION_INCFACTOR 0.25
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
@@ -249,6 +253,12 @@ enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
+
+/*! Return codes from parsing region modifiers +r,+R,+e */
+enum GMT_enum_region {
+	GMT_REGION_ADD = 1,
+	GMT_REGION_ROUND,
+	GMT_REGION_ROUND_EXTEND};
 
 /*! Return codes from gmt_get_refpoint */
 enum GMT_enum_refpoint {
@@ -278,6 +288,16 @@ enum GMT_enum_index {
 /*! Various mode for auto-download */
 enum GMT_enum_download {
 	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1};
+
+/*! Various mode for auto-legend pens */
+enum GMT_enum_autolegend {
+	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1,
+	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
+
+//#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
+//#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
+#define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
+#define GMT_LEGEND_DX2_MUL 1.5	/* Default offset from margin to start of label if given as '-' times max symbol size */
 
 /*! Various mode for axes */
 enum GMT_enum_oblique {

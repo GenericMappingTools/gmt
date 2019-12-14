@@ -1,12 +1,11 @@
-.. index:: ! flexure
+.. index:: ! gmtflexure
+.. include:: ../module_supplements_purpose.rst_
 
-*******
-flexure
-*******
+**********
+gmtflexure
+**********
 
-.. only:: not man
-
-    flexure - Compute flexural deformation of 2-D loads, forces, bending and moments
+|gmtflexure_purpose|
 
 Synopsis
 --------
@@ -86,12 +85,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *force*]
-    Set a constant horizontal in-plane force, in Pa m [0] 
+    Set a constant horizontal in-plane force, in Pa m [0]
 
 .. _-L:
 
 **-L**
-    Use a variable restoring force that depends on sign of the flexure [constant]. 
+    Use a variable restoring force that depends on sign of the flexure [constant].
 
 .. _-Q:
 

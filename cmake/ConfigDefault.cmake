@@ -38,7 +38,7 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 set (GMT_VERSION_YEAR "2019")
 
 # The GMT release DOI
-set (GMT_VERSION_DOI "TBD")
+set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.3407866")
 
 # The GMT release citation
 set (GMT_VERSION_CITATION "Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019). The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20. https://doi.org/10.1029/2019GC008515")
@@ -48,12 +48,12 @@ set (GMT_PACKAGE_VERSION_MAJOR 6)
 set (GMT_PACKAGE_VERSION_MINOR 1)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
-#set (GMT_PACKAGE_VERSION_SUFFIX "rc5")
+# set (GMT_PACKAGE_VERSION_SUFFIX "")
 
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
 # When making *public* release, uncomment to set it to TRUE.
-#set (GMT_PUBLIC_RELEASE TRUE)
+# set (GMT_PUBLIC_RELEASE TRUE)
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}${GMT_PACKAGE_VERSION_SUFFIX}")
@@ -121,7 +121,7 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_SERVER)
-	set (GMT_DATA_SERVER "http://oceania.generic-mapping-tools.org")
+	set (GMT_DATA_SERVER "https://oceania.generic-mapping-tools.org")
 endif (NOT DEFINED GMT_DATA_SERVER)
 
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.

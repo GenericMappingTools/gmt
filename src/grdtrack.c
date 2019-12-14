@@ -26,7 +26,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"grdtrack"
+#define THIS_MODULE_CLASSIC_NAME	"grdtrack"
+#define THIS_MODULE_MODERN_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
@@ -89,7 +90,7 @@ struct GRDTRACK_CTRL {
 		bool active;
 		char *file;
 	} D;
-	struct GRDTRACK_E {	/* -E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
+	struct GRDTRACK_E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -155,10 +156,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -199,6 +200,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>[u].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +c yields a continuous segment if two end points are identical [separate segments].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>[u].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius>[u] defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
@@ -769,7 +771,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

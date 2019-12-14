@@ -1,12 +1,11 @@
 .. index:: ! segy
+.. include:: ../module_supplements_purpose.rst_
 
 ******
 segy
 ******
 
-.. only:: not man
-
-    segy - Plot a SEGY file on a map
+|segy_purpose|
 
 Synopsis
 --------
@@ -35,6 +34,8 @@ Synopsis
 
 Examples
 --------
+
+.. include:: ../../oneliner_info.rst_
 
 To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at ±3 and with wiggle trace and positive

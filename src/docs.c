@@ -30,7 +30,8 @@
 #	include <windows.h>
 #endif
 
-#define THIS_MODULE_NAME	"docs"
+#define THIS_MODULE_CLASSIC_NAME	"docs"
+#define THIS_MODULE_MODERN_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Show HTML documentation of specified module"
 #define THIS_MODULE_KEYS	""
@@ -38,13 +39,13 @@
 #define THIS_MODULE_OPTIONS	"V"
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of api, cookbook, gallery, defaults, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, colors, cookbook, gallery, settings, and tutorial.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
@@ -69,7 +70,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
-	static const char *known_group[2] = {"core", "other"}, *known_doc[5] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf"};
+	static const char *known_group[2] = {"core", "other"}, *known_doc[7] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -84,7 +85,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (RegO == ERROR_SUCCESS)		/* User has postscript viewer installed */
 		ps_viewer = (char *)file_viewer;
 	else
-		ps_viewer = "cmd /c start gsview64c";	/* No previewer. Resort to this. */
+		ps_viewer = "cmd /c start gswin64c";	/* No previewer. Resort to this. */
 #elif defined(__APPLE__)
 	static const char *file_viewer = "open";
 	bool together = true;	/* Can call file_viewer once with all files */
@@ -103,7 +104,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 
 	/*---------------------------- This is the docs main code ----------------------------*/
 
@@ -180,23 +181,32 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	
 			if (strcmp (opt->arg, docname))	/* Gave classic name so change to what was given */
 				docname = opt->arg;
+			else
+				docname = gmt_get_full_name (API, opt->arg);
+				
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
-			if (!strcmp (t, "cookbook")) {
+			if (!strcmp (t, "colors")) {
 				docname = known_doc[0];	group   = known_group[0];	/* Pretend it is in the core */
 			}
+			else if (!strcmp (t, "cookbook")) {
+				docname = known_doc[1];	group   = known_group[0];	/* Pretend it is in the core */
+			}
 			else if (!strcmp (t, "api")) {
-				docname = known_doc[1]; group   = known_group[0];	/* Pretend it is in the core */
+				docname = known_doc[2]; group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "tutorial")) {
-				docname = known_doc[2];	group   = known_group[0];	/* Pretend it is in the core */
-			}
-			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[3];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "default", 7U)) {
+			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
+			}
+			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
+				docname = known_doc[5];	group   = known_group[0];	/* Pretend it is in the core */
+			}
+			else if (!strcmp (t, "gmt")) {
+				docname = known_doc[6];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (gmt_get_ext (docname)) {
 				group = known_group[1];
@@ -234,9 +244,26 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				}
 			}
 			else {	/* One of the fixed doc files */
-				snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-				if (remote || access (&URL[8], R_OK)) 	/* File does not exists, go to GMT documentation site */
-					snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+				if (remote) {	/* Go directly to GMT server online */
+						snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+				}
+				else {	/* Try local paths first */
+					snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+					if (access (&URL[8], R_OK)) { 	/* File does not exists, try GMT_DOC_DIR */
+						snprintf (URL, PATH_MAX, "file:///%s/html/%s", GMT_DOC_DIR, module);
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No access, Now try URL path: %s\n", URL);
+						if (access (&URL[8], R_OK)) { 	/* File does not exists, try GMT_SHARE_DIR */
+							snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", GMT_SHARE_DIR, module);
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No access, Now try URL path: %s\n", URL);
+							if (access (&URL[8], R_OK)) { 	/* File does not exists, give up and use remote link */
+								snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+								GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No local access,use server URL path: %s\n", URL);
+							}
+						}
+					}
+				}
 			}
 
 			if (opt->next && opt->next->option != GMT_OPT_INFILE) {	/* If an option request was made we position the doc there */

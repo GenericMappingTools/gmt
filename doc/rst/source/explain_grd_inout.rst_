@@ -19,7 +19,7 @@ See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, GMT will
-read, by default, the first 2-dimensional grid that can find in that
+read, by default, the first 2-dimensional grid that it can find in that
 file. To coax GMT into reading another multi-dimensional variable in
 the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
@@ -29,4 +29,4 @@ double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
 :doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information, particularly on
-how to read splices of 3-, 4-, or 5-dimensional grids.
+how to read slices of 3-, 4-, or 5-dimensional grids.

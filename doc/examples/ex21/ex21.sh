@@ -45,8 +45,7 @@ gmt begin ex21
 	echo "01-Jan-08	23.8852" >> RHAT.pw
 	gmt plot RHAT.pw -Wthick,-
 	gmt set FORMAT_DATE_IN yyyy-mm-dd
-	echo "${wesn[1]} 23.8852 PW sell" | gmt text -Dj0.8i/0.05i -N \
-		-F+f12p,Bookman-Demi+jRB
+	echo "${wesn[1]} 23.8852 PW sell" | gmt text -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB
 	gmt set FORMAT_DATE_IN dd-o-yy
 
 	# Get smaller region for inset for trend since 2004
@@ -69,4 +68,4 @@ gmt begin ex21
 
 	# Clean up after ourselves:
 	rm -f RHAT.*
-gmt end
+gmt end show

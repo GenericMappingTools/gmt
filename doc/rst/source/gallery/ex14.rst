@@ -4,7 +4,8 @@
 ----------------------------------------
 
 This example shows how one goes from randomly spaced data points to an
-evenly sampled surface. First we plot the distribution and values of our
+evenly sampled surface. We arrange for four panels using the :doc:`subplot </subplot>`
+command.  First we plot the distribution and values of our
 raw data set (same as in Example :ref:`example_12`). We choose an equidistant grid and run
 :doc:`blockmean </blockmean>` which preprocesses the
 data to avoid aliasing. The dashed lines indicate the logical blocks
