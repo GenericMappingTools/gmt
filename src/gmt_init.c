@@ -382,7 +382,7 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	{   0, 's', "skip",           "",       "",                                         "a,r",     "any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        ""},
 	{   0, 'x', "cores",         "",        "",                                         "",        ""},
-\	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
+	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
 };
 
 /* Local variables to gmt_init.c */
@@ -12643,7 +12643,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
