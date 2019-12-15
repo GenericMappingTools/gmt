@@ -15,7 +15,7 @@ Synopsis
 **gmt pssolar**
 [ |SYN_OPT-B| ]
 [ |-C| ]
-[ |-G|\ *fill*\ \|\ **c** ]
+[ |-G|\ [*fill*] ]
 [ |-I|\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
@@ -63,7 +63,7 @@ Set up a clip path overlay based on the day/night terminator:
 
    ::
 
-    gmt pssolar -R -J -Gc -Tc -O -K >> someplot.ps
+    gmt pssolar -R -J -G -Tc -O -K >> someplot.ps
 
 
 .. include:: solar_notes.rst_
