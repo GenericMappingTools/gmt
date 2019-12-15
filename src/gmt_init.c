@@ -360,7 +360,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-#if USE_LONG_OPTIONS
+#if defined(USE_LONG_OPTIONS)
 	{ '/', 'I', "increment",     "",        "",                                        "e,n",      "exact,number" },
 	{   0, 'J', "projection",    "",        "",                                        "",         ""},
 	{   0, 'R', "region",        "",        "",                                        "r",        "rectangular"},
@@ -383,7 +383,7 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	{   0, 's', "skip",           "",       "",                                         "a,r",     "any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        ""},
 	{   0, 'x', "cores",         "",        "",                                         "",        ""},
-#endif
+#endif	/* USE_LONG_OPTIONS */
 	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
 };
 

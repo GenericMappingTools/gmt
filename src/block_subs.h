@@ -89,7 +89,7 @@ struct BLOCK_CTRL {
 
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = { /* blockmean */
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-#if USE_LONG_OPTIONS
+#if defined(USE_LONG_OPTIONS)
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
 #if defined(BLOCKMODE)	/* Only blockmode has a -D option */
