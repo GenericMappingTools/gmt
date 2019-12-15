@@ -115,7 +115,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *level*\ \|\ *obsgrid*
-    Set observation level, either as a constant or variable by giveing the name of a grid with observation
+    Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
