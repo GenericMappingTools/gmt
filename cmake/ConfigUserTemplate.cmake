@@ -240,9 +240,6 @@
 # before docs_depends [TRUE].
 #set (GMT_DOCS_DEPEND_ON_GMT FALSE)
 
-# For testing of upcoming long-option syntax, set the following to true:
-#set (USE_LONG_OPTIONS TRUE)
-
 #
 # Debugging
 #
@@ -261,6 +258,7 @@ endif()
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
+#add_definitions(-DUSE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
