@@ -39,7 +39,7 @@ Description
 
 **math** will perform operations like add, subtract, multiply, and
 numerous other operands on one or more table data files or constants using
-`Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`
+`Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`_
 syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output file [or standard output]. Data
 operations are element-by-element, not matrix manipulations (except
