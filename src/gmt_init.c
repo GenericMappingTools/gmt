@@ -356,11 +356,19 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+o5c/6c) to regular GMT short format
- * options (e.g., -U/5c/6c/"My plot") that the common and module parsers expect. */
+ * options (e.g., -U/5c/6c/"My plot") that the common and module parsers expect.
+ *
+ * For testing this there are two define statements that need to be set in ConfigUser.cmake:
+ *
+ * -DUSE_COMMON_LONG_OPTIONS will allow us to test the gmt_common_kw array below.
+ * -DUSE_MODULE_LONG_OPTIONS will allow us to test any module_kw settings in the modules
+ *
+ * Without these we are blind to the keyword arrays.  Note that while you can test the
+ * common options without the module options, you cannot do the reverse.
+  */
 
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-#if defined(USE_LONG_OPTIONS)
 	{   0, 'B', "frame",         "",        "",                                        "",         "" },
 	{ '/', 'I', "increment",     "",        "",                                        "e,n",      "exact,number" },
 	{   0, 'J', "projection",    "",        "",                                        "",         ""},
@@ -384,7 +392,6 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_kw_common[] = {
 	{   0, 's', "skip",           "",       "",                                         "a,r",     "any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        ""},
 	{   0, 'x', "cores",         "",        "",                                         "",        ""},
-#endif	/* USE_LONG_OPTIONS */
 	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
 };
 
@@ -480,14 +487,14 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *A
 	/* Determine if this arg is found in one of the two keyword lists */
 	size_t len, lent = strlen(arg);
 	gmt_M_unused (API);
-	if (kw1) {	/* Search list 1 if not NULL */
+	if (kw1) {	/* Search list of common-option keywords if not NULL */
 		for (*k = 0; kw1[*k].long_option[0]; (*k)++) {
 			len = MIN (lent, strlen (kw1[*k].long_option));	/* Only compare up to the given # of characters, but less than length of long_option */
 			if (!strncmp (arg, kw1[*k].long_option, len)) break;	/* Match found */
 		}
 		if (kw1[*k].short_option) return kw1;	/* Return if successful */
 	}
-	if (kw2) {	/* Search list 2 if not NULL */
+	if (kw2) {	/* Search list of module-specific keywords if not NULL */
 		for (*k = 0; kw2[*k].long_option[0]; (*k)++) {
 			len = MIN (lent, strlen(kw2[*k].long_option));	/* Only compare up to the given # of characters, but less than length of long_option */
 			if (!strncmp (arg, kw2[*k].long_option, len)) break;	/* Match found */
@@ -548,7 +555,7 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options) {
+GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value]
 	 * with the corresponding short option version -<code>[value]. Specifically, format is
 	 *
@@ -560,7 +567,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	 * [<arg>][+<mod1[=<arg1>]][+<mod2[=<arg2>]]
 	 *
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is
-	 * given in module_kw.separator or it is 0 if the option does not take sections.
+	 * given in this_module_kw.separator or it is 0 if the option does not take sections.
 	 */
 
 	struct GMT_OPTION *opt = NULL;
@@ -570,6 +577,10 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
 	bool modified = false;
 	
+	#if !defined(USE_MODULE_LONG_OPTIONS)
+	this_module_kw = NULL;	/* Not testing the module long-options yet */
+	#endif
+
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
 		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings */
@@ -581,7 +592,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 			e = NULL;				/* The = is part of a modifier so ignore for now */
 		if (e) e[0] = '\0';				/* Cut off =value for now so opt->arg only has the keyword */
 		else if (p) p[0] = '\0';			/* Cut off +modifier for now so opt->arg only has the keyword */
-		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, orig, &k)) == NULL) {	/* Find matching keyword listing */
+		if ((kw = gmtinit_find_kw (API, gmt_common_kw, this_module_kw, orig, &k)) == NULL) {	/* Find matching keyword listing */
 			if (e) e[0] = '=';	/* Undo damage to option argument */
 			if (p) p[0] = '+';
 			continue;	/* Did not match anything in the list */
@@ -12787,7 +12798,7 @@ bool panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
@@ -12818,7 +12829,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
 
-	gmtinit_kw_replace (API, module_kw, options);
+	#if defined(USE_COMMON_LONG_OPTIONS)
+	gmtinit_kw_replace (API, this_module_kw, options);	/* Replace --long-option syntax with equivalent -onechar options */
+	#endif
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */

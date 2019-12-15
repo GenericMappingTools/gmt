@@ -87,9 +87,8 @@ struct BLOCK_CTRL {
 	} W;
 };
 
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = { /* blockmean */
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-#if defined(USE_LONG_OPTIONS)
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
 #if defined(BLOCKMODE)	/* Only blockmode has a -D option */
@@ -109,7 +108,6 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY local_kw[] = { /* blockmean */
 	{ 0, 'T', "quantile", "", "", "", "" },
 #endif
 	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
-#endif	/* USE_LONG_OPTIONS */
 	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
