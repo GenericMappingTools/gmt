@@ -145,7 +145,7 @@ these types of output:
    table output.
 
 GMT is available over the Internet at no charge. To obtain a copy,
-goto GMT home page https://www.generic-mapping-tools.org and follow instructions.
+go to the `GMT home page <https://www.generic-mapping-tools.org>`_ and follow instructions.
 We also maintain user forums and a bug and feature tracking system on
 the same page.
 

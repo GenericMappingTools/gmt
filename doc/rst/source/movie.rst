@@ -297,9 +297,9 @@ variables (e.g., frame number and anything given via **-T**).  The pre- and post
 access to the information in *movie_init* while the frame script in addition has access to the frame-
 specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
-The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on GraphicsMagick (http://www.graphicsmagick.org). 
+The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_. 
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on ffmpeg (https://www.ffmpeg.org). 
+PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_. 
 
 Hints for Movie Makers
 ----------------------
@@ -372,7 +372,7 @@ Other Movie Formats
 -------------------
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
-tool FFmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
+tool `FFmpeg <https://www.ffmpeg.org/>`_, which has more codecs and processing options than there are children in China.
 If you wish to run ffmpeg with other options, select mp4 and run **movie** with long verbose (**-Vl**).
 At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such

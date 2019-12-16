@@ -958,7 +958,7 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 }
 
 /*! . */
-GMT_LOCAL int gmtio_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 
@@ -1003,7 +1003,7 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 	/* First time we decide if we have floats only or a mix and finalize pointer settings */
 	if (txt && GMT->current.io.trailing_text[GMT_OUT]) {
 		if (n == 0 || (GMT->common.o.select && GMT->common.o.n_cols == 0))
-			GMT->current.io.output = gmtio_ascii_output_trailing_text;	/* Just print trailing text */
+			GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
 		else
 			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text after numerical output */
 		return GMT->current.io.output (GMT, fp, n, ptr, txt);
@@ -3223,6 +3223,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		*tpos = pos;
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
+	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+		gmtlib_reparse_i_option (GMT, col);
 	
 	if (found_text) {	/* Determine record type */
 		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
