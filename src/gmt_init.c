@@ -7968,9 +7968,13 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	GMT->common.i.end = false;
 	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
-	if (!strcmp (arg, "t") || !strcmp (arg, ",t")) {	/* Cannot just get trailing text, must use -ot instead */
+	if (!strcmp (arg, "t") || !strcmp (arg, ",t")) {	/* Cannot just input trailing text, must use -ot instead */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Selection -i%s (just trailing text, no numerical input) is not allowed.  Consider using -ot instead, if available.\n", arg);
 		return GMT_PARSE_ERROR;
+	}
+	if (!strcmp (arg, "n,t")) {	/* This is the default when -i is not called except it does not change default -o setting [no trailing text] */
+		GMT->current.io.trailing_text[GMT_IN] = true;
+		return GMT_NOERROR;
 	}
 
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
@@ -8160,25 +8164,58 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -o you have to specifically add column t to parse trailing text */
 	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
+	if (arg[0] == 't') {	/* Just wants trailing text, no numerical colulmns */
+		GMT->current.io.trailing_text[GMT_OUT] = true;
+		GMT->common.o.text = true;	/* Special flag to switch to gmtlib_ascii_output_trailing_text output function later */
+		if (arg[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
+			int64_t kk = atol (&arg[1]);
+			if (kk < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot give negative word position\n");
+				return GMT_PARSE_ERROR;
+			}
+			else {
+				GMT->common.o.word = true;
+				GMT->common.o.w_col = kk + 1;	/* Store as 1-nwords */
+			}
+		}
+		return GMT_NOERROR;
+	}
+	if (! strncmp (arg, "n,t", 3U)) {	/* Odd, but user wants both numerical and trailing text, possibly specific word */
+		GMT->current.io.trailing_text[GMT_OUT] = true;
+		if (arg[3]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
+			int64_t kk = atol (&arg[3]);
+			if (kk < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot give negative word position\n");
+				return GMT_PARSE_ERROR;
+			}
+			else {
+				GMT->common.o.word = true;
+				GMT->common.o.w_col = kk + 1;	/* Store as 1-nwords */
+			}
+		}
+		return GMT_NOERROR;
+	}
+
+	/* Regular parsing of -ocols */
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if (p[0] == 't') {
 			GMT->current.io.trailing_text[GMT_OUT] = true;	/* Include trailing text */
 			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
-				int64_t k = atol (&p[1]);
-				if (k < 0) {
+				int64_t kk = atol (&p[1]);
+				if (kk < 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot give negative word position\n");
 					return GMT_PARSE_ERROR;
 				}
 				else {
 					GMT->common.o.word = true;
-					GMT->common.o.w_col = k + 1;	/* Store as 1-nwords */
+					GMT->common.o.w_col = kk + 1;	/* Store as 1-nwords */
 				}
 			}
 		}
 		else {
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
-			if (stop == (GMT_MAX_COLUMNS-1)) GMT->common.o.end = true;	/* Gave an open interval, e.g., 3: or 4- to mean "until last column" */
+			if (stop == (GMT_MAX_COLUMNS-1)) GMT->common.o.end = true;	/* Gave an open-ended interval, e.g., 3: or 3- to mean "from 3 until last column" */
 
 			/* Now set the code for these columns */
 
@@ -16644,7 +16681,10 @@ void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	char text[GMT_LEN8] = {""}, token[GMT_BUFSIZ] = {""};
 	size_t k;
-	if (n_columns == 0) return;	/* Cannot update the string */
+	if (n_columns == 0) {
+		GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
+		return;	/* Cannot update the string */
+	}
 	for (k = strlen (GMT->common.o.string) - 1; k && !(GMT->common.o.string[k] == ':' || GMT->common.o.string[k] == '-'); k--);	/* Find the last : or - in open-ended sequence */
 	strncpy (token, GMT->common.o.string, k+1);	/* Get duplicate, this ends with - or : */
 	sprintf (text, "%d", (int)n_columns-1);

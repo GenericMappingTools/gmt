@@ -218,7 +218,7 @@ struct GMT_COMMON {
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word, end;
+		bool active, select, orig, word, end, text;
 		uint64_t n_cols, w_col;
 		char string[GMT_LEN64];
 	} o;
