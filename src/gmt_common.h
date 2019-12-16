@@ -191,7 +191,7 @@ struct GMT_COMMON {
 		char string[GMT_LEN256];
 	} h;
 	struct i {	/* -i[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word;
+		bool active, select, orig, word, end;
 		uint64_t n_cols, w_col;
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
@@ -218,8 +218,9 @@ struct GMT_COMMON {
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word;
+		bool active, select, orig, word, end, text;
 		uint64_t n_cols, w_col;
+		char string[GMT_LEN64];
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;
