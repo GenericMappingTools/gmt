@@ -94,10 +94,12 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all
 #if defined(BLOCKMODE)	/* Only blockmode has a -D option */
 	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
 #endif
-#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
-	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l", "lower" },
-#else
+#if defined(BLOCKMEAN)
 	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
+#elif defined(BLOCKMODE)
+	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
+#else
+	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l,h", "lower,higher" },
 #endif
 	{ 0, 'G', "gridfile", "", "", "", "" },
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
