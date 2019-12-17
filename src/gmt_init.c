@@ -356,7 +356,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
- * options (e.g., -U/5c/6c/"My plot") that the common and module parsers expect.
+ * options (e.g., -U"My plot"+o1c/1c) that the common and module parsers expect.
  *
  * For testing this there are two define statements that need to be set in ConfigUser.cmake:
  *
