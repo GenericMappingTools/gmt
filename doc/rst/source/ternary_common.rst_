@@ -52,7 +52,7 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width* \[*unit*]
+**-JX**\ *width*\ [*unit*]
     The only valid projection is linear plot with specified ternary width.
 
 .. _-L:
@@ -132,5 +132,3 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_distunits.rst_
