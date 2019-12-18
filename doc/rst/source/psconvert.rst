@@ -251,9 +251,10 @@ Optional Arguments
     building a multi-component KML file then you can issue a KML snipped
     without the KML header and trailer by using the **+o**\ *foldername*
     modification; it will enclose the image and associated KML code
-    within a KML folder of the specified name. See the KML documentation
-    for further explanation
-    (http://code.google.com/apis/kml/documentation/).
+    within a KML folder of the specified name. See the
+    `KML documentation <https://code.google.com/apis/kml/documentation/>`_
+    for further explanation.
+    
     Note: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,

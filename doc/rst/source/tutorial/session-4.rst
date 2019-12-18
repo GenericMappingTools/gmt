@@ -269,7 +269,7 @@ that GMT is able to plot "horizontal"
 slices (spanning latitude and longitude) of such grids without much effort.
 
 As an example we will download the Seasonal Analysed Mean Temperature from the
-World Ocean Atlas 1998 (http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html).
+`World Ocean Atlas 1998 <http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html)>`_
 The file in question is named
 otemp.anal1deg.nc (ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc).
 

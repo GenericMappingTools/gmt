@@ -9,6 +9,7 @@
     column, optionally add any of  the following: **+l** takes **log10** of
     the input values first; **+s**\ *scale*, subsequently multiplies by a
     given  scale factor [1]; **+o**\ *offset*, finally adds a given offset [0].
+    To read from a given column until the end of the record, leave off *stop*.
     Normally, any trailing text is read but when **i** is used you must explicitly add
     the column *t* to retain the text. To only ingest a single word from the
     trailing text, append the word number (first word is 0).  Finally, **-in**

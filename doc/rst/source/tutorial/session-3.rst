@@ -20,7 +20,7 @@ to use .nc for netCDF grids. Using that extension will help
 other programs installed on your system to recognize these files and might
 give it an identifiable icon in your file browser.
 Learn about other programs that read netCDF files at the
-netCDF website (http://www.unidata.ucar.edu/software/netcdf/)
+`netCDF website <https://www.unidata.ucar.edu/software/netcdf/>`_.
 You can also obtain tut_bathy.nc from the GMT cache server as we are doing below.
 Feel free to open it in any other program and compare results with GMT.
 

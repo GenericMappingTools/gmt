@@ -2,8 +2,8 @@ GSHHG Information
 -----------------
 
 The coastline database is GSHHG (formerly GSHHS) which is compiled from
-three sources:  World Vector Shorelines (WVS), CIA World Data Bank II
-(WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
+three sources:  World Vector Shorelines (WVS, not including Antarctica),
+CIA World Data Bank II (WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
 Apart from Antarctica, all level-1 polygons (ocean-land boundary) are derived from
 the more accurate WVS while all higher level polygons (level 2-4,
 representing land/lake, lake/island-in-lake, and

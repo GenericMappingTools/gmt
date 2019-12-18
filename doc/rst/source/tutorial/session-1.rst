@@ -70,8 +70,7 @@ Input data
 ~~~~~~~~~~
 
 A GMT module may or may not take input files.  Three different
-types of input are recognized (more details can be found in Appendix
-B in the Technical Reference):
+types of input are recognized (more details can be found in :doc:`/cookbook/file_formats`):
 
 #. Data tables.
    These are rectangular tables with a fixed number of columns and
@@ -147,14 +146,11 @@ Redirection
 Most GMT modules read their input from the terminal (called
 *stdin*) or from files, and write their output to the
 terminal (called *stdout*).  To use files instead one can
-use redirection:
-
-   ::
+use redirection::
 
     gmt module input-file > output-file		# Read a file and redirect output
     gmt module < input-file > output-file	# Redirect input and output
     gmt module input-file >> output-file	# Append output to existing file
-
 
 In this example, and in all those to follow, it is assumed that you do not have the shell
 variable **noclobber** set. If you do, it prevents accidental overwriting of existing files.
@@ -164,11 +160,9 @@ Piping (\|)
 ~~~~~~~~~~~
 
 Sometimes we want to use the output from one module as input
-to another module.  This is achieved with *pipes*:
+to another module.  This is achieved with *pipes*::
 
-   ::
-
-    Someprogram | gmt module1 | gmt module1 > OutputFile (or | lp)
+    Someprogram | gmt module1 | gmt module1 > OutputFile
 
 Standard error (*stderr*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,16 +171,12 @@ Most programs and GMT modules will on occasion write error messages.
 These are typically written to a separate data stream called
 *stderr* and can be redirected separately from the standard
 output (which goes to *stdout*).  To send the error messages to the same location
-as standard output we use
-
-   ::
+as standard output we use::
 
     program > errors.log 2>&1
 
 When we want to save both program output and error messages to
-separate files we use the following syntax:
-
-   ::
+separate files we use the following syntax::
 
     gmt module > output.txt 2> errors.log
 
@@ -291,7 +281,7 @@ Exercises:
 
 #. Leave the **p** modifier out of the **-B** string.
 
-#. Add **g**\ 3 to each side of the slash in **-B**.
+#. Add **g**\ 3 to **-Bx** and **-By**.
 
 Mercator projection
 ~~~~~~~~~~~~~~~~~~~
@@ -313,7 +303,7 @@ to the common switches we may need to use some of several coast-specific options
   +--------+------------------------------------------------------------------------------------------------+
   | Option | Purpose                                                                                        |
   +========+================================================================================================+
-  | **-A** | Exclude small features or those of high hierarchical levels (see Appendix K)                   |
+  | **-A** | Exclude small features or those of high hierarchical levels (see :doc:`/datasets/gshhg`        |
   +--------+------------------------------------------------------------------------------------------------+
   | **-D** | Select data resolution (**f**\ ull, **h**\ igh, **i**\ ntermediate, **l**\ ow, or **c**\ rude) |
   +--------+------------------------------------------------------------------------------------------------+
@@ -329,8 +319,6 @@ to the common switches we may need to use some of several coast-specific options
   +--------+------------------------------------------------------------------------------------------------+
   | **-W** | Draw coastlines and set pen thickness                                                          |
   +--------+------------------------------------------------------------------------------------------------+
-
-Main options when making coastline plots or overlays.
 
 One of **-W**, **-G**, **-S** must be selected.  Our first coastline
 example is from Latin America:
@@ -350,16 +338,11 @@ Your plot should look like :ref:`our example 3 below <gmt_tut_3>`
 Exercises:
 
 #. Add the **-V** option.
-
 #. Try **-R**\ 270/290/0/20 instead.  What happens to the annotations?
-
 #. Edit your gmt.conf file, change :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`
    to another setting (see the :doc:`/gmt.conf` documentation), and plot again.
-
 #. Pick another region and change land color.
-
 #. Pick a region that includes the north or south poles.
-
 #. Try **-W**\ 0.25\ **p** instead of (or in addition to) **-G**.
 
 Albers projection
