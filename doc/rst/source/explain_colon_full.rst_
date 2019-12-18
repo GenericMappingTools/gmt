@@ -5,4 +5,4 @@
     swapping]. Append **i** to select input only or **o** to select
     output only. [Default affects both]. This option is typically used
     to handle (latitude, longitude) files; see also
-    **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*].
+    **-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ *t*\ [*word*]].

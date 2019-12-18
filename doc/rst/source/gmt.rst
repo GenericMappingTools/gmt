@@ -159,6 +159,7 @@ The Common GMT Options
 |SYN_OPT-Y|
 |SYN_OPT-a|
 |SYN_OPT-b|
+|SYN_OPT-c|
 |SYN_OPT-d|
 |SYN_OPT-e|
 |SYN_OPT-f|
@@ -166,6 +167,7 @@ The Common GMT Options
 |SYN_OPT-h|
 |SYN_OPT-i|
 |SYN_OPT-j|
+|SYN_OPT-l|
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
@@ -179,7 +181,7 @@ Description
 -----------
 
 These are all the common GMT options that remain the same for all GMT
-programs. No space between the option flag and the associated arguments.
+modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_-B_full.rst_
 
