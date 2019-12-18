@@ -181,7 +181,7 @@ Description
 -----------
 
 These are all the common GMT options that remain the same for all GMT
-programs. No space between the option flag and the associated arguments.
+modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_-B_full.rst_
 
