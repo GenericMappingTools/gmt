@@ -400,11 +400,12 @@ int GMT_solar (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
-		bool print_postion = false;
+		bool print_postion = false, dump_data = false;
 		if (API->error) return (API->error);    /* Set or get option list */
 		print_postion = (GMT_Find_Option (API, 'I', options) != NULL);
+		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
-		if (!print_postion) {
+		if (!(print_postion || dump_data)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
