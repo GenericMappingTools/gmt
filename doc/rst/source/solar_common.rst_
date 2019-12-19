@@ -55,7 +55,7 @@ Optional Arguments
 
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
-    used with clipping (**-Gc**) and cannot be used together with **-B**.
+    used with clipping (**-G**) and cannot be used together with **-B**.
 
 .. _-R:
 
@@ -70,6 +70,8 @@ Optional Arguments
     **a** means astronomical twilight.  Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
     to know where the day-night was at that date. If necessary, append time zone via **+z**\ *TZ*.
 
+    Refer to https://en.wikipedia.org/wiki/Twilight for definitions of different twilights.
+
 .. _-U:
 
 .. include:: explain_-U.rst_
@@ -81,7 +83,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
+**-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid].
 
@@ -92,12 +94,11 @@ Optional Arguments
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-h.rst_
-
 .. include:: explain_-ocols.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_help.rst_
