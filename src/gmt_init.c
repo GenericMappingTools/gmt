@@ -483,6 +483,35 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 }
 #endif
 
+void gmtlib_handle_escape_text (char *text, char key, int way) {
+	/* Deal with text that contains modifiers +? that should be seen as plain text
+	 * because they have a leading escape ("My dumb \+p text").  If way = 1 then
+	 * we replace \+ with two GMT_ASCII_ES (Escape)  and if way = -1 then we
+	 * remove the first escape and replace the second with a +. Here, key sets
+	 * what to escape, such as +, but the function is general for key to escape.
+	 * Since way == +1 replaces 2 chars by 2 other chars and way == -1 replaces
+	 * two chars by one this function can work on both heap and allocated strings. */
+	size_t k, j;
+	if (way == +1) {	/* Replace \<key> with two escapes */
+		for (k = 1; k < strlen (text); k++)
+				if (text[k] == key && text[k-1] == '\\')
+						text[k] = text[k-1] = GMT_ASCII_ES;
+	}
+	else {	/* Replace two escapes with a single <key> symbol */
+		char c;
+		for (k = j = 0; k < strlen (text); k++) {
+			if (text[k] == GMT_ASCII_ES) {
+				c = key;	/* Write the special char */
+				k++;		/* SKip the second escape char */
+			}
+			else	/* Just copy out what we found */
+				c = text[k];
+			text[j++] = c;	/* Replace char */
+		}
+		text[j] = '\0';	/* Chop off remainder of string since no longer used */
+	}
+}
+
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this long-format arg is found in one of the two keyword lists kw1 and kw2.
@@ -573,7 +602,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KEYWORD_DICTIONARY *kw = NULL;
-	char new_arg[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""};
+	char new_arg[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""}, copy[GMT_BUFSIZ] = {""};
 	char *directive = NULL, *modifier = NULL, code = 0, e_code = '=', sep[2] = {'\0', '\0'};
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
 	bool modified = false, got_directive = false, got_modifier = false;
@@ -586,11 +615,13 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
 		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings */
 		strcpy (orig, opt->arg);			/* Retain a copy of current option arguments */
-		directive = strchr (opt->arg, '=');		/* Get location of equal sign, if present */
-		modifier  = strchr (opt->arg, '+');		/* Get location of plus sign, if present */
+		strcpy (copy, opt->arg);			/* Retain a copy of current option arguments */
+		gmtlib_handle_escape_text (copy, '+', +1);	/* Hide escaped +? sequences */
+		directive = strchr (copy, '=');		/* Get location of equal sign, if present */
+		modifier  = strchr (copy, '+');		/* Get location of plus sign, if present */
 		got_directive = got_modifier = false;	/* Reset these to false */
 		/* Check for case where the = is part of a modifier, hence not a value or directive */
-		if (directive && modifier && ((directive - opt->arg) > (modifier - opt->arg)))
+		if (directive && modifier && ((directive - copy) > (modifier - copy)))
 			directive = NULL;				/* The = is part of a modifier and not the directive so ignore for now */
 		if (directive) directive[0] = '\0', got_directive = true;	/* Cut off =value for now so opt->arg only has the keyword, but remember a directive was found */
 		if (modifier) modifier[0] = '\0', got_modifier = true;		/* Cut off +modifier for now so opt->arg only has the keyword, but remember a modifier was found */
@@ -653,6 +684,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 			}
 		}
 		gmt_M_str_free (opt->arg);		/* Free old par=value string argument */
+		gmtlib_handle_escape_text (new_arg, '+', -1);	/* Restore escaped +? sequences */
 		opt->arg = strdup (new_arg);	/* Allocate copy of new argument */
 	}
 	if (modified && gmt_M_is_verbose (API->GMT, GMT_MSG_LONG_VERBOSE)) {	/* Echo the converted options */
@@ -1943,26 +1975,30 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		char word[GMT_LEN256] = {""}, *c = NULL;
 		/* Find the first +c|j|o that looks like it may be a modifier and not random text */
 		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k)))) k++;
-		c = &item[k-1];	/* Start of the modifier */
-		c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
-		if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
-		c[0] = '+';	/* Restore modifiers */
-		while (gmt_getmodopt (GMT, 'U', c, "cjo", &pos, word, &uerr) && uerr == 0) {
-			switch (word[0]) {
-				case 'c':	/* Maybe +c but only if at end of followed by another modifier */
-					if (word[1] == '+' || word[1] == '\0')	/* Use command string */
-						GMT->current.ps.logo_cmd = true;
-					break;
-				case 'j':	/* Maybe +j if the next two letters are from LCRBMT */
-					if (strchr ("LCRBMT", word[1]) && strchr ("LCRBMT", word[2]))
-						just = gmt_just_decode (GMT, &word[1], GMT->current.setting.map_logo_justify);
-					break;
-				case 'o':	/* Maybe +o if next letter could be part of a number */
-					if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
-						if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 2) error++;
-					}
-					break;
-				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+		if (k == len)	/* MOdifiers were just random text */
+			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
+		else {	/* Appears to have gotten a valid modifier or more */
+			c = &item[k-1];	/* Start of the modifier */
+			c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
+			if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
+			c[0] = '+';	/* Restore modifiers */
+			while (gmt_getmodopt (GMT, 'U', c, "cjo", &pos, word, &uerr) && uerr == 0) {
+				switch (word[0]) {
+					case 'c':	/* Maybe +c but only if at end of followed by another modifier */
+						if (word[1] == '+' || word[1] == '\0')	/* Use command string */
+							GMT->current.ps.logo_cmd = true;
+						break;
+					case 'j':	/* Maybe +j if the next two letters are from LCRBMT */
+						if (strchr ("LCRBMT", word[1]) && strchr ("LCRBMT", word[2]))
+							just = gmt_just_decode (GMT, &word[1], GMT->current.setting.map_logo_justify);
+						break;
+					case 'o':	/* Maybe +o if next letter could be part of a number */
+						if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
+							if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 2) error++;
+						}
+						break;
+					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+				}
 			}
 		}
 		GMT->current.setting.map_logo_justify = just;

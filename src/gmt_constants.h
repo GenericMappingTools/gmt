@@ -75,6 +75,7 @@
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
+#define GMT_ASCII_ES	27	/* ASCII code for escape (used to prevent +? strings in plain text from being seen as modifiers) */
 #define GMT_ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
 #define GMT_ASCII_RS	30	/* ASCII code for record separator (temporarily replacing spaces in filenames) */
 #define GMT_ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
