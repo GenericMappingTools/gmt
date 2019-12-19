@@ -356,7 +356,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
- * options (e.g., -U"My plot"+o1c/1c) that the common and module parsers expect.
+ * options (e.g., -U"My plot"+o5c/6c) that the common and module parsers expect.
  *
  * For testing this there are two define statements that need to be set in ConfigUser.cmake:
  *
@@ -369,31 +369,32 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-	{   0, 'B', "frame",         "",        "",                                        "b,g,n,o,t",		"box,fill,noframe,oblique-pole,title" },
-	{   0, 'B', "axes",          "",        "",                                        "a,l,L,p,s,S,u",	"angle,label,Label,prefix,second-label,Second-label,unit" },
-	{ '/', 'I', "increment",     "",        "",                                        "e,n",      		"exact,number" },
-	{   0, 'J', "projection",    "",        "",                                        "",         		""},
-	{   0, 'R', "region",        "",        "",                                        "r",        		"rectangular"},
-	{   0, 'U', "timestamp",     "",        "",                                        "c,j,o",    		"command,justify,offset"},
-	{   0, 'V', "verbosity",     "",        "",                                        "",         		""},
-	{   0, 'X', "xshift",        "a,c,f,r", "absolute,center,fixed,relative",          "",         		""},
-	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",          "",         		""},
-	{   0, 'a', "aspatial",      "",        "",                                        "",         		""},
-	{   0, 'b', "binary",        "",        "",                                        "B,L",      		"big-endian,little-endian"},
-	{   0, 'd', "nodata",        "i,o",     "in,out",                                  "",         		""},
-	{   0, 'e', "find",          "",        "",                                        "f",        		"file"},
-	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        		""},
-	{   0, 'g', "gap",           "",        "",                                         "",        		""},
-	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 		"columns,delete,remark,title"},
-	{ ',', 'i', "read-columns",  "",        "",                                         "l,o,s",   		"log10,offset,scale"},
-	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t",     		"clip,threshold"},
-	{ ',', 'o', "write-columns", "",        "",                                         "",        		""},
-	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     		"view,world"},
-	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        		""},
-	{   0, 's', "skip",           "",       "",                                         "a,r",     		"any,reverse"},
-	{   0, 't', "transparency",  "",        "",                                         "",        		""},
-	{   0, 'x', "cores",         "",        "",                                         "",        		""},
-	{   0, '\0', "",             "",        "",                                         "",        		""}	/* End of list marked with empty code and strings */
+	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t",				"box,fill,noframe,oblique-pole,title" },
+	{   0, 'B', "axis",          "",        "",                                         "a,l,L,p,s,S,u",			"angle,label,Label,prefix,second-label,Second-label,unit" },
+	{   0, 'J', "projection",    "",        "",                                         "",         				""},
+	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
+	{   0, 'U', "timestamp",     "",        "",                                         "c,j,o",    				"command,justify,offset"},
+	{   0, 'V', "verbosity",     "",        "",                                         "",         				""},
+	{   0, 'X', "xshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
+	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
+	{   0, 'a', "aspatial",      "",        "",                                         "",         				""},
+	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"big-endian,little-endian"},
+	{   0, 'd', "nodata",        "i,o",     "in,out",                                   "",         				""},
+	{   0, 'e', "find",          "",        "",                                         "f",        				"file"},
+	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        					""},
+	{   0, 'g', "gap",           "",        "",                                         "n,p",        				"negative,positive"},
+	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 					"columns,delete,remark,title"},
+	{ ',', 'i', "read-columns",  "",        "",                                         "l,o,s",   					"log10,offset,scale"},
+	{   0, 'j', "spherical",     "e,f,g",   "ellipsoidal,flat-earth,great-circle",      "",   			    		""},
+	{   0, 'l', "legend",        "",        "",                                         "d,f,g,h,j,l,n,s,v,w,x",   	"drawline,font,gap,header,justify,linetext,ncols,size,vertline,width,scale"},
+	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "a,b,c,t",     				"antialias,bc,clip,threshold"},
+	{ ',', 'o', "write-columns", "",        "",                                         "",        					""},
+	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
+	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        					""},
+	{   0, 's', "skip-record",   "",       "",                                         "a,r",     					"any,reverse"},
+	{   0, 't', "transparency",  "",        "",                                         "",        					""},
+	{   0, 'x', "cores",         "",        "",                                         "",        					""},
+	{   0, '\0', "",             "",        "",                                         "",        					""}	/* End of list marked with empty code and strings */
 };
 
 /* Local variables to gmt_init.c */
