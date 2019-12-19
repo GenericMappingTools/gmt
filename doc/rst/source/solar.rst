@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt solar** 
+**gmt solar**
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-G|\ [*fill*] ]
@@ -20,7 +20,6 @@ Synopsis
 [ |-J|\ *parameters* ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ **dcna**\ [**+d**\ *date*][**+z**\ *TZ*]]
 [ |SYN_OPT-U| ]
@@ -29,7 +28,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
-[ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -42,27 +40,20 @@ Examples
 
 .. include:: explain_example.rst_
 
-Print current Sun position and Sunrise, Sunset times at:
-
-   ::
+Print current Sun position and Sunrise, Sunset times at::
 
     gmt solar -I-7.93/37.079+d2016-02-04T10:01:00
 
-Plot the day-night and civil twilight 
-
-   ::
+Plot the day-night and civil twilight::
 
     gmt begin
       gmt coast -Rd -W0.1p -JQ0/14c -B -BWSen -Dl -A1000
       gmt solar -W1p -Tdc
     gmt end show
 
-Set up a clip path overlay based on the day/night terminator: 
-
-   ::
+Set up a clip path overlay based on the day/night terminator::
 
     gmt solar -G -Tc
-
 
 .. include:: solar_notes.rst_
 
