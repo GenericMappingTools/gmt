@@ -30,6 +30,11 @@ set (DO_API_TESTS ON)
 set (N_TEST_JOBS 2)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 set (CMAKE_C_FLAGS "-coverage -O0 ${CMAKE_C_FLAGS}")
+
+# Turn on testing of upcoming long-option syntax for common GMT options
+add_definitions(-DUSE_COMMON_LONG_OPTIONS)
+# Turn on testing of upcoming long-option syntax for module options
+add_definitions(-DUSE_MODULE_LONG_OPTIONS)
 EOF
 fi
 
