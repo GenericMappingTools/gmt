@@ -486,12 +486,12 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 void gmtlib_handle_escape_text (char *text, char key, int way) {
 	/* Deal with text that contains modifiers +? that should be seen as plain text
-	 * because they have a leading escape ("My dumb \+p text").  If way = 1 then
-	 * we replace \+ with two GMT_ASCII_ES (Escape)  and if way = -1 then we
+	 * because they have a leading escape ("My dumb \+p text").  If way == 1 then
+	 * we replace \+ with two GMT_ASCII_ES (Escape) bytes and if way == -1 then we
 	 * remove the first escape and replace the second with a +. Here, key sets
-	 * what to escape, such as +, but the function is general for key to escape.
-	 * Since way == +1 replaces 2 chars by 2 other chars and way == -1 replaces
-	 * two chars by one this function can work on both heap and allocated strings. */
+	 * what to escape, such as +, but the function is general for any key to escape.
+	 * Since way == +1 replaces 2 chars by 2 other chars and way == -1 replaces two
+	 * chars by one char this function can work on both heap and allocated strings. */
 	size_t k, j;
 	if (way == +1) {	/* Replace \<key> with two escapes */
 		for (k = 1; k < strlen (text); k++)
@@ -503,7 +503,7 @@ void gmtlib_handle_escape_text (char *text, char key, int way) {
 		for (k = j = 0; k < strlen (text); k++) {
 			if (text[k] == GMT_ASCII_ES) {
 				c = key;	/* Write the special char */
-				k++;		/* SKip the second escape char */
+				k++;		/* Skip the second escape char */
 			}
 			else	/* Just copy out what we found */
 				c = text[k];
@@ -515,20 +515,20 @@ void gmtlib_handle_escape_text (char *text, char key, int way) {
 
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
-	/* Determine if this long-format arg is found in one of the two keyword lists kw1 and kw2.
-	 * If we find a match we return a pointer to the corresponding keyword list and the index *k into the array entry.
-	 * If not found we return NULL and set index to -1 (GMT_NOTSET) */
+	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (module).
+	 * If we find a match we return a pointer to the corresponding keyword list and the index *k for the array entry.
+	 * If not found then we return NULL and set index to -1 (GMT_NOTSET) */
 	size_t len, len_given_keyword = strlen(arg);	/* Get the length of given argument */
 	struct GMT_KEYWORD_DICTIONARY *kw[2] = {kw1, kw2};	/* kw1 is the common options and kw2 is any module options available in long-format version */
 	gmt_M_unused (API);
 	for (unsigned int set = 0; set < 2; set++) {	/* Loop over the two keyword structure arrays */
-		if (kw[set] == NULL) continue;	/* Not given this set of keywords */
-		/* Search list of long-format keywords for a match */
+		if (kw[set] == NULL) continue;	/* We were not given this set of keywords */
+		/* Search list of long-format keywords for a match with arg */
 		for (*k = 0; kw[set][*k].long_option[0]; (*k)++) {
 			len = MIN (len_given_keyword, strlen (kw[set][*k].long_option));	/* Only compare up to the given # of characters, but less than actual length of long_option */
 			if (!strncmp (arg, kw[set][*k].long_option, len)) break;	/* Match was found */
 		}
-		if (kw[set][*k].short_option) return kw[set];	/* Return if successful */
+		if (kw[set][*k].short_option) return kw[set];	/* Return if successful, otherwise short_option of last entry is blank */
 	}
 	*k = GMT_NOTSET;	/* Nothing found, return GMT_NOTSET and NULL  */
 	return NULL;
@@ -536,8 +536,8 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *A
 
 /*! . */
 GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *text, char sep, char *argument) {
-	/* Examine the text argument for directives or args and pass back out via argument.  Here,
-	 * sep is either ':' or '=' depending on the call arguments. */
+	/* Examine the text argument for directives or args and pass it back out via argument.  Here,
+	 * sep is either ':' or '=' depending on the call argument. */
 	unsigned int k = 0, pos = 0;
 	size_t len, lent = strlen(text);
 	char *c = NULL, m = 0, item[GMT_LEN64] = {""};
@@ -546,24 +546,24 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives to examine */
 		len = MIN (lent, strlen(item));	/* Only compare up to the given # of characters, but less than length of item */
 		if (!strncmp (item, text, len))	/* Found this directive in the text */
-			m = shortlist[k];	/* Assign the corresponding short modifier to m */
+			m = shortlist[k];	/* Assign the corresponding short modifier to m and this stops the while loop */
 		k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the comma) */
 	}
-	if (m && c)	/* We found a short-option flag and there is an argument that follows a coloon or equal sign */
+	if (m && c)	/* We found a short-option flag and there is an argument that follows a colon or equal sign */
 		strcpy (argument, &c[1]);	/* Pass out the directive argument */
 	else if (m)	/* Found a short-option flag but there is nothing that follows */
 		argument[0] = '\0';	/* Nothing */
-	else	/* not a directive, m is 0 and c is NULL */
-		strcpy (argument, text);	/* Not a directive, pass out the argument */
-	if (c) c[0] = sep;		/* Restore colon/equal sign */
-	return m;	/* Returns 0 if not found */
+	else	/* Not a directive, m is 0 and c is NULL */
+		strcpy (argument, text);	/* Not a directive, pass out the argument as is */
+	if (c) c[0] = sep;		/* Restore colon/equal sign we masked out earlier */
+	return m;	/* Returns 0 if no modifier was found */
 }
 
 GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
 	/* Find the k'th separator occurrence and chop off the rest, return pointer to start of k'th section */
 	int j = 0, kk = -1, s0 = 0, s = 0, last_s = 0;
 	gmt_M_unused (API);
-	while (arg[j] && kk < k) {	/* We need to skip some sections */
+	while (arg[j] && kk < k) {	/* We need to skip previous sections */
 		if (arg[j] == separator) {	/* Start of a new section separated by / or comma, probably */
 			kk++;		/* kk is now the section number, i.e., this will become 0 the first time we get here */
 			s0 = s;		/* Keep previous start position */
@@ -574,11 +574,11 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 		else	/* Not there yet, keep going */
 			j++;
 	}
-	if (kk == k) {	/* Found separator and is now at k'th section */
-		arg[j] = '\0';	/* Hide the rest of the string*/
+	if (kk == k) {	/* Found the separator and is now at k'th section */
+		arg[j] = '\0';	/* Hide the rest of the string */
 		*sx = j;	/* Return position of separator that was removed */
 	}
-	else if (last_s) {	/* Must be the last section that is missing a trailing separator */
+	else if (last_s) {	/* Must be the last section since it is missing a trailing separator */
 		*sx = -1;	/* Nothing to chop */
 		s0 = last_s + 1;	/* Start position of last section */
 	}
@@ -588,17 +588,17 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 /*! . */
 GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
-	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is
+	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
 	 *
 	 * --longoption[=[<directive>:]<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]...  
 	 *
-	 * For options that takes more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
+	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
 	 *
 	 * [<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]
 	 *
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is an entry
-	 * in kw.separator or it is 0 if the option does not take more than one section.
+	 * in kw.separator, or it is 0 if the option does not take more than one section.
 	 */
 
 	struct GMT_OPTION *opt = NULL;
@@ -609,23 +609,23 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	bool modified = false, got_directive = false, got_modifier = false;
 	
 	#if !defined(USE_MODULE_LONG_OPTIONS)
-	this_module_kw = NULL;	/* Not testing the module long-options yet */
+	this_module_kw = NULL;	/* Debugging: Not testing the module long-options */
 	#endif
 
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
-		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings */
+		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings, e.g., --FONT_TITLE=12p */
 		strcpy (orig, opt->arg);			/* Retain a copy of current option arguments */
-		strcpy (copy, opt->arg);			/* Retain a copy of current option arguments */
-		gmtlib_handle_escape_text (copy, '+', +1);	/* Hide escaped +? sequences */
+		strcpy (copy, opt->arg);			/* Retain another copy of current option arguments */
+		gmtlib_handle_escape_text (copy, '+', +1);	/* Hide any escaped +? sequences */
 		directive = strchr (copy, '=');		/* Get location of equal sign, if present */
 		modifier  = strchr (copy, '+');		/* Get location of plus sign, if present */
-		got_directive = got_modifier = false;	/* Reset these to false */
+		got_directive = got_modifier = false;	/* Reset these to be false */
 		/* Check for case where the = is part of a modifier, hence not a value or directive */
 		if (directive && modifier && ((directive - copy) > (modifier - copy)))
-			directive = NULL;				/* The = is part of a modifier and not the directive so ignore for now */
+			directive = NULL;				/* The = is part of a modifier and not the directive, so ignore it for now */
 		if (directive) directive[0] = '\0', got_directive = true;	/* Cut off =value for now so opt->arg only has the keyword, but remember a directive was found */
-		if (modifier) modifier[0] = '\0', got_modifier = true;		/* Cut off +modifier for now so opt->arg only has the keyword, but remember a modifier was found */
+		if (modifier) modifier[0] = '\0', got_modifier = true;		/* Cut off +modifier for now so orig only has the keyword, but remember a modifier was found */
 		if ((kw = gmtinit_find_kw (API, gmt_common_kw, this_module_kw, orig, &k)) == NULL) {	/* Find matching keyword listing */
 			/* Did not find matching long format keyword; undo damage and move to next option */
 			if (directive) directive[0] = '=';
