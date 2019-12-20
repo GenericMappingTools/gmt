@@ -991,7 +991,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	/* BECAUSE IT'S NOT TESTED LEAVE THIS (TEMP) WARNING ON TILL WE ARE SURE IT WORKS */
 	if (Ctrl->F.custom && GMT->common.x.n_threads > 1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Custom filter and multi-threading is not guarantied to work.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Custom filter and multi-threading is not guaranteed to work.\n");
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \

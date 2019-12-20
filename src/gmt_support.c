@@ -9643,7 +9643,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				S = prev_S;
 			}
 		}
-		else {	/* Not continous, or first segment */
+		else {	/* Not continuous, or first segment */
 			gmt_free_segment (GMT, &T->segment[T->n_segments]);	/* Done with this guy */
 			if (continuous) gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);	/* Avoid jumps in longitude due to joining */
 			T->segment[T->n_segments++] = S;	/* Hook into table */
