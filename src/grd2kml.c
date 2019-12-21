@@ -553,7 +553,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->W.active) {	/* Want to overlay contours given via file */
 		uint64_t c;
 		char line[GMT_LEN256] = {""};
-		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actul file */
+		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actual file */
 			char cval[GMT_LEN64] = {""}, pen[GMT_LEN64] = {""};
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
 				gmt_M_free (GMT, Q);
