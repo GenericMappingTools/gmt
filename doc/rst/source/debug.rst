@@ -26,19 +26,19 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    Also uncomment the two "add_definitions" lines that contain the word "DEBUG" in it somewhere.
 
 #. You will need to build GMT again.  I recommend you do this in a separate build directory (I
-   call mine xbuild, and while at it I use rbuild for "Release Builds" and dbuild for regular
-   debug command line builds, and build for the final build for the releases).  If you are in
-   the xbuild directory, these two command will do the build::
+   call mine *xbuild*, and while at it I use *rbuild* for "Release Builds" and *dbuild* for regular
+   debug command line builds, and *build* for the final build for the releases).  If you are in
+   the *xbuild* directory, these two commands will do the build::
 
     cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..
     xcodebuild
 
 #. After this step you can launch the Xcode application and then use the File->Open menu to
-   open the project file xbuild/GMT.xcodeproj.  After it opens it may looks something like
+   open the project file *xbuild/GMT.xcodeproj*.  After it opens it may looks something like
    this (click on the figure to enlarge it):
 
    .. figure:: /_images/xcode-1.*
-      :width: 90%
+      :width: 100%
       :align: center
 
 #. Pull down the tab that says "@ ALL_BUILD" and select "gmt" about 35 lines down, then in the
@@ -47,14 +47,14 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    your screen may look more like this:
 
    .. figure:: /_images/xcode-2.*
-      :width: 90%
+      :width: 100%
       :align: center
 
 #. Scroll down to the part around line 119 and click the line number to place a stop point; it
    will add a blue fat arrow at that line:
 
    .. figure:: /_images/xcode-3.*
-      :width: 90%
+      :width: 100%
       :align: center
 
    This is *usually* the first stop you want in Xcode.  The exception would be if you are debugging
@@ -71,7 +71,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    section that says "Arguments Passed on Launch" and paste in our command; it should result in this display:
 
    .. figure:: /_images/xcode-4.*
-      :width: 90%
+      :width: 100%
       :align: center
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
@@ -79,18 +79,18 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
    setting like $X2SYS_HOME, then you must set those here as well.
 
-#. Any data files your command will read must either be placed in the xbuild/src/Debug subdirectory or you must
+#. Any data files your command will read must either be placed in the *xbuild/src/Debug* subdirectory or you must
    change the command you pasted above to use the full path instead.  In other words, when Xcode runs
-   your command, your current directory becomes xbuild/src/Debug.
+   your command, your current directory becomes *xbuild/src/Debug*.
 
 #. Click close and hit the "Play" button next to the green circle in the top left corner.  It may do some
    building and indexing before it starts and then stops at your highlighted line, opening up a display console
    below the source code:
 
    .. figure:: /_images/xcode-5.*
-      :width: 90%
+      :width: 100%
       :align: center
-   
+
    You will see the current line is highlighted light greenish and the execution is stopped.  Below the code is a new window that
    lists some of the variables in the current scope.  You can examine that window to see what the variables are set
    to, you can type "print variable" in the lldb command window on the right (e.g., "print argc"), or you can place
@@ -98,7 +98,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    "module" on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).
 
    .. figure:: /_images/xcode-6.*
-      :width: 90%
+      :width: 100%
       :align: center
 
 #. The tool bar below the source code has a pause-play button (continue to next stop point), a step-over button (execute
@@ -108,7 +108,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    the pause-play button and you are now about to call your actual C function that correspond to the module (here pstext):
 
    .. figure:: /_images/xcode-7.*
-      :width: 90%
+      :width: 100%
       :align: center
 
 #. Click the step-into button and find yourself at the first executable line of code in GMT_pstext, the underlying
@@ -117,5 +117,5 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    advance to the next stop point, examine variables, and so on.
 
    .. figure:: /_images/xcode-8.*
-      :width: 90%
+      :width: 100%
       :align: center
