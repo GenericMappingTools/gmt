@@ -7293,7 +7293,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		}
 		else if ((h = strstr (line, "CYCLIC")))	/* CPT should wrap around */
 			X->is_wrapping = 1;
-		else if ((h = strstr (line, "STRETCHED")))	/* CPT was stretched to exact min/max with no dz rounding */
+		else if ((h = strstr (line, "ENABLE_B_OPTION")))	/* CPT was stretched to exact min/max with no dz rounding */
 			XH->auto_scale = 1;
 
 		GMT->current.setting.color_model = X->model;
@@ -8291,7 +8291,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	if (P->is_wrapping)
 		fprintf (fp, "# CYCLIC\n");
 	if (PH->auto_scale)
-		fprintf (fp, "# STRETCHED\n");
+		fprintf (fp, "# ENABLE_B_OPTION\n");
 
 	sprintf (format, "%%s\t%%s%%c");
 
