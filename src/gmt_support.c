@@ -7172,9 +7172,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
+	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model;
 	size_t k;
-	bool gap, overlap, error = false, close_file = false, check_headers = true, master = false;
+	bool gap, overlap, error = false, close_file = false, check_headers = true;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
@@ -7301,11 +7301,6 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (c == '#') {	/* Possibly a header/comment record */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			if (!check_headers) continue;	/* Done with the initial header records */
-			if (strstr (line, "$Id:")) master = true;
-			if (master) {
-				n_master++;
-				if (n_master <= 2) continue;	/* Skip first 2 lines of GMT master CPTs */
-			}
 			if (n_hdr_alloc == 0) X->header = gmt_M_memory (GMT, X->header, (n_hdr_alloc = GMT_TINY_CHUNK), char *);
 			X->header[X->n_headers] = strdup (line);
 			X->n_headers++;
