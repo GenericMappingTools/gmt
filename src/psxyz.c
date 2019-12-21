@@ -466,7 +466,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Syntax error -Z option: No CPT given via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Syntax error -Z option: Not compatible with -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file[0] == '\0', "Syntax error -C option: No CPT given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Syntax error -C option: No CPT given\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, true), "Syntax error -S option\n");
