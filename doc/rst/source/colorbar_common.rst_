@@ -33,7 +33,7 @@ Optional Arguments
     provided (classic mode only), the default is to annotate every color level based on the
     numerical entries in the CPT (which may be overridden by ULB
     flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
-    of a grid exactly and thus have arbitrary color levels; these will trigger an automatic -Baf setting.
+    of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT.
     For standard **-B** operations, see below.
