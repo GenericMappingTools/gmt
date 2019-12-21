@@ -19,7 +19,7 @@ Either **-M** (for dumping data) or **-R** and **-J** must be selected.
 Optional Arguments
 ------------------
 
-.. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. _-B:
@@ -104,8 +104,6 @@ Optional Arguments
 
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
-
-.. include:: explain_-aspatial.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
