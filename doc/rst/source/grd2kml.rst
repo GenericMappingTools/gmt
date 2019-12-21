@@ -53,16 +53,17 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cpt*
-    Name of the color palette table (CPT). Alternatively,
-    supply the name of a GMT color master dynamic CPT [turbo] to
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
+    Name of the CPT (for *grd_z* only). Alternatively,
+    supply the name of a GMT color master dynamic CPT [turbo, but geo
+    for @earth_relief and srtm for @srtm_relief data] to
     automatically determine a continuous CPT from
-    the grid's z-range.  If the dynamic CPT has a default range then
-    that range will be imposed instead.
-    Another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically, scaled to fit the data range.
-    In this case *color1*, etc., can be a *r/g/b* triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+    the grid's z-range; you may round up/down the z-range by adding **+i**\ *zinc*.
+    Yet another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
+    to build a linear continuous CPT from those colors automatically.
+    In this case *color1* etc can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).  If no argument is given to **-C**
+    then under modern mode we select the current CPT.
 
 .. _-E:
 
