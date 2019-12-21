@@ -7170,9 +7170,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
+	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model;
 	size_t k;
-	bool gap, overlap, error = false, close_file = false, check_headers = true, master = false;
+	bool gap, overlap, error = false, close_file = false, check_headers = true;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
@@ -7181,6 +7181,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
+	struct GMT_PALETTE_HIDDEN *XH = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	/* Determine input source */
@@ -7231,7 +7232,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	color_model = GMT->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT */
 	/* Also: GMT->current.setting.color_model is used in some rgb_to_xxx functions so it must be set if changed by cpt */
 	X->is_gray = X->is_bw = true;	/* May be changed when reading the actual colors */
-
+	XH = gmt_get_C_hidden (X);
 	/* Set default BFN colors; these may be overwritten by things in the CPT */
 	for (id = 0; id < 3; id++) {
 		gmt_M_rgb_copy (X->bfn[id].rgb, GMT->current.setting.color_patch[id]);
@@ -7290,17 +7291,14 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		}
 		else if ((h = strstr (line, "CYCLIC")))	/* CPT should wrap around */
 			X->is_wrapping = 1;
+		else if ((h = strstr (line, "ENABLE_B_OPTION")))	/* CPT was stretched to exact min/max with no dz rounding */
+			XH->auto_scale = 1;
 
 		GMT->current.setting.color_model = X->model;
 
 		if (c == '#') {	/* Possibly a header/comment record */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			if (!check_headers) continue;	/* Done with the initial header records */
-			if (strstr (line, "$Id:")) master = true;
-			if (master) {
-				n_master++;
-				if (n_master <= 2) continue;	/* Skip first 2 lines of GMT master CPTs */
-			}
 			if (n_hdr_alloc == 0) X->header = gmt_M_memory (GMT, X->header, (n_hdr_alloc = GMT_TINY_CHUNK), char *);
 			X->header[X->n_headers] = strdup (line);
 			X->n_headers++;
@@ -7763,6 +7761,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
 		char *master = NULL, *current_cpt = NULL;
 		double noise;
+		struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
@@ -7794,6 +7793,8 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			zmax = (ceil (zmax / dz) * dz);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
+		PH = gmt_get_C_hidden (P);
+		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
 		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
@@ -8211,6 +8212,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 	/* When writing the CPT to file it is no longer a normalized CPT with a hinge */
 	P->has_range = P->has_hinge = 0;
@@ -8259,6 +8261,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s CPT to %s\n", msg1[append], &cpt_file[append]);
 
+	PH = gmt_get_C_hidden (P);
+
 	/* Start writing CPT info to fp */
 
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
@@ -8280,6 +8284,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	}
 	if (P->is_wrapping)
 		fprintf (fp, "# CYCLIC\n");
+	if (PH->auto_scale)
+		fprintf (fp, "# ENABLE_B_OPTION\n");
 
 	sprintf (format, "%%s\t%%s%%c");
 

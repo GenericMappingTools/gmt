@@ -1522,6 +1522,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -1643,7 +1644,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
-	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
+	if (!GMT->current.map.frame.draw && (PH = gmt_get_C_hidden (P)) && PH->auto_scale) {	/* No -B given yet we have raw auto-scaling */
+		gmtlib_parse_B_option (GMT, "af");
+	}
+	else if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
 		char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
 		unsigned int pos = 0;
 		GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");

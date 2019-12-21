@@ -30,9 +30,11 @@ Optional Arguments
     the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
     option, use the y-axis label to plot the data unit to the right of a
     horizontal bar (and above a vertical bar). If **-B** is omitted, or no annotation intervals are
-    provided, the default is to annotate every color level based on the
+    provided (classic mode only), the default is to annotate every color level based on the
     numerical entries in the CPT (which may be overridden by ULB
-    flags in the CPT). To specify custom text annotations for
+    flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
+    of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
+    To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT.
     For standard **-B** operations, see below.
 
