@@ -7794,7 +7794,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
-			PH->auto_scale = 1;	/* Flag for colorbar to supply -B af if not given */
+			PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
