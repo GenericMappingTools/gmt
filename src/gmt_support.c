@@ -7293,7 +7293,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		}
 		else if ((h = strstr (line, "CYCLIC")))	/* CPT should wrap around */
 			X->is_wrapping = 1;
-		else if ((h = strstr (line, "STRETCHED")))	/* CPT was stretnch to exact min/max with no dz rounding */
+		else if ((h = strstr (line, "STRETCHED")))	/* CPT was stretched to exact min/max with no dz rounding */
 			XH->auto_scale = 1;
 
 		GMT->current.setting.color_model = X->model;
