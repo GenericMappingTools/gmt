@@ -126,7 +126,7 @@ Optional Arguments
     (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
     length units in current plot units after projecting the coordinates.
-    Optionally, append **z** to exclude the zero contour.
+    Optionally, append **+z** to exclude the zero contour.
 
 .. _-R:
 
