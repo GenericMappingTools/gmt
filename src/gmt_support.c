@@ -7768,6 +7768,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
 		char *master = NULL, *current_cpt = NULL;
 		double noise;
+		struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
@@ -7790,17 +7791,17 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
-			struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
-			PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
+		PH = gmt_get_C_hidden (P);
+		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
 		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
