@@ -258,6 +258,8 @@
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
+#add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
+#add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols

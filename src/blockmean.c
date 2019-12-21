@@ -41,8 +41,8 @@
 #include "block_subs.h"
 
 enum Block_Modes {
-	BLK_MODE_NOTSET   = 0,	/* No -E+p|P (or -Ep) set */
-	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^ */
+	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
+	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^2 */
 	BLK_MODE_WEIGHTED = 2,	/* -E+p computes weighted z means and error propagation on weighted z mean, using input s and w = 1/s^2 */
 	BLK_MODE_SIMPLE   = 3	/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */
 };
@@ -307,7 +307,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
