@@ -46,8 +46,9 @@ struct GRD2KML_CTRL {
 		bool active;
 		unsigned int size;
 	} A;
-	struct GRD2KML_C {	/* -C<cpt> */
+	struct GRD2KML_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
+		double dz;
 		char *file;
 	} C;
 	struct GRD2KML_D {	/* -D[+s][+d]  [DEBUG ONLY, NOT DOCUMENTED] */
@@ -153,7 +154,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [%s].\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E To store all files remotely, give leading URL [local files only].\n");
@@ -216,8 +218,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
+					Ctrl->C.dz = atof (&c[2]);
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+				}
 				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'D':	/* Debug options - may fade away when happy with the performance */
 				Ctrl->D.active = true;
@@ -434,7 +441,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		unsigned int zmode = gmt_cpt_default (GMT, G->header);
 		char cfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, 0.0, zmode)) == NULL) {
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz, zmode)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create a CPT\n");
 			Return (API->error);	/* Well, that did not go well... */
 		}
@@ -553,7 +560,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->W.active) {	/* Want to overlay contours given via file */
 		uint64_t c;
 		char line[GMT_LEN256] = {""};
-		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actul file */
+		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actual file */
 			char cval[GMT_LEN64] = {""}, pen[GMT_LEN64] = {""};
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
 				gmt_M_free (GMT, Q);

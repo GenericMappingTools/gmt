@@ -249,12 +249,12 @@
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
-if ( CMAKE_GENERATOR STREQUAL "Xcode" )
-#	So Xcode can find the supplemental plug-ins during debug sessions
-	add_definitions(-DXCODER)			# Handle a debug plugin directory
-	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
-	message("Add Xcode definition for GMT")
-endif()
+#if ( CMAKE_GENERATOR STREQUAL "Xcode" )
+#   #	So Xcode can find the supplemental plug-ins during debug sessions
+#	add_definitions(-DXCODER)			# Handle a debug plugin directory
+#	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
+#	message("Add Xcode definition for GMT")
+#endif()
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
@@ -264,11 +264,11 @@ endif()
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
 #set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)                  # debug link dependencies
-if (HAVE_OPENMP)
-	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized -flax-vector-conversions")  # check uninitialized variables
-else (HAVE_OPENMP)
-	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
-endif (HAVE_OPENMP)
+#if (HAVE_OPENMP)
+#	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized -flax-vector-conversions")  # check uninitialized variables
+#else (HAVE_OPENMP)
+#	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
+#endif (HAVE_OPENMP)
 
 #
 # System specific tweaks

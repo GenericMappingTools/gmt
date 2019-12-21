@@ -16031,6 +16031,18 @@ GMT_LOCAL bool check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
 	return false;
 }
 
+GMT_LOCAL bool A_was_given (char *text) {
+	/* Determine if A is one of the arguments */
+	size_t k = 1;
+	if (!text || !text[0]) return false;	/* No args means -A was not given */
+	if (text[0] == 'A') return true;	/* A was given as first option */
+	while (text[k]) {
+		if (text[k] == 'A' && text[k-1] == ',') return true;	/* Found A as first letter after comma */
+		k++;
+	}
+	return false;
+}
+
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
@@ -16118,7 +16130,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && strchr (fig[k].options, 'A') == NULL)	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
+				if (not_PS && auto_size && !A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
 					strcat (cmd, " -A");
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
@@ -16131,7 +16143,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && strchr (API->GMT->current.setting.ps_convert, 'A') == NULL)	/* Must always add -A if not PostScript unless when media size is given */
+				if (not_PS && auto_size && !A_was_given (API->GMT->current.setting.ps_convert))	/* Must always add -A if not PostScript unless when media size is given */
 					strcat (cmd, " -A");
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
