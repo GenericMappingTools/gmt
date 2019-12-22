@@ -116,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m] [%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m[<char>]] [%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n\n", par);
 
@@ -131,6 +131,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default])\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or append d for discontinuity at Dateline (output -180/+180).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set bin size for track bin index output [1/1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-m ASCII tracks have multiple segments separated by segment headers starting with >.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append another character to identify segment headers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Cartesian distance (user-dist-units, user-dist-units/user-time-units).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");

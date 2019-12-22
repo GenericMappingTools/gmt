@@ -18,6 +18,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
+[ |-m| ]
 [ |-N|\ *nx_min*\ [**+p**\ ] ]
 [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-R| ]
@@ -69,7 +70,7 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Enhance ASCII output by writing GMT segment headers with name of the
+    Enhance ASCII output by writing GMT segment headers with names of the
     two tracks and their total number of cross-overs [no segment headers].
 
 .. _-F:
@@ -117,6 +118,13 @@ Optional Arguments
     *TAG*\ \_corrections.txt which is expected to reside in the
     **$X2SYS_HOME**/*TAG* directory]. For the format of this file, see
     **x2sys_solve**.
+
+.. _-m:
+
+**-m**\ [*char* ]
+    Indicate that the ASCII data tables will contain multiple segments
+    separated by header records that start with '>'.  If another character
+    is used please append it to **-m**.
 
 .. _-N:
 
