@@ -1,6 +1,6 @@
 .. _-e_full:
 
-**-e**\ [**~**]\ *"pattern"* **\|** **-e**\ [**~**]/\ *regexp*/[**i**]
+**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
     Only accept ASCII data records that contain the specified pattern.
     To reverse the search, i.e., to only accept data records that do *not*
     contain the specified pattern, use **-e~**. Should your pattern happen
