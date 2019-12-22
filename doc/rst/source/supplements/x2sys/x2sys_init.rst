@@ -17,6 +17,7 @@ Synopsis
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **g** ]
 [ |-I|\ *dx*\ [/*dy*] ]
+[ |-m|\ [*char*] ]
 [ |-N|\ **d**\ \|\ **s**\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -94,6 +95,13 @@ Optional Arguments
     to indicate minutes or **s** to indicate seconds for geographic
     data. These spacings refer to the binning used in the track
     bin-index data base.
+
+.. _-m:
+
+**-m**\ [*char* ]
+    Indicate that the ASCII data tables will contain multiple segments
+    separated by header records that start with '>'.  If another character
+    is used please append it to **-m**.
 
 .. _-N:
 
