@@ -1,5 +1,5 @@
 <a href="https://www.generic-mapping-tools.org/">
-    <img src="https://www.generic-mapping-tools.org/_static/gmt-logo.png" alt="GMT logo" title="GMT" align="right" height="40" />
+    <img src="https://www.generic-mapping-tools.org/_static/gmt-logo.png" alt="GMT logo" title="GMT" align="right" height="120" />
 </a>
 
 # Generic Mapping Tools
