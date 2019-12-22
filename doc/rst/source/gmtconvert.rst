@@ -17,7 +17,7 @@ Synopsis
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
-[ |-N|\ *col*\ [**+a** \|\ **d**\ ] ]
+[ |-N|\ *col*\ [**+a**\ \|\ **d**\ ] ]
 [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
 [ |-T|\ [**h**\ \|\ **d**\ ] ]
@@ -152,7 +152,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *col*\ [**+a** \|\ **d**\ ]
+**-N**\ *col*\ [**+a**\ \|\ **d**\ ]
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
@@ -204,14 +204,14 @@ Optional Arguments
 
 .. _-W:
 
-**-W** [**+n**\ ]
+**-W**\ [**+n**\ ]
     Attempt to convert each word in the trailing text to a number and append
     such values to the numerical output columns.  Text that cannot be converted
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  Note: These columns are identified based on
     the first input record only.
 
-**-Z** [*first*\ ][/\ *last*]
+**-Z**\ [*first*\ ][/\ *last*]
     Limit output to the specified record range.  If *first* is not set it defaults
     to record 0 (very first record) and if *last* is not set then it defaults to the
     very last record.  Only records in the given range will be written out [all].
