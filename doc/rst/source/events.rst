@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
+**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*unit*]]
+|-T|\ *now*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
@@ -22,10 +23,8 @@ Synopsis
 [ |-L|\ [*length*\ \|\ **t**\ ] ]
 [ |-M|\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
 [ |-Q|\ *prefix* ]
-[ |-T|\ *now* ]
-[ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
