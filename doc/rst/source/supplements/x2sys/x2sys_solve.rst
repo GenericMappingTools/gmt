@@ -39,7 +39,7 @@ Required Arguments
     Name of file with the required crossover columns as produced by
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
-    IDs; otherwise we expect those columns to hold the text string names
+    IDs; otherwise we expect the trailing text to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.
 
 .. include:: explain_tag.rst_

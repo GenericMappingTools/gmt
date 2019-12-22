@@ -69,10 +69,6 @@ struct X2SYS_INIT_CTRL {
 		double inc[2];
 		char *string;
 	} I;
-	struct m {	/* -m */
-		bool active;
-		char *string;
-	} m;
 	struct N {	/* -N */
 		bool active[2];
 		char *string[2];
@@ -99,7 +95,6 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* 
 	gmt_M_str_free (C->E.string);
 	gmt_M_str_free (C->G.string);
 	gmt_M_str_free (C->I.string);
-	gmt_M_str_free (C->m.string);
 	gmt_M_str_free (C->N.string[0]);
 	gmt_M_str_free (C->N.string[1]);
 	gmt_M_str_free (C->W.string[0]);
@@ -116,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m] [%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n\n", par);
 
@@ -221,10 +216,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 					n_errors++;
 				}
 				Ctrl->I.string = strdup (opt->arg);
-				break;
-			case 'm':
-				Ctrl->m.active = true;
-				Ctrl->m.string = strdup (opt->arg);
 				break;
 			case 'N':	/* Distance and speed unit selection */
 				switch (opt->arg[0]) {
@@ -446,7 +437,6 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	else if (Ctrl->C.active) fprintf (fp, " -j%s", Ctrl->C.string);
 	if (Ctrl->E.active) fprintf (fp, " -E%s", Ctrl->E.string);
 	if (Ctrl->G.active) fprintf (fp, " -G%s", Ctrl->G.string);
-	if (Ctrl->m.active) fprintf (fp, " -m%s", Ctrl->m.string);
 	if (Ctrl->N.active[0]) fprintf (fp, " -N%s", Ctrl->N.string[0]);
 	if (Ctrl->N.active[1]) fprintf (fp, " -N%s", Ctrl->N.string[1]);
 	if (Ctrl->W.active[0]) fprintf (fp, " -W%s", Ctrl->W.string[0]);

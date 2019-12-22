@@ -154,8 +154,7 @@ reading native binary files). Not used with netCDF files.
 periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
 
 **MULTISEG** means each track consists of multiple segments separated by
-a GMT segment header (alternatively, use **-m** when defining the
-system TAG). Not used with netCDF files.
+a GMT segment header. Not used with netCDF files.
 
 The column information consists of one line per column in the order the
 columns appear in the data file. For each column you must provide seven

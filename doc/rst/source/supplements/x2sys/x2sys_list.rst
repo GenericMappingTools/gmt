@@ -69,7 +69,7 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Enhance ASCII output by writing GMT segment headers with name of the
+    Enhance ASCII output by writing GMT segment headers with names of the
     two tracks and their total number of cross-overs [no segment headers].
 
 .. _-F:
