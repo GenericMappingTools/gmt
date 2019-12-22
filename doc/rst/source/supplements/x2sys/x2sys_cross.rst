@@ -53,7 +53,7 @@ Optional Arguments
 **-A**\ *combi.lis*
     Only process the pair-combinations found in the file *combi.lis*
     [Default process all possible combinations among the specified
-    files]. The file *combi.lis* created by :doc:`x2sys_get` -L option
+    files]. The file *combi.lis* created by :doc:`x2sys_get` **-L** option
 
 .. _-C:
 
