@@ -422,6 +422,8 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->Q.active && Pin->has_hinge)
+		GMT_Report (API, GMT_MSG_VERBOSE, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
