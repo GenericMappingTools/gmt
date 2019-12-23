@@ -1,3 +1,7 @@
+<a href="https://www.generic-mapping-tools.org/">
+    <img src="https://www.generic-mapping-tools.org/_static/gmt-logo.png" alt="GMT logo" title="GMT" align="right" height="120" />
+</a>
+
 # Generic Mapping Tools
 
 [![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/latest?definitionId=2&branchName=master)
