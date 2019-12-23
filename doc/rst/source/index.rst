@@ -75,4 +75,5 @@ Quick links
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
    Debugging GMT <debug>
+   reStructuredText Cheatsheet <rst_cheatsheet>
 
