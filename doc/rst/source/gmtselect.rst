@@ -115,7 +115,7 @@ Optional Arguments
 
 **-G**\ *gridmask*
     Pass all locations that are inside the valid data area of the grid *gridmask*.
-	Nodes that are outside are either NaN or zero.
+    Nodes that are outside are either NaN or zero.
 
 .. _-I:
 

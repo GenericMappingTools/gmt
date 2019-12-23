@@ -41,7 +41,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*]
+**-G**\ *mask_grd_file*
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
 .. _-I:
