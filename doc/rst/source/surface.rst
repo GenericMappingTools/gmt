@@ -232,6 +232,8 @@ Optional Arguments
 
 .. include:: explain_float.rst_
 
+.. include:: explain_distunits.rst_
+
 
 Examples
 --------
