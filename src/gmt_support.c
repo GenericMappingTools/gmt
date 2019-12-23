@@ -7965,7 +7965,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	bool even = false;	/* even is true when nz is passed as negative */
 	bool set_z_only = false;
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
-	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
+	double *x = NULL, *z_out = NULL, a, b, f, x_inc, x_hinge = 0.5;
 	double hsv_low[4], hsv_high[4], hsv_fore[4], hsv_back[4];
 
 	struct GMT_LUT *lut = NULL;
@@ -8032,7 +8032,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		for (i = 0; i < nz; i++) x[i] = i * x_inc;	/* Normalized z values 0-1 */
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
-		double scale_low, scale_high, x_hinge = 0.5, z_hinge, hinge = 0.0;
+		double scale_low, scale_high, z_hinge, hinge = 0.0;
 		if (!Pin->has_hinge || support_find_cpt_hinge (GMT, Pin) == GMT_NOTSET) { 	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 			scale_high = 1.0 / (z_out[nz-1] - z_out[0]);
 			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
@@ -8127,7 +8127,10 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		}
 		else {	 /* Interpolate central value and assign color to both lower and upper limit */
 
-			a = (x[lower] + x[upper]) / 2;
+			if (Pin->has_hinge && x[lower] <= x_hinge && x[upper] > x_hinge)	/* Detected hinge, so select the hinge normalized x-value */
+				a = x_hinge;
+			elseif/* Get halfway between the limits */
+				a = (x[lower] + x[upper]) / 2;
 			for (j = 0; j < Pin->n_colors && a >= lut[j].z_high; j++);
 			if (j == Pin->n_colors) j--;
 
