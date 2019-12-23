@@ -129,8 +129,7 @@ Optional Arguments
 
 .. _-E:
 
-**E**\ [*misfitfile*]
-
+**-E**\ [*misfitfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
