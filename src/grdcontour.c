@@ -109,6 +109,8 @@ struct GRDCONTOUR_CTRL {
 #define GRDCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
 #define TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
 #define TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
+#define PEN_CONT	0
+#define PEN_ANNOT	1
 
 enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of any sort */
 	cont_is_closed = 1,				/* Clear case of closed contour away from boundaries */
@@ -155,8 +157,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->L.high = DBL_MAX;
 	C->T.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
 	C->T.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
-	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
-	C->W.pen[1].width *= 3.0;
+	C->W.pen[PEN_CONT] = C->W.pen[PEN_ANNOT] = GMT->current.setting.map_default_pen;
+	C->W.pen[PEN_ANNOT].width *= 3.0;
 	C->Z.scale = 1.0;
 
 	return (C);
@@ -588,12 +590,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					j = (opt->arg[0] == 'a' || opt->arg[0] == 'c') ? k+1 : k;
 				}
 				if (j == k && opt->arg[j]) {	/* Set both and gave argument */
-					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
+					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[PEN_CONT])) {
 						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
 					else
-						Ctrl->W.pen[1] = Ctrl->W.pen[0];
+						Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];
 				}
 				else if (opt->arg[j]) {	/* Gave a or c.  Because the user may say -Wcyan we must prevent this from being seen as -Wc and color yan! */
 					/* Get the argument following a or c and up to first comma, slash (or to the end) */
@@ -601,12 +603,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					while (!(opt->arg[n] == ',' || opt->arg[n] == '/' || opt->arg[n] == '\0')) n++;
 					strncpy (txt_a, &opt->arg[k], (size_t)(n-k));	txt_a[n-k] = '\0';
 					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
-					id = (opt->arg[k] == 'a') ? 1 : 0;
+					id = (opt->arg[k] == 'a') ? PEN_ANNOT : PEN_CONT;
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
 						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
-					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
+					if (j == k) Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];	/* Must copy since it was not -Wc nor -Wa after all */
 				}
 				if (reset) c[0] = '+';	/* Restore */
 				if (Ctrl->W.cptmode) Ctrl->W.cpt_effect = true;
@@ -1565,7 +1567,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (GMT->common.l.active) {	/* Add a contour to the auto-legend entry under modern mode */
-			gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[0]), &(GMT->common.l.item));
+			gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &(GMT->common.l.item));
 		}
 	}
 
@@ -1588,7 +1590,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (G->data[ij] == 0.0) G->data[ij] += (gmt_grdfloat)small;	  /* There will be no actual zero-values, just -ve and +ve values */
 		}
 
-		id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
+		id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
 
 		if (cont[c].penset)
 			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
