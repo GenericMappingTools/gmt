@@ -7965,7 +7965,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	bool even = false;	/* even is true when nz is passed as negative */
 	bool set_z_only = false;
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
-	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
+	double *x = NULL, *z_out = NULL, a, b, f, x_inc, x_hinge = 0.5;
 	double hsv_low[4], hsv_high[4], hsv_fore[4], hsv_back[4];
 
 	struct GMT_LUT *lut = NULL;
@@ -8032,9 +8032,25 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		for (i = 0; i < nz; i++) x[i] = i * x_inc;	/* Normalized z values 0-1 */
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
-		b = 1.0 / (z[nz-1] - z[0]);
-		a = -z[0] * b;
-		for (i = 0; i < nz; i++) x[i] = a + b * z[i];	/* Normalized z values 0-1 */
+		double scale_low, scale_high, z_hinge, hinge = 0.0;
+		if (!Pin->has_hinge || support_find_cpt_hinge (GMT, Pin) == GMT_NOTSET) { 	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+			scale_high = 1.0 / (z[nz-1] - z[0]);
+			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
+			x_hinge = 0.0;		/* Starting x is zero */
+            hinge = z[0];	/* There is no hinge so we need z-min */
+		}
+		else {	/* Need separate scales on either side of hinge */
+			z_hinge = Pin->hinge;
+			scale_low  = x_hinge / (hinge - z[0]);	/* Convert z_out below the hinge to x = 0 - x_hinge */
+			scale_high = (1.0 - x_hinge) * (1.0 / (z[nz-1] - hinge));	/* Convert z)out above hinge to x_hinge - 1 */
+		}
+		
+		for (i = 0; i < nz; i++) {
+			if (z[i] <= z_hinge)	/* Below or equal to hinge */
+				x[i] = (z[i] - z[0]) * scale_low;
+			else /* Above hinge or there is no hinge */
+				x[i] = x_hinge + (z[i] - hinge) * scale_high;
+		}
 	}
 	x[0] = 0.0;	/* Prevent bad roundoff */
 	x[nz-1] = 1.0;
@@ -8111,7 +8127,10 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		}
 		else {	 /* Interpolate central value and assign color to both lower and upper limit */
 
-			a = (x[lower] + x[upper]) / 2;
+			if (Pin->has_hinge && x[lower] <= x_hinge && x[upper] > x_hinge)	/* Detected hinge, so select the hinge normalized x-value */
+				a = x_hinge;
+			else	/* Get halfway between the limits */
+				a = (x[lower] + x[upper]) / 2;
 			for (j = 0; j < Pin->n_colors && a >= lut[j].z_high; j++);
 			if (j == Pin->n_colors) j--;
 
