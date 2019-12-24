@@ -341,7 +341,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	/* Given -Qo and -T...+l are the same, make sure both ways are defined since code uses both */
 	if (Ctrl->Q.active && Ctrl->Q.mode == 2) Ctrl->T.T.logarithmic = true;
+	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 	
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;

@@ -8127,7 +8127,9 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		}
 		else {	 /* Interpolate central value and assign color to both lower and upper limit */
 
-			if (Pin->has_hinge && x[lower] <= x_hinge && x[upper] > x_hinge)	/* Detected hinge, so select the hinge normalized x-value */
+			if (log_mode)	/* Get halfway between the limits */
+				a = (x[lower] + x[upper]) / 2;
+			else if (Pin->has_hinge && x[lower] <= x_hinge && x[upper] > x_hinge)	/* Detected hinge, so select the hinge normalized x-value */
 				a = x_hinge;
 			else	/* Get halfway between the limits */
 				a = (x[lower] + x[upper]) / 2;
