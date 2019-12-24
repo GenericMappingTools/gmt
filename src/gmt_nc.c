@@ -383,7 +383,7 @@ GMT_LOCAL bool not_obviously_global (double *we) {
 }
 
 GMT_LOCAL bool not_obviously_polar (double *se) {
-	/* If range is not 180 and boundaries are not -90/90then we pass */
+	/* If range is not 180 and boundaries are not -90/90 then we pass */
 	if (!gmt_M_180_range (se[0], se[1])) return true;
 	if (!(doubleAlmostEqual (se[0], -90.0) && doubleAlmostEqual (se[1], 90.0))) return true;
 	return false;
