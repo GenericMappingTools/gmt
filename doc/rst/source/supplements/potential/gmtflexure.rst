@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *force*]
+**-F**\ *force*
     Set a constant horizontal in-plane force, in Pa m [0]
 
 .. _-L:

@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
+**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h**]
     Perform unweighted mode calculation via histogram binning, using the
     specified histogram *width*. Append **+c** to center bins so that
     their mid point is a multiple of *width* [uncentered].

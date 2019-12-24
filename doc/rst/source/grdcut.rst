@@ -18,7 +18,7 @@ Synopsis
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [*unit*]\ [**+n**] ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [*min/max*]\ [\ **+n**\ \|\ **N** \|\ **r**] ]
+[ |-Z|\ [*min/max*]\ [\ **+n**\ \|\ **N**\ \|\ **r**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 

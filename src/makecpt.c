@@ -341,7 +341,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	/* Given -Qo and -T...+l are the same, make sure both ways are defined since code uses both */
 	if (Ctrl->Q.active && Ctrl->Q.mode == 2) Ctrl->T.T.logarithmic = true;
+	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 	
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;
@@ -422,6 +424,8 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->Q.active && Pin->has_hinge)
+		GMT_Report (API, GMT_MSG_VERBOSE, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);

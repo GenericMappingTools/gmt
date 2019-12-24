@@ -375,6 +375,20 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 	GMT->current.setting.io_nc4_chunksize[1] = (size_t) ceil (header->n_columns / floor (header->n_columns / chunksize[1]));
 }
 
+GMT_LOCAL bool not_obviously_global (double *we) {
+	/* If range is not 360 and boundaries are not 0, 180, 360 then we pass */
+	if (!gmt_M_360_range (we[0], we[1])) return true;
+	if (!(doubleAlmostEqualZero (we[0], 0.0) || doubleAlmostEqual (we[0], -180.0))) return true;
+	return false;
+}
+
+GMT_LOCAL bool not_obviously_polar (double *se) {
+	/* If range is not 180 and boundaries are not -90/90 then we pass */
+	if (!gmt_M_180_range (se[0], se[1])) return true;
+	if (!(doubleAlmostEqual (se[0], -90.0) && doubleAlmostEqual (se[1], 90.0))) return true;
+	return false;
+}
+
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
 	int j, err, has_vector, has_range, registration;
 	int old_fill_mode, status;
@@ -612,19 +626,27 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_max", &dummy[1])));
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
-			if (fabs (dummy[0] - xy[0]) > (0.5001 * dx) || fabs (dummy[1] - xy[header->n_columns-1]) > (0.5001 * dx)) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The x-coordinates and range attribute are in conflict; must rely on coordinates only\n");
-				dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
-				has_range = false;	/* Since useless information */
-				/* For registration, we have to assume that the actual range is an integer multiple of increment.
-				 * If so, then if the coordinates are off by 0.5*dx then we assume we have pixel registration */
-				if (set_reg && fabs (fmod (dummy[0], dx)) > (0.4999 * dx)) {	/* Pixel registration */
-					registration = header->registration = GMT_GRID_PIXEL_REG;
-					dummy[0] -= 0.5 * dx;	dummy[1] += 0.5 * dx;
-					if (gmt_M_360_range (dummy[0], dummy[1]))
-						GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid x-coordinates after pixel registration adjustment have exactly 360 range\n");
+			if (fabs (dummy[0] - xy[0]) > ((0.5+GMT_CONV5_LIMIT) * dx) || fabs (dummy[1] - xy[header->n_columns-1]) > ((0.5+GMT_CONV5_LIMIT) * dx)) {
+				if (not_obviously_global (dummy)) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The x-coordinates and range attribute are in conflict; must rely on coordinates only\n");
+					dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
+					has_range = false;	/* Since useless information */
+					/* For registration, we have to assume that the actual range is an integer multiple of increment.
+					 * If so, then if the coordinates are off by 0.5*dx then we assume we have pixel registration */
+					if (set_reg && fabs (fmod (dummy[0], dx)) > ((0.5-GMT_CONV5_LIMIT) * dx)) {	/* Pixel registration */
+						registration = header->registration = GMT_GRID_PIXEL_REG;
+						dummy[0] -= 0.5 * dx;	dummy[1] += 0.5 * dx;
+						if (gmt_M_360_range (dummy[0], dummy[1]))
+							GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid x-coordinates after pixel registration adjustment have exactly 360 range\n");
+					}
 				}
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing registration to be %s\n", regtype[header->registration]);
+				else {	/* Got clean global longitude range, stick with that information and ignore xy */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The x-coordinates and range attribute are in conflict but range is exactly 360; we rely on this range\n");
+					if (set_reg && (header->n_columns%2) == 0) {	/* Pixel registration */
+						registration = header->registration = GMT_GRID_PIXEL_REG;
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Global longitudes, guessing registration to be %s since nx is odd\n", regtype[header->registration]);
+					}
+				}
 			}
 			else {	/* Data seems OK; determine registration */
 				dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
@@ -634,7 +656,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else if (has_vector) {	/* No attribute for range, use coordinates */
 			dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
-			if (set_reg && fabs (fmod (dummy[0], dx)) > (0.4999 * dx)) {	/* Most likely pixel registration since off by dx/2 */
+			if (set_reg && fabs (fmod (dummy[0], dx)) > ((0.5-GMT_CONV5_LIMIT) * dx)) {	/* Most likely pixel registration since off by dx/2 */
 				registration = header->registration = GMT_GRID_PIXEL_REG;
 				dummy[0] -= 0.5 * dx;	dummy[1] += 0.5 * dx;
 				if (gmt_M_360_range (dummy[0], dummy[1]))
@@ -685,21 +707,30 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])));
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
-			if (fabs (dummy[0] - xy[0]) > (0.5001 * dy) || fabs (dummy[1] - xy[header->n_rows-1]) > (0.5001 * dy)) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The y-coordinates and range attribute are in conflict; must rely on coordinates only\n");
-				dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
-				has_range = false;	/* Since useless information */
-				/* Registration was set using x values, so here we just check that we get the same result.
-				 * If the coordinates are off by 0.5*dy then we assume we have pixel registration */
-				if (fabs (fmod (dummy[0], dy)) > (0.4999 * dy)) {	/* Pixel registration? */
-					if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
-					else {	/* Pixel registration confirmed */
-						dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
-						registration = GMT_GRID_PIXEL_REG;
-						if (gmt_M_180_range (dummy[0], dummy[1]))
-							GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid y-coordinates after pixel registration adjustment have exactly 180 range\n");
+			if (fabs (dummy[0] - xy[0]) > ((0.5+GMT_CONV5_LIMIT) * dy) || fabs (dummy[1] - xy[header->n_rows-1]) > ((0.5+GMT_CONV5_LIMIT) * dy)) {
+				if (not_obviously_polar (dummy)) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The y-coordinates and range attribute are in conflict; must rely on coordinates only\n");
+					dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
+					has_range = false;	/* Since useless information */
+					/* Registration was set using x values, so here we just check that we get the same result.
+					 * If the coordinates are off by 0.5*dy then we assume we have pixel registration */
+					if (fabs (fmod (dummy[0], dy)) > ((0.5-GMT_CONV5_LIMIT) * dy)) {	/* Pixel registration? */
+						if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
+							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+						else {	/* Pixel registration confirmed */
+							dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
+							registration = GMT_GRID_PIXEL_REG;
+							if (gmt_M_180_range (dummy[0], dummy[1]))
+								GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid y-coordinates after pixel registration adjustment have exactly 180 range\n");
+						}
 					}
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The y-coordinates and range attribute are in conflict but range is exactly 180; we rely on this range\n");
+					if ((header->n_rows%2) == 1 && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+					else
+						registration = header->registration;
 				}
 			}
 			else {	/* Data seems OK; determine registration and set dummy from data coordinates */
@@ -710,7 +741,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else if (has_vector) {	/* No attribute for range, use coordinates */
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
-			if ((fabs (fmod (dummy[0], dy)) > (0.4999 * dy))) {	/* Most likely pixel registration since off by dy/2 */
+			if ((fabs (fmod (dummy[0], dy)) > ((0.5-GMT_CONV5_LIMIT) * dy))) {	/* Most likely pixel registration since off by dy/2 */
 				if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
 				else {	/* Pixel registration confirmed */

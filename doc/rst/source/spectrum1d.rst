@@ -12,9 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt spectrum1d** [ *table* ] |-S|\ *segment_size*]
+**gmt spectrum1d** [ *table* ] [ |-S|\ *segment_size* ]
 [ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
-[ |-N|\ [\ *name_stem* ] ] [ |-T| ] [ |-W| ]
+[ |-N|\ [\ *name_stem*] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -73,7 +73,7 @@ Required Arguments
 
 .. _-S:
 
-**-S**\ *segment_size*]
+**-S**\ *segment_size*
     *segment_size* is a radix-2 number of samples per window for
     ensemble averaging. The smallest frequency estimated is
     1.0/(\ *segment_size* \* *dt*), while the largest is 1.0/(2 \*

@@ -17,7 +17,7 @@ Synopsis
 |-N|\ *prefix*
 |-T|\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
-[ |-D|\ *displayrate*
+[ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-H|\ *factor*\ ]

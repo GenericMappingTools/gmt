@@ -72,7 +72,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**
+**-D**\ [*file*]
     Dump level information to *file*, or standard output if no file is provided.
 
 .. _-G:
