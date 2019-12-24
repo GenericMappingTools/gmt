@@ -221,6 +221,11 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	int (*io) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to the correct read or write function given type/swab */
 };
 
+/*! For keeping track for row ranges in -q */
+struct GMT_ROW_RANGE {
+	int64_t first, last, inc;
+};
+
 struct GMT_IO {				/* Used to process input data records */
 	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII or binary tables */
 	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);	/* Pointer to function writing ASCII or binary tables */
@@ -255,6 +260,7 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int record_type[2];	/* Either GMT_READ|WRITE_DATA (0), GMT_READ|WRITE_TEXT (1), or GMT_READ|WRITE_MIXED (2) (for input and output) */
 	unsigned int n_numerical_cols;	/* As it says */
 	unsigned int max_cols_to_read;	/* For ascii input [all] */
+	unsigned int n_row_ranges[2];	/* How many row ranges given in -q */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -295,6 +301,7 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir true */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
+	struct GMT_ROW_RANGE row_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output rows */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	/* The remainder are just pointers to memory allocated elsewhere */

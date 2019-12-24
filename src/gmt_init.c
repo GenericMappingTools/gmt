@@ -6824,6 +6824,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			}
 			break;
 
+		case 'q':	/* -q option for input/output row selection */
+
+			gmt_message (GMT, "\t-q Select input (-qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
+			gmt_message (GMT, "\t   Append comma-separated list of rows or row ranges.\n");
+			break;
+
 		case 's':	/* Output control for records where z are NaN */
 
 			gmt_message (GMT, "\t-s Suppress output for records whose z-value (col = 2) equals NaN\n");
@@ -7703,6 +7709,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 				error++;
 			break;
 		case 'p': error += GMT->common.p.active == false; break;
+		case 'q': error += (GMT->common.q.active[GMT_IN] == false && GMT->common.q.active[GMT_OUT] == false); break;
 		case 'm': if (!gmt_M_compat_check (GMT, 4)) error++; break;
 		case 'S': if (!gmt_M_compat_check (GMT, 4)) error++; break;
 		case 'F': if (!gmt_M_compat_check (GMT, 4)) error++; break;
@@ -8093,12 +8100,12 @@ int64_t gmt_parse_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t 
 	char *c = NULL;
 	if ((c = strchr (p, '-'))) {	/* Range of columns given. e.g., 7-9 */
 		got = sscanf (p, "%" PRIu64 "-%" PRIu64, start, stop);
-		if (c[1] == '\0') *stop = GMT_MAX_COLUMNS - 1;	/* Did not specify stop, set to max */
+		if (c[1] == '\0') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
 		else if (got != 2) inc = 0L;	/* Error flag */
 	}
 	else if ((c = strchr (p, ':'))) {	/* Range of columns given. e.g., 7:9 or 1:2:5 */
 		got = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, start, &inc, stop);
-		if (p[strlen(p)-1] == ':') *stop = GMT_MAX_COLUMNS - 1;	/* Did not specify stop, set to max */
+		if (p[strlen(p)-1] == ':') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
 		else if (got == 2) { *stop = inc; inc = 1L;}	/* Just got start:stop with implicit inc = 1 */
 		else if (got != 3 || inc < 1) inc = 0L;	/* Error flag */
 	}
@@ -8107,7 +8114,7 @@ int64_t gmt_parse_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t 
 	else				/* Just assume it goes column by column */
 		(*start)++, (*stop)++;
 	if ((*stop) < (*start)) inc = 0L;	/* Not good */
-	if (inc > 1 && (*stop != (GMT_MAX_COLUMNS - 1)) && (r = ((*stop - *start) % inc)) != 0) {	/* Must adjust stop to fit the sequence */
+	if (inc > 1 && (*stop != INTMAX_MAX) && (r = ((*stop - *start) % inc)) != 0) {	/* Must adjust stop to fit the sequence */
 		*stop -= r;
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "For -i: Sequence %s does not end at given stop value, reduced to %" PRIu64 "\n", p, *stop);
 	}
@@ -8249,7 +8256,10 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		else {	/* Now process column range */
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
-			if (stop == (GMT_MAX_COLUMNS-1)) GMT->common.i.end = true;	/* Gave an open interval, e.g., 3: or 4- to mean "until last column" */
+			if (stop == INTMAX_MAX) {	/* Gave an open interval, e.g., 3: or 4- to mean "until last column" */
+				GMT->common.i.end = true;
+				stop = GMT_MAX_COLUMNS - 1;	/* Set to last column */
+			}
 			/* Now set the code for these columns */
 
 			for (i = start; i <= stop; i += inc, k++) {
@@ -8419,7 +8429,10 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		else {
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
-			if (stop == (GMT_MAX_COLUMNS-1)) GMT->common.o.end = true;	/* Gave an open-ended interval, e.g., 3: or 3- to mean "from 3 until last column" */
+			if (stop == INTMAX_MAX) {	/* Gave an open-ended interval, e.g., 3: or 3- to mean "from 3 until last column" */
+				GMT->common.o.end = true;
+				stop = GMT_MAX_COLUMNS - 1;	/* Set to last column */
+			}
 
 			/* Now set the code for these columns */
 
@@ -8432,6 +8445,33 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 	GMT->common.o.n_cols = k;
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];	/* Since -o machinery will march through */
 	GMT->common.o.select = true;
+	return (GMT_NOERROR);
+}
+
+/*! Routine will decode the -q[i|o\[<row>|<rowrange>|,... arguments */
+int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
+
+	char p[GMT_LEN64] = {""};
+	unsigned int pos = 0, id = GMT_IN, n = 0, k = 0;
+	struct GMT_ROW_RANGE *R = NULL;
+
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -q requires an argument */
+
+	if (arg[0] == 'i') k = 1;	/* Specifically gave input [Default] */
+	else if (arg[0] == 'o') k = 1, id = GMT_OUT;	/* Specifically gave output */
+	strncpy (GMT->common.q.string[id], arg, GMT_LEN64-1);	/* Verbatim copy */
+
+	R = GMT->current.io.row_range[id];	/* Just a short-hand */
+
+	/* Parsing of -q<rows> */
+	while ((gmt_strtok (&arg[k], ",", &pos, p))) {	/* While it is not empty, process it */
+		if ((R[n].inc = gmt_parse_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
+		if ((++n) == GMT_MAX_RANGES) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
+			return (GMT_PARSE_ERROR);
+		}
+	}
+	GMT->current.io.n_row_ranges[id] = n;
 	return (GMT_NOERROR);
 }
 
@@ -14921,7 +14961,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 #endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -l, -n, -o, -p, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -15230,6 +15270,19 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'p':
 			error += (GMT_more_than_once (GMT, GMT->common.p.active) || gmtinit_parse_p_option (GMT, item));
 			GMT->common.p.active = true;
+			break;
+
+		case 'q':
+			switch (item[0]) {
+				case 'o':
+					error += (GMT_more_than_once (GMT, GMT->common.q.active[GMT_OUT]) || gmt_parse_q_option (GMT, item));
+					GMT->common.q.active[GMT_OUT] = true;
+					break;
+				default:
+					error += (GMT_more_than_once (GMT, GMT->common.q.active[GMT_IN]) || gmt_parse_q_option (GMT, item));
+					GMT->common.q.active[GMT_IN] = true;
+					break;
+			}
 			break;
 
 		case 'r':

@@ -208,6 +208,21 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 /* Local functions */
 
 /*! . */
+static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	bool in = false;
+	if (!GMT->common.q.active[GMT_IN]) return false;	/* -qi not active */
+	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (row < GMT->current.io.row_range[GMT_IN][k].first || row > GMT->current.io.row_range[GMT_IN][k].last) continue;	/* Outside this range at least */
+		/* So row is in the desired range, but is inc == 1 or do we need more work? */
+		if (GMT->current.io.row_range[GMT_IN][k].inc == 1)	/* OK, in the requested range */
+			in = true;
+		else	/* Must see if row equals first + n * inc for some n */
+			in = ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc) == 0;
+	}
+	return !in;
+}
+
+/*! . */
 static inline uint64_t gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, uint64_t n) {
 	/* Return the actual items needed (which may be more than n if gap testing demands it) */
 	if (GMT->common.g.active) return (MAX (n, GMT->common.g.n_col));	/* n or n_col (if larger) */
@@ -3346,6 +3361,22 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			*status = 0;
 			return (NULL);
 		}
+		if (outside_in_row_range (GMT, GMT->current.io.rec_no-1)) {
+			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the next line */
+			if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
+				GMT->current.io.status = GMT_IO_EOF;
+				if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
+					            GMT->current.io.n_bad_records);
+					GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
+					GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
+				}
+				*status = -1;
+				return (NULL);
+			}
+			continue;	/* Records is outside range of interest */
+		}
+
 		/* Here we are done with any header records implied by -h */
 		if (GMT->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read a single line */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
