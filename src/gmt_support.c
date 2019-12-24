@@ -8129,7 +8129,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 			if (Pin->has_hinge && x[lower] <= x_hinge && x[upper] > x_hinge)	/* Detected hinge, so select the hinge normalized x-value */
 				a = x_hinge;
-			elseif/* Get halfway between the limits */
+			else	/* Get halfway between the limits */
 				a = (x[lower] + x[upper]) / 2;
 			for (j = 0; j < Pin->n_colors && a >= lut[j].z_high; j++);
 			if (j == Pin->n_colors) j--;
