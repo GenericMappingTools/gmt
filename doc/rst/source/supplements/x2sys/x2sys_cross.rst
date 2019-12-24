@@ -1,12 +1,11 @@
 .. index:: ! x2sys_cross
+.. include:: ../module_supplements_purpose.rst_
 
 ***********
 x2sys_cross
 ***********
 
-.. only:: not man
-
-    x2sys_cross - Calculate crossovers between track data files
+|x2sys_cross_purpose|
 
 Synopsis
 --------
@@ -54,7 +53,7 @@ Optional Arguments
 **-A**\ *combi.lis*
     Only process the pair-combinations found in the file *combi.lis*
     [Default process all possible combinations among the specified
-    files]. The file *combi.lis* created by :doc:`x2sys_get` -L option
+    files]. The file *combi.lis* created by :doc:`x2sys_get` **-L** option
 
 .. _-C:
 

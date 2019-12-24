@@ -39,7 +39,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"filter1d"
+#define THIS_MODULE_CLASSIC_NAME	"filter1d"
+#define THIS_MODULE_MODERN_NAME	"filter1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Time domain filtering of 1-D data tables"
 #define THIS_MODULE_KEYS	"<D{,>D},FD(1"
@@ -178,7 +179,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E] [-I<ignore_val>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[<unit>][+e|n|a]]\n");
@@ -385,7 +386,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	if (Ctrl->T.active)	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND, Ctrl->N.col);
-	if (Ctrl->N.spatial) Ctrl->T.T.spatial = Ctrl->N.spatial;	/* Obsolete -N settings propagated to -T */
+	if (Ctrl->N.spatial) {	/* Obsolete -N settings propagated to -T */
+		Ctrl->T.T.spatial = Ctrl->N.spatial;
+		Ctrl->T.T.unit = Ctrl->N.unit;
+		Ctrl->T.T.distmode = Ctrl->N.mode;
+	}
 	if (Ctrl->N.add_col) Ctrl->T.T.add = true;	/* Obsolete -N+a settings propagated to -T */
 	
 	/* Check arguments */
@@ -865,7 +870,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
@@ -894,7 +899,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.spatial) {	/* Must add extra column to store distances and then compute them */
 		Ctrl->N.col = (int)D->n_columns;
 		gmt_adjust_dataset (GMT, D, D->n_columns + 1);
-		gmt_init_distaz (GMT, Ctrl->N.unit, Ctrl->N.mode, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, Ctrl->T.T.unit, Ctrl->T.T.distmode, GMT_MAP_DIST);
 		for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 			for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 				S = D->table[tbl]->segment[seg];

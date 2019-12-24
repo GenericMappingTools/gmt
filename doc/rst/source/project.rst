@@ -1,12 +1,11 @@
 .. index:: ! project
+.. include:: module_core_purpose.rst_
 
 *******
 project
 *******
 
-.. only:: not man
-
-    project - Project data onto lines or great circles, generate tracks, or translate coordinates
+|project_purpose|
 
 Synopsis
 --------
@@ -201,7 +200,7 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*. 
 
-**-Z**\ *major*/*minor*/*azimuth*\ [**+e**\ ] ]
+**-Z**\ *major*/*minor*/*azimuth*\ [**+e**\ ]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
     with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
@@ -324,7 +323,7 @@ to make a file of flowlines in the hotspot reference frame. If you run:
 
    ::
 
-    gmt grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd -Retc -Ietc -Cflow.nc
+    gmt grd2xyz pacific_topo.nc | gmt project -T-75/68 -C0/-90 -Fxyq | gmt xyz2grd -Retc -Ietc -Cflow.nc
 
 then flow.nc is a file in the same area as pacific_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use

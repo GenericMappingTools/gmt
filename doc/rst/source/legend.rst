@@ -1,12 +1,11 @@
 .. index:: ! legend
+.. include:: module_core_purpose.rst_
 
 ********
 legend
 ********
 
-.. only:: not man
-
-    Plot legends on maps
+|legend_purpose|
 
 Synopsis
 --------

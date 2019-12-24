@@ -1,4 +1,4 @@
-.. _anim_06:
+.. _anim06:
 
 (6) Demonstrate aliasing by sampling a chirp
 --------------------------------------------
@@ -9,7 +9,7 @@ the signal by using a cubic spline on the sampled values.
 This works well for at the start but once we approach the
 Nyquist frequency it breaks down badly.
 
-.. literalinclude:: /_verbatim/anim_06.txt
+.. literalinclude:: /_verbatim/anim06.txt
    :language: bash
 
 
@@ -17,14 +17,14 @@ Nyquist frequency it breaks down badly.
 
 .. only:: html
 
-   .. image:: /_images/anim_06.png
+   .. image:: /_images/anim06.png
       :width: 0 px
 
 .. raw:: html
 
    <div class="figure align-center">
-     <video width="720" height="480" poster="../_images/anim_06.png" controls>
-       <source src="../_static/anim_06.mp4" type="video/mp4">
+     <video width="720" height="480" poster="../_images/anim06.png" controls>
+       <source src="../_static/anim06.mp4" type="video/mp4">
        Your browser does not support the video tag.
      </video>
      <p class="caption">Demonstrate aliasing by sampling a chirp.</p>

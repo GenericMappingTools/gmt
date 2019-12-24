@@ -68,7 +68,7 @@
 	For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
 	The diameter is excepted to be given in column 4.  Alternatively, append
 	the desired diameter to **-SE-** and this fixed diameter is used instead.
-	For allowable geographical units, see UNITS [Default is k for km].
+	For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront.  Supply distance gap between symbols and symbol size. If *gap* is
@@ -113,7 +113,7 @@
 	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
 	An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
-	For allowable geographical units, see UNITS [Default is k for km].
+	For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sk**
         **k**\ ustom symbol. Append <name>/*size*, and we will look for a
@@ -138,7 +138,7 @@
         is set by **-W**, with vector head outlines defaulting to half of arc width.
 	The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
-        in columns 4-6. See :ref:`Vec_attributes` for specifying attributes.
+        in columns 4-6. See `Vector Attributes`_ for specifying attributes.
 
     **-SM**
         Same as **-Sm** but switches to straight angle symbol if angles subtend
@@ -354,7 +354,7 @@
         if not specified on the command-line, should be  present in column 6.
         The *size* is the length of the vector head. Vector width is set by **-W**,
 	with head outline pen width defaulting to half of stem pen width.
-        See :ref:`Vec_attributes` for specifying attributes. But also be aware
+        See `Vector Attributes`_ for specifying attributes. But also be aware
         that using color via a CPT implies a shift of columns 4 and on to accommodate
         the color fill determined by the z-value in new 4rd column (See **-C** option).
 
@@ -362,7 +362,7 @@
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
-        unchanged.) See :ref:`Vec_attributes` for specifying attributes.
+        unchanged.) See `Vector Attributes`_ for specifying attributes.
 
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
@@ -379,7 +379,7 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged). Specify *size* as a geographical diameter.
-        For allowable geographical units, see UNITS [Default is k for km]. To instead
+        For allowable geographical units, see `Units`_ [Default is k for km]. To instead
         specify a diameter in plot units, you must append the desired unit.
         Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
@@ -397,10 +397,10 @@
     **-S=**
         geovector. Azimuth (in degrees east from north) and length (in km)
         must be found in columns 4 and 5. The *size* is the length of the
-        vector head. Vector width is set by **-W**. See :ref:`Vec_attributes`
+        vector head. Vector width is set by **-W**. See `Vector Attributes`_
         for specifying attributes. Note: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
-        not available. For allowable geographical units, see UNITS.
+        not available. For allowable geographical units, see `Units`_.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append

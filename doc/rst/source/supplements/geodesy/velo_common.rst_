@@ -27,15 +27,16 @@ Required Arguments
 
 **-S**
 
-Selects the meaning of the columns in the data file and the figure to be plotted.
+Selects the meaning of the columns in the data file and the figure to be plotted.  In all
+cases, the scales are in data units per length unit and sizes are in length units (default length
+unit is controlled by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` unless **c**, **i**, or **p** is appended).
 
-    **-Se**\ *velscale/confidence/fontsize*.
+    **-Se**\ *velscale/confidence*\ [**+f**\ *font*]
 
         Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the
-        velocity arrows. This scaling gives inches (unless **c**, **i**,
-        or **p** is appended). *confidence* sets the 2-dimensional confidence
-        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *fontsize*
-        sets the size of the text in points. The ellipse will be filled with the
+        velocity arrows. The *confidence* sets the 2-dimensional confidence
+        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *font*
+        sets the font and size of the text [9p,Helvetica,black]. The ellipse will be filled with the
         color or shade specified by the |-G| option [default transparent]. The
         arrow and the circumference of the ellipse will be drawn with the pen
         attributes specified by the |-W| option. Parameters are expected to be
@@ -52,10 +53,9 @@ Selects the meaning of the columns in the data file and the figure to be plotted
             **8**:
             name of station (optional).
 
-    **-Sn**\ *barscale.*
+    **-Sn**\ *barscale*
 
-        Anisotropy bars. *barscale* sets the scaling of the bars. This scaling
-        gives inches (unless **c**, **i**, or **p** is appended).
+        Anisotropy bars. *barscale* sets the scaling of the bars.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -63,13 +63,12 @@ Selects the meaning of the columns in the data file and the figure to be plotted
             **3**,\ **4**:
             eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-    **-Sr**\ *velscale/confidence/fontsize*
+    **-Sr**\ *velscale/confidence*\ [**+f**\ *font*]
 
         Velocity ellipses in rotated convention. *velscale* sets the scaling of
-        the velocity arrows. This scaling gives inches (unless **c**, **i**,
-        or **p** is appended). *confidence* sets the 2-dimensional
+        the velocity arrows. The *confidence* sets the 2-dimensional
         confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-        *fontsize* sets the size of the text in points. The ellipse will be
+        *font* sets the font and size of the text [9p,Helvetica,black]. The ellipse will be
         filled with the color or shade specified by the |-G| option [default
         transparent]. The arrow and the circumference of the ellipse will be
         drawn with the pen attributes specified by the |-W| option. Parameters
@@ -86,10 +85,9 @@ Selects the meaning of the columns in the data file and the figure to be plotted
             **8**:
             name of station (optional)
 
-    **-Sw**\ *wedgescale/wedgemag*.
+    **-Sw**\ *wedgescale/wedgemag*
 
-        Rotational wedges. *wedgescale* sets the size of the wedges in inches
-        (unless **c**, **i**, or **p** is appended). Values are
+        Rotational wedges. *wedgescale* sets the size of the wedges. Values are
         multiplied by *wedgemag* before plotting. For example, setting
         *wedgemag* to 1.e7 works well for rotations of the order of 100
         nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
@@ -105,8 +103,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
     **-Sx**\ *cross_scale*
 
-        gives Strain crosses. *cross_scale* sets the size of the cross in
-        inches (unless **c**, **i**, or **p** is appended). Parameters
+        gives Strain crosses. *cross_scale* sets the size of the cross. Parameters
         are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -140,26 +137,15 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *fill*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
     **-E** is not specified, the uncertainty regions will be transparent.]
 
-.. _-F:
-
-**-F**\ *fill*
-    Sets the color or shade used for frame and annotation. [Default is black]
-
 .. _-G:
 
-**-G**\ *fill*
-    Specify color (for symbols/polygons) or pattern (for polygons)
-    [Default is black]. Optionally, specify
-    **-Gp**\ *icon\_size/pattern*, where *pattern* gives the number of
-    the image pattern (1-90) OR the name of a icon-format file.
-    *icon\_size* sets the unit size in inches. To invert black and white
-    pixels, use **-GP** instead of **-Gp**. See the CookBook for
-    information on individual patterns.
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+    Select color or pattern for filling of symbols or polygons [Default is no fill].
 
 .. _-L:
 

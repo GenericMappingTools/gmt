@@ -1,12 +1,11 @@
 .. index:: ! grdfill
+.. include:: module_core_purpose.rst_
 
 *******
 grdfill
 *******
 
-.. only:: not man
-
-    Interpolate across holes in a grid
+|grdfill_purpose|
 
 Synopsis
 --------
@@ -42,8 +41,8 @@ Required Arguments
 
 **-A**\ *mode*\ [*arg*]
     Specify the hole-filling algorithm to use.  Choose from **c** for constant
-    fill and append the constant value, **n** for nearest neighbor and optionally
-    append a search radius in pixels, or **s** for bicubic spline [NOT IMPLEMENTED YET].
+    fill (and append the constant value), **n** for nearest neighbor (and optionally
+    append a search radius in *pixels*), or **s** for minimum curvature splines.
 
 .. _-G:
 

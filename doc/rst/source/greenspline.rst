@@ -1,12 +1,11 @@
 .. index:: ! greenspline
+.. include:: module_core_purpose.rst_
 
 ***********
 greenspline
 ***********
 
-.. only:: not man
-
-    Interpolate using Green's functions for splines in 1-3 dimensions
+|greenspline_purpose|
 
 Synopsis
 --------
@@ -130,8 +129,7 @@ Optional Arguments
 
 .. _-E:
 
-**E**\ [*misfitfile*]
-
+**-E**\ [*misfitfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
@@ -363,7 +361,7 @@ assuming the data are in the remote file mag_obs_1990.txt, try
 
    ::
 
-    gmt reenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
 
 To do the same problem but applying tension of 0.85, use
 

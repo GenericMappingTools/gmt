@@ -1,12 +1,11 @@
 .. index:: ! x2sys_put
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 x2sys_put
 *********
 
-.. only:: not man
-
-    x2sys_put - Update track index database from track bin file
+|x2sys_put_purpose|
 
 Synopsis
 --------

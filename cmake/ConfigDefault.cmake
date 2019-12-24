@@ -45,15 +45,15 @@ set (GMT_VERSION_CITATION "Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe,
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
-set (GMT_PACKAGE_VERSION_MINOR 0)
+set (GMT_PACKAGE_VERSION_MINOR 1)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
-#set (GMT_PACKAGE_VERSION_SUFFIX "rc5")
+# set (GMT_PACKAGE_VERSION_SUFFIX "")
 
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
 # When making *public* release, uncomment to set it to TRUE.
-#set (GMT_PUBLIC_RELEASE TRUE)
+# set (GMT_PUBLIC_RELEASE TRUE)
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}${GMT_PACKAGE_VERSION_SUFFIX}")
@@ -67,7 +67,7 @@ set (GMT_LIB_SOVERSION 6)
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 # The GMT documentation URL
-set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}")
+set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/dev")
 
 # Use SI units per default
 if (NOT UNITS)
@@ -106,6 +106,13 @@ endif (NOT DEFINED LICENSE_RESTRICTED)
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
+
+# Default location of release manpages. If the directory exists in the source
+# tree, the files will be copied to GMT_MANDIR instead of creating manpages
+# from source:
+if (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
+	set (GMT_INSTALL_EXTERNAL_MAN ${GMT_SOURCE_DIR}/man_release)
+endif (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
 
 # Directory in which to install the release sources per default
 if (NOT DEFINED GMT_RELEASE_PREFIX)

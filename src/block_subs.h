@@ -87,6 +87,33 @@ struct BLOCK_CTRL {
 	} W;
 };
 
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
+	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
+	{ 0, 'A', "fields", "", "", "", "" },
+	{ 0, 'C', "center", "", "", "", "" },
+#if defined(BLOCKMODE)	/* Only blockmode has a -D option */
+	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
+#endif
+#if defined(BLOCKMEAN)
+	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
+#elif defined(BLOCKMODE)
+	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
+#else
+	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l,h", "lower,higher" },
+#endif
+	{ 0, 'G', "gridfile", "", "", "", "" },
+	{ '/', 'I', "increment", "", "", "e,n", "exact,number" },
+#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
+	{ 0, 'Q', "quicker", "", "", "", "" },
+#endif
+	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
+#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
+	{ 0, 'T', "quantile", "", "", "", "" },
+#endif
+	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
+};
+
 #if 0
 enum GMT_grdval_blks {	/* mode for selected item for gridding */
 	BLK_ITEM_MEAN = 0,

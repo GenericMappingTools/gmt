@@ -1,12 +1,11 @@
 .. index:: ! grdhisteq
+.. include:: module_core_purpose.rst_
 
 *********
 grdhisteq
 *********
 
-.. only:: not man
-
-    Perform histogram equalization for a grid
+|grdhisteq_purpose|
 
 Synopsis
 --------
@@ -73,7 +72,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**
+**-D**\ [*file*]
     Dump level information to *file*, or standard output if no file is provided.
 
 .. _-G:

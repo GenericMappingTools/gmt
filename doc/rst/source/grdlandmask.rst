@@ -1,12 +1,11 @@
 .. index:: ! grdlandmask
+.. include:: module_core_purpose.rst_
 
 ***********
 grdlandmask
 ***********
 
-.. only:: not man
-
-    grdlandmask - Create a "wet-dry" mask grid from shoreline data base
+|grdlandmask_purpose|
 
 Synopsis
 --------
@@ -42,7 +41,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*]
+**-G**\ *mask_grd_file*
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
 .. _-I:
@@ -133,8 +132,6 @@ neighbor interpolation for such cases.
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do
 
@@ -149,7 +146,7 @@ nodes based on the low resolution data:
 
     gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
  
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 See Also
 --------

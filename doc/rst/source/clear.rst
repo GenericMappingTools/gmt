@@ -1,19 +1,18 @@
 .. index:: ! clear
+.. include:: module_core_purpose.rst_
 
 *****
 clear
 *****
 
-.. only:: not man
-
-    Delete current defaults, or the cache, data or sessions directories
+|clear_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** [ **all** \| **cache** \| **defaults** \| **data** \| **sessions** ]
+**gmt clear** **all** \| **cache** \| **data** \| **sessions** \| **settings**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -32,11 +31,6 @@ Optional Arguments
 **all**
     Deletes all the items under the control of the individual targets.
 
-.. _clear-defaults:
-
-**defaults**
-    Delete the current defaults (gmt.conf) file used for the current modern session.
-
 .. _clear-cache:
 
 **cache**
@@ -52,6 +46,11 @@ Optional Arguments
 **sessions**
     Delete the user's sessions directory.
 
+.. _clear-settings:
+
+**settings**
+    Delete the current default settings file (gmt.conf) used for the current modern session.
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -62,11 +61,9 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To remove the current default settings in a modern mode session, use::
 
-    gmt clear defaults
+    gmt clear settings
 
 To completely wipe your GMT cache directory, try::
 

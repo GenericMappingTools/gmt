@@ -649,12 +649,12 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		if (s2alphan > 1.0) bigisotestv2 += 1;
 	}
 
-	if (bigisotestv0 == 0 && bigisotestv2 != 0) {
+	if (bigisotestv0 == 0) {
 		d = 0;
 		m = 2;
 		F1 = C;
 		F2 = E;
-	} else if (bigisotestv2 == 0 && bigisotestv0 != 0) {
+	} else if (bigisotestv2 == 0) {
 		d = 2;
 		m = 0;
 		F1 = E;

@@ -1,12 +1,11 @@
 .. index:: ! x2sys_init
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 x2sys_init
 **********
 
-.. only:: not man
-
-    x2sys_init - Initialize a new x2sys track database
+|x2sys_init_purpose|
 
 Synopsis
 --------
@@ -155,8 +154,7 @@ reading native binary files). Not used with netCDF files.
 periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
 
 **MULTISEG** means each track consists of multiple segments separated by
-a GMT segment header (alternatively, use **-m** when defining the
-system TAG). Not used with netCDF files.
+a GMT segment header. Not used with netCDF files.
 
 The column information consists of one line per column in the order the
 columns appear in the data file. For each column you must provide seven
@@ -290,7 +288,7 @@ to find it.
     and **-N** will default to great circle distance calculation in km
     and speed in m/s. There are also format definition files for plain x,y[,z]
     and lon,lat[,z] tracks. To initiate new track databases to be used
-    with MGD77 data from NGDC, try
+    with MGD77 data from NCEI, try
 
       ::
 

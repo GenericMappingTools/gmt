@@ -1,24 +1,23 @@
 .. index:: ! mgd77track
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 mgd77track
 **********
 
-.. only:: not man
-
-    Plot track-line map of MGD77 cruises
+|mgd77track_purpose|
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77track** *NGDC-ids*
+**gmt mgd77track** *GEODAS-ids*
 |SYN_OPT-R|
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
 [ |SYN_OPT-B| ]
-[ **-Da**\ *startdate* ] 
+[ **-Da**\ *startdate* ]
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]

@@ -1,12 +1,11 @@
 .. index:: ! blockmode
+.. include:: module_core_purpose.rst_
 
 *********
 blockmode
 *********
 
-.. only:: not man
-
-    Block average (*x*,\ *y*,\ *z*) data tables by mode estimation
+|blockmode_purpose|
 
 Synopsis
 --------
@@ -24,6 +23,7 @@ Synopsis
 [ |-Q| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -51,7 +51,7 @@ or **blockmode** should be used as a pre-processor before running
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
 :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file, or you may
-choose binary input and/or output to avoid loss of precision. 
+choose binary input and/or output to avoid loss of precision.
 
 Required Arguments
 ------------------
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
+**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h**]
     Perform unweighted mode calculation via histogram binning, using the
     specified histogram *width*. Append **+c** to center bins so that
     their mid point is a multiple of *width* [uncentered].
@@ -132,7 +132,7 @@ Optional Arguments
 
 **-Q**
     (Quicker) Finds mode *z* and mean (*x*,\ *y*) [Default finds mode
-    *x*, mode *y*, mode *z*]. 
+    *x*, mode *y*, mode *z*].
 
 .. _-V:
 
@@ -147,9 +147,11 @@ Optional Arguments
     Weights can be used in input to construct weighted modal values for each
     block. Weight sums can be reported in output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, and **-Wo** for weighted output only. [Default uses unweighted i/o]. 
+    input only, and **-Wo** for weighted output only. [Default uses unweighted i/o].
     If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
@@ -172,7 +174,7 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 .. include:: explain_-ocols.rst_
 
-.. |Add_nodereg| replace:: 
+.. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
     **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
     (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
@@ -186,26 +188,18 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To find 5 by 5 minute block mode from the ASCII data in ship_15.txt
-and output a binary table with double precision triplets, run
-
-   ::
+and output a binary table with double precision triplets, run::
 
     gmt blockmedian @ship_15.txt -R245/255/20/30 -I5m -bo3d > ship_5x5.b
 
 To determine the most frequently occurring values per 2x2 block using histogram binning, with
-data representing integer counts, try
-
-   ::
+data representing integer counts, try::
 
     gmt blockmode @ship_15.txt -R245/255/20/30 -I2  -r -C -D
 
 To determine the mode and L1 scale (MAD) on the mode per 10 minute bin and save these to two separate grids
-called field_z.nc and field_s.nc, run
-
-   ::
+called field_z.nc and field_s.nc, run::
 
     gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 

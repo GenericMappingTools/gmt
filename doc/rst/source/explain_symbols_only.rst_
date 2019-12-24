@@ -113,7 +113,7 @@
         columns 3 and 4.  Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
- 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
@@ -121,13 +121,11 @@
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged). Specify *size* as a geographical diameter.
-        For allowable geographical units, see UNITS [Default is k for km]. To instead
-        specify a diameter in plot units, you must append the desired unit.
+        directions unchanged).
         Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
- 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 

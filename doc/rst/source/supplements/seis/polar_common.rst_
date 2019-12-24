@@ -73,19 +73,19 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *color*
+**-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of symbols for stations in extensive quadrants. Set
-    the color [Default is 250]. If **-E**\ *color* is the same as
-    **-F**\ *color*, use **-Qe** to outline.
+    the color [Default is 250]. If **-E**\ *fill* is the same as
+    **-F**\ *fill*, use **-Qe** to outline.
 
 .. _-F:
 
-**-F**\ *color*
+**-F**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets background color of the beach ball. Default is no fill.
 
 .. _-G:
 
-**-G**\ *color*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of symbols for stations in compressional quadrants.
     Set the color [Default is black].
 

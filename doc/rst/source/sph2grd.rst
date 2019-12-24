@@ -1,12 +1,11 @@
 .. index:: ! sph2grd
+.. include:: module_core_purpose.rst_
 
 *******
 sph2grd
 *******
 
-.. only:: not man
-
-    Compute grid from spherical harmonic coefficients
+|sph2grd_purpose|
 
 Synopsis
 --------
@@ -124,8 +123,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To create a 1 x 1 degree global grid file from the ASCII
 coefficients in the remote file EGM96_to_360.txt, use

@@ -43,13 +43,16 @@ struct GMT_MATH_MACRO {
 	char **arg;	/* List of those commands */
 };
 
-#ifdef USE_GMT_KWD
-/*! Definition of GMT_KW_DICT used to expand keyword-value pairs to GMT options */
-struct GMT_KW_DICT {	/* Used for keyword-value lookup */
-	char code;	/* Single character GMT option code */
-	char name[31];	/* Name of corresponding keyword */
+/*! Definition of GMT_KEYWORD_DICTIONARY used to expand keyword-value pairs to GMT options */
+struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
+	char separator;			/* Single character separating 2 or more identical specifications [0 for no repeat] */
+	char short_option;		/* Single character GMT option code */
+	char long_option[31];		/* Name of corresponding long option */
+	char short_directives[32];	/* Single character directives, comma-separated */
+	char long_directives[256];	/* Long name directives, comma-separated */
+	char short_modifiers[32];	/* Single character modifiers, comma-separated */
+	char long_modifiers[256];	/* Long name modifiers, comma-separated */
 };
-#endif
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
 struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
@@ -393,7 +396,7 @@ struct GMT_SESSION {
 	char unit_name[4][GMT_LEN8];	/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
-	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
+	unsigned int n_shorthands;			/* Length of array with shorthand information */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid read header functions */
 	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid update header functions */

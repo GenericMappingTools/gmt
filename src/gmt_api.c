@@ -22,7 +22,7 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 67 documented functions.  For a full
+ * The API presently consists of 68 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
@@ -39,38 +39,39 @@
  * GMT_Message		      : Report an message given a verbosity level
  * GMT_Report		      : Report an error given an error code
  *
- * There are 30 further public functions used for GMT i/o activities:
+ * There are 31 further public functions used for GMT i/o activities:
  *
- * GMT_Alloc_Segment      : Allocate a single DATASET segment
- * GMT_Begin_IO	          : Allow i/o to take place for rec-by-rec operations
- * GMT_Convert_Data       : Convert between different data sets, if possible
- * GMT_Create_Data        : Return an empty container for a new data set
- * GMT_Destroy_Data       : Destroy a data set and its container
- * GMT_Duplicate_Data     : Make an exact duplicate of a dataset
- * GMT_Duplicate_String   : Allocates a copy of a string to be freed by API
- * GMT_End_IO             : Disallow further rec-by-rec i/o
- * GMT_Get_Info           : Get meta-data from the object passed
- * GMT_Get_Record         : Get the next single data record from the source(s)
- * GMT_Get_Row            : Read one row from a grid
- * GMT_Get_Status         : Exmine current status of record-by-record i/o
- * GMT_Get_Matrix         : Get user matrix from GMT_MATRIX array
- * GMT_Get_Vector         : Get user vector from GMT_VECTOR column
- * GMT_Put_Strings        : Get user strings from GMT_VECTOR or MATRIX container
- * GMT_Init_IO            : Initialize rec-by-rec i/o machinery before program use
- * GMT_Init_VirtualFile   : Reset a virtual file for reuse
- * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
- * GMT_Put_Record         : Send the next output record to its destination
- * GMT_Put_Row            : Write one row to a grid
- * GMT_Put_Matrix         : Hook user matrix to GMT_MATRIX array
- * GMT_Put_Vector         : Hook user vector to GMT_VECTOR column
- * GMT_Put_Strings        : Hook user strings to GMT_VECTOR or MATRIX container
- * GMT_Read_Data          : Load data into program memory from selected source
- * GMT_Read_Group         : Read numerous files into an array of objects
- * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
- * GMT_Register_IO        : Register a source (or destination) for i/o use
- * GMT_Set_Comment        : Update a comment for a data set
- * GMT_Write_Data         : Place data set from program memory to selected destination
- * GMT_Encode_Options     : Used by external APIs to fill out options from implicit rules
+ * GMT_Alloc_Segment       : Allocate a single DATASET segment
+ * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
+ * GMT_Convert_Data        : Convert between different data sets, if possible
+ * GMT_Create_Data         : Return an empty container for a new data set
+ * GMT_Destroy_Data        : Destroy a data set and its container
+ * GMT_Duplicate_Data      : Make an exact duplicate of a dataset
+ * GMT_Duplicate_String    : Allocates a copy of a string to be freed by API
+ * GMT_End_IO              : Disallow further rec-by-rec i/o
+ * GMT_Get_Info            : Get meta-data from the object passed
+ * GMT_Get_Record          : Get the next single data record from the source(s)
+ * GMT_Get_Row             : Read one row from a grid
+ * GMT_Get_Status          : Exmine current status of record-by-record i/o
+ * GMT_Get_Matrix          : Get user matrix from GMT_MATRIX array
+ * GMT_Get_Vector          : Get user vector from GMT_VECTOR column
+ * GMT_Put_Strings         : Get user strings from GMT_VECTOR or MATRIX container
+ * GMT_Init_IO             : Initialize rec-by-rec i/o machinery before program use
+ * GMT_Init_VirtualFile    : Reset a virtual file for reuse
+ * GMT_Inquire_VirtualFile : Determine family of a virtual file
+ * GMT_Open_VirtualFile    : Open a memory location for reading or writing by a module
+ * GMT_Put_Record          : Send the next output record to its destination
+ * GMT_Put_Row             : Write one row to a grid
+ * GMT_Put_Matrix          : Hook user matrix to GMT_MATRIX array
+ * GMT_Put_Vector          : Hook user vector to GMT_VECTOR column
+ * GMT_Put_Strings         : Hook user strings to GMT_VECTOR or MATRIX container
+ * GMT_Read_Data           : Load data into program memory from selected source
+ * GMT_Read_Group          : Read numerous files into an array of objects
+ * GMT_Read_VirtualFile    : Obtain the memory resource that a module wrote to.
+ * GMT_Register_IO         : Register a source (or destination) for i/o use
+ * GMT_Set_Comment         : Update a comment for a data set
+ * GMT_Write_Data          : Place data set from program memory to selected destination
+ * GMT_Encode_Options      : Used by external APIs to fill out options from implicit rules
 
  * The above 29 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
@@ -83,7 +84,7 @@
  *
  * GMT_Get_Common	      : Checks for and returns values for GMT common options
  * GMT_Get_Default	      : Return the value of a GMT parameter as a string
- * GMT_Get_Enum	          : Return the integer constant of a GMT API enum.
+ * GMT_Get_Enum               : Return the integer constant of a GMT API enum.
  * GMT_Get_Values	      : Convert string to one or more coordinates or dimensions
  * GMT_Set_Default	      : Set a GMT parameter via a strings
  * GMT_Option		      : Display syntax for one or more GMT common options
@@ -97,26 +98,26 @@
  * GMT_Get_Coord	      : Return array of coordinates for one dimension
  * GMT_Get_Index	      : Return 1-D grid index given row, col
  * GMT_Get_Pixel	      : Return 1-D image index given row, col, layer
- * GMT_Set_Columns        : Specify number of output columns for rec-by-rec writing
+ * GMT_Set_Columns            : Specify number of output columns for rec-by-rec writing
  *
  * For FFT operations there are 8 additional API functions:
  *
- * GMT_FFT		          : Call the forward or inverse FFT
+ * GMT_FFT                    : Call the forward or inverse FFT
  * GMT_FFT_1D		      : Lower-level 1-D FFT call
  * GMT_FFT_2D		      : Lower-level 2-D FFT call
  * GMT_FFT_Create	      : Initialize the FFT machinery for given dimension
  * GMT_FFT_Destroy	      : Destroy FFT machinery
  * GMT_FFT_Option	      : Display the syntax of the GMT FFT option settings
  * GMT_FFT_Parse	      : Parse the GMT FFT option
- * GMT_FFT_Wavenumber	  : Return selected wavenumber given its type
+ * GMT_FFT_Wavenumber         : Return selected wavenumber given its type
  *
  * There are also 13 functions for argument and option parsing.  See gmt_parse.c for these.
  *
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *
- * gmt_f77_readgrdinfo_	  : Read the header of a GMT grid
- * gmt_f77_readgrd_		  : Read a GMT grid from file
- * gmt_f77_writegrd_	  : Write a GMT grid to file
+ * gmt_f77_readgrdinfo_   : Read the header of a GMT grid
+ * gmt_f77_readgrd_       : Read a GMT grid from file
+ * gmt_f77_writegrd_      : Write a GMT grid to file
  *
  * --------------------------------------------------------------------------------------------
  * Guru notes on memory management: Paul Wessel, June 2013.
@@ -676,7 +677,8 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
-	GMT_Destroy_Options (API, &head);	/* Done with these here */
+	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
 }
 
 /* Function to get PPID under Windows is a bit different */
@@ -4001,6 +4003,9 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 #endif
 	}
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
+	if (API->GMT->common.o.end || GMT->common.o.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+		gmtlib_reparse_o_option (GMT, (GMT->common.o.text) ? 0 : D_obj->n_columns);
+
 	DH = gmt_get_DD_hidden (D_obj);
 	DH->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
 	method = api_set_method (S_obj);	/* Get the actual method to use */
@@ -6947,6 +6952,27 @@ void *GMT_Read_VirtualFile_ (char *string, int len) {
 }
 #endif
 
+int GMT_Inquire_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, retrieve the family of the resulting object */
+	int object_ID, item;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	if ((item = gmtapi_validate_id (V_API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	API = api_get_api_ptr (V_API);
+	return API->object[item]->family;
+}
+
+#ifdef FORTRAN_API
+int *GMT_Inquire_VirtualFile_ (char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Inquire_VirtualFile (GMT_FORTRAN, string));
+}
+#endif
+
  /*! . */
 int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 	/* Reset a virtual file back to its original configuration so that it can be
@@ -7101,6 +7127,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
 				}
@@ -7549,7 +7576,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	struct GMT_RECORD *record;
 	
 	if (S->rec >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
-		S->status = GMT_IS_USED;	/* Mark as finished reading this guy */
+		S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 		if (api_next_data_object (API, S->family, GMT_IN) == EOF) {	/* That was the last source, return */
 			*n_fields = EOF;				/* EOF is ONLY returned when we reach the end of the LAST data file */
 			GMT->current.io.status = GMT_IO_EOF;
@@ -7604,7 +7631,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	uint64_t col;
 	
 	if (S->rec == S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
-		S->status = GMT_IS_USED;	/* Mark as read */
+		S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 		if (api_next_data_object (API, S->family, GMT_IN) == EOF) {	/* That was the last source, return */
 			*n_fields = EOF;				/* EOF is ONLY returned when we reach the end of the LAST data file */
 			GMT->current.io.status = GMT_IO_EOF;
@@ -7693,7 +7720,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 			*n_fields = GMT_IO_NEXT_FILE;
 			break;
 		case GMT_IO_EOF:	/* End of entire data set */
-			S->status = GMT_IS_USED;	/* Mark this dataset as finished */
+			S->status = (API->allow_reuse) ? GMT_IS_UNUSED : GMT_IS_USED;	/* Mark as finished reading this guy unless we may reuse */
 			record = NULL;	/* No more to return anyway */
 			*n_fields = EOF;
 			break;
@@ -8077,6 +8104,8 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			API->api_put_record = api_put_record_fp;
 			API->current_fp = S_obj->fp;
 			API->current_put_n_columns = S_obj->n_columns;
+			if (API->GMT->common.o.end || API->GMT->common.o.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+				gmtlib_reparse_o_option (API->GMT, (API->GMT->common.o.text) ? 0 : S_obj->n_columns);
 			error = api_put_record_fp (API, mode, record);
 			break;
 
@@ -10036,7 +10065,8 @@ GMT_LOCAL void *api_get_module_func (struct GMTAPI_CTRL *API, const char *module
 int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	/* Call the specified shared module and pass it the mode and args.
  	 * mode can be one of the following:
-	 * GMT_MODULE_LIST [-4]:	As GMT_MODULE_PURPOSE, but only lists the modules.
+	 * GMT_MODULE_CLASSIC [-5]:	As GMT_MODULE_PURPOSE, but only lists the classic modules.
+	 * GMT_MODULE_LIST [-4]:	As GMT_MODULE_PURPOSE, but only lists the modern modules.
 	 * GMT_MODULE_EXIST [-3]:	Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
 	 * GMT_MODULE_PURPOSE [-2]:	As GMT_MODULE_EXIST, but also print the module purpose.
 	 * GMT_MODULE_OPT [-1]:		Args is a linked list of option structures.
@@ -10046,23 +10076,23 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	int status = GMT_NOERROR;
 	unsigned int lib;
 	struct GMTAPI_CTRL *API = NULL;
-	char gmt_module[GMT_LEN32] = "GMT_";
+	char gmt_module[GMT_LEN64] = "GMT_";
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (module == NULL && !(mode == GMT_MODULE_LIST || mode == GMT_MODULE_PURPOSE))
+	if (module == NULL && !(mode == GMT_MODULE_LIST || mode == GMT_MODULE_CLASSIC || mode == GMT_MODULE_PURPOSE))
 		return_error (V_API, GMT_ARG_IS_NULL);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form name of gmt_<lib>_module_show|list_all function */
-		char *listfunc = (mode == GMT_MODULE_LIST) ? "list" : "show";
+		char *listfunc = (mode == GMT_MODULE_LIST) ? "list" : ( (mode == GMT_MODULE_CLASSIC) ? "classic" : "show");
 		void (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show|list_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {
-			snprintf (gmt_module, GMT_LEN32, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
+			snprintf (gmt_module, GMT_LEN64, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
 			*(void **) (&l_func) = api_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
 			(*l_func) (V_API);	/* Run this function */
@@ -10072,7 +10102,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 
 	/* Here we call a named module */
 
-	strncat (gmt_module, module, GMT_LEN32-5);		/* Concatenate GMT_-prefix and module name to get function name */
+	strncat (gmt_module, module, GMT_LEN64-5);		/* Concatenate GMT_-prefix and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
 		*(void **) (&p_func) = api_get_module_func (API, gmt_module, lib);
 		if (p_func) break;	/* Found it in this shared library */
@@ -10080,8 +10110,8 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
 		status = GMT_NOT_A_VALID_MODULE;	/* Most likely, but we will try again: */
 		if (strncasecmp (module, "gmt", 3)) {	/* For any module not already starting with "gmt..." */
-			char gmt_module[GMT_LEN32] = "gmt";
-			strncat (gmt_module, module, GMT_LEN32-4);	/* Prepend "gmt" to module and try again */
+			char gmt_module[GMT_LEN64] = "gmt";
+			strncat (gmt_module, module, GMT_LEN64-4);	/* Prepend "gmt" to module and try again */
 			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix this time */
 		}
 	}
@@ -10377,7 +10407,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN256] = {""}, type = 0;
-	char *module = NULL, argument[GMT_LEN256] = {""}, strip_colon_opt = 0;
+	char module[GMT_LEN32] = {""}, argument[GMT_LEN256] = {""}, strip_colon_opt = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
@@ -10392,18 +10422,16 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		*n = UINT_MAX;
 		return NULL;
 	}
-	module = calloc (strlen (module_name) + 4, sizeof(char));	/* Allow space for any "gmt" prefix added to module in api_get_module_keys */
-	strcpy (module, module_name);			/* This string can grow by 3 if need be */
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	(void) gmt_current_name (module_name, module);
+	gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* Detect and set modern mode if modern mode session dir is found */
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = api_get_module_keys (V_API, module)) == NULL) {	/* Gave an unknown module */
 		if (GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL))	/* List the available modules */
 			return_null (NULL, GMT_NOT_A_VALID_MODULE);
-		gmt_M_str_free (module);
 		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module code */
 	}
-
-	API = api_get_api_ptr (V_API);
-	API->error = GMT_NOERROR;
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 
@@ -10550,7 +10578,6 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 		}
 	}
-	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
 	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -11082,6 +11109,8 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
+	const char *module_name;
+	char not_used[GMT_LEN32];
 	FILE *err = stderr;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -11103,7 +11132,12 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 			source_info_len = strlen (API->message);	/* Update length of message from 0 */
 		}
 	}
-	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
+	if (GMT && GMT->init.module_name)
+		module_name = ((GMT->current.setting.run_mode == GMT_MODERN)) ? gmt_current_name (GMT->init.module_name, not_used) : GMT->init.module_name;
+	else
+		module_name = API->session_tag;
+
+	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", module_name, GMT_class[level]);
 	source_info_len = strlen (API->message);
 	va_start (args, format);
 	/* append format to the message: */
@@ -11231,7 +11265,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	gmt_M_memcpy (col_set_save[GMT_IN],   GMT->current.io.col_set[GMT_IN],    2, char);
 	gmt_M_memcpy (col_set_save[GMT_OUT],  GMT->current.io.col_set[GMT_OUT],   2, char);
 
-	while (gmt_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
+	while (gmt_strtok (arg, separators, &pos, p)) {	/* Loop over input arguments */
 		if ((len = strlen (p)) == 0) continue;
 		if (npar >= maxpar) {	/* Bail out when already maxpar values are stored */
 			gmtapi_report_error (API, GMT_DIM_TOO_LARGE);

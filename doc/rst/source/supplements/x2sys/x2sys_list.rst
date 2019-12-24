@@ -1,12 +1,11 @@
 .. index:: ! x2sys_list
+.. include:: ../module_supplements_purpose.rst_
 
 **********
 x2sys_list
 **********
 
-.. only:: not man
-
-    x2sys_list - Extract subset from crossover data base
+|x2sys_list_purpose|
 
 Synopsis
 --------
@@ -70,7 +69,7 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Enhance ASCII output by writing GMT segment headers with name of the
+    Enhance ASCII output by writing GMT segment headers with names of the
     two tracks and their total number of cross-overs [no segment headers].
 
 .. _-F:

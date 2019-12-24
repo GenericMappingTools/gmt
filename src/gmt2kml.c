@@ -28,9 +28,10 @@
 #include "gmt_dev.h"
 #include <stdarg.h>
 
-#define THIS_MODULE_NAME	"gmt2kml"
+#define THIS_MODULE_CLASSIC_NAME	"gmt2kml"
+#define THIS_MODULE_MODERN_NAME	"gmt2kml"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
+#define THIS_MODULE_PURPOSE	"Convert GMT data table to Google Earth KML file"
 #define THIS_MODULE_KEYS	"<D{,>D},CC("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>KOVabdefghi" GMT_OPT("HMm")
@@ -200,7 +201,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
@@ -395,8 +396,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				k = 0;
 				if ((c = strstr (opt->arg, "+f"))) 	/* Polygon fill */
 					ind = F_ID, k = 0, c[0] = '\0';
-				else if ((c = strstr (opt->arg, "+n")))	/* Label color */
+				else if ((c = strstr (opt->arg, "+n"))) {	/* Label color */
 					ind = N_ID, k = 0, c[0] = '\0';
+					if (opt->arg[0] == '\0')
+						Ctrl->N.mode = NO_LABEL;	/* Another way of turning off labels */
+				}
 				else if (gmt_M_compat_check (GMT, 5)) {	/* Old style -Gf or -Gn OK */
 					GMT_Report (API, GMT_MSG_COMPAT, "-Gf or -Gn is deprecated, use -G[<fill>][+f|n] instead\n");
 					if (opt->arg[0] == 'f')	/* Polygon fill */
@@ -855,7 +859,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1071,7 +1075,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
 				kml_print (API, Out, N++, "<Folder>");
-				if (label)
+				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
+				else if (label)
 					kml_print (API, Out, N, "<name>%s</name>", label);
 				else
 					kml_print (API, Out, N, "<name>%s Set %d</name>", name[Ctrl->F.mode], set_nr);

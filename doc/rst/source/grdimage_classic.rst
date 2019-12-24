@@ -1,12 +1,11 @@
 .. index:: ! grdimage
+.. include:: module_core_purpose.rst_
 
 ********
 grdimage
 ********
 
-.. only:: not man
-
-    Project grids or images and plot them on maps
+|grdimage_purpose|
 
 Synopsis
 --------
@@ -32,7 +31,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
-[ **-tr** ]
+[ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
 .. include:: grdimage_common.rst_

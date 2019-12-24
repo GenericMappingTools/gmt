@@ -138,8 +138,8 @@ Optional Arguments
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
     Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 3-4.
-    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either xmin, xmax, or x0, or
-    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
+    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
+    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
 
 .. _-N:
@@ -184,7 +184,7 @@ Optional Arguments
     use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
     Because **+v** may take additional modifiers it must necessarily be given
     at the end of the pen specification.
-    See the :ref:`Vec_attributes` for more information.
+    See the `Vector Attributes`_ for more information.
 
 .. _-X:
 
@@ -233,7 +233,5 @@ If no transparency is appended then we will read it from the last column per dat
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. _Vec_attributes:
 
 .. include:: explain_vectors.rst_

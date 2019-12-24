@@ -1,12 +1,11 @@
 .. index:: ! talwani3d
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 talwani3d
 *********
 
-.. only:: not man
-
-    talwani3d - Compute geopotential anomalies over 3-D bodies by the method of Talwani
+|talwani3d_purpose|
 
 Synopsis
 --------
@@ -116,7 +115,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *level*\ \|\ *obsgrid*
-    Set observation level, either as a constant or variable by giveing the name of a grid with observation
+    Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 

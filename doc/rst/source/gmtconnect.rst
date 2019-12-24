@@ -1,12 +1,11 @@
 .. index:: ! gmtconnect
+.. include:: module_core_purpose.rst_
 
 **********
 gmtconnect
 **********
 
-.. only:: not man
-
-    Connect individual lines whose end points match within tolerance
+|gmtconnect_purpose|
 
 Synopsis
 --------
@@ -103,7 +102,7 @@ Optional Arguments
 
 **-T**\ [*cutoff*\ [*unit*][**+s**\ *sdist*]]
     Specifies the separation tolerance in the data coordinate units [0]; for geographic data
-    append distance unit (see :ref:`Unit_attributes`). If two lines have end-points that
+    append distance unit (see `Units`_). If two lines have end-points that
     are closer than the *cutoff* they will be joined. Optionally, append
     /*sdist* which adds the extra requirement that a link will only be made
     if the *second* closest connection exceeds the *sdist* distance. The latter

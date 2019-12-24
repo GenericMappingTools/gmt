@@ -30,7 +30,8 @@
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
 
-#define THIS_MODULE_NAME	"x2sys_init"
+#define THIS_MODULE_CLASSIC_NAME	"x2sys_init"
+#define THIS_MODULE_MODERN_NAME	"x2sys_init"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Initialize a new x2sys track database"
 #define THIS_MODULE_KEYS	""
@@ -68,10 +69,6 @@ struct X2SYS_INIT_CTRL {
 		double inc[2];
 		char *string;
 	} I;
-	struct m {	/* -m */
-		bool active;
-		char *string;
-	} m;
 	struct N {	/* -N */
 		bool active[2];
 		char *string[2];
@@ -98,7 +95,6 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* 
 	gmt_M_str_free (C->E.string);
 	gmt_M_str_free (C->G.string);
 	gmt_M_str_free (C->I.string);
-	gmt_M_str_free (C->m.string);
 	gmt_M_str_free (C->N.string[0]);
 	gmt_M_str_free (C->N.string[1]);
 	gmt_M_str_free (C->W.string[0]);
@@ -112,10 +108,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	static char *par = "$X2SYS_HOME";
 #endif
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m] [%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n\n", par);
 
@@ -221,10 +217,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				}
 				Ctrl->I.string = strdup (opt->arg);
 				break;
-			case 'm':
-				Ctrl->m.active = true;
-				Ctrl->m.string = strdup (opt->arg);
-				break;
 			case 'N':	/* Distance and speed unit selection */
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
@@ -283,6 +275,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	time_t right_now;
 	char tag_file[PATH_MAX] = {""}, track_file[PATH_MAX] = {""}, bin_file[PATH_MAX] = {""}, def_file[PATH_MAX] = {""};
 	char path_file[PATH_MAX] = {""}, path[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
+	char *name = NULL;
 
 	int error = 0;
 
@@ -305,7 +298,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -433,16 +426,17 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
-        right_now = time ((time_t *)0);
+	name = gmt_putusername(NULL);
+	right_now = time ((time_t *)0);
 	fprintf (fp, "# TAG file for system: %s\n", Ctrl->In.TAG);
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
-	fprintf (fp, "# Initialized by: %s\n#\n", gmt_putusername(GMT));
+	fprintf (fp, "# Initialized by: %s\n#\n", name);
+	gmt_M_str_free (name);
 	fprintf (fp, "-D%s", &Ctrl->D.file[d_start]);	/* Now a local *.def file in the TAG directory */
 	if (GMT->common.j.active) fprintf (fp, " -j%s", GMT->common.j.string);
 	else if (Ctrl->C.active) fprintf (fp, " -j%s", Ctrl->C.string);
 	if (Ctrl->E.active) fprintf (fp, " -E%s", Ctrl->E.string);
 	if (Ctrl->G.active) fprintf (fp, " -G%s", Ctrl->G.string);
-	if (Ctrl->m.active) fprintf (fp, " -m%s", Ctrl->m.string);
 	if (Ctrl->N.active[0]) fprintf (fp, " -N%s", Ctrl->N.string[0]);
 	if (Ctrl->N.active[1]) fprintf (fp, " -N%s", Ctrl->N.string[1]);
 	if (Ctrl->W.active[0]) fprintf (fp, " -W%s", Ctrl->W.string[0]);

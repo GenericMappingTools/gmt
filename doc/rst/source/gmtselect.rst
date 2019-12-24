@@ -1,12 +1,11 @@
 .. index:: ! gmtselect
+.. include:: module_core_purpose.rst_
 
 *********
 gmtselect
 *********
 
-.. only:: not man
-
-    Select data table subsets based on multiple spatial criteria
+|gmtselect_purpose|
 
 Synopsis
 --------
@@ -77,7 +76,7 @@ Optional Arguments
     column of *pointfile* must have each point's individual radius of
     influence. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances and append a distance unit
-    (see :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then
+    (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
@@ -116,7 +115,7 @@ Optional Arguments
 
 **-G**\ *gridmask*
     Pass all locations that are inside the valid data area of the grid *gridmask*.
-	Nodes that are outside are either NaN or zero.
+    Nodes that are outside are either NaN or zero.
 
 .. _-I:
 
@@ -152,7 +151,7 @@ Optional Arguments
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
-    :ref:`Unit_attributes`). Alternatively, if **-R** and **-J** are used then geographic
+    `Units`_). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
@@ -318,8 +317,7 @@ origin.txt for a certain projection, try
 
    ::
 
-    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c \
-    --PROJ_LENGTH_UNIT=cm > subset2.txt
+    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
 
 To return all points in quakes.txt that are inside the grid topo.nc
 where the values are nonzero, try
@@ -336,7 +334,7 @@ and 5th column values are all negative, try
     gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
 
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 

@@ -1,12 +1,11 @@
 .. index:: ! inset
+.. include:: module_core_purpose.rst_
 
 *****
 inset
 *****
 
-.. only:: not man
-
-    Manage figure inset setup and completion
+|inset_purpose|
 
 The **inset** module is used to carve out a sub-region of the current plot canvas and
 restrict further plotting to that section of the canvas.  The inset setup is started with the **begin**
@@ -126,8 +125,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To make a simple basemap plot called inset.pdf that demonstrates the inset module, try
 

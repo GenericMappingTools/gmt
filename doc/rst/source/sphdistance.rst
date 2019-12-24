@@ -1,12 +1,11 @@
 .. index:: ! sphdistance
+.. include:: module_core_purpose.rst_
 
 ***********
 sphdistance
 ***********
 
-.. only:: not man
-
-    Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
+|sphdistance_purpose|
 
 Synopsis
 --------

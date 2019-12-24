@@ -26,9 +26,10 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"pslegend"
+#define THIS_MODULE_CLASSIC_NAME	"pslegend"
+#define THIS_MODULE_MODERN_NAME	"legend"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot legends on maps"
+#define THIS_MODULE_PURPOSE	"Plot a legend"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpt" GMT_OPT("c")
@@ -95,7 +96,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pslegend synopsis and optionally full usage information */
 
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<specfile>] -D%s[+w<width>[/<height>]][+l<spacing>]%s [%s]\n", name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [-F%s]\n", GMT_PANEL);
@@ -344,7 +345,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 }
 
 GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry, uint64_t n_segments, uint64_t n_rows, uint64_t n_cols, bool text) {
-	uint64_t dim[GMT_DIM_SIZE] = {1, n_segments, n_rows, n_cols};	/* We will a 1 or 2-row data set for up to n_segments segments; allocate just once */
+	uint64_t seg, dim[GMT_DIM_SIZE] = {1, n_segments, n_rows, n_cols};	/* We will a 1 or 2-row data set for up to n_segments segments; allocate just once */
 	unsigned int mode = (text) ? GMT_WITH_STRINGS : 0;
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -352,6 +353,10 @@ GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, stru
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for pslegend\n");
 		return (NULL);
 	}
+	/* Initialize counters to zero */
+	D->n_records = D->table[0]->n_records = 0;
+	for (seg = 0; seg < n_segments; seg++)
+		D->table[0]->segment[seg]->n_rows = 0;
 	return (D);
 }
 
@@ -490,7 +495,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1090,6 +1095,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X];
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							D[TXT]->n_records++;
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 							maybe_realloc_segment (GMT, S[TXT]);
@@ -1177,6 +1183,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = x_off;
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 							maybe_realloc_segment (GMT, S[TXT]);
 						}
@@ -1462,6 +1469,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Ellipse needs more arguments; we use minor = 0.65*major, az = 0 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = 0.0;
 									y = 0.65 * x;
 								}
@@ -1478,6 +1486,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rotated rectangle needs more arguments; we use height = 0.65*width, az = 30 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 									az1 = 30.0;
 								}
@@ -1534,6 +1543,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rectangle also need more args, we use h = 0.65*w */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 								}
 								S[SYM]->data[2][0] = x;
@@ -1548,6 +1558,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Rounded rectangle also need more args, we use h = 0.65*w and r = 0.1*w */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									y = 0.65 * x;
 									r = 0.1 * x;
 								}
@@ -1564,6 +1575,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {	/* Math angle need more args, we set fixed az1,az22 as 10 45 */
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = 10;	az2 = 45;
 								}
 								/* We want to center the arc around its mid-point */
@@ -1590,6 +1602,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								}
 								else {
 									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 									az1 = -30;	az2 = 30;
 								}
 								/* We want to center the wedge around its mid-point */
@@ -1602,6 +1615,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							}
 							else {
 								x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+								if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
 								S[SYM]->data[2][0] = x;
 							}
 							/* Place pen and fill colors in segment header */
@@ -1624,6 +1638,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[TXT]->data[GMT_X][krow[TXT]] = x_off + off_tt;
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
+							S[TXT]->n_rows++;
 							maybe_realloc_segment (GMT, S[TXT]);
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 						}
@@ -1654,6 +1669,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						/* Now processes paragraph text */
 						sscanf (&line[2], "%[^\n]", text);
 						S[PAR]->text[krow[PAR]++] = strdup (text);
+						S[PAR]->n_rows++;
+						maybe_realloc_segment (GMT, S[PAR]);
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", text);
 						flush_paragraph = true;
 						column_number = 0;
@@ -1810,6 +1827,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (D[PAR]) {
 		if (n_para >= 0) {	/* End of last paragraph for sure */
 			S[PAR]->n_rows = krow[PAR];
+			D[PAR]->table[0]->n_records += S[PAR]->n_rows;
+			D[PAR]->n_records = D[PAR]->table[0]->n_records;
 			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
 			

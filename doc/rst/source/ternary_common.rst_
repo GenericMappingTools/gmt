@@ -3,7 +3,7 @@
 Description
 -----------
 
-Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
+Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *table* [or standard input] and
 plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
 given, then we will interpret the fourth column of the input data
@@ -19,7 +19,7 @@ Either **-M** (for dumping data) or **-R** and **-J** must be selected.
 Optional Arguments
 ------------------
 
-.. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. _-B:
@@ -52,7 +52,7 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width* \[*unit*]
+**-JX**\ *width*\ [*unit*]
     The only valid projection is linear plot with specified ternary width.
 
 .. _-L:
@@ -105,8 +105,6 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
 
-.. include:: explain_-aspatial.rst_
-
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
 
@@ -132,7 +130,3 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_distunits.rst_
-
-.. include:: explain_vectors.rst_

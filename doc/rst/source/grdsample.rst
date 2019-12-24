@@ -1,12 +1,11 @@
 .. index:: ! grdsample
+.. include:: module_core_purpose.rst_
 
 *********
 grdsample
 *********
 
-.. only:: not man
-
-    grdsample - Resample a grid onto a new lattice
+|grdsample_purpose|
 
 Synopsis
 --------

@@ -1,12 +1,11 @@
 .. index:: ! x2sys_datalist
+.. include:: ../module_supplements_purpose.rst_
 
 ****************
 x2sys_datalist
 ****************
 
-.. only:: not man
-
-    x2sys_datalist - Extract content of track data files
+|x2sys_datalist_purpose|
 
 Synopsis
 --------
@@ -56,7 +55,7 @@ Optional Arguments
     files for each track and data column are called *track.column*.adj
     and are expected to be in the **$X2SYS_HOME**/*TAG* directory. The
     adjustments are only applied if the corresponding adjust file can be
-    found [No residual adjustments]
+    found [No residual adjustments].
 
 .. _-E:
 

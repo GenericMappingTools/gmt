@@ -5,8 +5,9 @@
 
 This example will illustrate how to make a fairly complicated composite
 figure. We need a subset of the ETOPO5 bathymetry [1]_ and Geosat geoid
-data sets which we will extract from the global data grids using
-:doc:`grdcut </grdcut>`. We would like to show a
+data sets which we have extracted from the global data grids using
+:doc:`grdcut </grdcut>` and access those files here as remote files
+on the GMT data server. We would like to show a
 2-layer perspective plot where layer one shows a contour map of the
 marine geoid with the location of the Hawaiian islands superposed, and a
 second layer showing the 3-D mesh plot of the topography. We also add an
@@ -44,4 +45,4 @@ have resulted in a much larger output file. The CPTs were taken
 from Example :ref:`example_02`.
 
 .. [1]
-   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
+   These data are available from NCEI (www.ncei.noaa.gov).

@@ -1,12 +1,11 @@
 .. index:: ! coast
+.. include:: module_core_purpose.rst_
 
 *****
 coast
 *****
 
-.. only:: not man
-
-    Plot continents, shorelines, rivers, and borders on maps
+|coast_purpose|
 
 Synopsis
 --------
@@ -17,18 +16,18 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
+[ |-C|\ *fill*\ [**+l**\ \|\ **+r**\ ] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]
-[ |-G|\ *fill*\ \|\ **c** ]
+[ |-G|\ [*fill*] ]
 [ |-I|\ *river*\ [/\ *pen*] ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]
 [ |-Q| ]
-[ |-S|\ *fill*\ \|\ **c** ]
+[ |-S|\ [*fill*] ]
 [ |-T|\ *rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -45,8 +44,6 @@ Synopsis
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 .. include:: oneliner_info.rst_
 
 To plot a green Africa with white outline on blue background, with
@@ -58,36 +55,28 @@ scale 0.1 inch/degree, use::
                 -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -pdf africa
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
-Mercator map at scale 1 cm/degree, run
-
-   ::
+Mercator map at scale 1 cm/degree, run::
 
     gmt coast -RIS+r1 -Jm1c -B -Wthin -Gp28+r100 -pdf iceland
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
-0.1 inch/degree, use
-
-   ::
+0.1 inch/degree, use::
 
     gmt begin
-      gmt coast -R-30/30/-40/40 -Jm0.1i -B -Gc
+      gmt coast -R-30/30/-40/40 -Jm0.1i -B -G
       gmt grdimage @earth_relief_05m
       gmt coast -Q
     gmt end show
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
-domain form the extents of these countries, use
-
-   ::
+domain from the extents of these countries, use::
 
     gmt coast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
 
 To extract a high-resolution coastline data table for Iceland to be used
-in your analysis, try
-
-   ::
+in your analysis, try::
 
     gmt coast -RIS -Dh -W -M > iceland.txt
 
@@ -98,7 +87,7 @@ any number of records that each holds the full pathname of an
 alternative directory. Comment lines (#) and blank lines are allowed.
 The desired file is then sought for in the alternate directories.
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: coast_notes.rst_
 

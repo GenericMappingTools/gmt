@@ -71,7 +71,8 @@ Optional Arguments
         col 2. The levels marked C (or c) are contoured, the levels marked A
         (or a) are contoured and annotated. Optionally, a third column may
         be present and contain the fixed annotation angle for this contour
-        level.
+        level. If so, an optional fourth column may be present and hold a
+	contour-specific pen.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
@@ -130,7 +131,7 @@ Optional Arguments
 **-Q**\ [*cut*\ [*unit*]][\ **+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
-    (see :ref:`Unit_attributes` for available units and how distances are computed),
+    (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
     length units in current plot units after projecting the coordinates.
     Optionally, append **z** to exclude the zero contour.

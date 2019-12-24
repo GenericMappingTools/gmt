@@ -1,12 +1,11 @@
 .. index:: ! end
+.. include:: module_core_purpose.rst_
 
 ***
 end
 ***
 
-.. only:: not man
-
-    Terminate GMT modern mode session and produce optional graphics
+|end_purpose|
 
 Synopsis
 --------
@@ -41,8 +40,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To close the current modern session and finalize any plots requested, we use::
 

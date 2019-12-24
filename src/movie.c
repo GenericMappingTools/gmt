@@ -37,7 +37,8 @@
 #include <windows.h> 
 #endif
 
-#define THIS_MODULE_NAME	"movie"
+#define THIS_MODULE_CLASSIC_NAME	"movie"
+#define THIS_MODULE_MODERN_NAME	"movie"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	"<T("
@@ -63,7 +64,8 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 	MOVIE_LABEL_IS_ELAPSED,
 	MOVIE_LABEL_IS_COL_C,
-	MOVIE_LABEL_IS_COL_T};
+	MOVIE_LABEL_IS_COL_T,
+	MOVIE_LABEL_IS_STRING};
 
 /* Control structure for movie */
 
@@ -97,9 +99,11 @@ struct MOVIE_CTRL {
 		char *format[MOVIE_N_FORMATS];
 		char *options[MOVIE_N_FORMATS];
 	} F;
-	struct MOVIE_G {	/* -G<canvasfill> */
+	struct MOVIE_G {	/* -G<canvasfill>[+p<pen>] */
 		bool active;
+		unsigned int mode;
 		char *fill;
+		char pen[GMT_LEN64];
 	} G;
 	struct MOVIE_H {	/* -H<factor> */
 		bool active;
@@ -110,12 +114,12 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} I;
-	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
+	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
 		unsigned int n_tags;
 		struct MOVIE_TAG {
 			struct GMT_FONT font;
-			char format[GMT_LEN64];
+			char format[GMT_LEN128];
 			char fill[GMT_LEN64];
 			char pen[GMT_LEN64];
 			char placement[3];
@@ -374,10 +378,10 @@ GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>[+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -423,7 +427,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNG frames - requires -M.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is no video products; just create the PNG frames].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].  Append +p<pen> to draw canvas outline [none]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase <dpu> by <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the movie_init.sh script [none].\n");
@@ -431,6 +435,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w; first word is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
@@ -629,10 +634,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 
 			case 'G':	/* Canvas fill */
 				Ctrl->G.active = true;
-				if (gmt_getfill (GMT, opt->arg, &fill))
-					n_errors++;
-				else
-					Ctrl->G.fill = strdup (opt->arg);
+				if ((c = strstr (opt->arg, "+p"))) {	/* Gave outline modifier */
+					if (c[2] && gmt_getpen (GMT, &c[2], &pen)) {	/* Bad pen */
+						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", 0);
+						n_errors++;
+					}
+					else	/* Pen is valid, just copy verbatim */
+						strncpy (Ctrl->G.pen, &c[2], GMT_LEN64);
+					c[0] = '\0';	/* Chop off options */
+					Ctrl->G.mode |= 1;
+				}
+				if (opt->arg[0]) {	/* Gave fill argument */
+					if (gmt_getfill (GMT, opt->arg, &fill))	/* Bad fill */
+						n_errors++;
+					else {	/* Fill is valid, just copy verbatim */
+						Ctrl->G.fill = strdup (opt->arg);
+						Ctrl->G.mode |= 2;
+					}
+				}
+				if (c) c[0] = '+';	/* Now we can restore the optional text we chopped off */
 				break;
 
 			case 'H':	/* RIP at a higher dpu, then downsample in gs to improve sub-pixeling */
@@ -662,6 +682,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					case 'c':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_C;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
 					case 't':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_T;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
 					case 'e':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_ELAPSED;	break;
+					case 's':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_STRING;	strncpy (Ctrl->L.tag[T].format, &opt->arg[1], GMT_LEN128); break;
 					case 'f': case '\0': Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
 					default:	/* Not recognized */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Select -Lf, -Lc<col> or -Lt<col>\n");
@@ -953,7 +974,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -963,7 +984,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Determine pixel dimensions of individual images */
 	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
-	one_frame = (Ctrl->M.active && (Ctrl->Q.scripts || !Ctrl->animate || Ctrl->M.exit));	/* true if we want to create a single master plot only */
+	one_frame = (Ctrl->M.active && (!Ctrl->animate || Ctrl->M.exit));	/* true if we want to create a single master plot only */
 	if (Ctrl->C.unit == 'c') Ctrl->C.dim[GMT_Z] *= 2.54;		/* Since gs requires dots per inch but we gave dots per cm */
 	else if (Ctrl->C.unit == 'p') Ctrl->C.dim[GMT_Z] *= 72.0;	/* Since gs requires dots per inch but we gave dots per point */
 	
@@ -1009,7 +1030,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		else if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
+		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
 			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "FFmpeg %s found.\n", version);
@@ -1449,6 +1470,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					else	/* Plot as is */
 						strcpy (string, L_txt);
 				}
+				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
+					strcpy (string, Ctrl->L.tag[T].format);
 				strcat (label, string);
 				/* Set MOVIE_LABEL_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
@@ -1468,10 +1491,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
-		else
-			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+		extra[0] = '\0';	/* Reset */
+		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
+			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
+		}
 		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
 		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
@@ -1571,11 +1596,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	extra[0] = '\0';	/* Reset */
-	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s+n+r", Ctrl->G.fill);
-	else
-		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+	sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
+		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
+	}
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
 		strcat (extra, ",Mb../movie_background.ps");
 		layers = true;
@@ -1656,7 +1681,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #ifdef WIN32
 			if (Ctrl->In.mode < 2)		/* A bash or sh run from Windows. Need to call via "start" to get parallel */
 				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
-			else						/* Runing batch, so no need for the above trick */
+			else						/* Running batch, so no need for the above trick */
 				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
 #else 
 			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);

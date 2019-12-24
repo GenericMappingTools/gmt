@@ -36,7 +36,8 @@
 #include <glib.h>
 #endif
 
-#define THIS_MODULE_NAME	"grdgravmag3d"
+#define THIS_MODULE_CLASSIC_NAME	"grdgravmag3d"
+#define THIS_MODULE_MODERN_NAME	"grdgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,GG}"
@@ -187,7 +188,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deal
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
@@ -478,7 +479,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -875,7 +876,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
 		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
-		if (Ctrl->H.pirtt) goto L1;                            /* Uggly, I know but the 2-grids case is not Bhattacharya implemented */
+		if (Ctrl->H.pirtt) goto L1;                            /* Ugly, I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {                                       /* That is, one grid and a flat base Do the BASE now */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
@@ -911,7 +912,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
 		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
-		if (Ctrl->H.pirtt) goto L1;     /* Uggly,I know but the 2-grids case is not Bhattacharya implemented */
+		if (Ctrl->H.pirtt) goto L1;     /* Ugly,I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {               /* That is, one grid and a flat base. Do the BASE now */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */

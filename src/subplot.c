@@ -41,7 +41,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"subplot"
+#define THIS_MODULE_CLASSIC_NAME	"subplot"
+#define THIS_MODULE_MODERN_NAME	"subplot"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
@@ -163,7 +164,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
@@ -273,7 +274,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			}
 		}
 		else {	/* Default to go to next subplot */
-			Ctrl->In.row = Ctrl->In.row = 0;
+			Ctrl->In.row = 0;
 			Ctrl->In.next = true;
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
@@ -697,7 +698,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	
 	
@@ -1028,7 +1029,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		fprintf (fp, "# subplot information file\n");
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
+		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_CLASSIC_NAME, cmd);
 		gmt_M_free (GMT, cmd);
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
@@ -1297,7 +1298,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Now add a -Jx1i projection to the history */
 		id = gmt_get_option_id (0, "J");	/* Top level -J history */
 		if (id > 0 && GMT->init.history[id]) {	/* There should/must be an entry but we check id nevertheless */
-			Jstr[1] = GMT->init.history[id][0];	/* The acual -J? that was used in the last subplot panel */
+			Jstr[1] = GMT->init.history[id][0];	/* The actual -J? that was used in the last subplot panel */
 			gmt_M_str_free (GMT->init.history[id]);	/* Remove whatever that was */
 			GMT->init.history[id] = strdup ("x");	/* Just place the linear projection code */
 			if ((id = gmt_get_option_id (id + 1, Jstr)) >= 0 && GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove the subplot -J? entry */

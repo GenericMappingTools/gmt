@@ -787,6 +787,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Init_VirtualFile_    | Reset a virtual file for reuse                        |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Inquire_VirtualFile_ | Get family of a virtual file                          |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Make_Option_         | Create an option structure                            |
     +--------------------------+-------------------------------------------------------+
     | GMT_Message_             | Issue a message, optionally with time stamp           |
@@ -1675,6 +1677,21 @@ the output filename you obtained from GMT_Open_VirtualFile_.  The syntax is
 
 The function requires the output filename via ``filename`` and then returns
 the data object, similar to what GMT_Read_Data_ does.
+
+Inquire a virtual file for family
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you do not know what family is being represented by a virtual file
+then you should first obtain the family via GMT_Inquire_VirtualFile_.  The syntax is
+
+.. _GMT_Inquire_VirtualFile:
+
+  ::
+
+    int GMT_Inquire_VirtualFile (void *API, const char *filename);
+
+The function requires the virtual file's ``filename`` and then returns the
+family of the data object.
 
 Reset a virtual file for reuse
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

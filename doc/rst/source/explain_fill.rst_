@@ -7,8 +7,8 @@
     Patterns are specified as **p**\ *pattern*, where *pattern*
     set the number of the built-in pattern (1-90) *or* the name of a
     raster image file. The optional **+r**\ *dpi* sets the resolution of
-    the image [1200]. For 1-bit rasters: use upper case **P**  for inverse
+    the image [300]. For 1-bit rasters: use upper case **P**  for inverse
     video, or append **+f**\ *color* and/or **+b**\ *color* to specify
-    fore- and background colors (use *color* = - for transparency). See
-    GMT Cookbook & Technical Reference Appendix E for information on
+    fore- and background colors (no *color* given means transparency).
+    See :doc:`/cookbook/predefined_patterns` for information on
     individual built-in patterns.

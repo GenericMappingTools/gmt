@@ -1,12 +1,11 @@
 .. index:: ! img2grd
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 img2grd
 *******
 
-.. only:: not man
-
-    Extract subset of img file in Mercator or Geographic format
+|img2grd_purpose|
 
 Synopsis
 --------
@@ -174,7 +173,7 @@ geographic coordinates, you can try
 
    ::
 
-    img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -V
+    gmt img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
 Because the latitude spacing in the img file is equidistant in Mercator
 units, the resulting grid will not match the specified **-R** exactly,
@@ -184,7 +183,7 @@ and latitude, use the **-E** option:
 
    ::
 
-    img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -E -V
+    gmt img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -E -V
 
 Mercator Examples
 -----------------
@@ -216,9 +215,9 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
     gmt set PROJ_ELLIPSOID Sphere
 
-    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -C ship.lonlatgrav |
-              gmt grdtrack -Gmerc_grav.nc | gmt mapproject
-              -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -C > ship.lonlatgravsat
+    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -C ship.lonlatgrav | \
+              gmt grdtrack -Gmerc_grav.nc | \
+              gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -C > ship.lonlatgravsat
 
 It is recommended to use the above method of projecting and unprojecting
 the data in such an application, because then there is only one
@@ -238,8 +237,8 @@ it may be always better to use)
 
    ::
 
-    gmt grd2xyz merc_grav.nc | gmt mapproject
-        -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I |
+    gmt grd2xyz merc_grav.nc | \
+        gmt mapproject -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I | \
         gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value

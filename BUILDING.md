@@ -38,16 +38,17 @@ For package maintainers:
 
 To build GMT, you must install:
 
-- [CMake](https://cmake.org/) (>=2.8.5)
-- [Ghostscript](https://www.ghostscript.com/)
+- [CMake](https://cmake.org/) (>=2.8.7)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
 Optionally install these for more capabilities within GMT:
 
+- [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
+- [GLib](https://developer.gnome.org/glib/) GTHREAD support
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 
@@ -62,7 +63,7 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 Optionally install for building GMT documentations and running tests:
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the HTML documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 You also need to download support data:
@@ -78,10 +79,10 @@ For Ubuntu and Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev ghostscript
+    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev
 
     # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
+    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev ghostscript
 
     # to enable movie-making
     sudo apt-get install graphicsmagick ffmpeg
@@ -105,14 +106,14 @@ You can add this repository by telling yum:
 You then can install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo yum install cmake libcurl-devel netcdf-devel ghostscript
+    sudo yum install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     sudo yum install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -130,14 +131,14 @@ For Fedora, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install necessary dependencies
-    sudo dnf install cmake libcurl-devel netcdf-devel ghostscript
+    sudo dnf install cmake libcurl-devel netcdf-devel
 
     # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
+    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
 
     # to enable movie-making
     # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     sudo dnf install GraphicsMagick ffmpeg
 
     # to enable document viewing via gmt docs
@@ -155,10 +156,10 @@ For Archlinux, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pacman -S base-devel cmake libcurl-gnutls netcdf ghostscript
+    sudo pacman -S base-devel cmake libcurl-gnutls netcdf
 
     # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas
+    sudo pacman -S gdal pcre fftw lapack openblas glib2 ghostscript
 
     # to enable movie-making
     sudo pacman -S graphicsmagick ffmpeg
@@ -178,10 +179,10 @@ For FreeBSD, there are prepackaged development binaries available.
 Install the gmt dependencies with:
 
     # install necessary dependencies
-    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf print/ghostscript9
+    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf
 
     # install optional dependencies
-    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas
+    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas print/ghostscript9
 
     # to enable movie-making
     sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
@@ -200,10 +201,10 @@ Install the gmt dependencies with:
 For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
-    brew install cmake curl netcdf ghostscript
+    brew install cmake curl netcdf
 
     # Install optional dependencies
-    brew install gdal pcre fftw
+    brew install gdal pcre2 fftw glib ghostscript
 
     # to enable movie-making
     brew install graphicsmagick ffmpeg
@@ -241,11 +242,10 @@ After installing vcpkg, you can install the GMT dependency libraries with (it ma
 
     # Build and install libraries
     # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre fftw3 clapack openblas --triplet x64-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x64-windows
 
     # If you want to build x86 libraries
-    # NOTE: clapack and openblas currently aren't available for x86-windows.
-    vcpkg install netcdf-c gdal pcre fftw3 --triplet x86-windows
+    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x86-windows
 
     # hook up user-wide integration (note: requires admin on first use)
     vcpkg integrate install
@@ -304,7 +304,6 @@ set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
 set (COPY_GSHHG true)
 set (COPY_DCW true)
-set (GMT_INSTALL_MODULE_LINKS FALSE)
 set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
@@ -368,7 +367,7 @@ cmake --build . --target install --config Release
 will install gmt executable, library, development headers and built-in data
 to the specified GMT install location.
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
-and HTML documentations.
+UNIX manpages, and HTML documentations.
 
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
@@ -394,15 +393,16 @@ Then, you should now be able to run GMT programs.
 
 ## Building documentation
 
-The GMT documentation is available in HTML format and can be generated with:
+The GMT documentations are available in different formats and can be generated with:
 
 ```
-cmake --build . --target docs_html  # HTML documentation
+cmake --build . --target docs_man   # UNIX manual pages
+cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
 ```
 
 To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
 documentation builder. You can choose to install the documentation files
-from an external location instead of generating the HTML files from the sources.
+from an external location instead of generating the Manpages, and HTML files from the sources.
 This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 `cmake/ConfigUser.cmake`.
 
@@ -543,17 +543,19 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
     - gshhg-gmt
 - **Runtime dependencies**:
     - ghostscript (*required*)
-    - curl
-    - netcdf
+    - curl (*required*)
+    - netcdf (*required*)
     - gdal
     - pcre
     - fftw
+    - glib2
     - lapack
     - openblas
     - dcw-gmt
@@ -568,7 +570,6 @@ Files should go into directories `/usr/share/dcw-gmt/` and `/usr/share/gshhg-gmt
     -DFFTW3_ROOT=${prefix}
     -DGDAL_ROOT=${prefix}
     -DPCRE_ROOT=${prefix}
-    -DGMT_INSTALL_MODULE_LINKS=off
     -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off
     -DLICENSE_RESTRICTED=LGPL or -DLICENSE_RESTRICTED=no to include non-free code
     ```

@@ -1,12 +1,11 @@
 .. index:: ! earthtide
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 earthtide
 *********
 
-.. only:: not man
-
-    earthtide - Compute grids or time-series of solid Earth tides
+|earthtide_purpose|
 
 Synopsis
 --------

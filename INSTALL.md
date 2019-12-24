@@ -40,41 +40,19 @@ animated GIFs.
 
 ### Application Bundle
 
-Application bundle is available from the [GMT main site](https://www.generic-mapping-tools.org).
+We provide macOS application bundle on the [GMT main site](https://www.generic-mapping-tools.org).
+The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
+
 Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
 and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
-your search path for executables. For that, just run GMT-6.x.x.app once and type:
+your search path for executables. For that, just run GMT-6.x.x.app once and follow
+the instructions at the end of the GMT splash screen.
 
-    echo ${BUNDLE_RESOURCES}/bin
-
-in the terminal. Then prepend this directory (e.g. `/Applications/GMT-6.x.x.app/Contents/Resources/bin`)
-to your PATH environment variable, e.g., in `~/.bashrc`.
-Note: The installer is always built for the latest macOS version only.
-
-While the installer comes with all GMT executables and needed libraries, there are some
-run-time dependencies on executables that you will need to install separately:
-
-- [GDAL](https://www.gdal.org/) (Convert shapefiles and produce geotiffs)
-- [Ghostscript](https://www.ghostscript.com/) (Convert PostScript to PDF or raster images)
-- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
-- [FFmpeg](http://www.ffmpeg.org/) (Convert images to MP4 or WebM videos)
-
-Install these via Fink, MacPorts, or Homebrew. If you do not use any of these, then
-we recommend installing [Homebrew](https://brew.sh/). Now, run either the fink, port,
-or brew command:
-
-    # For Fink users
-    fink install gdal ghostscript graphicsmagick ffmpeg
-
-    # For MacPorts users
-    sudo port install gdal +hdf5 +netcdf +openjpeg
-    sudo port install ghostscript graphicsmagick ffmpeg
-
-    # For Homebrew users
-    brew install gdal ghostscript graphicsmagick ffmpeg
+**Note**: The installer is always built for the latest macOS version only,
+and works for macOS Sierra (10.12) or higher.
 
 ### Install via Homebrew
 
@@ -84,21 +62,25 @@ You may need to update the formulas so for that you will do:
 
     brew update && brew upgrade
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
     brew install gmt
-
-If you want to install GMT 4 and GMT 5 alongside, do:
-
-    brew unlink gmt && brew install gmt4
-
-and to go from GMT 5 to GMT 4 (and vice-versa for 4 to 5, but see also the doc about gmtswitch):
-
-    brew unlink gmt && brew link gmt4
 
 You also need to install other GMT run-time dependencies separately:
 
     brew install ghostscript graphicsmagick ffmpeg
+
+If you want to install GMT 5 and GMT 6 alongside, do:
+
+    brew install gmt@5
+
+To go from GMT 6 to GMT 5 (but see also the doc about `gmtswitch`):
+
+    brew unlink gmt && brew link --force gmt@5
+
+And to go from GMT 5 to GMT 6:
+
+    brew unlink gmt@5 && brew link gmt
 
 ### Install via MacPorts
 
@@ -127,19 +109,23 @@ or:
 Installation of GMT through [Fink](http://www.finkproject.org/) is quite easy.
 All required packages will also be installed.
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
-    sudo fink install gmt5
-
-For the legacy GMT 4 version use:
-
-    sudo fink install gmt
-
-The two versions cannot live side by side.
+	sudo fink install gmt6
 
 You also need to install other GMT run-time dependencies separately:
 
-    fink install ghostscript graphicsmagick ffmpeg
+    sudo fink install graphicsmagick ffmpeg
+
+For legacy GMT 5 version, use:
+
+	sudo fink install gmt5
+
+For legacy GMT 4 version, use:
+
+    sudo fink install gmt
+
+These three GMT versions cannot live side by side.
 
 ## Linux
 
@@ -148,6 +134,8 @@ You also need to install other GMT run-time dependencies separately:
 The GMT binary packages provided by the Fedora official repositories are usually too old.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow Fedora users access the latest GMT releases in an easy way.
+
+**NOTE: The RPM repository provides GMT packages for Fedora 29 or newer only!**
 
 Fedora users can add the GMT official RPM repository and install gmt by:
 
@@ -162,7 +150,7 @@ Fedora users can add the GMT official RPM repository and install gmt by:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     dnf install GraphicsMagick ffmpeg gdal
 
 **Note**:
@@ -170,7 +158,7 @@ If you already installed the GMT packages provided by Fedora,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+    dnf remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### RHEL/CentOS
 
@@ -199,7 +187,7 @@ For RHEL/CentOS, run:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     yum install GraphicsMagick ffmpeg gdal
 
 **Note**:
@@ -207,8 +195,7 @@ If you already installed the GMT packages provided by EPEL,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    yum uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
-
+    yum remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### Ubuntu/Debian
 
@@ -244,15 +231,18 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.
-2. Install GMT and its dependencies (including ghostscript and gdal) by running
-   the following in a terminal:
+2. Install GMT and its dependencies (including ghostscript, gdal, ffmpeg and graphicsmagick)
+   by running the following in a terminal:
 
    ```
-   conda install gmt=6.0.0rc4 -c conda-forge/label/dev -c conda-forge
+   conda install gmt -c conda-forge
    ```
 
-3. Install ffmpeg using conda by running the following in a terminal:
+   NOTE: Currently conda-forge doesn't provide graphicsmagick on win-64 platform.
+   Windows users need to download and install graphicsmagick separately.
+
+3. If you want to install GMT 5, use:
 
    ```
-   conda install ffmpeg -c conda-forge
+   conda install gmt=5 -c conda-forge
    ```

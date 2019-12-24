@@ -29,9 +29,10 @@
 #include "gmt_dev.h"
 EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 
-#define THIS_MODULE_NAME	"grdfft"
+#define THIS_MODULE_CLASSIC_NAME	"grdfft"
+#define THIS_MODULE_MODERN_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Mathematical operations on grids in the wavenumber (or frequency) domain"
+#define THIS_MODULE_PURPOSE	"Mathematical operations on grids in the spectral domain"
 #define THIS_MODULE_KEYS	"<G{+,GG},GDE"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vfh" GMT_OPT("T")
@@ -564,7 +565,7 @@ GMT_LOCAL bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
@@ -837,7 +838,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);

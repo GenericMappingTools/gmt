@@ -1,12 +1,11 @@
 .. index:: ! grdredpol
+.. include:: ../module_supplements_purpose.rst_
 
 *********
 grdredpol
 *********
 
-.. only:: not man
-
-    grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
+|grdredpol_purpose|
 
 Synopsis
 --------

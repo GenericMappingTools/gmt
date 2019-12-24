@@ -1,12 +1,11 @@
 .. index:: ! grdimage
+.. include:: module_core_purpose.rst_
 
 ********
 grdimage
 ********
 
-.. only:: not man
-
-    Project grids or images and plot them on maps
+|grdimage_purpose|
 
 Synopsis
 --------
@@ -31,7 +30,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
-[ **-tr** ]
+[ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
 .. include:: grdimage_common.rst_
@@ -74,9 +73,7 @@ tickmarks every 5 units::
 When GDAL support is built in: To create a sinusoidal projection of a
 remotely located Jessica Rabbit::
 
-    gmt grdimage -JI15c -Rd
-        http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg
-        -pdf jess
+    gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
 .. include:: explain_cpt.rst_
 

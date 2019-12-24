@@ -43,7 +43,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"surface"
+#define THIS_MODULE_CLASSIC_NAME	"surface"
+#define THIS_MODULE_MODERN_NAME	"surface"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 #define THIS_MODULE_KEYS	"<D{,DD(,LG(,GG}"
@@ -70,6 +71,10 @@ struct SURFACE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct SRF_J {	/* -G<file> */
+		bool active;
+		char *projstring;
+	} J;
 	struct SRF_L {	/* -Ll|u<limit> */
 		bool active;
 		char *file[2];
@@ -1613,12 +1618,12 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Dea
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	unsigned int ppm;
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [%s] [-Ll<limit>] [-Lu<limit>] [-M<radius>[<unit>]] [-N<n_iterations>] [-Q]\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<search_radius>[m|s]] [-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1636,6 +1641,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the rms of your z data after removing L2 plane (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in the same units as your z data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data in the <breakline> file as a 'soft breakline'.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-J Select the data map projection. This projection is only used to add a CRS info to the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
@@ -1730,6 +1737,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
+				break;
+			case 'J':			/* We have this gal here be cause it needs to be processed separately (after -R) */
+				Ctrl->J.active = true;
+				Ctrl->J.projstring = strdup(opt->arg);
 				break;
 			case 'L':	/* Set limits */
 				Ctrl->L.active = true;
@@ -1861,7 +1872,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -2104,6 +2115,13 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_M_free (GMT, C.data);
+
+	/* Only gave -J to set the proj4 flag. Do it here only because otherwise would interfere with computations(!!) */
+	if (Ctrl->J.active) {
+		gmt_parse_common_options (GMT, "J", 'J', Ctrl->J.projstring);	/* Has to be processed independently of -R */
+		C.Grid->header->ProjRefPROJ4 = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */;
+		free (Ctrl->J.projstring);
+	}
 	
 	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write the output grid */
 		Return (error);

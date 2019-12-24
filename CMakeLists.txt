@@ -41,7 +41,7 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 2.8.5)
+cmake_minimum_required (VERSION 2.8.7)
 
 # Use NEW behavior with newer CMake releases
 foreach(p
@@ -100,24 +100,20 @@ add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
 if (GIT_FOUND AND HAVE_GIT_VERSION)
-	# Export git working tree
+	# Export git working tree, and remove some directories and files
+	# so that they are not included in the final release tarball
 	add_custom_target (git_export_release
-		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
-	# Remove some directories and files, so that they are not included in the final release tarball
-	add_custom_target (git_prune_dirs
+		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
+		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test)
-	add_custom_target (git_prune_files
-		COMMAND ${CMAKE_COMMAND} -E remove
-			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore)
-	add_depend_to_target (git_prune_dirs git_export_release)
-	add_depend_to_target (gmt_release git_prune_dirs)
-	add_depend_to_target (git_prune_files git_export_release)
-	add_depend_to_target (gmt_release git_prune_files)
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
+	)
+	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
@@ -178,12 +174,14 @@ else (EXTRA_BUILD_DIRS)
 	set (PROTO "none")
 endif (EXTRA_BUILD_DIRS)
 
+if (GMT_INSTALL_MODULE_LINKS)
+	set (LINKS "yes")
+else (GMT_INSTALL_MODULE_LINKS)
+	set (LINKS "no")
+endif (GMT_INSTALL_MODULE_LINKS)
+
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
-
-if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
-	set (GMT_DATA_SERVER ${GMT_DATA_URL})
-endif (GMT_DATA_URL)
 
 # Configuration done
 message(
@@ -201,6 +199,7 @@ message(
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
 	"*  FFTW library               : ${FFTW3F_LIBRARY}\n"
+	"*  FFTW threads library       : ${FFTW3F_THREADS_LIBRARY}\n"
 	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"
 	"*  Accelerate Framework       : ${ACCELERATE_FRAMEWORK}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
@@ -212,14 +211,15 @@ message(
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
 	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
-	"*  PTHREAD support            : ${GMT_CONFIG_PTHREAD_MESSAGE}\n"
+	"*  Build generator            : ${CMAKE_GENERATOR}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
-	"*  Found GhostScript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
+	"*  Build module links         : ${LINKS}\n"
+	"*  Found Ghostscript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
 	"*  Found GraphicsMagick (gm)  : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
 	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"
@@ -229,7 +229,8 @@ message(
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
 	"*  GMT_DATADIR                : ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}\n"
-	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}")
+	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}\n"
+	"*  GMT_MANDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_MANDIR}")
 
 # For debugging: print all set variables
 #get_cmake_property(_variableNames VARIABLES)

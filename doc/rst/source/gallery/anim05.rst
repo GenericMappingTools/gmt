@@ -1,4 +1,4 @@
-.. _anim_05:
+.. _anim05:
 
 (5) Control spline gridding via eigenvalues
 -------------------------------------------
@@ -14,10 +14,10 @@ by the colored circles; as we approach the full solution these
 all become white (no misfit). These 52 frames are well suited
 for an animated GIF.
 
-.. literalinclude:: /_verbatim/anim_05.txt
+.. literalinclude:: /_verbatim/anim05.txt
    :language: bash
 
-.. figure:: /_images/anim_05.*
+.. figure:: /_images/anim05.*
    :width: 400 px
    :align: center
 

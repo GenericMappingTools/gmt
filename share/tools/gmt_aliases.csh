@@ -10,8 +10,14 @@
 # If the GMT executable is not in the search path, set an extra alias:
 #   alias gmt path/to/gmt
 
-set gmt_modules = (`gmt --show-modules`)
-set compat_modules = (minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
+which gmt > /dev/null
+if ($? == 1) then
+  echo 'Error: gmt is not found in your search PATH.'
+  exit 1
+endif
+
+set gmt_modules = (`gmt --show-classic`)
+set compat_modules = (minmax gmtstitch gmtdp grdreformat ps2raster originator)
 
 foreach module ( $gmt_modules $compat_modules )
   	eval 'alias $module "gmt $module"'

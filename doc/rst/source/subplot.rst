@@ -1,12 +1,11 @@
 .. index:: ! subplot
+.. include:: module_core_purpose.rst_
 
 *******
 subplot
 *******
 
-.. only:: not man
-
-    Manage modern mode figure subplot configuration and selection
+|subplot_purpose|
 
 The **subplot** module is used to split the current figure into a rectangular layout of subplots
 that each may contain a single self-contained figure.  A subplot setup is started with the **begin**
@@ -51,7 +50,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -78,9 +77,9 @@ Required Arguments
     to compute the height of each subplot.  All subplots must share the same region and projection and you specify
     a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
 
-    Optionally, you may draw or paint the figure rectangle behind the subplots, and even expand it via **+c**.  This
-    is most useful if you supply **-B+n** to subplot begin, meaning no ticks or annotations will take place in the
-    subplots.
+    Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
+    subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
+    useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
 
 Optional Arguments
 ------------------
@@ -189,7 +188,7 @@ Optional Arguments
 ------------------
 
 *row,col*
-    Sets the current subplot until further notice.  Note: First *row* or *col is 0, not 1. If not given we go to the next subplot by order
+    Sets the current subplot until further notice.  Note: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
     specified via **-A**.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
@@ -245,11 +244,7 @@ Optional Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
-To make a minimalistic 2x2 basemap layout called panels.pdf, try
-
-   ::
+To make a minimalistic 2x2 basemap layout called panels.pdf, try::
 
     gmt begin panels pdf
       gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr

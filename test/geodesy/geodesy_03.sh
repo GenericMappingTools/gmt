@@ -7,7 +7,7 @@ ps=geodesy_03.ps
 #     scaling will give an ellipse which fits inside a rectangle
 #     of dimension Esig by Nsig. [K. Feigl, 2015-11/08]
  
-gmt psvelo -Xc -R-3/6/-3/7 -Wthin,red -Se1.5c/0.39/12 -Bpxa1g1 \
+gmt psvelo -Xc -R-3/6/-3/7 -Wthin,red -Se1.5c/0.39+f12p -Bpxa1g1 \
 	-Bpya1g1 -BWeSn+t"E = 3 @~\261@~ 1; N = 4 @~\261@~ 2" -Jx1.5c -Ggreen -Eblue -L -N \
 	-A1c+p3p+e -P -h2 << EOF > $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE

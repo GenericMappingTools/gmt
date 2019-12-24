@@ -1,32 +1,30 @@
 .. index:: ! events
+.. include:: module_core_purpose.rst_
 
 ********
 events
 ********
 
-.. only:: not man
-
-    Plot event symbols and labels for a moment in time
+|events_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
+**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*unit*]]
+|-T|\ *now*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
-[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
+[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-L|\ [*length*\ \|\ **t**\ ] ]
 [ |-M|\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
 [ |-Q|\ *prefix* ]
-[ |-T|\ *now* ]
-[ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -44,8 +42,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To show the display of events visible for May 1, 2018 given the catalog of
 large (>5) magnitude earthquakes that year, using a 2-day rise time during

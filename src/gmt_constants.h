@@ -73,8 +73,10 @@
 #define GMT_CONV12_LIMIT 1.0e-12	/* Tight limit for gaps/overlaps in CPT z-values */
 #define GMT_CONV8_LIMIT	 1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
+#define GMT_CONV5_LIMIT	 1.0e-5		/* 10 ppm */
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
+#define GMT_ASCII_ES	27	/* ASCII code for escape (used to prevent +? strings in plain text from being seen as modifiers) */
 #define GMT_ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
 #define GMT_ASCII_RS	30	/* ASCII code for record separator (temporarily replacing spaces in filenames) */
 #define GMT_ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
@@ -86,7 +88,7 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (~1 meter) */
+#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -155,6 +157,7 @@ enum GMT_swap_direction {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
+#define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
@@ -230,6 +233,9 @@ enum GMT_swap_direction {
 #define GMT_SUBPLOT_ACTIVE	1
 #define GMT_PANEL_NOTSET	2
 
+/* Fraction of increment to force outward region expansion */
+#define GMT_REGION_INCFACTOR 0.25
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
@@ -249,6 +255,12 @@ enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
+
+/*! Return codes from parsing region modifiers +r,+R,+e */
+enum GMT_enum_region {
+	GMT_REGION_ADD = 1,
+	GMT_REGION_ROUND,
+	GMT_REGION_ROUND_EXTEND};
 
 /*! Return codes from gmt_get_refpoint */
 enum GMT_enum_refpoint {

@@ -951,13 +951,14 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 		else
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
 		fprintf (fp, "\n");
+		gmt_M_str_free (orig);
 	}
 	else	/* Output the whole enchilada */
 		fprintf (fp, "%s\n", txt);
 }
 
 /*! . */
-GMT_LOCAL int gmtio_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 
@@ -1002,7 +1003,7 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 	/* First time we decide if we have floats only or a mix and finalize pointer settings */
 	if (txt && GMT->current.io.trailing_text[GMT_OUT]) {
 		if (n == 0 || (GMT->common.o.select && GMT->common.o.n_cols == 0))
-			GMT->current.io.output = gmtio_ascii_output_trailing_text;	/* Just print trailing text */
+			GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
 		else
 			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text after numerical output */
 		return GMT->current.io.output (GMT, fp, n, ptr, txt);
@@ -3222,6 +3223,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		*tpos = pos;
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
+	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+		gmtlib_reparse_i_option (GMT, col);
 	
 	if (found_text) {	/* Determine record type */
 		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
@@ -6673,6 +6676,26 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 }
 
 /*! . */
+GMT_LOCAL unsigned int n_trailing_chars (struct GMT_CTRL *GMT, char *text) {
+	/* Try to determine if there are trailing text that is not a valid unit for a number.
+	 * We do not try to scan for leading chars since Jan-01-2001T might be caught. */
+	unsigned int n = 0, p = 0, n_periods = 0;	/* n is number of trailing characters after last digit (or period) */
+	int k, last;
+	gmt_M_unused (GMT);
+	if (!text || !text[0]) return 0;
+	k = last = (int)strlen(text) - 1;
+	while (k >= 0 && !isdigit (text[k])) {	/* Count how many non-digits at the end of this text */
+		if (text[k] == '.') p = k, n_periods++;	/* But be aware of a trailing single period in a number before unit (e.g., 30.k) */
+		k--, n++;	/* Count trailing letters */
+	}
+	if (n_periods == 1 && p && isdigit (text[p-1]) && n <= 2)	/* May be OK if a valid unit (or nothing) afterwards and a digit before */
+		n--;	/* Let the period be part of the number */
+	if (n == 1 && !strchr (GMT_LEN_UNITS GMT_DIM_UNITS GMT_WESN_UNITS, text[last]))	/* Single trailing text letter but not recognized as a unit */
+		n = 2;	/* To ensure it is seen as text */
+	return (n);
+}
+
+/*! . */
 int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool cmd, double *val) {
 	/* Version of gmt_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from gmt_scanf in that if the expectation is GMT_IS_UNKNOWN it will
@@ -6698,10 +6721,15 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 		}
 		if (len > 1) {		/* Arguments of at least 2 characters can be many things */
 			char c = s[len-1];	/* Trailing letter */
-			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or junk */
+			unsigned int nt = (cmd) ? 0 : n_trailing_chars (GMT, s);
+			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or it will fail as junk */
 				expectation = GMT_IS_ARGTIME;
 			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
+			else if (nt > 1) {	/* No number has 2 or more letters at the end so return as NaN */
+				*val = GMT->session.d_NaN;
+				return GMT_IS_NAN;
+			}
 			else if (!((s[0] >= 0 && isdigit (s[0])) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
@@ -8303,7 +8331,7 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	if (!strlen (text)) return (true);	/* Blank string */
 	if (isalpha ((int)text[0])) return (true);	/* Numbers cannot start with letters */
 	i = (int)text[0];
-	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i >= 0 && i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || (i <= 255 && isdigit(i)) )) return (true);	/* Numbers must be [+|-][.][<digits>] */
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that should never appear in any number */
 		if (!strchr (valid, text[i])) return (true);	/* Found a char not among valid letters */
@@ -8560,10 +8588,14 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 	/* Try to rename a file - give error message if it fails.  Depends on extern int errno.
 	 * mode is either GMT_COPY_FILE or GMT_RENAME_FILE */
 	
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
+	if (mode == GMT_COPY_FILE)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Copying %s -> %s\n", oldfile, newfile);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
+	
 	errno = GMT_NOERROR;
 	if (mode == GMT_COPY_FILE || rename (oldfile, newfile)) {	/* This may be benign as rename won't move files between different mounted partitions on a drive. Copy/remove instead */
-		size_t ni, no;
+		size_t ni, no, total = 0;
 		char *chunk = NULL;
 		FILE *fpi = NULL, *fpo = NULL;
 		if (mode == GMT_RENAME_FILE) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to rename %s -> %s! [rename error: %s].  Try copy/delete instead.\n", oldfile, newfile, strerror (errno));
@@ -8585,6 +8617,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			return errno;
 		}
 		while ((ni = fread (chunk, sizeof (char), GMT_BUFSIZ, fpi))) {	/* Read until nothing, write each chunk */
+			total += ni;
 			if ((no = fwrite (chunk, sizeof (char), ni, fpo)) != ni) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to write %" PRIuS " bytes to %s! [fwrite error: %s]\n", ni, newfile, strerror (errno));
 				fclose (fpi);
@@ -8603,6 +8636,9 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to close %s! [fwrite error: %s]\n", newfile, strerror (errno));
 			return errno;
 		}
+		if (total == 0)
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Source file %s was empty (?): \n", oldfile);
+
 		/* Finally delete the old file */
 		if (mode == GMT_RENAME_FILE) errno = gmt_remove_file (GMT, oldfile);
 	}
@@ -8611,6 +8647,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 
 void gmt_replace_backslash_in_path (char *dir) {
 	size_t k = 0;
+	if (dir == NULL) return;	/* No can do */
 	while (dir[k]) {
 		if (dir[k] == '\\') dir[k] = '/';
 		k++;

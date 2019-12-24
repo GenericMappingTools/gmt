@@ -25,7 +25,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"gmtinfo"
+#define THIS_MODULE_CLASSIC_NAME	"gmtinfo"
+#define THIS_MODULE_MODERN_NAME	"gmtinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
 #define THIS_MODULE_KEYS	"<D{,>D}"
@@ -74,11 +75,13 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		bool active;
 		int mode;	/*  */
 	} F;
-	struct I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]] */
+	struct I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]][[+e|r|R<incs>]] */
 		bool active;
+		unsigned int extend;
 		unsigned int ncol;
 		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
 		double inc[GMT_MAX_COLUMNS];
+		double delta[4];
 	} I;
 	struct L {	/* -L */
 		bool active;
@@ -120,9 +123,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deal
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -141,7 +144,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i: One record with the number of tables, segments, data records, headers, and overall records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t: Tables:  Same as D but the counts resets per table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at lwesn[XHI] 2 columns).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
@@ -152,6 +155,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ib to report the bounding box polygon for the data files (or segments; see -A).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to round region to these multiples; use +R to extend region by those increments instead,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Determine limiting region. With -I it rounds inward so bounds are within data range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A to find the limiting common bounds of all segments or tables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
@@ -255,16 +261,35 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				break;
 			case 'I':	/* Granularity */
 				Ctrl->I.active = true;
+				n_errors += gmt_parse_region_extender (GMT, 'I', opt->arg, &(Ctrl->I.extend), Ctrl->I.delta);	/* Possibly extend the final region before reporting */
 				j = 1;
 				switch (opt->arg[0]) {
 					case 'p': special = true; break;
 					case 'f': Ctrl->I.mode = BEST_FOR_FFT; break;
 					case 's': Ctrl->I.mode = BEST_FOR_SURF; break;
 					case 'b': Ctrl->I.mode = BOUNDBOX; break;
-					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;	/* -I- is backwards compatible */
+					case '+':		/* -I+e|r|R */
+						if (opt->arg[1] && strchr ("erR", opt->arg[1]))
+							Ctrl->I.mode = ACTUAL_BOUNDS;
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I%s not recognized\n", opt->arg);					
+							n_errors++;						
+						}
+						break;
+					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS;
+						if (opt->arg[1]) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");					
+							n_errors++;
+						}
+						break;	/* -I- is backwards compatible */
 					default: j = 0;	break;
 				}
-				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
+						n_errors++;
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. No increment given.\n");					
+				}
+				else
+					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'L':	/* Detect limiting range */
 				Ctrl->L.active = true;
@@ -322,6 +347,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		Ctrl->D.inc[GMT_Y] = Ctrl->D.inc[GMT_X];
 		Ctrl->D.ncol = 2;
 	}
+	if (Ctrl->I.active && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {	/* SHould have increments */
+		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] <= 0.0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. Must specify positive increment for column %d.\n", k);
+			n_errors++;
+		}
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Syntax error: -D requires -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2,
 	                                   "Syntax error: -Ip requires -C\n");
@@ -329,10 +360,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	                                   "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 ,
 	                                   "Syntax error -T option: Must specify a positive increment\n");
-	for (k = 0; Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && k < Ctrl->I.ncol; k++) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0,
-		                                   "Syntax error -I option: Must specify positive increment(s)\n");
-	}
 	n_errors += gmt_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -351,7 +378,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	char buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""}, *t_ptr = NULL;
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
-	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
+	double wesn[4] = {0.0, 0.0, 0.0,  0.0}, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
 	double *xyzminL = NULL, *xyzmaxL = NULL, *d_ptr = NULL;
 	double out[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, *lonmin = NULL, *lonmax = NULL;
 
@@ -373,7 +400,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -460,17 +487,17 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
-	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing west > east */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing wesn[XLO] > wesn[XHI] */
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
+			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
+			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 	}
@@ -554,8 +581,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				if (Ctrl->I.mode == ACTUAL_BOUNDS) {
-					west  = xyzmin[GMT_X];	east  = xyzmax[GMT_X];
-					south = xyzmin[GMT_Y];	north = xyzmax[GMT_Y];
+					wesn[XLO]  = xyzmin[GMT_X];	wesn[XHI]  = xyzmax[GMT_X];
+					wesn[YLO] = xyzmin[GMT_Y];	wesn[YHI] = xyzmax[GMT_Y];
 				}
 				else if (Ctrl->I.mode == BOUNDBOX) {	/* Write out bounding box */
 					sprintf (buffer, "Bounding box for table data");
@@ -573,40 +600,41 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					do_report = false;
 				}
 				else if (Ctrl->L.active) { /* Round down to nearest inc for this segment or table */
-					west  = (ceil ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					east  = (floor  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					south = (ceil ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
-					north = (floor  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[XLO]  = (ceil ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					wesn[XHI]  = (floor  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					wesn[YLO] = (ceil ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[YHI] = (floor  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 				}
 				else { /* Round up to nearest inc */
-					west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
-					north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[XLO]  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					wesn[XHI]  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					wesn[YLO] = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[YHI] = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 					if (Ctrl->D.active) {	/* Center the selected region * better */
-						double off = 0.5 * (xyzmin[GMT_X] + xyzmax[GMT_X] - west - east);
+						double off = 0.5 * (xyzmin[GMT_X] + xyzmax[GMT_X] - wesn[XLO] - wesn[XHI]);
 						if (Ctrl->D.inc[GMT_X] > 0.0) off = rint (off / Ctrl->D.inc[GMT_X]) * Ctrl->D.inc[GMT_X];
-						west += off;	east += off;
-						off = 0.5 * (xyzmin[GMT_Y] + xyzmax[GMT_Y] - south - north);
+						wesn[XLO] += off;	wesn[XHI] += off;
+						off = 0.5 * (xyzmin[GMT_Y] + xyzmax[GMT_Y] - wesn[YLO] - wesn[YHI]);
 						if (Ctrl->D.inc[GMT_Y] > 0.0) off = rint (off / Ctrl->D.inc[GMT_Y]) * Ctrl->D.inc[GMT_Y];
-						south += off;	north += off;
+						wesn[YLO] += off;	wesn[YHI] += off;
 					}
 				}
+				gmt_extend_region (GMT, wesn, Ctrl->I.extend, Ctrl->I.delta);	/* Possibly extend the region */
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
 					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
-						if (south < -90.0) {
-							south = -90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90. Reset to -90.\n");
+						if (wesn[YLO] < -90.0) {
+							wesn[YLO] = -90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
 						}
-						if (north > 90.0) {
-							north = 90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90. Reset to +90.\n");
+						if (wesn[YHI] > 90.0) {
+							wesn[YHI] = 90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
 						}
-						if (fabs (east - west) > 360.0) {
+						if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
 							GMT_Report (API, GMT_MSG_VERBOSE,
 							            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
-							west = (west < 0.0) ? -180.0 : 0.0;
-							east = (west < 0.0) ? +180.0 : 360.0;
+							wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
+							wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
 							full_range = true;
 						}
 					}
@@ -620,36 +648,36 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting n_columns/n_rows */
 					unsigned int sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;
-					in_dim[GMT_X] = gmt_M_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.R.active[GSET]);
-					in_dim[GMT_Y] = gmt_M_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.R.active[GSET]);
-					ww = west;	ee = east; ss = south;	nn = north;
+					in_dim[GMT_X] = gmt_M_get_n (GMT, wesn[XLO], wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.R.active[GSET]);
+					in_dim[GMT_Y] = gmt_M_get_n (GMT, wesn[YLO], wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.R.active[GSET]);
+					ww = wesn[XLO];	ee = wesn[XHI]; ss = wesn[YLO];	nn = wesn[YHI];
 					gmt_best_dim_choice (GMT, Ctrl->I.mode, in_dim, out_dim);
 					sub = (out_dim[GMT_X] - in_dim[GMT_X]) / 2;	add = out_dim[GMT_X] - in_dim[GMT_X] - sub;
-					west  -= sub * Ctrl->I.inc[GMT_X];		east  += add * Ctrl->I.inc[GMT_X];
+					wesn[XLO]  -= sub * Ctrl->I.inc[GMT_X];		wesn[XHI]  += add * Ctrl->I.inc[GMT_X];
 					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;
-					south -= sub * Ctrl->I.inc[GMT_Y];		north += add * Ctrl->I.inc[GMT_Y];
+					wesn[YLO] -= sub * Ctrl->I.inc[GMT_Y];		wesn[YHI] += add * Ctrl->I.inc[GMT_Y];
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
-						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], west, east, south, north, out_dim[GMT_X], out_dim[GMT_Y]);
+						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], out_dim[GMT_X], out_dim[GMT_Y]);
 				}
 			}
 			if (give_r_string) {	/* Return -R string */
 				if (full_range)
-					sprintf (record, "-R%g/%g/", west, east);
+					sprintf (record, "-R%g/%g/", wesn[XLO], wesn[XHI]);
 				else {
 					sprintf (record, "-R");
-					i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
-					i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = strip_blanks_and_output (GMT, buffer, wesn[XLO], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = strip_blanks_and_output (GMT, buffer, wesn[XHI], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
 				}
-				i = strip_blanks_and_output (GMT, buffer, south, GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, north, GMT_Y);	strcat (record, &buffer[i]);
+				i = strip_blanks_and_output (GMT, buffer, wesn[YLO], GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
+				i = strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
-				west  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
-				east  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
+				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
+				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
-				i = strip_blanks_and_output (GMT, buffer, west, Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, east, Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
 				i = strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
@@ -677,12 +705,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						low = high = GMT->session.d_NaN;
 					else if (col < Ctrl->I.ncol) {	/* Special treatment for x and y (and perhaps more) if -I selected */
 						if (Ctrl->I.mode && col == GMT_X) {
-							low  = west;
-							high = east;
+							low  = wesn[XLO];
+							high = wesn[XHI];
 						}
 						else if (Ctrl->I.mode && col == GMT_Y) {
-							low  = south;
-							high = north;
+							low  = wesn[YLO];
+							high = wesn[YHI];
 						}
 						else if (Ctrl->L.active) {
 							low  = (Ctrl->I.active) ? ceil  (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
@@ -721,7 +749,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (do_report)
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-			got_stuff = true;		/* We have at least reported something */
+			got_stuff = true;		/* We have at lwesn[XHI] reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;

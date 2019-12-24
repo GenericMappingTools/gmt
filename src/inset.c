@@ -30,7 +30,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"inset"
+#define THIS_MODULE_CLASSIC_NAME	"inset"
+#define THIS_MODULE_MODERN_NAME	"inset"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Manage figure inset setup and completion"
 #define THIS_MODULE_KEYS	">X}"
@@ -81,7 +82,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct INSET_CTRL *C) {	/* Deall
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
@@ -235,7 +236,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -295,7 +296,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		}
 		fprintf (fp, "# Figure inset information file\n");
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
+		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_CLASSIC_NAME, cmd);
 		gmt_M_free (GMT, cmd);
 		fprintf (fp, "# ORIGIN: %g %g\n", Ctrl->D.inset.refpoint->x, Ctrl->D.inset.refpoint->y);
 		fprintf (fp, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
@@ -331,6 +332,23 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_history_tag (API, tag);
 		sprintf (ffile, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
 		gmt_remove_file (GMT, ffile);
+		/* Restore the old frame B setting to what it was before inset begin was called, if any */
+		if ((fp = fopen (file, "r"))) {	/* There is a gmt.frame file */
+			while (fgets (Bopts, PATH_MAX, fp) && strncmp (Bopts, "# FRAME: ", 9U));	/* Wind to reading the frame setting */
+			gmt_chop (Bopts);
+			fclose (fp);	/* Done reading the gmt.frame file */
+			if (!strncmp (Bopts, "# FRAME: ", 9U) && strlen (Bopts) > 9 && Bopts[9]) {	/* Got a previously saved -B frame setting */
+				sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+				if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
+					GMT_Report (API, GMT_MSG_NORMAL, "Cannot create frame file %s\n", ffile);
+					Return (GMT_ERROR_ON_FOPEN);
+				}
+				GMT_Report (API, GMT_MSG_DEBUG, "inset: Restore previous frame in %s\n", ffile);
+				/* Restore the previous frame setting in gmt.frame */
+				fprintf (fp, "%s\n", &Bopts[9]);
+				fclose (fp);
+			}
+		}
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");

@@ -1,13 +1,12 @@
 .. index:: ! contour
+.. include:: module_core_purpose.rst_
 
 
 *********
 contour
 *********
 
-.. only:: not man
-
-    Contour table data by direct triangulation [method]
+|contour_purpose|
 
 Synopsis
 --------
@@ -28,7 +27,7 @@ Synopsis
 [ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
+[ |-W|\ [*type*]\ *pen*\ [**+c**\ [**l**\ \|\ **f**]] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-b| ]

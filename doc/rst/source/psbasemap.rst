@@ -1,12 +1,11 @@
 .. index:: ! psbasemap
+.. include:: module_core_purpose.rst_
 
 *********
 psbasemap
 *********
 
-.. only:: not man
-
-    Plot base maps and frames
+|psbasemap_purpose|
 
 Synopsis
 --------
@@ -23,9 +22,9 @@ Synopsis
 [ |-L|\ *scalebar* ]
 [ |-O| ]
 [ |-P| ]
-[ |SYN_OPT-U| ]
 [ |-T|\ *rose* ]
 [ |-T|\ *mag_rose* ]
+[ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -66,8 +65,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
@@ -325,8 +322,8 @@ define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 
     gmt psbasemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -P > stereo2.ps
 
-`Miscellaneous Map Projections <#toc33>`_
------------------------------------------
+Miscellaneous Map Projections
+-----------------------------
 
 Hammer [equal-area]
 ~~~~~~~~~~~~~~~~~~~

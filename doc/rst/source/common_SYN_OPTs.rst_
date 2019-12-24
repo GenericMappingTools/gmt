@@ -22,7 +22,7 @@
 
 .. |SYN_OPT-bo| replace:: **-bo**\ :ref:`binary <-bo_full>`
 
-.. |SYN_OPT-c| replace:: **-c**\ :ref:`nodata <-c_full>`
+.. |SYN_OPT-c| replace:: **-c**\ :ref:`row,col|index <-c_full>`
 
 .. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`
 

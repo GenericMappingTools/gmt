@@ -1,12 +1,11 @@
 .. index:: ! docs
+.. include:: module_core_purpose.rst_
 
 ****
 docs
 ****
 
-.. only:: not man
-
-    Show the HTML documentation for selected module
+|docs_purpose|
 
 Synopsis
 --------
@@ -21,15 +20,16 @@ Description
 -----------
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
-Besides the modules names, the special targets *cookbook*, *gallery*, *defaults*, *api* and *tutorial*
+Besides the modules names, some special targets
+*gmt*, *api*, *colors*, *cookbook*, *gallery*, *settings*, and *tutorial*
 are also accepted.
 
 Required Arguments
 ------------------
 
 *module-name*
-    One of teh core or supplemental modules,
-    or one of api, cookbook, gallery, defaults, and tutorial.
+    One of the core or supplemental modules,
+    or one of *gmt*, *api*, *colors*, *cookbook*, *gallery*, *settings*, and *tutorial*.
 
 Optional Arguments
 ------------------
@@ -68,8 +68,6 @@ Optional Module Arguments
 Examples
 --------
 
-.. include:: explain_example.rst_
-
 To see the documentation of *grdimage*::
 
     gmt docs grdimage
@@ -82,13 +80,13 @@ To see the link to the documentation of *grdimage* on the GMT server::
 
     gmt docs -Q -S grdimage
 
-To see the documentation of the **-B** option in *pscoast*::
+To see the documentation of the **-B** option in *coast*::
 
-    gmt docs pscoast -B
+    gmt docs coast -B
 
-To examine the list of GMT defaults, try::
+To examine the list of GMT default settings, try::
 
-    gmt docs defaults
+    gmt docs settings
 
 To see the Gallery::
 

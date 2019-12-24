@@ -39,8 +39,13 @@ EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid
 EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 #endif
 
+/* gmt_nc.c: */
+
+EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray);
+
 /* gmt_init.c: */
 
+EXTERN_MSC unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]);
 EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag);
@@ -70,7 +75,7 @@ EXTERN_MSC bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file
 EXTERN_MSC int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M);
 EXTERN_MSC struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsigned int pad);
 EXTERN_MSC void gmt_end (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy);
+EXTERN_MSC struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy);
 EXTERN_MSC struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy);
 EXTERN_MSC void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy);
 EXTERN_MSC int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM *time_system);
@@ -338,11 +343,20 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]);
+EXTERN_MSC void gmt_rgb_to_hsv (double rgb[], double hsv[]);
+EXTERN_MSC void gmt_hsv_to_rgb (double rgb[], double hsv[]);
+EXTERN_MSC void gmt_rgb_to_xyz (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_rgb (double rgb[], double xyz[]);
+EXTERN_MSC void gmt_xyz_to_lab (double xyz[], double lab[]);
+EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
+EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
+EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
 EXTERN_MSC bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text);
 EXTERN_MSC void gmt_filename_set (char *name);
 EXTERN_MSC void gmt_filename_get (char *name);
 EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);
-EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
+EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);
 EXTERN_MSC double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
 EXTERN_MSC int gmt_getfonttype (struct GMT_CTRL *GMT, char *name);
@@ -495,11 +509,6 @@ EXTERN_MSC void gmt_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM *D);
 EXTERN_MSC void gmt_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights);
 EXTERN_MSC int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D);
 EXTERN_MSC void gmt_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]);
-#ifdef PRJ4
-EXTERN_MSC void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]);
-EXTERN_MSC void gmt_ECEF_forward_fw (struct GMT_CTRL *GMT, double in[], double out[]);
-EXTERN_MSC void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[]);
-#endif
 EXTERN_MSC struct GMT_DATASEGMENT *gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m);
 
 /* gmt_shore.c: */

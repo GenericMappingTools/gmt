@@ -48,22 +48,23 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**l**\ \|\ **r**/]\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-C**\ *fill*\ [**+l**\ \|\ **+r**\ ] :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
-    separate fills by prepending **l/** for lakes and **r/** for
+    separate fills by appending **+l** for lakes or **+r** for
     river-lakes, repeating the **-C** option as needed.
 
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Selects the resolution of the data set to use ((**f**)ull,
+    Select the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
-    resolution drops off by 80% between data sets [Default is **l**].
+    resolution drops off by 80% between data sets.
     Append **+f** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
     Alternatively, choose (**a**)uto to automatically select the best
-    resolution given the chosen map scale.
+    resolution given the chosen map scale. [Default is **l** in classic mode
+    and **a** in modern mode].
 
 .. _-E:
 
@@ -108,9 +109,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\ \|\ **c**
+**-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
-    or pattern; or use **-Gc** for clipping [Default is no fill].
+    or pattern; or give no argument for clipping [Default is no fill].
 
 .. _-I:
 
@@ -165,7 +166,7 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Dumps a single multisegment ASCII (or binary, see
+    Dump a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
     occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
     Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
@@ -198,9 +199,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *fill*\ \|\ **c**
+**-S**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
-    or pattern; or use **-Sc** for clipping [Default is no fill].
+    or pattern; or give no argument for clipping [Default is no fill].
 
 .. _-T:
 

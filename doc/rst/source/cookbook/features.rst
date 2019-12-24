@@ -284,33 +284,19 @@ Command line history
 --------------------
 
 GMT programs "remember" the standardized command line options (See
-Chapter :doc:`options`) given during their previous invocations and this
-provides a shorthand notation for complex options. For example, if a
-basemap was created with an oblique Mercator projection, specified as
+Chapter :doc:`options`) given during their first invocations in a modern
+mode session, and afterwards we do not need to repeat them any further.
+For example, if a map was created with an Cartesian linear projection,
+then any subsequent :doc:`/plot` commands to plot symbols on the same map
+do not need to repeat the region and projection information, as shown here::
 
-    ::
+     gmt begin map
+       gmt basemap -R0/6.5/0/7 -Jx2c -B
+       gmt plot @Table_5_11.txt -Sc0.3c -Gred
+     gmt end show
 
-     -Joc170W/25:30S/33W/56:20N/1:500000
-
-then a subsequent :doc:`/plot` command to plot
-symbols only needs to state **-J**\ o in order to activate the same
-projection. In contrast, note that **-J** by itself will pick the most
-recently used projection. Previous commands are maintained in the file ``gmt.history``,
-of which there will be one in each directory you run the programs from.
-This is handy if you create separate directories for separate projects
-since chances are that data manipulations and plotting for each project
-will share many of the same options. Note that an option spelled out on
-the command line will always override the previous entry in the ``gmt.history`` file and, if
-execution is successful, will replace this entry as the previous option
-argument in the ``gmt.history`` file. If you call several GMT modules piped together
-then GMT cannot guarantee that the ``gmt.history`` file is processed in the intended
-order from left to right. The only guarantee is that the file will not
-be clobbered since GMT uses advisory file locking. The uncertainty in
-processing order makes the use of shorthands in pipes unreliable. We
-therefore recommend that you only use shorthands in single process
-command lines, and spell out the full command option when using chains
-of commands connected with pipes.  The history can be cleared by running
-**gmt clear history**.
+Thus, the chosen options remain in effect until you provide new option
+arguments on the command line.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -627,8 +613,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
        from 0–100%.
 
-    #. Name. Specify one of 663 valid color names. Use **man
-       gmtcolors** to list all valid names. A very small yet versatile
+    #. Name. Specify one of 663 valid color names. See :doc:`/gmtcolors` for
+       a list of all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
        [light\ \|\ dark]{*red, orange, yellow, green, cyan, blue,
        magenta, gray\ \|\ grey, brown*\ }. The color names are
@@ -701,7 +687,7 @@ fashion. See the :doc:`/gmt.conf` man page for more information.
 
 Experience has shown that the rendering of lines that are short relative to the pen thickness
 can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
-GhostScript.  By default, lines are rendered using a fast algorithm which is susceptible to
+Ghostscript.  By default, lines are rendered using a fast algorithm which is susceptible to
 errors for thick lines.  The solution is to select a more accurate algorithm to render the lines
 exactly as intended.  This can be accomplished by using the GMT Defaults :ref:`PS_LINE_CAP <PS_LINE_CAP>`
 and :ref:`PS_LINE_JOIN <PS_LINE_JOIN>` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
@@ -786,7 +772,8 @@ Specifying area fill attributes
 -------------------------------
 
 Many plotting programs will allow the user to draw filled polygons or
-symbols. The fill specification may take two forms:
+symbols. The fill specification may take two forms (note: not all modules
+use **-G** for this task and some have several options specifying different fills):
 
 **-G**\ *fill*
     In the first case we may specify a *gray* shade (0–255), RGB color
@@ -813,8 +800,8 @@ symbols. The fill specification may take two forms:
     predefined bit-image patterns). For these patterns and other 1-bit
     images one may specify alternative background and foreground colors
     (by appending **+b**\ *color* and/or **+f**\ *color*) that will replace
-    the default white and black pixels, respectively. Setting one of the
-    fore- or background colors to - yields a *transparent* image where
+    the default white and black pixels, respectively. Excluding *color* from
+    a fore- or background specification yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
 Due to PostScript implementation limitations the raster images used
@@ -1985,7 +1972,7 @@ should contact the GMT team.
 +----------+---------------------------------------------------------------+
 | rb       | SUN raster file format (8-bit standard)                       |
 +----------+---------------------------------------------------------------+
-| rf       | GEODAS grid format GRD98 (NGDC)                               |
+| rf       | GEODAS grid format GRD98 (NCEI)                               |
 +----------+---------------------------------------------------------------+
 | sf       | Golden Software Surfer format 6 (32-bit float)                |
 +----------+---------------------------------------------------------------+
@@ -2296,7 +2283,7 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray 
+    gmt image jpeg_image_with_three_bands.jpg+b0 -jpg gray
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and

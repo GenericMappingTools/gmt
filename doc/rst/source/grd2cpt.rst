@@ -1,12 +1,11 @@
 .. index:: ! grd2cpt
+.. include:: module_core_purpose.rst_
 
 *******
 grd2cpt
 *******
 
-.. only:: not man
-
-    Make linear or histogram-equalized color palette table from grid
+|grd2cpt_purpose|
 
 Synopsis
 --------
@@ -211,7 +210,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [**w**]
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
     combination with a categorical color table. Cannot be used in

@@ -1,12 +1,11 @@
 .. index:: ! gmt2kml
+.. include:: module_core_purpose.rst_
 
 *******
 gmt2kml
 *******
 
-.. only:: not man
-
-    Convert GMT data tables to KML files for Google Earth
+|gmt2kml_purpose|
 
 Synopsis
 --------
@@ -21,7 +20,7 @@ Synopsis
 [ |-G|\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ] ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
-[ |-N|\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*] ]
+[ |-N|\ [**t**\ \|\ *col*\ \|\ *name\_template*\ \|\ *name*] ]
 [ **-O**]
 [ |-Q|\ **a**\ \|\ **i**\ *az* ]
 [ |-Q|\ **s**\ *scale*\ [*unit*\ ] ]
@@ -175,7 +174,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*]
+**-N**\ [**t**\ \|\ *col*\ \|\ *name\_template*\ \|\ *name*]
     By default, if segment headers contain a **-L**"label string" then
     we use that for the name of the KML feature (polygon, line segment
     or set of symbols). Default names for these segments are "Line %d"

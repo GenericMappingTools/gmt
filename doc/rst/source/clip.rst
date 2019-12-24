@@ -1,12 +1,11 @@
 .. index:: ! clip
+.. include:: module_core_purpose.rst_
 
 ******
 clip
 ******
 
-.. only:: not man
-
-    Initialize or terminate polygonal clip paths
+|clip_purpose|
 
 Synopsis
 --------
@@ -41,8 +40,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To see the effect of a simple clip path which result in some symbols
 being partly visible or missing altogether, try::

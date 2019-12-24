@@ -1,12 +1,11 @@
 .. index:: ! grdcontour
+.. include:: module_core_purpose.rst_
 
 **********
 grdcontour
 **********
 
-.. only:: not man
-
-    Make contour map using a grid
+|grdcontour_purpose|
 
 Synopsis
 --------
@@ -28,7 +27,7 @@ Synopsis
 [ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
+[ |-W|\ [*type*]\ *pen*\ [**+c**\ [**l**\ \|\ **f**]] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ [**+s**\ *factor*][**+o**\ *shift*][**+p**] ]
@@ -50,8 +49,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 .. include:: oneliner_info.rst_
 

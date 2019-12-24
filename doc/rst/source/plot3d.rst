@@ -1,12 +1,11 @@
 .. index:: ! plot3d
+.. include:: module_core_purpose.rst_
 
 ******
 plot3d
 ******
 
-.. only:: not man
-
-    Plot lines, polygons, and symbols in 3-D
+|plot3d_purpose|
 
 Synopsis
 --------
@@ -62,8 +61,8 @@ southeast at 30 degree elevation, use:
 
    ::
 
-    gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
-              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
+    gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
+              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
               -U+c -W -pdf heights
 
 To plot a point with color and outline dictated by the *t.cpt* file for the *level*-value 65, try

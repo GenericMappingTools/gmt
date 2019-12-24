@@ -1,12 +1,11 @@
 .. index:: ! pssegyz
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 pssegyz
 *******
 
-.. only:: not man
-
-    Create imagemasked postscript from SEGY file
+|pssegyz_purpose|
 
 Synopsis
 --------

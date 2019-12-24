@@ -1,5 +1,5 @@
-`Notes on Transparency <#toc12>`_
----------------------------------
+Notes on Transparency
+---------------------
 
 The PostScript language originally had no accommodation for transparency.  However, Adobe
 added an extension that allows developers to encode some forms of transparency
