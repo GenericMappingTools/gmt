@@ -6827,7 +6827,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'q':	/* -q option for input/output row selection */
 
 			gmt_message (GMT, "\t-q Select input (-qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
-			gmt_message (GMT, "\t   Append comma-separated list of rows or row ranges.\n");
+			gmt_message (GMT, "\t   Append comma-separated list of rows or row ranges; prepend ~ to exclude a single range.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -8452,7 +8452,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char p[GMT_LEN64] = {""};
-	unsigned int pos = 0, id = GMT_IN, n = 0, k = 0;
+	unsigned int pos = 0, id = GMT_IN, n = 0, k = 0, j;
+	bool one = false;
 	struct GMT_ROW_RANGE *R = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -q requires an argument */
@@ -8465,13 +8466,24 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	/* Parsing of -q<rows> */
 	while ((gmt_strtok (&arg[k], ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((R[n].inc = gmt_parse_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
+		if (p[0] == '~') {	/* Do not want this range */
+			R[n].inverse = true, j = 1, one = true;
+		}
+		else
+				j = 0;
+		if ((R[n].inc = gmt_parse_range (GMT, &p[j], &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
+		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, so switch to 1 being the first row */
+		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same */
 		if ((++n) == GMT_MAX_RANGES) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
 	GMT->current.io.n_row_ranges[id] = n;
+	if (one && n > 1) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of rows\n");
+		return (GMT_PARSE_ERROR);
+	}
 	return (GMT_NOERROR);
 }
 

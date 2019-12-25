@@ -212,7 +212,14 @@ static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 	bool in = false;
 	if (!GMT->common.q.active[GMT_IN]) return false;	/* -qi not active */
 	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
-		if (row < GMT->current.io.row_range[GMT_IN][k].first || row > GMT->current.io.row_range[GMT_IN][k].last) continue;	/* Outside this range at least */
+		if (GMT->current.io.row_range[GMT_IN][k].inverse) {	/* outside range if actually inside this range - only this test in effect */
+			if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* Outside this range at least */
+				if (GMT->current.io.row_range[GMT_IN][k].inc == 1) return true;	/* Yep, definitiely outside */
+				if ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc == 0) return true;	/* Want one of the steps */
+				return false;
+			}
+		}
+		else if (row < GMT->current.io.row_range[GMT_IN][k].first || row > GMT->current.io.row_range[GMT_IN][k].last) continue;	/* Outside this range at least */
 		/* So row is in the desired range, but is inc == 1 or do we need more work? */
 		if (GMT->current.io.row_range[GMT_IN][k].inc == 1)	/* OK, in the requested range */
 			in = true;
@@ -3361,9 +3368,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			*status = 0;
 			return (NULL);
 		}
-		if (outside_in_row_range (GMT, GMT->current.io.rec_no-1)) {
+		if (outside_in_row_range (GMT, GMT->current.io.rec_no)) {	/* Records is outside range of interest */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the next line */
-			if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
+			if (!p) {	/* Ran out of records */
 				GMT->current.io.status = GMT_IO_EOF;
 				if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
@@ -3374,7 +3381,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				*status = -1;
 				return (NULL);
 			}
-			continue;	/* Records is outside range of interest */
+			continue;
 		}
 
 		/* Here we are done with any header records implied by -h */
@@ -4361,6 +4368,8 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	uint64_t col_no, n_NaN;
 	bool bad_record = false, set_nan_flag = false;
 	/* Here, GMT->current.io.curr_rec has been filled in by fread */
+
+	if (outside_in_row_range (GMT, GMT->current.io.rec_no)) return (2);	/* Records is outside range of interest */
 
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {

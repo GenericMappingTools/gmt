@@ -1,0 +1,9 @@
+.. _-q_full:
+
+**-q**\ [**i**\ \|\ **o**]\ *rows*
+    Select specific data rows to be read (**-qi** [Default]) or write (**-qo**) [all].
+    Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where
+    *inc* defaults to 1 if not specified) separated by commas [Default reads all rows,
+    starting with the first row (0)]. 
+    To read from a given row until the end of the input, leave off *stop*.
+    To reverse the test prepend ~; then only a signle row or range can be given.

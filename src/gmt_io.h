@@ -224,6 +224,7 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 /*! For keeping track for row ranges in -q */
 struct GMT_ROW_RANGE {
 	int64_t first, last, inc;
+	bool inverse;	/* true is we do NOT want rows in this range */
 };
 
 struct GMT_IO {				/* Used to process input data records */
