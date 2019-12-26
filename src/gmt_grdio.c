@@ -1189,12 +1189,12 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
 
 	/* Catch some anomalies */
-	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT) {
+	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
 		
 	}
-	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON) {
+	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
 	}
