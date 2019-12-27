@@ -1707,13 +1707,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			status[k].completed = true;	/* Flag this frame as completed */
 			n_cores_unused++;		/* Free up the core */
 			percent = 100.0 * n_frames_completed / n_frames;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Frame %*.*d of %d completed [%5.1f %%]\r", precision, precision, k, n_frames, percent);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_frames, percent);
 		}
 		/* Adjust first_frame, if needed */
 		while (first_frame < n_frames && status[first_frame].completed) first_frame++;
 		if (n_frames_completed == n_frames) done = true;	/* All frames completed! */
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "\n");		/* Last was a '\r' */
 	/* END PARALLEL EXECUTION OF FRAME SCRIPTS */
 
 	gmt_M_free (GMT, status);	/* Done with this structure array */
