@@ -6824,8 +6824,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'q':	/* -q option for input/output row selection */
 
-			gmt_message (GMT, "\t-q Select input (-qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
-			gmt_message (GMT, "\t   Append comma-separated list of rows or row ranges; prepend ~ to exclude a single range.\n");
+			gmt_message (GMT, "\t-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
+			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude a single range.\n");
+			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data ranges.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -8096,10 +8097,13 @@ int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, in
 	int64_t inc = 1, r = 0;
 	int got;
 	char *c = NULL;
-	if ((c = strchr (p, '-'))) {	/* Range of columns given. e.g., 7-9 */
-		got = sscanf (p, "%" PRIu64 "-%" PRIu64, start, stop);
+	if ((c = strchr (p, '-')) || (c = strchr (p, '/'))) {	/* Range of columns given. e.g., 7-9 or 14/19 */
+		char q = c[0];
+		c[0] = ' ';	/* Replace - or . with a space */
+		got = sscanf (p, "%" PRIu64 " %" PRIu64, start, stop);
 		if (c[1] == '\0') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
 		else if (got != 2) inc = 0L;	/* Error flag */
+		c[0] = q;	/* Restore the character */
 	}
 	else if ((c = strchr (p, ':'))) {	/* Range of columns given. e.g., 7:9 or 1:2:5 */
 		got = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, start, &inc, stop);
@@ -8477,7 +8481,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 	return (GMT_NOERROR);
 }
 
-/*! Routine will decode the [~]<row>|<rowrange>|,... arguments */
+/*! Routine to decode the [~]<row>|<rowrange>|,... arguments */
 GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int id, char *arg) {
 
 	char p[GMT_LEN64] = {""};
@@ -8487,24 +8491,24 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int id, c
 
 	R = GMT->current.io.row_range[id];	/* Just a short-hand */
 
-	/* Parsing of -q<rows> */
+	/* Parsing of <rows> sequences */
 	while ((gmt_strtok (arg, ",", &pos, p))) {	/* While it is not empty, process it */
 		if (p[0] == '~') {	/* Do not want this range */
-			R[n].inverse = true, j = 1, one = true;
+			R[n].inverse = true, j = 1, one = true;	/* Can only give one range if negated */
 		}
 		else
-				j = 0;
+				j = 0;	/* No leading ~ to skip */
 		if ((R[n].inc = gmt_parse_index_range (GMT, &p[j], &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
-		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, so switch to 1 being the first row */
-		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same */
+		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row  here */
+		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row */
 		if ((++n) == GMT_MAX_RANGES) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
-	GMT->current.io.n_row_ranges[id] = n;
+	GMT->current.io.n_row_ranges[id] = n;	/* Number of sequences given */
 	if (one && n > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of rows\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of rows to exclude\n");
 		return (GMT_PARSE_ERROR);
 	}
 	return (GMT_NOERROR);
@@ -8520,22 +8524,22 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int dir, 
 
 	R = GMT->current.io.data_range[dir];	/* Just a short-hand */
 
-	/* Parsing of -q<range> */
+	/* Parsing of <range> sequences */
 	while ((gmt_strtok (arg, ",", &pos, p))) {	/* While it is not empty, process it */
 		if (p[0] == '~') {	/* Do not want this range */
-			R[n].inverse = true, j = 1, one = true;
+			R[n].inverse = true, j = 1, one = true;	/* Can only give one range if negated */
 		}
 		else
-				j = 0;
+				j = 0;	/* No leading ~ to skip */
 		if ((answer = gmt_parse_data_range (GMT, &p[j], gmt_M_type (GMT, dir, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
 		if ((++n) == GMT_MAX_RANGES) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
-	GMT->current.io.n_row_ranges[dir] = n;
+	GMT->current.io.n_row_ranges[dir] = n;	/* Number of sequences given */
 	if (one && n > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of rows\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of values\n");
 		return (GMT_PARSE_ERROR);
 	}
 	return (GMT_NOERROR);
@@ -8545,25 +8549,26 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int dir, 
 int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL;
-	unsigned int answer, k = 0, dir = GMT_IN;	/* Default is input rows */
+	unsigned int answer, k = 0, direction = GMT_IN;	/* Default direction is input rows */
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -q requires an argument */
 
 	if (arg[0] == 'i') k = 1;	/* Specifically gave input [Default] */
-	else if (arg[0] == 'o') k = 1, dir = GMT_OUT;	/* Specifically gave output */
-	strncpy (GMT->common.q.string[dir], arg, GMT_LEN64-1);	/* Verbatim copy */
+	else if (arg[0] == 'o') k = 1, direction = GMT_OUT;	/* Specifically gave output */
+	strncpy (GMT->common.q.string[direction], arg, GMT_LEN64-1);	/* Verbatim copy */
 
 	if ((c = strstr (arg, "+c"))) {	/* Set row limits based on data values */
 		unsigned int col = atol (&c[2]);
 		c[0] = '\0';	/* Chop off column indicator */
-		answer = gmtinit_parse_q_option_z (GMT, dir, col, &arg[k]);
+		answer = gmtinit_parse_q_option_z (GMT, direction, col, &arg[k]);
 		c[0] = '+';	/* Restore modifier */
 		GMT->common.q.col = col;
-		GMT->common.q.mode = 2 + 2 * dir;
+		GMT->common.q.mode = 2 + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
 	}
-	else {	/* Got rows */
-		answer = gmtinit_parse_q_option_r (GMT, dir, &arg[k]);
-		GMT->common.q.mode = 1 + 2 * dir;
+	else {	/* Got integer rows */
+		GMT->common.q.rec = &(GMT->current.io.rec_in_seg_no);
+		answer = gmtinit_parse_q_option_r (GMT, direction, &arg[k]);
+		GMT->common.q.mode = 1 + 2 * direction;	/* Mode flag is 1 (input rows) or 3 (output rows) */
 	}
 	return (answer);
 }
@@ -13052,6 +13057,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	#if defined(USE_COMMON_LONG_OPTIONS)
 	gmtinit_kw_replace (API, this_module_kw, options);	/* Replace --long-option syntax with equivalent -onechar options */
 	#endif
+
+	GMT->common.q.rec = &(GMT->current.io.rec_no);	/* Default assignment for -q counter */
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */

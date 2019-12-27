@@ -209,10 +209,11 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 
 /*! . */
 static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	/* Returns true of this row should be skipped according to -qi<fows> */
 	bool in = false;
 	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
 	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
-		if (GMT->current.io.row_range[GMT_IN][k].inverse) {	/* outside range if actually inside this range - only this test in effect */
+		if (GMT->current.io.row_range[GMT_IN][k].inverse) {	/* outside range is actually inside this range - only this single test in effect */
 			if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* Outside this range at least */
 				if (GMT->current.io.row_range[GMT_IN][k].inc == 1) return true;	/* Yep, definitiely outside */
 				if ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc == 0) return true;	/* Want one of the steps */
@@ -231,10 +232,11 @@ static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 
 /*! . */
 static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
+	/* Returns true of this row should be skipped according to -qi<rangevalues>+c<col> */
 	bool in = false;
 	if (GMT->common.q.mode != 2) return false;	/* -qi<times> not active */
 	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
-		if (GMT->current.io.data_range[GMT_IN][k].inverse) {	/* outside range if actually inside this range - only this test in effect */
+		if (GMT->current.io.data_range[GMT_IN][k].inverse) {	/* outside range is actually inside this range - only this single test in effect */
 			if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) {	/* Outside this range at least */
 				return true;	/* Yep, definitiely outside */
 			}
@@ -3350,7 +3352,7 @@ GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
 			GMT->current.io.n_bad_records);
 		GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
-		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
+		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = GMT->current.io.rec_in_seg_no = 0;
 	}
 	return (-1);
 }
@@ -3386,6 +3388,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 		GMT->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		GMT->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
+		GMT->current.io.rec_in_seg_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		if (GMT->current.setting.io_header[GMT_IN] && GMT->current.io.rec_in_tbl_no <= GMT->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the line */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
@@ -3397,19 +3400,20 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			*status = 0;
 			return (NULL);
 		}
-		if (outside_in_row_range (GMT, GMT->current.io.rec_no)) {	/* Records is outside range of interest */
+		if (outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the next line */
 			if (!p) {	/* Ran out of records */
 				*status = reached_EOF (GMT);
 				return (NULL);
 			}
-			continue;
+			if (!gmt_is_segment_header (GMT, line))
+				continue;
 		}
 
 		/* Here we are done with any header records implied by -h */
 		if (GMT->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read a single line */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
-			GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
+			GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++, GMT->current.io.rec_in_seg_no++;
 		}
 		else {	/* Default is to skip all blank lines until we get something else (or hit EOF) */
 			while ((p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) && gmt_is_a_blank_line (line)) GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
@@ -3435,6 +3439,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			GMT->current.io.seg_no++;
+			GMT->current.io.rec_in_seg_no = 0;
 			GMT->current.io.segment_header[0] = '\0';
 			if (kind == 1) {
 				/* If OGR input the also read next 1-2 records to pick up metadata */
@@ -3567,7 +3572,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				}
 			}
 		}
-		if (outside_in_data_range (GMT, GMT->common.q.col))	/* Must skip this record as outside desired time-range */
+		if (outside_in_data_range (GMT, GMT->common.q.col))	/* Must skip this record as key column value is outside desired data-range */
 			continue;
 
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
@@ -4387,7 +4392,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	bool bad_record = false, set_nan_flag = false;
 	/* Here, GMT->current.io.curr_rec has been filled in by fread */
 
-	if (outside_in_row_range (GMT, GMT->current.io.rec_no)) return (2);	/* Records is outside range of interest */
+	if (outside_in_row_range (GMT, *(GMT->common.q.rec))) return (2);	/* Record is outside desired row range of interest */
 
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
@@ -4422,7 +4427,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		n_NaN++;
 	}
 
-	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as outside desired time-range */
+	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as key data value is outside desired data-range */
 
 	if (!GMT->current.io.status && GMT->current.setting.n_bin_header_cols) {	/* Must have n_read NaNs to qualify as segment header (if enabled) */
 		if (n_read >= GMT->current.setting.n_bin_header_cols && n_NaN == n_read) {
@@ -4431,6 +4436,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 			GMT->current.io.segment_header[0] = '\0';
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			GMT->current.io.seg_no++;
+			GMT->current.io.rec_in_seg_no = 0;
 			GMT->current.io.pt_no = 0;
 			return (1);	/* 1 means segment header */
 		}

@@ -221,16 +221,16 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	int (*io) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to the correct read or write function given type/swab */
 };
 
-/*! For keeping track for row ranges in -q */
+/*! For selecting row ranges via -q */
 struct GMT_ROW_RANGE {
 	int64_t first, last, inc;
-	bool inverse;	/* true is we do NOT want rows in this range */
+	bool inverse;	/* true if we do NOT want rows in this row range */
 };
 
-/*! For keeping track for tiime-series ranges in -q */
+/*! For selecting data ranges via -q */
 struct GMT_DATA_RANGE {
-	double first, last, inc;
-	bool inverse;	/* true is we do NOT want rows in this time range */
+	double first, last;
+	bool inverse;	/* true if we do NOT want rows in this time/data range */
 };
 
 struct GMT_IO {				/* Used to process input data records */
@@ -276,6 +276,7 @@ struct GMT_IO {				/* Used to process input data records */
 					   8	NaNs encountered in first 2/3 cols */
 	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	uint64_t rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
+	uint64_t rec_in_seg_no;		/* Number of current data record in current segment */
 	uint64_t pt_no;			/* Number of current valid points in a row  */
 	int64_t curr_pos[2][4];		/* Keep track of current input/output table, segment, row, and table headers (for rec-by-rec action) */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */

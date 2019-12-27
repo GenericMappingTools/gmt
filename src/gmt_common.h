@@ -232,6 +232,7 @@ struct GMT_COMMON {
 		char string[2][GMT_LEN64];
 		unsigned int col;	/* When +c<col> sets a specific data column */
 		unsigned int mode;	/* 1 for in row-range check, 2 for in time check, 3 for out-row check, 4 for out-time check */
+		uint64_t *rec;		/* POinter to the relevant record counter (dataset, table, segment) */
 	} q;
 	struct s {	/* -s[r] */
 		bool active;
