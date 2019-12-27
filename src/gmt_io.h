@@ -227,6 +227,12 @@ struct GMT_ROW_RANGE {
 	bool inverse;	/* true is we do NOT want rows in this range */
 };
 
+/*! For keeping track for tiime-series ranges in -q */
+struct GMT_DATA_RANGE {
+	double first, last, inc;
+	bool inverse;	/* true is we do NOT want rows in this time range */
+};
+
 struct GMT_IO {				/* Used to process input data records */
 	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII or binary tables */
 	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);	/* Pointer to function writing ASCII or binary tables */
@@ -303,6 +309,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_ROW_RANGE row_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output rows */
+	struct GMT_DATA_RANGE data_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output times */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	/* The remainder are just pointers to memory allocated elsewhere */

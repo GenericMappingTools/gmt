@@ -230,6 +230,8 @@ struct GMT_COMMON {
 	struct q {	/* -q[i|o]<rows> */
 		bool active[2];
 		char string[2][GMT_LEN64];
+		unsigned int col;	/* When +c<col> sets a specific data column */
+		unsigned int mode;	/* 1 for in row-range check, 2 for in time check, 3 for out-row check, 4 for out-time check */
 	} q;
 	struct s {	/* -s[r] */
 		bool active;

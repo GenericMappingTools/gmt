@@ -210,7 +210,7 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 /*! . */
 static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 	bool in = false;
-	if (!GMT->common.q.active[GMT_IN]) return false;	/* -qi not active */
+	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
 	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
 		if (GMT->current.io.row_range[GMT_IN][k].inverse) {	/* outside range if actually inside this range - only this test in effect */
 			if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* Outside this range at least */
@@ -225,6 +225,24 @@ static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 			in = true;
 		else	/* Must see if row equals first + n * inc for some n */
 			in = ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc) == 0;
+	}
+	return !in;
+}
+
+/*! . */
+static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
+	bool in = false;
+	if (GMT->common.q.mode != 2) return false;	/* -qi<times> not active */
+	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (GMT->current.io.data_range[GMT_IN][k].inverse) {	/* outside range if actually inside this range - only this test in effect */
+			if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) {	/* Outside this range at least */
+				return true;	/* Yep, definitiely outside */
+			}
+		}
+		else if (GMT->current.io.curr_rec[col] < GMT->current.io.data_range[GMT_IN][k].first || GMT->current.io.curr_rec[col] > GMT->current.io.data_range[GMT_IN][k].last) continue;	/* Outside this range at least */
+		/* So row is in the desired range */
+		in = true;
+
 	}
 	return !in;
 }
@@ -3326,6 +3344,17 @@ GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_o
 		strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
 }
 
+GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
+	GMT->current.io.status = GMT_IO_EOF;
+	if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
+			GMT->current.io.n_bad_records);
+		GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
+		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
+	}
+	return (-1);
+}
+
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
@@ -3371,14 +3400,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		if (outside_in_row_range (GMT, GMT->current.io.rec_no)) {	/* Records is outside range of interest */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the next line */
 			if (!p) {	/* Ran out of records */
-				GMT->current.io.status = GMT_IO_EOF;
-				if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
-					            GMT->current.io.n_bad_records);
-					GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
-					GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
-				}
-				*status = -1;
+				*status = reached_EOF (GMT);
 				return (NULL);
 			}
 			continue;
@@ -3393,14 +3415,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			while ((p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) && gmt_is_a_blank_line (line)) GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
-			GMT->current.io.status = GMT_IO_EOF;
-			if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
-				            GMT->current.io.n_bad_records);
-				GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
-				GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
-			}
-			*status = -1;
+			*status = reached_EOF (GMT);
 			return (NULL);
 		}
 
@@ -3552,6 +3567,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				}
 			}
 		}
+		if (outside_in_data_range (GMT, GMT->common.q.col))	/* Must skip this record as outside desired time-range */
+			continue;
+
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (start_of_text < (GMT_BUFSIZ-1) && GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
 			gmtio_extract_trailing_text (GMT, start_of_text);
@@ -4403,6 +4421,9 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (GMT->current.io.skip_if_NaN[col_no]) set_nan_flag = true;
 		n_NaN++;
 	}
+
+	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as outside desired time-range */
+
 	if (!GMT->current.io.status && GMT->current.setting.n_bin_header_cols) {	/* Must have n_read NaNs to qualify as segment header (if enabled) */
 		if (n_read >= GMT->current.setting.n_bin_header_cols && n_NaN == n_read) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected binary segment header near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
