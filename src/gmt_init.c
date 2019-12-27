@@ -8566,7 +8566,7 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.q.mode = 2 + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
 	}
 	else {	/* Got integer rows */
-		GMT->common.q.rec = &(GMT->current.io.rec_in_seg_no);
+		GMT->common.q.rec = &(GMT->current.io.rec_no);
 		answer = gmtinit_parse_q_option_r (GMT, direction, &arg[k]);
 		GMT->common.q.mode = 1 + 2 * direction;	/* Mode flag is 1 (input rows) or 3 (output rows) */
 	}

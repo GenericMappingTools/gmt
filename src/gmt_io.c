@@ -3400,15 +3400,6 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			*status = 0;
 			return (NULL);
 		}
-		if (outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
-			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the next line */
-			if (!p) {	/* Ran out of records */
-				*status = reached_EOF (GMT);
-				return (NULL);
-			}
-			if (!gmt_is_segment_header (GMT, line))
-				continue;
-		}
 
 		/* Here we are done with any header records implied by -h */
 		if (GMT->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read a single line */
@@ -3423,6 +3414,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			return (NULL);
 		}
 
+		if (outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
+			if (!gmt_is_segment_header (GMT, line))
+				continue;
+		}
 		/* First chop off trailing whitespace and commas */
 		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
