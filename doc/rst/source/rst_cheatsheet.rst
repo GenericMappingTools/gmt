@@ -1,15 +1,20 @@
 reStructuredText Cheatsheet
 ###########################
 
-This is a quick and dirty cheatsheet for reStructureText, the plaintext markup language
-used by GMT documentations.
+The GMT documentations are written in `reStructureText (ReST) <https://docutils.sourceforge.io/rst.html>`_
+and built by `Sphinx <https://www.sphinx-doc.org/>`_.
+Here is a quick and dirty cheat sheet for some common ReST stuff used in GMT documentations.
+You can see the literal source code of the ReST file on the right,
+and the rendered web page on the left.
 
-In this page, you'll see the the literal source code of the reStructureText file on the right side,
-and the rendered web page on the left side.
+.. note::
+
+    Try a online reStructuredText editor (e.g. http://rst.ninjs.org/),
+    if you want to preview texts written in ReST.
 
 .. raw:: html
 
-   <div style="float: left; width:50%">
+   <div style="float: left; width:49%">
 
 .. include:: rst_cheatsheet.rst_
 
@@ -17,7 +22,7 @@ and the rendered web page on the left side.
 
    </div>
    </div>
-   <div style="float: right; width:50%">
+   <div style="float: right; width:49%">
 
 .. literalinclude:: rst_cheatsheet.rst_
 

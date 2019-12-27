@@ -1,27 +1,80 @@
-Paragraph
-=========
+Formatting text
+===============
 
-Simple paragraph for **bold**, *italic*.
+It's simple to use inline markup to have *italic text*,
+**bold text**, and ``inline source codes``.
 
 
 Lists
 =====
 
-- ABC
-- DEF
-- GHI
+**Bullet list:**
+
+- Point A
+- Point B
+- Point C
+- Point D
 
 
-#. ABC
-#. DEF
-#. GHI
+
+
+**Numbered list**:
+
+#. Point 1
+#. Point 2
+#. Point 3
+#. Point 4
 
 
 
+
+**Definition list**:
+
+term1
+    Definition of term1
+term2
+    Definition of term2
+
+
+
+Table
+=====
+
+ReST supports multiple ways to make a table.
+
+Simple Table
+------------
+
+Grid Table
+----------
 
 Links
 =====
 
+External links
+--------------
+
 https://generic-mapping-tools.org
 
 `GMT Forum <https://forum.generic-mapping-tools.org/>`_
+
+Internal links
+--------------
+
+This is a link to GMT's module :doc:`plot`.
+
+Codes
+=====
+
+
+::
+
+    gmt begin map
+    gmt basemap -R0/10/0/10 -JX10c/10c -Baf
+    gmt end
+
+
+Images
+======
+
+
