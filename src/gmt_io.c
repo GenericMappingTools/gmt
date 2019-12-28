@@ -5373,6 +5373,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 
 	unsigned int i;
 
+	GMT->common.q.rec = &(GMT->current.io.rec_no);	/* Default assignment for -q counter */
+
 	/* Pointer assignment for default ASCII input functions */
 
 	GMT->current.io.input  = GMT->session.input_ascii = &gmtio_ascii_input;

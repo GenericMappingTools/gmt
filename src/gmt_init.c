@@ -13058,8 +13058,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	gmtinit_kw_replace (API, this_module_kw, options);	/* Replace --long-option syntax with equivalent -onechar options */
 	#endif
 
-	GMT->common.q.rec = &(GMT->current.io.rec_no);	/* Default assignment for -q counter */
-
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
