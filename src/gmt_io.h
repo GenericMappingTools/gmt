@@ -276,8 +276,9 @@ struct GMT_IO {				/* Used to process input data records */
 					   8	NaNs encountered in first 2/3 cols */
 	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	uint64_t rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
-	uint64_t rec_in_seg_no;		/* Number of current data record in current segment */
-	uint64_t pt_no;			/* Number of current valid points in a row  */
+	uint64_t data_record_number_in_set[2];	/* Number of current valid data record number in the whole dataset, for input and output. Headers not counted.  */
+	uint64_t data_record_number_in_tbl[2];	/* Number of current valid data record number in the current table, for input and output. Headers not counted.  */
+	uint64_t data_record_number_in_seg[2];	/* Number of current valid data record number in the current segment, for input and output. Headers not counted.  */
 	int64_t curr_pos[2][4];		/* Keep track of current input/output table, segment, row, and table headers (for rec-by-rec action) */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
