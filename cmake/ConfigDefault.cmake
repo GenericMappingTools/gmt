@@ -41,7 +41,7 @@ set (GMT_VERSION_YEAR "2019")
 set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.3407866")
 
 # The GMT release citation
-set (GMT_VERSION_CITATION "Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019). The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20. https://doi.org/10.1029/2019GC008515")
+set (GMT_VERSION_CITATION "Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019). The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564. https://doi.org/10.1029/2019GC008515")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)

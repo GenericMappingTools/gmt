@@ -25,9 +25,6 @@ coastlines, rivers, and political boundaries and optionally
 GMT is developed and maintained by [the GMT Team](AUTHORS.md),
 with help from a global set of [contributors](AUTHORS.md)
 and support by the [National Science Foundation](http://www.nsf.gov/).
-It is released under the
-[GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
-version 3 or any later version.
 
 ## The GMT World Domination
 
@@ -45,8 +42,8 @@ If you think it is appropriate, you may consider paying us back by including
 our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
-> Wessel, P., Luis, J., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
-> The Generic Mapping Tools Version 6. Geochemistry, Geophysics, Geosystems, 20.
+> Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
 > https://doi.org/10.1029/2019GC008515
 
 ## Install GMT
@@ -106,3 +103,15 @@ provide us with enough information so that we can recreate the problem.
 
 For general questions, please post on the
 [GMT Community Forum](https://forum.generic-mapping-tools.org/).
+
+## Contributing
+
+Contributions are welcome and appreciated. Please refer to the [contributing guidelines](CONTRIBUTING.md) for more details.
+
+## License
+
+Copyright (c) 1991-2019 by [the GMT Team](AUTHORS.md).
+
+GMT is released under the
+[GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
+version 3 or any later version. See [LICENSE.TXT](LICENSE.TXT) for full details.
