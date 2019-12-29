@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
 #define THIS_MODULE_KEYS	"<D{,AD)=t,CC(,ED(,DDD,G?(=1,>X}@<D{,AD)=t,CC(,ED(,DD),G?(=1"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("Mmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehilpstxy" GMT_OPT("Mmc")
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
@@ -103,6 +103,8 @@ struct PSCONTOUR_CTRL {
 #define PSCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
 #define TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
 #define TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
+#define PEN_CONT	0
+#define PEN_ANNOT	1
 
 struct SAVE {
 	double *x, *y;
@@ -156,8 +158,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->L.pen = GMT->current.setting.map_default_pen;
 	C->T.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
 	C->T.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
-	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
-	C->W.pen[1].width *= 3.0;
+	C->W.pen[PEN_CONT] = C->W.pen[PEN_ANNOT] = GMT->current.setting.map_default_pen;
+	C->W.pen[PEN_ANNOT].width *= 3.0;
 
 	return (C);
 }
@@ -399,8 +401,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<indextable>] [%s] [-I] %s[-L<pen>] [-N]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", API->O_OPT, API->P_OPT, GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-	             GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	             GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -469,7 +471,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append l to let pen colors follow the CPT setting (requires -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append f to let fill/font colors follow the CPT setting.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Default [+c] sets both effects.\n");
-	GMT_Option (API, "X,bi3,bo,c,d,e,h,i,p,s,t,:,.");
+	GMT_Option (API, "X,bi3,bo,c,d,e,h,i,l");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the annotated contour is selected; change this by specifying the label as\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [<annotcontlabel>][/<contlabel>] (use separator | if / is part of the label).\n");
+	GMT_Option (API, "p,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -734,12 +739,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					j = (opt->arg[0] == 'a' || opt->arg[0] == 'c') ? k+1 : k;
 				}
 				if (j == k && opt->arg[j]) {	/* Set both */
-					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
+					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[PEN_CONT])) {
 						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
 					else
-						Ctrl->W.pen[1] = Ctrl->W.pen[0];
+						Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];
 				}
 				else if (opt->arg[j]) {	/* Gave a or c.  Because the user may say -Wcyan we must prevent this from being seen as -Wc and color yan! */
 					/* Get the argument following a or c and up to first comma, slash (or to the end) */
@@ -747,12 +752,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					while (!(opt->arg[n] == ',' || opt->arg[n] == '/' || opt->arg[n] == '\0')) n++;
 					strncpy (txt_a, &opt->arg[k], (size_t)(n-k));	txt_a[n-k] = '\0';
 					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
-					id = (opt->arg[k] == 'a') ? 1 : 0;
+					id = (opt->arg[k] == 'a') ? PEN_ANNOT : PEN_CONT;
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
 						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 						n_errors++;
 					}
-					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
+					if (j == k) Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];	/* Must copy since it was not -Wc nor -Wa after all */
 				}
 				if (reset) c[0] = '+';
 				if (Ctrl->W.cptmode) Ctrl->W.cpt_effect = true;
@@ -1282,7 +1287,28 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
 		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-		Ctrl->contour.line_pen = Ctrl->W.pen[0];
+		Ctrl->contour.line_pen = Ctrl->W.pen[PEN_CONT];
+		if (GMT->common.l.active) {	/* Add one or two contour entries to the auto-legend entry under modern mode; examine which pen & label we place */
+			char *p = NULL;
+			struct GMT_LEGEND_ITEM copy;
+			if (strchr ("|/", GMT->common.l.item.label[0])) {	/* Gave single label for contour pen since starting with | or / */
+				gmt_M_memcpy (&copy, &(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Make an identical copy */
+				gmt_strlshift (copy.label, 1U);	/* Remove the leading divider */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy);
+			}
+			else if ((p = strchr (GMT->common.l.item.label, '|')) || (p = strchr (GMT->common.l.item.label, '/'))) {	/* Got two titles */
+				char q = p[0];	/* Get the divider character */
+				gmt_M_memcpy (&copy, &(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Make an identical copy */
+				p[0] = '\0';	/* Truncate the second contour label */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item));	/* Place the first annotated contour entry */
+				p[0] = q;	/* Restore the label in the original -l setting */
+				if (copy.draw & GMT_LEGEND_DRAW_D) copy.draw -= GMT_LEGEND_DRAW_D;	/* Only want to draw one horizontal line (if set), so remove for the 2nd entry */
+				gmt_strlshift (copy.label, (size_t)(p - GMT->common.l.item.label)+1);	/* Remove the leading annotated contour label first */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy);	/* Place the second regular contour entry */
+			}
+			else	/* Got a single entry for annotated contours */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item));
+		}
 	}
 
 	if (Ctrl->L.active) {	/* Draw triangular mesh */
@@ -1480,7 +1506,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tracing the %g contour\n", cont[c].val);
 
-			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
+			id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
 
 			if (cont[c].penset)
 				Ctrl->contour.line_pen = cont[c].pen;		/* Load contour-specific pen into contour structure */

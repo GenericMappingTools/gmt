@@ -117,6 +117,8 @@ to cm given the scale 3.60, try
 
 .. include:: plot_notes.rst_
 
+.. include:: auto_legend_info.rst_
+
 See Also
 --------
 
