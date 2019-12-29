@@ -3351,8 +3351,8 @@ GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
 	if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
 			GMT->current.io.n_bad_records);
-		GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
-		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = GMT->current.io.rec_in_seg_no = 0;
+		GMT->current.io.n_bad_records = GMT->current.io.data_record_number_in_set[GMT_IN] = GMT->current.io.n_clean_rec = 0;
+		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
 	}
 	return (-1);
 }
@@ -3388,7 +3388,6 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 		GMT->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		GMT->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-		GMT->current.io.rec_in_seg_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		if (GMT->current.setting.io_header[GMT_IN] && GMT->current.io.rec_in_tbl_no <= GMT->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the line */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
@@ -3404,7 +3403,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		/* Here we are done with any header records implied by -h */
 		if (GMT->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read a single line */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
-			GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++, GMT->current.io.rec_in_seg_no++;
+			GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
 		}
 		else {	/* Default is to skip all blank lines until we get something else (or hit EOF) */
 			while ((p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) && gmt_is_a_blank_line (line)) GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
@@ -3434,7 +3433,6 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			GMT->current.io.seg_no++;
-			GMT->current.io.rec_in_seg_no = 0;
 			GMT->current.io.segment_header[0] = '\0';
 			if (kind == 1) {
 				/* If OGR input the also read next 1-2 records to pick up metadata */
