@@ -716,7 +716,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						text[0] = '\0';
 						n_scan = sscanf (line, "%*s %*s %*s %s %*s %*s %s %[^\n]", size, txt_b, text);
 						/* Find the largest symbol size specified */
-						if (strcmp (size, "-")) x = gmt_M_to_inch (GMT, size);
+						x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
 						if (x > def_size) def_size = x;
 						if (n_scan > 1 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
@@ -763,8 +763,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
 		def_size = 0.5 / 2.54;	/* In inches */
-	if (def_dx2 == 0.0)	/* No dist to texl label given; default to 2x*/
+	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
 		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
+	GMT_Report (API, GMT_MSG_DEBUG, "Default symbol size = %g and default distance to text label is %g\n", def_size, def_dx2);
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
 		int n_lines;
