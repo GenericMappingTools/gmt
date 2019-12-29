@@ -1,7 +1,7 @@
 .. _-l_full:
 
 **-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*\ ][**+j**\ *just*][**+l**\ [*code*/]\ *txt*][**+n**\ *cols*][**+s**\ *size*\ ][**+v**\ [*pen*]][**+w**\ *width*][**+x**\ *scale*\ ]
-    [**beta version**] Add a map legend entry to the session legend information file for the
+    Add a map legend entry to the session legend information file for the
     current plot.  Optionally append a text *label* to describe the entry.
     Several modifiers allow further changes to the legend (to be built
     when :doc:`legend` is called): Use **+d** to draw a horizontal line before the

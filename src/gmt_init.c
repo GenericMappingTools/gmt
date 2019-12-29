@@ -12380,14 +12380,15 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			}
 			c++;	k = 0;	/* Now at start of axes */
 			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of xaxis */
+			P->Baxes[k] = '\0'; c++;	k = 0;	/* Now at start of xaxis */
 			while (*c != GMT_ASCII_GS) P->Bxlabel[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of yaxis */
+			P->Bxlabel[k] = '\0'; c++;	k = 0;	/* Now at start of yaxis */
 			while (*c != GMT_ASCII_GS) P->Bylabel[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of xannot */
+			P->Bylabel[k] = '\0'; c++;	k = 0;	/* Now at start of xannot */
 			while (*c != GMT_ASCII_GS) P->Bxannot[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of yannot */
+			P->Bxannot[k] = '\0'; c++;	k = 0;	/* Now at start of yannot */
 			while (*c != GMT_ASCII_GS) P->Byannot[k++] = *(c++);	/* Copy it over until end */
+			P->Byannot[k] = '\0';
 			found = true;	/* We are done */
 		}
 	}
@@ -16582,7 +16583,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
 	char file[PATH_MAX] = {""};
 	bool gap_done = false;
-	double size;
+	double size = 0.0;
 	FILE *fp = NULL;
 
 	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+<just>][+l[<code>/]<label>][+n<cols>][+s<size>][+v[<pen>]][+w<length>][+x<scale>]
@@ -16598,6 +16599,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	 * +v corresponds to command V in the legend codes and starts/ends a vertical line.
 	 * +w specifies the legend width, as in -D+w<width>.
 	 * +s specifies an overall symbol scaling factor, as in -S<factor> [1].
+	 *
+	 * S can be given as NULL for lines but then item->size must be set (+size).
 	 */
 	
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
@@ -16667,11 +16670,13 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	/* Get the symbol size */
 	if (item->size > 0.0)	/* Hard-wired symbol size given */
 		size = item->size;
-	else
+	else if (S)
 		size = S->size_x;	/* Use the symbol size given */
+	else 
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
 
 	/* Place the symbol command */
-	if (S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
+	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (size > 0.0)	/* Got a line length in inches */
 			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);

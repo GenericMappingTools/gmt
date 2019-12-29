@@ -204,6 +204,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. |Add_-l| replace:: Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the *label* to be of the format [*annotcontlabel*][/*contlabel*].  If either label contains a slash (/) character then use | as the separator for the two labels instead.
+.. include:: explain_-l.rst_
+
 .. include:: explain_colon.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

@@ -716,7 +716,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						text[0] = '\0';
 						n_scan = sscanf (line, "%*s %*s %*s %s %*s %*s %s %[^\n]", size, txt_b, text);
 						/* Find the largest symbol size specified */
-						x = gmt_M_to_inch (GMT, size);
+						if (strcmp (size, "-")) x = gmt_M_to_inch (GMT, size);
 						if (x > def_size) def_size = x;
 						if (n_scan > 1 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
@@ -780,7 +780,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	scl = gmt_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
 	if (Ctrl->D.dim[GMT_Y] == 0.0) {	/* Use the computed height */
 		Ctrl->D.dim[GMT_Y] = height;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height not given, use estimated height of %g %s.\n", scl*height,
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Legend height not given, using estimated height of %g %s.\n", scl*height,
 			GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	}
 	else
