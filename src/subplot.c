@@ -672,6 +672,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_DATASET *D = NULL, *L = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
+	struct GMT_SUBPLOT *P = NULL;
 	struct SUBPLOT_CTRL *Ctrl = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -1062,13 +1063,16 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					fprintf (fp, "\t%g\t%g\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.clearance[GMT_X], Ctrl->A.clearance[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
 					fprintf (fp, "\t%s\t%s", Ctrl->A.fill, Ctrl->A.pen);
 				}
-				else	/* No subplot tqgs, write default fillers */
+				else	/* No subplot tags, write default fillers */
 					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters since there may be spaces in them */
 				if (no_frame)	/* Default filler since we dont want any frames */
 					fprintf (fp, "\t%c+n%c%c%c%c%c\n", GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS);	/* Pass -B+n only */
 				else {
-					fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this subplot */
+					if ((Bx[col] && Bx[col][0]) || (By[row] && By[row][0]))
+						fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this subplot */
+					else
+						fprintf (fp, "\t%c+n", GMT_ASCII_GS);	/* No frames for this subplot */
 					if (Ctrl->S[GMT_X].extra) fprintf (fp, "%s", Ctrl->S[GMT_X].extra);	/* Add frame modifiers to the axes */
 					fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given or just XLABEL */
 					if (Ly[row] && Ctrl->S[GMT_X].label[GMT_PRIMARY]) fprintf (fp,"%s", Ctrl->S[GMT_X].label[GMT_PRIMARY]); 
@@ -1198,11 +1202,15 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""};
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
-		
+
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
+			if ((P = gmt_subplot_info (API, fig)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No subplot information file!\n");
+				Return (GMT_ERROR_ON_FOPEN);
+			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1224,12 +1232,16 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		char legend_justification[4] = {""}, Jstr[3] = {"J"};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
-		struct GMT_SUBPLOT *P = NULL;
 		
+		if ((P = gmt_subplot_info (API, fig)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No subplot information file!\n");
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN64] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
+			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1237,10 +1249,6 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 
 		/* Update the previous plot width and height to that of the entire subplot instead of just last subplot */
-		if ((P = gmt_subplot_info (API, fig)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No subplot information file!\n");
-			Return (GMT_ERROR_ON_FOPEN);
-		}
 		API->GMT->current.map.width  = P->dim[GMT_X];
 		API->GMT->current.map.height = P->dim[GMT_Y];
 		P->active = 0;	/* Ensure subplot mode is now terminated */
