@@ -12038,14 +12038,15 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			}
 			c++;	k = 0;	/* Now at start of axes */
 			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of xaxis */
+			P->Baxes[k] = '\0'; c++;	k = 0;	/* Now at start of xaxis */
 			while (*c != GMT_ASCII_GS) P->Bxlabel[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of yaxis */
+			P->Bxlabel[k] = '\0'; c++;	k = 0;	/* Now at start of yaxis */
 			while (*c != GMT_ASCII_GS) P->Bylabel[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of xannot */
+			P->Bylabel[k] = '\0'; c++;	k = 0;	/* Now at start of xannot */
 			while (*c != GMT_ASCII_GS) P->Bxannot[k++] = *(c++);	/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of yannot */
+			P->Bxannot[k] = '\0'; c++;	k = 0;	/* Now at start of yannot */
 			while (*c != GMT_ASCII_GS) P->Byannot[k++] = *(c++);	/* Copy it over until end */
+			P->Byannot[k] = '\0';
 			found = true;	/* We are done */
 		}
 	}
