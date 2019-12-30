@@ -210,6 +210,36 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 /*! . */
 static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 	/* Returns true of this row should be skipped according to -qi<fows> */
+	bool pass;
+	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
+	pass = GMT->common.q.inverse[GMT_IN];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* row is inside this range */
+			if (GMT->current.io.row_range[GMT_IN][k].inc == 1) return pass;	/* Return if we want to use this row or not */
+			if ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc == 0) return pass;	/* Hit one of the steps */
+		}
+	}
+	return !pass;
+}
+
+/*! . */
+static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
+	/* Returns true of this row should be skipped according to -qi<rangevalues>+c<col> */
+	bool pass;
+	if (GMT->common.q.mode != 2) return false;	/* -qi<times> not active */
+	pass = GMT->common.q.inverse[GMT_IN];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) return pass;	/* Inside this range at least */
+	}
+	return !pass;
+}
+
+
+#if 0
+
+/*! . */
+static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	/* Returns true of this row should be skipped according to -qi<fows> */
 	bool in = false;
 	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
 	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
@@ -248,6 +278,7 @@ static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col
 	}
 	return !in;
 }
+#endif
 
 /*! . */
 static inline uint64_t gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, uint64_t n) {
@@ -3084,6 +3115,7 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 
 	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (&GMT->current.io.record); }
 	GMT->current.io.data_record_number_in_set[GMT_IN]++;
+	GMT->current.io.has_previous_rec = true;
 
 	*retval = (int)n_read;
 	return (&GMT->current.io.record);
@@ -3355,6 +3387,8 @@ GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
 		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
 	}
 	GMT->current.io.data_record_number_in_tbl[GMT_IN] = GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
+	GMT->current.io.has_previous_rec = false;
+
 	return (-1);
 }
 
@@ -3467,6 +3501,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			/* else we got a segment break instead - and header was set to NULL */
 			GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
+			GMT->current.io.has_previous_rec = false;
 			*status = 0;
 			return (NULL);
 		}
@@ -3595,7 +3630,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
 			}
 		}
-		else if (GMT->current.io.skip_duplicates && GMT->current.io.data_record_number_in_set[GMT_IN]) {	/* Test to determine if we should skip repeated duplicate records with same x,y */
+		else if (GMT->current.io.skip_duplicates && GMT->current.io.has_previous_rec) {	/* Test to determine if we should skip repeated duplicate records with same x,y */
 			done = !(GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] &&
 			         GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]);	/* Yes, duplicate */
 		}
@@ -3624,6 +3659,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
 		return (&GMT->current.io.record);	/* Pass back pointer to data array */
 	}
+	GMT->current.io.has_previous_rec = true;
 	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
 }
 
@@ -3857,6 +3893,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 		return (GMT->current.io.curr_rec);
 	}
 	GMT->current.io.data_record_number_in_set[GMT_IN]++;
+	GMT->current.io.has_previous_rec = true;
 	*retval = (int)*n;
 	return (&GMT->current.io.record);
 }
@@ -4317,7 +4354,7 @@ bool gmt_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *head) {
 bool gmtlib_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 
-	if (!GMT->common.g.active || GMT->current.io.rec_no == 0) return (false);	/* Not active or on first point in a segment */
+	if (!(GMT->common.g.active && GMT->current.io.has_previous_rec)) return (false);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see gmtlib_set_gap_param] are met */
 	for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
 		if ((GMT->common.g.get_dist[i] (GMT, GMT->common.g.col[i]) > GMT->common.g.gap[i]) != GMT->common.g.match_all)

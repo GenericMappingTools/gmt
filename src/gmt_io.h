@@ -224,13 +224,11 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 /*! For selecting row ranges via -q */
 struct GMT_ROW_RANGE {
 	int64_t first, last, inc;
-	bool inverse;	/* true if we do NOT want rows in this row range */
 };
 
 /*! For selecting data ranges via -q */
 struct GMT_DATA_RANGE {
 	double first, last;
-	bool inverse;	/* true if we do NOT want rows in this time/data range */
 };
 
 struct GMT_IO {				/* Used to process input data records */
@@ -253,6 +251,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
 	bool variable_in_columns;	/* true if we are reading ASCII records with variable numbers of columns */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
+	bool has_previous_rec;		/* true if we have the previous record for this segment */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 	bool first_rec;			/* true when reading very first data record in a dataset */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */

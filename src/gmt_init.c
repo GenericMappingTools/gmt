@@ -8483,23 +8483,18 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 /*! Routine to decode the [~]<row>|<rowrange>|,... arguments */
-GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int id, char *arg) {
+GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int dir, char *arg) {
 
 	char p[GMT_LEN64] = {""};
-	unsigned int pos = 0, n = 0, j;
-	bool one = false;
+	unsigned int pos = 0, n = 0, j = 0;
 	struct GMT_ROW_RANGE *R = NULL;
 
-	R = GMT->current.io.row_range[id];	/* Just a short-hand */
+	R = GMT->current.io.row_range[dir];	/* Just a short-hand */
+	if (arg[0] == '~') GMT->common.q.inverse[dir] = true, j = 1;
 
 	/* Parsing of <rows> sequences */
-	while ((gmt_strtok (arg, ",", &pos, p))) {	/* While it is not empty, process it */
-		if (p[0] == '~') {	/* Do not want this range */
-			R[n].inverse = true, j = 1, one = true;	/* Can only give one range if negated */
-		}
-		else
-				j = 0;	/* No leading ~ to skip */
-		if ((R[n].inc = gmt_parse_index_range (GMT, &p[j], &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
+	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process it */
+		if ((R[n].inc = gmt_parse_index_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
 		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row  here */
 		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row */
 		if ((++n) == GMT_MAX_RANGES) {
@@ -8507,11 +8502,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int id, c
 			return (GMT_PARSE_ERROR);
 		}
 	}
-	GMT->current.io.n_row_ranges[id] = n;	/* Number of sequences given */
-	if (one && n > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of rows to exclude\n");
-		return (GMT_PARSE_ERROR);
-	}
+	GMT->current.io.n_row_ranges[dir] = n;	/* Number of sequences given */
 	return (GMT_NOERROR);
 }
 
@@ -8519,30 +8510,21 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int id, c
 GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int dir, unsigned int col, char *arg) {
 
 	char p[GMT_LEN64] = {""};
-	unsigned int answer, pos = 0, n = 0, j;
-	bool one = false;
+	unsigned int answer, pos = 0, n = 0, j = 0;
 	struct GMT_DATA_RANGE *R = NULL;
 
 	R = GMT->current.io.data_range[dir];	/* Just a short-hand */
+	if (arg[0] == '~') GMT->common.q.inverse[dir] = true, j = 1;
 
 	/* Parsing of <range> sequences */
-	while ((gmt_strtok (arg, ",", &pos, p))) {	/* While it is not empty, process it */
-		if (p[0] == '~') {	/* Do not want this range */
-			R[n].inverse = true, j = 1, one = true;	/* Can only give one range if negated */
-		}
-		else
-				j = 0;	/* No leading ~ to skip */
-		if ((answer = gmt_parse_data_range (GMT, &p[j], gmt_M_type (GMT, dir, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
+	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process it */
+		if ((answer = gmt_parse_data_range (GMT, p, gmt_M_type (GMT, dir, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
 		if ((++n) == GMT_MAX_RANGES) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
 	GMT->current.io.n_row_ranges[dir] = n;	/* Number of sequences given */
-	if (one && n > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For negating a range you can only give one range of values\n");
-		return (GMT_PARSE_ERROR);
-	}
 	return (GMT_NOERROR);
 }
 
