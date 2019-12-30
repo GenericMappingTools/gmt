@@ -137,7 +137,7 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-hqrst_
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 
