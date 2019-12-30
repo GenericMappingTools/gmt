@@ -257,6 +257,13 @@ enum GMT_enum_inside {
 	GMT_ONEDGE,
 	GMT_INSIDE};
 
+/*! Codes for -q selections */
+enum GMT_enum_skiprows {
+	GMT_RANGE_ROW_IN   = 1,
+	GMT_RANGE_DATA_IN  = 2,
+	GMT_RANGE_ROW_OUT  = 3,
+	GMT_RANGE_DATA_OUT = 4};
+
 /*! Return codes from parsing region modifiers +r,+R,+e */
 enum GMT_enum_region {
 	GMT_REGION_ADD = 1,

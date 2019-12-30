@@ -209,9 +209,9 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 
 /*! . */
 static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
-	/* Returns true of this row should be skipped according to -qi<fows> */
+	/* Returns true of this row should be skipped according to -qi[~]<rows>,...[+a|f|s] */
 	bool pass;
-	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
+	if (GMT->common.q.mode != GMT_RANGE_ROW_IN) return false;	/* -qi<rows> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
 	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
 		if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* row is inside this range */
@@ -224,61 +224,15 @@ static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 
 /*! . */
 static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Returns true of this row should be skipped according to -qi<rangevalues>+c<col> */
+	/* Returns true of this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
 	bool pass;
-	if (GMT->common.q.mode != 2) return false;	/* -qi<times> not active */
+	if (GMT->common.q.mode != GMT_RANGE_DATA_IN) return false;	/* -qi<data> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
 	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
 		if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) return pass;	/* Inside this range at least */
 	}
 	return !pass;
 }
-
-
-#if 0
-
-/*! . */
-static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
-	/* Returns true of this row should be skipped according to -qi<fows> */
-	bool in = false;
-	if (GMT->common.q.mode != 1) return false;	/* -qi<rows> not active */
-	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
-		if (GMT->current.io.row_range[GMT_IN][k].inverse) {	/* outside range is actually inside this range - only this single test in effect */
-			if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* Outside this range at least */
-				if (GMT->current.io.row_range[GMT_IN][k].inc == 1) return true;	/* Yep, definitiely outside */
-				if ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc == 0) return true;	/* Want one of the steps */
-				return false;
-			}
-		}
-		else if (row < GMT->current.io.row_range[GMT_IN][k].first || row > GMT->current.io.row_range[GMT_IN][k].last) continue;	/* Outside this range at least */
-		/* So row is in the desired range, but is inc == 1 or do we need more work? */
-		if (GMT->current.io.row_range[GMT_IN][k].inc == 1)	/* OK, in the requested range */
-			in = true;
-		else	/* Must see if row equals first + n * inc for some n */
-			in = ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc) == 0;
-	}
-	return !in;
-}
-
-/*! . */
-static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Returns true of this row should be skipped according to -qi<rangevalues>+c<col> */
-	bool in = false;
-	if (GMT->common.q.mode != 2) return false;	/* -qi<times> not active */
-	for (unsigned int k = 0; !in && k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
-		if (GMT->current.io.data_range[GMT_IN][k].inverse) {	/* outside range is actually inside this range - only this single test in effect */
-			if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) {	/* Outside this range at least */
-				return true;	/* Yep, definitiely outside */
-			}
-		}
-		else if (GMT->current.io.curr_rec[col] < GMT->current.io.data_range[GMT_IN][k].first || GMT->current.io.curr_rec[col] > GMT->current.io.data_range[GMT_IN][k].last) continue;	/* Outside this range at least */
-		/* So row is in the desired range */
-		in = true;
-
-	}
-	return !in;
-}
-#endif
 
 /*! . */
 static inline uint64_t gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, uint64_t n) {

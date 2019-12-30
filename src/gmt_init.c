@@ -8483,48 +8483,56 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 /*! Routine to decode the [~]<row>|<rowrange>|,... arguments */
-GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int dir, char *arg) {
-
+GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direction, char *arg) {
+	/* Any modifiers +a|f|s have been stripped off by now */
 	char p[GMT_LEN64] = {""};
 	unsigned int pos = 0, n = 0, j = 0;
 	struct GMT_ROW_RANGE *R = NULL;
 
-	R = GMT->current.io.row_range[dir];	/* Just a short-hand */
-	if (arg[0] == '~') GMT->common.q.inverse[dir] = true, j = 1;
+	R = GMT->current.io.row_range[direction];	/* Just a short-hand */
+	if (arg[0] == '~') GMT->common.q.inverse[direction] = true, j = 1;
 
 	/* Parsing of <rows> sequences */
-	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
+		if (p[0] == '~') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			return (GMT_PARSE_ERROR);
+		}
 		if ((R[n].inc = gmt_parse_index_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
-		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row  here */
-		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row */
+		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row */
+		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row unless infinite */
 		if ((++n) == GMT_MAX_RANGES) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded max number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
-	GMT->current.io.n_row_ranges[dir] = n;	/* Number of sequences given */
+	GMT->current.io.n_row_ranges[direction] = n;	/* Number of sequences given */
 	return (GMT_NOERROR);
 }
 
 /*! Routine will decode the [~]<first/last>,|,... arguments */
-GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int dir, unsigned int col, char *arg) {
-
+GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, char *arg) {
+	/* Any modifier +ac<col> has been stripped off by now */
 	char p[GMT_LEN64] = {""};
 	unsigned int answer, pos = 0, n = 0, j = 0;
 	struct GMT_DATA_RANGE *R = NULL;
 
-	R = GMT->current.io.data_range[dir];	/* Just a short-hand */
-	if (arg[0] == '~') GMT->common.q.inverse[dir] = true, j = 1;
+	R = GMT->current.io.data_range[direction];	/* Just a short-hand */
+	if (arg[0] == '~') GMT->common.q.inverse[direction] = true, j = 1;
 
 	/* Parsing of <range> sequences */
-	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((answer = gmt_parse_data_range (GMT, p, gmt_M_type (GMT, dir, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
+	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
+		if (p[0] == '~') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			return (GMT_PARSE_ERROR);
+		}
+		if ((answer = gmt_parse_data_range (GMT, p, gmt_M_type (GMT, direction, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
 		if ((++n) == GMT_MAX_RANGES) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded number of row range arguments (%d)\n", GMT_MAX_RANGES);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded max number of row range arguments (%d)\n", GMT_MAX_RANGES);
 			return (GMT_PARSE_ERROR);
 		}
 	}
-	GMT->current.io.n_row_ranges[dir] = n;	/* Number of sequences given */
+	GMT->current.io.n_row_ranges[direction] = n;	/* Number of sequences given */
 	return (GMT_NOERROR);
 }
 
@@ -8536,17 +8544,17 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -q requires an argument */
 
-	if (arg[0] == 'i') k = 1;	/* Specifically gave input [Default] */
-	else if (arg[0] == 'o') k = 1, direction = GMT_OUT;	/* Specifically gave output */
-	strncpy (GMT->common.q.string[direction], arg, GMT_LEN64-1);	/* Verbatim copy */
+	if (arg[0] == 'i') k = 1;	/* Specifically gave input rows [Default] */
+	else if (arg[0] == 'o') k = 1, direction = GMT_OUT;	/* Specifically gave output rows */
+	strncpy (GMT->common.q.string[direction], arg, GMT_LEN64-1);	/* Verbatim copy of the option args */
 
-	if ((c = strstr (arg, "+c"))) {	/* Set row limits based on data values, not row counters */
-		unsigned int col = atol (&c[2]);
+	if ((c = strstr (arg, "+c"))) {	/* Want row limits based on data values, not row row counters */
+		unsigned int col = atol (&c[2]);	/* Examine the data in this column */
 		c[0] = '\0';	/* Chop off column indicator */
 		answer = gmtinit_parse_q_option_z (GMT, direction, col, &arg[k]);
 		c[0] = '+';	/* Restore modifier */
-		GMT->common.q.col = col;
-		GMT->common.q.mode = 2 + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
+		GMT->common.q.col = col;	/* Remember the column */
+		GMT->common.q.mode = GMT_RANGE_DATA_IN + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
 	}
 	else {	/* Got -q for integer rows */
 		if ((c = strstr (arg, "+a")) || (c = strstr (arg, "+f")) || (c = strstr (arg, "+s"))) {
@@ -8561,8 +8569,12 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 		else	/* Default assignment for -q counter */
 			GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[direction]);
 		answer = gmtinit_parse_q_option_r (GMT, direction, &arg[k]);
-		GMT->common.q.mode = 1 + 2 * direction;	/* Mode flag is 1 (input rows) or 3 (output rows) */
+		GMT->common.q.mode = GMT_RANGE_ROW_IN + 2 * direction;	/* Mode flag is 1 (input rows) or 3 (output rows) */
 		if (c) c[0] = '+';	/* Restore modifier */
+	}
+	if (GMT->current.io.n_row_ranges[direction] == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No valid ranges given [-q%s]!\n", arg);
+		answer = GMT_PARSE_ERROR;
 	}
 	return (answer);
 }
