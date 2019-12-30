@@ -6826,6 +6826,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
 			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude a single range.\n");
+			gmt_message (GMT, "\t   Append +f or +s to reset row count per table or segment [per set (+a).\n");
 			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data ranges.\n");
 			break;
 
@@ -8545,7 +8546,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int dir, 
 	return (GMT_NOERROR);
 }
 
-/*! Routine will decode the -q[i|o\[<row>|<rowrange>|,... arguments */
+/*! Routine will decode the -q[i|o\[<row>|<rowrange>|,...[+a|f|s] arguments */
 int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL;
@@ -8557,7 +8558,7 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 	else if (arg[0] == 'o') k = 1, direction = GMT_OUT;	/* Specifically gave output */
 	strncpy (GMT->common.q.string[direction], arg, GMT_LEN64-1);	/* Verbatim copy */
 
-	if ((c = strstr (arg, "+c"))) {	/* Set row limits based on data values */
+	if ((c = strstr (arg, "+c"))) {	/* Set row limits based on data values, not row counters */
 		unsigned int col = atol (&c[2]);
 		c[0] = '\0';	/* Chop off column indicator */
 		answer = gmtinit_parse_q_option_z (GMT, direction, col, &arg[k]);
@@ -8565,10 +8566,21 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.q.col = col;
 		GMT->common.q.mode = 2 + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
 	}
-	else {	/* Got integer rows */
-		GMT->common.q.rec = &(GMT->current.io.rec_no);
+	else {	/* Got -q for integer rows */
+		if ((c = strstr (arg, "+a")) || (c = strstr (arg, "+f")) || (c = strstr (arg, "+s"))) {
+			switch (c[1]) {
+				case 'a': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[direction]);	break; /* For the whole data set */
+				case 'f': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_tbl[direction]);	break; /* Reset counter per table */
+				case 's': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_seg[direction]);	break; /* Reset countr per segment */
+				default: break;	/* Cannot get here but Coverity does not know that... */
+			}
+			c[0] = '\0';	/* Chop off modifier */
+		}
+		else	/* Default assignment for -q counter */
+			GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[direction]);
 		answer = gmtinit_parse_q_option_r (GMT, direction, &arg[k]);
 		GMT->common.q.mode = 1 + 2 * direction;	/* Mode flag is 1 (input rows) or 3 (output rows) */
+		if (c) c[0] = '+';	/* Restore modifier */
 	}
 	return (answer);
 }

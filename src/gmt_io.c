@@ -3351,9 +3351,10 @@ GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
 	if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
 			GMT->current.io.n_bad_records);
-		GMT->current.io.n_bad_records = GMT->current.io.data_record_number_in_set[GMT_IN] = GMT->current.io.n_clean_rec = 0;
+		GMT->current.io.n_bad_records = GMT->current.io.n_clean_rec = 0;
 		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
 	}
+	GMT->current.io.data_record_number_in_tbl[GMT_IN] = GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
 	return (-1);
 }
 
@@ -3413,6 +3414,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			return (NULL);
 		}
 
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
 		if (outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
 			if (!gmt_is_segment_header (GMT, line))
 				continue;
@@ -3462,6 +3466,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				/* Just save the header content, not the marker and leading whitespace */
 			}
 			/* else we got a segment break instead - and header was set to NULL */
+			GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
 			*status = 0;
 			return (NULL);
 		}
@@ -3613,7 +3618,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		return (&GMT->current.io.record);
 	}
 
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;	/* Got a valid data record (which is true even if it was a gap) */
+	//GMT->current.io.data_record_number_in_set[GMT_IN]++;	/* Got a valid data record (which is true even if it was a gap) */
 	*status = (int)n_ok;			/* Return the number of fields successfully read */
 	if (set_nan_flag) {
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
@@ -4312,7 +4317,7 @@ bool gmt_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *head) {
 bool gmtlib_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 
-	if (!GMT->common.g.active || GMT->current.io.data_record_number_in_set[GMT_IN] == 0) return (false);	/* Not active or on first point in a segment */
+	if (!GMT->common.g.active || GMT->current.io.rec_no == 0) return (false);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see gmtlib_set_gap_param] are met */
 	for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
 		if ((GMT->common.g.get_dist[i] (GMT, GMT->common.g.col[i]) > GMT->common.g.gap[i]) != GMT->common.g.match_all)
@@ -5373,7 +5378,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 
 	unsigned int i;
 
-	GMT->common.q.rec = &(GMT->current.io.rec_no);	/* Default assignment for -q counter */
+	GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[GMT_IN]);	/* Default assignment for -q counter */
 
 	/* Pointer assignment for default ASCII input functions */
 

@@ -1,10 +1,12 @@
 .. _-q_full:
 
-**-q**\ [**i**\ \|\ **o**]\ *rows*\ [**+c**\ *col*]
+**-q**\ [**i**\ \|\ **o**]\ *rows*\ [**+c**\ *col*][**+a**\ \|\ **f**\ \|\ **s**]
     Select specific data rows to be read (**-qi** [Default]) or written (**-qo**) [all].
     Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where
     *inc* defaults to 1 if not specified) separated by commas [Default reads all rows,
-    starting with the first row (0)]. Use **+c**\ *col* to indicate that the arguments
+    starting with the first row (0)]. By default (**+a**) we count rows in the input
+    data set; append **+f** or **+s** to reset the count for each file or segment.
+    Use **+c**\ *col* to indicate that the arguments instead
     are data limits for monotonically increasing *col* values (such as a time series).
     Note: if you arguments contain colons or dashes, use *start*/*stop* instead.
     To read from a given row until the end of the input, leave off *stop*.
