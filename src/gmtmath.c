@@ -38,6 +38,8 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
 
+#define SPECIFIC_OPTIONS "AEILNQST"	/* All non-common options except for -C which we will actually process in the loop over args */
+
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
 EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M);
@@ -6463,7 +6465,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("AEILNQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
+		if (strchr (SPECIFIC_OPTIONS THIS_MODULE_OPTIONS GMT_OPT("F"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
 			if (decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;

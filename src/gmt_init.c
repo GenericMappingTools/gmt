@@ -8093,21 +8093,32 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 //*! . */
 int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop) {
-	/* Parses p looking for range or columns or individual columns.
+	/* Parse p looking for range or columns or individual columns.
 	 * If neither then we just increment both start and stop. */
 	int64_t inc = 1, r = 0;
 	int got;
 	char *c = NULL;
 	if ((c = strchr (p, '-')) || (c = strchr (p, '/'))) {	/* Range of columns given. e.g., 7-9 or 14/19 */
 		char q = c[0];
-		c[0] = ' ';	/* Replace - or . with a space */
-		got = sscanf (p, "%" PRIu64 " %" PRIu64, start, stop);
-		if (c[1] == '\0') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
-		else if (got != 2) inc = 0L;	/* Error flag */
-		c[0] = q;	/* Restore the character */
+		if (p[0] == q) {	/* Got no start - set to 0 */
+			*start = 0;
+			got = sscanf (&p[1], "%" PRIu64, stop) + 1;
+		}
+		else {
+			c[0] = ' ';	/* Replace - or . with a space */
+			got = sscanf (p, "%" PRIu64 " %" PRIu64, start, stop);
+			if (c[1] == '\0') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
+			else if (got != 2) inc = 0L;	/* Error flag */
+			c[0] = q;	/* Restore the character */
+		}
 	}
 	else if ((c = strchr (p, ':'))) {	/* Range of columns given. e.g., 7:9 or 1:2:5 */
-		got = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, start, &inc, stop);
+		if (p[0] == ':') {	/* Did not give the start value */
+			*start = 0;	
+			got = sscanf (&p[1], "%" PRIu64 ":%" PRIu64, &inc, stop) + 1;
+		}
+		else
+			got = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, start, &inc, stop);
 		if (p[strlen(p)-1] == ':') *stop = INTMAX_MAX;	/* Did not specify stop, set to max */
 		else if (got == 2) { *stop = inc; inc = 1L;}	/* Just got start:stop with implicit inc = 1 */
 		else if (got != 3 || inc < 1) inc = 0L;	/* Error flag */
@@ -8142,8 +8153,10 @@ int gmt_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigned int type, do
 		if ((c = strchr (arg, '/')) || (c = strchr (arg, ':'))) q = c[0];	/* Range of values given. e.g., 14.5/3.44 or 14:20 */
 	}
 	if (c) {	/* Got a range */
-		if (arg[0] == q)	/* Got :B which means we eid not get a start so we go from -infinity */
+		if (arg[0] == q) {	/* Got :B which means we eid not get a start so we go from -infinity */
 			*start = -DBL_MAX;
+			gmt_scanf_arg (GMT, &arg[1], type, false, stop);	/* Decode B according to type */
+		}
 		else {	/* Got A:[B] */
 			c[0] = ' ';	/* Temporarily remove the range divider */
 			sscanf (arg, "%s %s", A, B);	/* Split into A and B strings */
@@ -8505,6 +8518,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direc
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
+		/* We can process A or A: or A- or A/ or A:B or A-B or A/B or :B or -B or /B */
 		if ((R[n].inc = gmt_parse_index_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
 		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row */
 		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row unless infinite */
@@ -8533,6 +8547,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direc
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
+		/* We can process A or A/ or A/B or /B */
 		if ((answer = gmt_parse_data_range (GMT, p, gmt_M_type (GMT, direction, col), &R[n].first, &R[n].last)) == GMT_PARSE_ERROR) return (answer);
 		if ((++n) == GMT_MAX_RANGES) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exceeded max number of row range arguments (%d)\n", GMT_MAX_RANGES);
