@@ -1,2 +1,2 @@
-**-q**\ [**i**\ \|\ **o**]\ *rows*\ [**+c**\ *col*] :ref:`(more ...) <-q_full>`
-    Select input or output row range(s) [all].
+**-q**\ [**i**\ \|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\ \|\ **f**\ \|\ **s**] :ref:`(more ...) <-q_full>`
+    Select input or output row or data range(s) [all].
