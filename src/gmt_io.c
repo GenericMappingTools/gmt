@@ -223,13 +223,41 @@ static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
 }
 
 /*! . */
+static inline bool outside_out_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	/* Returns true of this row should be skipped according to -qo[~]<rows>,...[+a|s] */
+	bool pass;
+	if (GMT->common.q.mode != GMT_RANGE_ROW_OUT) return false;	/* -qo<rows> not active */
+	pass = GMT->common.q.inverse[GMT_OUT];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_OUT]; k++) {
+		if (row >= GMT->current.io.row_range[GMT_OUT][k].first && row <= GMT->current.io.row_range[GMT_OUT][k].last) {	/* row is inside this range */
+			if (GMT->current.io.row_range[GMT_OUT][k].inc == 1) return pass;	/* Return if we want to use this row or not */
+			if ((row - GMT->current.io.row_range[GMT_OUT][k].first) % GMT->current.io.row_range[GMT_OUT][k].inc == 0) return pass;	/* Hit one of the steps */
+		}
+	}
+	return !pass;
+}
+
+/*! . */
 static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
 	/* Returns true of this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_DATA_IN) return false;	/* -qi<data> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
+	if (gmt_M_is_dnan (GMT->current.io.curr_rec[col])) return !pass;	/* A NaN value is never in a range */
 	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
 		if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) return pass;	/* Inside this range at least */
+	}
+	return !pass;
+}
+
+/*! . */
+static inline bool outside_out_data_range (struct GMT_CTRL *GMT, unsigned int col, double *data) {
+	/* Returns true of this row should be skipped according to -qo[~]<rangevalues>,...+c<col> */
+	bool pass;
+	if (GMT->common.q.mode != GMT_RANGE_DATA_OUT) return false;	/* -qi<data> not active */
+	pass = GMT->common.q.inverse[GMT_OUT];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_OUT]; k++) {
+		if (data[col] >= GMT->current.io.data_range[GMT_OUT][k].first && data[col] <= GMT->current.io.data_range[GMT_OUT][k].last) return pass;	/* Inside this range at least */
 	}
 	return !pass;
 }
@@ -4552,6 +4580,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	}
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
+		GMT->current.io.data_record_number_in_tbl[GMT_OUT] = GMT->current.io.data_record_number_in_seg[GMT_OUT] = 0;
 		if (DH->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
 			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, DH->io_mode, 1))) {
 				if (close_file) gmt_fclose (GMT, fp);
@@ -5224,6 +5253,8 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
 	GMT->current.io.data_record_number_in_set[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_seg[GMT_OUT]++;
+	if (outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
+	if (outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
 		for (c = 0; c < n_cols; c++) if (gmt_M_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
