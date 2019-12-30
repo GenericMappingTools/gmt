@@ -253,9 +253,7 @@ static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col
 /*! . */
 static inline bool outside_out_data_range (struct GMT_CTRL *GMT, unsigned int col, double *data) {
 	/* Returns true of this row should be skipped according to -qo[~]<rangevalues>,...+c<col> */
-	bool pass;
-	if (GMT->common.q.mode != GMT_RANGE_DATA_OUT) return false;	/* -qi<data> not active */
-	pass = GMT->common.q.inverse[GMT_OUT];
+	bool pass = GMT->common.q.inverse[GMT_OUT];
 	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_OUT]; k++) {
 		if (data[col] >= GMT->current.io.data_range[GMT_OUT][k].first && data[col] <= GMT->current.io.data_range[GMT_OUT][k].last) return pass;	/* Inside this range at least */
 	}
@@ -5253,9 +5251,13 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
 	GMT->current.io.data_record_number_in_set[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_seg[GMT_OUT]++;
-	if (outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
-	if (outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
+	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {
+		if (outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
+	}
+	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {
+		if (outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
+	}
+	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);			/* Normal case; output the record */
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
 		for (c = 0; c < n_cols; c++) if (gmt_M_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
 		return (false);	/* No NaNs, output record */

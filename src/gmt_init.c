@@ -8128,23 +8128,30 @@ int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, in
 
 /*! . */
 int gmt_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigned int type, double *start, double *stop) {
-	/* Parses p looking for range or columns or individual columns.
-	 * If neither then we just increment both start and stop. */
+	/* Parses p looking for range of data or individual values.
+	  * Because values may be negative we cannot use - as a range separator here */
 	int result = GMT_NOERROR;
 	char *c = NULL, A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, q;
-	if (type == GMT_IS_ABSTIME) {	/* yyyy-mm-ddThh:mm:ss.xxx/yyyy-mm-ddThh:mm:ss.xxx  */
+	if (type == GMT_IS_ABSTIME) {	/* yyyy-mm-ddThh:mm:ss.xxx/yyyy-mm-ddThh:mm:ss.xxx format so must insist on slash separation */
 		if ((c = strchr (arg, '/'))) q = '/';
 	}
-	else {	/* Just numbers, can use -, :, or / */
-		if ((c = strchr (arg, '/')) || (c = strchr (arg, ':')) || (c = strchr (arg, '-')))	/* Range of values given. e.g., 14.5-13.44 pr 14/20 */
-			q = c[0];
+	else if (type & GMT_IS_GEO && strchr (arg, ':')) {	/* Geographical lon/lat arguments contain dddd:mm:ss probably, so also use slash */
+		if ((c = strchr (arg, '/'))) q = '/';
 	}
-	if (c) {	/* Got a pair of arguments */
-		c[0] = ' ';
-		sscanf (arg, "%s %s", A, B);
-		gmt_scanf_arg (GMT, A, type, false, start);
-		if (c[1] == '\0') *stop = DBL_MAX; else	/* Did not specify stop, set to max */
-		gmt_scanf_arg (GMT, B, type, false, stop);
+	else {	/* Just floating point numbers, can use :, or / */
+		if ((c = strchr (arg, '/')) || (c = strchr (arg, ':'))) q = c[0];	/* Range of values given. e.g., 14.5/3.44 or 14:20 */
+	}
+	if (c) {	/* Got a range */
+		if (arg[0] == q)	/* Got :B which means we eid not get a start so we go from -infinity */
+			*start = -DBL_MAX;
+		else {	/* Got A:[B] */
+			c[0] = ' ';	/* Temporarily remove the range divider */
+			sscanf (arg, "%s %s", A, B);	/* Split into A and B strings */
+			gmt_scanf_arg (GMT, A, type, false, start);	/* Decode A according to type */
+			if (c[1] == '\0') *stop = DBL_MAX; else	/* Did not specify stop, set to max */
+				gmt_scanf_arg (GMT, B, type, false, stop);	/* Decode B according to type */
+			c[0] = q;	/* Restore divisor */
+		}
 	}
 	else {	/* A single value (?) */
 		gmt_scanf_arg (GMT, arg, type, false, start);
@@ -8152,7 +8159,7 @@ int gmt_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigned int type, do
 	}
 	if ((*stop) < (*start)) { /* Not good */
 		result = GMT_PARSE_ERROR;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad range [%s]: value, start-stop, start:stop, or datetime1/datetime2 must yield monotonically increasing positive selections\n", arg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad range [%s]: value, start:stop, or datetime1/datetime2 must yield monotonically increasing positive selections\n", arg);
 	}
 	return (result);	/* Either > 0 or 0 for error */
 }
