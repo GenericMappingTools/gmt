@@ -6826,8 +6826,24 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
 			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude a single range.\n");
-			gmt_message (GMT, "\t   Append +f or +s to reset row count per table or segment [per set (+a).\n");
-			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data ranges.\n");
+			gmt_message (GMT, "\t   Append +f or +s to reset row count per table or segment [per set (+a)].\n");
+			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for column <col>.\n");
+			break;
+
+		case 'u':	/* -qi option for input only */
+
+			gmt_message (GMT, "\t-qi Select input rows to process [Default reads all rows].\n");
+			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude a single range.\n");
+			gmt_message (GMT, "\t   Append +f or +s to reset row count per table or segment [per set (+a)].\n");
+			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for input column <col>.\n");
+			break;
+
+		case 'v':	/* -qo option for output only */
+
+			gmt_message (GMT, "\t-qo Select output rows to process [Default writes all rows].\n");
+			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude a single range.\n");
+			gmt_message (GMT, "\t   Append +f or +s to reset row count per table or segment [per set (+a)].\n");
+			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for output column <col>.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */

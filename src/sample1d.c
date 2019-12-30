@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 #define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->Vbdefghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "->Vbdefghioqs" GMT_OPT("HMm")
 
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */
@@ -94,8 +94,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-N<time_col>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[<unit>][+n|a] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_s_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[<unit>][+n|a] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -125,7 +125,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the spatial resampling is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
-	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,s,.");
+	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,q,s,.");
 	
 	return (GMT_MODULE_USAGE);
 }

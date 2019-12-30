@@ -150,6 +150,7 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 .. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-qi.rst_
 .. include:: ../../explain_-t.rst_
 
 .. include:: ../../explain_colon.rst_

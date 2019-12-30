@@ -30,6 +30,7 @@ Synopsis
 [ |SYN_OPT-j| ] 
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
 [ **-:**\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT--| ]
@@ -253,6 +254,8 @@ Optional Arguments
 .. include:: explain_-n.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
 

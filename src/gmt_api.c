@@ -11045,6 +11045,14 @@ int GMT_Option (void *V_API, const char *options) {
 			case 'j':	/* Spherical distance calculation mode */
 				arg[k++] = 'A';
 				break;
+			case 'q':	/* Row selection, either just input, output, or both */
+				if (p[1] == 'i')
+					arg[k++] = 'u';
+				else if (p[1] == 'o')
+					arg[k++] = 'v';
+				else
+					arg[k++] = p[0];
+				break;
 			case 'r':	/* Pixel registration */
 				arg[k++] = 'F';
 				break;
