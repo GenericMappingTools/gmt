@@ -3088,13 +3088,15 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 		gmt_update_prev_rec (GMT, n_use);
 		if (gmtio_get_binary_input (GMT, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
 		GMT->current.io.rec_no++;
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
 		status = gmtlib_process_binary_input (GMT, n_use);
 		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	n_read = (GMT->common.i.select) ? gmtlib_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
 
 	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (&GMT->current.io.record); }
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;
 	GMT->current.io.has_previous_rec = true;
 
 	*retval = (int)n_read;
@@ -4465,12 +4467,13 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		}
 		return (2);	/* 2 means skip this record and try again */
 	}
-	else if (GMT->current.io.skip_duplicates && GMT->current.io.data_record_number_in_set[GMT_IN]) {	/* Test to determine if we should skip duplicate records with same x,y */
+	else if (GMT->current.io.skip_duplicates && GMT->current.io.has_previous_rec) {	/* Test to determine if we should skip duplicate records with same x,y */
 		if (GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] && GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
+	GMT->current.io.has_previous_rec = true;
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
