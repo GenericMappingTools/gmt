@@ -3086,7 +3086,7 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);
 		gmt_update_prev_rec (GMT, n_use);
-		if (gmtio_get_binary_input (GMT, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
+		if (gmtio_get_binary_input (GMT, fp, n_use)) { *retval = -1; GMT->current.io.data_record_number_in_tbl[GMT_IN] = 0; return (NULL); }	/* EOF */
 		GMT->current.io.rec_no++;
 		GMT->current.io.data_record_number_in_set[GMT_IN]++;
 		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
@@ -4409,8 +4409,6 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	bool bad_record = false, set_nan_flag = false;
 	/* Here, GMT->current.io.curr_rec has been filled in by fread */
 
-	if (outside_in_row_range (GMT, *(GMT->common.q.rec))) return (2);	/* Record is outside desired row range of interest */
-
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
@@ -4444,8 +4442,6 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		n_NaN++;
 	}
 
-	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as key data value is outside desired data-range */
-
 	if (!GMT->current.io.status && GMT->current.setting.n_bin_header_cols) {	/* Must have n_read NaNs to qualify as segment header (if enabled) */
 		if (n_read >= GMT->current.setting.n_bin_header_cols && n_NaN == n_read) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected binary segment header near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
@@ -4453,10 +4449,14 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 			GMT->current.io.segment_header[0] = '\0';
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			GMT->current.io.seg_no++;
-			GMT->current.io.data_record_number_in_set[GMT_IN] = 0;
+			GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
 			return (1);	/* 1 means segment header */
 		}
 	}
+	if (outside_in_row_range (GMT, *(GMT->common.q.rec))) return (2);	/* Record is outside desired row range of interest */
+
+	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as key data value is outside desired data-range */
+
 	if (bad_record) {
 		GMT->current.io.n_bad_records++;
 		if (GMT->current.io.give_report && GMT->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
