@@ -36,19 +36,9 @@ social and biological sciences, and by geographers, fisheries institutes, oil
 companies, a wide range of government agencies, and last but not least innumerable
 hobbyists.
 
-## A reminder
+## Installation
 
-If you think it is appropriate, you may consider paying us back by including
-our latest article in the reference list of your future publications that
-will benefit from the availability of GMT:
-
-> Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
-> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
-> https://doi.org/10.1029/2019GC008515
-
-## Install GMT
-
-GMT has been installed successfully under UNIX/Linux/OS X on workstations.  It
+GMT has been installed successfully under UNIX/Linux/macOS on workstations.  It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
@@ -65,32 +55,15 @@ You can obtain GMT and support data from the [GMT main site](https://www.generic
 Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
 
-## GMT supplemental Code
+## Citation
 
-GMT users elsewhere have developed programs that utilize the GMT libraries and
-produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation. Currently, the supplemental archive include these directories:
+If you think it is appropriate, you may consider paying us back by including
+our latest article in the reference list of your future publications that
+will benefit from the availability of GMT:
 
--  geodesy: Velocity arrows and error ellipses, solid Earth tides, GPS gridding.
--  gshhg: Data extractor for GSHHG shoreline polygons and rivers, borders.
--  img: Data extractor for Smith/Sandwell altimetry grids.
--  mgd77: Programs for handling of native MGD77 files.
--  potential: Geopotential manipulations.
--  segy: Plotting SEGY seismic data sets.
--  seis: Plotting of focal mechanisms and SAC (seismic Analysis Code) data.
--  spotter: Plate tectonic & kinematics applications.
--  x2sys: Track intersection (crossover) tools.
-
-## Misc
-
-Before running programs, there are a few things you should do/know:
-
-    Read carefully the documentation for the gmt system. This can be
-    found as HTML files in the doc/html directories.
-    The successful operation of gmt-programs depends directly on your
-    understanding of how gmt "works", its option lists, I/O, and composite
-    plot mechanisms. Then, before running individual gmt programs, read
-    the associated man page.
+> Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
+> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
+> https://doi.org/10.1029/2019GC008515
 
 ## Software support
 
