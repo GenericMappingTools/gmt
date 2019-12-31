@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdinfo** *grdfiles* [ |-C|\ [**n**\ \|\ **t**\] ]
-[ |-D|\ [*xoff*\ [/*yoff*][**+n**] ]
+[ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ] ]
 [ |-L|\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**\ \|\ **a**] ] [ |-M| ]
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*xoff*\ [/*yoff*][**+i**]
+**-D**\ [*xoff*\ [/*yoff*]][**+i**]
     Divide a single grid's domain (or the **-R** domain, if no grid given)
     into tiles of size *dx* times *dy* (set via **-I**).  You can specify
     overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
