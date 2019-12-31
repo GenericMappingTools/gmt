@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Convert grid to data table"
 #define THIS_MODULE_KEYS	"<G{+,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>RVbdfhos" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>RVbdfhoqs" GMT_OPT("H")
 
 struct GRD2XYZ_CTRL {
 	struct GRD2XYZ_C {	/* -C[f|i] */
@@ -75,8 +75,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[f|i]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[a|<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[a|<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     f  4-byte floating point single precision.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
-	GMT_Option (API, "bo,d,f,h,o,s,:,.");
+	GMT_Option (API, "bo,d,f,h,o,qo,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

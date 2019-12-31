@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-qo| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT--| ]
 
@@ -122,6 +123,8 @@ Optional Arguments
 ..  include:: explain_-f.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-qo.rst_
 
 .. include:: explain_-s.rst_
 
