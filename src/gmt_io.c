@@ -3866,16 +3866,19 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 		/* Increment record counters */
 		GMT->current.io.nrec++;
 		GMT->current.io.rec_no++;
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
+		GMT->current.io.has_previous_rec = true;
 		status = gmtlib_process_binary_input (GMT, n_use);	/* Determine if a header record, data record, or record to skip */
 		if (status == 1) { *retval = 0; return (NULL); }	/* Found a segment header, meaning all columns were NaN */
+		if (gmtlib_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
+			*retval = gmtlib_set_gap (GMT);
+			return (&GMT->current.io.record);
+		}
+		GMT->current.io.has_previous_rec = true;
 	} while (status == 2);	/* Continue reading when a record is to be skipped */
 
-	if (gmtlib_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
-		*retval = gmtlib_set_gap (GMT);
-		return (GMT->current.io.curr_rec);
-	}
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;
-	GMT->current.io.has_previous_rec = true;
 	*retval = (int)*n;
 	return (&GMT->current.io.record);
 }
