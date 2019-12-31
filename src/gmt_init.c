@@ -8162,14 +8162,18 @@ int gmt_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigned int type, do
 	if (type == GMT_IS_ABSTIME) {	/* yyyy-mm-ddThh:mm:ss.xxx/yyyy-mm-ddThh:mm:ss.xxx format so must insist on slash separation */
 		if ((c = strchr (arg, '/'))) q = '/';
 	}
-	else if (type & GMT_IS_GEO && strchr (arg, ':')) {	/* Geographical lon/lat arguments contain dddd:mm:ss probably, so also use slash */
+	else if (type & GMT_IS_GEO && strchr (arg, ':')) {	/* Geographical lon/lat arguments contain dddd:mm:ss probably, so also use slash if found */
+		char *d = strchr (arg, '-');
 		if ((c = strchr (arg, '/'))) q = '/';
+		if (c == NULL && d && (d > arg)) c = d, q = c[0];	/* Used hyphens as separator so we are OK using it since no slash was found */
 	}
 	else {	/* Just floating point numbers, can use :, or / */
+		char *d = strchr (arg, '-');
 		if ((c = strchr (arg, '/')) || (c = strchr (arg, ':'))) q = c[0];	/* Range of values given. e.g., 14.5/3.44 or 14:20 */
+		if (c == NULL && d && (d > arg)) c = d, q = c[0];	/* Used hyphens as separator so we are OK using it since no slash or colon was found */
 	}
 	if (c) {	/* Got a range */
-		if (arg[0] == q) {	/* Got :B which means we eid not get a start so we go from -infinity */
+		if (arg[0] == q) {	/* Got :B which means we did not get a start so we start at -infinity */
 			*start = -DBL_MAX;
 			gmt_scanf_arg (GMT, &arg[1], type, false, stop);	/* Decode B according to type */
 		}
@@ -8177,7 +8181,8 @@ int gmt_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigned int type, do
 			c[0] = ' ';	/* Temporarily remove the range divider */
 			sscanf (arg, "%s %s", A, B);	/* Split into A and B strings */
 			gmt_scanf_arg (GMT, A, type, false, start);	/* Decode A according to type */
-			if (c[1] == '\0') *stop = DBL_MAX; else	/* Did not specify stop, set to max */
+			if (c[1] == '\0') *stop = DBL_MAX;	/* Did not specify stop, set to +infinity */
+			else
 				gmt_scanf_arg (GMT, B, type, false, stop);	/* Decode B according to type */
 			c[0] = q;	/* Restore divisor */
 		}
