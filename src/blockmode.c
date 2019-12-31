@@ -461,7 +461,7 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 			if (index) src = get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
 		}
 		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
-			if (index) {	/* Cannot have multiple modes when we are requesting teh source, go with high or low per emode setting */
+			if (index) {	/* Cannot have multiple modes when we are requesting the source, go with high or low per emode setting */
 				if (emode & BLK_DO_INDEX_HI) {	/* OK, we are interested in the higher mode only */
 					src = get_source (d, i, j, emode);	/* Must find corresponding high index */
 					mode = 0.5 * (d[i].a[k] + d[j].a[k]);
