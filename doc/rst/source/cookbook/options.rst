@@ -53,6 +53,8 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-p**   | Control perspective views for plots                                |
 +----------+--------------------------------------------------------------------+
+| **-q**   | Specify which input rows to read or output rows to write           |
++----------+--------------------------------------------------------------------+
 | **-r**   | Set grid registration [Default is gridline]                        |
 +----------+--------------------------------------------------------------------+
 | **-s**   | Control output of records containing one or more NaNs              |
@@ -1072,18 +1074,18 @@ on columns from the physical record. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
 :doc:`/blockmean` you would specify
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
-will be used as is. Optionally, you can specify that input columns
+will be used as given. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
 Do so by appending [**+l**][\ **+s**\ *scale*][\ **+o**\ *offset*] to
 each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
-part of your subset logical record then also select the special column
+part of your subset logical record then you must also select the special column
 by requesting column **t**, otherwise we ignore trailing text.  If you only
 want to select one word from the trailing text, then append the word number
 (0 is the first word).  Finally, to use the entire numerical record and
-ignore trailing text, use **-in**.
+ignore all trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1173,6 +1175,24 @@ arguments, the values from the last use of **-p** in a previous
 GMT command will be used.  Alternatively, you can perform a simple rotation
 about the z-axis by just giving the rotation angle.  Optionally, use **+v**
 or **+w** to select another axis location than the plot origin.
+
+.. _option_-q:
+
+Data row selection: The **-q** option
+-------------------------------------
+
+Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
+and **-qo** options control which data *rows* to read and write. As for columns, you
+can specify specific rows, a range of rows, or several sets of row ranges. You can also
+invert your selections with a leading ~ and then we select all the rows *not* specified by
+your ranges.  Normally, the row counter starts at 0 and increases until the end of the
+data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
+table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1**+s**
+will only read the 2nd data record from each of the segments found.  Note that header records do not
+increase the row counters; only data records do.  Instead of rows you may specify data
+*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
+data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
+note that when **+c** is used the **+a**\ \|\ **f**\ \|\ **s** have no effect.
 
 .. _option_nodereg:
 
