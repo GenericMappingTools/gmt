@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # Until/if we are able to get MATLAB to not override every

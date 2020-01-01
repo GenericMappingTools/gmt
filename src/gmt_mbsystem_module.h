@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019 by pwessel
+ * Copyright (c) 2016-2020 by pwessel
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 

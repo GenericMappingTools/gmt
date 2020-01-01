@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #
-# Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script just makes the include snippet gmt_enum_dict.h

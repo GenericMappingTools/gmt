@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #
-# Copyright (c) 2009-2019 by David Sandwell and Paul Wessel
+# Copyright (c) 2009-2020 by David Sandwell and Paul Wessel
 # Credit to Joaquim Luis for adding KML output from ps2raster
 #
 # Shell script that will generate a Google Earth png tile from
