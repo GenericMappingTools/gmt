@@ -285,6 +285,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	                                   "Syntax error -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active,
 	                                   "Syntax error: Only one of -I -T can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.active,
+	                                   "Syntax error: Only one of -C, -F can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
 	                                   "Syntax error: The -o option requires -Cn\n");
 
