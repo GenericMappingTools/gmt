@@ -49,6 +49,8 @@
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
+#define GMT_qi_OPT	"-qi[~]<rows>[,...][+c<col>][+a|f|s]"
+#define GMT_qo_OPT	"-qo[~]<rows>[,...][+c<col>][+a|f|s]"
 #define GMT_PAR_OPT	"--PAR=<value>"
 
 #ifdef GMT_MP_ENABLED
@@ -116,6 +118,7 @@
 #define GMT_l_OPT	"-l<label>[<mods>]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...][t[<word>]]"
+#define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|f|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"
 #define GMT_s_OPT	"-s[<cols>][+a|r]"

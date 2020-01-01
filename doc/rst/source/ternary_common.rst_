@@ -122,6 +122,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_-qi.rst_
+
 .. include:: explain_colon.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

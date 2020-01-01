@@ -2183,7 +2183,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
 	if (!strncmp (GMT->init.module_name, "inset", 5U))
-		no_scaling = 1;	/* Dont scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
+		no_scaling = 1;	/* Don't scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
 
 	w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 

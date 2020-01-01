@@ -38,6 +38,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -278,6 +279,8 @@ Optional Arguments
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
 

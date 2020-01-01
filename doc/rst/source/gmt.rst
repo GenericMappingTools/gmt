@@ -171,6 +171,7 @@ The Common GMT Options
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
+|SYN_OPT-q|
 |SYN_OPT-r|
 |SYN_OPT-s|
 |SYN_OPT-t|
@@ -244,6 +245,15 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-ocols_full.rst_
 
 .. include:: explain_perspective_full.rst_
+
+.. |Add_-q| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-q_full.rst_
+
+.. |Add_-qi| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-qi_full.rst_
+
+.. |Add_-qo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-qo_full.rst_
 
 .. include:: explain_nodereg_full.rst_
 

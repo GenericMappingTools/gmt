@@ -3670,6 +3670,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				if ((Din_obj = S_obj->resource) == NULL)	/* Ooops, noting there? */
 					return_null (API, GMT_PTR_IS_NULL);
+				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+					GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from GMT_DATASET memory location\n");
 				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL, NULL);
 				break;
@@ -3679,6 +3681,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				gmt_M_free (GMT, D_obj->hidden);
 				gmt_M_free (GMT, D_obj);
 				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+					GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from GMT_DATASET memory location\n");
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				DH = gmt_get_DD_hidden (D_obj);
@@ -3692,6 +3696,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					return_null (API, GMT_PTR_IS_NULL);
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user matrix location\n");
+				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+					GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qi is not implemented for [GMT_IS_DUPLICATE,GMT_IS_REFERENCE]|GMT_IS_MATRIX external memory objects\n");
 				/* Allocate a table with a single segment given matrix dimensions, but if nan-record we may end up with more segments */
 				smode = (M_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
@@ -3756,6 +3762,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
+				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+					GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE|GMT_VIA_VECTOR external memory objects\n");
 				/* Allocate a single table with one segment - there may be more if there are nan-records */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a vector has text we have a mixed record */
@@ -3819,6 +3827,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				if (V_obj->type[0] != GMT_DOUBLE) {
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
 				}
+				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+					GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE|GMT_VIA_VECTOR external memory objects\n");
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
@@ -4024,6 +4034,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 
 		case GMT_IS_DUPLICATE:		/* Duplicate the input dataset on output */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
+			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to GMT_DATASET memory location\n");
 			D_copy = gmt_duplicate_dataset (GMT, D_obj, GMT_ALLOC_NORMAL, NULL);
 			S_obj->resource = D_copy;	/* Set resource pointer from object to this dataset */
@@ -4031,6 +4043,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
+			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_DATASET memory location\n");
 			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
 			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
@@ -4039,6 +4053,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user matrix location\n");
+			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE|GMT_VIA_MATRIX external memory objects\n");
 			save = GMT->current.io.multi_segments[GMT_OUT];
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
 			n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of rows needed to hold the data [incl any segment headers] */
@@ -4098,6 +4114,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
+			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE|GMT_VIA_VECTOR external memory objects\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
 			save = GMT->current.io.multi_segments[GMT_OUT];
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
@@ -4149,6 +4167,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			break;
 
 		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
+			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE|GMT_VIA_VECTOR external memory objects\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "Referencing data table to users column-vector location\n");
 			if (D_obj->n_tables > 1 || D_obj->n_segments > 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Reference by vector requires a single segment!\n");
@@ -11044,6 +11064,14 @@ int GMT_Option (void *V_API, const char *options) {
 				break;
 			case 'j':	/* Spherical distance calculation mode */
 				arg[k++] = 'A';
+				break;
+			case 'q':	/* Row selection, either just input, output, or both */
+				if (p[1] == 'i')
+					arg[k++] = 'u';
+				else if (p[1] == 'o')
+					arg[k++] = 'v';
+				else
+					arg[k++] = p[0];
 				break;
 			case 'r':	/* Pixel registration */
 				arg[k++] = 'F';

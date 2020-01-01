@@ -208,6 +208,59 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line);
 /* Local functions */
 
 /*! . */
+static inline bool outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	/* Returns true of this row should be skipped according to -qi[~]<rows>,...[+a|f|s] */
+	bool pass;
+	if (GMT->common.q.mode != GMT_RANGE_ROW_IN) return false;	/* -qi<rows> not active */
+	pass = GMT->common.q.inverse[GMT_IN];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (row >= GMT->current.io.row_range[GMT_IN][k].first && row <= GMT->current.io.row_range[GMT_IN][k].last) {	/* row is inside this range */
+			if (GMT->current.io.row_range[GMT_IN][k].inc == 1) return pass;	/* Return if we want to use this row or not */
+			if ((row - GMT->current.io.row_range[GMT_IN][k].first) % GMT->current.io.row_range[GMT_IN][k].inc == 0) return pass;	/* Hit one of the steps */
+		}
+	}
+	return !pass;
+}
+
+/*! . */
+static inline bool outside_out_row_range (struct GMT_CTRL *GMT, int64_t row) {
+	/* Returns true of this row should be skipped according to -qo[~]<rows>,...[+a|s] */
+	bool pass;
+	if (GMT->common.q.mode != GMT_RANGE_ROW_OUT) return false;	/* -qo<rows> not active */
+	pass = GMT->common.q.inverse[GMT_OUT];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_OUT]; k++) {
+		if (row >= GMT->current.io.row_range[GMT_OUT][k].first && row <= GMT->current.io.row_range[GMT_OUT][k].last) {	/* row is inside this range */
+			if (GMT->current.io.row_range[GMT_OUT][k].inc == 1) return pass;	/* Return if we want to use this row or not */
+			if ((row - GMT->current.io.row_range[GMT_OUT][k].first) % GMT->current.io.row_range[GMT_OUT][k].inc == 0) return pass;	/* Hit one of the steps */
+		}
+	}
+	return !pass;
+}
+
+/*! . */
+static inline bool outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
+	/* Returns true of this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
+	bool pass;
+	if (GMT->common.q.mode != GMT_RANGE_DATA_IN) return false;	/* -qi<data> not active */
+	pass = GMT->common.q.inverse[GMT_IN];
+	if (gmt_M_is_dnan (GMT->current.io.curr_rec[col])) return !pass;	/* A NaN value is never in a range */
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_IN]; k++) {
+		if (GMT->current.io.curr_rec[col] >= GMT->current.io.data_range[GMT_IN][k].first && GMT->current.io.curr_rec[col] <= GMT->current.io.data_range[GMT_IN][k].last) return pass;	/* Inside this range at least */
+	}
+	return !pass;
+}
+
+/*! . */
+static inline bool outside_out_data_range (struct GMT_CTRL *GMT, unsigned int col, double *data) {
+	/* Returns true of this row should be skipped according to -qo[~]<rangevalues>,...+c<col> */
+	bool pass = GMT->common.q.inverse[GMT_OUT];
+	for (unsigned int k = 0; k < GMT->current.io.n_row_ranges[GMT_OUT]; k++) {
+		if (data[col] >= GMT->current.io.data_range[GMT_OUT][k].first && data[col] <= GMT->current.io.data_range[GMT_OUT][k].last) return pass;	/* Inside this range at least */
+	}
+	return !pass;
+}
+
+/*! . */
 static inline uint64_t gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, uint64_t n) {
 	/* Return the actual items needed (which may be more than n if gap testing demands it) */
 	if (GMT->common.g.active) return (MAX (n, GMT->common.g.n_col));	/* n or n_col (if larger) */
@@ -3033,15 +3086,18 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);
 		gmt_update_prev_rec (GMT, n_use);
-		if (gmtio_get_binary_input (GMT, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
+		if (gmtio_get_binary_input (GMT, fp, n_use)) { *retval = -1; GMT->current.io.data_record_number_in_tbl[GMT_IN] = 0; return (NULL); }	/* EOF */
 		GMT->current.io.rec_no++;
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
 		status = gmtlib_process_binary_input (GMT, n_use);
 		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	n_read = (GMT->common.i.select) ? gmtlib_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
 
 	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (&GMT->current.io.record); }
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;
+	GMT->current.io.has_previous_rec = true;
 
 	*retval = (int)n_read;
 	return (&GMT->current.io.record);
@@ -3304,6 +3360,20 @@ GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_o
 		strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
 }
 
+GMT_LOCAL inline int reached_EOF (struct GMT_CTRL *GMT) {
+	GMT->current.io.status = GMT_IO_EOF;
+	if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
+			GMT->current.io.n_bad_records);
+		GMT->current.io.n_bad_records = GMT->current.io.n_clean_rec = 0;
+		GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
+	}
+	GMT->current.io.data_record_number_in_tbl[GMT_IN] = GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
+	GMT->current.io.has_previous_rec = false;
+
+	return (-1);
+}
+
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
@@ -3346,6 +3416,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			*status = 0;
 			return (NULL);
 		}
+
 		/* Here we are done with any header records implied by -h */
 		if (GMT->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read a single line */
 			p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
@@ -3355,17 +3426,17 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			while ((p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) && gmt_is_a_blank_line (line)) GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
-			GMT->current.io.status = GMT_IO_EOF;
-			if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n",
-				            GMT->current.io.n_bad_records);
-				GMT->current.io.n_bad_records = GMT->current.io.data_record_number_in_set[GMT_IN] = GMT->current.io.n_clean_rec = 0;
-				GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
-			}
-			*status = -1;
+			*status = reached_EOF (GMT);
 			return (NULL);
 		}
 
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
+		if (outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
+			if (!gmt_is_segment_header (GMT, line))
+				continue;
+		}
 		/* First chop off trailing whitespace and commas */
 		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
@@ -3411,6 +3482,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				/* Just save the header content, not the marker and leading whitespace */
 			}
 			/* else we got a segment break instead - and header was set to NULL */
+			GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
+			GMT->current.io.has_previous_rec = false;
 			*status = 0;
 			return (NULL);
 		}
@@ -3514,6 +3587,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				}
 			}
 		}
+		if (outside_in_data_range (GMT, GMT->common.q.col))	/* Must skip this record as key column value is outside desired data-range */
+			continue;
+
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (start_of_text < (GMT_BUFSIZ-1) && GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
 			gmtio_extract_trailing_text (GMT, start_of_text);
@@ -3536,7 +3612,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
 			}
 		}
-		else if (GMT->current.io.skip_duplicates && GMT->current.io.data_record_number_in_set[GMT_IN]) {	/* Test to determine if we should skip repeated duplicate records with same x,y */
+		else if (GMT->current.io.skip_duplicates && GMT->current.io.has_previous_rec) {	/* Test to determine if we should skip repeated duplicate records with same x,y */
 			done = !(GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] &&
 			         GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]);	/* Yes, duplicate */
 		}
@@ -3559,12 +3635,13 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		return (&GMT->current.io.record);
 	}
 
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;	/* Got a valid data record (which is true even if it was a gap) */
+	//GMT->current.io.data_record_number_in_set[GMT_IN]++;	/* Got a valid data record (which is true even if it was a gap) */
 	*status = (int)n_ok;			/* Return the number of fields successfully read */
 	if (set_nan_flag) {
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
 		return (&GMT->current.io.record);	/* Pass back pointer to data array */
 	}
+	GMT->current.io.has_previous_rec = true;
 	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
 }
 
@@ -3789,15 +3866,19 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 		/* Increment record counters */
 		GMT->current.io.nrec++;
 		GMT->current.io.rec_no++;
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
+		GMT->current.io.has_previous_rec = true;
 		status = gmtlib_process_binary_input (GMT, n_use);	/* Determine if a header record, data record, or record to skip */
 		if (status == 1) { *retval = 0; return (NULL); }	/* Found a segment header, meaning all columns were NaN */
+		if (gmtlib_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
+			*retval = gmtlib_set_gap (GMT);
+			return (&GMT->current.io.record);
+		}
+		GMT->current.io.has_previous_rec = true;
 	} while (status == 2);	/* Continue reading when a record is to be skipped */
 
-	if (gmtlib_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
-		*retval = gmtlib_set_gap (GMT);
-		return (GMT->current.io.curr_rec);
-	}
-	GMT->current.io.data_record_number_in_set[GMT_IN]++;
 	*retval = (int)*n;
 	return (&GMT->current.io.record);
 }
@@ -4258,7 +4339,7 @@ bool gmt_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *head) {
 bool gmtlib_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 
-	if (!GMT->common.g.active || GMT->current.io.data_record_number_in_set[GMT_IN] == 0) return (false);	/* Not active or on first point in a segment */
+	if (!(GMT->common.g.active && GMT->current.io.has_previous_rec)) return (false);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see gmtlib_set_gap_param] are met */
 	for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
 		if ((GMT->common.g.get_dist[i] (GMT, GMT->common.g.col[i]) > GMT->common.g.gap[i]) != GMT->common.g.match_all)
@@ -4363,6 +4444,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (GMT->current.io.skip_if_NaN[col_no]) set_nan_flag = true;
 		n_NaN++;
 	}
+
 	if (!GMT->current.io.status && GMT->current.setting.n_bin_header_cols) {	/* Must have n_read NaNs to qualify as segment header (if enabled) */
 		if (n_read >= GMT->current.setting.n_bin_header_cols && n_NaN == n_read) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected binary segment header near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
@@ -4370,10 +4452,14 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 			GMT->current.io.segment_header[0] = '\0';
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			GMT->current.io.seg_no++;
-			GMT->current.io.data_record_number_in_set[GMT_IN] = 0;
+			GMT->current.io.data_record_number_in_seg[GMT_IN] = 0;
 			return (1);	/* 1 means segment header */
 		}
 	}
+	if (outside_in_row_range (GMT, *(GMT->common.q.rec))) return (2);	/* Record is outside desired row range of interest */
+
+	if (outside_in_data_range (GMT, GMT->common.q.col)) return (2);	/* Must skip this record as key data value is outside desired data-range */
+
 	if (bad_record) {
 		GMT->current.io.n_bad_records++;
 		if (GMT->current.io.give_report && GMT->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
@@ -4384,12 +4470,13 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		}
 		return (2);	/* 2 means skip this record and try again */
 	}
-	else if (GMT->current.io.skip_duplicates && GMT->current.io.data_record_number_in_set[GMT_IN]) {	/* Test to determine if we should skip duplicate records with same x,y */
+	else if (GMT->current.io.skip_duplicates && GMT->current.io.has_previous_rec) {	/* Test to determine if we should skip duplicate records with same x,y */
 		if (GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] && GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
+	GMT->current.io.has_previous_rec = true;
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
@@ -4497,6 +4584,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	}
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
+		GMT->current.io.data_record_number_in_tbl[GMT_OUT] = GMT->current.io.data_record_number_in_seg[GMT_OUT] = 0;
 		if (DH->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
 			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, DH->io_mode, 1))) {
 				if (close_file) gmt_fclose (GMT, fp);
@@ -5169,7 +5257,13 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
 	GMT->current.io.data_record_number_in_set[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_seg[GMT_OUT]++;
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
+	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {
+		if (outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
+	}
+	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {
+		if (outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
+	}
+	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);			/* Normal case; output the record */
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
 		for (c = 0; c < n_cols; c++) if (gmt_M_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
 		return (false);	/* No NaNs, output record */
@@ -5313,6 +5407,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	 * gmtlib_io_init must be called before parsing of defaults. */
 
 	unsigned int i;
+
+	GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[GMT_IN]);	/* Default assignment for -q counter */
 
 	/* Pointer assignment for default ASCII input functions */
 

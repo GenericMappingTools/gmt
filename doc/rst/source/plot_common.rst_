@@ -222,6 +222,8 @@ Optional Arguments
 .. |Add_-l| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-l.rst_
 
+.. include:: explain_-qi.rst_
+
 .. include:: explain_colon.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

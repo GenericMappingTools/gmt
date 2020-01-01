@@ -1,0 +1,2 @@
+**-qo**\ [~]\ *rows*\ [**+c**\ *col*][**+a**\ \|\ **f**\ \|\ **s**] :ref:`(more ...) <-qo_full>`
+    Select output rows or data range(s) [all].

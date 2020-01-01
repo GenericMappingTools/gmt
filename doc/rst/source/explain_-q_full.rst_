@@ -1,0 +1,13 @@
+.. _-q_full:
+
+**-q**\ [**i**\ \|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\ \|\ **f**\ \|\ **s**]
+    Select specific data rows to be read (**-qi** [Default]) or written (**-qo**) [all].
+    Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where
+    *inc* defaults to 1 if not specified) separated by commas [Default reads/writes all rows,
+    starting with the first row (0)]. By default (**+a**) we count rows in the data set;
+    append **+f** or **+s** to reset the count at the start of each file or segment.
+    Alternatively, use **+c**\ *col* to indicate that the arguments instead
+    are min/max *data limits* for the values in column *col*.
+    Note: Because arguments may contain colons or be negative, your must specify *start*/*stop* instead.
+    To read (or write) from a given row until the end of the data, leave off *stop*.
+    To reverse the tests, prepend ~ before giving your first range.

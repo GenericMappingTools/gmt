@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ **-it**\ *word* ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]

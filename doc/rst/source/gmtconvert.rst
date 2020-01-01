@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -243,6 +244,8 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
+.. include:: explain_-q.rst_
+
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
@@ -257,70 +260,50 @@ Examples
 
 .. include:: explain_example.rst_
 
-To convert the binary file test.b (single precision) with 4 columns to ASCII:
-
-   ::
+To convert the binary file test.b (single precision) with 4 columns to ASCII::
 
     gmt convert test.b -bi4f > test.dat
 
-To convert the multiple segment ASCII table test.txt to a double precision binary file:
-
-   ::
+To convert the multiple segment ASCII table test.txt to a double precision binary file::
 
     gmt convert test.txt -bo > test.b
 
-You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try
-
-   ::
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try::
 
     gmt convert table.txt -o5,0 | gmt plot ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
-columns 4-6 and write ASCII with the command
-
-   ::
+columns 4-6 and write ASCII with the command::
 
     gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.txt:
-
-   ::
+first column of a file right.txt::
 
     gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
 To extract all segments in the file big_file.txt whose headers contain
-the string "RIDGE AXIS", try
-
-   ::
+the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
-followed by an integer number and any letter between "g" and "l", try
-
-   ::
+followed by an integer number and any letter between "g" and "l", try::
 
     gmt convert -S~"/^profile [0-9]+[g-l]$/"
 
 To reverse the order of segments in a file without reversing the order
-of records within each segment, try
-
-   ::
+of records within each segment, try::
 
     gmt convert lots_of_segments.txt -Is > last_segment_first.txt
 
-To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try
-
-   ::
+To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try::
 
     gmt convert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 
-To extract the attribute ELEVATION from an ogr gmt file like this
-
-   ::
+To extract the attribute ELEVATION from an ogr gmt file like this::
 
     # @VGMT1.0 @GPOINT
     ...
@@ -330,32 +313,32 @@ To extract the attribute ELEVATION from an ogr gmt file like this
     # @D4.945000|-106500.00000000|-32700.00000000
     -9.36890245902635 39.367156766570389
 
-do
-
-   ::
+do::
 
     gmt convert file.gmt -a2=ELEVATION > xyz.dat
 
-or just
-
-   ::
+or just::
 
     gmt convert file.gmt -aELEVATION > xyz.dat
 
 To connect all points in the file sensors.txt with the specified origin
-at 23.5/19, try
-
-   ::
+at 23.5/19, try::
 
     gmt convert sensors.txt -F23.5/19 > lines.txt
 
 To write all segments in the two files A.txt and B.txt to
 individual files named profile_005000.txt, profile_005001.txt, etc.,
-where we reset the origin of the sequential numbering from 0 to 5000, try
-
-   ::
+where we reset the origin of the sequential numbering from 0 to 5000, try::
 
     gmt convert A.txt B.txt -Dprofile_%6.6d.txt+o5000
+
+To only read rows 100-200 and 500-600 from file junk.txt, try::
+
+    gmt convert junk.txt -q100-200,500-600 < subset.txt
+
+To get all rows except those bad ones between rows 1000-2000, try::
+
+    gmt convert junk.txt -q~1000-2000 > good.txt
 
 See Also
 --------

@@ -991,7 +991,7 @@ GMT_LOCAL void setjd0(int iyr, int imo, int idy) {
 GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, int *mjd, double *fmjd) {
 	/* convert civil date to modified julian date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100     (leap year protocols) */
+	/* only valid in range mar-1900 through feb-2100     (leap year protocols) */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed against table 3.3 values on pg.34 */
 	int m, y, it1, it2;
@@ -1013,7 +1013,7 @@ GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, i
 GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *ihr, int *imn, double *sec) {
 	/* convert modified julian date to civil date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100 */
+	/* only valid in range mar-1900 through feb-2100 */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed for leap years (incl. year 2000) */
 	static int ia, ib, ic, id, ie, it1, it2, it3;
