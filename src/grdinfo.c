@@ -118,6 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no grid is given then -R must be given and we tile based on the given region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to append the region string as trailing text to the numerical columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Report domain in world mapping format [Default is generic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
@@ -264,7 +265,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
+	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
 	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
 	                                   "Syntax error: Must specify one or more input files\n");
@@ -285,6 +286,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	                                   "Syntax error -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active,
 	                                   "Syntax error: Only one of -I -T can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.active,
+	                                   "Syntax error: Only one of -C, -F can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
 	                                   "Syntax error: The -o option requires -Cn\n");
 
@@ -304,8 +307,8 @@ GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w,
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
 	
-	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
-	Out = gmt_new_record (GMT, num_report ? NULL : out, num_report ? record : NULL);
+	num_report = (Ctrl->C.active);
+	Out = gmt_new_record (GMT, num_report ? out : NULL, (num_report && Ctrl->C.mode != GRDINFO_TRAILING) ? NULL : record);
 	
 	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);
 	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], 1);
@@ -351,7 +354,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 						out[XHI] = (out[XHI] < 0.0) ? +180.0 : 360.0;
 					}
 				}
-				if (num_report)	/* Report numerical only */
+				if (num_report && Ctrl->C.mode != GRDINFO_TRAILING)	/* Report numerical only */
 					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 				else {
 					sprintf (record, "-R");
@@ -493,7 +496,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = global_ymax = global_zmax = -DBL_MAX;
 	}
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
-	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
+	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
 	
 	if (Ctrl->C.active) {
 		n_cols = 6;	/* w e s n z0 z1 */
@@ -508,6 +511,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		geometry = GMT_IS_NONE;
 		if (Ctrl->C.mode == GRDINFO_TRADITIONAL) geometry = GMT_IS_TEXT;
 		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunately */
+		if (Ctrl->D.active) {
+			n_cols = 4;	/* Just reporting w e s n per tile */
+			if (Ctrl->C.mode != GRDINFO_TRAILING) cmode = GMT_COL_FIX_NO_TEXT;
+		}
 	}
 	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
 		n_cols = 2;
