@@ -101,16 +101,8 @@ a tolerance of 500 km, use::
 
     gmt simplify @GSHHS_h_Australia.txt -T500k
 
-To reduce the geographic line segment.txt using a tolerance of 2 km, run
-
-   ::
-
-    gmt simplify segment.txt -T2k > new_segment.txt
-
 To reduce the Cartesian lines xylines.txt using a tolerance of 0.45 and
-write the reduced lines to file new_xylines.txt, run
-
-   ::
+write the reduced lines to file new_xylines.txt, run::
 
     gmt simplify xylines.txt -T0.45 > new_xylines.txt
 
