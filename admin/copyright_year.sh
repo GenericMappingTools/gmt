@@ -27,7 +27,7 @@ cat >> $$.tmp.lis << EOF
 ./src/img/img2google
 EOF
 
-# 2. Update the fils
+# 2. Update the files
 while read f; do
     sed -E "s/Copyright \(c\) ([0-9]+)-${lastyear}/Copyright \(c\) \1-${newyear}/" $f > $f.new
     mv -f $f.new $f
