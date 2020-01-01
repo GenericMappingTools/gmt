@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *  Copyright (c) 2016-2019 by Dongdong Tian
+ *  Copyright (c) 2016-2020 by Dongdong Tian
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
