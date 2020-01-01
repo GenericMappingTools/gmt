@@ -29,8 +29,8 @@ EOF
 
 # 2. Update the files
 while read f; do
-    sed -E "s/Copyright \(c\) ([0-9]+)-${lastyear}/Copyright \(c\) \1-${newyear}/" $f > $f.new
-    mv -f $f.new $f
+    sed -E -i.bak "s/Copyright \(c\) ([0-9]+)-${lastyear}/Copyright \(c\) \1-${newyear}/" $f
+    rm -f $f.bak
 done < $$.tmp.lis
 
 # 3. Clean up
