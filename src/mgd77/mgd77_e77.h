@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
+ *    Copyright (c) 2004-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77_e77.h
  *
  *	Include file for mgd77 programs

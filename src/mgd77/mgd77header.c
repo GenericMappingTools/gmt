@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and Michael Chandler
+ *    Copyright (c) 2004-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and Michael Chandler
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
