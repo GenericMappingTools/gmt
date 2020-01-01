@@ -35,8 +35,8 @@ various statistics for the (*x*,\ *y*,\ *z*) data in the grid file(s).
 The output information contains the minimum/maximum values for *x*, *y*,
 and *z*, where the min/max of *z* occur, the *x*- and *y*-increments,
 and the number of *x* and *y* nodes, and [optionally] the mean, standard
-deviation, and/or the median, median absolute deviation of *z*, and/or
-the mode (LMS), LMS scale of *z*, and number of nodes set
+deviation, and/or the median, median absolute deviation (MAD) of *z*, and/or
+the mode (Least Median of Squares; LMS), LMS scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file). 
 
