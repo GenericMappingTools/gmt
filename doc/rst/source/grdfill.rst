@@ -42,7 +42,12 @@ Required Arguments
 **-A**\ *mode*\ [*arg*]
     Specify the hole-filling algorithm to use.  Choose from **c** for constant
     fill and append the constant value, **n** for nearest neighbor (and optionally
-    append a search radius in pixels), or **s** for bicubic spline [NOT IMPLEMENTED YET].
+    append a search radius in pixels [default radius is
+
+    .. math:: r^2 = \sqrt {\left(X^2 + Y2\right)}
+
+    where (*X,Y*) are the node dimensions ofthe grid, or
+    *s** for bicubic spline [NOT IMPLEMENTED YET].
 
 .. _-G:
 
