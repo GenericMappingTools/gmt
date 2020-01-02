@@ -592,6 +592,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	n_read = ij = 0;
 	if (Ctrl->Z.active) {
 		size_t nr = 0;
+		if (Ctrl->Z.swab) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Binary input data will be byte swapped\n");
 		for (i = 0; i < io.skip; i++)
 			nr += fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 	}
