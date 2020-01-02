@@ -6579,10 +6579,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'h':	/* Header */
 
-			gmt_message (GMT, "\t-h[i][<n>][+c][+d][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n",
+			gmt_message (GMT, "\t-h[i|o][<n>][+c][+d][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n",
 			             GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
-			gmt_message (GMT, "\t   Optionally, append i for input only and/or number of header records [0].\n");
-			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output.\n");
+			gmt_message (GMT, "\t   Optionally, append i for input or o for output only and/or number of header records [0].\n");
+			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output since none will be read.\n");
 			gmt_message (GMT, "\t   Append +c to add header record with column information [none].\n");
 			gmt_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
 			gmt_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
