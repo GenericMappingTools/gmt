@@ -107,7 +107,6 @@ Optional Arguments
     * **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
-    Note that **-Z** only applies to 1-column output. 
 
 .. |Add_-bo| replace:: [Default is 3]. This option
     only applies to xyz output; see **-Z** for z table output. 
