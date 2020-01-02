@@ -26,6 +26,8 @@ Synopsis
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -151,6 +153,8 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
+
+.. include:: explain_-i.rst_
 
 .. include:: explain_help.rst_
 
