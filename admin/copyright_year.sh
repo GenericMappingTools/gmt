@@ -33,5 +33,9 @@ while read f; do
     rm -f $f.bak
 done < $$.tmp.lis
 
+# 3. Update GMT_VERSION_YEAR in cmake/ConfigDefault.cmake
+sed -i.bak "s/set (GMT_VERSION_YEAR \"${lastyear}\")/set (GMT_VERSION_YEAR \"${newyear}\")/" cmake/ConfigDefault.cmake
+rm -f cmake/ConfigDefault.cmake.bak
+
 # 3. Clean up
 rm -f $$.tmp.lis

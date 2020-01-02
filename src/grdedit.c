@@ -39,7 +39,7 @@
 #define THIS_MODULE_PURPOSE	"Modify header or content of a grid"
 #define THIS_MODULE_KEYS	"<G{,ND(,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:JRVbdefh" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:JRVbdefhi" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
 	struct In {
@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_Option (API, "V,bi3,di,e,f,h,:,.");
+	GMT_Option (API, "V,bi3,di,e,f,h,i.:,.");
 
 	return (GMT_MODULE_USAGE);
 }
