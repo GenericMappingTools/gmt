@@ -18,7 +18,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\ \|\ *list*
     Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
     If *min/max* are not given then we default to the range in **-R**.
     For details on array creation, see `Generate 1D Array`_.
