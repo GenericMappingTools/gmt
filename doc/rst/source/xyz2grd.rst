@@ -161,6 +161,7 @@ Optional Arguments
     *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats but expects each
     input record to have a single value, while the former can handle multiple
     values per record but can only parse regular floating point values.
+    Translate incoming *z*-values via the **-i**\ 0 option and needed modifiers.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
     to xyz input files; see **-Z** for z tables.
