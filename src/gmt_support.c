@@ -4120,8 +4120,11 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+g<fill>][+u] */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_sy, txt_len);
 	}
-	else	/* Wrong number of slashes */
+	else {	/* Wrong number of slashes */
 		error++;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Not enough arguments given, including no width\n", option);
+		return (error);
+	}
 	i = (int)strlen (txt_len) - 1;
 	if (isalpha ((int)txt_len[i])) {	/* Letter at end of distance value */
 		ms->measure = txt_len[i];
@@ -11897,7 +11900,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	char string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
 	struct GMT_MAP_PANEL *save_panel = B->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
-	if (!in_text) {
+	if (!in_text || in_text[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
@@ -12059,7 +12062,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	char string[GMT_BUFSIZ] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
-	if (!text) {
+	if (!text || text[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
@@ -12236,7 +12239,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	 * If  -Tm, optionally set annotation interval with +t
 	 */
 
-	if (!text) {
+	if (!text || text[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
