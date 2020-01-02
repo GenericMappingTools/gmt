@@ -120,34 +120,26 @@ oblique map in general does not. Hence, to get all the data from the
 ETOPO2 data needed to make a contour map for the region defined by its
 lower left and upper right corners and the desired projection, use::
 
-    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
+    gmt grdcut @earth_relief_02m -R160/20/220/30+r -Joc190/25.5/292/69/1 -Gdata.nc
 
 Suppose you have used :doc:`surface` to grid ship gravity in the region
 between 148E - 162E and 8N - 32N, and you do not trust the gridding near
-the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:
-
-   ::
+the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then::
 
     gmt grdcut grav_148_162_8_32.nc -Ggrav_150_160_10_30.nc -R150/160/10/30 -V
 
 To return the subregion of a grid such that any boundary strips where
-all values are entirely above 0 are excluded, try
-
-   ::
+all values are entirely above 0 are excluded, try::
 
     gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z-/0 -V
 
 To return the subregion of a grid such that any boundary rows or columns
-that are all NaNs, try
-
-   ::
+that are all NaNs, try::
 
     gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z+N -V
 
 To return the subregion of a grid that contains all nodes within a
-distance of 500 km from the point 45,30 try
-
-   ::
+distance of 500 km from the point 45,30 try::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
 
