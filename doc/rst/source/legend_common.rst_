@@ -166,7 +166,7 @@ Legend Codes
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
     **-** to default to the size and font type of **FONT\_LABEL**.
-**M** *slon*\ \|\ **-** *slat length* [**+f**\ ][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
+**M** *slon*\ \|\ **-** *slat* *length*\ [**+a**\ *align*][**+f**][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
     certain oblique projections. If not needed, you must specify **-**
