@@ -35,7 +35,7 @@ set (GMT_PACKAGE_NAME "GMT")
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # Year of the current GMT release.
-set (GMT_VERSION_YEAR "2019")
+set (GMT_VERSION_YEAR "2020")
 
 # The GMT release DOI
 set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.3407866")
