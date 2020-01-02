@@ -4307,13 +4307,17 @@ int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data, char
 	return (err ? -1 : 0);	/* Return -1 if failed, else n items written */
 }
 
-/* gmt_z_input and gmt_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
+/* gmt_z_input and gmt_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery
+ * Despite taking uint64_t *n we KNOW that this value is 1 and hence column is always GMT_X. */
 /*! . */
 void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == GMT_DATA_READ_ERROR) {
 		GMT->current.io.status = GMT_IO_EOF;
 		return (NULL);
 	}
+	if (GMT->common.i.select)	/* We need to scale this single item */
+		gmt_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
+
 	return (&GMT->current.io.record);
 }
 

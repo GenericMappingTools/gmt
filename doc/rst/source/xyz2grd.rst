@@ -159,7 +159,8 @@ Optional Arguments
     Note that **-Z** only applies to 1-column input. The difference
     between **A** and **a** is that the latter can decode both
     *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats while the former
-    is strictly for regular floating point values.
+    is strictly for regular floating point values.  To translate the incoming
+    *z*-values you may use the **-i**\ 0 option with the desirable modifiers.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
     to xyz input files; see **-Z** for z tables.
