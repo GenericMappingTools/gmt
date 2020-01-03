@@ -483,8 +483,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
 			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
-				if (Ctrl->G.rgb[PSIMG_TRA][0] != -2) {b
-					GMT_Report (API, GMT_MSG_VERBOSE, "Your -G<color>+t is ignored for 1-bit images; see +f/+f modifiers instead\n");
+				if (Ctrl->G.rgb[PSIMG_TRA][0] != -2) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
 				}
 				for (unsigned int k = PSIMG_BGD; k <= PSIMG_FGD; k++) {
 					if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
