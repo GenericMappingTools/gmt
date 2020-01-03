@@ -1109,178 +1109,178 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
 				tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
 
-		if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
+			if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
 		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
-			continue;
-		}
-
-		/* If we didn't computed it yet, its time to do it now */
-		if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
-
-		/* In the "Preview" mode those guys below are different and what we need is the BufSize */
-		if (jump) {
-			nXSize = nBufXSize;		nYSize = nBufYSize;
-		}
-
-		startColPos = pad_w + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
-		nXSize_withPad = nXSize + pad_w + pad_e;
-		nYSize_withPad = nYSize + pad_n + pad_s;
-
-		if (prhs->mini_hdr.active) {				/* Read into a padded zone that can be larger then grid dims (grdpaste) */
-			if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
-				nXSize_withPad = prhs->mini_hdr.mx;
-				if (prhs->mini_hdr.side[0] == 'r')
-					startColPos += prhs->mini_hdr.offset;
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
+				continue;
 			}
-			else if (prhs->mini_hdr.side[0] == 'b') {
-				startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
-				endRow = startRow + nRowsPerBlock;
-				if (k == nBlocks-1)
-					endRow = prhs->mini_hdr.offset + nYSize;
+
+			/* If we didn't computed it yet, its time to do it now */
+			if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
+
+			/* In the "Preview" mode those guys below are different and what we need is the BufSize */
+			if (jump) {
+				nXSize = nBufXSize;		nYSize = nBufYSize;
 			}
-		}
 
-		switch (GDALGetRasterDataType(hBand)) {
-			case GDT_Byte:
-				/* This chunk is kind of complicated because we want to take into account several different cases */
-				for (n = 0; n < nXSize; n++) {
-					if (do_BIP)			/* Vector for Pixel Interleaving */
-						colVec[n] = n * nRGBA + i;
-					else {				/* Vector for Band Sequential */
-						if (topdown)
-							colVec[n] = n * nY + i_x_nXYSize;
-						else
-							colVec[n] = n + i_x_nXYSize;
-					}
-				}
+			startColPos = pad_w + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
+			nXSize_withPad = nXSize + pad_w + pad_e;
+			nYSize_withPad = nYSize + pad_n + pad_s;
 
-				Ctrl->UInt8.active = true;
-				if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
-					/* Currently all calls to send image to GMT (BIP case) must come through here */
-					if (rowmajor) {
-						for (m = row_i; m < row_e; m++) {
-							off = nRGBA * pad_w + (pad_w+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
-							for (n = 0; n < nXSize; n++)
-								Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
-						}
-					}
-					else {
-						for (n = 0; n < nXSize; n++) {
-							off = nRGBA * pad_n + (pad_n+n) * (nRGBA * nYSize_withPad) + i;
-							for (m = row_i; m < row_e; m++)
-								Ctrl->UInt8.data[m * nRGBA + off] = tmp[rowVec[m] + n];
-						}
-					}
+			if (prhs->mini_hdr.active) {		/* Read into a padded zone that can be larger then grid dims (grdpaste) */
+				if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
+					nXSize_withPad = prhs->mini_hdr.mx;
+					if (prhs->mini_hdr.side[0] == 'r')
+						startColPos += prhs->mini_hdr.offset;
 				}
-				else {
-					if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
-						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
-					}
-					else if (copy_flipud) {
-						/* We could copy and flip but the idea here is also to not use a tmp array too */
-						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
-						gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
-					}
-					else if (fliplr) {				/* No BIP option yet, and maybe never */
-						for (m = row_i; m < row_e; m++) {
-							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-							for (n = nXSize-1; n >= 0; n--)
-								Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+				else if (prhs->mini_hdr.side[0] == 'b') {
+					startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
+					endRow = startRow + nRowsPerBlock;
+					if (k == nBlocks-1)
+						endRow = prhs->mini_hdr.offset + nYSize;
+				}
+			}
+
+			switch (GDALGetRasterDataType(hBand)) {
+				case GDT_Byte:
+					/* This chunk is kind of complicated because we want to take into account several different cases */
+					for (n = 0; n < nXSize; n++) {
+						if (do_BIP)			/* Vector for Pixel Interleaving */
+							colVec[n] = n * nRGBA + i;
+						else {				/* Vector for Band Sequential */
+							if (topdown)
+								colVec[n] = n * nY + i_x_nXYSize;
+							else
+								colVec[n] = n + i_x_nXYSize;
 						}
 					}
-					else if (topdown) {			/* No BIP option yet, and maybe never */
-						for (m = row_i; m < row_e; m++) {
+
+					Ctrl->UInt8.active = true;
+					if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
+						/* Currently all calls to send image to GMT (BIP case) must come through here */
+						if (rowmajor) {
+							for (m = row_i; m < row_e; m++) {
+								off = nRGBA * pad_w + (pad_w+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
+								for (n = 0; n < nXSize; n++)
+									Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
+							}
+						}
+						else {
 							for (n = 0; n < nXSize; n++) {
-								ij = colVec[n] + m;
-								Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
+								off = nRGBA * pad_n + (pad_n+n) * (nRGBA * nYSize_withPad) + i;
+								for (m = row_i; m < row_e; m++)
+									Ctrl->UInt8.data[m * nRGBA + off] = tmp[rowVec[m] + n];
 							}
 						}
 					}
-				}
-				break;
-			case GDT_Int16:
-				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-						if (prhs->f_ptr.active) {
-							int16_t tmpI16;
-							memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-							Ctrl->Float.data[nn++] = tmpI16;
+					else {
+						if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
+							memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
 						}
-						else
-							memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-				}
-				break;
-			case GDT_UInt16:
-				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-						if (prhs->f_ptr.active) {
-							uint16_t tmpUI16;
-							memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
-							Ctrl->Float.data[nn++] = tmpUI16;
+						else if (copy_flipud) {
+							/* We could copy and flip but the idea here is also to not use a tmp array too */
+							memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
+							gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
 						}
-						else
-							memcpy (&Ctrl->UInt16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
-				}
-				break;
-			case GDT_Int32:
-				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-						if (prhs->f_ptr.active) {
-							int32_t tmpI32;
-							memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-							Ctrl->Float.data[nn++] = (float)tmpI32;
+						else if (fliplr) {				/* No BIP option yet, and maybe never */
+							for (m = row_i; m < row_e; m++) {
+								nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+								for (n = nXSize-1; n >= 0; n--)
+									Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+							}
 						}
-						else
-							memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-				}
-				break;
-			case GDT_UInt32:
-				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-						if (prhs->f_ptr.active) {
-							int32_t tmpUI32;
-							memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-							Ctrl->Float.data[nn++] = (float)tmpUI32;
+						else if (topdown) {			/* No BIP option yet, and maybe never */
+							for (m = row_i; m < row_e; m++) {
+								for (n = 0; n < nXSize; n++) {
+									ij = colVec[n] + m;
+									Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
+								}
+							}
 						}
-						else
-							memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-				}
-				break;
-			case GDT_Float32:
-				Ctrl->Float.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = 0; n < nXSize; n++) {
-						memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
-						nn += incStep;
 					}
-				}
-				break;
-			case GDT_Float64:	/* For now we don't care about doubles */
-				Ctrl->Float.active = true;
-				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-					for (n = 0; n < nXSize; n++) {
-						double tmpF64;
-						memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
-						Ctrl->Float.data[nn] = (float)tmpF64;
-						nn += incStep;
+					break;
+				case GDT_Int16:
+					if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							if (prhs->f_ptr.active) {
+								int16_t tmpI16;
+								memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+								Ctrl->Float.data[nn++] = tmpI16;
+							}
+							else
+								memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
 					}
-				}
-				break;
-			default:
-				CPLAssert(false);
+					break;
+				case GDT_UInt16:
+					if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							if (prhs->f_ptr.active) {
+								uint16_t tmpUI16;
+								memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
+								Ctrl->Float.data[nn++] = tmpUI16;
+							}
+							else
+								memcpy (&Ctrl->UInt16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
+					}
+					break;
+				case GDT_Int32:
+					if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							if (prhs->f_ptr.active) {
+								int32_t tmpI32;
+								memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+								Ctrl->Float.data[nn++] = (float)tmpI32;
+							}
+							else
+								memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+					}
+					break;
+				case GDT_UInt32:
+					if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							if (prhs->f_ptr.active) {
+								int32_t tmpUI32;
+								memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+								Ctrl->Float.data[nn++] = (float)tmpUI32;
+							}
+							else
+								memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+					}
+					break;
+				case GDT_Float32:
+					Ctrl->Float.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = 0; n < nXSize; n++) {
+							memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
+							nn += incStep;
+						}
+					}
+					break;
+				case GDT_Float64:	/* For now we don't care about doubles */
+					Ctrl->Float.active = true;
+					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+						for (n = 0; n < nXSize; n++) {
+							double tmpF64;
+							memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
+							Ctrl->Float.data[nn] = (float)tmpF64;
+							nn += incStep;
+						}
+					}
+					break;
+				default:
+					CPLAssert(false);
+			}
 		}
-}
 	}
 
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
