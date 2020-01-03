@@ -27,7 +27,7 @@ S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
 D 0.2i 1p
 V 0 1p
 N 1
-M 5 5 600+u f
+M 5 5 600+u+f
 G 0.05i
 I @SOEST_block4.png 3i CT
 G 0.05i
