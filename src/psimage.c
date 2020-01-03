@@ -55,7 +55,6 @@ struct PSIMAGE_CTRL {
 	struct PSIMG_G {	/* -G<rgb>[+b|+f|+t] */
 		bool active;
 		double rgb[3][4];
-		int index;	/* For 1-bit images, which index do we change */
 	} G;
 	struct PSIMG_I {	/* -I */
 		bool active;
@@ -75,7 +74,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = C->G.index = -2;	/* All turned off */
+	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = -2;	/* All turned off */
 	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
@@ -255,7 +254,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				if (p) p[0] = '+';	/* Restore modifier */
-				Ctrl->G.index = (Ctrl->G.index == -2) ? ind : -1;	/* -1 means we are setting both fore and background colors */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				Ctrl->I.active = true;
@@ -284,11 +282,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	/* If not done previously, set foreground to black, background to white */
-
-	if (Ctrl->G.rgb[PSIMG_FGD][0] == -2) { Ctrl->G.rgb[PSIMG_FGD][0] = Ctrl->G.rgb[PSIMG_FGD][1] = Ctrl->G.rgb[PSIMG_FGD][2] = 0.0; }
-	if (Ctrl->G.rgb[PSIMG_BGD][0] == -2) { Ctrl->G.rgb[PSIMG_BGD][0] = Ctrl->G.rgb[PSIMG_BGD][1] = Ctrl->G.rgb[PSIMG_BGD][2] = 1.0; }
-
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
 		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0", 'D');	/* Default if no -D given */
 		Ctrl->D.active = true;
@@ -304,7 +297,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Syntax error -D option: Must specify positive values for replication with +n\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMG_FGD][0] < 0 && Ctrl->G.rgb[PSIMG_BGD][0] < 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMG_FGD][0] == -1 && Ctrl->G.rgb[PSIMG_BGD][0] == -1,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -489,17 +482,17 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			/* Convert colormap from integer to unsigned char and count colors */
 			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
-			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G */
-				if (Ctrl->G.index == -1) {	/* Set both fore and backtround color */
-					for (n = 0; n < 4; n++) colormap[n] = gmt_M_u255(Ctrl->G.rgb[PSIMG_BGD][n]);
-					for (n = 0; n < 4; n++) colormap[n+4] = gmt_M_u255(Ctrl->G.rgb[PSIMG_FGD][n]);
+			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
+				if (Ctrl->G.rgb[PSIMG_TRA][0] != -2) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
 				}
-				else if (Ctrl->G.rgb[Ctrl->G.index][0] == -1) { /* Set transparency for this color */
-					has_trans = true; r = colormap[4*Ctrl->G.index]; g = colormap[1+4*Ctrl->G.index]; b = colormap[2+4*Ctrl->G.index];
-					gmt_M_rgb_copy (Ctrl->G.rgb[PSIMG_TRA],Ctrl->G.rgb[Ctrl->G.index]);
+				for (unsigned int k = PSIMG_BGD; k <= PSIMG_FGD; k++) {
+					if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
+						has_trans = 1; r = colormap[4*k]; g = colormap[1+4*k]; b = colormap[2+4*k];
+					}
+					else if (Ctrl->G.rgb[k][0] >= 0)	/* If we changed this color, update it, else use what was given in the colormap */
+						for (n = 0; n < 3; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);	/* Do not override the A entry, just R/G/B */
 				}
-				else
-					for (n = 0; n < 4; n++) colormap[n+4*Ctrl->G.index] = gmt_M_u255(Ctrl->G.rgb[Ctrl->G.index][n]);
 			}
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
@@ -508,7 +501,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			n = 3 * I->header->nm - 1;
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				k = 4 * I->data[j] + 3;
-				if (has_trans && colormap[k] == 0)
+				if (has_trans && colormap[k] == 0)	/* Found a transparent pixel, set its color to the transparent color found/selected earlier */
 					I->data[n--] = (unsigned char)b, I->data[n--] = (unsigned char)g, I->data[n--] = (unsigned char)r;
 				else
 					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
