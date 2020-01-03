@@ -488,7 +488,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 						has_trans = 1; r = colormap[4*k]; g = colormap[1+4*k]; b = colormap[2+4*k];
 					}
 					else if (Ctrl->G.rgb[k][0] >= 0)	/* If we changed this color, update it, else use what was given in the colormap */
-						for (n = 0; n < 4; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);
+						for (n = 0; n < 3; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);	/* Do not override the A entry, just R/G/B */
 				}
 			}
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
@@ -498,7 +498,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			n = 3 * I->header->nm - 1;
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				k = 4 * I->data[j] + 3;
-				if (has_trans && colormap[k] == 0)	/* Found a transparent pixel, set its color to the transparent color found/selected */
+				if (has_trans && colormap[k] == 0)	/* Found a transparent pixel, set its color to the transparent color found/selected earlier */
 					I->data[n--] = (unsigned char)b, I->data[n--] = (unsigned char)g, I->data[n--] = (unsigned char)r;
 				else
 					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
