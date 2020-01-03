@@ -22,6 +22,7 @@ Synopsis
 [ |-S|\ [**x**\ ][**y**] ]
 [ |-T|\ *dz*\ [\ **+c**\ *col*] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -31,6 +32,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -80,7 +82,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**
+**-D**\ [*dx*\ [/*dy*\ ]]
     Modifies results obtained by **-I** by shifting the region to better
     align with the center of the data.  Optionally, append granularity
     for this shift [Default performs an exact shift].
@@ -156,6 +158,8 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
@@ -180,6 +184,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 
