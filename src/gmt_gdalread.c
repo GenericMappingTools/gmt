@@ -331,6 +331,8 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		return (-1);
 	}
 
+	gmt_M_tic (GMT);
+
 	/* ------------------------------------------------------------------------- */
 	/* Record the ProjectionRef */
 	/* ------------------------------------------------------------------------- */
@@ -675,6 +677,8 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	}
 
 	GDALClose (hDataset);
+
+	gmt_M_toc (GMT, "In populate_metadata");
 
 	return (GMT_NOERROR);
 }
@@ -1061,6 +1065,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
+	gmt_M_tic (GMT);
+
 	for (i = 0; i < nBands; i++) {
 		if (!nReqBands)		/* No band selection, read them sequentialy */
 			hBand = GDALGetRasterBand(hDataset, i+1);
@@ -1295,6 +1301,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	gmt_M_free (GMT, colVec);
 
 	GDALClose(hDataset);
+
+	gmt_M_toc (GMT, "After gdalread data reading");
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
