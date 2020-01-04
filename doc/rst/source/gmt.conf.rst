@@ -1012,6 +1012,7 @@ fonts can be found in the :doc:`gmt` man page.
 |     *WGS-66*: World Geodetic System (1966)
 |     *WGS-72*: World Geodetic System (1972)
 |     *WGS-84*: World Geodetic System [Default] (1984)
+|     *Web-Mercator*: Spherical Mercator with WGS-84 radius (1984)
 |     *Moon*: Moon (IAU2000) (2000)
 |     *Mercury*: Mercury (IAU2000) (2000)
 |     *Venus*: Venus (IAU2000) (2000)
