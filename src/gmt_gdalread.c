@@ -636,11 +636,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			/* If file is a "VRT/Virtual Raster" do NOT try to compute min/max and trust on XML info */
-			if (strcmp(Ctrl->DriverShortName, "VRT"))
-				GDALComputeRasterMinMax(hBand, false, adfMinMax);		/* NO VRT, scan file to compute min/max */
-			else
-				GDALComputeRasterMinMax(hBand, true, adfMinMax);		/* VRT, believe in metadata info */
+			GDALComputeRasterMinMax(hBand, true, adfMinMax);		/* Trust on metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}
