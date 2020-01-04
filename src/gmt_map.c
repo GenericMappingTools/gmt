@@ -1131,6 +1131,40 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 	return (0);
 }
 
+GMT_LOCAL int map_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
+	/* true if x- or y-distance between points exceeds 1/2 map width at this y value or map height */
+	double dx, dy, map_half_width, map_half_height;
+
+	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
+
+	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
+
+	map_half_width = MAX (gmt_half_map_width (GMT, y0), gmt_half_map_width (GMT, y1));
+	if (fabs (map_half_width) < GMT_CONV4_LIMIT) return (0);	/* Very close to a pole for some projections */
+	map_half_height = 0.5 * GMT->current.map.height;	/* We assume this is constant */
+
+	dx = x1 - x0;
+	if (fabs (dx) > map_half_width) {	/* Possible jump; let's see how far apart those longitudes really are */
+		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
+		double last_lon, this_lon, dummy, dlon;
+		double half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
+		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
+		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
+		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
+		if (fabs (dlon) < half_lon_range) /* Not going the long way so we judge this to be no jump */
+			return (0);
+		/* Jump it is */
+		if (dx > map_half_width)	return (-1);	/* Cross left/west boundary */
+		if (dx < (-map_half_width)) return (1);	/* Cross right/east boundary */
+	}
+	else if (fabs ((dy = y1 - y0)) > map_half_height) {	/* Possible jump for TM or UTM */
+		/* Jump it is */
+		if (dy > map_half_height)	return (-2);	/* Cross bottom/south boundary */
+		if (dy < (-map_half_height)) return (2);	/* Cross top/north boundary */
+	}
+	return (0);	/* No jump */
+}
+
 GMT_LOCAL int map_jump_not (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 #if 0
 	double dx, map_half_size;
@@ -5169,6 +5203,25 @@ GMT_LOCAL void map_get_crossings_x (struct GMT_CTRL *GMT, double *xc, double *yc
 }
 
 /*! . */
+GMT_LOCAL void map_get_crossings_y (struct GMT_CTRL *GMT, double *xc, double *yc, double x0, double y0, double x1, double y1) {
+	/* Finds crossings for wrap-arounds in y, assuming rectangular domain */
+	double xa, xb, ya, yb, c;
+
+	xa = x0;	xb = x1;
+	ya = y0;	yb = y1;
+	if (ya > yb) {	/* Make A the minimum y point */
+		gmt_M_double_swap (xa, xb);
+		gmt_M_double_swap (ya, yb);
+	}
+
+	yb -= GMT->current.map.height;	/* Now below the y = 0 line */
+	c = (doubleAlmostEqualZero (ya, yb)) ? 0.0 : (xa - xb) / (ya - yb);
+	xc[0] = xc[1] = xa - c * ya;
+	yc[0] = 0.0;
+	yc[1] = GMT->current.map.height;
+}
+
+/*! . */
 GMT_LOCAL bool map_this_point_wraps_x (struct GMT_CTRL *GMT, double x0, double x1, double w_last, double w_this) {
 	/* Returns true if the 2 x-points implies a jump at this y-level of the map */
 
@@ -7238,7 +7291,7 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	 * add_crossings is true if we need to find the crossings; false means
 	 * they are already part of the line. */
 
-	uint64_t i, j, k, n, n_seg, *split = NULL, *pos = NULL;
+	uint64_t i, j, jc, k, n, n_seg, *split = NULL, *pos = NULL;
 	size_t n_alloc = 0;
  	int l_or_r;
  	char *way = NULL;
@@ -7249,14 +7302,14 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	xin = *xx;	yin = *yy;
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 	for (n_seg = 0, i = 1; i < *nn; i++) {
-		if ((l_or_r = map_jump_x (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
+		if ((l_or_r = map_jump_xy (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
 				pos = gmt_M_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
 				way = gmt_M_malloc (GMT, way, n_seg, &n_alloc, char);
 			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
-			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
+			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right, +2 is top to bottom, -2 is bottom to top */
 			n_seg++;
 		}
 	}
@@ -7271,21 +7324,33 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	n_alloc = 0;
 	gmt_M_malloc2 (GMT, x, y, n, &n_alloc, double);
 	split = gmt_M_memory (GMT, NULL, n_seg+2, uint64_t);
-	split[0] = n_seg;
+	split[0] = n_seg;	/* Number of segments we will need */
 
 	x[0] = xin[0];	y[0] = yin[0];
 	for (i = j = 1, k = 0; i < *nn; i++, j++) {
 		if (k < n_seg && i == pos[k]) {	/* At jump point */
 			if (add_crossings) {	/* Find and insert the crossings */
-				map_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-				if (way[k] == 1) {	/* Add right border point first */
-					gmt_M_double_swap (xc[0], xc[1]);
-					gmt_M_double_swap (yc[0], yc[1]);
+				if (way[k] == -2 || way[k] == +2) {	/* Jump in y for TM */
+					map_get_crossings_y (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
+					if (way[k] == -2) {	/* Add top border point first */
+						gmt_M_double_swap (xc[0], xc[1]);
+						gmt_M_double_swap (yc[0], yc[1]);
+					}
+				}
+				else {	/* Jump in x */
+					map_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
+					if (way[k] == 1) {	/* Add right border point first */
+						gmt_M_double_swap (xc[0], xc[1]);
+						gmt_M_double_swap (yc[0], yc[1]);
+					}
 				}
 				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
+				jc = j;		/* Node of first point in next segment */
 				x[j] = xc[1];	y[j++] = yc[1];	/* Start of another */
 			}
-			split[++k] = j;		/* Node of first point in new segment */
+			else
+				jc = j;
+			split[++k] = jc;		/* Node of first point in new segment */
 		}
 		/* Then copy the regular points */
 		x[j] = xin[i];	y[j] = yin[i];

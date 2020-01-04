@@ -655,7 +655,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	}
 	if (utf8_codes == 0) return;	/* Nothing to do */
 
-	out_string = PSL_memory (PSL, NULL, strlen(in_string), char);	/* Get a new string of same length */
+	out_string = PSL_memory (PSL, NULL, strlen(in_string) + 1, char);	/* Get a new string of same length (extra byte for '\0') */
 	
 	for (k = kout = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
