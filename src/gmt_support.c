@@ -10280,7 +10280,7 @@ void gmt_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 		support_hold_contour_sub (GMT, &xs, &ys, n, zval, label, ctype, cangle, closed, contour, G);
 		gmt_M_free (GMT, xs);
 		gmt_M_free (GMT, ys);
-		first = n;	/* First point in next segment */
+		first += n;	/* First point in the next segment */
 	}
 	gmt_M_free (GMT, split);
 }
