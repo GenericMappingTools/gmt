@@ -4687,10 +4687,12 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 #else
 					snprintf (cmd, GMT_BUFSIZ+GMT_LEN256, "ogr2ogr -f \"GMT\" %s %s", GMT->current.io.tempfile, c);
 #endif
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running %s\n", cmd);
 					if ((error = system (cmd))) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] FAILED with error %d.\n", cmd, error);
 						return NULL;
 					}
+					sprintf (GMT->current.io.filename[GMT_IN], "%s <converted from %s via ogr2ogr>", GMT->current.io.tempfile, c);
 					c = GMT->current.io.tempfile;	/* Open this temporary instead */
 				}
 #endif
