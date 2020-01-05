@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-J|\ *parameters* ]
-[ |-D|\ *breakline_file*]
+[ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
 [ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
@@ -124,11 +124,13 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *breakline*\
-    Use xyz data in the <breakline> file as a 'soft breakline'. A 'soft breakline'
+**-D**\ *breakline*\ [**+z**\ [*level*]]
+    Use xyz data in the *breakline* file as a 'soft breakline'. A 'soft breakline'
     is a line whose vertices will be used to constrain the nearest grid nodes without
     any further interpolation. A coastline or a lake shore are good examples of
-    'soft breaklines'. Multi-segments files are accepted.
+    'soft breaklines'. Multi-segments files are accepted.  If your lines do not have
+    *z*-values or you wish to override those with a constant z-value, then append
+    **+z**\ *level* to the filename. If no value is given then we default to 0.
 
 .. _-L:
 

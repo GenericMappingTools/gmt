@@ -4823,11 +4823,15 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
 
-	if (direction == GMT_IN && GMT->common.b.ncol[direction]) return (GMT_OK);	/* Already set once by -bi */
+	if (direction == GMT_IN && GMT->common.b.ncol[direction]) {	/* Some more conditions when input n columns have been set (by -bi or by reading another file) */
+		if (GMT->common.b.ncol[direction] == expected) return (GMT_OK);	/* Already set to this value */
+		if (expected == 0) return (GMT_OK);	/* Nothing to do yet */
+		if (GMT->common.b.active[direction]) return (GMT_OK);	/* Already set once by -bi so cannot change that here */
+		/* If we get here we are ASCII input and we want to change the expected columns only */
+	}
 
 	if (expected == 0 && (direction == GMT_OUT || GMT->common.b.active[direction])) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of numerical %s columns has been set to 0\n", mode[direction]);
-	//	return (GMT_N_COLS_NOT_SET);
 	}
 	/* Here we may set the number of data columns */
 	if (GMT->common.b.active[direction]) {	/* Must set uninitialized input/output pointers */
@@ -4849,7 +4853,6 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		gmtlib_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
 	}
-	//if (direction == GMT_IN && expected && GMT->common.i.select && GMT->common.i.n_cols > expected)
 	if (direction == GMT_IN && expected && GMT->common.i.select && GMT->common.i.n_actual_cols > expected)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n",
 		            mode[GMT_IN], expected, GMT->common.i.n_actual_cols);
