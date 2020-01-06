@@ -154,7 +154,7 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-i.rst_
+.. include:: explain_-icols.rst_
 
 .. include:: explain_help.rst_
 
@@ -169,44 +169,32 @@ Examples
 
 Let us assume the file data.nc covers the area 300/310/10/30. We want to
 change the boundaries from geodetic longitudes to geographic and put a
-new title in the header. We accomplish this by
-
-   ::
+new title in the header. We accomplish this by::
 
     gmt grdedit data.nc -R-60/-50/10/30 -D+t"Gravity Anomalies"
 
 The grid world.nc has the limits 0/360/-72/72. To shift the data so that
-the limits would be -180/180/-72/72, use
-
-   ::
+the limits would be -180/180/-72/72, use::
 
     gmt grdedit world.nc -R-180/180/-72/72 -S
 
 The file junk.nc was created prior to GMT 3.1 with incompatible
-**-R** and **-I** arguments. To reset the x- and y-increments we run
-
-   ::
+**-R** and **-I** arguments. To reset the x- and y-increments we run::
 
     gmt grdedit junk.nc -A
 
 The file junk.nc was created prior to GMT 4.1.3 and does not contain
 the required information to indicate that the grid is geographic. To add
-this information, run
-
-   ::
+this information, run::
 
     gmt grdedit junk.nc -fg
 
 To rotate the grid oblique.nc 90 degrees counter-clockwise and write out
-the rotated grid to a new file, run
-
-   ::
+the rotated grid to a new file, run::
 
     gmt grdedit oblique.nc -El -Goblique_rot.nc
 
-To ensure that the grid depths.nc only has positive longitude values, run
-
-   ::
+To ensure that the grid depths.nc only has positive longitude values, run::
 
     gmt grdedit depths.nc -L+p
 
@@ -225,5 +213,5 @@ See Also
 :doc:`gmt`,
 :doc:`grd2xyz`,
 :doc:`grdfill`,
-:doc:`grdinfo`
+:doc:`grdinfo`,
 :doc:`xyz2grd`
