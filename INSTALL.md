@@ -62,9 +62,13 @@ You may need to update the formulas so for that you will do:
 
     brew update && brew upgrade
 
-For the latest GMT 6 version, use:
+For the latest stable GMT 6 release, use:
 
     brew install gmt
+
+For the latest unstable/developing version (i.e. the master branch), run:
+
+    brew install gmt --HEAD
 
 You also need to install other GMT run-time dependencies separately:
 
