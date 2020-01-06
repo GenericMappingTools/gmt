@@ -953,7 +953,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Painting entire map as ocean color first\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Painting entire map with ocean color first, then draw land on top later\n");
 		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 		gmt_setfill (GMT, &Ctrl->S.fill, false);
 		if (donut) {
@@ -965,8 +965,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			PSL_plotpolygon (PSL, xtmp, ytmp, n);
 		gmt_M_free (GMT, xtmp);
 		gmt_M_free (GMT, ytmp);
-		level_to_be_painted[0] = level_to_be_painted[1] = 1;
-		start_direction = stop_direction = 1;	/* Since we are only doing land below */
+		level_to_be_painted[0] = level_to_be_painted[1] = 1;	/* Land */
+		start_direction = stop_direction = 1;	/* Since we are only doing land in the loop below */
 	}
 	if (double_recursive) {	/* Must recursively paint both land and ocean */
 		start_direction = -1;	stop_direction = 1;
@@ -976,7 +976,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		start_direction = stop_direction = (Ctrl->G.active) ? 1 : -1;
 		level_to_be_painted[0] = level_to_be_painted[1] = (Ctrl->G.active) ? 1 : 0;
 	}
-	else if (!clobber_background) {	/* Just paint one of them but not recursively */
+	else if (!clobber_background) {	/* Just paint one of them but not recursively; skip this if clobber_backtround is true */
 		start_direction = -1;	stop_direction = 1;
 		level_to_be_painted[0] = level_to_be_painted[1] = (Ctrl->S.active) ? 0 : 1;
 	}
