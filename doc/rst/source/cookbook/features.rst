@@ -385,7 +385,7 @@ Three classes of files are given special treatment in GMT.
    into a seamless grid using :doc:`/grdblend`. A tile is only downloaded and converted
    once (unless the user cleans the data directories).
 #. If a file is given as a full URL, starting with **http://**, **https://**,
-   or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
+   or **ftp://**, then the file will be downloaded to the current directory and subsequently
    read from there (until removed by the user).  If the URL is actually a CGI Get
    command (i.e., ends in ?par=val1&par2=val2...) then we download the file
    each time we encounter the URL.
