@@ -15,6 +15,7 @@ Synopsis
 
 **gmt fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -100,6 +101,9 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. |Add_-a| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-a.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
