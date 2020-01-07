@@ -7293,21 +7293,20 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		else if (strstr (line, "HINGE")) {	/* CPT has either a soft or hard hinge */
-			if ((h = strstr (line, "HINGE ="))) {	/* Bad mix of old CPTs with new GMT parsing - treat as hard hinge */
+			if (strstr (line, "HINGE =")) {	/* Bad mix of old CPTs with new GMT parsing - treat as hard hinge */
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mixing old CPT master tables with HINGE = <value> in %s.  Interpreted as HARD_HINGE.\n", cpt_file);
 				X->mode |= GMT_CPT_HARD_HINGE;
 				X->has_hinge = 1;
-				continue;	/* Don't want this instruction to be also kept as a comment */
 			}
 			else if (strstr (line, "HARD_HINGE")) {	/* Hard hinge the user cannot override */
 				X->mode |= GMT_CPT_HARD_HINGE;
 				X->has_hinge = 1;
-				continue;	/* Don't want this instruction to be also kept as a comment */
+				if (hinge_mode)
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot override hard hinges in CPT %s with +h. Modifier is ignored.\n", cpt_file);
 			}
-			else if (strstr (line, "SOFT_HINGE")) {	/* Soft hinge the user can select via +h[<value>] */
+			else if (strstr (line, "SOFT_HINGE"))	/* Soft hinge the user can turn to a hard hinge via +h[<value>] */
 				X->mode |= GMT_CPT_SOFT_HINGE;
-				continue;	/* Don't want this instruction to be also kept as a comment */
-			}
+			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		else if ((h = strstr (line, "RANGE ="))) {	/* CPT has a default range */
 			k = 7;	while (h[k] == ' ' || h[k] == '\t') k++;	/* Skip any leading spaces or tabs */
