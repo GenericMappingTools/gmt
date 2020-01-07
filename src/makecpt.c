@@ -314,7 +314,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC, GMT_Z);
-				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;
+				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
 				Ctrl->Q.active = true;
@@ -561,7 +561,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		nz = gmtlib_log_array (GMT, Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc, &(Ctrl->T.T.array));
 		z = Ctrl->T.T.array;
 	}
-	if (!Ctrl->T.interpolate) {	/* Just copy what was in the CPT but stretch to given range */
+	if (!Ctrl->T.interpolate) {	/* Just copy what was in the CPT but stretch to given range min/max */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
 		gmt_stretch_cpt (GMT, Pout, Ctrl->T.T.min, Ctrl->T.T.max);	/* Stretch to given range or use natural range if 0/0 */
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
