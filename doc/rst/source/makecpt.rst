@@ -318,7 +318,7 @@ we always get a color regardless of the *z* value, try
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 Bugs
 ----

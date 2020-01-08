@@ -265,7 +265,7 @@ file relief, run
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 See Also
 --------

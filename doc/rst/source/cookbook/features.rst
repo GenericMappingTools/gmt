@@ -1131,13 +1131,25 @@ special properties that modify the behavior of programs that use them.
 All dynamic CPTs are normalized in one of two ways: If a CPT was designed
 to behave differently across a *hinge* value (e.g., a CPT designed specifically
 for topographic relief may include a discontinuity in color across the
-coastline at *z = 0*), then the CPT's *z*-values will range from -1, via 0
-at the hinge, to +1 at the other end.  The hinge value is specified via the special
-comment
+coastline at *z = 0*), then the CPT's normalized *z'*-values will range from -1, via 0
+at the hinge, to +1 at the other end.  A hinge is always at *z' = 0* in the
+normalized CPT file.  There are two kinds of hinges: *hard* and *soft*. A *hard* hinge means the
+CPT will always be interpolated separately on either side of the hinge, and
+most of these CPTs are intended for use with bathymetry/topography with a special
+emphasis (hinge) via an abrupt color change at the coastline.  Such CPT files
+are identified via the special comment
 
-| ``# HINGE = <hinge-value>``
+| ``# HARD_HINGE``
 
-CPTs without a hinge are instead normalized with *z*-values from 0 to 1.
+Other CPTs may instead have a *soft* hinge which indicates a natural hinge
+point in the CPT with respect to the data. These CPTs are flagged by the special comment
+
+| ``# SOFT_HINGE``
+
+CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user
+appends **+h**\ [*hinge*] to the CPT name.  This modifer will convert the soft
+hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
+CPTs without a hinge are instead normalized with *z'*-values from 0 to 1.
 Dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*
@@ -1166,6 +1178,9 @@ while :doc:`/grd2cpt` can derive the range from one or more grids.
    is asymmetrical, going from -8,000 meter depths up to +3,000 meter elevations.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range while utilizing the full color range.
+
+All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
+where those with hard or soft hinges are identified.
 
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
