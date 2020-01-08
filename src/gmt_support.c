@@ -7910,12 +7910,12 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		ks = GMT_NOTSET;
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
-		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
+		scale = (P->hinge - z_low) / (0.0 - P->data[0].z_low);
 
 	for (is = 0; is < (int)P->n_colors; is++) {
 		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
 			z_min = z_start = P->hinge;
-			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);
+			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - 0.0);
 		}
 		P->data[is].z_low  = z_start + (P->data[is].z_low  - z_min) * scale;
 		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
