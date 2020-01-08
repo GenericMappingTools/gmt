@@ -1128,29 +1128,28 @@ Master (dynamic) CPTs
 
 The CPTs distributed with GMT are *dynamic*.  This means they have several
 special properties that modify the behavior of programs that use them.
-All dynamic CPTs are normalized in one of two ways: If a CPT was designed
+Dynamic CPTs comes in a few different flavors: Some CPTs were designed
 to behave differently across a *hinge* value (e.g., a CPT designed specifically
 for topographic relief may include a discontinuity in color across the
-coastline at *z = 0*), then the CPT's normalized *z'*-values will range from -1, via 0
-at the hinge, to +1 at the other end.  A hinge is always at *z' = 0* in the
-normalized CPT file.  There are two kinds of hinges: *hard* and *soft*. A *hard* hinge means the
-CPT will always be interpolated separately on either side of the hinge, and
-most of these CPTs are intended for use with bathymetry/topography with a special
-emphasis (hinge) via an abrupt color change at the coastline.  Such CPT files
-are identified via the special comment
+coastline at *z = 0*), and when users select these CPTs they will be stretched
+to fit the user's desired data range separately for each side of this *hard* hinge.
+Basically, a *hard* hinge CPT is the juxtaposition of two different CPTs joined
+at the hinge and these sections are stretched independently. Such CPT files
+are identified as such via the special comment
 
 | ``# HARD_HINGE``
 
-Other CPTs may instead have a *soft* hinge which indicates a natural hinge
-point in the CPT with respect to the data. These CPTs are flagged by the special comment
+and all hard hinges occur at data value *z = 0*.
+Other CPTs may instead have a *soft* hinge which indicates a natural hinge or transition
+point in the CPT itself, unrelated to any natural data set *per se*. These CPTs
+are flagged by the special comment
 
 | ``# SOFT_HINGE``
 
 CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user
 appends **+h**\ [*hinge*] to the CPT name.  This modifer will convert the soft
 hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
-CPTs without a hinge are instead normalized with *z'*-values from 0 to 1.
-Dynamic CPTs will need to be stretched to the user's preferred range, and there
+All dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*
 specified in the master table via the special comment
@@ -1158,16 +1157,16 @@ specified in the master table via the special comment
 
 | ``# RANGE = <zmin/zmax>``
 
-and when used by applications the normalized *z*-values will be stretched to reflect
-this natural range.  In contrast, CPTs without a natural range are instead
+and when used by applications the CPT may be automatically stretched to reflect
+this natural range.  In contrast, dynamic CPTs *without* a natural range are instead
 stretched to fit the range of the data in question (e.g., a grid's range).
-Exceptions to these rules are implemented in the two CPT-producing modules
+Exceptions to these rules are implemented in the two *CPT-producing* modules
 :doc:`/makecpt` and :doc:`/grd2cpt`, both of which can read dynamic CPTs
 and produce *static* CPTs satisfying a user's specific range needs.  These
-tools can also read static CPTs where the new range must be specified (or computed
+tools can also read static CPTs for which a new range must be specified (or computed
 from data), reversing the order of colors, and even isolating a section
-of an incoming CPT.  Here, :doc:`/makecpt` can be told the range or compute it from data tables
-while :doc:`/grd2cpt` can derive the range from one or more grids.
+of an incoming CPT.  Here, :doc:`/makecpt` can be told the data range or compute
+it from data tables while :doc:`/grd2cpt` can derive the range from one or more grids.
 
 .. figure:: /_images/GMT_hinge.*
    :width: 500 px
@@ -1180,7 +1179,7 @@ while :doc:`/grd2cpt` can derive the range from one or more grids.
    to honor the desired range while utilizing the full color range.
 
 All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
-where those with hard or soft hinges are identified.
+where those with hard or soft hinges are identified by triangles at their hinges.
 
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
