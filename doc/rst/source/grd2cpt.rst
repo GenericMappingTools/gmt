@@ -90,15 +90,7 @@ Optional Arguments
 
 .. _-C:
 
-
-**-C**\ *cpt*
-    Selects the master color table to use in the interpolation. Choose
-    among the built-in tables (type **grd2cpt** to see the list) or give
-    the name of an existing CPT [Default gives the turbo CPT].
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous CPT from those colors automatically.  
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: create_cpt.rst_
 
 .. _-D:
 
