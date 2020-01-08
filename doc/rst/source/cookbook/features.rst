@@ -1166,7 +1166,7 @@ Exceptions to these rules are implemented in the two CPT-producing modules
 and produce *static* CPTs satisfying a user's specific range needs.  These
 tools can also read static CPTs where the new range must be specified (or computed
 from data), reversing the order of colors, and even isolating a section
-of an incoming CPT.  Here, :doc:`/makecpt` can be told the range of compute it from data tables
+of an incoming CPT.  Here, :doc:`/makecpt` can be told the range or compute it from data tables
 while :doc:`/grd2cpt` can derive the range from one or more grids.
 
 .. figure:: /_images/GMT_hinge.*
