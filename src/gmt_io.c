@@ -198,7 +198,7 @@ typedef enum {
 } SwapWidth;
 
 /*! Macro to apply columns log/scale/offset conversion on the fly */
-#define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset;}
+#define gmt_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
 
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
@@ -852,8 +852,7 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Numerical adds to data columns */
 			double value = GMT->current.io.OGR->dvalue[GMT->common.a.ogr[k]];
-			gmt_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
-			GMT->current.io.curr_rec[GMT->common.a.col[k]] = value;
+			GMT->current.io.curr_rec[GMT->common.a.col[k]] = gmt_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
 			n++;
 		}
 	}
@@ -3572,16 +3571,15 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
-				gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
+				GMT->current.io.curr_rec[col_pos] = gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
-					gmtio_adjust_periodic_lon (GMT, &val);
-				GMT->current.io.curr_rec[col_pos] = val;
+					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_pos]);
 				col_no++;		/* Count up number of columns found */
 				n_ok++;
 				while (GMT->common.i.select && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
 					/* This input column is requested more than once */
 					col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* The data column that will receive this value */
-					GMT->current.io.curr_rec[col_pos] = val;
+					GMT->current.io.curr_rec[col_pos] = gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 					col_no++;
 					n_ok++;
 				}
@@ -3840,7 +3838,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 						GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
 					else	/* Regular translation */
 						GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][row] * GMT->current.io.scale_factor[v] + GMT->current.io.add_offset[v];
-					gmt_convert_col (GMT->current.io.col[GMT_IN][v], GMT->hidden.mem_coord[col][row]);	/* Any additional user scalings */
+					GMT->hidden.mem_coord[col][row] = gmt_convert_col (GMT->current.io.col[GMT_IN][v], GMT->hidden.mem_coord[col][row]);	/* Any additional user scalings */
 				}
 			}
 		}
@@ -4397,7 +4395,7 @@ void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 		return (NULL);
 	}
 	if (GMT->common.i.select)	/* We need to scale this single item */
-		gmt_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
+		GMT->current.io.curr_rec[GMT_X] = gmt_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
 
 	return (&GMT->current.io.record);
 }
@@ -4723,7 +4721,6 @@ int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
 		return GMT_OK;
 	}
-	//if (direction == GMT_IN && GMT->common.i.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_cols) {
 	if (direction == GMT_IN && GMT->common.i.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_actual_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of input columns set by -i exceeds those set by -bi!\n");
 		GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
@@ -5231,8 +5228,7 @@ uint64_t gmtlib_bin_colselect (struct GMT_CTRL *GMT) {
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
 		S = &(GMT->current.io.col[GMT_IN][col]);
 		order = S->order;
-		tmp[order] = GMT->current.io.curr_rec[S->col];
-		gmt_convert_col (GMT->current.io.col[GMT_IN][col], tmp[order]);
+		tmp[order] = gmt_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[S->col]);
 		switch (gmt_M_type (GMT, GMT_IN, order)) {
 			case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
 				gmtio_adjust_periodic_lon (GMT, &tmp[order]);

@@ -449,7 +449,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   c  Focal mechanism in Global CMT convention\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 rake1 strike2 dip2 rake2 moment [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d  Closed double couple defined from seismic moment tensor (zero trace and zero determinant):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d  Closest double couple defined from seismic moment tensor (zero trace and zero determinant):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p  Focal mechanism defined with:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 strike2 fault mag [newX newY] [event_title]\n");
@@ -466,11 +466,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +f<font>+j<justify>+o<dx>[/<dy>] to change the label font, location and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Append +u to plot it under.\n");
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white]");
+	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Set color used for T_symbol [default as set by -E].\n");
@@ -481,7 +480,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	gmt_fill_syntax (API->GMT, 'G', NULL, "Set color used for compressive parts [Default is black]");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Set color used for compressive parts [Default is black].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set same size for any magnitude. Size is given with -S.\n");
