@@ -354,6 +354,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
+#if defined(USE_COMMON_LONG_OPTIONS)
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
  * options (e.g., -U"My plot"+o5c/6c) that the common and module parsers expect.
@@ -396,6 +397,7 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	{   0, 'x', "cores",         "",        "",                                         "",        					""},
 	{   0, '\0', "",             "",        "",                                         "",        					""}	/* End of list marked with empty code and strings */
 };
+#endif
 
 /* Local variables to gmt_init.c */
 
@@ -511,6 +513,7 @@ void gmtlib_handle_escape_text (char *text, char key, int way) {
 	}
 }
 
+#if defined(USE_COMMON_LONG_OPTIONS)
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (module).
@@ -692,6 +695,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
 	}
 }
+#endif
 
 GMT_LOCAL int get_psl_encoding (const char *encoding) {
 	/* Return the specified encoding ID */
