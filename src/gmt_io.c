@@ -4633,7 +4633,6 @@ int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
 		return GMT_OK;
 	}
-	//if (direction == GMT_IN && GMT->common.i.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_cols) {
 	if (direction == GMT_IN && GMT->common.i.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_actual_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of input columns set by -i exceeds those set by -bi!\n");
 		GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
