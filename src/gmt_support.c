@@ -12560,7 +12560,7 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 		if (strchr (sep, string[k]))
 			done = true;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Modifier +%c found but not a valid modifier!\n", string[k]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Modifier +%c found but not a valid modifier! - ignored\n", string[k]);
 			return NULL;
 		}
 	}
