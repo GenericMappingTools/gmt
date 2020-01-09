@@ -8731,10 +8731,10 @@ int gmt_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 			GMT->common.b.ncol[GMT_IN], n_req);
 		n_errors++;
 	}
-	if (GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_cols) {
+	if (GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_actual_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 			"Syntax error: Binary input data (-bi) provides %d but column selection (-i) asks for %d columns\n",
-			GMT->common.b.ncol[GMT_IN], GMT->common.i.n_cols);
+			GMT->common.b.ncol[GMT_IN], GMT->common.i.n_actual_cols);
 		n_errors++;
 	}
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] && (GMT->common.b.ncol[GMT_OUT] < GMT->common.o.n_cols)) {

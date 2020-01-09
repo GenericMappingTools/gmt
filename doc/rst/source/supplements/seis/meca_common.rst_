@@ -4,8 +4,7 @@ Description
 -----------
 
 Reads data values from *files* [or standard input] and
-will plot focal mechanisms on a map.
-Many options are similar to those of :doc:`plot </plot>`.
+plots focal mechanisms.
 
 Required Arguments
 ------------------
@@ -52,8 +51,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Selects filling of extensive quadrants. Usually white. Set the color
-    [Default is white].
+    Selects filling of extensive quadrants. [Default is white].
 
 .. _-F:
 
@@ -89,7 +87,7 @@ Optional Arguments
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
-    shaded. Set the color [Default is black].
+    shaded. [Default is black].
 
 .. _-L:
 
@@ -105,7 +103,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **not** skip symbols that fall outside frame boundary specified
+    Does **NOT** skip symbols that fall outside frame boundary specified
     by **-R** [Default plots symbols inside frame only].
 
 .. _-T:
@@ -122,6 +120,10 @@ Optional Arguments
 
     Append **/**\ *pen* to set the pen attributes for this feature.
     Default pen is as set by **-W**. [Default: 0].
+
+    For double couple mechanisms, the **-T** option renders the beach ball transparent
+    by drawing only the nodal planes and the circumference.
+    For non-double couple mechanisms, **-T**\ *0* option overlays best double couple transparently.
 
 .. _-U:
 
