@@ -540,7 +540,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 		G->header->registration, GMT_NOTSET, NULL)) == NULL) return (NULL);
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
-		dx = A->header->inc[GMT_X] * R2D;			/* Longitude increment in radians */
+		dx = A->header->inc[GMT_X] * D2R;			/* Longitude increment in radians */
 		s2 = sind (0.5 * A->header->inc[GMT_Y]);		/* Holds sin (del_y/2) */
 	}
 	else	/* Cartesian */

@@ -6344,7 +6344,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append +dh for map height, +du for max map dimension, and +dl for min map dimension [Default +dw is width].\n");
 			gmt_message (GMT, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
 			gmt_message (GMT, "\t   longitude range specified by -R is used. The default standard parallel is the equator\n");
-			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n");
+			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n");
 
 			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area)\n");
 			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
@@ -6484,9 +6484,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t   Append +dh for map height, +du for max (upper) or +dl for min (lower) map dimension [+dw for width].\n");
-			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is set.\n\n");
+			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is set.\n\n");
 
-			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<hor>]/<scl (or <radius>/<lat>)|<width> (Lambert Azimuthal EA)\n");
+			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<hor>]/<scl> (or <radius>/<lat>)|<width> (Lambert Azimuthal EA)\n");
 
 			gmt_message (GMT, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Albers Conic EA)\n");
 
@@ -6496,11 +6496,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Equidistant Conic)\n");
 
-			gmt_message (GMT, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scl (or <radius>/<lat>)|<width>  (Azimuthal Equidistant)\n");
+			gmt_message (GMT, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width>  (Azimuthal Equidistant)\n");
 
-			gmt_message (GMT, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scl (or <radius>/<lat>)|<width>  (Gnomonic)\n");
+			gmt_message (GMT, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width>  (Gnomonic)\n");
 
-			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<scl (or <radius>/<lat>)|<width>  (Orthographic)\n");
+			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<scl> (or <radius>/<lat>)|<width>  (Orthographic)\n");
 
 			gmt_message (GMT, "\t   -Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl>|<width> (General Perspective)\n");
 
