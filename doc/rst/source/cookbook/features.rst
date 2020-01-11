@@ -1181,6 +1181,34 @@ it from data tables while :doc:`/grd2cpt` can derive the range from one or more 
 All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
 where those with hard or soft hinges are identified by triangles at their hinges.
 
+CPTs from color lists
+~~~~~~~~~~~~~~~~~~~~~
+
+GMT can build color tables "on the fly" from a comma-separated list of colors
+and a range of *z*-values to go with them.  As illustrated below, there are
+four different ways to create such CPTs. In this example, we will operate with
+a list of three colors: red,yellow and purple, given to modules with the option **-C**\ red,yellow,purple.
+The different CPTs result because we either select a *continuous* or *discrete table*, and because the *z*-intervals are
+either *equidistant* or *arbitrary*.  The top continuous color table with equidistant spacing (a) is selected
+with the range **-T**\ 0/6, meaning the colors will continuously change from red (at *z = 0*) via
+yellow (at *z = 3*) to purple (at *z = 6*). Next, a discrete table with the same range (b)
+is obtained with **-T**\ 0/6/2, yielding colors that are either constant red (*z = 0-2*), yellow (*z = 2-4*)
+or purple (*z = 4-6*). The next discrete table (c) illustrates how to specify arbitrary
+node points in the CPT by providing a comma-separated list of values (**-T**\ 0,4,5,6). Now, the constant
+color intervals have unequal ranges, with red (*z = 0-4*), yellow (*z = 4-5*) and purple (*z = 5-6*).  Finally, we
+create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,4,6 and adding **-Z**;
+the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
+continuously change from red (at *z = 0*) via yellow (at *z = 2*) to purple (at *z = 6*).
+Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use the exact data range
+to set the quivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
+color list to have the *min* and *max* values rounded down and up to nearest multiple of *dz*, respectively.
+
+.. figure:: /_images/GMT_colorlist.*
+   :width: 500 px
+   :align: center
+
+   Lists of colors (here red,yellow,purple) can be turned into discrete or continuous CPT tables on the fly.
+
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -1241,7 +1269,10 @@ A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
 "turbo" color table, but this is overridden if the user uses the @eart_relief
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
-these CPTs are read and scaled to match the range of the grid values.
+these CPTs are read and scaled to match the range of the grid values. You may append
+**+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
+THis is helpful if you plan to place a colorbar and prefer start and stop *z*-values
+that are multiples of *dz*.
 
 The Drawing of Vectors
 ----------------------
