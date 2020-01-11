@@ -1194,9 +1194,9 @@ with the range **-T**\ 0/6, meaning the colors will continuously change from red
 yellow (at *z = 3*) to purple (at *z = 6*). Next, a discrete table with the same range (b)
 is obtained with **-T**\ 0/6/2, yielding colors that are either constant red (*z = 0-2*), yellow (*z = 2-4*)
 or purple (*z = 4-6*). The next discrete table (c) illustrates how to specify arbitrary
-node points in the CPT by providing a comma-separated list of values (**-T**\ 0,4,5,6). Now, the constant
-color intervals have unequal ranges, with red (*z = 0-4*), yellow (*z = 4-5*) and purple (*z = 5-6*).  Finally, we
-create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,4,6 and adding **-Z**;
+node points in the CPT by providing a comma-separated list of values (**-T**\ 0,4,5.5,6). Now, the constant
+color intervals have unequal ranges, with red (*z = 0-4*), yellow (*z = 4-5.5*) and purple (*z = 5.5-6*).  Finally, we
+create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,2,6 and adding **-Z**;
 the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
 continuously change from red (at *z = 0*) via yellow (at *z = 2*) to purple (at *z = 6*).
 Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use the exact data range
