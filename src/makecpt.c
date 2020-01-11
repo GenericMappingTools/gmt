@@ -424,7 +424,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->T.interpolate && !Pin->is_continuous) {
+	if (Ctrl->T.interpolate && !Pin->is_continuous && !(Pin->mode & GMT_CPT_COLORLIST)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "CPT %s is discrete hence you can only stretch it (-Tmin/max) but not sample it (-Tmin/max/inc).\n", Ctrl->C.file);
 		Return (GMT_RUNTIME_ERROR);
 	}

@@ -5668,6 +5668,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
 		return (GMT_NOTSET);
 	}
+	fprintf (fp, "# COLOR_LIST\n");	/* Flag that we are building a CPT from a list of discrete colors */
 
 	if ((*mode) & GMT_CPT_CONTINUOUS) {	/* Make a continuous cpt from the colors */
 		char last_color[GMT_LEN256] = {""};

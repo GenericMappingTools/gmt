@@ -485,7 +485,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (!Pin->is_continuous) {
+	if (!Pin->is_continuous && !(Pin->mode & GMT_CPT_COLORLIST)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "CPT %s is discrete and we cannot resample it - please select a continuous CPT instead\n", Ctrl->C.file);
 		Return (GMT_RUNTIME_ERROR);
 	}

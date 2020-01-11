@@ -7326,6 +7326,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->is_wrapping = 1;
 		else if ((h = strstr (line, "ENABLE_B_OPTION")))	/* CPT was stretched to exact min/max with no dz rounding */
 			XH->auto_scale = 1;
+		else if ((h = strstr (line, "COLOR_LIST")))	/* CPT was created from a list of colors */
+			X->mode |= GMT_CPT_COLORLIST;
 
 		GMT->current.setting.color_model = X->model;
 

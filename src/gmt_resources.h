@@ -566,6 +566,7 @@ enum GMT_enum_cptflags {
 	GMT_CPT_HARD_HINGE = 4,
 	GMT_CPT_SOFT_HINGE = 8,
 	GMT_CPT_TIME       = 16,
+	GMT_CPT_COLORLIST  = 32,
 	GMT_CPT_HINGED     = 4	/* Backwards compatibility with 6.0 API */
 };
 
