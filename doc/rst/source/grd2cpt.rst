@@ -221,14 +221,12 @@ Optional Arguments
 
 .. include:: explain_transparency.rst_
 
-Color Aliasing
---------------
+Discrete versus Continuous CPT
+------------------------------
 
-For best result when **-E** is used we recommend you do no append
-a specific *nlevels*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the grid limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------

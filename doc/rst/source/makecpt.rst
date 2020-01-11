@@ -239,14 +239,12 @@ part from the hinge to the top, according to the prescribed new range.
 If the selected range does not include the hinge then no such partitioning
 takes place.
 
-Color Aliasing
---------------
+Discrete versus Continuous CPT
+------------------------------
 
-For best result when **-T -Z** is used we recommend you do no append
-a specific *z_inc*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the stated limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------

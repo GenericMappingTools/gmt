@@ -424,6 +424,10 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->T.interpolate && !Pin->is_continuous) {
+		GMT_Report (API, GMT_MSG_NORMAL, "CPT %s is discrete hence you can only stretch it (-Tmin/max) but not sample it (-Tmin/max/inc).\n", Ctrl->C.file);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	if (Ctrl->Q.active && Pin->has_hinge)
 		GMT_Report (API, GMT_MSG_VERBOSE, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */

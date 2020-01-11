@@ -485,6 +485,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (!Pin->is_continuous) {
+		GMT_Report (API, GMT_MSG_NORMAL, "CPT %s is discrete and we cannot resample it - please select a continuous CPT instead\n", Ctrl->C.file);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
 	
