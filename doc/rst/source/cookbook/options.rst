@@ -1025,42 +1025,6 @@ slightly different meaning. Now, the *n_recs* argument is taken to mean
 how many *bytes* should be skipped (on input) or padded with the space
 character (on output).
 
-.. _option_-l:
-
-Setting automatic legend entries: The **-l** option
----------------------------------------------------
-
-Map or plot legends are created by :doc:`/legend` and normally this module
-will read a *specfile* that outlines how the legend should look.  You can
-make very detailed and complicated legends by mixing a variety of items,
-such as symbol, free text, colorbars, scales, images, and more.  Yet, for
-the vast majority of plots displaying symbols or lines a simple legend will suffice.
-The **-l** option is used to automatically build the *specfile* as we plot
-the various layers that will make up our illustration.  Apart from setting
-the label string that goes with the current symbol or line, you can select
-from a series of modifiers that mirror the effect of control codes normally
-added to the *specfile* by hand.  For instance, a simple plot with two
-symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`::
-
-   gmt begin fruit
-     gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
-     gmt plot @Table_5_11.txt -St0.35c -Gorange -B -BWStr -lOranges
-     gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
-   gmt end show
-
-As the script shows, when no *specfile* is given to :doc:`/legend` then we
-look for the automatically generated on in the session directory.
-
-.. _auto_legend:
-
-.. figure:: /_images/GMT_autolegend.*
-   :width: 500 px
-   :align: center
-
-   Each of the two :doc:`/plot` commands use **-l** to add a symbol to the
-   auto legend; the first also sets a legend header of given size and draws a horizontal line.
-
 .. _option_-i:
 
 Input columns selection: The **-i** option
@@ -1109,6 +1073,59 @@ ignore all trailing text, use **-in**.
    trailing text, then append the word number (0 is the first word).  Note that
    these column numbers now refer to the logical record, not the physical, since
    after reading the data there is no physical record, only the logical record in memory.
+
+. _option_-j:
+
+Spherical distance calculations: The **-j** option
+--------------------------------------------------
+
+    GMT has different ways to compute distances on planetary bodies.
+    By default (**-jg**) we perform great circle distance calculations, and parameters such
+    as distance increments or radii will be compared against calculated great
+    circle distances. To simplify and speed up calculations you can select Flat
+    Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
+    you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
+    (and slowest calculation time).  All spherical distance calculations depend on
+    the current ellipsoid (:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`), the definition of
+    the mean radius (:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`), and the specification
+    of latitude type (:ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`).  Geodesic distance
+    calculations is also controlled by method (:ref:`PROJ_GEODESIC <PROJ_GEODESIC>`).
+
+.. _option_-l:
+
+Setting automatic legend entries: The **-l** option
+---------------------------------------------------
+
+Map or plot legends are created by :doc:`/legend` and normally this module
+will read a *specfile* that outlines how the legend should look.  You can
+make very detailed and complicated legends by mixing a variety of items,
+such as symbol, free text, colorbars, scales, images, and more.  Yet, for
+the vast majority of plots displaying symbols or lines a simple legend will suffice.
+The **-l** option is used to automatically build the *specfile* as we plot
+the various layers that will make up our illustration.  Apart from setting
+the label string that goes with the current symbol or line, you can select
+from a series of modifiers that mirror the effect of control codes normally
+added to the *specfile* by hand.  For instance, a simple plot with two
+symbols can obtain a legend by using this option and modifiers and is shown
+in Figure :ref:`Auto Legend <auto_legend>`::
+
+   gmt begin fruit
+     gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
+     gmt plot @Table_5_11.txt -St0.35c -Gorange -B -BWStr -lOranges
+     gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
+   gmt end show
+
+As the script shows, when no *specfile* is given to :doc:`/legend` then we
+look for the automatically generated on in the session directory.
+
+.. _auto_legend:
+
+.. figure:: /_images/GMT_autolegend.*
+   :width: 500 px
+   :align: center
+
+   Each of the two :doc:`/plot` commands use **-l** to add a symbol to the
+   auto legend; the first also sets a legend header of given size and draws a horizontal line.
 
 .. _option_-n:
 
