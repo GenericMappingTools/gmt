@@ -7185,6 +7185,46 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 }
 
 /*! . */
+void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
+	unsigned int k, i;
+	gmt_M_unused(GMT);
+	if (P->is_continuous) return;	/* Nothing to do */
+	P->n_colors--;	/* One less slice */
+	for (k = 0; k < P->n_colors; k++) {	/* Copy next low color to previous high color */
+		gmt_M_rgb_copy (P->data[k].rgb_high, P->data[k+1].rgb_low);
+		gmt_M_rgb_copy (P->data[k].hsv_high, P->data[k+1].hsv_low);
+		/* Update color differences for interpolation function later (dz remains the same == 1) */
+		for (i = 0; i < 4; i++) P->data[k].rgb_diff[i] = P->data[k].rgb_high[i] - P->data[k].rgb_low[i];
+		for (i = 0; i < 4; i++) P->data[k].hsv_diff[i] = P->data[k].hsv_high[i] - P->data[k].hsv_low[i];
+	}
+	P->is_continuous = true;	/* Flag this as a continuous CPT */
+}
+
+/*! . */
+unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous) {
+	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate)) {	/* Color list with -T/min/max should be seen as continuous */
+		*force_continuous = true, P->mode |= GMT_CPT_CONTINUOUS;
+		gmtlib_make_continuous_colorlist (GMT, P);
+	}
+	if (*interpolate) {
+		if (!P->is_continuous && !(P->mode & GMT_CPT_COLORLIST)) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s is a discrete CPT. You can stretch it (-T<min>/<max>) but not interpolate it (-T<min>/<max>/<inc>).\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Selecting the given range and ignoring the increment setting.\n");
+			*interpolate = false;
+		}
+	}
+	else {	/* Did not request resampling */
+		if (P->categorical) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s is a special categorical, discrete CPT. You can select a subset only via (-Tmin/max/inc).\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This will yield a subset categorical CPT with [(max-min)/inc] - 1 entries.\n", file);
+			return GMT_RUNTIME_ERROR;
+		}		
+	}
+	return GMT_NOERROR;
+}
+
+/*! . */
 struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int cpt_flags) {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length.
 	 * Return the result as a palette struct.
@@ -7631,6 +7671,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			X->data[i].i_dz = 1.0 / dz;
 		}
+		/* Add special flag since this CPT is basically a list of colors */
+		X->mode |= GMT_CPT_COLORLIST;
 	}
 	X->wrap_length = X->data[X->n_colors-1].z_high - X->data[0].z_low;
 

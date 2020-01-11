@@ -58,9 +58,17 @@ do
 	j=`expr $i + 1`
 	left=`sed -n ${j}p tt.lis`
 	right=`sed -n ${i}p tt.lis`
-	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
+	if [ "$left" = "paired" ]; then
+		gmt makecpt -H -C$left > tt.left.cpt
+	else
+		gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
+	fi
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
-	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
+	if [ "$right" = "paired" ]; then
+		gmt makecpt -H -C$right > tt.right.cpt
+	else
+		gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
+	fi
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
 	gmt colorbar -D1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0 
 	gmt colorbar -D4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0

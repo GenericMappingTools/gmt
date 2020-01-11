@@ -185,9 +185,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with color boundaries in the first column, or a comma-separate list of values.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals]. Without -T or when using -T<z_min>/<z_max> this\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   has no effect; the input palette table is used untouched with possible scaling.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Force a continuous color palette when derived from color and z-lists [discrete].\n");
 	GMT_Option (API, "bi,di,h,i,.");
 
 	return (GMT_MODULE_USAGE);
@@ -424,10 +422,9 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->T.interpolate && !Pin->is_continuous && !(Pin->mode & GMT_CPT_COLORLIST)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "CPT %s is discrete hence you can only stretch it (-Tmin/max) but not sample it (-Tmin/max/inc).\n", Ctrl->C.file);
-		Return (GMT_RUNTIME_ERROR);
-	}
+	if (Ctrl->T.active && (API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &(Ctrl->T.interpolate), &(Ctrl->Z.active))))
+			Return (API->error)
+
 	if (Ctrl->Q.active && Pin->has_hinge)
 		GMT_Report (API, GMT_MSG_VERBOSE, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */

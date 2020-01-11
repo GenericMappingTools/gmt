@@ -199,18 +199,14 @@ Optional Arguments
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the color table, until colors for all
     intervals are assigned. This is particularly useful in combination
-    with a categorical color table, like "categorical". Cannot be used
-    in combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    with a categorical color table, like "categorical". Alternatively,
+    use **-Ww** to produce a wrapped (cyclic) color table that endlessly
+    repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Creates a continuous CPT [Default is discontinuous, i.e.,
-    constant colors for each interval]. This option has no effect when no **-T**
-    is used, or when using **-T**\ *z_min*/*z_max*; in the first case the input
-    CPT remains untouched, in the second case it is only scaled to match the
-    range *z_min*/*z_max*.
+    Force a continuous CPT when building from a list of colors and a list of *z*-values [discrete].
 
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
@@ -263,7 +259,7 @@ continuous default turbo rainbow of colors:
 
    ::
 
-    gmt makecpt -T-2/6 -Z > colors.cpt
+    gmt makecpt -T-2/6 > colors.cpt
 
 To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
@@ -277,7 +273,7 @@ the remote ata table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
-    gmt makecpt -Cgebco @v3206_06.txt -i2 -Z -E24 > my_depths.cpt
+    gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try
@@ -299,7 +295,7 @@ To make a continuous CPT from white to blue as z goes from
 
    ::
    
-    gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
+    gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval
 0 to 500, i.e., the color will be wrapped every 500 z-units so that

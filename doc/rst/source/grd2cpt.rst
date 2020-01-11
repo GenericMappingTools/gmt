@@ -205,15 +205,13 @@ Optional Arguments
 **-W**\ [**w**]
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
-    combination with a categorical color table. Cannot be used in
-    combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    combination with a categorical color table. Alternatively, use **-Ww**
+    to produce a wrapped (cyclic) color table that endlessly repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Will create a continuous color palette. [Default is discontinuous,
-    i.e., constant color intervals] 
+    Force a continuous CPT [Default is discontinuous].
 
 .. include:: explain_help.rst_
 
