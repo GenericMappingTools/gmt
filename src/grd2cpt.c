@@ -352,7 +352,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
-				Ctrl->T.interpolate = true;
 			}
 			else if (T_arg[0]) {	/* Gave -T<nlevels> */
 				Ctrl->T.n_levels = atoi (T_arg);
@@ -378,7 +377,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
-				Ctrl->T.interpolate = true;
 			}
 			else if (S_arg[0]) {	/* Gave -S<nlevels> */
 				Ctrl->T.n_levels = atoi (S_arg);
@@ -436,7 +434,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	bool write = false;
+	bool write = false, interpolate = true;
 
 	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
@@ -488,7 +486,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->T.active && (API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &(Ctrl->T.interpolate), &(Ctrl->Z.active))))
+	if ((API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &interpolate, &(Ctrl->Z.active))))
 			Return (API->error)
 
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
