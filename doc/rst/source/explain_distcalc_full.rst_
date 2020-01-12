@@ -1,4 +1,4 @@
-.. _distcalc_full:
+.. _-distcalc_full:
 
 **-je**\ \|\ **f**\ \|\ **g**
     Determine how spherical distances are calculated in modules that support this.
