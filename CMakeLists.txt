@@ -46,20 +46,12 @@ cmake_minimum_required (VERSION 2.8.7)
 # Use NEW behavior with newer CMake releases
 foreach(p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
 	if(POLICY ${p})
 		cmake_policy(SET ${p} NEW)
-	endif()
-endforeach()
-
-# Use OLD behavior with newer CMake releases
-foreach(p
-		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
-		)
-	if(POLICY ${p})
-		cmake_policy(SET ${p} OLD)
 	endif()
 endforeach()
 
@@ -141,16 +133,27 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	endif (GNUTAR AND GZIP AND XZ)
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
-get_target_property (_location gmtlib LOCATION)
-get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
+get_target_property (_name gmtlib OUTPUT_NAME)
+get_target_property (_prefix gmtlib PREFIX)
+if (BUILD_SHARED_LIBS)
+    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
+else (BUILD_SHARED_LIBS)
+    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
+endif (BUILD_SHARED_LIBS)
 
-get_target_property (_location pslib LOCATION)
-get_filename_component (PSL_LIB_NAME ${_location} NAME)
+get_target_property (_name pslib OUTPUT_NAME)
+get_target_property (_prefix pslib PREFIX)
+if (BUILD_SHARED_LIBS)
+    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
+else (BUILD_SHARED_LIBS)
+    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
+endif (BUILD_SHARED_LIBS)
 
 if (BUILD_SUPPLEMENTS)
 	# Get name of shared supplemental library
-	get_target_property (_location supplib LOCATION)
-	get_filename_component (GMT_SUPPL_LIB_NAME ${_location} NAME)
+	get_target_property (_name supplib OUTPUT_NAME)
+	get_target_property (_prefix supplib PREFIX)
+	set (GMT_SUPPL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
 	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
