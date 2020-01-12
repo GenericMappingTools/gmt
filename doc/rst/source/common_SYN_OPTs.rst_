@@ -40,7 +40,7 @@
 
 .. |SYN_OPT-i| replace:: **-i**\ :ref:`flags <-icols_full>`
 
-.. |SYN_OPT-j| replace:: **-j**\ :ref:`flags <distcalc_full>`
+.. |SYN_OPT-j| replace:: **-j**\ :ref:`flags <-distcalc_full>`
 
 .. |SYN_OPT-l| replace:: **-l**\ :ref:`flags <-l_full>`
 
