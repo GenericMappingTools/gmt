@@ -186,6 +186,7 @@
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended; on non-x86 architectures uncomment the next option as well):
+# Only the core GMT library can be built static; supplements lib is always shared.
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
