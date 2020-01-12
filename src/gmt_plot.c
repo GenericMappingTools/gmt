@@ -6775,7 +6775,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
 			FILE *fpl = NULL;
-			snprintf (file, PATH_MAX, "%s/gmt.movie", GMT->parent->gwf_dir);
+			snprintf (file, PATH_MAX, "%s/gmt.movielabels", GMT->parent->gwf_dir);
 			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
 				while (fgets (record, GMT_LEN128, fpl)) {
 					if (record[0] == '#') continue;	/* Skip header */

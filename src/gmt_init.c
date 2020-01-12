@@ -16542,7 +16542,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 			return GMT_RUNTIME_ERROR;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special MOVIE_N_LABELS = %s\n", L);
-		snprintf (file, PATH_MAX, "%s/gmt.movie", API->gwf_dir);
+		snprintf (file, PATH_MAX, "%s/gmt.movielabels", API->gwf_dir);
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
 			return GMT_ERROR_ON_FOPEN;
