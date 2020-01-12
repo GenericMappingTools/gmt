@@ -7950,8 +7950,12 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	z_start = z_low;
 	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
-		if (P->has_hinge)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h is outside given data range - hinge is ignored\n");
+		if (P->has_hinge) {
+			if (P->mode & GMT_CPT_HARD_HINGE)
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - hinge is ignored and your result is likely to be terrible.\n");
+			else
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+		}
 		P->has_hinge = 0;
 		ks = GMT_NOTSET;
 	}
@@ -8122,8 +8126,12 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	else {	/* As with LUT, translate users z-range to 0-1 range */
 		double scale_low, scale_high, z_hinge = 0.0, hinge = 0.0;
 		if (!Pin->has_hinge || z[0] >= Pin->hinge || z[nz-1] <= Pin->hinge || support_find_cpt_hinge (GMT, Pin) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
-			if (Pin->has_hinge)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_sample_cpt: CPT hinge requested via +h is outside given data range - hinge is ignored\n");
+			if (Pin->has_hinge) {
+				if (Pin->mode & GMT_CPT_HARD_HINGE)
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - hinge is ignored and your result is likely to be terrible.\n");
+				else
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+			}
 			Pin->has_hinge = 0;
 			scale_high = 1.0 / (z[nz-1] - z[0]);
 			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
