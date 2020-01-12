@@ -384,8 +384,6 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 
 /* Local variables to gmt_init.c */
 
-static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
-
 #include "gmt_gsformats.h"
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
@@ -2349,7 +2347,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			header = false;
 			continue;
 		}
-		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0 && !GMT_keywords_updated[case_val])
 			{k++; continue;}	/* If equal to default, skip it */
 		if (!header) {
@@ -5661,11 +5659,11 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 	 */
 
 	/* PROJ_LENGTH_UNIT */
-	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	GMT->current.setting.proj_length_unit = GMT_INCH;
 	/* PS_CHAR_ENCODING */
-	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
@@ -5673,7 +5671,7 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.run_mode == GMT_MODERN)
 		gmtinit_setautopagesize (GMT);
 	else {
-		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
@@ -5682,7 +5680,7 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 		GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
 	}
 	/* TIME_WEEK_START */
-	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
 }
@@ -8597,7 +8595,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 		if (gmtlib_setparameter (GMT, keyword, value, false))
 			error++;
 		else {
-			int case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+			int case_val = gmt_hash_lookup (GMT, keyword, GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 			if (case_val >= 0) GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 		}
 	}
@@ -8667,7 +8665,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	gmt_str_tolower (lower_value);
 	len = strlen (value);
 
-	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	case_val = gmt_hash_lookup (GMT, keyword, GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
 		/* FORMAT GROUP */
@@ -8799,25 +8797,25 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_tick_length[2] *= scale;
 				GMT->current.setting.map_tick_length[3] *= scale;
 				if (core) {		/* Need to update more than just FONT_ANNOT_PRIMARY */
-					int p = gmt_hash_lookup (GMT, "FONT_ANNOT_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					int p = gmt_hash_lookup (GMT, "FONT_ANNOT_SECONDARY", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_PRIMARY", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_SECONDARY", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "FONT_LABEL", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "FONT_LABEL", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "FONT_TITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "FONT_TITLE", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_TITLE_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_TITLE_OFFSET", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_PRIMARY", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_SECONDARY", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
-					p = gmt_hash_lookup (GMT, "MAP_FRAME_WIDTH", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					p = gmt_hash_lookup (GMT, "MAP_FRAME_WIDTH", GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 				}
 			}
@@ -10198,7 +10196,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	gmt_M_memset (value, GMT_BUFSIZ, char);
 	if (!keyword) return (value);		/* keyword argument missing */
 
-	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	case_val = gmt_hash_lookup (GMT, keyword, GMT->parent->keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
 		/* FORMAT GROUP */
@@ -15383,7 +15381,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_init_unit_conversion (GMT);	/* Set conversion factors from various units to meters */
 
-	gmt_hash_init (GMT, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);	/* Initialize hash table for GMT defaults */
+	gmt_hash_init (GMT, GMT->parent->keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);	/* Initialize hash table for GMT defaults */
 
 	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
 

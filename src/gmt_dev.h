@@ -115,8 +115,10 @@ extern "C" {
 
 #include <time.h>
 
+#include "gmt_dimensions.h"     /* Constant definitions created by configure */
 #include "common_math.h"     /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
+#include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
 
@@ -127,12 +129,10 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_constants.h"      /* All basic constant definitions */
 #include "gmt_modern.h"         /* Modern mode constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
-#include "gmt_dimensions.h"     /* Constant definitions created by configure */
 #include "gmt_time.h"           /* Declarations of structures for dealing with time */
 #include "gmt_texture.h"        /* Declarations of structures for dealing with pen, fill, etc. */
 #include "gmt_defaults.h"       /* Declarations of structure for GMT default settings */
 #include "gmt_psl.h"            /* Declarations of structure for GMT PostScript settings */
-#include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 
 #ifdef HAVE_GDAL
 #	include "gmt_gdalread.h"      /* GDAL support */

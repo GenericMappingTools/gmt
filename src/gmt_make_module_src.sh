@@ -192,8 +192,8 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #ifndef BUILD_SHARED_LIBS
-	/* gmt module function pointer: */
-	int (*p_func)(void*, int, void*);
+	int (*m_func)(void*, int, void*);	/* modern module function pointer: */
+	int (*c_func)(void*, int, void*);	/* classic module function pointer: */
 #endif
 EOF
 fi
@@ -226,11 +226,11 @@ gawk '
 		FS = "\t";
 	}
 	!/^[ \t]*#/ {
-		printf "\t{\"%s\", \"%s\", \"%s\", %s, %s, &GMT_%s},\n", $1, $2, $3, $5, $7, $1;
+		printf "\t{\"%s\", \"%s\", \"%s\", %s, %s, &GMT_%s, &GMT_%s},\n", $1, $2, $3, $5, $7, $1, $2;
 	}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	{NULL, NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #endif
 };
 EOF
@@ -419,18 +419,18 @@ if [ "$U_TAG" = "CORE" ]; then
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
 void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
-	int module_id = 0;
+	int module_id = 0, m;
 	size_t len = strlen (candidate);
 	gmt_M_unused(API);
 
 	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
+
 	/* Match actual_name against g_module[module_id].cname */
-	while (g_${L_TAG}_module[module_id].cname != NULL &&
-	       strcmp (&candidate[4], g_${L_TAG}_module[module_id].cname))
+	while (g_${L_TAG}_module[module_id].cname != NULL && (m = strcmp (&candidate[4], g_${L_TAG}_module[module_id].mname)) && strcmp (&candidate[4], g_${L_TAG}_module[module_id].cname))
 		++module_id;
 
 	/* Return Module function or NULL */
-	return (g_${L_TAG}_module[module_id].p_func);
+	return ((m) ? g_${L_TAG}_module[module_id].c_func : g_${L_TAG}_module[module_id].m_func);
 }
 #endif
 EOF
