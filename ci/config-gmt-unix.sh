@@ -14,6 +14,8 @@ set (COPY_DCW TRUE)
 
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
+# Uncomment following line to enable static build
+set (BUILD_SHARED_LIBS FALSE)
 
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
