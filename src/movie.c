@@ -68,9 +68,6 @@ enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 	MOVIE_LABEL_IS_COL_T,
 	MOVIE_LABEL_IS_STRING};
 
-enum enum_item {MOVIE_ITEM_IS_LABEL = 0,
-	MOVIE_ITEM_IS_PROG_INDICATOR};
-
 struct MOVIE_ITEM {
 	struct GMT_FONT font;
 	char format[GMT_LEN128];
@@ -447,6 +444,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     p selects the percent of completion as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w; first word is 0).\n");
@@ -461,10 +459,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) and consult the movie documentation for which attributes are needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TL].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|c<col.>] to add annotations (see -L for meaning):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to specify which indicator and consult the movie documentation for which attributes are needed:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col.>] to add annotations (see -L for details):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +G to set background (static) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to set foreground (moving) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +P to set background (static) pen for indicator [Depends in indicator selected].\n");
@@ -609,6 +607,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 				n_errors++;
 				break;
 		}
+		if (I->kind != 'l') I->kind = toupper ((int)I->kind);	/* Use upper case A-F to indicate that labeling is requested */
 	}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
@@ -818,7 +817,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					break;
 				}
 				I = &Ctrl->item[MOVIE_ITEM_IS_LABEL][T];	/* Shorthand for current label item */
-				I->kind = 'l';			/* This is a label item */
+				I->kind = 'L';			/* This is a label item */
 				n_errors += parse_common_item_attributes (GMT, 'L', opt->arg, I);
 				Ctrl->n_items[MOVIE_ITEM_IS_LABEL]++;	/* One more label specified */
 				break;
@@ -1544,14 +1543,15 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
 				unsigned int type;
-				/* Set MOVIE_N_LABELS as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
+				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
-				set_ivalue (fp, Ctrl->In.mode, true, "MOVIE_N_LABELS", Ctrl->n_items[k]);
+				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
+				set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
-					/* Place x/y/just/clearance_x/clearance_Y/pen/pen2/fill/fil2/font/txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%g%c/%g%c/%s/%g/%g/%s/%s/%s/%s/%s/", I->x, Ctrl->C.unit, I->y, Ctrl->C.unit,
+					/* Place kind/x/y/width/just/clearance_x/clearance_Y/pen/pen2/fill/fill2/font/txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
+					sprintf (label, "%c/%g%c/%g%c/%g/%s/%g/%g/%s/%s/%s/%s/%s/", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, I->width,
 						I->placement, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */

@@ -4234,8 +4234,10 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
-		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
-		PSL_command (PSL, "PSL_movie_completion /PSL_movie_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie label completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_label_completion /PSL_movie_label_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie progress indicator completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def\n");	/* Run then make it a null function */
 		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");
 		if (PSL->init.runmode) {
@@ -4454,7 +4456,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
 		
 		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
-		PSL_command (PSL, "/PSL_movie_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_label_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);

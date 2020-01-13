@@ -6709,15 +6709,38 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	return (pStrOut);
 }
 
+GMT_LOCAL void gmtplot_just_f_xy (int justify, double *fx, double *fy) {
+	/* Factors to multiply width and add to x,y that addresses its location */
+	*fy = -0.5 * ((justify / 4) - 1);
+	*fx = -0.5 * ((justify % 4) - 2);
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *F1, char *F2, char *label) {
+	/* Place default progress indicator pie */
+	double dim[3], fx, fy;
+	struct GMT_FILL fill;
+	dim[0] = w;
+	dim[1] = 90.0;	/* Start is 12 'oclock */
+	dim[2] = 90.0 - 3.6 * atof (label);	/* Go clockwise. label has percent - convert to 0-360 degrees */
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	x += fx * w;	y += fy * w;	/* Move to center of circle */
+	gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
+	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
+	PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_WEDGE);	/* Plot wedge */
+}
+
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active, auto_media = false;
-	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_labels = 0;
-	char *mode[2] = {"w","a"}, *movie_label_arg[GMT_LEN32];
-	static char *ps_mode[2] = {"classic", "modern"};
+	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_items[2] = {0, 0};
+	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32];
+	static char *ps_mode[2] = {"classic", "modern"}, *F_name[2] = {"label", "prog_indicator"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
@@ -6775,22 +6798,24 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
 			FILE *fpl = NULL;
-			snprintf (file, PATH_MAX, "%s/gmt.movielabels", GMT->parent->gwf_dir);
-			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
-				while (fgets (record, GMT_LEN128, fpl)) {
-					if (record[0] == '#') continue;	/* Skip header */
-					if (n_movie_labels == GMT_LEN32) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie labels exceed capacity [%d] - skipped.\n", n_movie_labels);
-						continue;
+			for (k = 0; k < 2; k++) {
+				snprintf (file, PATH_MAX, "%s/gmt.movie%ss", GMT->parent->gwf_dir, F_name[k]);
+				if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
+					while (fgets (record, GMT_LEN128, fpl)) {
+						if (record[0] == '#') continue;	/* Skip header */
+						if (n_movie_items[k] == GMT_LEN32) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie %ss exceed capacity [%d] - skipped.\n", F_name[k], n_movie_items[k]);
+							continue;
+						}
+						gmt_chop (record);		/* Chop off LF or CR/LF */
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_items[k], record);
+						movie_item_arg[k][n_movie_items[k]++] = strdup (record);
 					}
-					gmt_chop (record);		/* Chop off LF or CR/LF */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_labels, record);
-					movie_label_arg[n_movie_labels++] = strdup (record);
-				}
-				fclose (fpl);
-				if (gmt_remove_file (GMT, file)) {	/* Now remove the file since done */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot delete file %s\n", file);
-					GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+					fclose (fpl);
+					if (gmt_remove_file (GMT, file)) {	/* Now remove the file since done */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot delete file %s\n", file);
+						GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+					}
 				}
 			}
 		}
@@ -7015,27 +7040,28 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row, P->col, P->gap, P->tag, 0))
 			return NULL;	/* Should never happen */
 	}
-	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
-		/* Decode x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
+	if (n_movie_items[MOVIE_ITEM_IS_LABEL]) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
+		/* Decode x/y/just/clearance_x/clearance_Y/pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
 		double off[2] = {0.0, 0.0};
 		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
-		
-		/* Create special PSL_movie_completion PostScript procedure and define it here in the output PS.
+		k = MOVIE_ITEM_IS_LABEL;
+		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
 		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
 		
-		PSL_command (PSL, "/PSL_movie_completion {\nV\n");
+		PSL_command (PSL, "/PSL_movie_label_completion {\nV\n");
 		PSL_comment (PSL, "Start of movie labels\n");
 		PSL_comment (PSL, "Will not execute until end of plot\n");
-		
-		for (T = 0; T < n_movie_labels; T++) {
-			/* Replace the 8 leading slashes first with spaces */
-			for (kk = nc = 0; movie_label_arg[T][kk] && nc < 8; kk++) if (movie_label_arg[T][kk] == '/') { movie_label_arg[T][kk] = ' '; nc++;}
-			if (sscanf (movie_label_arg[T], "%s %s %s %lg %lg %s %s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 8 required items\n", movie_label_arg[T]);
+	
+		for (T = 0; T < n_movie_items[k]; T++) {
+			/* Parse -/x/y/-/just/clearance_x/clearance_Y/pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
+			/* Replace the 10 leading slashes first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %s %lg %lg %s %*s %s %*s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 8 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
@@ -7065,13 +7091,77 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			else	
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, form);
-			gmt_M_str_free (movie_label_arg[T]);
-			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
+			gmt_M_str_free (movie_item_arg[k][T]);
+			/* Because PSL_movie_label_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 		}
 		PSL_comment (PSL, "End of movie labels\n");
+		PSL_command (PSL, "U\n}!\n");
+	}
+	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
+		/* Decode kind/x/y/width/just/clearance_x/clearance_Y/pen/pen2/fill/fill2/font/txt in MOVIE_PROG_INDICATOR_ARG */
+		double off[2] = {0.0, 0.0}, width = 0.0;
+		char kind, just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
+		int kk, nc;
+		unsigned int T;
+		struct GMT_FONT Tfont;
+		k = MOVIE_ITEM_IS_PROG_INDICATOR;
+		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
+		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
+		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
+		
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {\nV\n");
+		PSL_comment (PSL, "Start of movie progress indicators\n");
+		PSL_comment (PSL, "Will not execute until end of plot\n");
+		
+		for (T = 0; T < n_movie_items[k]; T++) {
+			/* Replace the 10 leading slashes first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %s %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &width, just, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) != 13) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 12 required items\n", movie_item_arg[k][T]);
+				return NULL;	/* Should never happen */
+			}
+			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
+			if (isupper (kind) && kind != 'A') {	/* Need to do labeling stuff */
+				gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
+				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+				PSL_setfont (PSL, Tfont.id);
+			}
+			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);
+			justify = gmt_just_decode (GMT, just, PSL_NO_DEF);		/* Convert XX refpoint code to PSL number */
+			switch (kind) {
+				case 'a': case 'A':	/* Default pie symbol */
+					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, width, justify, F1, F2, label);
+					break;
+#if 0
+				case 'b': case 'B':	/* growing ring symbol */
+					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					break;
+				case 'c': case 'C':	/* growing vector symbol */
+					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					break;
+				case 'd': case 'D':	/* growing vector symbol */
+					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					break;
+				case 'e': case 'E':	/* growing vector symbol */
+					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					break;
+				case 'f': case 'F':	/* growing vector symbol */
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, width, justify, P1, F1, label);
+					break;
+#endif
+				default:
+					break;	/* Just for Coverity */
+			}
+			gmt_M_str_free (movie_item_arg[k][T]);
+			/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used fonts here */
+			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
+			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
+			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+		}
+		PSL_comment (PSL, "End of movie progress indicators\n");
 		PSL_command (PSL, "U\n}!\n");
 	}
 	

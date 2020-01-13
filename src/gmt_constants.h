@@ -497,6 +497,8 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 	GMT_DIST_DEG = 20,	/* 2-D lon, lat data, convert distance to spherical degree */
 	GMT_DIST_COS = 30};	/* 2-D lon, lat data, convert distance to cos of spherical degree */
 
+enum enum_item {MOVIE_ITEM_IS_LABEL = 0,	/* Item is a frame counter or time label in movie */
+	MOVIE_ITEM_IS_PROG_INDICATOR};			/* Item is a progress indicator symbol in movie */
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN
