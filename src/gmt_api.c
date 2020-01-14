@@ -7147,7 +7147,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
 				elen = strlen (ext);
 				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';    /* Truncate modifier */
-                else if ((q = strstr (file, "+h"))) q[0] = '\0';    /* Truncate +h modifier */
+				else if ((q = strstr (file, "+h"))) q[0] = '\0';    /* Truncate +h modifier */
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
