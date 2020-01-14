@@ -6726,13 +6726,14 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 	gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
 	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
 	dim[1] = 90.0;	/* Start is 12 'oclock */
 	dim[2] = 90.0 - 3.6 * atof (label);	/* Go clockwise. label has percent - convert to 0-360 degrees */
 	dim[7] = 1;	/* Lay down filled wedge */
 	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
 	PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
-	PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_WEDGE);	/* Plot wedge */
+	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7123,7 +7124,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* Replace the 10 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %s %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &width, just, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) != 13) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 12 required items\n", movie_item_arg[k][T]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 13 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
