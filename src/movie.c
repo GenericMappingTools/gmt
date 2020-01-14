@@ -515,6 +515,7 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	if (I->pen2[0] == '-')
 		sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
+	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label, regardless of +a */
 	return (n_errors);
 }
 
@@ -864,11 +865,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				if (gmt_get_modifier (opt->arg, 'w', string))	/* Progress indicator dimension (length or width) */
 					I->width = gmt_M_to_inch (GMT, string);
 				switch (I->kind) {	/* Deal with any missing required attributes for each progress indicator type */
-					case 'b':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress ring */
-					case 'c':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress arrow  */
-					case 'd':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress rounded line */
-					case 'e':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* progress line on line */
-					case 'f':	 n_errors += get_item_pen_fill (GMT, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
+					case 'b':	case 'B':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress ring */
+					case 'c':	case 'C':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress arrow  */
+					case 'd':	case 'D':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress rounded line */
+					case 'e':	case 'E':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* progress line on line */
+					case 'f':	case 'F':	 n_errors += get_item_pen_fill (GMT, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
 					default: n_errors += get_item_default (GMT, opt->arg, I);  break;	/* Default pie progression circle (a)*/
 				}
 				Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]++;	/* Got one more progress indicator */

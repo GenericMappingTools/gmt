@@ -6724,8 +6724,8 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	x += fx * w;	y += fy * w;	/* Move to center of circle */
 	dim[0] = w;
-	if (percent < 100) {	/* Need the background circle */
-		gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
+	if (percent < 100) {	/* Need the background full circle */
+		gmt_getfill (GMT, F2, &fill);	/* Want to paint background full circle*/
 		PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
 	}
@@ -6741,6 +6741,31 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
 	}
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *P1, char *P2, char *label, char kind) {
+	/* Place growing ring */
+	double fx, fy, fsize, dr2, percent = atof (label);
+	struct GMT_PEN pen;
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
+	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
+	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	if (percent < 100.0) {	/* Need the background full circle */
+		gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+		gmt_setpen (GMT, &pen);	/* Full circle pen */
+		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	}
+	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
+	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+	if (doubleAlmostEqual (percent, 100.0)) 
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	else
+		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0, 90.0 - 3.6 * percent, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7146,11 +7171,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				case 'a': case 'A':	/* Default pie symbol */
 					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, width, justify, F1, F2, label);
 					break;
-#if 0
 				case 'b': case 'B':	/* growing ring symbol */
-					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind);
 					break;
-				case 'c': case 'C':	/* growing vector symbol */
+#if 0
 					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, width, justify, P1, P2, label);
 					break;
 				case 'd': case 'D':	/* growing vector symbol */
