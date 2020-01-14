@@ -6748,11 +6748,40 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	double fx, fy, fsize, dr2, percent = atof (label);
 	struct GMT_PEN pen;
 	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
 	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	if (percent < 100.0) {	/* Need the background full circle */
+		gmt_M_memset (&pen, 1, struct GMT_PEN);
+		gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+		gmt_setpen (GMT, &pen);	/* Full circle pen */
+		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	}
+	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
+	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+	fprintf (stderr, "Pen: %s\n", gmt_putpen (GMT, &pen));
+	if (doubleAlmostEqual (percent, 100.0)) 
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	else
+		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0, 90.0 - 3.6 * percent, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *P1, char *P2, char *label, char kind) {
+	/* Place growing math arrow */
+	double fx, fy, fsize, dr2, dim[PSL_MAX_DIMS], percent = atof (label);
+	struct GMT_PEN pen;
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
+	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
+	if (kind == 'C') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	if (percent < 100.0) {	/* Need the background full circle */
 		gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
@@ -6762,10 +6791,16 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
 	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
-	if (doubleAlmostEqual (percent, 100.0)) 
-		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
-	else
-		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0, 90.0 - 3.6 * percent, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
+	fprintf (stderr, "Pen: %s\n", gmt_putpen (GMT, &pen));
+	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
+	dim[1] = 90.0;	/* Start is 12 'oclock */
+	dim[2] = 90.0 - 3.6 * percent;	/* Go clockwise. label has percent - convert to 0-360 degrees */
+	dim[3] = 0.2 * w, dim[4] = 0.2 * w, dim[5] = pen.width / PSL_POINTS_PER_INCH;
+	dim[6] = GMT->current.setting.map_vector_shape;
+	dim[7] = (double)PSL_VEC_BEGIN;
+	dim[8] = (double)PSL_VEC_ARROW;	dim[9] = (double)PSL_VEC_ARROW;
+	dim[12] = 0.5 * pen.width;
+	PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_MARC);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7093,9 +7128,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 	
 		for (T = 0; T < n_movie_items[k]; T++) {
-			/* Parse -/x/y/-/just/clearance_x/clearance_Y/pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
-			/* Replace the 10 leading slashes first with spaces */
-			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			/* Parse -|x|y|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG */
+			/* Replace the 12 leading slashes first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %s %lg %lg %s %*s %s %*s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
@@ -7137,7 +7172,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_command (PSL, "U\n}!\n");
 	}
 	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
-		/* Decode kind/x/y/width/just/clearance_x/clearance_Y/pen/pen2/fill/fill2/font/txt in MOVIE_PROG_INDICATOR_ARG */
+		/* Decode kind|x|y|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG */
 		double off[2] = {0.0, 0.0}, width = 0.0;
 		char kind, just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
@@ -7153,12 +7188,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 		
 		for (T = 0; T < n_movie_items[k]; T++) {
-			/* Replace the 10 leading slashes first with spaces */
-			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			/* Replace the 12 leading bars first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %s %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &width, just, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) != 13) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 13 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
+			fprintf (stderr, "P1 = %s P2 = %s\n", P1, P2);
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			if (isupper (kind) && kind != 'A') {	/* Need to do labeling stuff */
 				gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
@@ -7174,9 +7210,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				case 'b': case 'B':	/* growing ring symbol */
 					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind);
 					break;
-#if 0
-					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+				case 'c': case 'C':	/* Growing circular arrow */
+					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind);
 					break;
+#if 0
 				case 'd': case 'D':	/* growing vector symbol */
 					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, width, justify, P1, P2, label);
 					break;

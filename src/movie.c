@@ -281,7 +281,7 @@ GMT_LOCAL void set_ivalue (FILE *fp, int mode, bool env, char *name, int value) 
 
 GMT_LOCAL void set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
-	if (strchr (value, ' ') || strchr (value, '\t')) {	/* String has spaces or tabs */
+	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
 			case CSH_MODE:  if (env)
@@ -508,13 +508,21 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struc
 	unsigned int n_errors = 0;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	/* Default progress indicator: ring indicator */
-	if (I->pen[0] == '-')
-		sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
+	if (I->pen[0] == '-') {
+		if (I->kind == 'b' || I->kind == 'B')
+			sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
+		else
+			sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); /* Give default moving ring pen width (5% of width) and color */
+	}
 	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {
 		if (gmt_getpen (GMT, I->pen2, &pen)) n_errors++;
 	}
-	if (I->pen2[0] == '-')
-		sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
+	if (I->pen2[0] == '-') {
+		if (I->kind == 'b' || I->kind == 'B')
+			sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
+		else
+			sprintf (I->pen2, "0.5p,darkred,-"); /* Give default moving ring pen width (15% of width) and color */
+	}
 	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label, regardless of +a */
 	return (n_errors);
 }
@@ -1551,8 +1559,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
-					/* Place kind/x/y/width/just/clearance_x/clearance_Y/pen/pen2/fill/fill2/font/txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%c/%g%c/%g%c/%g/%s/%g/%g/%s/%s/%s/%s/%s/", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, I->width,
+					/* Place kind|x|y|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
+					sprintf (label, "%c|%g%c|%g%c|%g|%s|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, I->width,
 						I->placement, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					string[0] = '\0';
