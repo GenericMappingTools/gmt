@@ -507,6 +507,7 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	/* Default progress indicator: ring indicator */
 	if (I->pen[0] == '-') {
 		if (I->kind == 'b' || I->kind == 'B')

@@ -6755,12 +6755,11 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	if (percent < 100.0) {	/* Need the background full circle */
-		gmt_M_memset (&pen, 1, struct GMT_PEN);
-		gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
 	}
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
 	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
@@ -6777,17 +6776,18 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	struct GMT_PEN pen;
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
 	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'C') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	if (percent < 100.0) {	/* Need the background full circle */
-		gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
 	}
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
 	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
