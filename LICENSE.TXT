@@ -1,4 +1,4 @@
-Copyright (c) 1991–2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 
 As of GMT 5.0.0, GMT is distributed under the GNU Lesser General Public
 License (LGPL) version 3 or later. Copies of the GNU General Public

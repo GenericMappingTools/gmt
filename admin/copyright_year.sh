@@ -13,7 +13,7 @@ newyear=2020
 
 # 1. Find all files with "Copyright"
 find -E . \
-    -regex '.*\.(md|c|h|in|rst|bash|csh|sh|bat|m|cmake|txt)' \
+    -regex '.*\.(md|c|h|in|rst|bash|csh|sh|bat|m|cmake|txt|TXT)' \
     ! -path "./share/spotter/*" \
     -exec grep -H Copyright {} + | \
     grep -v ${newyear} | \
