@@ -4457,6 +4457,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		
 		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
 		PSL_command (PSL, "/PSL_movie_label_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);
