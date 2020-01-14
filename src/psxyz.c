@@ -564,7 +564,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol, tcol;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
