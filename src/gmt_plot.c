@@ -6717,18 +6717,21 @@ GMT_LOCAL void gmtplot_just_f_xy (int justify, double *fx, double *fy) {
 
 GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *F1, char *F2, char *label) {
 	/* Place default progress indicator pie */
-	double dim[3], fx, fy;
+	double dim[PSL_MAX_DIMS], fx, fy;
 	struct GMT_FILL fill;
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	dim[0] = w;
-	dim[1] = 90.0;	/* Start is 12 'oclock */
-	dim[2] = 90.0 - 3.6 * atof (label);	/* Go clockwise. label has percent - convert to 0-360 degrees */
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	x += fx * w;	y += fy * w;	/* Move to center of circle */
 	gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
 	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	dim[1] = 90.0;	/* Start is 12 'oclock */
+	dim[2] = 90.0 - 3.6 * atof (label);	/* Go clockwise. label has percent - convert to 0-360 degrees */
+	dim[7] = 1;	/* Lay down filled wedge */
 	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
+	PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
 	PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_WEDGE);	/* Plot wedge */
 }
 

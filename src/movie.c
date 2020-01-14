@@ -500,6 +500,7 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 	}
 	if (I->fill2[0] == '-')
 		strcpy (I->fill2, "lightred"); /* Give default fixed color */
+	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label */
 	return (n_errors);
 }
 
@@ -539,7 +540,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens */
 	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% offset of TAG font size */
 	I->clearance[GMT_X] = I->clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% of TAG font size */
-	if (I->kind == 'l')	/* Default label placement is top left of canvas */
+	if (I->kind == 'L')	/* Default label placement is top left of canvas */
 		sprintf (I->placement, "TL");
 	else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
 		sprintf (I->placement, "TR");
@@ -547,11 +548,10 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		sprintf (I->placement, "CB");
 
 	gmt_M_memcpy (&(I->font), &(GMT->current.setting.font_tag), 1, struct GMT_FONT);
-	if ((c = strchr (arg, '+')) == NULL) return (n_errors);	/* No modifiers to parse */
 
-	/* Gave modifiers so we must parse those now */
-	/* Common item modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] */
-	if (gmt_validate_modifiers (GMT, arg, option, "cfgjopst")) n_errors++;
+	/* Check for modifiers */
+	/* Common item modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
+	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;
 	if (gmt_get_modifier (c, 'c', string) && string[0])	/* Clearance for text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
 	if (gmt_get_modifier (c, 'f', string)) {	/* Gave a separate font */
@@ -566,7 +566,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
 	}
 	if (gmt_get_modifier (c, 'j', I->placement)) {	/* Placement for item */
-		if (I->kind == 'l')	/* Default label placement is top left of canvas */
+		if (I->kind == 'L')	/* Default label placement is top left of canvas */
 			gmt_just_validate (GMT, I->placement, "TL");
 		else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
 			gmt_just_validate (GMT, I->placement, "TR");
@@ -585,9 +585,9 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +t not given any format\n", option);
 		n_errors++;
 	}
-	if ((c = strchr (arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
 
-	if (I->kind == 'l') {
+	if (I->kind == 'L') {
+		if ((c = strchr (arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
 		t = arg;	/* Start of required label time information */
 		I->mode = MOVIE_LABEL_IS_FRAME;	/* Frame number is default for -L */
 	}
@@ -607,7 +607,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 				n_errors++;
 				break;
 		}
-		if (I->kind != 'l') I->kind = toupper ((int)I->kind);	/* Use upper case A-F to indicate that labeling is requested */
+		if (I->kind != 'L') I->kind = toupper ((int)I->kind);	/* Use upper case A-F to indicate that labeling is requested */
 	}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
@@ -1554,6 +1554,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					sprintf (label, "%c/%g%c/%g%c/%g/%s/%g/%g/%s/%s/%s/%s/%s/", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, I->width,
 						I->placement, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
+					string[0] = '\0';
 					if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
 						if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
 							sprintf (string, I->format, (int)frame);
