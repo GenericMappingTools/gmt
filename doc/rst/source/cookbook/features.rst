@@ -1147,7 +1147,7 @@ are flagged by the special comment
 | ``# SOFT_HINGE``
 
 CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user
-appends **+h**\ [*hinge*] to the CPT name.  This modifer will convert the soft
+appends **+h**\ [*hinge*] to the CPT name.  This modifier will convert the soft
 hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
 All dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
@@ -2588,4 +2588,3 @@ any of these directories.
 
 .. [19]
    Requires building GMT with GDAL.
-
