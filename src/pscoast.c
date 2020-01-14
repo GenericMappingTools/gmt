@@ -275,7 +275,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, k, j;
+	unsigned int n_errors = 0, n_files = 0, k = 0, j = 0;
 	int ks;
 	bool clipping, get_panel[2] = {false, false}, one = false;
 	struct GMT_OPTION *opt = NULL;
