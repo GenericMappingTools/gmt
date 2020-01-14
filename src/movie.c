@@ -552,9 +552,9 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 	/* Check for modifiers */
 	/* Common item modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
 	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;
-	if (gmt_get_modifier (c, 'c', string) && string[0])	/* Clearance for text box */
+	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
-	if (gmt_get_modifier (c, 'f', string)) {	/* Gave a separate font */
+	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font */
 		if (!string[0]) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +f not given any font\n", option);
 			n_errors++;
@@ -562,10 +562,10 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		else
 			n_errors += gmt_getfont (GMT, string, &(I->font));
 	}
-	if (gmt_get_modifier (c, 'g', I->fill) && I->fill[0]) {
+	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {
 		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
 	}
-	if (gmt_get_modifier (c, 'j', I->placement)) {	/* Placement for item */
+	if (gmt_get_modifier (arg, 'j', I->placement)) {	/* Placement for item */
 		if (I->kind == 'L')	/* Default label placement is top left of canvas */
 			gmt_just_validate (GMT, I->placement, "TL");
 		else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
@@ -573,15 +573,15 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		else 	/* Default line progress indicator placement is bottom center of canvas */
 			gmt_just_validate (GMT, I->placement, "BC");
 	}
-	if (gmt_get_modifier (c, 'o', string))	/* Offset refpoint */
+	if (gmt_get_modifier (arg, 'o', string))	/* Offset refpoint */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->off) < 0) n_errors++;
-	if (gmt_get_modifier (c, 'p', I->pen) && I->pen[0]) {
+	if (gmt_get_modifier (arg, 'p', I->pen) && I->pen[0]) {
 		if (gmt_getpen (GMT, I->pen, &pen)) n_errors++;
 	}
-	if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (c, 's', string)) {	/* Gave frame time length */
+	if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length */
 		I->scale = atof (string);
 	}
-	if (gmt_get_modifier (c, 't', I->format) && !I->format[0]) {
+	if (gmt_get_modifier (arg, 't', I->format) && !I->format[0]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +t not given any format\n", option);
 		n_errors++;
 	}
