@@ -6717,23 +6717,30 @@ GMT_LOCAL void gmtplot_just_f_xy (int justify, double *fx, double *fy) {
 
 GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *F1, char *F2, char *label) {
 	/* Place default progress indicator pie */
+	int percent = atoi (label);
 	double dim[PSL_MAX_DIMS], fx, fy;
 	struct GMT_FILL fill;
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
-	dim[0] = w;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	x += fx * w;	y += fy * w;	/* Move to center of circle */
-	gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
-	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
-	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
-	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
-	dim[1] = 90.0;	/* Start is 12 'oclock */
-	dim[2] = 90.0 - 3.6 * atof (label);	/* Go clockwise. label has percent - convert to 0-360 degrees */
-	dim[7] = 1;	/* Lay down filled wedge */
+	dim[0] = w;
+	if (percent < 100) {	/* Need the background circle */
+		gmt_getfill (GMT, F2, &fill);	/* Want to paint inside of tag box */
+		PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	}
 	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
-	PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
-	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
+	if (percent == 100) 
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	else {
+		dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
+		dim[1] = 90.0;	/* Start is 12 'oclock */
+		dim[2] = 90.0 - 3.6 * percent;	/* Go clockwise. label has percent - convert to 0-360 degrees */
+		dim[7] = 1;	/* Lay down filled wedge */
+		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
+	}
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7065,7 +7072,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* Replace the 10 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 12; kk++) if (movie_item_arg[k][T][kk] == '/') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %s %lg %lg %s %*s %s %*s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 8 required items\n", movie_item_arg[k][T]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
@@ -7074,7 +7081,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			justify = gmt_just_decode (GMT, just, PSL_NO_DEF);		/* Convert XX refpoint code to PSL number */
 			form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
 			PSL_setfont (PSL, Tfont.id);
-			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Must deal with textbox fill/outline */
+			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Must deal with textbox fill and/or outline */
 				int outline = 0;
 				struct GMT_FILL fill;
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
@@ -7160,10 +7167,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					break;	/* Just for Coverity */
 			}
 			gmt_M_str_free (movie_item_arg[k][T]);
-			/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used fonts here */
-			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
-			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
-			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+			if (isupper (kind) && kind != 'A') {
+				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used fonts here */
+				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
+				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
+				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+			}
 		}
 		PSL_comment (PSL, "End of movie progress indicators\n");
 		PSL_command (PSL, "U\n}!\n");

@@ -1565,11 +1565,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					}
 					else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
 						if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
-							sprintf (string, I->format, (int)irint (100.0 * frame / n_frames));
+							sprintf (string, I->format, (int)irint (100.0 * (frame+1) / n_frames));
 						else if (I->format[0])	/* Set as floating point */
-							sprintf (string, I->format, (100.0 * frame / n_frames));
+							sprintf (string, I->format, (100.0 * (frame+1) / n_frames));
 						else	/* Default to xxx % */
-							sprintf (string, "%3d%%", (int)irint (100.0 * frame / n_frames));
+							sprintf (string, "%3d%%", (int)irint (100.0 * (frame+1) / n_frames));
 					}
 					else if (I->mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
 						gmt_M_memset (string, GMT_LEN128, char);
@@ -1961,7 +1961,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #else
 		char dir_sep_ = '/';
 #endif
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files saved in directory: %s\n", n_frames, Ctrl->N.prefix);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files saved in directory: %s\n", n_frames, workdir);
 		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
 			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
 		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */
