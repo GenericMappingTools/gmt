@@ -541,6 +541,7 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, char *arg, struc
 			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
 	if (I->fill[0] == '-')
 		strcpy (I->fill, "red"); /* Give default moving color */
+	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label */
 	return (n_errors);
 }
 

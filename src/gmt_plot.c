@@ -6856,6 +6856,31 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	PSL_plotsegment (GMT->PSL, x-w/2, y, xt, y);
 }
 
+GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *P1, char *F1, char *label, char kind, double fsize) {
+	/* Place roudned line indicator */
+	int symb = PSL_INVTRIANGLE;
+	double fx, fy, dy, dy2, xt, f = 0.01 * atof (label), s = 1;
+	struct GMT_PEN pen;
+	struct GMT_FILL fill;
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Want to draw the whole line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	dy2 = dy / 2.0;
+	x += fx * w;	y += fy * dy;
+	xt = x + w * (f - 0.5);
+	if (justify == PSL_TC) s = -1, symb = PSL_TRIANGLE;
+	if (kind == 'F')
+			PSL_plottext (GMT->PSL, xt, y+s* dy, fsize, label, 0.0, justify, 0);
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* triangle color */
+	w = dy * 1.5;
+	PSL_plotsymbol (GMT->PSL, xt, y+s*dy2, &w, symb);
+}
+
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
@@ -7271,11 +7296,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				case 'e': case 'E':	/* growing vector symbol */
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-#if 0
 				case 'f': case 'F':	/* growing vector symbol */
-					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, width, justify, P1, F1, label);
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, width, justify, P1, F1, label, kind, Tfont.size);
 					break;
-#endif
 				default:
 					break;	/* Just for Coverity */
 			}
