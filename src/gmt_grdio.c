@@ -2660,8 +2660,10 @@ void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header) {
 	if (h == NULL) return;	/* Nothing to deallocate */
 	/* Free the header structure and anything allocated by it */
 	HH = gmt_get_H_hidden (h);
-	gmt_M_str_free (h->ProjRefWKT);
-	gmt_M_str_free (h->ProjRefPROJ4);
+	if (!GMT->parent->external) {
+		gmt_M_str_free (h->ProjRefWKT);
+		gmt_M_str_free (h->ProjRefPROJ4);
+	}
 	gmt_M_str_free (HH->pocket);
 	gmt_M_free (GMT, h->hidden);
 	gmt_M_free (GMT, *header);
