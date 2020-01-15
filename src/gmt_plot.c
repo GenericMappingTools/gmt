@@ -6763,7 +6763,6 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
 	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
-	fprintf (stderr, "Pen: %s\n", gmt_putpen (GMT, &pen));
 	if (doubleAlmostEqual (percent, 100.0)) 
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
 	else
@@ -6779,7 +6778,7 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
+	x += fx * 1.2 * w;	y += fy * 1.2 * w;	/* Move to center of circle */
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'C') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	if (percent < 100.0) {	/* Need the background full circle */
@@ -6790,17 +6789,17 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
-	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
-	fprintf (stderr, "Pen: %s\n", gmt_putpen (GMT, &pen));
+	PSL_setfill (GMT->PSL, pen.rgb, 1);
 	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
-	dim[1] = 90.0;	/* Start is 12 'oclock */
-	dim[2] = 90.0 - 3.6 * percent;	/* Go clockwise. label has percent - convert to 0-360 degrees */
+	dim[2] = 90.0;	/* Start is 12 'oclock */
+	dim[1] = 90.0 - 3.6 * percent;	/* Go clockwise. label has percent - convert to 0-360 degrees */
 	dim[3] = 0.2 * w, dim[4] = 0.2 * w, dim[5] = pen.width / PSL_POINTS_PER_INCH;
 	dim[6] = GMT->current.setting.map_vector_shape;
-	dim[7] = (double)PSL_VEC_BEGIN;
+	dim[7] = (double)(PSL_VEC_BEGIN | PSL_VEC_FILL);
 	dim[8] = (double)PSL_VEC_ARROW;	dim[9] = (double)PSL_VEC_ARROW;
 	dim[12] = 0.5 * pen.width;
-	PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_MARC);
+		PSL_command (GMT->PSL, "/PSL_vecheadpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
+	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_MARC);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7194,7 +7193,6 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 13 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
-			fprintf (stderr, "P1 = %s P2 = %s\n", P1, P2);
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			if (isupper (kind) && kind != 'A') {	/* Need to do labeling stuff */
 				gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
