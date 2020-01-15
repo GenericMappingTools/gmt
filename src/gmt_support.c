@@ -7929,6 +7929,42 @@ unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
 	return (mode);
 }
 
+int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
+	int ks;
+	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
+	/* Claims to have a hinge */
+	ks = support_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge found) */
+	if (ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
+		P->has_hinge = 0;
+		return GMT_NOTSET;
+	}
+	if (*z_low < P->hinge && *z_high > P->hinge) return ks;	/* Output range includes hinge, all is well */
+
+	/* Here we have a CPT with a hinge that is not included in the desired range.  Per policy:
+	 * If a hard hinge then we extend the range to reach the hinge and throw away the unreferenced CPT half.
+	 * If a soft hinge then we turn off the hinge.
+	 */
+	if (P->mode & GMT_CPT_HARD_HINGE) {	/* Output range excludes hard hinge, must move z_low or z_high to include the hinge */
+		if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
+			*z_low = P->hinge;	/* Always include the hinge in these cases */
+			gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
+			P->n_colors -= ks;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
+		}
+		else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
+			*z_high = P->hinge;	/* Always include the hinge in these cases */
+			P->n_colors = ks;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
+		}
+	}
+	else	/* Soft hinge outside range means we ignore the hinge */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT soft hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+	/* Behave as a single CPT range with no hinge from now on */
+	P->has_hinge = 0;
+	return GMT_NOTSET;
+}
+
 /*! . */
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
@@ -7940,7 +7976,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	 *   hard hinge: include hinge in the final output range and ignore the other half of the CPT
 	 *   soft hinge: Ignore the hinge setting.
 	 */
-	int is, ks = 0;
+	int is, ks;
 	double z_min, z_start, scale;
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
@@ -7949,40 +7985,14 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		}
 		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
+	ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high);	/* Deal with any issure related to hinges */
+
 	z_min = P->data[0].z_low;
 	z_start = z_low;
-	ks = support_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge) */
-	if (P->has_hinge && ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
-		P->has_hinge = 0;
-	}
-	if (!P->has_hinge)	/* No hinge, single scale using the entire CPT */
-		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
-	else if (P->has_hinge && (z_low >= P->hinge || z_high <= P->hinge)) {	/* Output range excludes hinge */
-		if (P->mode & GMT_CPT_HARD_HINGE) {	/* Output range excludes hard hinge, must move z_low or z_high to include the hinge */
-			if (z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
-				z_low = P->hinge;	/* Always include the hinge in these cases */
-				gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
-				P->n_colors -= ks;
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - data range adjusted to start at hinge and below-hinge CPT ignored.\n");
-			}
-			else if (z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
-				z_high = P->hinge;	/* Always include the hinge in these cases */
-				P->n_colors = ks;
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - data range adjusted to begin at hinge and above-hinge CPT ingored.\n");
-			}
-		}
-		else	/* Soft hinge outside range means we ignore the hinge */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
-		/* Behave as a single CPT range with no hinge from now on */
-		z_min = P->data[0].z_low;
-		z_start = z_low;
-		P->has_hinge = 0;
-		ks = GMT_NOTSET;
-		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
-	}
-	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
+	if (P->has_hinge)	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (0.0 - P->data[0].z_low);
+	else	/* No hinge, single scale using the entire CPT */
+		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 
 	for (is = 0; is < (int)P->n_colors; is++) {
 		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
@@ -8085,14 +8095,24 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
 
-	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Making a continuous cpt from a discrete cpt may give unexpected results!\n");
-
 	if (nz_in < 0) {	/* Called from grd2cpt which wants equal area colors */
 		nz = abs (nz_in);
 		even = true;
 	}
 	else
 		nz = nz_in;
+
+	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
+		z_out = gmt_M_memory (GMT, NULL, nz, double);
+		for (i = 0; i < nz; i++) z_out[i] = pow (10.0, z[i]);
+	}
+	else	/* Just point to the incoming z values */
+		z_out = z;
+
+	(void) gmtsupport_validate_cpt (GMT, Pin, &z_out[0], &z_out[nz-1]);	/* Deal with any issure related to hinges */
+
+	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Making a continuous cpt from a discrete cpt may give unexpected results!\n");
+
 
 	dim_nz[0] = nz - 1;
 	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
@@ -8132,12 +8152,6 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	/* Then set up normalized output locations x */
 
 	x = gmt_M_memory (GMT, NULL, nz, double);
-	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
-		z_out = gmt_M_memory (GMT, NULL, nz, double);
-		for (i = 0; i < nz; i++) z_out[i] = pow (10.0, z[i]);
-	}
-	else
-		z_out = z;	/* Just point to the incoming z values */
 
 	if (nz < 2)	/* Want a single color point, assume range 0-1 */
 		nz = 2;
@@ -8147,23 +8161,16 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
 		double scale_low, scale_high, z_hinge = 0.0, hinge = 0.0;
-		if (!Pin->has_hinge || z[0] >= Pin->hinge || z[nz-1] <= Pin->hinge || support_find_cpt_hinge (GMT, Pin) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
-			if (Pin->has_hinge) {
-				if (Pin->mode & GMT_CPT_HARD_HINGE)
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - hinge is ignored and your result is likely to be terrible.\n");
-				else
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
-			}
-			Pin->has_hinge = 0;
-			scale_high = 1.0 / (z[nz-1] - z[0]);
-			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
-			x_hinge = 0.0;		/* Starting x is zero */
-            hinge = z[0];	/* There is no hinge so we need z-min */
-		}
-		else {	/* Need separate scales on either side of hinge at 0.0 */
+		if (Pin->has_hinge) {	/* Need separate scales on either side of hinge at 0.0 */
 			hinge = Pin->hinge;
 			scale_low  = x_hinge / (hinge - z[0]);	/* Convert z_out below the hinge to x = 0 - x_hinge */
 			scale_high = (1.0 - x_hinge) * (1.0 / (z[nz-1] - hinge));	/* Convert z)out above hinge to x_hinge - 1 */
+		}
+		else {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+			scale_high = 1.0 / (z[nz-1] - z[0]);
+			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
+			x_hinge = 0.0;		/* Starting x is zero */
+			hinge = z[0];	/* There is no hinge so we need z-min */
 		}
 		
 		for (i = 0; i < nz; i++) {
