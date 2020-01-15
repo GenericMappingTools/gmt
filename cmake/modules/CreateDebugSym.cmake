@@ -37,7 +37,7 @@ if (APPLE AND DEBUG_BUILD)
 
 	# Macro for generating Mac debugging symbols
 	macro (CREATE_DEBUG_SYM DESTINATION)
-		if (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		if (DSYMUTIL AND ("${CMAKE_GENERATOR}" MATCHES "Make" OR "${CMAKE_GENERATOR}" MATCHES "Ninja"))
 			# create tag from current dirname
 			tag_from_current_source_dir (_tag "_")
 
@@ -50,30 +50,26 @@ if (APPLE AND DEBUG_BUILD)
 					VERBATIM)
 
 				# clean target
-				get_target_property (_location ${target} LOCATION)
 				get_target_property (_type ${target} TYPE)
 				get_target_property (_version ${target} VERSION)
-				get_filename_component (_path ${_location} PATH)
-				get_filename_component (_name ${_location} NAME)
+				get_target_property (_name ${target} OUTPUT_NAME)
 				if (_type STREQUAL "SHARED_LIBRARY")
 					string (REPLACE ".dylib" ".${_version}.dylib" _name "${_name}")
 				endif (_type STREQUAL "SHARED_LIBRARY")
-				set (_dsym_bundle "${_path}/${_name}.dSYM")
 				add_custom_target (_dsym_clean_${target}
-					COMMAND ${RM} -rf ${_dsym_bundle}
+					COMMAND ${RM} -rf $<TARGET_FILE:${target}>.dSYM
 					COMMENT "Removing .dSYM bundle")
 				add_depend_to_target (dsym_clean${_tag} _dsym_clean_${target})
 
 				# install target
-				install (DIRECTORY ${_dsym_bundle}
+				install (DIRECTORY $<TARGET_FILE:${target}>
 					DESTINATION ${DESTINATION}
 					COMPONENT Debug)
 			endforeach (target)
 
 			# register with spotless target
 			add_depend_to_target (spotless dsym_clean${_tag})
-
-		endif (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		endif (DSYMUTIL AND ("${CMAKE_GENERATOR}" MATCHES "Make" OR "${CMAKE_GENERATOR}" MATCHES "Ninja"))
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 
 elseif (MSVC AND DEBUG_BUILD)
@@ -84,17 +80,13 @@ elseif (MSVC AND DEBUG_BUILD)
 
 		foreach (target ${ARGN}) # get all args past the last expected
 			# clean target
-			get_target_property (_location ${target} LOCATION)
-			get_filename_component (_path ${_location} PATH)
-			get_filename_component (_name ${_location} NAME_WE)
-			set (_pdb_file "${_path}/${_name}.pdb")
 			add_custom_target (_pdb_clean_${target}
-				COMMAND ${CMAKE_COMMAND} remove -f ${_pdb_file}
+				COMMAND ${CMAKE_COMMAND} remove -f $<TARGET_PDB_FILE:${target}>
 				COMMENT "Removing .pdb file")
 			add_depend_to_target (pdb_clean${_tag} _pdb_clean_${target})
 
 			# install target
-			install (FILES ${_pdb_file}
+			install (FILES $<TARGET_PDB_FILE:${target}>
 				DESTINATION ${DESTINATION}
 				COMPONENT Debug)
 		endforeach (target)
