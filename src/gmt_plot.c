@@ -6820,15 +6820,40 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 			PSL_plottext (GMT->PSL, xt, y-dy, fsize, label, 0.0, PSL_TC, 0);
 	}
 	PSL_command (GMT->PSL, "V\n");	/* do a save/restore around the cap change */
-	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	gmt_setpen (GMT, &pen);
 	PSL_setlinecap (GMT->PSL, PSL_ROUND_CAP);
 	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
 	PSL_command (GMT->PSL, "U\n");
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground crossline */
-	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	gmt_setpen (GMT, &pen);
 	x += w * (f - 0.5);
 	PSL_plotsegment (GMT->PSL, x, y-dy2, x, y+dy2);
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
+	/* Place roudned line indicator */
+	double fx, fy, dy, dy2, xt, f = 0.01 * atof (label);
+	struct GMT_PEN pen;
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P2, &pen);	/* Want to draw the whole line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	dy2 = dy / 2.0;
+	x += fx * w;	y += fy * dy;
+	xt = x + w * (f - 0.5);
+	if (kind == 'E') {
+		if (justify == 2) /* CB */
+			PSL_plottext (GMT->PSL, xt, y+dy, fsize, label, 0.0, PSL_BC, 0);
+		else
+			PSL_plottext (GMT->PSL, xt, y-dy, fsize, label, 0.0, PSL_TC, 0);
+	}
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground crossline */
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, x-w/2, y, xt, y);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7243,10 +7268,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				case 'd': case 'D':	/* rounded time line  */
 					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-#if 0
 				case 'e': case 'E':	/* growing vector symbol */
-					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, width, justify, P1, P2, label);
+					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
+#if 0
 				case 'f': case 'F':	/* growing vector symbol */
 					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, width, justify, P1, F1, label);
 					break;
