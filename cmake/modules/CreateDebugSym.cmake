@@ -80,17 +80,13 @@ elseif (MSVC AND DEBUG_BUILD)
 
 		foreach (target ${ARGN}) # get all args past the last expected
 			# clean target
-			get_target_property (_location ${target} LOCATION)
-			get_filename_component (_path ${_location} PATH)
-			get_filename_component (_name ${_location} NAME_WE)
-			set (_pdb_file "${_path}/${_name}.pdb")
 			add_custom_target (_pdb_clean_${target}
-				COMMAND ${CMAKE_COMMAND} remove -f ${_pdb_file}
+				COMMAND ${CMAKE_COMMAND} remove -f $<TARGET_PDB_FILE:${target}>
 				COMMENT "Removing .pdb file")
 			add_depend_to_target (pdb_clean${_tag} _pdb_clean_${target})
 
 			# install target
-			install (FILES ${_pdb_file}
+			install (FILES $<TARGET_PDB_FILE:${target}>
 				DESTINATION ${DESTINATION}
 				COMPONENT Debug)
 		endforeach (target)
