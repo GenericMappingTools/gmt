@@ -7932,10 +7932,13 @@ unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
 /*! . */
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
-	 * zero then we substitute the CPT's default range instead.
+	 * zero then we substitute the CPT's default range instead (if available).
 	 * Note: If P has a hinge then its value is expected to be in the final user data values.
-	 * Default hinge is 0 but *h modifier can set this otherwise.
-	  * Note: Input P has normalized z' values at this time (0-1) so hinge is at 0.5.
+	 * Default hinge is 0 but *h modifier can set this for CPTs with soft hinges.
+	 * Note: Input P has normalized z' values at this time (0-1) so z' hinge is at 0.5.
+	 * If a hinge is outside the requested data range then we make adjustments:
+	 *   hard hinge: include hinge in the final output range and ignore the other half of the CPT
+	 *   soft hinge: Ignore the hinge setting.
 	 */
 	int is, ks = 0;
 	double z_min, z_start, scale;
@@ -7944,27 +7947,46 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
 			return;
 		}
-		z_low =  P->minmax[0];	z_high = P->minmax[1];
+		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
 	z_min = P->data[0].z_low;
 	z_start = z_low;
-	if (!P->has_hinge || z_low > P->hinge || z_high < P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+	ks = support_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge) */
+	if (P->has_hinge && ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
+		P->has_hinge = 0;
+	}
+	if (!P->has_hinge)	/* No hinge, single scale using the entire CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
-		if (P->has_hinge) {
-			if (P->mode & GMT_CPT_HARD_HINGE)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - hinge is ignored and your result is likely to be terrible.\n");
-			else
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+	else if (P->has_hinge && (z_low >= P->hinge || z_high <= P->hinge)) {	/* Output range excludes hinge */
+		if (P->mode & GMT_CPT_HARD_HINGE) {	/* Output range excludes hard hinge, must move z_low or z_high to include the hinge */
+			if (z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
+				z_low = P->hinge;	/* Always include the hinge in these cases */
+				gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
+				P->n_colors -= ks;
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - data range adjusted to start at hinge and below-hinge CPT ignored.\n");
+			}
+			else if (z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
+				z_high = P->hinge;	/* Always include the hinge in these cases */
+				P->n_colors = ks;
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - data range adjusted to begin at hinge and above-hinge CPT ingored.\n");
+			}
 		}
+		else	/* Soft hinge outside range means we ignore the hinge */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+		/* Behave as a single CPT range with no hinge from now on */
+		z_min = P->data[0].z_low;
+		z_start = z_low;
 		P->has_hinge = 0;
 		ks = GMT_NOTSET;
+		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (0.0 - P->data[0].z_low);
 
 	for (is = 0; is < (int)P->n_colors; is++) {
 		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
-            z_min = 0.0; z_start = P->hinge;
+			z_min = 0.0; z_start = P->hinge;
 			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - 0.0);
 		}
 		P->data[is].z_low  = z_start + (P->data[is].z_low  - z_min) * scale;
