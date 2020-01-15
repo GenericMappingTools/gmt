@@ -50,22 +50,19 @@ if (APPLE AND DEBUG_BUILD)
 					VERBATIM)
 
 				# clean target
-				get_target_property (_location ${target} LOCATION)
 				get_target_property (_type ${target} TYPE)
 				get_target_property (_version ${target} VERSION)
-				get_filename_component (_path ${_location} PATH)
-				get_filename_component (_name ${_location} NAME)
+				get_target_property (_name ${target} OUTPUT_NAME)
 				if (_type STREQUAL "SHARED_LIBRARY")
 					string (REPLACE ".dylib" ".${_version}.dylib" _name "${_name}")
 				endif (_type STREQUAL "SHARED_LIBRARY")
-				set (_dsym_bundle "${_path}/${_name}.dSYM")
 				add_custom_target (_dsym_clean_${target}
-					COMMAND ${RM} -rf ${_dsym_bundle}
+					COMMAND ${RM} -rf $<TARGET_FILE:${target}>.dSYM
 					COMMENT "Removing .dSYM bundle")
 				add_depend_to_target (dsym_clean${_tag} _dsym_clean_${target})
 
 				# install target
-				install (DIRECTORY ${_dsym_bundle}
+				install (DIRECTORY $<TARGET_FILE:${target}>
 					DESTINATION ${DESTINATION}
 					COMPONENT Debug)
 			endforeach (target)
