@@ -28,8 +28,8 @@ version = '@GMT_PACKAGE_VERSION_MAJOR@.@GMT_PACKAGE_VERSION_MINOR@'
 # The full version shown in the page title
 release = '@GMT_PACKAGE_VERSION@'
 # Make the "Edit on GitHub" button link to the correct branch
-# Default to 'version' if Azure Pipelines environmental variable BUILD_SOURCEBRANCHNAME is not defined
-github_version = os.getenv("BUILD_SOURCEBRANCHNAME", version)
+# Default to master branch if Azure Pipelines environmental variable BUILD_SOURCEBRANCHNAME is not defined
+github_version = os.getenv("BUILD_SOURCEBRANCHNAME", 'master')
 
 # -- Options for HTML output ---------------------------------------------------
 html_theme = 'rtd'
