@@ -37,7 +37,7 @@ if (APPLE AND DEBUG_BUILD)
 
 	# Macro for generating Mac debugging symbols
 	macro (CREATE_DEBUG_SYM DESTINATION)
-		if (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		if (DSYMUTIL AND ("${CMAKE_GENERATOR}" MATCHES "Make" OR "${CMAKE_GENERATOR}" MATCHES "Ninja"))
 			# create tag from current dirname
 			tag_from_current_source_dir (_tag "_")
 
@@ -72,8 +72,7 @@ if (APPLE AND DEBUG_BUILD)
 
 			# register with spotless target
 			add_depend_to_target (spotless dsym_clean${_tag})
-
-		endif (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		endif (DSYMUTIL AND ("${CMAKE_GENERATOR}" MATCHES "Make" OR "${CMAKE_GENERATOR}" MATCHES "Ninja"))
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 
 elseif (MSVC AND DEBUG_BUILD)
