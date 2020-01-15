@@ -507,22 +507,26 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+	char kind = tolower (I->kind);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	/* Default progress indicator: ring indicator */
 	if (I->pen[0] == '-') {
-		if (I->kind == 'b' || I->kind == 'B')
-			sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
-		else
-			sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); /* Give default moving ring pen width (5% of width) and color */
+		switch (kind) {
+			case 'b': sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and color */
+			case 'c': sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); break; /* Give default moving ring pen width (5% of width) and color */
+			case 'd': sprintf (I->pen, "1p,yellow"); break; /* Give default moving ring pen width (5% of width) and color */
+			case 'e': sprintf (I->pen, "%dp,red", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
+		}
 	}
 	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {
 		if (gmt_getpen (GMT, I->pen2, &pen)) n_errors++;
 	}
 	if (I->pen2[0] == '-') {
-		if (I->kind == 'b' || I->kind == 'B')
-			sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); /* Give default moving ring pen width (15% of width) and color */
-		else
-			sprintf (I->pen2, "0.5p,darkred,-"); /* Give default moving ring pen width (15% of width) and color */
+		switch (kind) {
+			case 'b': sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and color */
+			case 'c': sprintf (I->pen2, "0.5p,darkred,-"); break; /* Give default moving ring pen width (15% of width) and color */
+			case 'd': sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
+			case 'e': sprintf (I->pen2, "%dp,lightgreen", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
+		}
 	}
 	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label, regardless of +a */
 	return (n_errors);
@@ -534,7 +538,7 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, char *arg, struc
 	gmt_M_unused (arg);
 	/* Default progress indicator: line and filled symbol */
 	if (I->pen[0] == '-')
-		sprintf (I->pen, "%dp,black", irint (I->width * 0.02 * 72.0)); /* Give moving math angle pen width (2% of width) and color */
+			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
 	if (I->fill[0] == '-')
 		strcpy (I->fill, "red"); /* Give default moving color */
 	return (n_errors);
