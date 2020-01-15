@@ -500,7 +500,6 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 	}
 	if (I->fill2[0] == '-')
 		strcpy (I->fill2, "lightred"); /* Give default fixed color */
-	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label */
 	return (n_errors);
 }
 
@@ -528,7 +527,6 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struc
 			case 'e': sprintf (I->pen2, "%dp,lightgreen", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
 		}
 	}
-	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label, regardless of +a */
 	return (n_errors);
 }
 
@@ -541,7 +539,6 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, char *arg, struc
 			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
 	if (I->fill[0] == '-')
 		strcpy (I->fill, "red"); /* Give default moving color */
-	I->mode = MOVIE_LABEL_IS_PERCENT;	/* Need the percent set via the label */
 	return (n_errors);
 }
 
@@ -1558,6 +1555,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
 				unsigned int type;
+				double t = (frame + 1.0) / n_frames;	/* Relative time 0-1 */
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
 				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
@@ -1565,8 +1563,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
-					/* Place kind|x|y|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%c|%g%c|%g%c|%g|%s|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, I->width,
+					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
+					sprintf (label, "%c|%g%c|%g%c|%g|%g|%s|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, t, I->width,
 						I->placement, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					string[0] = '\0';
@@ -1580,11 +1578,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					}
 					else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
 						if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
-							sprintf (string, I->format, (int)irint (100.0 * (frame+1) / n_frames));
+							sprintf (string, I->format, (int)irint (100.0 * t));
 						else if (I->format[0])	/* Set as floating point */
-							sprintf (string, I->format, (100.0 * (frame+1) / n_frames));
+							sprintf (string, I->format, (100.0 * t));
 						else	/* Default to xxx % */
-							sprintf (string, "%3d%%", (int)irint (100.0 * (frame+1) / n_frames));
+							sprintf (string, "%3d%%", (int)irint (100.0 * t));
 					}
 					else if (I->mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
 						gmt_M_memset (string, GMT_LEN128, char);
