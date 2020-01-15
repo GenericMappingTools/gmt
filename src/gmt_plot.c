@@ -7190,7 +7190,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (n_movie_items[MOVIE_ITEM_IS_LABEL]) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
 		/* Decode x/y/just/clearance_x/clearance_Y/pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
 		double off[2] = {0.0, 0.0};
-		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
+		char x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
@@ -7204,17 +7204,16 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 	
 		for (T = 0; T < n_movie_items[k]; T++) {
-			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG */
+			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings */
 			/* Replace the 13 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
-			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %s %lg %lg %s %*s %s %*s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
+			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", x, y, &justify, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
 			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);
-			justify = gmt_just_decode (GMT, just, PSL_NO_DEF);		/* Convert XX refpoint code to PSL number */
 			form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
 			PSL_setfont (PSL, Tfont.id);
 			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Must deal with textbox fill and/or outline */
@@ -7248,9 +7247,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_command (PSL, "U\n}!\n");
 	}
 	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
-		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG */
+		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG# strings */
 		double off[2] = {0.0, 0.0}, width = 0.0, t;
-		char kind, just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
+		char kind, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
@@ -7266,42 +7265,41 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		for (T = 0; T < n_movie_items[k]; T++) {
 			/* Replace the 13 leading bars first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
-			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %lg %s %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &t, &width, just, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
+			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &t, &width, &justify, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 14 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
-			if (isupper (kind) && kind != 'A') {	/* Need to do labeling stuff */
-				gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
-				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+			if (isupper (kind) && kind != 'A') {	/* Requested text labels so initialize selected font */
+				gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+				form = gmt_setfont (GMT, &Tfont);	/* Set the font to be used */
 				PSL_setfont (PSL, Tfont.id);
 			}
-			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);
-			justify = gmt_just_decode (GMT, just, PSL_NO_DEF);		/* Convert XX refpoint code to PSL number */
-			switch (kind) {
-				case 'a': case 'A':	/* Default pie symbol */
+			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);	/* Center of the indicator */
+			switch (tolower (kind)) {	/* Set the selected progress indicator a-f */
+				case 'a': 	/* Default pie symbol */
 					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, t, width, justify, F1, F2);
 					break;
-				case 'b': case 'B':	/* growing ring symbol */
+				case 'b': 	/* Growing ring symbol */
 					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
 					break;
-				case 'c': case 'C':	/* Growing circular arrow */
+				case 'c': /* Growing circular arrow */
 					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
 					break;
-				case 'd': case 'D':	/* rounded time line  */
+				case 'd': /* Rounded time line with vertical bar */
 					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-				case 'e': case 'E':	/* growing vector symbol */
+				case 'e': /* Straight line on top of fixed line */
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-				case 'f': case 'F':	/* growing vector symbol */
+				case 'f': /* Moving triangle on time-line */
 					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P1, F1, label, kind, Tfont.size);
 					break;
-				default:
-					break;	/* Just for Coverity */
+				default:	/* Just for Coverity */
+					break;
 			}
-			gmt_M_str_free (movie_item_arg[k][T]);
-			if (isupper (kind) && kind != 'A') {
+			gmt_M_str_free (movie_item_arg[k][T]);	/* Free since done with this string */
+			if (isupper (kind)) {
 				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used fonts here */
 				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */

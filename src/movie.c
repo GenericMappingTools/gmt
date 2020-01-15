@@ -73,9 +73,9 @@ struct MOVIE_ITEM {
 	char format[GMT_LEN128];
 	char fill[GMT_LEN64], fill2[GMT_LEN64];
 	char pen[GMT_LEN64], pen2[GMT_LEN64];
-	char placement[3];
 	char kind;	/* Either a-f for progress indicators or l for label */
 	unsigned int mode;
+	unsigned int justify;
 	unsigned int col;
 	unsigned int ne;	/* Number of elements in elapsed format */
 	double scale;
@@ -491,15 +491,20 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
-	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	/* Default progress indicator: Pie-wedge with different colors */
-	if (I->fill[0] == '-')
-		strcpy (I->fill, "lightgreen"); /* Give default moving color */
-	if (gmt_get_modifier (arg, 'G', I->fill2) && I->fill2[0]) {
+	if (I->fill[0] == '-') /* Give default color for foreground wedge */
+		strcpy (I->fill, "lightgreen");
+	if (gmt_get_modifier (arg, 'G', I->fill2) && I->fill2[0]) {	/* Found +G<fill> */
+		struct GMT_FILL fill;	/* Only used to make sure fill is given with correct syntax */
 		if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
 	}
-	if (I->fill2[0] == '-')
-		strcpy (I->fill2, "lightred"); /* Give default fixed color */
+	if (I->fill2[0] == '-') /* Give default fixed circle color */
+		strcpy (I->fill2, "lightred");
+	if (I->kind == 'A') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Progress indicator a does not place any labels. modifier +a ignored\n");
+			I->kind = 'a';
+
+	}
 	return (n_errors);
 }
 
@@ -508,23 +513,23 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struc
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	char kind = tolower (I->kind);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	if (I->pen[0] == '-') {
+	if (I->pen[0] == '-') {	/* Set pen for foreground (changing) feature */
 		switch (kind) {
-			case 'b': sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and color */
-			case 'c': sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); break; /* Give default moving ring pen width (5% of width) and color */
-			case 'd': sprintf (I->pen, "1p,yellow"); break; /* Give default moving ring pen width (5% of width) and color */
-			case 'e': sprintf (I->pen, "%dp,red", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
+			case 'b': sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and blue color */
+			case 'c': sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); break; /* Give default moving math angle pen width (5% of width) and red color */
+			case 'd': sprintf (I->pen, "1p,yellow"); break; /* Give default crossbar pen width and color yellow */
+			case 'e': sprintf (I->pen, "%dp,red", MIN (irint (I->width * 0.025 * 72.0), 8)); break;	/* Give a variable pen thickness >= 8p in red */
 		}
 	}
-	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {
+	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {	/* Found +P<pen> */
 		if (gmt_getpen (GMT, I->pen2, &pen)) n_errors++;
 	}
-	if (I->pen2[0] == '-') {
+	if (I->pen2[0] == '-') {	/* Set pen for background (static) feature */
 		switch (kind) {
-			case 'b': sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and color */
-			case 'c': sprintf (I->pen2, "0.5p,darkred,-"); break; /* Give default moving ring pen width (15% of width) and color */
-			case 'd': sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
-			case 'e': sprintf (I->pen2, "%dp,lightgreen", MIN (irint (I->width * 0.025 * 72.0), 8)); break;
+			case 'b': sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); break; /* Give default static ring pen width (15% of width) and color lightblue */
+			case 'c': sprintf (I->pen2, "0.5p,darkred,-"); break; /* Give default static ring pen width (0.5p) and color darkred */
+			case 'd': sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.025 * 72.0), 8)); break;	/* Give a variable pen thickness >= 8p in black */
+			case 'e': sprintf (I->pen2, "%dp,lightgreen", MIN (irint (I->width * 0.025 * 72.0), 8)); break;/* Give a variable pen thickness >= 8p in lightgreen */
 		}
 	}
 	return (n_errors);
@@ -535,38 +540,37 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, char *arg, struc
 	gmt_M_unused (GMT);
 	gmt_M_unused (arg);
 	/* Default progress indicator: line and filled symbol */
-	if (I->pen[0] == '-')
+	if (I->pen[0] == '-')	/* Give default static line pen thickness >= 4p in black */
 			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
-	if (I->fill[0] == '-')
+	if (I->fill[0] == '-')	/* Give default moving triangle the red color */
 		strcpy (I->fill, "red"); /* Give default moving color */
 	return (n_errors);
 }
 
 GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char option, char *arg, struct MOVIE_ITEM *I) {
-	/* Initialize and parse the common item attributes for both labels and progress indicators */
+	/* Initialize and parse the modifiers for item attributes for both labels and progress indicators */
 	unsigned int n_errors = 0;
-	char *c = NULL, *t = NULL, string[GMT_LEN128] = {""};
+	char *c = NULL, *t = NULL, string[GMT_LEN128] = {""}, placement[4] = {""};
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 
-	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens */
+	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens set yet */
 	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% offset of TAG font size */
 	I->clearance[GMT_X] = I->clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% of TAG font size */
 	if (I->kind == 'L')	/* Default label placement is top left of canvas */
-		sprintf (I->placement, "TL");
+		I->justify = PSL_TL;
 	else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
-		sprintf (I->placement, "TR");
+		I->justify = PSL_TR;
 	else 	/* Default line progress indicator placement is bottom center of canvas */
-		sprintf (I->placement, "CB");
+		I->justify = PSL_BC;
 
-	gmt_M_memcpy (&(I->font), &(GMT->current.setting.font_tag), 1, struct GMT_FONT);
+	gmt_M_memcpy (&(I->font), &(GMT->current.setting.font_tag), 1, struct GMT_FONT);	/* FONT_TAG is the default labeling font for progress indicators */
 
-	/* Check for modifiers */
-	/* Common item modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
-	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;
-	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for text box */
+	/* Check for modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
+	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;	/* ALso tolerate +G +P */
+	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for a text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
-	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font */
+	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font for labeling */
 		if (!string[0]) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +f not given any font\n", option);
 			n_errors++;
@@ -574,23 +578,24 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		else
 			n_errors += gmt_getfont (GMT, string, &(I->font));
 	}
-	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {
+	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {	/* Primary fill color */
 		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
 	}
-	if (gmt_get_modifier (arg, 'j', I->placement)) {	/* Placement for item */
+	if (gmt_get_modifier (arg, 'j', placement)) {	/* Placement on cancas for this item */
 		if (I->kind == 'L')	/* Default label placement is top left of canvas */
-			gmt_just_validate (GMT, I->placement, "TL");
+			gmt_just_validate (GMT, placement, "TL");
 		else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
-			gmt_just_validate (GMT, I->placement, "TR");
+			gmt_just_validate (GMT, placement, "TR");
 		else 	/* Default line progress indicator placement is bottom center of canvas */
-			gmt_just_validate (GMT, I->placement, "BC");
+			gmt_just_validate (GMT, placement, "BC");
+		I->justify = gmt_just_decode (GMT, placement, PSL_NO_DEF);
 	}
-	if (gmt_get_modifier (arg, 'o', string))	/* Offset refpoint */
+	if (gmt_get_modifier (arg, 'o', string))	/* Offset of refpoint */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->off) < 0) n_errors++;
-	if (gmt_get_modifier (arg, 'p', I->pen) && I->pen[0]) {
+	if (gmt_get_modifier (arg, 'p', I->pen) && I->pen[0]) {	/* Primary pen */
 		if (gmt_getpen (GMT, I->pen, &pen)) n_errors++;
 	}
-	if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length */
+	if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
 		I->scale = atof (string);
 	}
 	if (gmt_get_modifier (arg, 't', I->format) && !I->format[0]) {
@@ -598,28 +603,28 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		n_errors++;
 	}
 
-	if (I->kind == 'L') {
-		if ((c = strchr (arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
-		t = arg;	/* Start of required label time information */
-		I->mode = MOVIE_LABEL_IS_FRAME;	/* Frame number is default for -L */
+	if (I->kind == 'L') {	/* This is a label item with type the first letter in arg */
+		if ((c = strchr (arg, '+'))) c[0] = '\0';	/* Chop off all modifiers for now */
+		t = arg;	/* Start of required label type information */
+		I->mode = MOVIE_LABEL_IS_FRAME;	/* Frame number is default for -L just in case nothing is set */
 	}
-	else if ((t = strstr (arg, "+a")))
-		t += 2;		/* Start of optional progress indicator time information */
+	else if ((t = strstr (arg, "+a")))	/* A progress indicator wants to be labeled */
+		t += 2;		/* Start of optional progress indicator time information following +a */
 
 	if (t) {	/* Parse attributes specific to the movie labels */
-		switch (t[0]) {
+		switch (t[0]) {	/* We got some */
 			case 'c':	I->mode = MOVIE_LABEL_IS_COL_C;	I->col = atoi (&t[1]);	break;
 			case 't':	I->mode = MOVIE_LABEL_IS_COL_T;	I->col = atoi (&t[1]);	break;
 			case 'e':	I->mode = MOVIE_LABEL_IS_ELAPSED;	break;
 			case 'p':	I->mode = MOVIE_LABEL_IS_PERCENT;	break;
 			case 's':	I->mode = MOVIE_LABEL_IS_STRING;	strncpy (I->format, &t[1], GMT_LEN128); break;
 			case 'f': case '\0': I->mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
-			default:	/* Not recognized */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: Select label flag Le|f|p, c<col> or t<col>\n", option);
+			default:	/* Not recognized argument */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: Select label flag e|f|p|s, c<col> or t<col>\n", option);
 				n_errors++;
 				break;
 		}
-		if (I->kind != 'L') I->kind = toupper ((int)I->kind);	/* Use upper case A-F to indicate that labeling is requested */
+		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
 	}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
@@ -1077,7 +1082,7 @@ GMT_LOCAL bool is_gmt_end_show (char *line) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_movie (void *V_API, int mode, void *args) {
-	int error = 0, precision, scol, srow, justify;
+	int error = 0, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 	
 	unsigned int n_values = 0, n_frames = 0, frame, i_frame, col, p_width, p_height, k, T;
@@ -1137,9 +1142,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		/* Compute auto label placement */
 		for (T = 0; T < Ctrl->n_items[k]; T++) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
-			justify = gmt_just_decode (GMT, I->placement, PSL_TL);
-			scol = (justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
-			srow = justify / 4;			/* Split the 2-D justify code into y just 0-2 */
+			scol = (I->justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
+			srow = I->justify / 4;			/* Split the 2-D justify code into y just 0-2 */
 			I->x = 0.5 * Ctrl->C.dim[GMT_X] * scol;
 			I->y = 0.5 * Ctrl->C.dim[GMT_Y] * srow;
 			if (scol != 1) I->x += (1-scol) * I->off[GMT_X];
@@ -1564,8 +1568,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%c|%g%c|%g%c|%g|%g|%s|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, t, I->width,
-						I->placement, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
+					sprintf (label, "%c|%g%c|%g%c|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, t, I->width,
+						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					string[0] = '\0';
 					if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
