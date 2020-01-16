@@ -3,7 +3,7 @@
 Description
 -----------
 
-This module plots the GMT logo on a map. By default, the GMT logo is 2 inches wide and 1 inch high and will be
+This module plots the GMT logo on a map. By default, the GMT logo is 144 points (2 inches wide) and 72 points (1 inch) high and will be
 positioned relative to the current plot origin. Use various options to change this and to place a
 transparent or opaque rectangular map panel behind the GMT logo.
 
