@@ -3,7 +3,7 @@
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
     (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    a 2-char justification code that refers to the (invisible) projected map bounding box,
     (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
     (inches, cm, etc.) [Default].  You can offset the reference point by *dx*/*dy* in
     the direction implied by *justify*.
@@ -29,7 +29,7 @@
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
     (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    a 2-char justification code that refers to the (invisible) projected map bounding box,
     (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
     (inches, cm, etc.) [Default]. You can offset the reference point by *dx*/*dy* in
     the direction implied by *justify*.

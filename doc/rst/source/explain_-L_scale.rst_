@@ -2,7 +2,7 @@
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
     (1) Use **-Lg** for map (user) coordinates, (2) use **-Lj** or **-LJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    a 2-char justification code that refers to the (invisible) projected map bounding box,
     (3) use **-Ln** for normalized (0-1) coordinates, or (4) use **-Lx** for plot coordinates
     (inches, cm, etc.).  Scale is calculated for latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
