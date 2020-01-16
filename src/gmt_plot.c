@@ -6779,7 +6779,7 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	x += fx * 1.2 * w;	y += fy * 1.2 * w;	/* Move to center of circle */
+	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle */
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'C') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	if (t < 1.0) {	/* Need the background full circle */
