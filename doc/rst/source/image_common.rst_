@@ -36,14 +36,12 @@ Optional Arguments
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+r**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
     Sets reference point on the map for the image using one of four coordinate systems:
 
-    .. include:: explain_-Drefpoint.rst_
+    .. include:: explain_refpoint.rst_
 
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Specify image size in one of two ways:
     Use **+r**\ *dpi* to set the dpi of the image in dots per inch, or use
     **+w**\ [**-**]\ *width*\ [/*height*] to

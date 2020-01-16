@@ -1,4 +1,0 @@
-(1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-a 2-char justification code that refers to the (invisible) projected map bounding box,
-(3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-(inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
