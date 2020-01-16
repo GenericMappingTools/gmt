@@ -6802,31 +6802,40 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
-	/* Place roudned line indicator */
-	double fx, fy, dy, dy2, xt;
+	/* Place rounded line indicator */
+	int text_justify;
+	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0;
 	struct GMT_PEN pen;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getpen (GMT, P2, &pen);	/* Want to draw the whole line */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	dy2 = dy / 2.0;
-	x += fx * w;	y += fy * dy;
-	xt = x + w * (t - 0.5);
-	if (kind == 'D') {
-		if (justify == 2) /* CB */
-			PSL_plottext (GMT->PSL, xt, y+dy, fsize, label, 0.0, PSL_BC, 0);
-		else
-			PSL_plottext (GMT->PSL, xt, y-dy, fsize, label, 0.0, PSL_TC, 0);
+	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
+	dy2 = dy / 2.0;	/* Half pen-width */
+	x += fx * (w + dy2);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
+	xt = w * (t - 0.5);	/* Location of label and tick along x-axis */
+	w /= 2;	/* From here on, w is half-length of fixed line */
+	if (kind == 'D') {	/* Want a label at the curent crossmark */
+		switch (justify) {	/* Deal with justification of text and possibly rotation */
+			case PSL_BL: case PSL_BC: case PSL_BR:
+				text_justify = PSL_BC; del_y = dy; break;
+			case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:
+				text_justify = PSL_TC; del_y = -dy; break;
+			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
+			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
+		}
 	}
-	PSL_command (GMT->PSL, "V\n");	/* do a save/restore around the cap change */
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
+	if (kind == 'D') PSL_plottext (GMT->PSL, xt+del_x, del_y, fsize, label, -angle, text_justify, 0);
+	PSL_command (GMT->PSL, "V\n");	/* Do a save/restore around the line cap change */
 	gmt_setpen (GMT, &pen);
-	PSL_setlinecap (GMT->PSL, PSL_ROUND_CAP);
-	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
-	PSL_command (GMT->PSL, "U\n");
-	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground crossline */
+	PSL_setlinecap (GMT->PSL, PSL_ROUND_CAP);	/* Want the rounded line effect */
+	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
+	PSL_command (GMT->PSL, "U\n");	/* grestore to restore to whatever line cap was set to before */
+	gmt_M_memset (&pen, 1, struct GMT_PEN);	/* Wipe pen */
+	gmt_getpen (GMT, P1, &pen);	/* Get pen for crossmark */
 	gmt_setpen (GMT, &pen);
-	PSL_plotsegment (GMT->PSL, xt, y-dy2, xt, y+dy2);
+	PSL_plotsegment (GMT->PSL, xt, -dy2, xt, dy2);	/* Draw foreground crossmark at label time */
+	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
