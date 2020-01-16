@@ -39,7 +39,7 @@ To append a GMT logo overlay in the upper right corner of the current map, but
 scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 
     gmt begin map
-    gmt ...<plot the map using -R J>
+    gmt ...<plot the map using -R -J>
     gmt logo -DjTR+o0.25c+w6c
     gmt end show
 
