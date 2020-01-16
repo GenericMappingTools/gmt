@@ -52,7 +52,7 @@ Required Arguments
     of bounding rectangle in projected coordinates and optionally append **+u**\ *unit* [Default coordinate unit is meter (e)].
     (c) Give the reference point on the map for the inset using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    a 2-char justification code that refers to the (invisible) projected map bounding box,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).
     Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).

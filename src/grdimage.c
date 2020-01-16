@@ -1417,7 +1417,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		I->x = Ix;	I->y = Iy;
 	}
 
-	if (!need_to_project) {
+	if (!need_to_project && !API->external) {
 		for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
 			if (mem_G[k]) {
 				gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);

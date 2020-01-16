@@ -1482,6 +1482,42 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	return (PSL_NO_ERROR);
 }
 
+/*! . */
+static int psl_getfont (struct PSL_CTRL *PSL, char *name) {
+	int ret = 0;	/* Return Helvetica if we cannot figure it out */
+	char *c = NULL;
+	/* Return font number from strings like 33% or Helvetica-Bold% */
+	if (!name || !name[0] || name[0] == '%') return (-1);
+	if ((c = strchr (name, '%'))) c[0] = '\0';	/* Chop off trailing % */
+	if (isdigit ((unsigned char) name[0])) {	/* Starts with number */
+		if (!isdigit ((unsigned char) name[strlen(name)-1]))
+			ret = -1;	/* Starts with digit, ends with something else: cannot be */
+		else
+			ret = atoi (name);
+		if (ret < 0 || ret >= PSL->internal.N_FONTS) {
+			PSL_message (PSL, PSL_MSG_NORMAL, "Error: font number %s outside the valid range - reset to 0\n", name);
+			ret = 0;
+		}
+	}
+	else {	/* Does not start with number. Try known font name */
+		int i;
+		char q, *m = NULL;
+		if ((m = strchr (name, 0255)))
+			q = m[0];
+		if (m) m[0] = '-';	/* Temporarily replace hyphen with minus */
+		for (i = 0; i < PSL->internal.N_FONTS && strcmp (name, PSL->internal.font[i].name); i++);
+		if (i < PSL->internal.N_FONTS)
+			ret = i;
+		else {
+			PSL_message (PSL, PSL_MSG_NORMAL, "Error: font %s not recognized - reset to %s\n", name, PSL->internal.font[0].name);
+			ret = 0;
+		}
+		if (m) m[0] = q;	/* Restore hyphen */
+	}
+	if (c) c[0] = '%';	/* Restore trailing % */
+	return (ret);
+}
+
 char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 
 /*	Adds escapes for misc parenthesis, brackets etc.
@@ -1593,10 +1629,8 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					j += (int)strlen(psl_scandcodes[15][he]); i++;
 					break;
 				case '%':	/* Font switcher */
-					if (isdigit ((int)text[i+1])) {	/* Got a font */
-						font = atoi (&text[i+1]);
+					if ((font = psl_getfont (PSL, &text[i+1])) >= 0)
 						psl_encodefont (PSL, font);
-					}
 					string[j++] = '@';
 					string[j++] = text[i++];	/* Just copy over the rest */
 					while (text[i] != '%') string[j++] = text[i++];
@@ -1968,7 +2002,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 						}
 						else {
 							old_font = font;
-							font = atoi (&clean[i1]);
+							font = psl_getfont (PSL, &clean[i1]);
 							while (clean[i1] != '%') i1++;
 							i1++;
 						}
@@ -4902,9 +4936,9 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			ptr++;
 			if (ptr[0] == '%')
 				font = old_font;
-			else {
+			else if (ptr[0]) {
 				old_font = font;
-				font = atoi (ptr);
+				font = psl_getfont (PSL, ptr);
 			}
 			while (*ptr != '%') ptr++;
 			ptr++;
@@ -5199,9 +5233,9 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			ptr++;
 			if (*ptr == '%')
 				font = old_font;
-			else {
+			else if (*ptr) {
 				old_font = font;
-				font = atoi (ptr);
+				font = psl_getfont (PSL, ptr);
 				psl_encodefont (PSL, font);
 			}
 			while (*ptr != '%') ptr++;
