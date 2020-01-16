@@ -52,7 +52,7 @@ Required Arguments
 .. _-S:
 
 **-S**\ *<symbol_type><size>*
-    Selects *symbol_type* and symbol *size*. Size is in default inits (unless
+    Selects *symbol_type* and symbol *size*. Size is in default units (unless
     **c**, **i**, or **p** is appended). Choose symbol type from
     st(*a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
     triangle, (*p*)oint, (*s*)quare, (*t*)riangle, (*x*)cross.
