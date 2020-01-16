@@ -6710,10 +6710,12 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL void gmtplot_just_f_xy (int justify, double *fx, double *fy) {
-	/* Factors to multiply width and add to x,y that addresses its location */
+	/* Factors to multiply feature width/height and add to x,y that updates its mid-point location */
 	*fy = -0.5 * ((justify / 4) - 1);
 	*fx = -0.5 * ((justify % 4) - 2);
 }
+
+/* Here are 6 (a-f) different progress indicator plotting functions.  See the movie documentation for how they look */
 
 GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *F1, char *F2) {
 	/* Place default progress indicator pie */
@@ -7238,7 +7240,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		struct GMT_FONT Tfont;
 		k = MOVIE_ITEM_IS_LABEL;
 		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
-		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
+		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
 		
 		PSL_command (PSL, "/PSL_movie_label_completion {\nV\n");
@@ -7246,41 +7248,41 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 	
 		for (T = 0; T < n_movie_items[k]; T++) {
-			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings */
+			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
 			/* Replace the 13 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", x, y, &justify, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
-			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
-			gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
-			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);
-			form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+			/* Because this PostScript procedure runs outside the main gsave/grestore block the origin is at (0,0) */
+			gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness so no need to check here */
+			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);	/* Location of label placement on plot */
+			form = gmt_setfont (GMT, &Tfont);	/* Obtain and set the tag font */
 			PSL_setfont (PSL, Tfont.id);
-			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Must deal with textbox fill and/or outline */
-				int outline = 0;
+			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Requested textbox fill and/or outline */
+				int outline = 0;	/* No outline */
 				struct GMT_FILL fill;
-				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
+				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize to no fill */
 				if (PP[0] != '-') {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
-					gmt_getpen (GMT, PP, &pen);	/* No need to check since we verified it in movie.c */
+					gmt_getpen (GMT, PP, &pen);	/* No need to check since we verified pen syntax in movie.c */
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
-				if (FF[0] != '-')	/* Want to paint inside of tag box */
-					gmt_getfill (GMT, FF, &fill);	/* No need to check since we verified it in movie.c */
+				if (FF[0] != '-')	/* Want to paint the background of tag box */
+					gmt_getfill (GMT, FF, &fill);	/* No need to check since we verified fill syntax in movie.c */
 				
-				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
+				PSL_setfill (PSL, fill.rgb, outline);	/* Box color (or nothing) */
 				PSL_plottextbox (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, off, 0);
-				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font (again?) */
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, NULL, 0.0, justify, form);
 			}
 			else	
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, form);
-			gmt_M_str_free (movie_item_arg[k][T]);
-			/* Because PSL_movie_label_completion is called at the end of the module, we must forget we used fonts here */
+			gmt_M_str_free (movie_item_arg[k][T]);	/* Done with this label */
+			/* Because PSL_movie_label_completion is called at the end of the module, we must forget we used any fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
@@ -7297,8 +7299,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		struct GMT_FONT Tfont;
 		k = MOVIE_ITEM_IS_PROG_INDICATOR;
 		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
-		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
-		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
+		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
+		 * If not NULL then it will plot 1-32 progress indicators set via movie.c's -P option */
 		
 		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {\nV\n");
 		PSL_comment (PSL, "Start of movie progress indicators\n");
@@ -7319,22 +7321,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);	/* Center of the indicator */
 			switch (tolower (kind)) {	/* Set the selected progress indicator a-f */
-				case 'a': 	/* Default pie symbol */
+				case 'a': 	/* Default pie symbol (no label) */
 					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, t, width, justify, F1, F2);
 					break;
-				case 'b': 	/* Growing ring symbol */
+				case 'b': 	/* Growing ring symbol with optional label */
 					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
 					break;
-				case 'c': /* Growing circular arrow */
+				case 'c': /* Growing circular arrow with optional label */
 					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
 					break;
-				case 'd': /* Rounded time line with vertical bar */
+				case 'd': /* Rounded time line with vertical bar and optional label */
 					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-				case 'e': /* Straight line on top of fixed line */
+				case 'e': /* Straight line on top of fixed line with optional start/end labels */
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
-				case 'f': /* Moving triangle on time-line */
+				case 'f': /* Moving triangle on basemap time-line */
 					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P1, F1, label, kind, width);
 					break;
 				default:	/* Just for Coverity */
@@ -7342,7 +7344,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			gmt_M_str_free (movie_item_arg[k][T]);	/* Free since done with this string */
 			if (isupper (kind)) {
-				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used fonts here */
+				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used any fonts here */
 				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
