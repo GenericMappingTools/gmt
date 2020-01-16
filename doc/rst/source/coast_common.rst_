@@ -78,7 +78,7 @@ Optional Arguments
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
     NA (North America), or SA (South America).  Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
-    Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, and the US.
+    Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
     specified unless **-M** is in effect, in which case only one **-E** option can be given.
@@ -93,7 +93,7 @@ Optional Arguments
     Add **+g**\ *fill* to fill the logo box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between logo and border. 
+    x- and y-direction, or individual side spacings between logo and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
     *gap* between borders of 2\ **p** and the :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
     unless other values are specified. Append **+r** to draw rounded
