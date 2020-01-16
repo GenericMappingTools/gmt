@@ -78,6 +78,7 @@ struct MOVIE_ITEM {
 	unsigned int justify;
 	unsigned int col;
 	unsigned int ne;	/* Number of elements in elapsed format */
+	unsigned int n_labels;	/* Number of labels for progress indicator */
 	double scale;
 	double width;
 	double x, y;
@@ -503,7 +504,6 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 	if (I->kind == 'A') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Progress indicator a does not place any labels. modifier +a ignored\n");
 			I->kind = 'a';
-
 	}
 	return (n_errors);
 }
@@ -625,6 +625,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 				break;
 		}
 		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
+		I->n_labels = (strchr ("EF", I->kind == 'E')) ? 2 : 1;
 	}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
@@ -1558,8 +1559,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
-				unsigned int type;
-				double t = (frame + 1.0) / n_frames;	/* Relative time 0-1 */
+				unsigned int type, use_frame, p;
+				double t = (frame + 1.0) / n_frames;
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
 				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
@@ -1572,74 +1573,86 @@ int GMT_movie (void *V_API, int mode, void *args) {
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					string[0] = '\0';
-					if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
-						if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
-							sprintf (string, I->format, (int)frame);
-						else if (I->format[0])	/* Set as floating point */
-							sprintf (string, I->format, (double)frame);
-						else	/* Default to the frame tag string */
-							strcpy (string, state_tag);
-					}
-					else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
-						if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
-							sprintf (string, I->format, (int)irint (100.0 * t));
-						else if (I->format[0])	/* Set as floating point */
-							sprintf (string, I->format, (100.0 * t));
-						else	/* Default to xxx % */
-							sprintf (string, "%3d%%", (int)irint (100.0 * t));
-					}
-					else if (I->mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
-						gmt_M_memset (string, GMT_LEN128, char);
-						L_col = (I->scale > 0.0) ? frame * I->scale : frame / Ctrl->D.framerate;
-						ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
-						mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
-						hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
-						dd = urint (L_col);
-						switch (I->ne) {
-							case 4: 	sprintf (string, I->format, dd, hh, mm, ss); break;
-							case 3: 	sprintf (string, I->format, hh, mm, ss); break;
-							case 2: 	sprintf (string, I->format, mm, ss); break;
-							case 1: 	sprintf (string, I->format, ss); break;
-						}
-					}
-					else if (I->mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
-						L_col = D->table[0]->segment[0]->data[I->col][frame];
-						if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
-							char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
-							gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
-							if (GMT->current.plot.calclock.clock.skip)
-								sprintf (string, "%s", date);
-							else if (GMT->current.plot.calclock.date.skip)
-								sprintf (string, "%s", clock);
-							else
-								sprintf (string, "%s %s", date, clock);
-						}
-						else {	/* Regular floating point (or latitude, etc.) */
-							if (I->format[0] && strchr (I->format, 'd'))	/* Set as an integer */
-								sprintf (string, I->format, (int)irint (L_col));
+					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
+						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
+							use_frame = (p == 0) ? 0 : n_frames - 1;
+						else	/* Current frame only */
+							use_frame = frame;
+						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
+						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
+						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
+							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+								sprintf (string, I->format, (int)use_frame);
 							else if (I->format[0])	/* Set as floating point */
-								sprintf (string, I->format, L_col);
-							else	/* Uses standard formatting*/
-								gmt_ascii_format_one (GMT, string, L_col, type);
+								sprintf (string, I->format, (double)use_frame);
+							else	/* Default to the frame tag string format */
+								sprintf (string, "%*.*d", precision, precision, use_frame);
 						}
-					}
-					else if (I->mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
-						char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);
-						col = 0;	trail = orig;
-						while (col != I->col && (word = strsep (&trail, " \t")) != NULL) {
-							if (*word != '\0')	/* Skip empty strings */
-								col++;
+						else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
+							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+								sprintf (string, I->format, (int)irint (100.0 * t));
+							else if (I->format[0])	/* Set as floating point */
+								sprintf (string, I->format, (100.0 * t));
+							else	/* Default to xxx % */
+								sprintf (string, "%3d%%", (int)irint (100.0 * t));
 						}
-						strcpy (L_txt, word);
-						gmt_M_str_free (orig);
-						if (I->format[0])	/* Use the given string format */
-							sprintf (string, I->format, L_txt);
-						else	/* Plot as is */
-							strcpy (string, L_txt);
+						else if (I->mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
+							gmt_M_memset (string, GMT_LEN128, char);
+							L_col = (I->scale > 0.0) ? use_frame * I->scale : use_frame / Ctrl->D.framerate;
+							ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
+							mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
+							hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
+							dd = urint (L_col);
+							switch (I->ne) {
+								case 4: 	sprintf (string, I->format, dd, hh, mm, ss); break;
+								case 3: 	sprintf (string, I->format, hh, mm, ss); break;
+								case 2: 	sprintf (string, I->format, mm, ss); break;
+								case 1: 	sprintf (string, I->format, ss); break;
+							}
+						}
+						else if (I->mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
+							L_col = D->table[0]->segment[0]->data[I->col][use_frame];
+							if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
+								char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
+								gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
+								if (GMT->current.plot.calclock.clock.skip)
+									sprintf (string, "%s", date);
+								else if (GMT->current.plot.calclock.date.skip)
+									sprintf (string, "%s", clock);
+								else
+									sprintf (string, "%s %s", date, clock);
+							}
+							else {	/* Regular floating point (or latitude, etc.) */
+								if (I->format[0] && strchr (I->format, 'd'))	/* Set as an integer */
+									sprintf (string, I->format, (int)irint (L_col));
+								else if (I->format[0])	/* Set as floating point */
+									sprintf (string, I->format, L_col);
+								else	/* Uses standard formatting*/
+									gmt_ascii_format_one (GMT, string, L_col, type);
+							}
+						}
+						else if (I->mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
+							char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[use_frame]);
+							col = 0;	trail = orig;
+							while (col != I->col && (word = strsep (&trail, " \t")) != NULL) {
+								if (*word != '\0')	/* Skip empty strings */
+									col++;
+							}
+							strcpy (L_txt, word);
+							gmt_M_str_free (orig);
+							if (I->format[0])	/* Use the given string format */
+								sprintf (string, I->format, L_txt);
+							else	/* Plot as is */
+								strcpy (string, L_txt);
+						}
+						else if (I->mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
+							strcpy (string, I->format);
+						strcat (label, string);
+						if (I->kind == 'F' && p == 0) 
+							strcat (label, "/");
+						else if (p < (I->n_labels-1)) strcat (label, ";");
 					}
-					else if (I->mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
-						strcpy (string, I->format);
-					strcat (label, string);
+					if (I->kind == 'F') strcat (label, "/0/1");
 					/* Set MOVIE_{LABEL|PROG_INDICATOR}_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie{label|prog_indicator}s in session directory */
 					fprintf (fp, "%s", export[Ctrl->In.mode]);
 					set_tvalue (fp, Ctrl->In.mode, true, name, label);

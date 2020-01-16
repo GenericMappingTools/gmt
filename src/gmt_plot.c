@@ -6839,53 +6839,86 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
-	/* Place roudned line indicator */
-	double fx, fy, dy, dy2, xt;
+	/* Place solid line indicator with optional start/end labels */
+	int text_justify;
+	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0;
 	struct GMT_PEN pen;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getpen (GMT, P2, &pen);	/* Want to draw the whole line */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	dy2 = dy / 2.0;
-	x += fx * w;	y += fy * dy;
-	xt = x + w * (t - 0.5);
+	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
+	dy2 = dy / 2.0;	/* Half pen-width */
+	x += fx * (w + dy2);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
+	xt = w * (t - 0.5);
+	w /= 2;	/* From here on, w is half-length of fixed line */
+	if (kind == 'E') {	/* Want a label at the curent crossmark */
+		switch (justify) {	/* Deal with justification of text and possibly rotation */
+			case PSL_BL: case PSL_BC: case PSL_BR:
+				text_justify = PSL_BC; del_y = dy; break;
+			case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:
+				text_justify = PSL_TC; del_y = -dy; break;
+			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
+			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
+		}
+	}
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
 	if (kind == 'E') {
-		if (justify == 2) /* CB */
-			PSL_plottext (GMT->PSL, xt, y+dy, fsize, label, 0.0, PSL_BC, 0);
-		else
-			PSL_plottext (GMT->PSL, xt, y-dy, fsize, label, 0.0, PSL_TC, 0);
+		char *c = strchr (label, ';');
+		c[0] = '\0';	/* Chop of label at t == 1 and place the first at t == 0 */
+		PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
+		PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
 	}
 	gmt_setpen (GMT, &pen);
-	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
+	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground crossline */
+	gmt_getpen (GMT, P1, &pen);	/* Pen for time-variable line */
 	gmt_setpen (GMT, &pen);
-	PSL_plotsegment (GMT->PSL, x-w/2, y, xt, y);
+	PSL_plotsegment (GMT->PSL, w, 0.0, xt, 0.0);
+	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
 }
 
-GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double fsize) {
-	/* Place roudned line indicator */
+GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width) {
+	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symb = PSL_INVTRIANGLE;
-	double fx, fy, dy, dy2, xt, s = 1;
+	char cmd[GMT_LEN64] = {""}, axis;
+	bool was = GMT->current.map.frame.init;
+	double fx, fy, dy, dy2, xt, s = 1, angle = 0.0, h;
 	struct GMT_PEN pen;
 	struct GMT_FILL fill;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getpen (GMT, P1, &pen);	/* Want to draw the whole line */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	dy2 = dy / 2.0;
-	x += fx * w;	y += fy * dy;
-	xt = x + w * (t - 0.5);
-	if (justify == PSL_TC) s = -1, symb = PSL_TRIANGLE;
-	if (kind == 'F')
-			PSL_plottext (GMT->PSL, xt, y+s* dy, fsize, label, 0.0, justify, 0);
-	gmt_setpen (GMT, &pen);
-	PSL_plotsegment (GMT->PSL, x-w/2, y, x+w/2, y);
-	gmt_M_memset (&pen, 1, struct GMT_PEN);
-	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
-	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* triangle color */
-	w = dy * 1.5;
-	PSL_plotsymbol (GMT->PSL, xt, y+s*dy2, &w, symb);
+	gmt_getpen (GMT, P1, &pen);	/* Pen for the time axis */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width here even if not plotted */
+	dy2 = dy / 2.0;	/* Half pen width */
+	x += fx * w;	y += fy * dy;	/* Adjust the (x,y) to be mid-point of axis */
+	xt = w * t;	/* Relative fraction of w along the axis from left point */
+	/* Must allow for the space needed for tick-mark, annot-offset, and possibly annotations */
+	h = GMT->current.setting.map_tick_length[GMT_PRIMARY] + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);
+	if (kind == 'F') h += GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+	x -= 0.5 * w;	/* Let x be start position of axis rather than middle */
+	switch (justify) {	/* Deal with justification and adjust x,y for starting point of axis */
+		case PSL_BL: case PSL_BC: case PSL_BR:	/* At bottom we need to move up to give space for annotations below axis */
+			axis = 'S'; y += h; break;
+		case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:	/* At top (and middle) we likewise need space above, plus switch to TRIANGE */
+			axis = 'N'; y-= h; s = -1; symb = PSL_TRIANGLE; break;
+		case PSL_ML: angle = 90.0; y -= 0.5*w; axis = 'N'; x += h; s = -1; symb = PSL_TRIANGLE; break;	/* Left is like TC but rotated 90 */
+		case PSL_MR: angle = 90.0; y -= 0.5*w; axis = 'S'; x += w - h; break;	/* Right is like BC but rotated 90 */
+	}
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
+	if (kind == 'F')	/* Want annotations so add a */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf -B%c --MAP_FRAME_PEN=%s", label, width, axis, P1);
+	else	/* Only axis with ticks */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf -B%c --MAP_FRAME_PEN=%s", label, width, axis, P1);
+	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap with args %s\n", cmd);
+	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to call basemap with args %s ???\n", cmd);
+	}
+	GMT->current.map.frame.init = was;	/* Reset how we found it */
+	gmt_getfill (GMT, F1, &fill);	/* Get color for the triangle */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);
+	w = dy * 1.5;	/* Set triangle size to 1.5 times the axis width */
+	PSL_plotsymbol (GMT->PSL, xt, s*dy2, &w, symb);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7302,7 +7335,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
 				case 'f': /* Moving triangle on time-line */
-					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P1, F1, label, kind, Tfont.size);
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P1, F1, label, kind, width);
 					break;
 				default:	/* Just for Coverity */
 					break;
