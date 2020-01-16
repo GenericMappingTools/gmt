@@ -7446,11 +7446,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			continue;
 		}
 
-		if (hinge_mode && X->mode & GMT_CPT_SOFT_HINGE) { /* Add a hard hinge to the CPT */
-			X->mode -= GMT_CPT_SOFT_HINGE;
-			X->mode |= GMT_CPT_HARD_HINGE;
+		if (hinge_mode && X->mode & GMT_CPT_SOFT_HINGE) { /* Activate a soft hinge for the CPT */
 			X->has_hinge = 1;
-			X->hinge = z_hinge;	/* THis is now a user-selected hinge value */
+			X->hinge = z_hinge;	/* This is now a user-selected hinge value */
 		}
 
 		/* Here we have regular z-slices.  Allowable formats are
@@ -15852,6 +15850,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		return (GMT_NOERROR);
 	}
+
+	if (gmt_validate_modifiers (GMT, argument, option, "abelnt")) return (GMT_PARSE_ERROR);
 
 	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
