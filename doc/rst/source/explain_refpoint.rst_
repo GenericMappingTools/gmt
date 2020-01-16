@@ -1,0 +1,5 @@
+(1) Append **g**\ *lon*/*lat* for map (user) coordinates, (2)  **j**\ *code* or **J**\ *code* for setting
+the *refpoint* via a 2-char justification code that refers to the (invisible) projected map bounding box,
+(3) **n**\ *xn*/*yn* for normalized (0-1) bounding box coordinates, or (4) **x**\ *x*/*y* for plot coordinates
+(inches, cm, points, append unit).  All but **x** requires both **-R** and **-J** to be specified.
+You can offset the reference point via **+o**\ *dx*/*dy* in the direction implied by *code* or **+j**\ *justify*.
