@@ -4,9 +4,8 @@ Description
 -----------
 
 Reads data values from *files* [or standard input] and
-will plot symbols, lines or polygons on
-a cross-section. Focal mechanisms may be specified and require
-additional columns of data.  The name "coupe" comes from the French
+will plot a cross-section of focal mechanisms.
+The name "coupe" comes from the French
 verb “to cut”.  The best translation is a (vertical) cross section.
 
 Unless |-Q| is used, new file is created with the new coordinates
@@ -85,21 +84,26 @@ Optional Arguments
     Sets one or more attributes; repeatable. The various combinations are
 
 **-Fs**\ *symbol*\ [*size*\ ][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-   selects a symbol instead of mechanism. Choose from the following:
-   (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
-   (**t**) triangle, (**x**) cross. *size* is the symbol size in
-   **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
-   to indicate that the size information is in units of cm, inches, meters,
-   or points, respectively). If *size* must be read, it must be in column 4
-   and the text string will start in column 5. Parameters are expected to
-   be in the following columns:
+    selects a symbol instead of mechanism. Choose from the following:
+    (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
+    (**t**) triangle, (**x**) cross. *size* is the symbol size in
+    **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
+    to indicate that the size information is in units of cm, inches, meters,
+    or points, respectively). If *size* must be read, it must be in column 4
+    and the text string will start in column 5.
+
+    Append **+f**\ *font* to change the font of the text string;
+    append **+j**\ *justify* to change the text location relative to the beachball (default is above the beachball);
+    append **+o** to offset the text string by *dx/dy*.
+
+    Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
       longitude, latitude of event (**-:** option interchanges order)
     **3**:
       depth of event in kilometers
     **4**:
-      Text string to appear above the beach ball (default) or under (add **+u**).
+      Text string to appear near the beach ball
 
 **-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
     Computes and plots P and T axes with symbols. Optionally specify
@@ -179,9 +183,9 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    set pen attributes for text string or default pen attributes for
-    fault plane edges. [Defaults: width = default, color = black, style = solid].
+**-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
+    Set pen attributes for text string or default pen attributes for
+    fault plane edges. [Defaults: default,black,solid].
 
 .. _-X:
 
