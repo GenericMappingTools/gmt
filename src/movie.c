@@ -625,7 +625,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 				break;
 		}
 		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
-		I->n_labels = (strchr ("EF", I->kind == 'E')) ? 2 : 1;
+		I->n_labels = (strchr ("EF", I->kind)) ? 2 : 1;
 	}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
@@ -1560,12 +1560,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
 				unsigned int type, use_frame, p;
-				double t = (frame + 1.0) / n_frames;
+				double t;
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
 				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
 				set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
+					t = (frame + 1.0) / n_frames;
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */

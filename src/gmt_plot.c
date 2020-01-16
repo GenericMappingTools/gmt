@@ -6804,19 +6804,22 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
-	/* Place rounded line indicator */
-	int text_justify;
-	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0;
+	/* Place rounded line indicator with a single crossmark line and optional label.
+	 * If label is in percent then we strip off the percent and place it at end of line insteadl */
+	int text_justify, just_p;
+	char *p = NULL;
+	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0, xp;
 	struct GMT_PEN pen;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
 	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
 	dy2 = dy / 2.0;	/* Half pen-width */
-	x += fx * (w + dy2);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
+	x += fx * (w + dy);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
 	xt = w * (t - 0.5);	/* Location of label and tick along x-axis */
 	w /= 2;	/* From here on, w is half-length of fixed line */
 	if (kind == 'D') {	/* Want a label at the curent crossmark */
+		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately */
 		switch (justify) {	/* Deal with justification of text and possibly rotation */
 			case PSL_BL: case PSL_BC: case PSL_BR:
 				text_justify = PSL_BC; del_y = dy; break;
@@ -6825,9 +6828,19 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
 			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
 		}
+		if (justify == PSL_ML || justify == PSL_MR)
+			just_p = PSL_BC, xp = w + dy;
+		else {
+			just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
+			xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+		}
 	}
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
-	if (kind == 'D') PSL_plottext (GMT->PSL, xt+del_x, del_y, fsize, label, -angle, text_justify, 0);
+	if (kind == 'D') {
+		PSL_plottext (GMT->PSL, xt+del_x, del_y, fsize, label, -angle, text_justify, 0);
+		if (p) PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
+		if (p) p[0] = '%';	/* Restore it */
+	}
 	PSL_command (GMT->PSL, "V\n");	/* Do a save/restore around the line cap change */
 	gmt_setpen (GMT, &pen);
 	PSL_setlinecap (GMT->PSL, PSL_ROUND_CAP);	/* Want the rounded line effect */
@@ -6842,8 +6855,8 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 
 GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
 	/* Place solid line indicator with optional start/end labels */
-	int text_justify;
-	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0;
+	int text_justify, just_p;
+	double fx, fy, dy, dy2, xt, xp, del_x = 0.0, del_y = 0.0, angle = 0.0;
 	struct GMT_PEN pen;
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
@@ -6865,10 +6878,23 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	}
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
 	if (kind == 'E') {
-		char *c = strchr (label, ';');
+		char *c = strchr (label, ';'), *p = NULL;
 		c[0] = '\0';	/* Chop of label at t == 1 and place the first at t == 0 */
+		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately */
 		PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
+		if (p) p[0] = '%';	/* Restore it */
+		if ((p = strchr (&c[1], '%'))) p[0] = '\0';	/* Remove % here and add separately */
 		PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
+		if (p) {
+			p[0] = '%';	/* Restore it */
+			if (justify == PSL_ML || justify == PSL_MR)
+				just_p = PSL_BC, xp = w + dy;
+			else {
+				just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
+				xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+			}
+			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
+		}
 	}
 	gmt_setpen (GMT, &pen);
 	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
@@ -6882,7 +6908,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symb = PSL_INVTRIANGLE;
-	char cmd[GMT_LEN64] = {""}, axis;
+	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis;
 	bool was = GMT->current.map.frame.init;
 	double fx, fy, dy, dy2, xt, s = 1, angle = 0.0, h;
 	struct GMT_PEN pen;
@@ -6906,11 +6932,21 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		case PSL_ML: angle = 90.0; y -= 0.5*w; axis = 'N'; x += h; s = -1; symb = PSL_TRIANGLE; break;	/* Left is like TC but rotated 90 */
 		case PSL_MR: angle = 90.0; y -= 0.5*w; axis = 'S'; x += w - h; break;	/* Right is like BC but rotated 90 */
 	}
+	if (strchr (label, '%')) {	/* Cannot have percentages in the -R string */
+		sprintf (region, "-R0/100/0/1");
+		strcpy (unit, "+u%");
+	}
+	else if (label[2] == ' ') { /* Eliminate leading spaces... */
+		int k = 2; while (label[k] && label[k] == ' ') k++;	/* Find first non-space character */
+		sprintf (region, "-R%s", &label[k]);
+	}
+	else	/* Use as is */
+		strcpy (region, label);
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
 	if (kind == 'F')	/* Want annotations so add a */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Baf -B%c --MAP_FRAME_PEN=%s", label, width, axis, P1);
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
 	else	/* Only axis with ticks */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Bf -B%c --MAP_FRAME_PEN=%s", label, width, axis, P1);
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
@@ -7248,11 +7284,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 	
 		for (T = 0; T < n_movie_items[k]; T++) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
 			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
 			/* Replace the 13 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", x, y, &justify, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this PostScript procedure runs outside the main gsave/grestore block the origin is at (0,0) */
@@ -7307,10 +7344,11 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 		
 		for (T = 0; T < n_movie_items[k]; T++) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
 			/* Replace the 13 leading bars first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &t, &width, &justify, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 14 required items\n", movie_item_arg[k][T]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 14 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
