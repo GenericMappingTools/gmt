@@ -1051,6 +1051,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
+
 GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 	/* Close all files when an error forces us to quit */
 	fclose (Ctrl->In.fp);
@@ -1387,6 +1389,29 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
 				Return (API->error);
+			}
+			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
+			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+		}
+		else if (gmtlib_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
+			char output[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
+			unsigned int V = GMT->current.setting.verbose;
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+				Return (API->error);
+			}
+			if (GMT->common.f.active[GMT_IN])
+				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=false T = %s", Ctrl->T.file, GMT->common.f.string, output);
+			else
+				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=false T = %s", Ctrl->T.file, output);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Calling gmtmath with args %s\n", cmd);
+			GMT->current.setting.verbose = GMT_MSG_NORMAL;	/* So we don't get unwanted verbosity from gmtmath */
+  			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
+				Return (API->error);	/* Some sort of failure */
+			}
+			GMT->current.setting.verbose = V;	/* Restore */
+			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
+				Return (API->error);	/* Some sort of failure */
 			}
 			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */

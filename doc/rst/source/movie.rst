@@ -15,7 +15,7 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
 [ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
@@ -88,8 +88,9 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
-    Either specify how many image frames to make or supply a file with a set of parameters,
+**-T**\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+    Either specify how many image frames to make, create a one-column data set width values from
+    *min* to *max* every *inc* (append **+n** if *inc* is number of points instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
