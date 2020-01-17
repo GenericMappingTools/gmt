@@ -46,7 +46,6 @@ struct PSPOLAR_CTRL {
 	} D;
  	struct E {	/* -E<fill> */
 		bool active;
-		int outline;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
@@ -73,14 +72,13 @@ struct PSPOLAR_CTRL {
 	struct H2 {	/* -Qh for Hypo71 */
 		bool active;
 	} H2;
-	struct S {	/* -r<fill> */
+	struct S {	/* -S<symbol><size>[c|i|p] */
 		bool active;
 		int symbol;
-		char type;
-		double scale, size;
+		double size;
 		struct GMT_FILL fill;
 	} S;
-	struct S2 {	/* -r<fill> */
+	struct S2 {	/* -Qs<half-size>[+v<size>[+<specs>] */
 		bool active;
 		bool scolor;
 		bool vector;
@@ -93,7 +91,7 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_SYMBOL S;
 	} S2;
-	struct T {
+	struct T {      /* -T<angle>/<form>/<justify>/<fontsize> and -Qt<pen> */
 		bool active;
 		double angle, fontsize;
 		int form, justify;
@@ -392,10 +390,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
-				Ctrl->S.type = opt->arg[0];
-				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				Ctrl->S.active = true;
-				switch (Ctrl->S.type) {
+				switch (opt->arg[0]) {
 					case 'a':
 						Ctrl->S.symbol = PSL_STAR;
 						break;
@@ -425,9 +421,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
 						break;
 				}
+				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				break;
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = true;
