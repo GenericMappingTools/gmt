@@ -200,7 +200,7 @@ Optional Arguments
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
     **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
-    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
+    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
     Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
@@ -351,8 +351,8 @@ Progress Indicators
    :width: 500 px
    :align: center
 
-   The six types of movie progress indicators.  All have default colors and pens (shown) but these can be
-   overridden by the corresponding modifiers (see below).
+   The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
+   but these can be overridden by the corresponding modifiers (see below).
 
 The letters a-f select one of the six indicators. Indicator a) needs a static [lightgreen] and moving [lightred]
 *fill* (set via **+G** and **+g**), while indicators b-e all take a static [lightblue, dashed darkred, black, red]
