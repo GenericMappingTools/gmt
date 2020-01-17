@@ -199,7 +199,7 @@ Optional Arguments
     **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
-    * Use **+p**\ *pen* to set moving item *pen*.  Bor corresponding static fill and pen, use **+G** and **+P** instead.
+    Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
 
@@ -352,11 +352,11 @@ Progress Indicators
    The six types of movie progress indicators.  All have default colors and pens (shown) but these can be
    overridden by the corresponding modifiers (see below).
 
-THe letter a-f selects one of the six indicators. Indicator a) needs static [lightred] and moving [lightgreen]
-fill (via **+G** and **+g**), while indicators b-e all take a static [lightblue, dashed darkred, black, lightgreen]
-and moving [blue, red, yellow, red] pens, respectively.  Finally, indicator f) takes a pen for the static axis [black]
-and a fill for the moving triangle [red].  If a percentage is selected (**+ap**) then the axes all have a unit label,
-otherwise no label is supplied.  The indicators d-f are horizontal for all *justify* codes xcept **ML** and **MR**.
+The letters a-f select one of the six indicators. Indicator a) needs a static [lightgreen] and moving [lightred]
+*fill* (set via **+G** and **+g**), while indicators b-e all take a static [lightblue, dashed darkred, black, red]
+and moving [blue, red, yellow, lightgreen] *pen*, respectively.  Finally, indicator f) takes a *pen* for the static axis [black]
+and a *fill* for the moving triangle [red].  If percentages are selected (**+ap**), then the axes all display a unit label,
+otherwise no label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
 
 Examples
 --------

@@ -6880,13 +6880,15 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	if (kind == 'E') {
 		char *c = strchr (label, ';'), *p = NULL;
 		c[0] = '\0';	/* Chop of label at t == 1 and place the first at t == 0 */
-		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately */
-		PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
-		if (p) p[0] = '%';	/* Restore it */
-		if ((p = strchr (&c[1], '%'))) p[0] = '\0';	/* Remove % here and add separately */
-		PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
+		if ((p = strchr (label, '%')))
+			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, "0", -angle, text_justify, 0);
+		else
+			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
+		if ((p = strchr (&c[1], '%')))
+			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, "100", -angle, text_justify, 0);
+		else
+			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
 		if (p) {
-			p[0] = '%';	/* Restore it */
 			if (justify == PSL_ML || justify == PSL_MR)
 				just_p = PSL_BC, xp = w + dy;
 			else {
@@ -6895,6 +6897,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 			}
 			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
 		}
+		c[0] = ';';	/* Restore it */
 	}
 	gmt_setpen (GMT, &pen);
 	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
