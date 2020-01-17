@@ -6725,19 +6725,21 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	x += fx * w;	y += fy * w;	/* Move to center of circle */
 	dim[0] = w;
-	if (t < 1.0) {	/* Need the background full circle */
+	if (t < 1.0) {	/* Need the background full circle since partly visible */
 		gmt_getfill (GMT, F2, &fill);	/* Want to paint background full circle*/
 		PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
 	}
 	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
-	if (doubleAlmostEqual (t, 1.0)) 
+	if (doubleAlmostEqual (t, 1.0)) {
+		fprintf (stderr, "FUll circle\n");
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	}
 	else {
 		dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
-		dim[1] = 90.0;	/* Start is 12 'oclock */
-		dim[2] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
+		dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
+		dim[2] = 90.0;	/* Start is 12 'oclock */
 		dim[7] = 1;	/* Lay down filled wedge */
 		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
@@ -6755,7 +6757,8 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
-	if (t < 1.0) {	/* Need the background full circle */
+	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
+	if (t < 1.0) {	/* Need the background full circle since partly visible */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
@@ -6767,7 +6770,7 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	if (doubleAlmostEqual (t, 1.0)) 
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
 	else
-		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0, 90.0 - 360 * t, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
+		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0 - 360 * t, 90.0, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind) {
@@ -6792,8 +6795,8 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	gmt_setpen (GMT, &pen);	/* Full circle pen */
 	PSL_setfill (GMT->PSL, pen.rgb, 1);
 	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
-	dim[2] = 90.0;	/* Start is 12 'oclock */
 	dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
+	dim[2] = 90.0;	/* Start is 12 'oclock */
 	dim[3] = 0.2 * w, dim[4] = 0.2 * w, dim[5] = pen.width / PSL_POINTS_PER_INCH;
 	dim[6] = GMT->current.setting.map_vector_shape;
 	dim[7] = (double)(PSL_VEC_BEGIN | PSL_VEC_FILL);
@@ -6958,8 +6961,8 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	GMT->current.map.frame.init = was;	/* Reset how we found it */
 	gmt_getfill (GMT, F1, &fill);	/* Get color for the triangle */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);
-	w = dy * 1.5;	/* Set triangle size to 1.5 times the axis width */
-	PSL_plotsymbol (GMT->PSL, xt, s*dy2, &w, symb);
+	w = dy * 1.75;	/* Set triangle size to 1.5 times the axis width */
+	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symb);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {

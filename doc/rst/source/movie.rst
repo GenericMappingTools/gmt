@@ -194,8 +194,9 @@ Optional Arguments
 **-P**\ *progress*
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
     Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
-    linear axis-like indicators.  Specify dimension of the indicator with **+w**\ *width* and placement via **+j**\ *justify*.
-    Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
+    linear axis-like indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
+    circular indicators and 60% of relevant canvas dimension for the axis indicators] and placement via **+j**\ *justify*
+    [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
     **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].

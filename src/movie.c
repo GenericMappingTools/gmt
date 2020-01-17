@@ -462,7 +462,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) and consult the movie documentation for which attributes are needed:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TL].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to specify size [5%% of max canvas dimension for circles, 60%% for axes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
@@ -493,17 +494,27 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
+GMT_LOCAL void set_default_width (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct MOVIE_ITEM *I) {
+	double def_width = (strchr ("defDEF", I->kind) && (I->justify == PSL_ML || I->justify == PSL_MR)) ? Ctrl->C.dim[GMT_Y] : Ctrl->C.dim[GMT_X];
+	if (I->width > 0.0) return;
+	/* Assign default widths */
+	I->width = (strchr ("abcABC", I->kind)) ? 0.05 * def_width : 0.6 * def_width;
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No width given for progress indicator %c. Setting width to %g%c.\n", I->kind, I->width, Ctrl->C.unit);
+	if (Ctrl->C.unit == 'c') I->width /= 2.54; else if (Ctrl->C.unit == 'p') I->width /= 72.0;	/* Now in inches */
+}
+
+GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
 	/* Default progress indicator: Pie-wedge with different colors */
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
 	if (I->fill[0] == '-') /* Give default color for foreground wedge */
-		strcpy (I->fill, "lightgreen");
+		strcpy (I->fill, "lightred");
 	if (gmt_get_modifier (arg, 'G', I->fill2) && I->fill2[0]) {	/* Found +G<fill> */
 		struct GMT_FILL fill;	/* Only used to make sure fill is given with correct syntax */
 		if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
 	}
 	if (I->fill2[0] == '-') /* Give default fixed circle color */
-		strcpy (I->fill2, "lightred");
+		strcpy (I->fill2, "lightgreen");
 	if (I->kind == 'A') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Progress indicator a does not place any labels. modifier +a ignored\n");
 			I->kind = 'a';
@@ -511,11 +522,12 @@ GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, char *arg, struct
 	return (n_errors);
 }
 
-GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
+GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	char kind = tolower (I->kind);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
 	if (I->pen[0] == '-') {	/* Set pen for foreground (changing) feature */
 		switch (kind) {
 			case 'b': sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and blue color */
@@ -538,11 +550,12 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, char *arg, struc
 	return (n_errors);
 }
 
-GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, char *arg, struct MOVIE_ITEM *I) {
+GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
 	unsigned int n_errors = 0;
 	gmt_M_unused (GMT);
 	gmt_M_unused (arg);
 	/* Default progress indicator: line and filled symbol */
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
 	if (I->pen[0] == '-')	/* Give default static line pen thickness >= 4p in black */
 			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
 	if (I->fill[0] == '-')	/* Give default moving triangle the red color */
@@ -885,12 +898,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				if (gmt_get_modifier (opt->arg, 'w', string))	/* Progress indicator dimension (length or width) */
 					I->width = gmt_M_to_inch (GMT, string);
 				switch (I->kind) {	/* Deal with any missing required attributes for each progress indicator type */
-					case 'b':	case 'B':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress ring */
-					case 'c':	case 'C':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress arrow  */
-					case 'd':	case 'D':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* Progress rounded line */
-					case 'e':	case 'E':	 n_errors += get_item_two_pens (GMT, opt->arg, I); break;	/* progress line on line */
-					case 'f':	case 'F':	 n_errors += get_item_pen_fill (GMT, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
-					default: n_errors += get_item_default (GMT, opt->arg, I);  break;	/* Default pie progression circle (a)*/
+					case 'b':	case 'B':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress ring */
+					case 'c':	case 'C':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress arrow  */
+					case 'd':	case 'D':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress rounded line */
+					case 'e':	case 'E':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* progress line on line */
+					case 'f':	case 'F':	 n_errors += get_item_pen_fill (GMT, Ctrl, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
+					default: n_errors += get_item_default (GMT, Ctrl, opt->arg, I);  break;	/* Default pie progression circle (a)*/
 				}
 				Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]++;	/* Got one more progress indicator */
 				break;
