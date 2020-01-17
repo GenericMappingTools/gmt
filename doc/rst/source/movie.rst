@@ -24,6 +24,7 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
+[ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ **-Sb**\ *backgroundscript* ]
 [ **-Sf**\ *foregroundscript* ]
@@ -162,7 +163,8 @@ Optional Arguments
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **s**\ *string* uses the fixed text *string* as the label,
-    **f** selects the running frame number as the label, **c**\ *col* uses the value in column
+    **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
+    **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
@@ -186,6 +188,18 @@ Optional Arguments
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+
+.. _-P:
+
+**-P**\ *progress*
+    Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
+    Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
+    linear axis-like indicators.  Specify dimension of the indicator with **+w**\ *width* and placement via **+j**\ *justify*.
+    Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
+    **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
+    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
+    * Use **+p**\ *pen* to set moving item *pen*.  Bor corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
 
@@ -327,6 +341,22 @@ indirectly by :doc:`grdimage` or  :doc:`grdview`).  Instead, you must create CPT
 files and pass those names to the modules that require CPT information.  In modern mode, this means
 you need to use the **-H** option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
 to named files.
+
+Progress Indicators
+-------------------
+
+.. figure:: /_images/GMT_movie_progress.*
+   :width: 500 px
+   :align: center
+
+   The six types of movie progress indicators.  All have default colors and pens (shown) but these can be
+   overridden by the corresponding modifiers (see below).
+
+THe letter a-f selects one of the six indicators. Indicator a) needs static [lightred] and moving [lightgreen]
+fill (via **+G** and **+g**), while indicators b-e all take a static [lightblue, dashed darkred, black, lightgreen]
+and moving [blue, red, yellow, red] pens, respectively.  Finally, indicator f) takes a pen for the static axis [black]
+and a fill for the moving triangle [red].  If a percentage is selected (**+ap**) then the axes all have a unit label,
+otherwise no label is supplied.  The indicators d-f are horizontal for all *justify* codes xcept **ML** and **MR**.
 
 Examples
 --------

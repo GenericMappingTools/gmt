@@ -392,8 +392,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>[+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<script>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<script>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -463,12 +463,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) and consult the movie documentation for which attributes are needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TL].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col.>] to add annotations (see -L for details):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
+		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +G to set background (static) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to set foreground (moving) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +P to set background (static) pen for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to set foreground (moving) pen for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for background script).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional background and foreground GMT scripts [none]:\n");
@@ -1154,7 +1157,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
 			}
-			else if (I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
+			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
