@@ -110,7 +110,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-        C->C.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
+	C->C.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
 
 	C->C.size = GMT_DOT_SIZE;
 	gmt_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
@@ -513,7 +513,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = true;
 
-        gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
+	gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
 	if (Ctrl->C.active) {
 		gmt_setpen (GMT, &Ctrl->C.pen);
 		gmt_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
@@ -585,7 +585,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				symbol_size2 = Ctrl->S.size * 0.8;
 			}
 		}
-                else
+		else
 			symbol_size2 = Ctrl->S.size;
 		radius = sqrt (1.0 - sin (plongement));
 		if (radius >= 0.97) radius = 0.97;
