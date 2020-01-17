@@ -6733,7 +6733,6 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
 	if (doubleAlmostEqual (t, 1.0)) {
-		fprintf (stderr, "FUll circle\n");
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
 	}
 	else {
