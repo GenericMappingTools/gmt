@@ -7273,8 +7273,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			return NULL;	/* Should never happen */
 	}
 	if (n_movie_items[MOVIE_ITEM_IS_LABEL]) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
-		/* Decode x/y/just/clearance_x/clearance_Y/pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
-		double off[2] = {0.0, 0.0};
+		/* Decode x/y/just/clearance_x/clearance_Y|offX|offY//pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
+		double clearance[2] = {0.0, 0.0};
 		char x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
@@ -7290,10 +7290,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	
 		for (T = 0; T < n_movie_items[k]; T++) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
-			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
-			/* Replace the 13 leading slashes first with spaces */
+			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|offX|offY|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
+			/* Replace the 15 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
-			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", x, y, &justify, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
+			if (sscanf (movie_item_arg[k][T], "%*c %s %s %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", x, y, &justify, &clearance[GMT_X], &clearance[GMT_Y], PP, FF, font, label) != 9) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
@@ -7317,7 +7317,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmt_getfill (GMT, FF, &fill);	/* No need to check since we verified fill syntax in movie.c */
 				
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color (or nothing) */
-				PSL_plottextbox (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, off, 0);
+				PSL_plottextbox (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, clearance, 0);
 				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font (again?) */
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, NULL, 0.0, justify, form);
 			}
@@ -7333,8 +7333,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_command (PSL, "U\n}!\n");
 	}
 	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
-		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG# strings */
-		double off[2] = {0.0, 0.0}, width = 0.0, t;
+		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y||offX|offY|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG# strings */
+		double clearance[2] = {0.0, 0.0}, width = 0.0, t;
 		char kind, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
@@ -7352,7 +7352,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
 			/* Replace the 13 leading bars first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
-			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &t, &width, &justify, &off[GMT_X], &off[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
+			if (sscanf (movie_item_arg[k][T], "%c %s %s %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, x, y, &t, &width, &justify, &clearance[GMT_X], &clearance[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 14 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
