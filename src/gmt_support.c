@@ -7949,16 +7949,16 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 			*z_low = P->hinge;	/* Always include the hinge in these cases */
 			gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
 			P->n_colors -= ks;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
 		}
 		else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
 			*z_high = P->hinge;	/* Always include the hinge in these cases */
 			P->n_colors = ks;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
 		}
 	}
 	else	/* Soft hinge outside range means we ignore the hinge */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT soft hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT soft hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
 	/* Behave as a single CPT range with no hinge from now on */
 	P->has_hinge = 0;
 	return GMT_NOTSET;
