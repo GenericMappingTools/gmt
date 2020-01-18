@@ -31,6 +31,7 @@
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehiqt" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
+#define DEFAULT_OFFSET		3.0	/* In points */
 
 /* Control structure for pspolar */
 
@@ -91,11 +92,13 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_SYMBOL S;
 	} S2;
-	struct T {      /* -T<angle>/<form>/<justify>/<fontsize> and -Qt<pen> */
+	struct T { /* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
 		bool active;
-		double angle, fontsize;
-		int form, justify;
-		struct GMT_PEN pen;
+		double angle;
+		int justify;
+		double offset[2];
+		struct GMT_FONT font;
+		int form; /* for back-compatibility only */
  	} T;
 	struct W {	/* -W<pen> */
 		bool active;
@@ -117,8 +120,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	gmt_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);
-	C->T.justify = 5;
-	C->T.fontsize = 12.0;
+	C->T.justify = PSL_TC;
+	C->T.font.size = 12.0;
 	return (C);
 }
 
@@ -137,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[+p<pen>][+s<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[+a<angle>][+j<justify>][+f<font>][+o<dx>[/<dy>]]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -179,10 +182,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Azimuth of S polarity is in last column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Specify a vector (with +v modifier) [Default is segment line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of vector is +v0.3i+e+gblack if just +v is given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t Set pen attributes to write station codes [default is current pen].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T [<info about label printing>] to write station code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <angle/form/justify/fontsize in points>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is 0.0/0/5/12].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Write station code near the symbol.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a<angle> or +f<font> to change the angle or font of text string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +j<justify> or +o<dx>/<dy> to change the text justification or offset relative to the symbol.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is above the symbol, with font size of 12p].\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,e,h,i,qi,t,.");
@@ -368,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						}
 						break;
 					case 't':	/* Set color for station label */
-						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) {
+						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.font.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qt", "Station code symbol[Default current pen]", 0);
 							n_errors++;
 						}
@@ -429,7 +432,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
-					sscanf (opt->arg, "%lf/%d/%d/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
+					/* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
+					if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+						char word[GMT_LEN64] = {""};
+						if (gmt_get_modifier (opt->arg, 'a', word))
+							Ctrl->T.angle = atof(word);
+						if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
+							Ctrl->T.justify = gmt_just_decode (GMT, word, Ctrl->T.justify);
+						if (gmt_get_modifier (opt->arg, 'f', word))
+							n_errors += gmt_getfont (GMT, word, &(Ctrl->T.font));
+						if (gmt_get_modifier (opt->arg, 'o', word)) {
+							if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->T.offset) < 0) n_errors++;
+						} else {	/* Set default offset */
+							if (Ctrl->T.justify%4 != 2) /* Not center aligned */
+								Ctrl->T.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+							if (Ctrl->T.justify/4 != 1) /* Not middle aligned */
+								Ctrl->T.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+						}
+					} else {
+						/* Old syntax: -T<angle>/<form>/<justify>/<fontsize> */
+						sscanf (opt->arg, "%lf/%d/%d/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.font.size);
+					}
 				}
 				break;
 			case 'W':	/* Set line attributes */
@@ -597,36 +620,29 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 		if (Ctrl->S.symbol == PSL_CROSS || Ctrl->S.symbol == PSL_DOT) PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
 
 		if (Ctrl->T.active) {
-			gmt_setpen (GMT, &Ctrl->T.pen);
-			switch (Ctrl->T.justify) {
-				case PSL_TR:
-					PSL_plottext (PSL, plot_x-symbol_size2-0.1, plot_y-symbol_size2-0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_TR, Ctrl->T.form);
-					break;
-				case PSL_TC:
-					PSL_plottext (PSL, plot_x, plot_y-symbol_size2-0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_TC, Ctrl->T.form);
-					break;
-				case PSL_TL:
-					PSL_plottext (PSL, plot_x+symbol_size2+0.1, plot_y-symbol_size2-0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_TL, Ctrl->T.form);
-					break;
-				case PSL_MR:
-					PSL_plottext (PSL, plot_x-symbol_size2-0.1, plot_y, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_MR, Ctrl->T.form);
-					break;
-				case PSL_MC:
-					PSL_plottext (PSL, plot_x, plot_y, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_MC, Ctrl->T.form);
-					break;
-				case PSL_ML:
-					PSL_plottext (PSL, plot_x+symbol_size2+0.1, plot_y, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_ML, Ctrl->T.form);
-					break;
-				case PSL_BR:
-					PSL_plottext (PSL, plot_x-symbol_size2-0.1, plot_y+symbol_size2+0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_BR, Ctrl->T.form);
-					break;
-				case PSL_BC:
-					PSL_plottext (PSL, plot_x, plot_y+symbol_size2+0.1, Ctrl->T.fontsize, col[3], Ctrl->T.angle, PSL_BC, Ctrl->T.form);
-					break;
-				case PSL_BL:
-					PSL_plottext (PSL, plot_x+symbol_size2+0.1, plot_y+symbol_size2+0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_BL, Ctrl->T.form);
-					break;
-			}
+			int form;
+			int label_justify = 0;
+			double label_x, label_y;
+			double label_offset[2];
+
+			label_justify = gmt_flip_justify(GMT, Ctrl->T.justify);
+			label_offset[0] = label_offset[1] = GMT_TEXT_CLEARANCE * 0.01 * Ctrl->T.font.size / PSL_POINTS_PER_INCH;
+
+			label_x = plot_x + 0.5 * (Ctrl->T.justify%4 - label_justify%4) * Ctrl->S.size * 0.5;
+			label_y = plot_y + 0.5 * (Ctrl->T.justify/4 - label_justify/4) * Ctrl->S.size * 0.5;
+
+			/* Also deal with any justified offsets if given */
+			if (Ctrl->T.justify%4 == 1) /* Left aligned */
+				label_x -= Ctrl->T.offset[0];
+			else /* Right or center aligned */
+				label_x += Ctrl->T.offset[0];
+			if (Ctrl->T.justify/4 == 0) /* Bottom aligned */
+				label_y -= Ctrl->T.offset[1];
+			else /* Top or middle aligned */
+				label_y += Ctrl->T.offset[1];
+
+			form = gmt_setfont (GMT, &Ctrl->T.font);
+			PSL_plottext (PSL, label_x, label_y, Ctrl->T.font.size, stacode, Ctrl->T.angle, label_justify, form);
 		}
 		if (Ctrl->S.symbol == PSL_DOT) symbol_size2 = GMT_DOT_SIZE;
 

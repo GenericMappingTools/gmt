@@ -24,7 +24,7 @@ Synopsis
 [ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
-[ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
+[ |-T|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\[/*dy*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
