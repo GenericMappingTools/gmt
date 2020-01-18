@@ -563,7 +563,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 					azS = -1.0;
 			}
 			else { /* !Ctrl->S2.active */
-				sscanf (In->text, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
+				sscanf (In->text, "%s %s %s %s %lf %lf %s", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
 				pol = col[3][2];
 			}
 		}
@@ -583,7 +583,8 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				plongement = -plongement;
 				azimut += 180.0;
 				symbol_size2 = Ctrl->S.size * 0.8;
-			}
+			} else
+				symbol_size2 = Ctrl->S.size;
 		}
 		else
 			symbol_size2 = Ctrl->S.size;

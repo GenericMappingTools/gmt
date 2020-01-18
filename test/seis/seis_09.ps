@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.0_r16371 [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.1.0_64f62e5-dirty_2020.01.17 [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May  5 10:52:03 2016
+%%CreationDate: Fri Jan 17 23:27:52 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -150,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 47 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -190,6 +190,14 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/STSong-Light--UniGB-UTF8-H Y}!
+/F40 {/STFangsong-Light--UniGB-UTF8-H Y}!
+/F41 {/STHeiti-Regular--UniGB-UTF8-H Y}!
+/F42 {/STKaiti-Regular--UniGB-UTF8-H Y}!
+/F43 {/STSong-Light--UniGB-UTF8-V Y}!
+/F44 {/STFangsong-Light--UniGB-UTF8-V Y}!
+/F45 {/STHeiti-Regular--UniGB-UTF8-V Y}!
+/F46 {/STKaiti-Regular--UniGB-UTF8-V Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -646,6 +654,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,14 +666,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_plot_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -4200 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: psbasemap -R-8/8/-10/10 -JX7i -P -Xc -K '-B+tcircles should plot on curves'
+%@GMT: gmt psbasemap -R-8/8/-10/10 -JX7i -P -Xc -K '-B+tcircles should plot on curves'
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
+%GMTBoundingBox: -252 72 504 504
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -682,7 +696,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -745,17 +759,34 @@ O1
 -100 -60 D
 -102 -57 D
 -103 -54 D
--106 -51 D
--107 -47 D
--109 -44 D
--167 -59 D
--113 -35 D
--171 -46 D
--174 -37 D
--118 -20 D
--178 -23 D
--179 -14 D
--180 -5 D
+-53 -26 D
+-53 -25 D
+-53 -24 D
+-54 -23 D
+-55 -22 D
+-54 -22 D
+-55 -20 D
+-56 -20 D
+-56 -19 D
+-56 -18 D
+-57 -17 D
+-56 -16 D
+-58 -15 D
+-57 -15 D
+-58 -13 D
+-58 -12 D
+-58 -12 D
+-59 -10 D
+-59 -10 D
+-59 -8 D
+-59 -8 D
+-60 -7 D
+-59 -5 D
+-60 -5 D
+-60 -4 D
+-60 -2 D
+-60 -2 D
+-60 -1 D
 -182 4 D
 -121 8 D
 -121 12 D
@@ -788,7 +819,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -806,7 +837,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -847,22 +878,43 @@ O1
 -85 -65 D
 -86 -62 D
 -132 -88 D
--135 -82 D
--139 -76 D
+-90 -55 D
+-91 -53 D
+-93 -50 D
 -93 -47 D
--95 -45 D
--145 -62 D
--146 -55 D
--149 -50 D
--150 -43 D
--153 -37 D
--103 -21 D
--155 -26 D
--156 -20 D
--158 -13 D
--106 -5 D
--159 -2 D
--107 2 D
+-48 -23 D
+-47 -22 D
+-48 -21 D
+-48 -21 D
+-49 -20 D
+-48 -19 D
+-49 -18 D
+-49 -18 D
+-49 -17 D
+-50 -17 D
+-50 -16 D
+-50 -15 D
+-50 -14 D
+-50 -14 D
+-51 -13 D
+-51 -12 D
+-51 -12 D
+-51 -11 D
+-52 -10 D
+-51 -9 D
+-52 -9 D
+-52 -8 D
+-52 -7 D
+-52 -7 D
+-52 -6 D
+-53 -5 D
+-52 -4 D
+-53 -4 D
+-53 -3 D
+-53 -2 D
+-53 -1 D
+-53 -1 D
+-160 2 D
 -160 10 D
 -107 10 D
 -161 22 D
@@ -908,7 +960,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -926,7 +978,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -950,21 +1002,44 @@ O1
 -146 -98 D
 -98 -61 D
 -100 -57 D
--150 -79 D
--152 -70 D
--153 -62 D
--101 -37 D
--153 -50 D
--153 -42 D
--152 -35 D
--151 -28 D
--101 -16 D
--149 -17 D
--99 -9 D
--148 -8 D
--195 -2 D
--144 5 D
--143 10 D
+-100 -53 D
+-50 -26 D
+-51 -24 D
+-50 -23 D
+-51 -23 D
+-51 -21 D
+-51 -21 D
+-51 -20 D
+-50 -19 D
+-51 -18 D
+-51 -17 D
+-51 -17 D
+-51 -16 D
+-51 -14 D
+-51 -14 D
+-51 -14 D
+-51 -12 D
+-50 -12 D
+-51 -11 D
+-50 -10 D
+-51 -9 D
+-50 -9 D
+-50 -8 D
+-51 -8 D
+-50 -6 D
+-49 -6 D
+-50 -5 D
+-50 -5 D
+-49 -4 D
+-50 -3 D
+-49 -3 D
+-49 -2 D
+-49 -1 D
+-49 -1 D
+-48 0 D
+-97 1 D
+-144 7 D
+-95 7 D
 -141 16 D
 -93 12 D
 -185 33 D
@@ -1024,7 +1099,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1042,7 +1117,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1052,12 +1127,18 @@ O0
 O1
 3601 4200 4200 Sc
 6317 1287 M
--129 -34 D
--129 -29 D
+-65 -18 D
+-64 -16 D
+-64 -15 D
+-65 -14 D
 -64 -12 D
--128 -19 D
--127 -15 D
--189 -12 D
+-64 -10 D
+-64 -9 D
+-64 -8 D
+-63 -7 D
+-64 -5 D
+-63 -4 D
+-62 -3 D
 -62 -2 D
 -124 1 D
 -122 5 D
@@ -1120,7 +1201,8 @@ O1
 36 55 D
 S
 7113 6317 M
--5826 -4234 D
+-2913 -2117 D
+-2913 -2117 D
 S
 {1 A} FS
 O0
@@ -1134,7 +1216,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
@@ -1152,7 +1234,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
@@ -1227,7 +1309,8 @@ O1
 62 32 D
 S
 7801 4200 M
--7202 0 D
+-3601 0 D
+-3601 0 D
 S
 {1 A} FS
 O0
@@ -1241,7 +1324,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_11
 0 setlinecap
@@ -1259,7 +1342,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
@@ -1341,7 +1424,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_13
 0 setlinecap
@@ -1359,7 +1442,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
@@ -1437,7 +1520,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_15
 0 setlinecap
@@ -1455,7 +1538,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_16
 0 setlinecap
@@ -1524,7 +1607,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_17
 0 setlinecap
@@ -1542,7 +1625,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_18
 0 setlinecap
@@ -1603,7 +1686,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_19
 0 setlinecap
@@ -1621,7 +1704,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
+%@GMT: gmt psmeca -R-8/8/-10/10 -JX7i -P -M -Sa6i -N -W1p -O -K -h4 -C -T
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_20
 0 setlinecap
@@ -1648,7 +1731,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
+%@GMT: gmt pspolar -R-8/8/-10/10 -JX7i -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_21
 0 setlinecap
@@ -1658,7 +1741,7 @@ O0
 945 4200 4200 Sc
 {0.98 A} FS
 O1
-0 3283 4200 Sc
+120 3283 4200 Sc
 %%EndObject
 0 A
 FQ
@@ -1666,7 +1749,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psbasemap -R-8/8/-10/10 -JX7i -P -V -O -B0
+%@GMT: gmt psbasemap -R-8/8/-10/10 -JX7i -P -V -O -B0
 %@PROJ: xy -8.00000000 8.00000000 -10.00000000 10.00000000 -8.000 8.000 -10.000 10.000 +xy
 %%BeginObject PSL_Layer_22
 0 setlinecap
@@ -1696,6 +1779,10 @@ N 0 0 M 8400 0 D S
 0 -8400 T
 0 setlinecap
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
