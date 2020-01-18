@@ -6745,9 +6745,9 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 	}
 }
 
-GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind) {
+GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
 	/* Place growing ring */
-	double fx, fy, fsize, dr2;
+	double fx, fy, dr2;
 	struct GMT_PEN pen;
 
 	gmtplot_just_f_xy (justify, &fx, &fy);
@@ -6755,9 +6755,11 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
 	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
-	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
-	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
+	if (kind == 'B') {
+		if (fsize == 0.0) fsize = 0.3 * w * PSL_POINTS_PER_INCH;
+		PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	}
 	if (t < 1.0) {	/* Need to plot the background full circle since partly visible */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
@@ -6773,9 +6775,9 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0 - 360 * t, 90.0, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
 }
 
-GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind) {
+GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
 	/* Place growing math arrow */
-	double fx, fy, fsize, dr2, dim[PSL_MAX_DIMS];
+	double fx, fy, dr2, dim[PSL_MAX_DIMS];
 	struct GMT_PEN pen;
 
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -6784,8 +6786,9 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
 	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle, add 15% to get more space so arrow head won't clip at canvas edge */
+	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
 	if (kind == 'C') {	/* Place center label */
-		fsize = 0.3 * w * PSL_POINTS_PER_INCH;	/* Use a fontsize that is 30% of width */
+		if (fsize == 0.0) fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 		PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	}
 	if (t < 1.0) {	/* Need to plot the background full circle */
@@ -6801,7 +6804,7 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
 	dim[2] = 90.0;	/* Start is 12 'oclock */
 	dim[3] = 0.2 * w, dim[4] = 0.2 * w, dim[5] = pen.width / PSL_POINTS_PER_INCH;
-	dim[6] = GMT->current.setting.map_vector_shape;
+	dim[6] = 0.75;	/* Fixed shape setting */
 	dim[7] = (double)(PSL_VEC_BEGIN | PSL_VEC_FILL);
 	dim[8] = (double)PSL_VEC_ARROW;	dim[9] = (double)PSL_VEC_ARROW;
 	dim[12] = 0.5 * pen.width;
@@ -6826,6 +6829,7 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 	xt = w * (t - 0.5);	/* Location of label and tick along x-axis */
 	w /= 2;	/* From here on, w is half-length of fixed line */
 	if (kind == 'D') {	/* Want a label at the curent crossmark */
+		if (fsize == 0.0) fsize = 2.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
 		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately later */
 		switch (justify) {	/* Deal with justification of text and possibly rotation */
 			case PSL_BL: case PSL_BC: case PSL_BR:
@@ -6879,6 +6883,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	xt = w * (t - 0.5);	/* Point of current time on axis */
 	w /= 2;	/* From here on, w is half-length of fixed line length */
 	if (kind == 'E') {	/* Want a label at the current crossmark */
+		if (fsize == 0.0) fsize = 2.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
 		switch (justify) {	/* Deal with justification of text and possibly rotation */
 			case PSL_BL: case PSL_BC: case PSL_BR:
 				text_justify = PSL_BC; del_y = dy; break;
@@ -6920,7 +6925,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
 }
 
-GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width) {
+GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, struct GMT_FONT *F) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
 	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis;
@@ -6949,7 +6954,7 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		case PSL_MR: angle = 90.0; y -= 0.5*w; axis = 'S'; x += w - h; break;	/* Right is like BC but rotated 90 */
 	}
 	if (strchr (label, '%')) {	/* Cannot have percentages in the -R string */
-		sprintf (region, "-R0/100/0/1");
+		sprintf (region, "-R0/100/0/1");	/* Always 0-100 % */
 		strcpy (unit, "+u%");
 	}
 	else if (label[2] == ' ') { /* Eliminate leading spaces... */
@@ -6960,9 +6965,9 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		strcpy (region, label);
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
 	if (kind == 'F')	/* Want annotations so add a */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
 	else	/* Only axis with ticks */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
@@ -6971,7 +6976,7 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	GMT->current.map.frame.init = was;	/* Reset how we found it */
 	gmt_getfill (GMT, F1, &fill);	/* Get and set color for the triangle; no outline */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);
-	w = dy * 1.75;	/* Set triangle size to 1.75 times the axis width */
+	w = dy * 2;	/* Set triangle size to 2 times the axis width */
 	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
 }
 
@@ -7290,7 +7295,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
-		k = MOVIE_ITEM_IS_LABEL;
+		k = MOVIE_ITEM_IS_LABEL;	/* Just a short hand to avoid repeating that long constant */
 		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
 		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
@@ -7309,6 +7314,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				return NULL;	/* Should never happen */
 			}
 			/* Because this PostScript procedure runs outside the main gsave/grestore block the origin is at (0,0) */
+			if (font[0] == '-')	/* Set default TAG font */
+				gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_tag), 1, struct GMT_FONT);	/* Tag font is the default labeling font for labels */
+			else	/* Gave a specific font */
+				gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
 			gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness so no need to check here */
 			form = gmt_setfont (GMT, &Tfont);	/* Obtain and set the tag font */
 			PSL_setfont (PSL, Tfont.id);
@@ -7344,12 +7353,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	}
 	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
 		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y||offX|offY|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG# strings */
-		double clearance[2] = {0.0, 0.0}, width = 0.0, t;
+		double clearance[2] = {0.0, 0.0}, width = 0.0, t, fsize;
 		char kind, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
-		k = MOVIE_ITEM_IS_PROG_INDICATOR;
+		k = MOVIE_ITEM_IS_PROG_INDICATOR;	/* Just a short hand to avoid repeating that long constant */
 		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
 		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 progress indicators set via movie.c's -P option */
@@ -7368,7 +7377,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			if (isupper (kind) && kind != 'A') {	/* Requested text labels so initialize selected font */
-				gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+				if (font[0] == '-') {	/* Set default TAG font */
+					gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_annot[GMT_SECONDARY]), 1, struct GMT_FONT);	/* Secondary annotation font is the default labeling font for progress indicators */
+					fsize = 0.0;	/* So we can scale at will */
+				}
+				else {	/* Gave a specific font */
+					gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+					fsize = Tfont.size;
+				}
 				form = gmt_setfont (GMT, &Tfont);	/* Set the font to be used */
 				PSL_setfont (PSL, Tfont.id);
 			}
@@ -7377,19 +7393,19 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, t, width, justify, F1, F2);
 					break;
 				case 'b': 	/* Growing ring symbol with optional label */
-					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
+					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
 					break;
 				case 'c': /* Growing circular arrow with optional label */
-					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind);
+					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
 					break;
 				case 'd': /* Rounded time line with vertical bar and optional label */
-					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
+					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
 					break;
 				case 'e': /* Straight line on top of fixed line with optional start/end labels */
-					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
+					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
 					break;
 				case 'f': /* Moving triangle on basemap time-line */
-					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width);
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width, &Tfont);
 					break;
 				default:	/* Just for Coverity */
 					break;

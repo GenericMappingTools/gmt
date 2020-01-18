@@ -199,7 +199,7 @@ Optional Arguments
     circular indicators and 60% of relevant canvas dimension for the axis indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
     **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
-    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
+    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
     Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
@@ -354,11 +354,24 @@ Progress Indicators
    The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
    but these can be overridden by the corresponding modifiers (see below).
 
-The letters a-f select one of the six indicators. Indicator a) needs a static [lightgreen] and moving [lightred]
-*fill* (set via **+G** and **+g**), while indicators b-e all take a static [lightblue, dashed darkred, black, red]
-and moving [blue, red, yellow, lightgreen] *pen*, respectively.  Finally, indicator f) takes a *pen* for the static axis [black]
-and a *fill* for the moving triangle [red].  If percentages are selected (**+ap**), then the axes all display a unit label,
-otherwise no label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
+The letters a-f select one of the six progress indicators shown above. Indicator a) needs a static [lightgreen] and moving [lightred]
+*fill* (set via **+G** and **+g**); there is no label option. Indicator b) takes a static [lightblue]
+and moving [blue] *pen* (set via **+P** and **+p**), and if **+a** is set we place a centered label with a font size scaled to 30%
+of indicator size (unless **+f** was set which is used as).
+Indicator c) takes a static [dashed darkred, 0.5p width] and moving [red] *pen* (default pen width is
+5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
+label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
+Indicator d) takes a static [black] and moving [yellow] *pen* for a rounded line with a cross-mark. If
+labels are requested (**+a**) we use a font size that is 2 times the static pen thickness (unless **+f** was set).
+Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
+use a font size that is 2 times the static pen thickness (unless **+f** was set).
+Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
+the triangle size is scaled to 2 times the axis width (see below).
+Note for indicators d-f: If percentages are selected (**+ap**), then the axes display a unit label,
+otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
+The default pen thicknesses for the long bars are the smallest of 2.5% of their lengths or 8p (4p for f).
+If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
+60% of the relevant canvas dimension for the linear indicators.
 
 Examples
 --------

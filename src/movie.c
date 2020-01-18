@@ -466,7 +466,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to specify size [5%% of max canvas dimension for circles, 60%% for axes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
-		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
+		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_SECONDARY]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +G to set background (static) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to set foreground (moving) color fill for indicator [Depends in indicator selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +P to set background (static) pen for indicator [Depends in indicator selected].\n");
@@ -571,7 +571,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 
 	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens set yet */
-	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 50% offset of TAG font size */
+	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% offset of TAG font size */
 	I->clearance[GMT_X] = I->clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% of TAG font size */
 	if (I->kind == 'L')	/* Default label placement is top left of canvas */
 		I->justify = PSL_TL;
@@ -579,8 +579,6 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		I->justify = PSL_TR;
 	else 	/* Default line progress indicator placement is bottom center of canvas */
 		I->justify = PSL_BC;
-
-	gmt_M_memcpy (&(I->font), &(GMT->current.setting.font_tag), 1, struct GMT_FONT);	/* FONT_TAG is the default labeling font for progress indicators */
 
 	/* Check for modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
 	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;	/* ALso tolerate +G +P */
@@ -611,9 +609,6 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 	if (gmt_get_modifier (arg, 'p', I->pen) && I->pen[0]) {	/* Primary pen */
 		if (gmt_getpen (GMT, I->pen, &pen)) n_errors++;
 	}
-	if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
-		I->scale = atof (string);
-	}
 	if (gmt_get_modifier (arg, 't', I->format) && !I->format[0]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +t not given any format\n", option);
 		n_errors++;
@@ -642,7 +637,10 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		}
 		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
 		I->n_labels = (strchr ("EF", I->kind)) ? 2 : 1;
+		if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
+		I->scale = atof (string);
 	}
+}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
 }
@@ -1620,7 +1618,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
 					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
-						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
+						I->fill, I->fill2, (I->font.size > 0.0) ? gmt_putfont (GMT, &I->font) : "-");
 					string[0] = '\0';
 					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
 						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
@@ -1707,7 +1705,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					set_tvalue (fp, Ctrl->In.mode, true, name, label);
 				}
 			}
-			spacer = 'T';	/* For ISO time stamp */
+			spacer = 'T';	/* For ISO time stamp as used in -R */
 		}
 		fclose (fp);	/* Done writing this parameter file */
 	}
