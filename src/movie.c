@@ -992,6 +992,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			}
 		}
 	}
+	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
+					"Syntax error -C: Bad unit given for cancas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -1121,7 +1123,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
 	char dir_sep = '/', which[2] = {"LP"};
 	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
-	double percent = 0.0, L_col = 0;
+	double percent = 0.0, L_col = 0, sx, sy;
 	
 	FILE *fp = NULL;
 	
@@ -1163,10 +1165,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
 			scol = (I->justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
 			srow = I->justify / 4;			/* Split the 2-D justify code into y just 0-2 */
-			I->x = 0.5 * Ctrl->C.dim[GMT_X] * scol;
-			I->y = 0.5 * Ctrl->C.dim[GMT_Y] * srow;
-			if (scol != 1) I->x += (1-scol) * I->off[GMT_X];
-			if (srow != 1) I->y += (1-srow) * I->off[GMT_Y];
+			/* Must compute x,y in inches since off is in inches already */
+			I->x = 0.5 * Ctrl->C.dim[GMT_X] * scol * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+			I->y = 0.5 * Ctrl->C.dim[GMT_Y] * srow * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+			sx = (scol == 2) ? -1 : 1;
+			sy = (srow == 2) ? -1 : 1;
+			I->x += sx * I->off[GMT_X];
+			I->y += sy * I->off[GMT_Y];
 			if (I->mode == MOVIE_LABEL_IS_COL_T && !strchr (I->format, 's')) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
 				close_files (Ctrl);
@@ -1604,6 +1609,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				unsigned int type, use_frame, p;
 				double t;
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
+				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
 				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
 				set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
@@ -1612,7 +1618,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%c|%g%c|%g%c|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, Ctrl->C.unit, I->y, Ctrl->C.unit, t, I->width,
+					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
 						I->fill, I->fill2, gmt_putfont (GMT, &I->font));
 					string[0] = '\0';

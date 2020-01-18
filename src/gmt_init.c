@@ -5399,6 +5399,19 @@ GMT_LOCAL unsigned int gmtinit_key_lookup (char *name, char **list, unsigned int
 	return (i);
 }
 
+int gmt_set_length_unit (struct GMT_CTRL *GMT, char unit) {
+	/* UPdate the current setting for length unit index */
+	switch (unit) {
+		case 'c': GMT->current.setting.proj_length_unit = GMT_CM;   break;
+		case 'i': GMT->current.setting.proj_length_unit = GMT_INCH; break;
+		case 'p': GMT->current.setting.proj_length_unit = GMT_PT;   break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized projected length unit given (%c)!\n", unit);
+			return GMT_NOTSET;
+	}
+	return (GMT_NOERROR);
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL;
@@ -10161,12 +10174,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("PROJ_LENGTH_UNIT");
 			break;
 		case GMTCASE_PROJ_LENGTH_UNIT:
-			switch (lower_value[0]) {
-				case 'c': GMT->current.setting.proj_length_unit = GMT_CM; break;
-				case 'i': GMT->current.setting.proj_length_unit = GMT_INCH; break;
-				case 'p': GMT->current.setting.proj_length_unit = GMT_PT; break;
-				default: error = true;
-			}
+			if (gmt_set_length_unit (GMT, lower_value[0]) == GMT_NOTSET)
+					error = true;
 			break;
 		case GMTCASE_PROJ_MEAN_RADIUS:
 			if (!strncmp (lower_value, "mean", 4U)) /* Mean radius R_1 */
