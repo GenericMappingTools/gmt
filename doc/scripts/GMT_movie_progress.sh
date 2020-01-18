@@ -6,7 +6,7 @@
 cat << EOF > map.sh
 gmt begin
 	gmt set MAP_VECTOR_SHAPE 0.75
-	gmt psbasemap -R0/10/0/5 -JX7.6i/3.4i -Bafg -BWSrt+gbeige
+	gmt basemap -R0/10/0/5 -JX7.6i/3.4i -Bafg -BWSrt+gbeige
 gmt end
 EOF
 gmt movie map.sh -CHD -T50 -Fnone -M10,ps -NGMT_movie_progress -Pa+jTL -Pb+jTC+ap -Pc+ap -Pd+jLM+ap+f12p -Pe+ap+jRM+f12p -Pf+ap -W/tmp/junk -Z \
