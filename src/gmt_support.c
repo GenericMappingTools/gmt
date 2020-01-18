@@ -7946,13 +7946,11 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 	 */
 	if (P->mode & GMT_CPT_HARD_HINGE) {	/* Output range excludes hard hinge, must move z_low or z_high to include the hinge */
 		if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
-			*z_low = P->hinge;	/* Always include the hinge in these cases */
 			gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
 			P->n_colors -= ks;
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
 		}
 		else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
-			*z_high = P->hinge;	/* Always include the hinge in these cases */
 			P->n_colors = ks;
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
 		}
