@@ -14,7 +14,7 @@ Synopsis
 
 **gmt coupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
