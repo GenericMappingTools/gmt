@@ -7028,12 +7028,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
-			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
+			char file[PATH_MAX] = {""}, record[GMT_LEN256] = {""};
 			FILE *fpl = NULL;
 			for (k = 0; k < 2; k++) {
 				snprintf (file, PATH_MAX, "%s/gmt.movie%ss", GMT->parent->gwf_dir, F_name[k]);
 				if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
-					while (fgets (record, GMT_LEN128, fpl)) {
+					while (fgets (record, GMT_LEN256, fpl)) {
 						if (record[0] == '#') continue;	/* Skip header */
 						if (n_movie_items[k] == GMT_LEN32) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie %ss exceed capacity [%d] - skipped.\n", F_name[k], n_movie_items[k]);
