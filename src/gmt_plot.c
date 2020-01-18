@@ -6749,6 +6749,7 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	/* Place growing ring */
 	double fx, fy, fsize, dr2;
 	struct GMT_PEN pen;
+
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
@@ -6757,7 +6758,7 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
 	if (kind == 'B') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
 	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
-	if (t < 1.0) {	/* Need the background full circle since partly visible */
+	if (t < 1.0) {	/* Need to plot the background full circle since partly visible */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
@@ -6776,22 +6777,25 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	/* Place growing math arrow */
 	double fx, fy, fsize, dr2, dim[PSL_MAX_DIMS];
 	struct GMT_PEN pen;
+
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
 	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
-	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle */
-	fsize = 0.3 * w * PSL_POINTS_PER_INCH;
-	if (kind == 'C') PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
-	if (t < 1.0) {	/* Need the background full circle */
+	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle, add 15% to get more space so arrow head won't clip at canvas edge */
+	if (kind == 'C') {	/* Place center label */
+		fsize = 0.3 * w * PSL_POINTS_PER_INCH;	/* Use a fontsize that is 30% of width */
+		PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	}
+	if (t < 1.0) {	/* Need to plot the background full circle */
 		gmt_setpen (GMT, &pen);	/* Full circle pen */
 		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
 		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
 	}
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
-	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	gmt_setpen (GMT, &pen);	/* Front circle pen */
 	PSL_setfill (GMT->PSL, pen.rgb, 1);
 	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
 	dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
@@ -6801,7 +6805,7 @@ GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double 
 	dim[7] = (double)(PSL_VEC_BEGIN | PSL_VEC_FILL);
 	dim[8] = (double)PSL_VEC_ARROW;	dim[9] = (double)PSL_VEC_ARROW;
 	dim[12] = 0.5 * pen.width;
-	PSL_command (GMT->PSL, "/PSL_vecheadpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
+	PSL_command (GMT->PSL, "/PSL_vecheadpen {} def\n");	/* So wedge won't fuss about not being set (like in psxy) */
 	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_MARC);
 }
 
@@ -6812,6 +6816,7 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 	char *p = NULL;
 	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0, xp;
 	struct GMT_PEN pen;
+
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
@@ -6821,7 +6826,7 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 	xt = w * (t - 0.5);	/* Location of label and tick along x-axis */
 	w /= 2;	/* From here on, w is half-length of fixed line */
 	if (kind == 'D') {	/* Want a label at the curent crossmark */
-		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately */
+		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately later */
 		switch (justify) {	/* Deal with justification of text and possibly rotation */
 			case PSL_BL: case PSL_BC: case PSL_BR:
 				text_justify = PSL_BC; del_y = dy; break;
@@ -6830,18 +6835,22 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
 			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
 		}
-		if (justify == PSL_ML || justify == PSL_MR)
-			just_p = PSL_BC, xp = w + dy;
-		else {
-			just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
-			xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+		if (p) {	/* Got percentages; must plot it separately */
+			if (justify == PSL_ML || justify == PSL_MR)
+				just_p = PSL_BC, xp = w + dy;
+			else {
+				just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
+				xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+			}
 		}
 	}
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
 	if (kind == 'D') {
 		PSL_plottext (GMT->PSL, xt+del_x, del_y, fsize, label, -angle, text_justify, 0);
-		if (p) PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
-		if (p) p[0] = '%';	/* Restore it */
+		if (p) {
+			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
+			p[0] = '%';	/* Restore it */
+		}
 	}
 	PSL_command (GMT->PSL, "V\n");	/* Do a save/restore around the line cap change */
 	gmt_setpen (GMT, &pen);
@@ -6860,15 +6869,16 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	int text_justify, just_p;
 	double fx, fy, dy, dy2, xt, xp, del_x = 0.0, del_y = 0.0, angle = 0.0;
 	struct GMT_PEN pen;
+
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
 	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
 	dy2 = dy / 2.0;	/* Half pen-width */
 	x += fx * (w + dy2);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
-	xt = w * (t - 0.5);
-	w /= 2;	/* From here on, w is half-length of fixed line */
-	if (kind == 'E') {	/* Want a label at the curent crossmark */
+	xt = w * (t - 0.5);	/* Point of current time on axis */
+	w /= 2;	/* From here on, w is half-length of fixed line length */
+	if (kind == 'E') {	/* Want a label at the current crossmark */
 		switch (justify) {	/* Deal with justification of text and possibly rotation */
 			case PSL_BL: case PSL_BC: case PSL_BR:
 				text_justify = PSL_BC; del_y = dy; break;
@@ -6878,19 +6888,19 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
 		}
 	}
-	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
-	if (kind == 'E') {
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line and we have possibly rotated 90 degrees */
+	if (kind == 'E') {	/* Place the two labels */
 		char *c = strchr (label, ';'), *p = NULL;
 		c[0] = '\0';	/* Chop of label at t == 1 and place the first at t == 0 */
-		if ((p = strchr (label, '%')))
+		if ((p = strchr (label, '%')))	/* Watch for percentage sign; if found place 0 and add % to axis label */
 			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, "0", -angle, text_justify, 0);
 		else
 			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
-		if ((p = strchr (&c[1], '%')))
+		if ((p = strchr (&c[1], '%')))	/* Watch for percentage sign; if found place 100 and add % to axis label */
 			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, "100", -angle, text_justify, 0);
 		else
 			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
-		if (p) {
+		if (p) {	/* Since we found percentage we add it as an axis label */
 			if (justify == PSL_ML || justify == PSL_MR)
 				just_p = PSL_BC, xp = w + dy;
 			else {
@@ -6899,7 +6909,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 			}
 			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
 		}
-		c[0] = ';';	/* Restore it */
+		c[0] = ';';	/* Restore the semi-colon separator */
 	}
 	gmt_setpen (GMT, &pen);
 	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
@@ -6912,16 +6922,17 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 
 GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
-	int symb = PSL_INVTRIANGLE;
+	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
 	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis;
 	bool was = GMT->current.map.frame.init;
-	double fx, fy, dy, dy2, xt, s = 1, angle = 0.0, h;
+	double fx, fy, dy, dy2, xt, s = 1.0, angle = 0.0, h;
 	struct GMT_PEN pen;
 	struct GMT_FILL fill;
+
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Pen for the time axis */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width here even if not plotted */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width t odetermine triangle size */
 	dy2 = dy / 2.0;	/* Half pen width */
 	x += fx * w;	y += fy * dy;	/* Adjust the (x,y) to be mid-point of axis */
 	xt = w * t;	/* Relative fraction of w along the axis from left point */
@@ -6933,8 +6944,8 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		case PSL_BL: case PSL_BC: case PSL_BR:	/* At bottom we need to move up to give space for annotations below axis */
 			axis = 'S'; y += h; break;
 		case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:	/* At top (and middle) we likewise need space above, plus switch to TRIANGE */
-			axis = 'N'; y-= h; s = -1; symb = PSL_TRIANGLE; break;
-		case PSL_ML: angle = 90.0; y -= 0.5*w; axis = 'N'; x += h; s = -1; symb = PSL_TRIANGLE; break;	/* Left is like TC but rotated 90 */
+			axis = 'N'; y-= h; s = -1; symbol = PSL_TRIANGLE; break;
+		case PSL_ML: angle = 90.0; y -= 0.5*w; axis = 'N'; x += h; s = -1; symbol = PSL_TRIANGLE; break;	/* Left is like TC but rotated 90 */
 		case PSL_MR: angle = 90.0; y -= 0.5*w; axis = 'S'; x += w - h; break;	/* Right is like BC but rotated 90 */
 	}
 	if (strchr (label, '%')) {	/* Cannot have percentages in the -R string */
@@ -6953,15 +6964,15 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	else	/* Only axis with ticks */
 		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap with args %s\n", cmd);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to call basemap with args %s ???\n", cmd);
 	}
 	GMT->current.map.frame.init = was;	/* Reset how we found it */
-	gmt_getfill (GMT, F1, &fill);	/* Get color for the triangle */
+	gmt_getfill (GMT, F1, &fill);	/* Get and set color for the triangle; no outline */
 	PSL_setfill (GMT->PSL, fill.rgb, 0);
-	w = dy * 1.75;	/* Set triangle size to 1.5 times the axis width */
-	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symb);
+	w = dy * 1.75;	/* Set triangle size to 1.75 times the axis width */
+	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
 }
 
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
