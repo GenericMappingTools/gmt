@@ -48,7 +48,7 @@ Examples
 
    ::
 
-    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
+    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 << END > test.ps
     #stat azim ih pol
     0481 11 147 c
     6185 247 120 d
