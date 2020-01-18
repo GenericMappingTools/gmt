@@ -76,14 +76,15 @@ struct PSMECA_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]] */
+	struct S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool no_label;
 		unsigned int readmode;
 		unsigned int plotmode;
-		int justify;
 		unsigned int n_cols;
 		double scale;
+		double angle;
+		int justify;
 		double offset[2];
 		struct GMT_FONT font;
 	} S;
@@ -170,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -203,7 +204,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Deviatoric part of the moment tensor (zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +f<font>+j<justify>+o<dx>[/<dy>] to change the label font, location and offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
@@ -415,8 +416,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						break;
 				}
 
-				if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
-					/* New syntax: -S<format><scale>+f<font>+o<dx>/<dy>+j<justify> */
+				if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+					/* New syntax: -S<format><scale>+a<angle>+f<font>+o<dx>/<dy>+j<justify> */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 
 					/* parse beachball size */
@@ -424,6 +425,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 					Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 					if (c) c[0] = '+';	/* Restore modifiers */
 
+					if (gmt_get_modifier (opt->arg, 'a', word))
+						Ctrl->S.angle = atof(word);
 					if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 						Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
 					if (gmt_get_modifier (opt->arg, 'f', word))
@@ -527,7 +530,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2] = {0.0};
-	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
+	double fault, depth, size, P_x, P_y, T_x, T_y;
 
 	char string[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
 
@@ -854,9 +857,9 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
-			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, label_offset, 0);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
-			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, form);
+			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);
 		}
 
 		if (Ctrl->A2.active) {
