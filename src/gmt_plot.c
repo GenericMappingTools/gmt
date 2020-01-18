@@ -7380,7 +7380,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, Tfont.size);
 					break;
 				case 'f': /* Moving triangle on basemap time-line */
-					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P1, F1, label, kind, width);
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width);
 					break;
 				default:	/* Just for Coverity */
 					break;

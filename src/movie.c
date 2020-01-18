@@ -556,8 +556,8 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, struct MOVIE_CTR
 	gmt_M_unused (arg);
 	/* Default progress indicator: line and filled symbol */
 	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
-	if (I->pen[0] == '-')	/* Give default static line pen thickness >= 4p in black */
-			sprintf (I->pen, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
+	if (I->pen2[0] == '-')	/* Give default static line pen thickness >= 4p in black */
+			sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
 	if (I->fill[0] == '-')	/* Give default moving triangle the red color */
 		strcpy (I->fill, "red"); /* Give default moving color */
 	return (n_errors);
