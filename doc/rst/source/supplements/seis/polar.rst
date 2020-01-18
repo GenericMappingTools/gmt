@@ -47,7 +47,7 @@ Examples
 
 ::
 
-    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 -pdf test << END
+    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 -pdf test << END
     #stat azim ih pol
     0481 11 147 c
     6185 247 120 d
@@ -56,11 +56,9 @@ Examples
     0487 212 109 .
     END
 
-or
+Use special format derived from HYPO71 output::
 
-::
-
-    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 -pdf test <<END
+    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 -Qh -pdf test <<END
     #Date Or. time stat azim ih
     910223 1 22 0481 11 147 ipu0
     910223 1 22 6185 247 120 ipd0

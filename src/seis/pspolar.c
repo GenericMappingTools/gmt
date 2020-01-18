@@ -46,7 +46,6 @@ struct PSPOLAR_CTRL {
 	} D;
  	struct E {	/* -E<fill> */
 		bool active;
-		int outline;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
@@ -73,14 +72,13 @@ struct PSPOLAR_CTRL {
 	struct H2 {	/* -Qh for Hypo71 */
 		bool active;
 	} H2;
-	struct S {	/* -r<fill> */
+	struct S {	/* -S<symbol><size>[c|i|p] */
 		bool active;
 		int symbol;
-		char type;
-		double scale, size;
+		double size;
 		struct GMT_FILL fill;
 	} S;
-	struct S2 {	/* -r<fill> */
+	struct S2 {	/* -Qs<half-size>[+v<size>[+<specs>] */
 		bool active;
 		bool scolor;
 		bool vector;
@@ -93,7 +91,7 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_SYMBOL S;
 	} S2;
-	struct T {
+	struct T {      /* -T<angle>/<form>/<justify>/<fontsize> and -Qt<pen> */
 		bool active;
 		double angle, fontsize;
 		int form, justify;
@@ -112,7 +110,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-        C->C.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
+	C->C.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
 
 	C->C.size = GMT_DOT_SIZE;
 	gmt_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
@@ -135,7 +133,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -D<lon>/<lat>\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] [-A] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[+p<pen>][+s<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n");
@@ -392,10 +390,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
-				Ctrl->S.type = opt->arg[0];
-				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				Ctrl->S.active = true;
-				switch (Ctrl->S.type) {
+				switch (opt->arg[0]) {
 					case 'a':
 						Ctrl->S.symbol = PSL_STAR;
 						break;
@@ -425,9 +421,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
 						break;
 				}
+				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				break;
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = true;
@@ -516,7 +513,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = true;
 
-        gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
+	gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
 	if (Ctrl->C.active) {
 		gmt_setpen (GMT, &Ctrl->C.pen);
 		gmt_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
@@ -566,7 +563,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 					azS = -1.0;
 			}
 			else { /* !Ctrl->S2.active */
-				sscanf (In->text, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
+				sscanf (In->text, "%s %s %s %s %lf %lf %s", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
 				pol = col[3][2];
 			}
 		}
@@ -586,9 +583,10 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				plongement = -plongement;
 				azimut += 180.0;
 				symbol_size2 = Ctrl->S.size * 0.8;
-			}
+			} else
+				symbol_size2 = Ctrl->S.size;
 		}
-                else
+		else
 			symbol_size2 = Ctrl->S.size;
 		radius = sqrt (1.0 - sin (plongement));
 		if (radius >= 0.97) radius = 0.97;
