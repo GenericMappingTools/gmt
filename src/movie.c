@@ -96,8 +96,8 @@ struct MOVIE_CTRL {
 	struct MOVIE_In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
 		enum enum_script mode;
-		char *file;
-		FILE *fp;
+		char *file;	/* Name of main script */
+		FILE *fp;	/* Open file pointer to main script */
 	} In;
 	struct MOVIE_A {	/* -A[+l[<nloops>]][+s<stride>]  */
 		bool active;
@@ -124,17 +124,17 @@ struct MOVIE_CTRL {
 	struct MOVIE_G {	/* -G<canvasfill>[+p<pen>] */
 		bool active;
 		unsigned int mode;
-		char *fill;
-		char pen[GMT_LEN64];
+		char *fill;		/* Canvas constant fill */
+		char pen[GMT_LEN64];	/* Canvas outline pen */
 	} G;
 	struct MOVIE_H {	/* -H<factor> */
 		bool active;
-		int factor;
+		int factor;	/* Amount of subpixel rendering */
 	} H;
 	struct MOVIE_I {	/* -I<includefile> */
 		bool active;
-		char *file;
-		FILE *fp;
+		char *file;	/* Name of include script */
+		FILE *fp;	/* Open file pointer to include script */
 	} I;
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
@@ -142,12 +142,12 @@ struct MOVIE_CTRL {
 	struct MOVIE_M {	/* -M[<frame>][,format] */
 		bool active;
 		bool exit;
-		unsigned int frame;
-		char *format;
+		unsigned int frame;	/* Frame selected as master frame */
+		char *format;	/* Plot format for master frame */
 	} M;
 	struct MOVIE_N {	/* -N<movieprefix> */
 		bool active;
-		char *prefix;
+		char *prefix;	/* Movie prefix and also name of working directory (but see -W) */
 	} N;
 	struct MOVIE_P {	/* Repeatable: -P[kind][+wwidth][+ppen1][+Ppen2][+gfill1][+Gfill2][+ooffset][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
 		bool active;
@@ -156,25 +156,26 @@ struct MOVIE_CTRL {
 		bool active;
 		bool scripts;
 	} Q;
-	struct MOVIE_S {	/* -Sb|f<script> */
+	struct MOVIE_S {	/* -Sb|f<script>|<psfile> */
 		bool active;
-		char *file;
-		FILE *fp;
+		bool PS;	/* true if we got a plot instead of a script */
+		char *file;	/* Name of script or PostScript file */
+		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct MOVIE_T {	/* -T<n_frames>|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<min>/<max?<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
 		bool active;
-		bool split;
-		unsigned int n_frames;
-		unsigned int start_frame;
-		unsigned int precision;
-		char *file;
+		bool split;		/* true means we must split any trailing text in to words */
+		unsigned int n_frames;	/* Total number of frames */
+		unsigned int start_frame;	/* First frame [0] */
+		unsigned int precision;	/* Decimals used in making unique frame tags */
+		char *file;		/* timefile name */
 	} T;
 	struct MOVIE_W {	/* -W<workingdirectory> */
 		bool active;
-		char *dir;
+		char *dir;	/* Alternative working directory than implied by -N */
 	} W;
 	struct MOVIE_Z {	/* -Z */
-		bool active;
+		bool active;	/* Delete temporary files when completed */
 	} Z;
 	struct MOVIE_x {	/* -x[[-]<ncores>] */
 		bool active;
@@ -340,9 +341,19 @@ GMT_LOCAL int dry_run_only (const char *cmd) {
 	return 0;
 }
 
-GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file) {
+GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
 	unsigned int n_errors = 0;
+	size_t L;
 	/* Examines file extension and compares to known mode from mainscript */
+
+	if (PS) *PS = false;
+	if (k < 2 && (L = strlen (file)) > 3 && !strncmp (&file[L-3], ".ps", 3U)) {
+		static char *layer[2] = {"background", "foreground"};
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "PostScript %s layer %s detected\n", layer[k], file);
+		if (PS) *PS = true;	/* Got a PostScript file */
+		return GMT_NOERROR;
+	}
+
 	switch (mode) {
 		case BASH_MODE:
 			if (!(strstr (file, ".bash") || strstr (file, ".sh"))) {
@@ -391,9 +402,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>[+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<script>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<script>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -476,12 +487,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for background script).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional background and foreground GMT scripts [none]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional background and foreground GMT scripts or PostScript layers [none]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of background GMT modern script that may pre-compute\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript> and/or build a static background plot layer.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       If a plot is generated then the script must be in GMT modern mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       Alternatively, give PostScript file of correct canvas size that will be the background.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay appended to all frames.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       Alternatively, give PostScript file of correct canvas size that will be the foreground.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
@@ -931,7 +944,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->S[k].active = true;
 				Ctrl->S[k].file = strdup (&opt->arg[1]);
 				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -S%c: Unable to open script %s\n", opt->arg[0], Ctrl->S[k].file);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
 				break;
@@ -1032,10 +1045,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
 		for (k = MOVIE_PREFLIGHT; !n_errors && k <= MOVIE_POSTFLIGHT; k++) {
 			if (!Ctrl->S[k].active) continue;	/* Not provided */
-			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file);
+			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file, k, &Ctrl->S[k].PS);
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
-			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->I.file);
+			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 2, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
@@ -1323,63 +1336,67 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the user's background script */
 		/* The background script must be modern mode */
 		unsigned int rec = 0;
-		sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
-		is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
-		if (is_classic) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create preflight script %s and execute it\n", pre_file);
-		if ((fp = fopen (pre_file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create preflight script %s - exiting\n", pre_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-		set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
-		set_comment (fp, Ctrl->In.mode, "Preflight script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
-			fprintf (fp, "set GMT_SESSION_NAME=1\n");
-		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
-			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
-		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
-		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
-			if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
-				fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
-				set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
-				fprintf (fp, "\tgmt figure movie_background ps\n");
-				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+		if (Ctrl->S[MOVIE_PREFLIGHT].PS)	/* Just got a PS file, nothing to do */
+			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);
+		else {	/* Run the preflight script */
+			sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
+			is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
+			if (is_classic) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
 			}
-			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by set_script */
-				if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create preflight script %s and execute it\n", pre_file);
+			if ((fp = fopen (pre_file, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create preflight script %s - exiting\n", pre_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
-			rec++;
-		}
-		fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
-		fclose (fp);	/* Done writing the preflight script */
-#ifndef WIN32
-		/* Set executable bit if not on Windows */
-		if (chmod (pre_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to make preflight script %s executable - exiting.\n", pre_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
-#endif
-		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", pre_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
-		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
+			set_comment (fp, Ctrl->In.mode, "Preflight script");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
+			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
+				fprintf (fp, "set GMT_SESSION_NAME=1\n");
+			else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
+				set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
+			set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
+			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
+				if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
+					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
+					set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
+					fprintf (fp, "\tgmt figure movie_background ps\n");
+					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+					fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+				}
+				else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by set_script */
+					if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				}
+				rec++;
+			}
+			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
+			fclose (fp);	/* Done writing the preflight script */
+	#ifndef WIN32
+			/* Set executable bit if not on Windows */
+			if (chmod (pre_file, S_IRWXU)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make preflight script %s executable - exiting.\n", pre_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
+	#endif
+			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
+			if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+				sprintf (cmd, "cmd /C %s", pre_file);
+			else
+				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+			if ((error = system (cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 	
@@ -1459,62 +1476,66 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames))));	/* Width needed to hold largest frame number */
 	
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
-		sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
-		is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_POSTFLIGHT].fp);
-		if (is_classic) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create postflight script %s\n", post_file);
-		if ((fp = fopen (post_file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create postflight file %s - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		set_comment (fp, Ctrl->In.mode, "Postflight script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
-			fprintf (fp, "set GMT_SESSION_NAME=1\n");
-		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
-			set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
-		set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
-		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
-			if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line */
-				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-				set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
-				fprintf (fp, "\tgmt figure movie_foreground ps\n");
-				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
+			fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);
+		else {	/* Must run postflight script */
+			sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
+			is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_POSTFLIGHT].fp);
+			if (is_classic) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
 			}
-			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create postflight script %s\n", post_file);
+			if ((fp = fopen (post_file, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create postflight file %s - exiting\n", post_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
-		}
-		fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
-		fclose (fp);	/* Done writing the postflight script */
-#ifndef WIN32
-		/* Set executable bit if not Windows */
-		if (chmod (post_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to make postflight script %s executable - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
-#endif
-		/* Run post-flight now before dealing with the loop so the overlay exists */
-		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", post_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
-		if ((error = run_script (cmd))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+			set_comment (fp, Ctrl->In.mode, "Postflight script");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
+			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
+				fprintf (fp, "set GMT_SESSION_NAME=1\n");
+			else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
+				set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
+			set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
+			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
+				if (is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line */
+					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
+					set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
+					fprintf (fp, "\tgmt figure movie_foreground ps\n");
+					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+					fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+				}
+				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
+					if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				}
+			}
+			fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
+			fclose (fp);	/* Done writing the postflight script */
+	#ifndef WIN32
+			/* Set executable bit if not Windows */
+			if (chmod (post_file, S_IRWXU)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make postflight script %s executable - exiting\n", post_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
+	#endif
+			/* Run post-flight now before dealing with the loop so the overlay exists */
+			if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+				sprintf (cmd, "cmd /C %s", post_file);
+			else
+				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+			if ((error = run_script (cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 
@@ -1732,8 +1753,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 			strcat (extra, ",Mb../movie_background.ps");
+		else if (Ctrl->S[MOVIE_PREFLIGHT].PS) {	/* Got a background PS layer directly */
+			strcat (extra, ",Mb../../");
+			strcat (extra, Ctrl->S[MOVIE_PREFLIGHT].file);
+		}
 		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
 			strcat (extra, ",Mf../movie_foreground.ps");
+		else if (Ctrl->S[MOVIE_POSTFLIGHT].PS) {	/* Got a foreground PS layer directly */
+			strcat (extra, ",Mf../../");
+			strcat (extra, Ctrl->S[MOVIE_POSTFLIGHT].file);
+		}
 		if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 			sprintf (line, ",H%d", Ctrl->H.factor);
 			strncat (extra, line, GMT_LEN128);
