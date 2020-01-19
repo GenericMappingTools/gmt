@@ -73,17 +73,17 @@ struct MOVIE_ITEM {
 	char format[GMT_LEN128];
 	char fill[GMT_LEN64], fill2[GMT_LEN64];
 	char pen[GMT_LEN64], pen2[GMT_LEN64];
-	char kind;	/* Either a-f for progress indicators or l for label */
-	unsigned int mode;
-	unsigned int justify;
-	unsigned int col;
-	unsigned int ne;	/* Number of elements in elapsed format */
+	char kind;				/* Either a-f|A-F for progress indicators or L for label */
+	unsigned int mode;		/* What type of "time" selected for label */ 
+	unsigned int justify;	/* Placement location of label or indicator */
+	unsigned int col;		/* Which data column to use for labels (if active) */
+	unsigned int ne;		/* Number of elements in elapsed format */
 	unsigned int n_labels;	/* Number of labels for progress indicator */
-	double scale;
-	double width;
-	double x, y;
-	double off[2];
-	double clearance[2];
+	double scale;			/* Scaling from frame number to elapsed time [1/framerate] */
+	double width;			/* Width of progress indicator */
+	double x, y;			/* Placement of progress indicator or label in inches */
+	double off[2];			/* Offset from justification point for progress indicators */
+	double clearance[2];	/* Space bewteen label and text box (if selected) for -L labels */
 };
 
 /* Control structure for movie */

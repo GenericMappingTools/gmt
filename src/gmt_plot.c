@@ -7377,13 +7377,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			if (isupper (kind) && kind != 'A') {	/* Requested text labels so initialize selected font */
-				if (font[0] == '-') {	/* Set default TAG font */
+				if (font[0] == '-') {	/* Set default annotation secondary font */
 					gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_annot[GMT_SECONDARY]), 1, struct GMT_FONT);	/* Secondary annotation font is the default labeling font for progress indicators */
-					fsize = 0.0;	/* So we can scale at will */
+					fsize = 0.0;	/* So we can scale at will for b-e */
 				}
 				else {	/* Gave a specific font */
 					gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
-					fsize = Tfont.size;
+					fsize = Tfont.size;	/* Must honor the given setting */
 				}
 				form = gmt_setfont (GMT, &Tfont);	/* Set the font to be used */
 				PSL_setfont (PSL, Tfont.id);
