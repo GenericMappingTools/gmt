@@ -8613,7 +8613,7 @@ int gmt_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 			switch (c[1]) {
 				case 'a': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[direction]);	break; /* For the whole data set */
 				case 'f': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_tbl[direction]);	break; /* Reset counter per table */
-				case 's': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_seg[direction]);	break; /* Reset countr per segment */
+				case 's': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_seg[direction]);	break; /* Reset counter per segment */
 				default: break;	/* Cannot get here but Coverity does not know that... */
 			}
 			c[0] = '\0';	/* Chop off modifier */
@@ -13575,9 +13575,9 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 #endif
 
 	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner && GMT->current.ps.active) {
-		GMT->current.ps.oneliner = false;
 		char *setting = getenv ("GMT_END_SHOW");
 		char *show = (setting && !strcmp (setting, "off")) ? "" : "show";
+		GMT->current.ps.oneliner = false;
 		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, show))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to call module end for a one-liner plot.\n");
 			return;
