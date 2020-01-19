@@ -12,7 +12,7 @@ resets the font to the starting font, @- toggles subscripts on/off, @+
 toggles superscript on/off, @# toggles small caps on/off, @;\ *color*;
 changes the font color (@;; resets it), @:\ *size*: changes the font
 size (@:: resets it), and @\_ toggles underline on/off. @@ prints the @
-sign. @e, @o, @a, @E, @O, @A give the accented Scandinavian characters.
+sign while @. prints the degree symbol. @e, @o, @a, @E, @O, @A give the accented Scandinavian characters.
 Composite characters (overstrike) may be indicated with the
 @!<char1><char2> sequence, which will print the two characters on top of
 each other. To learn the octal codes for symbols not available on the

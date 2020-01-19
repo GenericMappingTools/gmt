@@ -58,5 +58,5 @@ gmt begin ex30
 	-0.33333 0.6 12p,Times-Roman 30 LB 120@.
 	EOF
 
-	echo 0 0 0.5 0 120 | gmt plot -Sm0.15i+e -W1p -Gblack --PROJ_LENGTH_UNIT=inch
+	echo 0 0 0.5i 0 120 | gmt plot -Sm0.15i+e -W1p -Gblack
 gmt end show
