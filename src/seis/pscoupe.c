@@ -1213,7 +1213,7 @@ Definition of scalar moment.
 				label_y += Ctrl->S.offset[1];
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
-			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, 0);
 			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);

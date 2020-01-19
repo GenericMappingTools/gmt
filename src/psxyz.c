@@ -60,7 +60,7 @@ struct PSXYZ_CTRL {
 	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
-		bool outline;		/* true when +p<pen> is given */
+		int outline;		/* 1 when +p<pen> is given */
 		unsigned int mode;	/* Which side for the anchor */
 		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors, 3 = +/-dy, 4 = -dy1, +dy2 */
 		double value;
@@ -399,7 +399,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", 0);
 						n_errors++;
 					}
-					Ctrl->L.outline = true;
+					Ctrl->L.outline = 1;
 				}
 				break;
 			case 'N':	/* Do not clip to map */
@@ -1086,7 +1086,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].f = current_fill;
 			data[n].p = current_pen;
 			data[n].h = last_headpen;
-			data[n].outline = outline_active;
+			data[n].outline = outline_active ? 1 : 0;
 			if (GMT->common.t.variable) data[n].transparency = 0.01 * in[tcol];	/* Specific transparency for current symbol if -t was given */
 			data[n].string = NULL;
 			/* Next two are for sorting:
@@ -1655,7 +1655,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (polygon) {
 					gmt_plane_perspective (GMT, -1, 0.0);
 					for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->data[GMT_X][i], L->data[GMT_Y][i], L->data[GMT_Z][i], &xp[i], &yp[i]);
-					gmt_setfill (GMT, &current_fill, outline_active);
+					gmt_setfill (GMT, &current_fill, outline_active ? 1 : 0);
 					PSL_plotpolygon (PSL, xp, yp, (int)n);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
@@ -1773,7 +1773,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
 					gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
-					gmt_setfill (GMT, &current_fill, (S.f.f_pen == -1) ? false : true);
+					gmt_setfill (GMT, &current_fill, (S.f.f_pen == -1) ? 0 : 1);
 					gmt_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 					if (S.f.f_pen == 0) gmt_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}

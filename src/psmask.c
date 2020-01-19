@@ -942,7 +942,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
 					
-					gmt_setfill (GMT, &Ctrl->G.fill, false);
+					gmt_setfill (GMT, &Ctrl->G.fill, 0);
 					if ((*GMT->current.map.will_it_wrap) (GMT, xp, yp, plot_n, &start)) {	/* Polygon wraps */
 
 						/* First truncate against left border */

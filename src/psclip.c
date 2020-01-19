@@ -308,7 +308,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			if (Ctrl->W.active) {
 				gmt_setpen (GMT, &Ctrl->W.pen);
-				gmt_setfill (GMT, &no_fill, true);
+				gmt_setfill (GMT, &no_fill, 1);
 			}
 				
 			for (tbl = 0; tbl < D->n_tables; tbl++) {

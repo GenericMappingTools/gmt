@@ -209,7 +209,7 @@ GMT_LOCAL void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_plotsegment (PSL, xx[3], yy[1], xx[3], yy[2]);		/* Right whisker */
 	PSL_plotsegment (PSL, xx[3], yy[0], xx[2], yy[0]);
 
-	PSL_setfill (PSL, rgb, true);
+	PSL_setfill (PSL, rgb, 1);
 	if (kind == 2) {	/* Notched box-n-whisker plot */
 		double xp[10], yp[10], s, p;
 		s = 1.7 * ((1.25 * (xx[2] - xx[1])) / (1.35 * hinge[4]));	/* 5th term in hinge has n */
@@ -252,7 +252,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_plotsegment (PSL, xx[1], yy[3], xx[2], yy[3]);		/* Top whisker */
 	PSL_plotsegment (PSL, xx[0], yy[3], xx[0], yy[2]);
 
-	PSL_setfill (PSL, rgb, true);
+	PSL_setfill (PSL, rgb, 1);
 	if (kind == 2) {	/* Notched box-n-whisker plot */
 		double xp[10], yp[10], s, p;
 		s = 1.7 * ((1.25 * (yy[2] - yy[1])) / (1.35 * hinge[4]));	/* 5th term in hinge has n */

@@ -282,7 +282,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))
-		gmt_setfill (GMT, f, false);
+		gmt_setfill (GMT, f, 0);
 	else
 		PSL_setfill (PSL, rgb, -2);
 	/* Contours drawn separately later if desired */
