@@ -19,15 +19,15 @@ Synopsis
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
-[ |-G|\ *fill*\ ]
+[ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *backgroundscript* ]
-[ **-Sf**\ *foregroundscript* ]
+[ **-Sb**\ *background* ]
+[ **-Sf**\ *foreground* ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |-W|\ *workdir* ]
@@ -133,8 +133,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ [*fill*]\ [**+p**\ *pen*] :ref:`(more ...) <-Gfill_attrib>`
     Set the canvas color or fill before plotting commences [none].
+    Optionally, append **+p** to draw the canvas outline with *pen* [no outline].
 
 .. _-H:
 
@@ -213,19 +214,21 @@ Optional Arguments
 
 .. _-Sb:
 
-**-Sb**\ *backgroundscript*
-    The optional GMT modern mode *backgroundscript* (written in the same scripting language as *mainscript*) can be
+**-Sb**\ *background*
+    The optional GMT modern mode *background* (written in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
-    so that the layered plot will stack correctly (unless you actually want a different offset).
+    so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
+    *background* can be a PostScript plot layer of dimensions exacly matching the cancas size.
 
 .. _-Sf:
 
-**-Sf**\ *foregroundscript*
-    The optional GMT modern mode *foregroundscript* (written in the same scripting language as *mainscript*) can be
+**-Sf**\ *foreground*
+    The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
-    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.
+    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
+    *foreground* can be a PostScript plot layer of dimensions exacly matching the cancas size.
 
 .. _movie-V:
 
@@ -259,7 +262,7 @@ Parameters
 ----------
 
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
-*backgroundscript* and *foregroundscript* scripts. There are two sets of parameters: Those that are constants
+*background* and *foreground* scripts. There are two sets of parameters: Those that are constants
 and those that change with the frame number.  The constants are accessible by all the scripts:
 **MOVIE_WIDTH**\ : The width of the canvas,
 **MOVIE_HEIGHT**\ : The height of the canvas,
@@ -294,10 +297,22 @@ slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"
 frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
-recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
-a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
-static data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
+recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
+a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
+static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
+
+External PostScript Layers
+--------------------------
+
+Instead of passing GMT modern scripts to **-S** you can alternatively provide the name of PostScript
+plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
+making a HD movie using the US unit dimensions then a background pink layer would be created by::
+
+    gmt psbasemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 -P --PS_MEDIA=9.6ix5.4i > background.ps
+
+Note the canvas selection via :ref:`PS_MEDIA <PS_MEDIA>`, the matching region and projection, and
+the zero location of the origin.
 
 Technical Details
 -----------------
