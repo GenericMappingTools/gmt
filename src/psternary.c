@@ -433,7 +433,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	 * relative to each other and we do this directly with PSL calls. */
 	
 	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
 		PSL_plotpolygon (PSL, tri_x, tri_y, 4);
 		GMT->current.map.frame.paint = false;
 	}
@@ -444,7 +444,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	if (n_sides) {	/* Draw some or all of the triangular sides */
 		PSL_comment (PSL, "Draw triangular frame sides\n");
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
-		gmt_setfill (GMT, NULL, true);
+		gmt_setfill (GMT, NULL, 1);
 		if (n_sides == 3)
 			PSL_plotpolygon (PSL, tri_x, tri_y, 4);
 		else if (n_sides == 2) {	/* Must find the open jaw */

@@ -485,7 +485,7 @@ GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct
 				yp = yy;
 				npts = ii;
 			}
-			gmt_setfill(GMT, &Ctrl->G.fill[mode], false);
+			gmt_setfill(GMT, &Ctrl->G.fill[mode], 0);
 
 			PSL_plotpolygon(PSL, xp, yp, npts);
 		}

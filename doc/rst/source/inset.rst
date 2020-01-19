@@ -46,22 +46,18 @@ Required Arguments
 
 **-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:
-    (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
+ 
+    .. include:: explain_refpoint.rst_
+
+    Alternatively, Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **+r** if the coordinates instead are the lower left and
-    upper right corners of the desired rectangle. (b) Give *xmin/xmax/ymin/ymax*
+    upper right corners of the desired rectangle. (Or, give *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates and optionally append **+u**\ *unit* [Default coordinate unit is meter (e)].
-    (c) Give the reference point on the map for the inset using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).
     Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Specify inset box attributes via the **-F** option [outline only].
 
 Optional Arguments

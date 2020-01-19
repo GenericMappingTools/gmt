@@ -809,7 +809,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						mrk = MGD77TRACK_MARK_SAMEDAY;
 						sprintf (label, "+%s", the_clock);
 					}
-					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, 1);
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), PSL_CIRCLE);
 					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
@@ -822,7 +822,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				if (annot_tick[ANNOT] & 2) {	/* Distance mark */
 					mrk = MGD77TRACK_MARK_DIST;
 					sprintf (label, "%d km  ", (int)((annot_dist[ANNOT] - Ctrl->L.info.annot_int_dist) * factor));
-					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, 1);
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), PSL_SQUARE);
 					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
@@ -834,12 +834,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 			}
 			if (both && !(annot_tick[ANNOT] & 1) && (draw_tick[ANNOT] & 1)) {
 				mrk = (this_julian != last_julian) ? MGD77TRACK_MARK_NEWDAY : MGD77TRACK_MARK_SAMEDAY;
-				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, 1);
 				PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), PSL_CIRCLE);
 			}
 			if (both && !(annot_tick[ANNOT] & 2) && (draw_tick[ANNOT] & 2)) {
 				mrk = (this_julian != last_julian) ? MGD77TRACK_MARK_NEWDAY : MGD77TRACK_MARK_SAMEDAY;
-				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, 1);
 				PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), PSL_SQUARE);
 			}
 			if (draw_tick[ANNOT]) {

@@ -1,10 +1,10 @@
 **-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [\ **+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
-    (1) Use **-Lg** for map (user) coordinates, (2) use **-Lj** or **-LJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Ln** for normalized (0-1) coordinates, or (4) use **-Lx** for plot coordinates
-    (inches, cm, etc.).  Scale is calculated for latitude *slat*
+ 
+    .. include:: explain_refpoint.rst_
+
+    Scale is calculated for latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
     is central meridian]), *length* is in km, or append unit from
     **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
@@ -18,8 +18,6 @@
     unit (meter, foot, km, mile, nautical mile, US survey foot) and is
     justified on top of the scale [t]. Change this by giving your own
     label (append **+l**\ *label*).
-    Add **+o** to offset the map scale by *dx*/*dy* away from the *refpoint* in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Select **+u** to append the unit to all distance annotations along the
     scale (for the plain scale, **+u** will instead select the unit to be
     appended to the distance length). Cartesian projections: Origin **+c** is

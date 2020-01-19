@@ -8,7 +8,7 @@
  *--------------------------------------------------------------------*/
 /*
 
-pscoupe will read focal mechanisms from input file and plot beachballs on a cross-section. 
+pscoupe will read focal mechanisms from input file and plot beachballs on a cross-section.
 Focal mechanisms are specified in double couple, moment tensor, or principal axis.
 PostScript code is written to stdout.
 
@@ -83,17 +83,18 @@ struct PSCOUPE_CTRL {
 	struct Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
+	struct S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
 		bool active;
 		bool zerotrace;
 		bool no_label;
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int n_cols;
-		int justify;
 		int symbol;
 		char P_symbol, T_symbol;
 		double scale;
+		double angle;
+		int justify;
 		double offset[2];
 		struct GMT_FILL fill;
 		struct GMT_FONT font;
@@ -427,10 +428,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format><scale>[+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<fill>] [-Fa[<size>][/<Psymbol>[<Tsymbol>]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>] [-G<fill>] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -464,7 +465,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge P_value P_azim P_plunge exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Deviatoric part of the moment tensor (zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +f<font>+j<justify>+o<dx>[/<dy>] to change the label font, location and offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -621,7 +622,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 's':	/* Only points : get symbol [and size] */
 						Ctrl->S.active = true;
 						Ctrl->S.symbol = opt->arg[1];
-						if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) { 
+						if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
 							/* New syntax: -Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify> */
 							char word[GMT_LEN256] = {""}, *c = NULL;
 
@@ -632,7 +633,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 
 							if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 								Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
-							if (gmt_get_modifier (opt->arg, 'f', word)) 
+							if (gmt_get_modifier (opt->arg, 'f', word))
 								n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
 							if (gmt_get_modifier (opt->arg, 'o', word)) {
 								if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
@@ -643,14 +644,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 									Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 							}
 							if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
-						} else {	/* Old syntax: -Fs<symbol>[<size>[/fontsize[/offset[+u]]]] */	
+						} else {	/* Old syntax: -Fs<symbol>[<size>[/fontsize[/offset[+u]]]] */
 							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 							if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
 								Ctrl->S.justify = PSL_BC;
 								p[0] = '\0';	/* Chop off modifier */
 							}
 							else if (opt->arg[strlen(opt->arg)-1] == 'u') {
-								Ctrl->S.justify = PSL_BC; 
+								Ctrl->S.justify = PSL_BC;
 								opt->arg[strlen(opt->arg)-1] = '\0';
 							}
 							txt[0] = txt_b[0] = txt_c[0] = '\0';
@@ -746,8 +747,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						break;
 				}
 
-				if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) { 
-					/* New syntax: -S<format><scale>+f<font>+o<dx>/<dy>+j<justify> */
+				if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+					/* New syntax: -S<format><scale>+a<angle>+f<font>+o<dx>/<dy>+j<justify> */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 
 					/* parse beachball size */
@@ -755,9 +756,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 					if (c) c[0] = '+';	/* Restore modifiers */
 
+					if (gmt_get_modifier (opt->arg, 'a', word))
+						Ctrl->S.angle = atof(word);
 					if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 						Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
-					if (gmt_get_modifier (opt->arg, 'f', word)) 
+					if (gmt_get_modifier (opt->arg, 'f', word))
 						n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
 					if (gmt_get_modifier (opt->arg, 'o', word)) {
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
@@ -858,7 +861,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_scanned = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
-	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
+	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y, *in = NULL;
 
 	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
@@ -1210,10 +1213,10 @@ Definition of scalar moment.
 				label_y += Ctrl->S.offset[1];
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
-			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
-			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, label_offset, 0);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, 0);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
-			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, angle, label_justify, form);
+			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);
 		}
 	} while (true);
 

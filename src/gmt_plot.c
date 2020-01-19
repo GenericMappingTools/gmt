@@ -2197,10 +2197,10 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	/* Now draw black box with GMT logo, and white box with time stamp */
 
-	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 	PSL_plotsymbol (PSL, 0.5*dim[0], 0.5*dim[1], dim, PSL_RECT);
 	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, 220, 90, 1);
-	PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+	PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 	PSL_command (PSL, "PSL_g_h PSL_b_w PSL_g_w 0 Sb\n");
 	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, PSL_BL, 0);
 
@@ -2214,7 +2214,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	PSL_command (PSL, "U\n%% End GMT time-stamp\n");
 
 	/* Reset fill style to empty and no outline and reset linewidth */
-	PSL_setfill (PSL, unset_rgb, false);
+	PSL_setfill (PSL, unset_rgb, 0);
 	PSL->current.linewidth = -1.0;
 }
 
@@ -2278,7 +2278,7 @@ GMT_LOCAL void plot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
-		PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+		PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 		PSL_plotpolygon (PSL, x, y, 4);
 		/* Hollow half */
 		x[0] = x[3] = x0, y[0] = y[3] = y0;
@@ -2289,7 +2289,7 @@ GMT_LOCAL void plot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
-		PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+		PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 		PSL_plotpolygon (PSL, x, y, 4);
 	}
 }
@@ -2332,7 +2332,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
 		if (level == GMT_ROSE_PRIMARY && mr->kind != 2) continue;	/* Sorry, not magnetic directions */
 		if (mr->draw_circle[level]) {
-			gmt_setfill (GMT, NULL, true);
+			gmt_setfill (GMT, NULL, 1);
 			PSL_comment (PSL, "Draw magnetic rose %s circle\n", type[level]);
 			gmt_setpen (GMT, &mr->pen[level]);
 			s = 2.0 * R[level];
@@ -2419,7 +2419,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		dim[2] = M_VW * mr->size, dim[3] = M_HL * mr->size, dim[4] = M_HW * mr->size,
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 		gmt_setpen (GMT, &GMT->current.setting.map_default_pen);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, x[0], y[0], dim, PSL_VECTOR);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
@@ -2442,12 +2442,12 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		dim[0] = xp[1], dim[1] = yp[1];
 		dim[2] = F_VW * mr->size, dim[3] = F_HL * mr->size, dim[4] = F_HW * mr->size;
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], dim, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 	}
@@ -2496,11 +2496,11 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 			x[3] = x[5] = -x[1], x[4] = -x[0];
 			y[5] = y[7] = -y[1], y[6] = -y[2];
 			gmtlib_rotate2D (GMT, x, y, 8, mr->refpoint->x, mr->refpoint->y, rot[kind] + angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
-			PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+			PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 			PSL_plotpolygon (PSL, xp, yp, 8);	/* Outline of 4-pointed star */
 			tx[0] = mr->refpoint->x, ty[0] = mr->refpoint->y;
 			/* Fill positive halves of the 4-pointed blades */
-			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 			tx[1] = xp[0], ty[1] = yp[0], tx[2] = xp[7], ty[2] = yp[7];
 			PSL_plotpolygon (PSL, tx, ty, 3);	/* East */
 			tx[1] = xp[1], ty[1] = yp[1], tx[2] = xp[2], ty[2] = yp[2];
@@ -2527,12 +2527,12 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		x[0] = xp[1], x[1] = yp[1];
 		x[2] = F_VW * mr->size, x[3] = F_HL * mr->size, x[4] = F_HW * mr->size;
 		x[5] = GMT->current.setting.map_vector_shape, x[6] = PSL_VEC_END | PSL_VEC_FILL;
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], x, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 		if (mr->label[2][0]) {	/* Wanted the north label */
@@ -2674,10 +2674,9 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 	return (!result);			/* Return the opposite of the test result */
 }
 
-GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush) {
-	bool draw_outline;
+GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, int outline, bool *flush) {
+	int draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
 
-	draw_outline = (outline && p->rgb[0] != -1) ? true : false;
 	if (draw_outline) gmt_setpen (GMT, p);
 	if (outline == 2) {	/* Stroke path only */
 		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE|PSL_STROKE);
@@ -4367,7 +4366,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		struct GMT_FILL arrow;
 		double vector_width, dim[PSL_MAX_DIMS], g_scale_begin = 0.0, g_scale_end = 0.0, g_ext = 0.0;
 		gmt_init_fill (GMT, &arrow, GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
-		gmt_setfill (GMT, &arrow, false);
+		gmt_setfill (GMT, &arrow, 0);
 		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		vector_width = rint (PSL_DOTS_PER_INCH * GMT->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / PSL_DOTS_PER_INCH;	/* Round off vector width same way as pen width */
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
@@ -4979,7 +4978,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Vertical walls */
 
 	if (GMT->current.map.frame.draw_box) {
-		PSL_setfill (PSL, GMT->session.no_rgb, true);
+		PSL_setfill (PSL, GMT->session.no_rgb, 1);
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		if (fore) {
 			plot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw, false);
@@ -5113,12 +5112,12 @@ unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	PSL_setfont (GMT->PSL, F->id);	/* Set the current font ID */
 	if (F->form & 2) {	/* Outline font requested; set pen and fill (rgb[0] == -1 means no fill) */
 		gmt_setpen (GMT, &F->pen);		/* Stroke the text outline with this pen */
-		gmt_setfill (GMT, &F->fill, true);	/* Use this color or pattern (if any) for the text fill */
+		gmt_setfill (GMT, &F->fill, 1);	/* Use this color or pattern (if any) for the text fill */
 		outline = 1;	/* Indicates outline font is needed and should be stroked */
 		if (F->form & 8) outline = 3;	/* Indicates that the outline is allowed to overlap the font */
 	}
 	else if (F->form & 4) {	/* Want to use a pattern to fill the text but do not draw outline */
-		gmt_setfill (GMT, &F->fill, false);
+		gmt_setfill (GMT, &F->fill, 0);
 		outline = 2;	/* Indicates outline font is needed for filling but will not be stroked */
 	}
 	else {	/* Regular, solid text fill is set via stroke color */
@@ -5174,13 +5173,12 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 		}
 		else {	/* Curved map inset */
 			uint64_t np;
-			int outline;
+			int outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE) ? 1 : 0;	/* Does the panel have an outline? */
 			double *lon = NULL, *lat = NULL;
 			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);	/* Just get empty array pointers */
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
-			outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 			if ((panel->mode & 1)) gmt_setfill (GMT, &panel->fill, outline);
 			if ((panel->mode & 2)) gmt_setpen (GMT, &panel->pen1);
 			gmt_geo_polygons (GMT, S);
@@ -5354,7 +5352,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 		PSL_plotsegment (PSL, x_left, ms->refpoint->y - bar_tick_len, x_left, ms->refpoint->y);
 		for (j = 0; j < n_f_ticks[i]; j++) {
-			PSL_setfill (PSL, (j%2) ? GMT->PSL->init.page_rgb : GMT->current.setting.map_default_pen.rgb, true);
+			PSL_setfill (PSL, (j%2) ? GMT->PSL->init.page_rgb : GMT->current.setting.map_default_pen.rgb, 1);
 			PSL_plotbox (PSL, x_left + j * dx_f, ms->refpoint->y, x_left + (j+1) * dx_f, ms->refpoint->y - bar_height);
 			PSL_plotsegment (PSL, x_left + (j+1) * dx_f, ms->refpoint->y - bar_tick_len, x_left + (j+1) * dx_f, ms->refpoint->y);
 		}
@@ -5557,7 +5555,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	int outline;
 	struct GMT_FILL *fill = NULL;	/* Default is no fill */
 	if (!P) return;	/* No panel given */
-	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
+	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE) ? 1 : 0;	/* Does the panel have an outline? */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Clearance: %g/%g/%g/%g\n", P->padding[XLO], P->padding[XLO], P->padding[YLO], P->padding[YHI]);
 	dim[GMT_X] = P->width  + P->padding[XLO] + P->padding[XHI];	/* Rectangle width */
@@ -5568,7 +5566,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	y += 0.5 * (P->padding[YHI] - P->padding[YLO]);
 	if (mode == 1) outline = 0;	/* Do not draw outlines (even if requested) at this time since mode == 1*/
 	if ((mode & 1) && (P->mode & GMT_PANEL_SHADOW)) {	/* Draw offset background shadow first */
-		gmt_setfill (GMT, &P->sfill, false);	/* The shadow has no outline */
+		gmt_setfill (GMT, &P->sfill, 0);	/* The shadow has no outline */
 		PSL_plotsymbol (GMT->PSL, x + P->off[GMT_X], y + P->off[GMT_Y], dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	if ((mode & 2) && outline) gmt_setpen (GMT, &P->pen1);	/* Need to set frame outline pen */
@@ -5579,7 +5577,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 		dim[GMT_X] -= 2.0 * P->gap;	/* Shrink dimension of panel by the uniform gap on all sides */
 		dim[GMT_Y] -= 2.0 * P->gap;
 		gmt_setpen (GMT, &P->pen2);	/* Set inner border pen */
-		gmt_setfill (GMT, NULL, true);	/* Never fill for inner frame */
+		gmt_setfill (GMT, NULL, 1);	/* Never fill for inner frame */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	/* Reset color */
@@ -5624,9 +5622,9 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], char *tr_text, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
-	int action, ifs;
+	int action, ifs, this_outline = 0;
 	unsigned int na, i, id = 0, level;
-	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
+	bool flush = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, az, angle1, angle2, p_width = 0.0, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
@@ -5846,7 +5844,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				PSL_plotsymbol (PSL, x, y, dim, action);
@@ -5857,7 +5855,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] = s->p[0];
@@ -5869,7 +5867,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
@@ -5883,7 +5881,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
@@ -5899,7 +5897,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size */
@@ -7432,7 +7430,7 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 		bool donut;
 		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill));
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));
 		gmt_M_free (GMT, x);
 		gmt_M_free (GMT, y);

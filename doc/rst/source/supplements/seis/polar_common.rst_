@@ -52,7 +52,7 @@ Required Arguments
 .. _-S:
 
 **-S**\ *<symbol_type><size>*
-    Selects *symbol_type* and symbol *size*. Size is in default inits (unless
+    Selects *symbol_type* and symbol *size*. Size is in default units (unless
     **c**, **i**, or **p** is appended). Choose symbol type from
     st(*a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
     triangle, (*p*)oint, (*s*)quare, (*t*)riangle, (*x*)cross.
@@ -123,8 +123,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *angle*/*form*/*justify*/*fontsize*
-    To write station code; *fontsize* must be given in points [Default is 0.0/0/5/12].
+**-T**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\[/*dy*]]
+    Write station code near symbols.
+
+    Optionally append **+a**\ *angle* to change the text angle;
+    **+f**\ *font* to set the font of the text;
+    append **+j**\ *justify* to change the text location relative to the symbol;
+    append **+o** to offset the text string by *dx*/*dy*.
+    [Default to write station code above the symbol; the default font size is 12p]
 
 .. _-U:
 
@@ -138,7 +144,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set current pen attributes [Defaults: width = default, color = black, style = solid].
+    Set current pen attributes [Default pen is default,black,solid].
 
 .. _-X:
 

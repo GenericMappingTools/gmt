@@ -149,7 +149,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	/* fill at then beginning (here), outline at the end */
 	/*  argument is DIAMETER!! */
 	ssize[0] = size;
-	gmt_setfill (GMT, E, false);
+	gmt_setfill (GMT, E, 0);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
@@ -325,7 +325,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	}
 
 	/* fill at then beginning, outline at the end (here) */
-	gmt_setfill (GMT, NULL, true);
+	gmt_setfill (GMT, NULL, 1);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	return (size);
 }
@@ -344,7 +344,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 
 	/*  argument is DIAMETER!!*/
 	ssize[0] = size;
-	PSL_setfill (PSL, GMT->session.no_rgb, true);
+	PSL_setfill (PSL, GMT->session.no_rgb, 1);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	if (num_of_plane != 2) {
@@ -618,11 +618,11 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	/* pure implosion or explosion */
 	if (fabs (squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
 		if (vi > 0.) {
-			gmt_setfill (GMT, C, true);
+			gmt_setfill (GMT, C, 1);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		if (vi < 0.) {
-			gmt_setfill (GMT, E, true);
+			gmt_setfill (GMT, E, 1);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		return (radius_size*2.);
@@ -737,7 +737,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	azi[n][1] = az;
 
 	/* fill at then beginning (here), outline at the end */
-	gmt_setfill (GMT, F2, false);
+	gmt_setfill (GMT, F2, 0);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F1, outline);
@@ -847,7 +847,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	}
 
 	/* fill at then beginning, outline at the end (here) */
-	gmt_setfill (GMT, NULL, true);
+	gmt_setfill (GMT, NULL, 1);
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	return (size);

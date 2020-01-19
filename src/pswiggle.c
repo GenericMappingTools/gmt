@@ -168,7 +168,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", negative ? "Negative" : "Positive");
-		gmt_setfill (GMT, fill, false);
+		gmt_setfill (GMT, fill, 0);
 		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n);
 	}
 

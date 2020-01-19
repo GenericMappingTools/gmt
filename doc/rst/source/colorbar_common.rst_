@@ -62,10 +62,9 @@ Optional Arguments
 
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [\ **+w**\ *length*\ [/\ *width*\ ]]\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**\ \|\ **v**\ ][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+ 
+    .. include:: explain_refpoint.rst_
+
     For **-Dj** or **-DJ** with codes TC, BC, ML, MR (i.e., centered on one of the map sides) we
     pre-calculate all further settings.  Specifically, the *length* is set to 80% of the map side,
     horizontal or vertical depends on the side, the offset is MAP_LABEL_OFFSET for **Dj** with an
@@ -81,12 +80,9 @@ Optional Arguments
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
-    Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Add sidebar triangles for back- and/or foreground
     colors with **+e**. Append **f** (foreground) or **b** (background) for only one sidebar triangle [Default
-    gives both]. Optionally, append triangle height [Default is half the
-    barwidth].
+    gives both]. Optionally, append triangle height [Default is half the barwidth].
     Move text to opposite side with **+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**].
     Horizontal scale bars: Move annotations and labels above the scale bar [Default is below];
     the unit remains on the left.

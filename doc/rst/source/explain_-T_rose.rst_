@@ -2,18 +2,14 @@
     Draw a map directional rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
-    (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
-    (inches, cm, etc.) [Default].  You can offset the reference point by *dx*/*dy* in
-    the direction implied by *justify*.
+
+    .. include:: explain_refpoint.rst_
+
     By default, the anchor point on the directional rose is assumed to be the center of the rose (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify*
     (see :doc:`text` for list and explanation of codes).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the directional rose by *dx*/*dy* away from the *refpoint* in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Append **+w**\ *width* to set the width of the rose in plot coordinates (in inches, cm, or points).
     Add **+f** to get a "fancy" rose, and specify in *level* what
     you want drawn. The default [1] draws the two principal E-W,
@@ -28,18 +24,14 @@
     Draw a map magnetic rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
-    (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
-    (inches, cm, etc.) [Default]. You can offset the reference point by *dx*/*dy* in
-    the direction implied by *justify*.
+ 
+    .. include:: explain_refpoint.rst_
+
     By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify*
     (see :doc:`text` for list and explanation of codes).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the color magnetic rose by *dx*/*dy* away from the *refpoint* in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Append **+w**\ *width* to set the width of the rose in plot coordinates (in inches, cm, or points).
     Use **+d** to assign the magnetic declination and set *dlabel*, which is a label for
     the magnetic compass needle (Leave empty to format a label from
@@ -54,4 +46,3 @@
     strings to override the default.  Skip a specific label by leaving it blank.
     Number GMT default parameters control pens, fonts, and color.
     See :ref:`Placing-mag-map-roses` and **-F** on how to place a panel behind the magnetic rose.
-
