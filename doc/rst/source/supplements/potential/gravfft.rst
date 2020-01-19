@@ -36,7 +36,7 @@ Description
 compute the geopotential due to the surface given in the topo.grd file.
 Requires a density contrast (**-D**) and possibly a different observation
 level (**-W**).  It will take the 2-D
-forward FFT of the grid and 
+forward FFT of the grid and
 use the full Parker's method up to the chosen terms.  Mode 2: Compute the
 geopotential response due to flexure of the topography file. It will take the 2-D
 forward FFT of the grid and use the  full Parker's method applied to the chosen
@@ -162,7 +162,7 @@ Optional Arguments
     Give average mantle depth via **-Z**. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
-    with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
+    with the Moho's geopotential effect (see **-F**) from model selected by **-T**.
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 
 .. _-W:

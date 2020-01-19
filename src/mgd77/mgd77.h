@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * 
+ *
  *    Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *
@@ -9,10 +9,10 @@
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
  *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
- *		
+ *	
  *  Version:	1.4
  *  Revised:	15-MAR-2006
- * 
+ *
  *-------------------------------------------------------------------------*/
 
 /*!
@@ -209,7 +209,7 @@
 
 typedef char byte;	/* Used to indicate 1-byte long integer */
 typedef char* Text;	/* Used to indicate character strings */
- 
+
 /* The MGD77 File format contains a header section consisting a set of 24 records
  * of length 80 characters each.  This information can be read and stored internally
  * in the structure MGD77_HEADER.  The two i/o functions MGD77_read_header and
@@ -264,7 +264,7 @@ struct MGD77_META {	/* Information about a cruise as derived from navigation dat
 	double G1980_1930;	/* Average difference between 1980 and 1930 gravity reference field for this cruise */
 };
 
-struct MGD77_HEADER {	
+struct MGD77_HEADER {
 	struct MGD77_HEADER_PARAMS *mgd77[2];		/* See MGD-77 Documentation from NGDC for details; [0] is ORIG, [1] is REVISED */
 	struct MGD77_META meta;				/* Holds some meta-data derived directly from data records */
 	char *author;					/* Name of author of last creation/modification */
@@ -419,7 +419,7 @@ struct MGD77_CONTROL {
 	/* Programs that need to write out MGD77 data columns in a certain order will need
 	 * to declare this structure and use the MGD77_Init function to get going
 	 */
-	
+
 	/* File path information */
 	char *MGD77_HOME;				/* Directory where paths are stored [$GMT->session.SHAREDIR/mgd77] */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
@@ -478,7 +478,7 @@ struct MGD77_CORRECTION {	/* Holds parameters for one term of a correction for o
 	double scale;		/* Scale to apply to (value - origin) */
 	double power;		/* Power we should raise the argument to [1] */
 	double (*modifier) (double);	/* Pointer to function that will modify argument */
-	
+
 	struct MGD77_CORRECTION *next;
 };
 
@@ -565,7 +565,7 @@ EXTERN_MSC double MGD77_rdc2dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, i
 EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_GCAL *cal);
 EXTERN_MSC double MGD77_Eotvos (struct GMT_CTRL *GMT, double lat, double velocity, double heading);
 
-#ifdef USE_CM4 
+#ifdef USE_CM4
 EXTERN_MSC double MGD77_Calc_CM4 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, bool calc_date, struct MGD77_CM4 *CM4);
 EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date, struct MGD77_CM4 *CM4);
 EXTERN_MSC void MGD77_CM4_end (struct GMT_CTRL *GMT, struct MGD77_CM4 *CM4);

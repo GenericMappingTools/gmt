@@ -211,7 +211,7 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 
 enum PSL_enum_txtmode {PSL_TXTMODE_HYPHEN	= 0,
 	PSL_TXTMODE_MINUS			= 1};
-	
+
 /* Verbosity levels */
 
 enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */

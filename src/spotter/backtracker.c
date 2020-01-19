@@ -150,10 +150,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->E.rot.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_str_free (C->S.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->E.rot.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -309,12 +309,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				Ctrl->M.active = true;
 				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				break;
-				
+			
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
-				
+			
 			case 'Q':	/* Fixed age for all points */
 				Ctrl->Q.active = true;
 				Ctrl->Q.t_fix = atof (opt->arg);
@@ -462,7 +462,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 		else
 			n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
-			
+		
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Loaded rotations in order for %slines; calling spotter_track with direction %swards\n", emode[mode], fmode[(spotter_way+1)/2]);
 
@@ -609,7 +609,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				 * both the drift and the rotation and is used to PREDICT positions along trails based on hotspot location */
 				t = (Ctrl->A.mode) ? t_low : 0.0;
 				t_end = (Ctrl->A.mode) ? t_high : age;
-				
+			
 				while (t <= t_end) {
 					/* Determine location along the drift curve for this time */
 					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t, &hlon, GMT->current.setting.interpolant);
@@ -650,7 +650,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
-					out[GMT_Y] = lat * R2D;	
+					out[GMT_Y] = lat * R2D;
 					if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
 						out[GMT_X] -= (hlon - H->data[GMT_X][0]);
 						out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);

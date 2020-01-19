@@ -121,7 +121,7 @@
  * Wessel and Kroenke, 1997, (see above)
  *
  */
- 
+
 #include "gmt_dev.h"
 #include "spotter.h"
 
@@ -164,11 +164,11 @@ struct HOTSPOTTER_CTRL {	/* All control options for this program (except common 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct HOTSPOTTER_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct HOTSPOTTER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->D.value = 0.5;	/* Sets how many points along flowline per node */
 	C->N.t_upper = 180.0;	/* Upper age assigned to seamounts on undated seafloor */
 	return (C);
@@ -176,10 +176,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->E.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->S.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->E.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -204,7 +204,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
 	GMT_Option (API, "V,bi5,di,e,h,i,qi,r,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -296,7 +296,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
 	int d_col, d_row, col_0, row_0, n_columns, n_rows;
 	int error = 0;			/* nonzero when arguments are wrong */
-	
+
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */
 	double x_smt;			/* Seamount longitude (input degrees, stored as radians) */
@@ -371,7 +371,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (wesn, G_rad->header->wesn, 4, double);
 	wesn[YLO] = D2R * gmt_lat_swap (GMT, R2D * wesn[YLO], GMT_LATSWAP_G2O);
 	wesn[YHI] = D2R * gmt_lat_swap (GMT, R2D * wesn[YHI], GMT_LATSWAP_G2O);
-	
+
 	/* Initialize the CVA grid and structure */
 
 	i_yinc_r = 1.0 / G_rad->header->inc[GMT_Y];
@@ -431,7 +431,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		/* STEP 1: Read information about a single seamount from input record */
 
 		if (gmt_M_is_dnan (in[4]))	/* Age is NaN, assign value */
@@ -534,7 +534,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 		if (!(n_smts%100)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld seamounts\r", n_smts);
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		gmt_M_free (GMT, processed_node);	gmt_M_free (GMT, latfactor);	gmt_M_free (GMT, p);
 		gmt_M_free (GMT, ilatfactor);		gmt_M_free (GMT, xpos);			gmt_M_free (GMT, ypos);
@@ -548,7 +548,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
 		uint64_t node;
 		double scale;
-		
+	
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;

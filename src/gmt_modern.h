@@ -42,7 +42,7 @@
  * only if modern mode is in effect. */
 
 /* Modern names: core */
-	
+
 EXTERN_MSC int GMT_basemap (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_coast (void *API, int mode, void *args);

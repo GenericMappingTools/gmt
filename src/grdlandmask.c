@@ -24,7 +24,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdlandmask"
@@ -84,24 +84,24 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
 	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, gmt_grdfloat);		/* Default "wet" value = 0 */
 	C->N.mask[2] = C->N.mask[6] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -135,7 +135,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,x.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -262,10 +262,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
-	
+
 	int64_t ij;
 	uint64_t count[GRDLANDMASK_N_CLASSES];
-	
+
 	size_t nx_alloc = GMT_SMALL_CHUNK;
 
 	char line[GMT_LEN256] = {""};
@@ -273,7 +273,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch, inc_inch[2];
 	double dummy, *x = NULL, *y = NULL;
-	
+
 	gmt_grdfloat f_level = 0.0f;
 
 	struct GMT_SHORE c;
@@ -311,18 +311,18 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	if (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] < 0.0) {	/* Shift longitudes */
 		temp_shift = true;
 		Grid->header->wesn[XLO] += 360.0;
 		Grid->header->wesn[XHI] += 360.0;
 	}
 	HH = gmt_get_H_hidden (Grid->header);
-	
+
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
-	
+
 	if (Ctrl->N.wetdry) {	/* Must duplicate wet/dry settings */
 		Ctrl->N.mask[6] = Ctrl->N.mask[2];
 		Ctrl->N.mask[4] = Ctrl->N.mask[8] = Ctrl->N.mask[0];
@@ -396,10 +396,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	if ((Cart = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, GMT->current.proj.rect, inc_inch, \
 		Grid->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	C = Cart->header;
-	
+
 	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
-	
+
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
@@ -479,7 +479,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				int last_col, last_row, start_col, end_col, brow, bcol;
 				double dx, del_x, del_y, xc, yc, xb, yb;
 				bool last_not_set;
-				
+			
 				if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {	/* Just get segments */
 					gmt_free_shore (GMT, &c);
 					continue;
@@ -497,7 +497,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 					/* To handle lines that exit the grid we pursue the entire line even if outside.
 					 * We only check if (row,col) is inside when filling in between points and assigning nodes */
-					
+				
 					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {
 						/* Get (row,col) and index to nearest node for this point */
 						row = gmt_M_grd_y_to_row (GMT, p[k].lat[pt], C);
@@ -525,9 +525,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
 								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
 							}
-							
+						
 							/* Now add all crossings between this line segment and the gridlines outlining the cells centered on the nodes */
-							
+						
 							for (brow = MIN (last_row, row) + 1; brow <= MAX (last_row, row); brow++) {	/* If we go in here we know dy is non-zero */
 								if (brow < 0 || brow > (int)C->n_rows) continue;	/* Outside grid */
 								/* Determine intersections between the line segment and parallels */
@@ -645,7 +645,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
 #endif
-	
+
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
@@ -657,7 +657,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		unsigned int row_l;
 		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
-	
+
 	if (temp_shift) {
 		Grid->header->wesn[XLO] -= 360.0;
 		Grid->header->wesn[XHI] -= 360.0;

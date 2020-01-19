@@ -36,7 +36,7 @@ precision of the ASCII output format by editing the
 :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file or use
 **-**\ **-D_FORMAT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates; see **-Z** below. 
+output z-values without the (x,y) coordinates; see **-Z** below.
 
 Required Arguments
 ------------------
@@ -61,7 +61,7 @@ Optional Arguments
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output. 
+    boundaries of the grid, only the common region will be output.
 .. include:: explain_-R.rst_
 
 .. _-V:
@@ -109,7 +109,7 @@ Optional Arguments
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
 
 .. |Add_-bo| replace:: [Default is 3]. This option
-    only applies to xyz output; see **-Z** for z table output. 
+    only applies to xyz output; see **-Z** for z table output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -118,7 +118,7 @@ Optional Arguments
 .. |Add_-f| replace:: See also **TIME
     COORDINATES** below. **-h** Output 1 header record based on
     information in the first grid file header. Ignored if binary output
-    is selected. [Default is no header]. 
+    is selected. [Default is no header].
 ..  include:: explain_-f.rst_
 
 .. include:: explain_-ocols.rst_

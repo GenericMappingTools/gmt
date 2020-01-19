@@ -29,7 +29,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"nearneighbor"
@@ -346,7 +346,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	}
 
 	/* Regular nearest neighbor moving average operation */
-	
+
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
@@ -375,7 +375,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	factor = Ctrl->N.sectors / (2.0 * M_PI);
 
 	/* To allow data points falling outside -R but within the search radius we extend the data domain in all directions */
-	
+
 	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];	/* This is what -R says */
 	if (gmt_M_is_cartesian (GMT, GMT_IN) || !gmt_grd_is_global (GMT, Grid->header)) {
 		x_left  -= max_d_col * Grid->header->inc[GMT_X];	/* OK to extend x-domain since not a periodic geographic grid */
@@ -413,7 +413,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 		in = In->data;	/* Only need to process numerical part here */
-		
+	
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
@@ -421,7 +421,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		/* Store this point in memory */
-		
+	
 		point[n].x = (gmt_grdfloat)in[GMT_X];
 		point[n].y = (gmt_grdfloat)in[GMT_Y];
 		point[n].z = (gmt_grdfloat)in[GMT_Z];
@@ -444,7 +444,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
-				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */  
+				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;

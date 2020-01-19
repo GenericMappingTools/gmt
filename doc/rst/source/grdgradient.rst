@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
-[ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
+[ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ]
 [ |-N|\ [**e**\ \|\ **t**][*amp*][**+a**\ *ambient*\ ][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
 [ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
@@ -32,7 +32,7 @@ given direction (**-A**), or to find the direction (**-S**) [and the magnitude
 (**-D**)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
-boundary conditions (see **-n**). 
+boundary conditions (see **-n**).
 
 Required Arguments
 ------------------
@@ -143,7 +143,7 @@ Optional Arguments
 
 **-S**\ *slopefile*
     Name of output grid file with scalar magnitudes of gradient vectors.
-    Requires **-D** but makes **-G** optional. 
+    Requires **-D** but makes **-G** optional.
 
 .. _-V:
 
@@ -216,7 +216,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using 
+To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using
 exponentially  normalized gradients in the range [-0.6,0.6] imitating light sources in
 the north and west directions::
 
@@ -253,7 +253,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf` 
+:doc:`gmt`, :doc:`gmt.conf`
 :doc:`grdhisteq`,
 :doc:`grdinfo`,
 :doc:`grdmath`,

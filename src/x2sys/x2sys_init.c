@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
 	GMT_Option (API, "j,m,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'C':	/* Distance calculation flag */
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
@@ -326,9 +326,9 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	}
 	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
 	d_start++;		/* Find start of file name */
-	
+
 	/* Determine the TAG directory */
-	
+
 	x2sys_set_home (GMT);
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
@@ -343,7 +343,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		fclose (fp_def);	/* Close local def file */
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	/* Initialize the system TAG files in X2SYS_HOME/TAG */
 
 	sprintf (tag_file,   "%s/%s.tag",       Ctrl->In.TAG, Ctrl->In.TAG);
@@ -361,7 +361,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
-		else 
+		else
 			n_found++;
 	}
 	if (!x2sys_access (GMT, def_file, R_OK)) {
@@ -373,7 +373,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
-		else 
+		else
 			n_found++;
 	}
 	if (!x2sys_access (GMT, track_file, R_OK)) {
@@ -385,7 +385,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
-		else 
+		else
 			n_found++;
 	}
 	if (!x2sys_access (GMT, path_file, R_OK)) {
@@ -397,7 +397,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
-		else 
+		else
 			n_found++;
 	}
 	if (!x2sys_access (GMT, bin_file, R_OK)) {
@@ -409,7 +409,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
-		else 
+		else
 			n_found++;
 	}
 	if (n_found) {
@@ -466,7 +466,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	fprintf (fp,"# %s\n", Ctrl->In.TAG);	/* Write header record to empty track file */
-	
+
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, track_file, fp), track_file);
 
 	/* Initialize the system's index data base  */
@@ -489,7 +489,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	fprintf (fp, "# The current directory is always searched first.\n");
 	fprintf (fp, "# Add full paths to search additional directories\n");
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, path_file, fp), path_file);
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
 
 	gmt_M_free (GMT, X2SYS_HOME);

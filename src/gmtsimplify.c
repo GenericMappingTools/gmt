@@ -25,7 +25,7 @@
  * segment given a tolerance.
  */
 
-/* 
+/*
 * The algorithm is based on the paper:
 * Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
 *   of the number of points required to represent a digitized line
@@ -66,14 +66,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct GMTSIMPLIFY_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTSIMPLIFY_CTRL);
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->Out.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->Out.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -90,7 +90,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,q,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -116,7 +116,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'T':	/* Set tolerance distance */
 				Ctrl->T.active = true;
 				Ctrl->T.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.tolerance), &(Ctrl->T.unit));
@@ -127,7 +127,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 				break;
 		}
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -1, "Syntax error -T: Unrecognized unit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -2, "Syntax error -T: Unable to decode tolerance distance.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -3, "Syntax error -T: Tolerance is negative.\n");
@@ -179,7 +179,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 
 	/* All calculations uses the original units, either Cartesian or FlatEarth */
 	/* The tolerance (band) must be in the same units as the data */
-	
+
 	band_sqr = GMT_sqr (band);
 
 	n_dest = sig_start[0] = 0;
@@ -206,7 +206,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 			y12 = y_source[end] - y_source[start];
 			if (geo) x12 *= cosd (0.5 * (y_source[end] + y_source[start]));
 			d12 = GMT_sqr (x12) + GMT_sqr (y12);
-			
+		
 			for (i = start + 1, sig = start, max_dev_sqr = -1.0; i < end; i++) {
 				x13 = x_source[i] - x_source[start];
 				if (geo && fabs (x13) > 180.0) x13 = 360.0 - fabs (x13);
@@ -280,16 +280,16 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	bool geo, poly, skip;
 	uint64_t tbl, col, row, seg_in, seg_out, np_out, ns_in = 0, ns_out = 0, n_in_tbl, *index = NULL;
 	uint64_t dim_out[4] = {1, 0, 0, 0}, n_saved;
-	
+
 	double tolerance;
-	
+
 	struct GMT_DATASET *D[2] = {NULL, NULL};
 	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
 	struct GMTSIMPLIFY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -304,7 +304,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the gmtsimplify main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
@@ -312,10 +312,10 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "gmtsimplify only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
-	
+
 	/* Now we are ready to take on some input values */
 	/* Allocate memory and read in all the files; each file can have many lines */
-	
+
 	/* We read as lines even though some/all segments could be polygons. */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
@@ -331,14 +331,14 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
 	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
-	
+
 	/* Convert tolerance to degrees [or leave as Cartesian] */
 	/* We must do this here since Douglas_Peucker_geog is doing its own thing and cannot use gmt_distance yet */
-	
+
 	tolerance = Ctrl->T.tolerance;
 	switch (Ctrl->T.unit) {
 		case 'd':	/* Various arc angular distances */
-		case 'm': 
+		case 'm':
 		case 's':
 			tolerance /= GMT->current.map.dist[GMT_MAP_DIST].scale; /* Get degrees */
 			break;
@@ -353,16 +353,16 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		default:	/* Cartesian; do nothing further */
 			break;
 	}
-	
+
 	/* Process all tables and segments */
-	
+
 	dim_out[GMT_TBL] = D[GMT_IN]->n_tables;		/* Allocate at least as many tables as the input source */
 	dim_out[GMT_COL] = D[GMT_IN]->n_columns;	/* Allocate same number of columns tables as the input source */
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, D[GMT_IN]->geometry, 0, dim_out, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
 		Return (API->error);
 	}
-	
+
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		n_in_tbl = 0;
 		D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Initial (and max) allocation of segments */
@@ -400,11 +400,11 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		D[GMT_OUT]->n_records += n_in_tbl;		/* Update dataset count of total records*/
 		D[GMT_OUT]->n_segments += seg_out;		/* Update dataset count of total segments*/
 	}
-	
+
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
-	
+
 	Return (GMT_NOERROR);
 }

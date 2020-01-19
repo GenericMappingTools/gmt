@@ -84,12 +84,12 @@ Optional Arguments
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings and
     **e** for errors, and append **+l** to send such log information to stdout.
- 
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
+   
 .. include:: ../../explain_help.rst_
 
 Examples

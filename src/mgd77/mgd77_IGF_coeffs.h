@@ -1,14 +1,14 @@
 /*-------------------------------------------------------------------------
- * 
+ *
  *    Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  */
 
 /*!
  * \file mgd77_IGF_coeffs.h
- * \brief  
+ * \brief 
  */
- 
+
 #define MGD77_IGF24_G0	978052.0
 #define MGD77_IGF30_G0	978049.0
 #define MGD77_IGF67_G0	978031.846

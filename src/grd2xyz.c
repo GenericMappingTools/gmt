@@ -53,22 +53,22 @@ struct GRD2XYZ_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2XYZ_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->E.nodata = -9999.0;
 	C->W.weight = 1.0;
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -109,7 +109,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Option (API, "bo,d,f,h,o,qo,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -128,14 +128,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	gmt_M_memset (io, 1, struct GMT_Z_IO);
-	
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 			case '<':	/* Input files */
 				n_files++;
 				break;
-				
+			
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Write row,col or index instead of x,y */
@@ -221,7 +221,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true;
 	unsigned int row, col, n_output, w_col = 3;
 	int error = 0, write_error = 0;
-	
+
 	uint64_t ij, ij_gmt, n_total = 0, n_suppressed = 0;
 
 	char header[GMT_BUFSIZ];
@@ -251,11 +251,11 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
-	
+
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (GMT->common.b.active[GMT_OUT]) {
@@ -291,8 +291,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	}
 
 	out[w_col] = Ctrl->W.weight;
-		
-	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
+	
+	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
@@ -316,12 +316,12 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 			save = GMT->current.io.output;
 			Out = gmt_new_record (GMT, &d_value, NULL);	/* Since we only need to worry about numerics in this module */
-			
+		
 			if (Ctrl->Z.swab) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Binary output data will be byte swapped\n");
 			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
-			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
+			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z)
 				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we don't do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
 				ij_gmt = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
@@ -352,7 +352,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			n_alloc = G->header->n_columns * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
 			record = gmt_M_memory (GMT, NULL, G->header->n_columns, char);
 			Out = gmt_new_record (GMT, NULL, record);
-			
+		
 			sprintf (record, "ncols %d\nnrows %d", G->header->n_columns, G->header->n_rows);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
@@ -413,7 +413,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
 				gmt_get_cellarea (GMT, W);
 			}
-			
+		
 			/* Compute grid node positions once only */
 
 			x = gmt_grd_coord (GMT, G->header, GMT_X);

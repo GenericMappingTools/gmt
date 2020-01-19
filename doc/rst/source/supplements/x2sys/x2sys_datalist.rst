@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_datalist** *track(s)* **-T**\ *TAG* 
+**gmt x2sys_datalist** *track(s)* **-T**\ *TAG*
 [ |-A| ]
 [ |-E| ]
 [ |-F|\ *name1*,\ *name2*,... ]

@@ -39,7 +39,7 @@ will be set to the weighted average value. Any input grid that does not
 share the final output grid's node registration and grid spacing will
 automatically be resampled via calls to :doc:`grdsample`. Note: Due to the
 row-by-row i/o nature of operations in **grdblend** we only support the
-netCDF and native binary grid formats for both input and output. 
+netCDF and native binary grid formats for both input and output.
 
 Required Arguments
 ------------------
@@ -50,7 +50,7 @@ Required Arguments
     *outgrid* is the name of the binary output grid file. (See GRID FILE
     FORMATS below). Only netCDF and native binary grid formats are can
     be written directly. Other output format choices will be handled by
-    reformatting the output once blending is complete. 
+    reformatting the output once blending is complete.
 
 .. _-I:
 
@@ -112,7 +112,7 @@ Optional Arguments
 
 **-Q**
     Create plain header-less grid file (for use with external tools).
-    Requires that the output grid file is a native format (i.e., not netCDF). 
+    Requires that the output grid file is a native format (i.e., not netCDF).
 
 .. _-V:
 
@@ -128,7 +128,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *scale*
-    Scale output values by *scale* before writing to file. [1]. 
+    Scale output values by *scale* before writing to file. [1].
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

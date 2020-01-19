@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	ps=anim02.ps
 else	# Make animated GIF
 	opt="-A+l"
-fi	
+fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 gmt begin
@@ -25,8 +25,8 @@ gmt begin
 	width=\`gmt math -Q \${MOVIE_WIDTH} 0.5i SUB =\`
 	gmt grdimage @tut_relief.nc -I+a\${MOVIE_COL0}+nt2 -JM\${width} -Cmain.cpt \
 		-BWSne -B1 -X0.35i -Y0.3i --FONT_ANNOT_PRIMARY=9p
-	gmt plot -Sc0.8i -Gwhite -Wthin <<< "256.25 35.6" 
-	gmt plot -Sv0.1i+e -Gred -Wthick <<< "256.25 35.6 \${MOVIE_COL1} 0.37i" 
+	gmt plot -Sc0.8i -Gwhite -Wthin <<< "256.25 35.6"
+	gmt plot -Sv0.1i+e -Gred -Wthick <<< "256.25 35.6 \${MOVIE_COL1} 0.37i"
 gmt end
 EOF
 # 3. Run the movie

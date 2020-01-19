@@ -175,7 +175,7 @@ Optional Arguments
 
 **-S**\ *mode*
     Determine a suitable range for the **-T** option from the input table(s) (or stdin).
-    Choose from several types of range determinations: 
+    Choose from several types of range determinations:
     **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
@@ -300,14 +300,14 @@ hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1
 earthquakes, use
 
    ::
-   
+  
     gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
-   
+  
     gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval

@@ -43,7 +43,7 @@ Required Arguments
 
 *grdfile_top* [*grdfile_bot*]
    Grid file whose gravity effect is going to be computed. If two grids are
-   provided then the gravity/magnetic effect of the volume between them is computed. 
+   provided then the gravity/magnetic effect of the volume between them is computed.
 
 .. _-C:
 
@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t** **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n**  
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t** **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** 
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
@@ -80,7 +80,7 @@ Optional Arguments
 
     OR for a grid mode
 
-      **+m**\ *magfile*, where *magfile* is the name of the magnetic intensity file. 
+      **+m**\ *magfile*, where *magfile* is the name of the magnetic intensity file.
 
     To compute a component, specify any of:
 
@@ -94,7 +94,7 @@ Optional Arguments
 
       **t**\ \|\ **T**\ \|\ **f**\ \|\ **F**  to compute the total field.
 
-      For a variable inclination and declination use IGRF. Set any of **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** to do that 
+      For a variable inclination and declination use IGRF. Set any of **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** to do that
 
 .. _-I:
 
@@ -102,14 +102,14 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *z_obs* 
+**-L**\ *z_obs*
     Sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
 
 .. _-Q:
 
 **-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [*region*]
-    Extend the domain of computation with respect to output **-R** region. 
+    Extend the domain of computation with respect to output **-R** region.
       **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
 
@@ -181,7 +181,7 @@ processors, do:
 
    ::
 
-    gmt grdgravmag3d bat.grd -E10000 -Gcomp_Z.grd -Hz -H+n -H+mmag.grd -x4 -V -S50 
+    gmt grdgravmag3d bat.grd -E10000 -Gcomp_Z.grd -Hz -H+n -H+mmag.grd -x4 -V -S50
 
 See Also
 --------

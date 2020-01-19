@@ -490,7 +490,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tThe operators and number of input and output arguments:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
-	GMT_Message (API, GMT_TIME_NONE, 
+	GMT_Message (API, GMT_TIME_NONE,
 		"	ABS        1  1    abs (A)\n"
 		"	ACOS       1  1    acos (A)\n"
 		"	ACOSH      1  1    acosh (A)\n"
@@ -1614,7 +1614,7 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		coeff = gmt_corrcoeff (GMT, a, b, info->T->n_records, 0);
 		for (s = 0; s < info->T->n_segments; s++)
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = coeff;
-		gmt_M_free (GMT, a);		gmt_M_free (GMT, b); 
+		gmt_M_free (GMT, a);		gmt_M_free (GMT, b);
 		return 0;
 	}
 	/* Local, or per-segment calculations */
@@ -4010,7 +4010,7 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 	pair = gmt_M_memory (GMT, NULL, info->T->n_records, struct GMT_OBSERVATION);
 	q = 0.01 * S[last]->factor;
-	
+
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) k = 0;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
@@ -4023,7 +4023,7 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				w = T_prev1->segment[s]->data[col][row];
 			pair[k].value  = (gmt_grdfloat)T_prev2->segment[s]->data[col][row];
 			pair[k].weight = (gmt_grdfloat)w;
-			
+		
 			k++;
 		}
 		if (info->local) {
@@ -4737,7 +4737,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		if (!info->local)	/* Sort the whole enchilada */
 			gmt_sort_order (GMT, info->Q[0], k, dir);
 	}
-	
+
 	/* OK now we can deal with shuffling of rows based on how the selected column was sorted */
 	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors once if the entire table */
 	for (s = k0 = 0; s < info->T->n_segments; s++) {
@@ -5908,14 +5908,14 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	}
 
 	/* Check if it is a dimension (which would fail the gmt_not_numeric check above) */
-	
+
 	last = strlen (txt) - 1;	/* Position of last character in string */
 	if (strchr (GMT_DIM_UNITS, txt[last])) {	/* Yes, ends in c, i, or p */
 		*value = gmt_M_to_inch (GMT, txt);
 		*dimension = true;
 		return GMTMATH_ARG_IS_NUMBER;
 	}
-	
+
 	if (check != GMT_IS_NAN) {	/* OK it is a number */
 		*value = tmp;
 		return GMTMATH_ARG_IS_NUMBER;
@@ -5962,7 +5962,7 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	 * cache files. */
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL;
 	char target[GMT_LEN64] = {""};
-	
+
 	for (opt = list; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && !strncmp (opt->arg, "STO@", 4U)) {	/* Found a STO@item */
 			for (opt2 = opt->next; opt2; opt2 = opt2->next) {	/* Loop over all remaining options */
@@ -6702,7 +6702,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			}
 		}
 		free_sort_list (GMT, &info);	/* Frees helper array if SORT was called */
-		
+	
 		nstack = new_stack;
 
 		for (kk = 1; kk <= created; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
@@ -6717,7 +6717,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	last = nstack - 1;	/* Index of top of stack (also hopefully bottom of stack) */
-	
+
 	if (stack[last]->constant) {	/* Only a constant provided, set table accordingly */
 		if (!stack[last]->D)
 			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);

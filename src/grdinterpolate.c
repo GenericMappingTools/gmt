@@ -264,12 +264,12 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and their levels */
 		if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file[0], &n_layers, &level))) Return (error);
 	}
-	
+
 	if (n_layers == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Only one layer given - need at least 2 to interpolate\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	/* Create output level array */
 	if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to set up output level array\n");
@@ -283,7 +283,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
 
 	/* Determine the range of input layers needed for interpolation */
-	
+
 	start_k = 0; stop_k = n_layers - 1;	/* We first assume all layers are needed */
 	while (start_k < n_layers && Ctrl->T.T.array[0] > level[start_k])	/* Find the first that is inside the output time range */
 		start_k++;
@@ -301,13 +301,13 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		else stop_k++;	/* We know there are at least 2 input grids */
 		n_use = 2;
 	}
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
-	
+
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if ((G[GMT_IN] = gmt_M_memory (GMT, NULL, n_layers, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);	/* Allocate one grid per input layer */
-	
+
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3-rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
 
 	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
@@ -320,20 +320,20 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	/* Create grid layers for each output level */
-	
+
 	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
 	if ((G[GMT_OUT] = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);	/* Allocate on grid per output layer */
 	for (k = 0; k < Ctrl->T.T.n; k++)	{	/* Duplicate grid headers and allocate arrays */
 		if ((G[GMT_OUT][k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G[GMT_IN][start_k])) == NULL)
 			Return (API->error);
 	}
-	
+
 	/* Allocate input and output arrays for the 1-D spline */
 	if ((i_value = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) Return (GMT_MEMORY_ERROR);
 	if ((o_value = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double)) == NULL) Return (GMT_MEMORY_ERROR);
-	
+
 	gmt_M_grd_loop (GMT, G[GMT_IN][start_k], row, col, node) {	/* Loop over all coregistered nodes (picking G[GMT_IN][start_k] to represent all grid layouts) */
 		for (k = start_k; k <= stop_k; k++)	/* For all available input levels */
 			i_value[k] = G[GMT_IN][k]->data[node];	/* Get the values at this (x,y) across all input levels */
@@ -341,7 +341,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels */
 			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
 	}
-	
+
 	if (Ctrl->T.T.n == 1 || Ctrl->Z.active[GMT_OUT]) {	/* Special case of only sampling the cube at one layer or asking for 2-D slices via -Zo */
 		for (k = 0; k < Ctrl->T.T.n; k++) {	/* For all output levels */
 			if (Ctrl->Z.active[GMT_OUT])	/* Create the k'th layer file */
@@ -353,11 +353,11 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	
+
 	/* Here we must write an output 3-D data cube - not implemented yet - but this case is caught earlier */
-	
+
 	/* Done with everything; free up memory */
-		
+	
 	if (!Ctrl->Z.active[GMT_IN])
 		gmt_M_free (GMT, level);
 	gmt_M_free (GMT, i_value);
@@ -368,6 +368,6 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->T.T.n; k++)
 		GMT_Destroy_Data (API, &(G[GMT_OUT][k]));
 	gmt_M_free (GMT, G[GMT_OUT]);
-		
+	
 	Return (GMT_NOERROR);
 }

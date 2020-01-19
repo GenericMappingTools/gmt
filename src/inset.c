@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -144,7 +144,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				break;
-	
+
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 		}
 		opt = opt->next;
 	}
-	
+
 	if (Ctrl->In.mode == INSET_BEGIN) {
 		/* Was -R -J given */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			n_errors++;
 		}
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -268,7 +268,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* Here we need to compute dimensions and save those plus current -R -J to the inset information file,
 		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths and maybe
 		 * draw the panel. */
-		
+	
 		char *cmd = NULL;
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
@@ -277,9 +277,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
-		
+	
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
-		
+	
 		/* First get the -B options in place before inset was called */
 		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 		if ((fp = fopen (ffile, "r")) == NULL)
@@ -287,9 +287,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		fgets (Bopts, PATH_MAX, fp);
 		gmt_chop (Bopts);
 		fclose (fp);
-		
+	
 		/* Write out the inset information file */
-		
+	
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create inset file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
@@ -354,7 +354,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
 		gmt_reload_history (API->GMT);
 	}
-	
+
 	gmt_plotend (GMT);
 
 	Return (error);

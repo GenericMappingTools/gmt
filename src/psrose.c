@@ -543,18 +543,18 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	/* Allocate arrays */
-	
+
 	sum = gmt_M_memory (GMT, NULL, n_bins, double);
 	xx = gmt_M_memory (GMT, NULL, n_bins+2, double);
 	yy = gmt_M_memory (GMT, NULL, n_bins+2, double);
 	azimuth = gmt_M_memory (GMT, NULL, n_alloc, double);
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
-	
+
 	/* Because of -JX being parsed already, any -: will have no effect.  For backwards compatibility we
 	 * check if -: was given and turn that on again here before reading */
 	if (GMT->common.colon.active)
 		GMT->current.setting.io_lonlat_toggle[GMT_IN] = true;
-	
+
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */

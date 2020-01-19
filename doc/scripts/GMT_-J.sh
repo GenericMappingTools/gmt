@@ -9,7 +9,7 @@ gmt begin GMT_-J
 3	1.75	11p,Helvetica		BL	THEMATIC
 4	1.75	11p,Helvetica		BL	OTHER
 EOF
-	gmt text -F+f8p+jBL << EOF 
+	gmt text -F+f8p+jBL << EOF
 # Cylindrical
 0	1.35	Basic [E]
 0	1.2	Cassini
@@ -51,7 +51,7 @@ EOF
 0.075	2.6	E = Equal Area
 EOF
 
-	gmt plot -Wthinner << EOF 
+	gmt plot -Wthinner << EOF
 >
 2.3	2.75
 2	2.4

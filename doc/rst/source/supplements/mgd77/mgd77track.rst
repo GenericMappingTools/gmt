@@ -17,7 +17,7 @@ Synopsis
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
 [ |SYN_OPT-B| ]
-[ **-Da**\ *startdate* ] 
+[ **-Da**\ *startdate* ]
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]

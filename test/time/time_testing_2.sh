@@ -7,7 +7,7 @@
 # Test 2:
 # Generate relative time values from 0-4 and use the --TIME_* options to
 # convert to absolute calendar time for ASCII output.
-# 
+#
 # First we use J2000 which uses days.  Hence the output should cover the
 # first 5 days in year 2000, starting at noon:
 

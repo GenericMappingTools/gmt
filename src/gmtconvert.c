@@ -794,7 +794,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		}
 		if (do_it) gmt_M_free (GMT, Z);
 	}
-	
+
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, DHo->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}

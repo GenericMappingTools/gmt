@@ -56,10 +56,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->In.file[GMT_IN]);	
-	gmt_M_str_free (C->In.file[GMT_OUT]);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->In.file[GMT_IN]);
+	gmt_M_str_free (C->In.file[GMT_OUT]);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -198,16 +198,16 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	}
 
 	if ((C = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, A)) == NULL) Return (API->error);	/* Just to get a header */
-	
+
 	one_or_zero = A->header->registration == GMT_GRID_NODE_REG;
 	x_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_X] * 10;
 	y_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_Y] * 10;
 
 	AH = gmt_get_H_hidden (A->header);
 	BH = gmt_get_H_hidden (B->header);
-	
+
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
 		double del;
 		if (common_y) {	/* A and B are side-by-side, may differ by +-360 +- 1 pixel width */
@@ -240,7 +240,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			else if (del < (-360.0 + x_noise) && del > (-360.0 - x_noise)) {
 				A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
-			}	
+			}
 		}
 	}
 

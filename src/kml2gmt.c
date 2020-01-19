@@ -22,7 +22,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"kml2gmt"
@@ -166,13 +166,13 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	int error = 0, n_scan;
 	size_t length;
 	bool scan = true, first = true, skip, single = false, extended = false;
-	
+
 	char buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	char word[GMT_LEN128] = {""}, description[GMT_BUFSIZ] = {""};
 	char *gm[3] = {"Point", "Line", "Polygon"}, *line = NULL;
 
 	double out[3], elev;
-	
+
 	FILE *fp = NULL;
 
 	struct GMT_RECORD *Out = NULL;
@@ -202,7 +202,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	
+
 	GMT_Set_Columns (API, GMT_OUT, 2 + Ctrl->Z.active, GMT_COL_FIX_NO_TEXT);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
@@ -219,7 +219,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	 * coordinate pairs/triplets on the same line.  It is also unlikely anyone really
 	 * needs to call GMT_kml2gmt with a memory pointer, so this is a small sacrifice.
 	 * P. Wessel, April 2013. */
-	
+
 	if (Ctrl->In.active) {
 		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
@@ -241,7 +241,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
-	
+
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 	Out->text = NULL;
 	line = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, char);
@@ -295,7 +295,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			if (name[0] && description[0]) strcat (GMT->current.io.segment_header, " ");
 			if (description[0]) { strcat (GMT->current.io.segment_header, "-D\""); strcat (GMT->current.io.segment_header, description); strcat (GMT->current.io.segment_header, "\""); }
 		}
-		
+	
 		if (Ctrl->E.active && strstr (line, "<ExtendedData>")) {
 			/* https://developers.google.com/kml/documentation/kmlreference#extendeddata
 			   But only a single <SimpleData name="string" is implemented here. */
@@ -316,7 +316,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-		
+	
 		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
 		}
@@ -326,7 +326,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 
 		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
-		
+	
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
@@ -359,8 +359,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, line);
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u features with selected geometry\n", n_features);
-	
+
 	Return (GMT_NOERROR);
 }

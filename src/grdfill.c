@@ -62,19 +62,19 @@ struct GRDFILL_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILL_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDFILL_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -173,7 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == 'p')
 					Ctrl->L.mode = 1;
 				break;
-	
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -189,7 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
 	/* Algorithm 1: Replace NaNs with a constant value */
 	uint64_t node;
-	
+
 	for (unsigned int row = limit[YLO]; row <= limit[YHI]; row++) {
 		for (unsigned int col = limit[XLO]; col <= limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
@@ -211,7 +211,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_GRID *G_hole = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
-	
+
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
 	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
@@ -289,7 +289,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 		return (API->error);
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual input file %s\n", input);
 	}
-	
+
 	/* Free our custom vectors */
 	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 	if (GMT_Destroy_Data (API, &G_hole) != GMT_NOERROR) {
@@ -310,7 +310,7 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 	static int drow[4] = {1, 0, -1, 0}, dcol[4] = {0, 1, 0, -1};	/* Change in row,col per cardinal direction */
 	unsigned int side, next_row, next_rcol, n_nodes = 0;
 	int64_t ij;
-	
+
 	for (side = 0; side < 4; side++) {	/* For each of the 4 cardinal directions */
 		ij = node + step[side];		/* This is the grid node (and ID node) of this cardinal point */
 		if (ID[ij] == 0 && gmt_M_is_fnan (G->data[ij])) {	/* Hole extends in this direction, follow it to its next neighbor */
@@ -331,9 +331,9 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
 	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
 	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr, nx1_2, ny_2;
-    
+   
 	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
-    
+   
 	/* starting with nx = ny */
 	nx = (int64_t)(sqrt((double)(*r2) / 2.0));
 	/* loop over possible nx, find smallest rr */
@@ -368,7 +368,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 		if (ny == 0) {
 			js[ct] =   0;	is[ct++] =  nx;
 			js[ct] =   0;	is[ct++] = -nx;
-			js[ct] =  nx;	is[ct++] =   0; 
+			js[ct] =  nx;	is[ct++] =   0;
 			js[ct] = -nx;	is[ct++] =   0;
 		}
 		else if (nx != ny){
@@ -379,7 +379,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 			js[ct] =  nx;	is[ct++] =  ny;
 			js[ct] = -nx;	is[ct++] =  ny;
 			js[ct] =  nx;	is[ct++] = -ny;
-			js[ct] = -nx;	is[ct++] = -ny; 
+			js[ct] = -nx;	is[ct++] = -ny;
 		}
 		else {
 			js[ct] =  nx;	is[ct++] =  nx;
@@ -407,7 +407,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	int64_t *is = NULL, *js = NULL, *xs = NULL, *ys = NULL;
 	gmt_grdfloat *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
 	double rad2;
- 	
+ 
  	/* Allocate memory for temporary indexes */
  	is = gmt_M_memory (GMT, NULL, 2048, int64_t);
  	js = gmt_M_memory (GMT, NULL, 2048, int64_t);
@@ -417,11 +417,11 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 	if (radius == -1)	/* Set default radius */
 		radius = (int64_t)floor (sqrt ((double)(nx*nx + ny*ny)));
 	rad2 = (double)(radius * radius);
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbor...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
  		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
-		rr = 0; 
+		rr = 0;
 		gmt_M_col_loop (GMT, In, i, j, ij) {	/* Loop over all columns */
 			if (!gmt_M_is_fnan (m[ij]))	/* Already duplicated in the calling program */
 				rr = 0;
@@ -523,7 +523,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
-	
+
 	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm and bail */
 		int64_t radius = lrint (Ctrl->A.value);
 		struct GMT_GRID *New = NULL;
@@ -532,14 +532,14 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
-		
+	
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write output grid!\n");
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
 	}
-	
+
 	if (Ctrl->L.active) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, (Ctrl->L.mode) ? GMT_IS_POLYGON : GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -555,15 +555,15 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
-	
+
 	if (Ctrl->A.mode == ALG_SPLINE) {	/* Must preserve the original -RG history which greenspline messes with */
 		RG_id = gmt_get_option_id (0, "R") + 1;
 		if (GMT->init.history[RG_id]) RG_orig_hist = strdup (GMT->init.history[RG_id]);
 	}
-	
+
 	/* To avoid having to check every row,col for being inside the grid we set
 	 * the boundary row/cols in the ID grid to 1. */
-	
+
 	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
 	/* Set the top and bottom boundary rows to UINT_MAX */
 	offset = (uint64_t)(Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;
@@ -578,7 +578,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 	/* Initiate the node offsets in the cardinal directions */
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
-	
+
 	Out = gmt_new_record (GMT, wesn, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Loop over all grid nodes */
 		if (ID[node]) continue;	/* Already identified as part of a hole */
@@ -599,15 +599,15 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 					double tmp[4];
 					gmt_M_memcpy (tmp, wesn, 4, double);
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
-					wesn[GMT_X] = tmp[XLO];	wesn[GMT_Y] = tmp[YLO];	
+					wesn[GMT_X] = tmp[XLO];	wesn[GMT_Y] = tmp[YLO];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					wesn[GMT_X] = tmp[XHI];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-					wesn[GMT_Y] = tmp[YHI];	
+					wesn[GMT_Y] = tmp[YHI];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-					wesn[GMT_X] = tmp[XLO];	
+					wesn[GMT_X] = tmp[XLO];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-					wesn[GMT_Y] = tmp[YLO];	
+					wesn[GMT_Y] = tmp[YLO];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				else	/* Write west east south north limits */

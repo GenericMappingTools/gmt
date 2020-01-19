@@ -12,7 +12,7 @@ function gridset_check {
 }
 
 rm -f fail
-gmt grdmath -R0/5/0/5 -I1 X Y MUL = gtesti.nc 
+gmt grdmath -R0/5/0/5 -I1 X Y MUL = gtesti.nc
 # FYI: For grids, the stream and file descriptor cases are N/A
 # 1. Read File and write GRID via...
 gridset_check f f	# 1a. File

@@ -17,7 +17,7 @@
 
 /**
  * \file block_subs.h
- * \brief Code included into the three blockm*_func.c files 
+ * \brief Code included into the three blockm*_func.c files
  *
  * This code is included into the three blockm*_func.c files which each
  * will define their names (e.g., BLOCKMEAN).  That definition controls
@@ -204,9 +204,9 @@ struct BLK_DATA {
 /*! Allocate and initialize a new control structure */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMODE)	/* Only used by blockmode */
 	C->D.mode = BLOCKMODE_LOW;
@@ -222,8 +222,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	unsigned int k;
 	if (!C) return;
 	for (k = 0; k < C->G.n; k++)
-		gmt_M_str_free (C->G.file[k]);	
-	gmt_M_free (GMT, C);	
+		gmt_M_str_free (C->G.file[k]);
+	gmt_M_free (GMT, C);
 }
 
 #if !defined(BLOCKMEAN)	/* Not used by blockmean */

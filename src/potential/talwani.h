@@ -17,7 +17,7 @@
 
 /*!
  * \file talwani.h
- * \brief  
+ * \brief 
  */
 
 #ifndef TALWANI_H
@@ -35,7 +35,7 @@
 GMT_LOCAL double g_normal (double lat) {
 	/* IAG 1980 model */
 	double slat2 = sind (lat);
-	slat2 *= slat2;	
+	slat2 *= slat2;
 	return (MGD77_IGF80_G0 * ((1.0 + MGD77_IGF80_G1 * slat2) / sqrt (1.0 - MGD77_IGF80_G2 * slat2)) / SI_TO_MGAL);
 }
 

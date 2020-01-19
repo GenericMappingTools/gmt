@@ -38,7 +38,7 @@ and the number of *x* and *y* nodes, and [optionally] the mean, standard
 deviation, and/or the median, median absolute deviation (MAD) of *z*, and/or
 the mode (Least Median of Squares; LMS), LMS scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
-if it is a Cartesian or Geographic data set (based on metadata in the file). 
+if it is a Cartesian or Geographic data set (based on metadata in the file).
 
 Required Arguments
 ------------------
@@ -118,7 +118,7 @@ Optional Arguments
 
 **-M**
     Find and report the location of min/max z-values, and count and
-    report the number of nodes set to NaN, if any. 
+    report the number of nodes set to NaN, if any.
 
 .. _-R:
 

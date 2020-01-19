@@ -55,7 +55,7 @@ void get_list (char *top, char *name, int level, struct LINK *list) {
 	int k, library = (strstr (name, ".dylib") != NULL), verb = 0;
 	FILE *fp = NULL;
 	struct LINK *this = NULL;
-	
+
 	strcpy (dir, top);
 	c = strrchr (dir, '/');	c[0] = '\0';
 	if (name[0] == '/')	/* Full path */
@@ -75,7 +75,7 @@ void get_list (char *top, char *name, int level, struct LINK *list) {
 			if (verb) fprintf (stderr, "[%d-%d] Skip: %s\n", level, library, next);
 			continue;
 		}
-		
+	
 		if (used (list, next)) {	/* Already processed this library */
 			if (verb) fprintf (stderr, "[%d-%d] Used: %s\n", level, library, next);
 			continue;

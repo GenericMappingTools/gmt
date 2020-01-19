@@ -1082,7 +1082,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			eigen[i].order = i;
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), vector_compare_singular_values);
-		
+	
 		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
@@ -1405,7 +1405,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row 0 contains NaNs - no resampling taken place!\n");
 		return n;
 	}
-	
+
 	gmt_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
 	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
 	GMT->hidden.mem_coord[GMT_X][0] = lon[0];

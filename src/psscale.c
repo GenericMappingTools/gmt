@@ -751,7 +751,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	/* So if CPT has pattern AND continuous color sections then use_image is false but we still need to do an image later */
 	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
-	
+
 	if (Ctrl->D.emode & (reverse+1)) elength[XLO] =  Ctrl->D.elength;
 	if (Ctrl->D.emode & (2-reverse)) elength[XHI] =  Ctrl->D.elength;
 	if (!strncmp (PSL->init.encoding, "Standard", 8U))
@@ -874,7 +874,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Adjust if there is +n NaNmarker */
 			if (Ctrl->D.emode & 4)	/* Add NaN rectangle on left side */
 				dim[XLO] += 2.0 * Ctrl->D.elength + gap + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + 3.25 * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
-			
+		
 			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
@@ -1557,7 +1557,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
-	
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)

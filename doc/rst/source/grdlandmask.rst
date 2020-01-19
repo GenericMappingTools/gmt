@@ -34,7 +34,7 @@ over water. The nodes defined by the selected region and lattice spacing
 will be set according to one of two criteria: (1) land vs water, or
 (2) the more detailed (hierarchical) ocean vs land vs lake
 vs island vs pond. The resulting mask may be used in subsequent
-operations involving :doc:`grdmath` to mask out data from land [or water] areas. 
+operations involving :doc:`grdmath` to mask out data from land [or water] areas.
 
 Required Arguments
 ------------------
@@ -42,7 +42,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
+    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
 
 .. _-I:
 
@@ -101,7 +101,7 @@ Optional Arguments
 
     **-N**\ *ocean/land/lake/island/pond*.
 
-    [Default is 0/1/0/1/0 (i.e., 0/1)]. 
+    [Default is 0/1/0/1/0 (i.e., 0/1)].
 
 .. _-V:
 
@@ -145,7 +145,7 @@ nodes based on the low resolution data:
    ::
 
     gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
- 
+
 .. include:: explain_gshhg.rst_
 
 See Also

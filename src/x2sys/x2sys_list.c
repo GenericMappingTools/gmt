@@ -165,7 +165,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
 	GMT_Option (API, "bo,do,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'A':
 				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Unknown item %c.\n", Ctrl->F.flags[i]);
-			n_errors++;			
+			n_errors++;		
 		}
 		if (Ctrl->F.flags[i] == 'n') Ctrl->F.mixed = true;	/* Output will have trailing text */
 	}
@@ -332,7 +332,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
 	for (i = j = 0; i < strlen (Ctrl->F.flags); i++) {
@@ -345,31 +345,31 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.mode == 1) internal = false;
 		if (Ctrl->Q.mode == 2) external = false;
 	}
-	
+
 	sec_2_unit = GMT->current.setting.time_system.i_scale;	/* Save conversion from secs to TIME_UNIT before MGD77_Init switches to UNIX time system (seconds) */
-	
+
 	/* Initialize system via the tag */
-	
+
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	/* Verify that the chosen column is known to the system */
-	
+
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "-C must specify a single column name\n");
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	/* Select internal, external, or both */
-	
+
 	coe_kind = 0;
 	if (internal) coe_kind |= 1;
 	if (external) coe_kind |= 2;
 	if (coe_kind == 0) coe_kind = 3;	/* Both */
-	
+
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
-	
+
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
 	if (GMT->common.R.active[RSET]) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read crossover database from %s...\n", from);
@@ -380,13 +380,13 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_NOERROR);
 	}
-	
+
 	if (Ctrl->W.file) {	/* Got file with weights for each track, OR a fixed weight [1] */
 		if (x2sys_read_weights (GMT, Ctrl->W.file, &weight_name, &weights, &n_weights) != X2SYS_NOERROR) fixed_weight = atof (Ctrl->W.file);
 	}
-	
+
 	/* Must count to see total number of COE per track */
-	
+
 	trk_nx = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);
 	trk_name = gmt_M_memory (GMT, NULL, n_tracks, char *);
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
@@ -395,9 +395,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			trk_name[P[p].id[k]] = P[p].trk[k];
 		}
 	}
-	
+
 	/* Initialize column output types */
-	
+
 	one = 0;	two = 1;	/* Normal track order */
 	both = Ctrl->S.both;		/* Usually false unless -S<track>+b is set */
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
@@ -406,7 +406,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	gmt_set_column (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
 	gmt_set_column (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
 
-	n_items = strlen (Ctrl->F.flags); 
+	n_items = strlen (Ctrl->F.flags);
 	for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
 		switch (Ctrl->F.flags[i]) {	/* acdhitTvxyz */
 			case 'a':	/* Angle between tracks */
@@ -446,7 +446,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR);
 	}
-	
+
 	if (Ctrl->A.active) {	/* Requested asymmetry estimates */
 		int *x_side[2] = {NULL, NULL}, half;
 		double mid[2];
@@ -610,7 +610,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	}
 	Out = gmt_new_record (GMT, out, (Ctrl->F.mixed) ? record : NULL);
 	record[0] = '\0';
-	
+
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 		if (Ctrl->N.active) {	/* Not enough COEs check */
 			if (Ctrl->N.mode) {	/* Checking this pair only*/
@@ -632,7 +632,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
 		}
-		
+	
 		for (k = 0; k < P[p].nx; k++) {	/* For each crossover */
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (gmt_M_is_dnan (P[p].COE[k].data[one][COE_Z]) || gmt_M_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
@@ -729,9 +729,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
-	
+
 	/* Done, free up data base array */
-	
+
 	x2sys_free_coe_dbase (GMT, P, np);
 	gmt_M_free (GMT, trk_nx);
 	gmt_M_free (GMT, Out);

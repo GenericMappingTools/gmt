@@ -32,7 +32,7 @@ into one color or gray shade in image processing, when clipping of the
 range of data values is required, or for reclassification of data values.
 *above*, *below*, *between*, *old* and *new* can be any number or even NaN
 (Not a Number). You must choose at least one of the **-S** options. Use
-**-R** to only extract a subset of the *ingrid* file. 
+**-R** to only extract a subset of the *ingrid* file.
 
 Required Arguments
 ------------------
@@ -60,7 +60,7 @@ Optional Arguments
 **-Sa**\ *high/above*
     Set all data[i] > *high* to *above*.
 **-Sb**\ *low/below*
-    Set all data[i] < *low* to *below*. 
+    Set all data[i] < *low* to *below*.
 **-Si**\ *low/high/between*
     Set all data[i] >= *low* and <= *high* to *between*.
     Repeat the option for as many intervals as are needed.

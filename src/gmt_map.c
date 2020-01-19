@@ -1802,7 +1802,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			gmt_M_memcpy (ytmp[out], ytmp[in], m, double);
 			continue;
 		}
-#if 0	
+#if 0
 /* This caused lots of issues with various map types so replaced by the check about
  * that uses the mid-longitude as center and does a +/- 180 test from that.
  * P. Wessel, Dec 1 2016 */
@@ -2206,7 +2206,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	unsigned int no_scaling = P->no_scaling;
 	bool update_parameters = false;
 	double fw, fh, fx, fy, w, h;
-	
+
 	/* Set up the original min/max values, the rectangular map dimensionsm and the projection offset */
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
@@ -5080,7 +5080,7 @@ GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double 
 	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
 	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
 	 * cases.  P. Wessel, July 20, 2019. */
-	
+
 	np = (GMT->current.proj.polar && (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0)) ? GMT->current.map.n_lon_nodes + 2: 2 * (GMT->current.map.n_lon_nodes + 1);
 	work_x = gmt_M_memory (GMT, NULL, np, double);
 	work_y = gmt_M_memory (GMT, NULL, np, double);
@@ -6649,7 +6649,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
 			sprintf (par, " --FORMAT_DATE_MAP=\"o yyyy\"");
 		}
-		
+	
 		interval = (unit == 'Y' || unit == 'O' || unit == 'D');
 	}
 	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
@@ -6659,7 +6659,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		if (unit == 'H' && d == 24.0) d = 1.0, f /= 24.0, unit = 'D';
 		sunit[0] = unit;	/* Since we need a string in strcat */
 	}
-	
+
 	/* Set annotation/major tick interval */
 	T = &A->item[item];
 	if (T->active && T->interval == 0.0) {
@@ -7971,7 +7971,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
-	
+
 /* Open MP does not work yet */
 
 /* The OpenMP loop below fails and yields nodes still set to NaN.  I cannot see any errors but obviously
@@ -7979,7 +7979,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 //#ifdef _OPENMP
 //#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
-//#endif 
+//#endif
 	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
@@ -8183,7 +8183,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 //#ifdef _OPENMP
 //#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz,b) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz,z_int_bg,nb)
-//#endif 
+//#endif
 	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
@@ -8867,7 +8867,7 @@ double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 		}
 	}
 	if (project) cum_dist *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-	
+
 	return (cum_dist);
 }
 
@@ -9081,9 +9081,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	 * to/from may call this function only, while all the plotting program need to have more
 	 * things initialized and they will call gmt_map_setup instead, which starts by calling
 	 * gmt_proj_setup first. */
-	
+
 	bool search = false;
-	
+
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
 
 	if (!GMT->common.J.active) {
@@ -9289,7 +9289,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		Return(GMT_MAP_NO_PROJECTION);
 
 	GMT->current.proj.search = search;
-	
+
 	GMT->current.proj.i_scale[GMT_X] = (GMT->current.proj.scale[GMT_X] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_X] : 1.0;
 	GMT->current.proj.i_scale[GMT_Y] = (GMT->current.proj.scale[GMT_Y] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Y] : 1.0;
 	GMT->current.proj.i_scale[GMT_Z] = (GMT->current.proj.scale[GMT_Z] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Z] : 1.0;
@@ -9303,7 +9303,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (GMT->current.proj.central_meridian < GMT->common.R.wesn[XLO] && (GMT->current.proj.central_meridian + 360.0) <= GMT->common.R.wesn[XHI]) GMT->current.proj.central_meridian += 360.0;
 		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
 	}
-	
+
 	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
 	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
@@ -9321,7 +9321,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) Return (i);
 
 	search = GMT->current.proj.search;
-	
+
 	/* If intervals are not set specifically, round them to some "nice" values
 	 * Remember whether frame items in both directions were automatically set */
 	for (i = 0; i < 6; i++)
@@ -9406,7 +9406,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.active]);
 		mode = GMT->common.j.mode;	/* Override with what -j said */
 	}
-	
+
 	switch (unit) {
 			/* First the three arc angular distance units */
 
@@ -9457,7 +9457,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			proj_type = GMT_CARTESIAN;
 			if (GMT->common.n.periodic[GMT_X] || GMT->common.n.periodic[GMT_Y])
 				map_set_distaz (GMT, GMT_CARTESIAN_DIST_PERIODIC, type, "");
-			else	
+			else
 				map_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			break;
 		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J */

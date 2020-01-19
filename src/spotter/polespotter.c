@@ -84,11 +84,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->A.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_str_free (C->S.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->A.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -203,7 +203,7 @@ int n;
 						if (gmt_get_modifier (opt->arg, 'c', txt_a) && txt_a[0]) {	/* Crossing output file */
 							Ctrl->S.dump_crossings = true;
 							Ctrl->S.file = strdup (txt_a);
-							
+						
 						}
 						break;
 					default:
@@ -285,7 +285,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	gmt_grdfloat *layer = NULL;
 	double weight, seg_weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
 	double P1[3], P2[3], M[3], G[3], X[3];
-	
+
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *In[2] = {NULL, NULL};
@@ -353,7 +353,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	if (Ctrl->S.mode == SPOTTER_SCAN_SPOTS) {
 		double Rot0[3][3], Rot[3][3], *GG = NULL;
 		/* Loop over all abyssal hill and fracture zone lines and consider each subsecutive pair of points to define a great circle that intersects the pole */
-	
+
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Entering scan mode: spots\n");
 		create_great_circles = (Ctrl->G.active || Ctrl->S.dump_lines);
 		if (Ctrl->S.dump_crossings) {	/* Need temporary storage for all great circle poles and their weights and type */
@@ -530,7 +530,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		double *plon = NULL, *plat = NULL, sum_L = 0.0, del_angle, chi2;
 
 		/* Now visit all our segments to convert to geocentric and to get sum of weights once */
-		
+	
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Entering scan mode: poles\n");
 		for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
 			if (In[d] == NULL) continue;	/* Don't have this data set */
@@ -552,7 +552,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			}
 		}
 		/* Now we know sum_L which we will divide our grid by at the end */
-		
+	
 		plon = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		plat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 		for (grow = 0; grow < Grid->header->n_rows; grow++) {	/* Try all possible pole latitudes in selected region */
@@ -588,7 +588,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		}
 		gmt_M_free (GMT, plon);
 		gmt_M_free (GMT, plat);
-			
+		
 		for (node = 0; node < Grid->header->size; node++) Grid->data[node] /= (gmt_grdfloat)sum_L;	/* Correct for weight sum */
 	}
 	if (Ctrl->G.active) {	/* Write the spotting grid */
@@ -602,6 +602,6 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	Return (GMT_NOERROR);
 }

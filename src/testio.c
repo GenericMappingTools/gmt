@@ -37,7 +37,7 @@ int main () {
 	char i_string[GMT_STR16], o_string[GMT_STR16], buffer[GMT_BUFSIZ];
 	struct GMT_VECTOR *Vi = NULL, *Vo = NULL;
 	struct GMT_GRID *G = NULL;
-	
+
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
@@ -57,7 +57,7 @@ int main () {
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/5/0/5 -Jm1 -Fk -bi3 ->%s", i_string, o_string);
-	
+
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "mapproject", GMT_MODULE_CMD, buffer);
 	if (status) {
@@ -73,7 +73,7 @@ int main () {
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
-	
+
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "xyz2grd", GMT_MODULE_CMD, buffer);
 	if (status) {
@@ -83,16 +83,16 @@ int main () {
 	if ((G = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
 
 	/* Now print out the results locally */
-	
+
 	for (row = 0; row < Vo->n_rows; row++) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
 	gmt_free_vector (API->GMT, &Vo, true);
-	
+
 	printf ("n_columns,n_rows = %d %d\n", G->header->n_columns, G->header->n_rows);
 	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!gmt_M_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
-	
+
 	if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G\n");
 	}
@@ -105,7 +105,7 @@ int main () {
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);
-	
+
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	GMT_Message (API, GMT_TIME_NONE, "\ngmtselect output\n");
 	status = GMT_Call_Module (API, "gmtselect", GMT_MODULE_CMD, buffer);

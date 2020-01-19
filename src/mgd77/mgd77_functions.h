@@ -8,7 +8,7 @@
 
 /*!
  * \file mgd77_functions.h
- * \brief  
+ * \brief 
  */
 
 #ifndef _MGD77_FUNCTIONS_H

@@ -317,8 +317,8 @@ GMT_LOCAL integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, doubler
     /* Local variables */
     static doublereal a, e;
     static integer i__;
-    static doublereal s, b1, b2, d1, d2, e1, e2, al, cm, gt, sm, tm, un[3], 
-	    ts, cm2, sb1, sb2, sm2, tm1, tm2, tp1, tp2, cmm, sig, ems, tau1, 
+    static doublereal s, b1, b2, d1, d2, e1, e2, al, cm, gt, sm, tm, un[3],
+	    ts, cm2, sb1, sb2, sm2, tm1, tm2, tp1, tp2, cmm, sig, ems, tau1,
 	    tau2, sinh__, sinh2, dummy, unorm;
 
 
@@ -489,9 +489,9 @@ GMT_LOCAL integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, doubler
 	sinh__ = sm + sig;
 	sinh2 = sm2 + sb2;
 	e = sig * sm - cmm - cmm;
-	*f = *f1 + al * tau1 + a * ((cm * sm2 - sm * cm2) * (d1 + d2) + sig * 
+	*f = *f1 + al * tau1 + a * ((cm * sm2 - sm * cm2) * (d1 + d2) + sig *
 		(cm * cm2 - sinh__ * sm2) * d1) / (sig * e);
-	gt = tau1 + ((cm * cm2 - sm * sinh2) * (d1 + d2) + sig * (cm * sinh2 
+	gt = tau1 + ((cm * cm2 - sm * sinh2) * (d1 + d2) + sig * (cm * sinh2
 		- sinh__ * cm2) * d1) / e;
     } else {
 
@@ -508,12 +508,12 @@ GMT_LOCAL integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, doubler
 	tm1 = 1. - e1;
 	tm2 = 1. - e2;
 	e = tm * (sig * (ems + 1.) - tm - tm);
-	*f = *f1 + al * s + a * (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 * 
-		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2)) 
+	*f = *f1 + al * s + a * (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 *
+		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2))
 		/ (sig * e);
 	tp1 = e1 + 1.;
 	tp2 = e2 + 1.;
-	gt = s + (tm1 * (tm * tp2 - sig * e2 * tp1) * d1 - tm2 * (tm * tp1 - 
+	gt = s + (tm1 * (tm * tp2 - sig * e2 * tp1) * d1 - tm2 * (tm * tp1 -
 		sig * e1 * tp2) * d2) / e;
     }
 
@@ -607,7 +607,7 @@ GMT_LOCAL doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, double
     double exp(doublereal);
 
     /* Local variables */
-    static doublereal e, s, b1, b2, d1, d2, e1, e2, cm, sm, tm, ts, cm2, sb1, 
+    static doublereal e, s, b1, b2, d1, d2, e1, e2, cm, sm, tm, ts, cm2, sb1,
 	    sb2, sm2, tm1, tm2, cmm, sig, ems, dummy;
 
 
@@ -702,8 +702,8 @@ GMT_LOCAL doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, double
 	tm1 = 1. - e1;
 	tm2 = 1. - e2;
 	e = tm * (sig * (ems + 1.) - tm - tm);
-	ret_val = *h1 + b2 * s + (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 * 
-		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2)) 
+	ret_val = *h1 + b2 * s + (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 *
+		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2))
 		/ (sig * e);
     }
     return ret_val;
@@ -951,7 +951,7 @@ GMT_LOCAL integer getsig_(integer *n, doublereal *x, doublereal *y, doublereal *
     doublereal d__1, d__2;
 
     /* Builtin functions */
-    double sqrt(doublereal), exp(doublereal), d_sign(doublereal *, doublereal 
+    double sqrt(doublereal), exp(doublereal), d_sign(doublereal *, doublereal
 	    *);
 
     /* Local variables */
@@ -1206,7 +1206,7 @@ L2:
 
 	s1 = al * (grad[n1 * 3 + 1] * p2[0] + grad[n1 * 3 + 2] * p2[1] + grad[
 		n1 * 3 + 3] * p2[2]) / unorm;
-	s2 = -al * (grad[n2 * 3 + 1] * p1[0] + grad[n2 * 3 + 2] * p1[1] + 
+	s2 = -al * (grad[n2 * 3 + 1] * p1[0] + grad[n2 * 3 + 2] * p1[1] +
 		grad[n2 * 3 + 3] * p1[2]) / unorm;
 	s = h__[n2] - h__[n1];
 	d1 = s - s1;
@@ -1694,7 +1694,7 @@ GMT_LOCAL integer gradg_(integer *n, doublereal *x, doublereal *y, doublereal *z
     static integer j, k;
     static doublereal t, g1, g2, g3, r1, r2, a11, a12, a22, fk, sd, cx;
     static integer nn;
-    static doublereal cy, xj, xk, yk, zk, yj, zj, sx, sy, xs, ys, dg1, dg2, 
+    static doublereal cy, xj, xk, yk, zk, yj, zj, sx, sy, xs, ys, dg1, dg2,
 	    dgk[3], den;
     static integer ifl;
     static doublereal det, sig;
@@ -1984,7 +1984,7 @@ L2:
 	a12 += t * xj * yj;
 	a22 += t * ys;
 	t = (d__ + sd) * (fk - f[j]) / (alfa * alfa * sinal) + (d__ * (g1 * x[
-		j] + g2 * y[j] + g3 * z__[j]) - sd * (grad[j * 3 + 1] * xk + 
+		j] + g2 * y[j] + g3 * z__[j]) - sd * (grad[j * 3 + 1] * xk +
 		grad[j * 3 + 2] * yk + grad[j * 3 + 3] * zk)) / den;
 	r1 -= t * xj;
 	r2 -= t * yj;
@@ -2596,7 +2596,7 @@ GMT_LOCAL integer gradl_(integer *n, integer *k, doublereal *x, doublereal *y, d
     lm1 = lmin - 1;
     i__1 = lm1;
     for (lnp = 2; lnp <= i__1; ++lnp) {
-	getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp, 
+	getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp,
 		npts, &df, &ierr);
 	sum = sum + 1. - df * df;
 /* L1: */
@@ -2607,7 +2607,7 @@ GMT_LOCAL integer gradl_(integer *n, integer *k, doublereal *x, doublereal *y, d
 
     i__1 = lmax;
     for (lnp = lmin; lnp <= i__1; ++lnp) {
-	getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp, 
+	getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp,
 		npts, &rf, &ierr);
 	if (rf - df >= rtol) {
 	    goto L3;
@@ -2700,7 +2700,7 @@ L8:
 
 	++lnp;
 	if (lnp <= lmax) {
-	    getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp, 
+	    getnp_(&x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], &lnp,
 		    npts, &rf, &ierr);
 	}
 	rin = 1. / ((rf + 1.) * 1.05);
@@ -3211,7 +3211,7 @@ GMT_LOCAL integer intrc1_(integer *n, doublereal *plat, doublereal *plon, double
 
 /* Locate P with respect to the triangulation. */
 
-    trfind_(ist, p, &nn, &x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1], 
+    trfind_(ist, p, &nn, &x[1], &y[1], &z__[1], &list[1], &lptr[1], &lend[1],
 	    &b1, &b2, &b3, &i1, &i2, &i3);
     if (i1 == 0) {
 	goto L12;
@@ -3489,8 +3489,8 @@ L13:
     return 0;
 } /* intrc1_ */
 
-GMT_LOCAL integer smsgs_(integer *n, doublereal *x, doublereal *y, 
-	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
+GMT_LOCAL integer smsgs_(integer *n, doublereal *x, doublereal *y,
+	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer
 	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
 	p, integer *nit, doublereal *dfmax, doublereal *f, doublereal *grad, integer *ier) {
     /* System generated locals */
@@ -3502,10 +3502,10 @@ GMT_LOCAL integer smsgs_(integer *n, doublereal *x, doublereal *y,
 
     /* Local variables */
     static integer j, k;
-    static doublereal t, g1, g2, g3, r1, r2, r3, t1, t2, t3, t4, t5, t6, c11, 
+    static doublereal t, g1, g2, g3, r1, r2, r3, t1, t2, t3, t4, t5, t6, c11,
 	    c12, c13, c22, c23, c33, df, fk, cx;
     static integer nn;
-    static doublereal cy, pp, xj, xk, yj, yk, zj, zk, sx, sy, xs, ys, rr2, 
+    static doublereal cy, pp, xj, xk, yj, yk, zj, zk, sx, sy, xs, ys, rr2,
 	    rr3, cc22, cc23, cc33, dgk[3];
     static integer ifl;
     static doublereal gjk, det, gkj, dgx, dgy, sig;
@@ -3718,7 +3718,7 @@ L2:
 	c23 += t6 * xj * yj;
 	c33 += t6 * ys;
 	gkj = g1 * x[j] + g2 * y[j] + g3 * z__[j];
-	gjk = grad[j * 3 + 1] * xk + grad[j * 3 + 2] * yk + grad[j * 3 + 3] * 
+	gjk = grad[j * 3 + 1] * xk + grad[j * 3 + 2] * yk + grad[j * 3 + 3] *
 		zk;
 	r1 = r1 + t4 * (f[j] - fk) + t5 * (gjk - gkj);
 	t = t5 * (f[j] - fk) - t6 * gkj + t2 * gjk / den1;
@@ -4098,7 +4098,7 @@ GMT_LOCAL integer smsurf_(integer *n, doublereal *x, doublereal *y, doublereal *
 L3:
     nit = nitmax;
     dfmax = tol;
-    smsgs_(&nn, &x[1], &y[1], &z__[1], &u[1], &list[1], &lptr[1], &lend[1], 
+    smsgs_(&nn, &x[1], &y[1], &z__[1], &u[1], &list[1], &lptr[1], &lend[1],
 	    iflgs, &sigma[1], &w[1], &p, &nit, &dfmax, &f[1], &grad[4], &ierr)
 	    ;
     if (ierr < 0) {

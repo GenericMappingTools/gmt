@@ -19,9 +19,9 @@
  * Date:	1-Mar-2018
  * Version:	6 API
  *
- * Brief synopsis: gmt docs 
+ * Brief synopsis: gmt docs
  *	Opens GMT HTML docs in the default viewer (browser); when called from
- *	gmt end show it also opens illustrations via default viewer. 
+ *	gmt end show it also opens illustrations via default viewer.
  */
 
 #include "gmt_dev.h"
@@ -54,7 +54,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -109,17 +109,17 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the docs main code ----------------------------*/
 
 	opt = options;	/* Start at first option to gmt docs */
-	
+
 	while (opt) {	/* For all possible arguments */
 		if (opt->option == 'Q') { print_url = true, opt = opt->next; continue; }	/* Process optional -Q option which must be first (or maybe second if -S also) */
 		else if (opt->option == 'S') { remote = true, opt = opt->next; continue; }	/* Process optional -S option which is either first or second (if -Q) */
 		else if (opt->option == 'V') { opt = opt->next; continue; }	/* Skip the optional -V common option */
-		
+	
 		if (opt->option != GMT_OPT_INFILE) {	/* This is not good */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown option (-%c)\n", opt->option);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		
+	
 		if ((ext = gmt_get_ext (opt->arg)) && (id = gmt_get_graphics_id (GMT, ext)) != GMT_NOTSET) {	/* Got a graphics file */
 			if (strchr (opt->arg, GMT_ASCII_RS)) {	/* Got a file with spaces there are temporarily represented by RS */
 				sprintf (name, "\'%s\'", opt->arg);
@@ -178,12 +178,12 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		else {	/* Documentation references */
 
 			docname = gmt_current_name (opt->arg, name);	/* Get modern mode name */
-	
+
 			if (strcmp (opt->arg, docname))	/* Gave classic name so change to what was given */
 				docname = opt->arg;
 			else
 				docname = gmt_get_full_name (API, opt->arg);
-				
+			
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
@@ -224,7 +224,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
 
 			if (opt->next && opt->next->option != GMT_OPT_INFILE) remote = true;	/* Can only use anchors on actual URLs not local files */
-			
+		
 			/* Get the local URL (which may not exist) */
 			if (other_file) {	/* A local or Web file */
 				if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */
@@ -302,11 +302,11 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		}
 		called = true;
 	}
-	
+
 	if (!called) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No files or documents given\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	Return (error);
 }

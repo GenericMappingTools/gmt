@@ -150,7 +150,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
-		
+	
 	/* To ensure that all is written to stdout we must set updated to true */
 
 	gmtinit_update_keys (GMT, true);

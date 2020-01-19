@@ -133,7 +133,7 @@ See Also
 --------
 
 :doc:`x2sys_binlist`,
-:doc:`x2sys_cross` 
+:doc:`x2sys_cross`
 :doc:`x2sys_datalist`,
 :doc:`x2sys_init`,
 :doc:`x2sys_list`,

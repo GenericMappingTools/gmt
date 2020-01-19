@@ -25,7 +25,7 @@ cat << EOF > test.awk
 	true_y = \$6
 	GMT_x = \$7
 	GMT_y = \$8
-	
+
 #	Check longitudes & latitudes
 
 	dx = GMT_lon - true_lon
@@ -39,7 +39,7 @@ cat << EOF > test.awk
 	if (! (dy == 0.0)) {
 		printf "%s: Bad latitude conversion, d = %lg\n", \$9, dy
 	}
-	
+
 #	Check x & y
 
 	dx = GMT_x - true_x

@@ -1125,7 +1125,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			out = gmt_M_memory (GMT, NULL, n_out, double);
 			Out = gmt_new_record (GMT, out, NULL);
 		}
-	
+
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
@@ -1166,7 +1166,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Out = gmt_new_record (GMT, out, NULL);
 				Out->text = (GMT->current.io.trailing_text[GMT_OUT]) ? In->text : NULL;
 			}
-			
+		
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);

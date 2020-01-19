@@ -144,7 +144,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-static char *dimtemplate = 
+static char *dimtemplate =
 	"#!/usr/bin/env bash\n"
 	"#\n"
 	"#\n"
@@ -1137,11 +1137,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		
+	
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		
+	
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
@@ -1163,7 +1163,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				if (S->data[col][row] < err_min) err_min = S->data[col][row];
 				if (S->data[col][row] > err_max) err_max = S->data[col][row];
 			}
-			
+		
 			/* calculate MEDIAN and MAD for each row */
 			gmt_median (GMT, err_workarray, S->n_columns, err_min, err_max, err_null_median, &err_median);
 			err_workarray[0] = err_min = err_max = fabs (err_workarray[0] - err_median);
@@ -1188,7 +1188,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		gmt_M_free (GMT, Out);
 		gmt_M_free (GMT, err_workarray);
-		
+	
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 			Return (API->error);	/* Disables further data output */
 		}

@@ -20,7 +20,7 @@
  * Author:	Paul Wessel
  * Date:	1-JUN-2013
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sph2grd"
@@ -70,22 +70,22 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPH2GRD_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SPH2GRD_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.hc = C->F.hp = DBL_MAX;	/* No high-cutting is the default */
 	C->F.lc = C->F.lp = 0.0;	/* No low-cutting is the default */
-	
+
 	C->N.mode = 'm';
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -119,7 +119,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
 	GMT_Option (API, "V,bi4,e,h,i,r,s,x,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -242,13 +242,13 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the sph2grd main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) gmt_set_column (GMT, GMT_IN, col, GMT_IS_FLOAT);	/* Not reading lon,lat in this program */
-	
+
 	if ((error = GMT_Set_Columns (API, GMT_IN, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
@@ -263,7 +263,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	gmt_set_geographic (GMT, GMT_IN);	/* But x and y are really lon,lat in the rest of the program */
-	
+
 	if (Ctrl->F.active && Ctrl->F.km) {	/* Convert cutoffs to harmonic degrees */
 		double scale = 360.0 * GMT->current.proj.DIST_KM_PR_DEG;
 		Ctrl->F.lc = scale / Ctrl->F.lc;
@@ -271,9 +271,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		Ctrl->F.hp = scale / Ctrl->F.hp;
 		Ctrl->F.hc = scale / Ctrl->F.hc;
 	}
-	
+
 	/* First loop over all records and determine the highest L, M */
-	
+
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 		T = D->table[tbl]->segment[seg];
 		for (drow = 0; drow < T->n_rows; drow++) {
@@ -289,7 +289,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
-	
+
 	if (Ctrl->F.active && Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* See if we can save work by ignoring low or high terms */
 		L = (Ctrl->F.hc < DBL_MAX) ? irint (Ctrl->F.hc) : INT_MAX;	/* Get the highest L needed given the high-cut filter */
 		if (L_max > L) {
@@ -302,7 +302,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
 		}
 	}
-	
+
 	/* Allocate C[L][M] and S[L][M] arrays to simplify accessing the coefficients in the big loop */
 	gmt_M_malloc2 (GMT, C, S, L_max + 1, NULL, double *);
 	for (L = 0; L <= L_max; L++) gmt_M_malloc2 (GMT, C[L], S[L], L_max + 1, NULL, double);
@@ -343,7 +343,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	
+
 	if (Ctrl->Q.active) {	/* Set Condon-Shortley phase flag */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Legendre polynomials will include the Condon-Shortley phase\n");
 		L_sign = -1;
@@ -354,7 +354,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->N.mode == 'g') GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Geodesy normalization - inner products summed over surface equal 4pi\n");
 	if (Ctrl->N.mode == 's') GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Schmidt normalization - as used in geomagnetism\n");
-	
+
 	/* Allocate output grid */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -367,7 +367,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	P_lm  = gmt_M_memory (GMT, NULL, n_PLM, double);
 	gmt_M_malloc2 (GMT, Cosmx, Sinmx, n_CS_nx, NULL, double);
 	gmt_M_malloc2 (GMT, Cosm,  Sinm,  Grid->header->n_columns, NULL, double *);
-	
+
 	/* Evaluate longitude terms once and for all to avoid doing it repeatedly in the big loop.
 	 * We compute a matrix with rows representing order M and columns representing longitude.
 	 * Then, we allocate a set of pointers assigned to each row to enable 2-D indexing.*/
@@ -395,7 +395,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		n_bytes += n_PLM * sizeof (double);				/* P_lm */
 		n_bytes += 2 * n_CS_nx * sizeof (double);			/* Sinmx and Cosmn */
 		n_bytes += 2 * Grid->header->n_columns * sizeof (double *);		/* Sinm and Cosm pointers */
-		
+	
 		mem = n_bytes / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
@@ -403,16 +403,16 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	percent_inc = 100.0 / Grid->header->n_rows;	/* Percentage of whole grid represented by one row */
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	n_columns = (duplicate_col) ? Grid->header->n_columns - 1 : Grid->header->n_columns;
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start evaluating the spherical harmonic series\n");
-	
+
 	/* Below section will become parallellized via OpenMP soon.
 	 * Shared:  Grid, L_sign, L_max, L_min, ortho, Cosm, Sinm, Cosmx, Sinmx.
 	 * Private: P_lm, row, lat, col, node, sum, k, L, M.
 	 * Probably redo the verbosity to deal with multiple threads: Split 100% over
 	 * the n_threads, split 10/n_treads into nearest integer.
 	 */
-	
+
 	gmt_M_row_loop (GMT, Grid, row) {					/* For each output latitude */
 		lat = gmt_M_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		/* Compute all P_lm needed for this latitude at once via gmt_plm_bar_all */
@@ -450,15 +450,15 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write grid to file\n");
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		error = API->error;
 	else
 		error = 0;
-	
+
 	/* Clear up by freeing memory */
-	
+
 	gmt_M_free (GMT, P_lm);
 	gmt_M_free (GMT, Cosm);
 	gmt_M_free (GMT, Sinm);
@@ -470,7 +470,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, C);
 	gmt_M_free (GMT, S);
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Completed\n");
 	Return ((error) ? error : EXIT_SUCCESS);
 }

@@ -10,9 +10,9 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	1-Aug-2005
- * 
+ *
  *  References:
  *    Langel, R. A., 1987. The Main Field. In Geomagnetism, Volume I,
  *      (Ed. J. A. Jacobs). London: Academic Press, pp249-512.

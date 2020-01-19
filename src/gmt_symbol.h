@@ -28,7 +28,7 @@
 
 /*!
  * \file gmt_symbol.h
- * \brief Miscellaneous definitions and structures related to symbols 
+ * \brief Miscellaneous definitions and structures related to symbols
  */
 
 #ifndef GMT_SYMBOLS_H
@@ -52,7 +52,7 @@ enum gmt_enum_panel {
 	GMT_PANEL_FILL		= 8,
 	GMT_PANEL_OUTLINE	= 16
 };
-	
+
 /*! Definition of structure used for holding information about a reference point */
 struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 	double x;		/* X position of reference point */

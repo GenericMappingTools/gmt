@@ -6,7 +6,7 @@ gmt set PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1
 
 # Plotting 2 mechanisms on map
 gmt psmeca -R128/130/10/11.1 -JX2id -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
-# lon   lat  dep str dip rake str dip rake m ex nx ny 
+# lon   lat  dep str dip rake str dip rake m ex nx ny
 129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
@@ -22,8 +22,8 @@ EOF
 # y dimension is counted along steepest descent on the plane
 # so the values of depth are only in the vertical cross-section.
 
-# Variation of dip for cross-section plane 
-# (WE azimuth, between points (128E,11N) and (130E,11N))) 
+# Variation of dip for cross-section plane
+# (WE azimuth, between points (128E,11N) and (130E,11N)))
 
 plots () {
 y_offset=-2.5i
@@ -31,7 +31,7 @@ for d in $1 $2 $3 ; do
     gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
         -Q -L -Sc0.4 -Aa128/11/130/11/$d/60/0/100f -Ggrey -Fa0.1i/cc $4 $5 \
         -Y$y_offset -X$x_offset -O -K << EOF
-# lon   lat  dep str dip rake str dip rake m ex nx ny 
+# lon   lat  dep str dip rake str dip rake m ex nx ny
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
 EOF

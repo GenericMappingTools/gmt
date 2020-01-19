@@ -104,7 +104,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 			PH->pole = -1;
 			PH->lat_limit = P->min[GMT_Y];
 			P->min[GMT_Y] = -90.0;
-			
+		
 		}
 		else {	/* N */
 			PH->pole = +1;
@@ -264,7 +264,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	double first_x = 0.0, first_y = 0.0, prev_x = 0.0, prev_y = 0.0, X[3];
 	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
-	
+
 	gmt_grdfloat f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -379,7 +379,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Enables data input and sets access mode */
 		}
 
-		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */
 
 		n_alloc = 0;
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
@@ -524,7 +524,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				case SPHD_VALUES:	f_val = z_val[node];	break;
 				default:	break;	/* Must compute distances below */
 			}
-			
+		
 		}
 
 		/* Here we have the polygon in P */
@@ -558,7 +558,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				else
 					col = p_col;
 				side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
-				
+			
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = gmt_M_ijp (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)

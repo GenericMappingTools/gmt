@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	char *name[6], *code, *def_code = "", buffer[GMT_LEN64] = {""};
 	struct GMTAPI_CTRL *API = NULL;	/* GMT API control structure */
 	struct GMT_GRID *G_real = NULL, *G_imag = NULL, *G_cplx = NULL;
-	
+
 	/* 0. Create file names using the formats and code given [if any] */
 	code = (argc == 2) ? argv[1] : def_code;
 	for (k = 0; k < 6; k++) {
@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 	/* 3. Write out real and imaginary components from one grid  */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL, NULL, name[2], G_cplx) != GMT_NOERROR) exit (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_IMAG, NULL, name[3], G_cplx) != GMT_NOERROR) exit (API->error);
-	
+
 	/* 4. Read in real components into one grid, multiplex, then demultiplex, then write out real again */
 	if ((G_real = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL, NULL, name[0], NULL)) == NULL) exit (API->error);
 	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_INTERLEAVED);	/* First multiplex ... */

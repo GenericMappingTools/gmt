@@ -74,20 +74,20 @@ struct GRDCLIP_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCLIP_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-			
+		
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C->S.class);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C->S.class);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -109,14 +109,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    <above>, <below>, <between>, and <new> can be any number, including NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Choose at least one -S option; -Si -Sr may be repeated.\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int compare_classes (const void *point_1v, const void *point_2v) {
 	/*  Needed to sort classes on low value. */
 	const struct GRDCLIP_RECLASSIFY *point_1 = point_1v, *point_2 = point_2v;
-	
+
 	if (point_1->low < point_2->low) return (-1);
 	if (point_1->low > point_2->low) return (+1);
 	return (0);
@@ -171,7 +171,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
 					}
-					else 
+					else
 						Ctrl->S.above = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 
 					if (!isnan(Ctrl->S.above) && Ctrl->S.above < Ctrl->S.high) {
@@ -287,7 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Your -Sa selection overlaps with your -Sb selection\n");
 		n_errors++;
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option is mandatory\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.mode, "Syntax error -S option: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
@@ -302,11 +302,11 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	unsigned int row, col, k;
 	int error = 0;
 	bool new_grid, go = false;
-	
+
 	uint64_t ij, n_above = 0, n_below = 0;
-	
+
 	double wesn[4];
-	
+
 	struct GRDCLIP_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -332,7 +332,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	
+
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -365,7 +365,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		}
 		else if (new_grid)
 			Out->data[ij] = G->data[ij];
-	}	
+	}
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
@@ -383,7 +383,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		if (Ctrl->S.mode & GRDCLIP_BETWEEN) {
 			strcpy (format, "%" PRIu64 " values ");
 			strcpy (format2, "%" PRIu64 " values ");
-			sprintf (buffer, "between %s and %s set to %s\n", GMT->current.setting.format_float_out, 
+			sprintf (buffer, "between %s and %s set to %s\n", GMT->current.setting.format_float_out,
 				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			strcat (format, buffer);
 			sprintf (buffer, "equal to %s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

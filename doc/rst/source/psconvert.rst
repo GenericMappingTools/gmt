@@ -254,7 +254,7 @@ Optional Arguments
     within a KML folder of the specified name. See the
     `KML documentation <https://code.google.com/apis/kml/documentation/>`_
     for further explanation.
-    
+   
     Note: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,

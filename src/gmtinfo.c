@@ -109,9 +109,9 @@ GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MINMAX_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct MINMAX_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
 	return (C);
@@ -169,7 +169,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V,a");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
 	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -272,13 +272,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1] && strchr ("erR", opt->arg[1]))
 							Ctrl->I.mode = ACTUAL_BOUNDS;
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I%s not recognized\n", opt->arg);					
-							n_errors++;						
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I%s not recognized\n", opt->arg);				
+							n_errors++;					
 						}
 						break;
 					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS;
 						if (opt->arg[1]) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");					
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");				
 							n_errors++;
 						}
 						break;	/* -I- is backwards compatible */
@@ -286,7 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				}
 				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. No increment given.\n");					
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. No increment given.\n");				
 				}
 				else
 					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
@@ -412,14 +412,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		Return (GMT_DIM_TOO_LARGE);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
-	
+
 	if (Ctrl->F.active) {	/* Special case of reporting on record numbers */
 		/* This is best done by reading the whole thing in */
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		uint64_t tbl, seg, start_rec = 0;
-		
+	
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			Return (API->error);	/* Establishes data files or stdin */
 		}
@@ -434,7 +434,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 5, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		for (col = 0; col < 5; col++) GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_FLOAT;
-		
+	
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		switch (Ctrl->F.mode) {
@@ -479,7 +479,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);	/* We are done */
 	}
-	
+
 	give_r_string = (Ctrl->I.active && !(Ctrl->I.mode == BOUNDBOX || Ctrl->C.active));
 	delimiter[0] = (Ctrl->C.active || Ctrl->I.mode == BOUNDBOX) ? '\t' : '/';
 	delimiter[1] = '\0';
@@ -543,7 +543,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			gmt_quad_reset (GMT, Q, ncol);
 			if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
 		}
-		
+	
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
 			if (Ctrl->A.active) {
 				if (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) {
@@ -559,9 +559,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				GMT->current.io.seg_no++;	/* Must manually increment since we are not reading any further */
 			}
 			if (n == 0) continue;			/* This segment, table, or data set had no data records, skip */
-			
+		
 			/* Here we must issue a report */
-			
+		
 			do_report = true;
 			if (Ctrl->L.active && !gmt_M_rec_is_eof (GMT)) do_report = false;	/* Only final report for -L */
  			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must update longitudes separately */
@@ -799,7 +799,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Something went wrong, ncol is still = 0. Maybe a call from an external program? Have to abort here.\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			
+		
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
@@ -884,7 +884,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], PATH_MAX-1);	/* Grab name of current file while we can */
-		
+	
 	}
 	if (GMT->common.a.active) {
 		gmt_list_aspatials (GMT, buffer);
@@ -896,7 +896,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	
+
 	if (!got_stuff) GMT_Report (API, GMT_MSG_NORMAL, "No input data found!\n");
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */

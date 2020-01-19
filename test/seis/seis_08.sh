@@ -9,18 +9,18 @@
 #
 #Thank you Dan and Joaquim.
 #
-#I was hoping to use psmeca to plot moment  tensors with possibly large non-DC 
-#components.  But I'm not sure that the  problem is necessarily due only to these 
+#I was hoping to use psmeca to plot moment  tensors with possibly large non-DC
+#components.  But I'm not sure that the  problem is necessarily due only to these
 #large components.
 #
 #take for  example this tensor:
 #
-#echo "3 3 0 0.961 0.204 -0.895 1.045 -0.307 0.716 2"  | psmeca -JX6 -R0/6/0/6 
+#echo "3 3 0 0.961 0.204 -0.895 1.045 -0.307 0.716 2"  | psmeca -JX6 -R0/6/0/6
 #-Sm6 -N -M -T0 -G200 > MT.ps
 #
 #It is very close  to being pure DC (~95%).  Its best fit DC is:
 #
-#echo  "3 3 0  4.319 37.28 145.8  6" | psmeca -JM8 -R0/6/0/6 -Sa6 -G200 >  
+#echo  "3 3 0  4.319 37.28 145.8  6" | psmeca -JM8 -R0/6/0/6 -Sa6 -G200 > 
 #out.ps
 #
 

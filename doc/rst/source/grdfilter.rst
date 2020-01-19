@@ -37,7 +37,7 @@ input (via **-R**) and/or with new increment (via **-I**) or
 registration (via **-T**). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
 within one half-width of the input edges. If the filter is low-pass,
-then the output may be less frequently sampled than the input. 
+then the output may be less frequently sampled than the input.
 
 Required Arguments
 ------------------

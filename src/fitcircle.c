@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	size_t k, s_length; 
+	size_t k, s_length;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 			case 'F':	/* Select outputs for data */
 				Ctrl->F.active = true;
-				s_length = strlen (opt->arg); 
+				s_length = strlen (opt->arg);
 				for (k = 0; k < s_length; k++) {
 					switch (opt->arg[k]) {
 						case 'f': Ctrl->F.mode |=  1;	break;

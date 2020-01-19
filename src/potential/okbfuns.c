@@ -19,7 +19,7 @@
 
 GMT_LOCAL double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
 GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
-	double c_tet, double s_tet, double c_phi, double s_phi); 
+	double c_tet, double s_tet, double c_phi, double s_phi);
 GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z);
 GMT_LOCAL double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
 GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double *c_tet, double *s_tet,
@@ -39,7 +39,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
  * km is an: index of current body facet (if they have different mags); or 0 if mag=const
- * pm is an: index of current body facet (when all F, Mag may vary); or 0 if mag=const. This an UNDOCUMENTED feature 
+ * pm is an: index of current body facet (when all F, Mag may vary); or 0 if mag=const. This an UNDOCUMENTED feature
  * bd_desc is a structure containing the body's description. It contains the following members
  * n_f -> number of facets (int)
  * n_v -> number of vertex of each facet (pointer)

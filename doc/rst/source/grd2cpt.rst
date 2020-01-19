@@ -68,7 +68,7 @@ The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
 there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
 :ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
-line will be used. 
+line will be used.
 
 Required Arguments
 ------------------
@@ -96,7 +96,7 @@ Optional Arguments
     among the built-in tables (type **grd2cpt** to see the list) or give
     the name of an existing CPT [Default gives the turbo CPT].
     Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous CPT from those colors automatically.  
+    to build a linear continuous CPT from those colors automatically. 
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
@@ -179,7 +179,7 @@ Optional Arguments
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
-    colors, and writes out z. 
+    colors, and writes out z.
 
 .. _-R:
 
@@ -221,7 +221,7 @@ Optional Arguments
 
 **-Z**
     Will create a continuous color palette. [Default is discontinuous,
-    i.e., constant color intervals] 
+    i.e., constant color intervals]
 
 .. include:: explain_help.rst_
 

@@ -94,9 +94,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
-	
+
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -111,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x,lat|y,time) columns.)\n");
 	GMT_Option (API, "V,bo,do,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -139,7 +139,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'A':
 				Ctrl->A.active = true;
 				break;
@@ -190,10 +190,10 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
-	
+
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
-	
+
 	adj = gmt_M_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
 	adj->d = gmt_M_memory (GMT, NULL, n_alloc, double);
 	adj->c = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -267,7 +267,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (GMT_RUNTIME_ERROR);		
+		Return (GMT_RUNTIME_ERROR);	
 	}
 	n_tracks = (uint64_t)error;
 
@@ -297,7 +297,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION],  &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale,  -1);	/* Sets output scale for distances using in velocities */
-	
+
 	switch (s->unit[X2SYS_SPEED_SELECTION][0]) {
 		case 'c':
 			vel_scale = 1.0;
@@ -375,7 +375,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
-	
+
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
@@ -413,7 +413,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (GMT_RUNTIME_ERROR);		
+			Return (GMT_RUNTIME_ERROR);	
 		}
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection_GMT = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
@@ -461,7 +461,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		adj_col = gmt_M_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	if (Ctrl->E.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
-	
+
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {	/* Process each track */
 
 		if (Ctrl->I.active && n_ignore) {	/* First see if this track is in the ignore list */
@@ -558,7 +558,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 
 	/* Clean up before quitting */
-	
+
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 
 	x2sys_end (GMT, s);
@@ -570,6 +570,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
 	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);
-	
+
 	Return (GMT_NOERROR);
 }

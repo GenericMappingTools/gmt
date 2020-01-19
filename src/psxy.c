@@ -288,7 +288,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
 		return GMT_NOERROR;
-	
+
 	/* Here we have symbols.  Open up virtual file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
@@ -337,7 +337,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file: %s\n", tmp_file);
 	}
-		
+	
 	return GMT_NOERROR;
 }
 
@@ -357,7 +357,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		/* Add vector heads to this end */
 		PSL_comment (GMT->PSL, "Add vector head to %s of line\n", end[k]);
 		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
-		sincosd (angle, &s, &c); 
+		sincosd (angle, &s, &c);
 		L = (P->end[k].V->v.v_kind[1] == PSL_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
 		P->end[k].V->v.v_width = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
 		dim[0] = x[current[k]] + c * L; dim[1] = y[current[k]] + s * L;
@@ -552,7 +552,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXY_CTRL *C
 GMT_LOCAL unsigned int parse_old_E (struct GMTAPI_CTRL *API, struct PSXY_CTRL *Ctrl, char *text) {
 	unsigned int j = 0, j0, n_errors = 0;
 	char txt_a[GMT_LEN256] = {""};
-	
+
 	while (text[j] && text[j] != '/') {
 		switch (text[j]) {
 			case 'x':	/* Error bar for x */
@@ -627,7 +627,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				switch (opt->arg[0]) {
 					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
-					
+				
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
 #endif
@@ -662,7 +662,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 							case 'y':	Ctrl->E.ybar = EBAR_NORMAL;  break;	/* Error bar for x */
 							case 'X':	Ctrl->E.xbar = EBAR_WHISKER; break;	/* Box-whisker for x */
 							case 'Y':	Ctrl->E.ybar = EBAR_WHISKER; break;	/* Box-whisker for y */
-							default: 
+							default:
 								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Unrecognized error bar selection %c\n", opt->arg[j]);
 								n_errors++;	break;
 						}
@@ -893,7 +893,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
 	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);
 	gmt_M_memset (&last_spiderpen, 1, struct GMT_PEN);
-        
+       
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -968,7 +968,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
 	if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols_start += 2;
-	
+
 	/* For most symbols, the data columns beyond two will be dimensions that either have the units appended (e.g., 2c)
 	 * or they are assumed to be in the current measure unit (PROJ_LENGTH_UNIT).  We therefore set the in_col_type to be
 	 * GMT_IS_DIMENSION for these so that unit conversions are handled correctly.  However, some symbols also require
@@ -1033,7 +1033,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
-	
+
 	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
@@ -1043,7 +1043,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
 		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
 	}
-	
+
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 #ifdef DEBUG
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
@@ -1106,7 +1106,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {
-		if (S.n_required == 1) 
+		if (S.n_required == 1)
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
 		else {
 			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
@@ -1170,7 +1170,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");	/* Place all symbols under a gsave/grestore clause */
-		
+	
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)	/* Specified a particular unit, so scale values unless we chose inches */
@@ -1186,7 +1186,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if (!Ctrl->W.active)	/* No outline of QR code */
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
-		
+	
 		if (S.diagonal) {
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};	/* Put everything in one table */
 			if ((Diag = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_NO_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
@@ -1218,9 +1218,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				continue;							/* Go back and read the next record */
 			}
 			outline_setting = (outline_active) ? 1 : 0;
-			
+		
 			/* Data record to process */
-			
+		
 			in = In->data;
 			n_total_read++;
 
@@ -1296,7 +1296,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						gmt_illuminate (GMT, in[icol], current_fill.rgb);
 				}
 			}
-			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */ 
+			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */
 				current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
@@ -1312,7 +1312,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
-				
+			
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
 					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, current_fill.rgb));
@@ -1402,7 +1402,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
-			
+		
 			xpos[0] = plot_x;
 			if (periodic) {
 				width = 2.0 * gmt_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
@@ -1571,7 +1571,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 						else
 							d = in[ex1+S.read_size];
-						
+					
 						if (!S.convert_angles)	/* Use direction as given */
 							direction = d;
 						else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
@@ -1844,7 +1844,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				SH = gmt_get_DS_hidden (L);
-				
+			
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
@@ -1863,7 +1863,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
 				}
-				
+			
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
@@ -1896,7 +1896,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					s_args[0] = '\0';	/* Recycle this string for this purpose */
 					strcat (s_args, " -G");
 					if (S.D.fill[0]) strcat (s_args, S.D.fill);	/* Set specific fill */
-					strcat (s_args, " -W"); 
+					strcat (s_args, " -W");
 					if (S.D.pen[0])  strcat (s_args, S.D.pen);	/* Set specific outline */
 					Decorate->table[0]->segment[seg_out]->header = strdup (s_args);
 					if (change & 1) change -= 1;	/* Don't want polygon to be true if -G was found */
@@ -2158,7 +2158,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	gmt_symbol_free (GMT, &S);
-	
+
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);

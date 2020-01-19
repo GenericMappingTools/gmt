@@ -395,9 +395,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0)
 		GMT->common.b.ncol[GMT_IN] = n_out;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, 
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
 			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr,
 			"Syntax error: You cannot select both -F and -L options\n");
 	n_errors += gmt_M_check_condition (GMT, (do_CM4core && Ctrl->do_IGRF) || (do_CM4core && Ctrl->joint_IGRF_CM4),
 			"Syntax error: You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
@@ -413,7 +413,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
 	unsigned int n_out = 0, n_in, t_col = 3;
 	bool cm4_igrf_T = false;
-	
+
 	size_t i, s, need = 0, n_alloc = 0;
 
 	double the_altitude, the_time, *time_array = NULL, *alt_array = NULL, *time_years = NULL, IGRF[7], out[GMT_MAX_COLUMNS];
@@ -479,7 +479,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				for (i = 0; i < 3; i++) Ctrl->CM4->CM4_F.field_components[i] = (int)i+2;	/* Force the x,y,z request */
 				cm4_igrf_T = true;
 			}
-			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
+			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) &&
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;

@@ -326,7 +326,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if ((opt = GMT_Find_Option (GMT->parent, 'p', options))) three_D = true;	/* Gave -p */
-	
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -477,7 +477,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 		n = get_column_bands (S);
 		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Syntax error: -So|O with multiple layers requires -C\n");
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -701,7 +701,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		tcol = n_needed - 1;
 		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
 	}
-	
+
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
 
@@ -817,7 +817,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
-		
+	
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -881,7 +881,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_FLOAT);
 			delayed_unit_scaling[GMT_Y] = (S.u_set && S.u != GMT_INCH);	/* Since S.u will be set under GMT_X if that else branch kicked in */
 		}
-		
+	
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
@@ -1002,7 +1002,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						gmt_illuminate (GMT, in[icol], current_fill.rgb);
 				}
 			}
-			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */ 
+			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */
 				current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
@@ -1066,7 +1066,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (delayed_unit_scaling[GMT_Y]) S.size_y *= GMT->session.u2u[S.u][GMT_INCH];
 			}
 			if (S.base_set & 4) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
-			
+		
 			if (Ctrl->W.cpt_effect) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
@@ -1173,7 +1173,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-						
+					
 					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
 						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 					else
@@ -1184,7 +1184,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[0] = 90.0 - d;
 					else	/* Convert geo azimuth to map direction */
 						data[n].dim[0] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
-						
+					
 					if (gmt_M_is_dnan (data[n].dim[0])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Vector azimuth = NaN near line %d\n", n_total_read);
 						continue;
@@ -1364,7 +1364,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
-			
+		
 			xpos[0] = data[i].x;
 			if (periodic) {
 				width = 2.0 * gmt_half_map_width (GMT, data[i].y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
@@ -1594,7 +1594,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
 				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 		}
-		
+	
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 

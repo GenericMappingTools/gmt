@@ -19,7 +19,7 @@
  *
  *
  */
- 
+
 #include "gmt_dev.h"
 #include "mgd77.h"
 #include "mgd77_codes.h"
@@ -65,19 +65,19 @@ struct MGD77INFO_CTRL {	/* All control options for this program (except common a
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77INFO_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77INFO_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
-	C->C.mode = 3;	
+
+	C->C.mode = 3;
 	C->L.mode = 1;
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -86,9 +86,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]]\n\t[%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
-        
+       
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-             
+            
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   display the vessels and their 4-character codes for each institution.\n");
 	GMT_Option (API, "V,.");
-	
+
 	MGD77_end (API->GMT, &M);	/* Close machinery */
 
 	return (GMT_MODULE_USAGE);
@@ -251,20 +251,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 
 int GMT_mgd77info (void *V_API, int mode, void *args) {
 	int i, id, id_col, t_col, x_col, y_col, error = 0, argno, n_paths;
-	
+
 	int64_t rata_die;
 	size_t length;
-	
+
 	uint64_t rec, counter[MGD77_MAX_COLS];
 	unsigned int saved_range, quad_no, n_quad, use, k;
 	bool first = true, read_file, quad[4] = {false, false, false, false};
-	
+
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
 	double *dvalue[MGD77_MAX_COLS];
-	
+
 	char *tvalue[MGD77_MAX_COLS], **list = NULL;
-		
+	
 	struct MGD77_CONTROL M, Out;
 	struct MGD77_DATASET *D = NULL;
 	struct MGD77INFO_CTRL *Ctrl = NULL;
@@ -297,14 +297,14 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	}
 
 	/* Initialize MGD77 output order and other parameters*/
-	
+
 	MGD77_Init (GMT, &Out);		/* Initialize output MGD77 Machinery */
 	Out.fp = GMT->session.std[GMT_OUT];
 
 	if (Ctrl->I.active) MGD77_Process_Ignore (GMT, 'I', Ctrl->I.code);
 
 	/* Check that the options selected are mutually consistent */
-	
+
 	if (Ctrl->L.active) {	/* Just display the list and exit */
 		(Ctrl->L.mode == 2) ? printf ("CODE\tINSTITUTION/VESSEL\n") : printf ("CODE\tINSTITUTION\n");
 		for (id = i = 0; id < MGD77_N_AGENCIES; id++) {
@@ -317,14 +317,14 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	}
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
-	
+
 	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
-	
+
 	read_file = (Ctrl->E.active || (Ctrl->M.mode == RAW_HEADER));
-	
+
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
 	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, M.time_format);
@@ -333,15 +333,15 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 
 	use = (M.original || M.format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
-	
+
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
-	
+
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
-		
+	
 		D = MGD77_Create_Dataset (GMT);
-		
+	
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header & data for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
@@ -367,7 +367,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			continue;
 		}
 		if (Ctrl->M.mode == FORMATTED_HEADER) {	/* Dump of header items, one per line */
-			MGD77_Dump_Header_Params (GMT, &M, D->H.mgd77[use]);	
+			MGD77_Dump_Header_Params (GMT, &M, D->H.mgd77[use]);
 			MGD77_Close_File (GMT, &M);
 			MGD77_Free_Dataset (GMT, &D);
 			continue;
@@ -376,7 +376,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		x_col = MGD77_Get_Column (GMT, "lon", &M);
 		y_col = MGD77_Get_Column (GMT, "lat", &M);
 		id_col = MGD77_Get_Column (GMT, "id", &M);
-		
+	
 		if (first && Ctrl->E.active) {	/* Output all column headers */
 			for (i = k = 0; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
@@ -384,7 +384,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}
-		
+	
 		if (Ctrl->C.active) {	/* Just list names and info for any extra columns */
 			for (i = k = 0, first = true; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
@@ -400,7 +400,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
-			
+		
 		if (Ctrl->M.mode == RAW_HEADER) {	/* Write entire MGD77 header */
 			fprintf (GMT->session.std[GMT_OUT], "-------------------------------");
 			fprintf (GMT->session.std[GMT_OUT], " Cruise: %8s ", M.NGDC_id);
@@ -421,7 +421,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			}
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}
-		
+	
 		tmin = tmax = GMT->session.d_NaN;
 		this_dist = this_lon = this_lat = ds = this_time = 0.0;
 		xmin1 = xmin2 = 360.0;
@@ -430,16 +430,16 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		ymax = -180.0;
 		gmt_M_memset (quad, 4, bool);	/* Set all to false */
 		gmt_M_memset (counter, MGD77_MAX_COLS, uint64_t);
-	
+
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
 			dvalue[i] = D->values[i];
 			tvalue[i] = D->values[i];
 		}
-		
-		/* Start processing data */
 	
+		/* Start processing data */
+
 		for (rec = 0; rec < D->H.n_records; rec++) {		/* While able to read a data record */
-		
+	
 			/* Get min and max time */
 			if (t_col >= 0 && !gmt_M_is_dnan(dvalue[t_col][rec])) {
 				if (gmt_M_is_dnan(tmin) && gmt_M_is_dnan(tmax)) tmin = tmax = dvalue[t_col][rec];
@@ -471,9 +471,9 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			}
 			ymin = MIN (this_lat, ymin);
 			ymax = MAX (this_lat, ymax);
-			
+		
 			/* Count the number of non-NaN observations */
-			
+		
 			for (i = k = 1; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if ((length = D->H.info[M.order[k].set].col[M.order[k].item].text) != 0) {
@@ -530,7 +530,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 				rata_die = gmt_rd_from_gymd (GMT, yy[1], mm[1], dd[1]);
 				tmax = gmt_rdc2dt (GMT, rata_die, 0.0);
 			}
-		}			
+		}		
 		if (Ctrl->E.active) {
 			fprintf (GMT->session.std[GMT_OUT],"%8s%s%8s%s", M.NGDC_id, GMT->current.setting.io_col_separator, D->H.mgd77[use]->Survey_Identifier, GMT->current.setting.io_col_separator);
 			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmin, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
@@ -539,7 +539,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymax, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			if (!gmt_M_is_dnan(tmin) && !gmt_M_is_dnan(tmax)) {
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmin, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);					
 			} else {
 				fprintf (GMT->session.std[GMT_OUT], "%4s-%2s-%2s%s%4s-%2s-%2s%s",
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,
@@ -555,7 +555,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		}
 		MGD77_Free_Dataset (GMT, &D);
 	}
-		
+	
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);

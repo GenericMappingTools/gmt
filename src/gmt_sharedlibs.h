@@ -6,7 +6,7 @@
 
 /*!
  * \file gmt_sharedlibs.h
- * \brief Structures needed by the various shared libraries. 
+ * \brief Structures needed by the various shared libraries.
  */
 
 #pragma once

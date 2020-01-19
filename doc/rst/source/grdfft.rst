@@ -38,7 +38,7 @@ the data before writing the new values to an output file. The horizontal
 dimensions of the grid are assumed to be in meters. Geographical grids
 may be used by specifying the |SYN_OPT-f| option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
-to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`. 
+to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`.
 
 Required Arguments
 ------------------
@@ -100,7 +100,7 @@ Optional Arguments
     Filter the data. Place **x** or **y** immediately after **-F** to
     filter *x* or *y* direction only; default is isotropic [**r**\ ].
     Choose between a cosine-tapered band-pass, a Gaussian band-pass
-    filter, or a Butterworth band-pass filter. 
+    filter, or a Butterworth band-pass filter.
 
     Cosine-taper:
         Specify four wavelengths *lc*/*lp*/*hp*/*hc* in correct units (see |SYN_OPT-f|)
@@ -121,7 +121,7 @@ Optional Arguments
         lowpass filter, give a hyphen (-) for the *hi* or *lo* wavelength,
         respectively. E.g., **-F**-/30 will lowpass the data using a
         Gaussian filter with half-weight at 30, while **-F**\ 400/- will
-        highpass the data. 
+        highpass the data.
     Butterworth band-pass:
         Append *lo*/*hi*/*order*,
         the two wavelengths in correct units (see |SYN_OPT-f|) and the filter
@@ -156,7 +156,7 @@ Optional Arguments
 
 **-S**\ *scale*
     Multiply each element by *scale* in the space domain (after the
-    frequency domain operations). [Default is 1.0]. 
+    frequency domain operations). [Default is 1.0].
 
 .. _-V:
 

@@ -565,7 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	
+
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
@@ -878,7 +878,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
 	if (get_z && Ctrl->F.mode < LINE) n_coord++;
 	if (Ctrl->F.mode < LINE) Ctrl->E.tessellate = false;	/* No tessellation for symbols */
-	
+
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
@@ -894,7 +894,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
  //       	GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed because of -L\n", (int)D->n_columns, n_coord+Ctrl->L.n_cols);
  //       	Return (GMT_DIM_TOO_SMALL);
  //       }
-	
+
 	n_tables = D->n_tables;
 
 	if (Ctrl->N.mode == GET_LABEL && D->type != GMT_READ_MIXED) {
@@ -922,7 +922,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	
+
 	Out = gmt_new_record (GMT, NULL, record);	/* Since we only need to worry about text in this module */
 
 	/* Now we are ready to take on some input values */
@@ -1178,7 +1178,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					gmt_M_memcpy (kml->z, z, S->n_rows, double);
 					kml->n_in = S->n_rows;
 					kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, false, true, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
-				} 
+				}
 			}
 			else {
 				unsigned int col;

@@ -793,7 +793,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		double wesn[4];
 		got_R = true;
 		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
-		
+	
 		if (!error) {
 			double dx = 0, dy = 0;
 			if (!prhs->registration.val) {	/* Subregion coords are grid-reg. Need to convert to pix-reg */

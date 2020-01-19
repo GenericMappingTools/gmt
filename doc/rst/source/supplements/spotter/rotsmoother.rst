@@ -64,7 +64,7 @@ Optional Arguments
     finite rotation to a quaternion, determining the mean quaternion (rotation) and
     the consider all rotations as perturbation to the mean rotation.  From these
     perturbations we determine the covariance matrix.
-   
+  
 
 .. _-N:
 

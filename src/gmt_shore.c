@@ -544,7 +544,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NetCDF Library Version: %s\n", nc_inq_libvers());
-	
+
 	/* Get global attributes */
 	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
 	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
@@ -755,7 +755,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	ny = (c->bins[b] / c->bin_nx) + 1;
 	c->lat_sw = 90.0 - ny * dx;
 	c->ns = 0;
-	
+
 	c->ant_special = (c->ant_mode && c->res == 'c' && ny == 8);	/* For crude we must split the 50-70S bin at 60S */
 
 	/* Determine if this bin is one of the bins at the left side of the map */
@@ -775,7 +775,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	 * we check if Antarctica with no polygons (i.e., just a tile) and large -A.
 	 * It may have side effects to we keep that issue open for now.
 	 */
-	
+
 	if (c->min_area > 0.0) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
 		may_shrink = true;	/* Most likely, but check for Antarctica */
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
@@ -784,7 +784,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 			if ((ID == GSHHS_ANTARCTICA_ICE_ID || ID == GSHHS_ANTARCTICA_GROUND_ID) && c->ns == 0 && c->min_area > 5000.0) may_shrink = false;
 		}
 	}
-	
+
 	if (c->min_area > 0.0 && may_shrink) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
@@ -916,7 +916,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		c->seg[s].dy = gmt_M_memory (GMT, NULL, c->seg[s].n, short);
 		start[0] = seg_start[s];
 		count[0] = c->seg[s].n;
-		if ((err = nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx)) || 
+		if ((err = nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx)) ||
 			(err = nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy))) {
 			gmt_free_shore (GMT, c);
 			gmt_M_free (GMT, seg_skip);
@@ -1615,7 +1615,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 	unsigned int col, id, side, uinside = 0U;
 	uint64_t k, i;
 	double xx = lon, yy, xmin, xmax, ymin, ymax, west_border, east_border;
-	
+
 	if (inside < 0) {	/* Final call to clean memory */
 		for (id = 0; id < 2; id++) {
 			gmt_free_shore_polygons (GMT, p[id], np[id]);
@@ -1691,6 +1691,6 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 			}
 		}
 	}
-	
+
 	return this_point_level;
 }

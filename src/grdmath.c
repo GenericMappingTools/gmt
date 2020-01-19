@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tThe operators and number of input and output arguments are:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
-	GMT_Message (API, GMT_TIME_NONE, 
+	GMT_Message (API, GMT_TIME_NONE,
 		"	ABS        1  1    abs (A)\n"
 		"	ACOS       1  1    acos (A)\n"
 		"	ACOSH      1  1    acosh (A)\n"
@@ -692,13 +692,13 @@ GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * where the -S option turns on the collapsible stack operators; it turns itself off
 	 * once the stack has been processed to yield a single new grid on the stack.
 	 */
-	
+
 	uint64_t node, s;
 	double *array = NULL;
 	double (*func) (struct GMT_CTRL *, double *, uint64_t);	/* Pointer to function returning a double */
 
 	/* First ensure we have a reducing operator */
-	
+
 	if (!strcmp (OP, "ADD"))
 		func = &stack_collapse_add;
 	else if (!strcmp (OP, "AND"))
@@ -2640,7 +2640,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,seg,node,inside,S) shared(info,stack,last,GMT,T)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -3088,7 +3088,7 @@ GMT_LOCAL void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,last,GMT,T)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		for (col = 0; col < info->G->header->mx; col++) {	/* Visit each node */
@@ -3120,7 +3120,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	 * We use helper array curr_dist which needs one sectiion per thread and we determine which thread we are
 	 * working on in the loop.  In OpenMP is not active then number of threads is 1 and the current thread is
 	 * always 0. PW Aug 4. 2018. */
-	
+
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 	gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);	/* Request distances in km */
@@ -3203,7 +3203,7 @@ GMT_LOCAL void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,prev,GMT,T)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -3293,16 +3293,16 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
 		W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		gmt_get_cellarea (GMT, W);
 	}
-	
+
 	lmsscl_f = (float)gmt_grd_lmsscl (GMT, stack[last]->G, W, NULL, true);
 
 	if (W) gmt_free_grid (GMT, &W, true);
-	
+
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl_f;
 }
 
@@ -3450,11 +3450,11 @@ GMT_LOCAL void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		gmt_get_cellarea (GMT, W);
 	}
-	
+
 	zm = (float)gmt_grd_mean (GMT, stack[last]->G, W);	/* Compute the [weighted] mean */
 
 	if (W) gmt_free_grid (GMT, &W, true);
-	
+
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = zm;
 }
 
@@ -3467,7 +3467,7 @@ GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for MEANW!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for MEANW!\n");
-	
+
 	if (stack[prev]->constant) {	/* Trivial case if data are constant */
 		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		return;
@@ -3557,11 +3557,11 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		gmt_get_cellarea (GMT, W);
 	}
-	
+
 	mode = (float)gmt_grd_mode (GMT, stack[last]->G, W, true);
 
 	if (W) gmt_free_grid (GMT, &W, true);
-	
+
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = mode;
 }
 
@@ -3714,7 +3714,7 @@ GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,dummy) shared(info,stack,last,GMT,T)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -3739,7 +3739,7 @@ GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,dummy) shared(info,stack,prev,GMT,T)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -3812,7 +3812,7 @@ GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	else {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(info,stack,first,GMT,L,M)
-#endif 
+#endif
 		for (node = 0; node < (int64_t)info->size; node++)
 			stack[first]->G->data[node] = (float)gmt_plm (GMT, L, M, stack[first]->G->data[node]);
 	}
@@ -3843,7 +3843,7 @@ GMT_LOCAL void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	else {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(info,stack,first,GMT,L,M)
-#endif 
+#endif
 		for (node = 0; node < (int64_t)info->size; node++)
 			stack[first]->G->data[node] = (float)gmt_plm_bar (GMT, L, M, stack[first]->G->data[node], false);
 	}
@@ -4024,7 +4024,7 @@ GMT_LOCAL void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	else {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) firstprivate(x) shared(info,stack,last,GMT)
-#endif 
+#endif
 		for (node = 0; node < (int64_t)info->size; node++) {
 			x[0] = stack[last]->G->data[node];
 			stack[last]->G->data[node] = (float)gmt_psi (GMT, x, NULL);
@@ -4305,7 +4305,7 @@ GMT_LOCAL void grd_RMS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = rms;
 		return;
 	}
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
 		W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		gmt_get_cellarea (GMT, W);
@@ -4314,7 +4314,7 @@ GMT_LOCAL void grd_RMS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	rms = (float)gmt_grd_std (GMT, stack[last]->G, W);
 
 	if (W) gmt_free_grid (GMT, &W, true);
-	
+
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = rms;
 }
 
@@ -4470,7 +4470,7 @@ GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -4496,7 +4496,7 @@ GMT_LOCAL void grd_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -4520,7 +4520,7 @@ GMT_LOCAL void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
@@ -4710,7 +4710,7 @@ GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = 0.0;
 		return;
 	}
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
 		W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		gmt_get_cellarea (GMT, W);
@@ -4719,7 +4719,7 @@ GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	std = (float)gmt_grd_std (GMT, stack[last]->G, W);
 
 	if (W) gmt_free_grid (GMT, &W, true);
-	
+
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = std;
 }
 
@@ -4948,7 +4948,7 @@ GMT_LOCAL void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	else {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,a,b) shared(info,stack,prev,last,GMT)
-#endif 
+#endif
 		for (row = 0; row < (int)info->G->header->n_rows; row++) {
 			for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 				a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
@@ -5436,7 +5436,7 @@ GMT_LOCAL void grd_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x,P,S,C) shared(info,stack,prev,GMT,L,M,ortho,z)
-#endif 
+#endif
 	for (row = 0; row < info->G->header->my; row++) {	/* For each latitude */
 		node = row * info->G->header->mx;
 
@@ -5789,7 +5789,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	double tmp = 0.0;
 
 	if (opt == NULL || opt->arg == NULL || opt->arg[0] == '\0') return GRDMATH_ARG_IS_BAD;
-	
+
 	grdmath_backwards_fixing (GMT, &(opt->arg));	/* Possibly exchange obsolete operator name for new one unless compatibility is off */
 
 	if (opt->option == GMT_OPT_OUTFILE2) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
@@ -5894,7 +5894,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 		}
 		gmt_M_free (GMT, recall[k]);
 	}
-	
+
 	/* Free the info grid structure */
 	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
@@ -5918,7 +5918,7 @@ GMT_LOCAL void grdmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	 * cache files. */
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL;
 	char target[GMT_LEN64] = {""};
-	
+
 	for (opt = list; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && !strncmp (opt->arg, "STO@", 4U)) {	/* Found a STO@item */
 			for (opt2 = opt->next; opt2; opt2 = opt2->next) {	/* Loop over all remaining options */
@@ -6610,7 +6610,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 
 		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-		
+	
 		pos = (consumed_operands[op]) ? nstack - 1 : nstack;
 		(*call_operator[op]) (GMT, &info, stack, pos);	/* Do it */
 

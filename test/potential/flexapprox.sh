@@ -23,7 +23,7 @@ disc_vol_grid=`gmt math -Q 512 512 MUL $n_nan SUB 2000 2000 MUL MUL $h MUL =`
 disc_vol_exact=`gmt math -Q $r $r MUL PI MUL $h MUL =`
 scale=`gmt math -Q $disc_vol_exact $disc_vol_grid DIV =`
 # Traditional rhoi = rhol
-gmt gravfft load.nc -Gflex_a.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow       
+gmt gravfft load.nc -Gflex_a.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow      
 z0=`echo -511000 -511000 | gmt grdtrack -Gflex_a.nc -o2`
 gmt grdmath flex_a.nc $z0 SUB = flex_a.nc
 # Approximate rhoi < rhol

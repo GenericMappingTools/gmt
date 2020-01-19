@@ -729,7 +729,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	p_data = gmt_M_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
 
 	if (Ctrl->G.active && Ctrl->E.active && (Ctrl->L.min == Ctrl->L.max)) Ctrl->L.constrain = true;	/* Default generate from A to B  */
-	
+
 	/* Set up rotation matrix e for flat earth, or pole and center for spherical; get Ctrl->L.min, Ctrl->L.max if stay_within  */
 
 	if (Ctrl->N.active) {	/* Flat Earth mode */
@@ -752,10 +752,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 		else {	/* Using -C, -E or -A */
 			double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
 			int done, n_iter = 0;
-			
+		
 			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
-			radius = 0.5 * d_acosd (gmt_dot3v (GMT, a, b)); 
+			radius = 0.5 * d_acosd (gmt_dot3v (GMT, a, b));
 			if (radius > fabs (Ctrl->G.colat)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
 				Ctrl->G.mode = 0;
@@ -775,7 +775,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					sincosd (sign * s_mid, &s, &c);
 					for (col = 0; col < 3; col++) x[col] = P.pole[col] * s + m[col] * c;
 					gmt_normalize3v (GMT, x);
-					radius = d_acosd (gmt_dot3v (GMT, a, x)); 
+					radius = d_acosd (gmt_dot3v (GMT, a, x));
 					if (fabs (radius - fabs (Ctrl->G.colat)) < GMT_CONV8_LIMIT)
 						done = true;
 					else if (radius > fabs (Ctrl->G.colat))
@@ -977,7 +977,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		
+	
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
 			Return (API->error);
 		}

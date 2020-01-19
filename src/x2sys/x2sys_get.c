@@ -189,7 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 	/* Return track id # for this leg */
 	unsigned int i;
-	
+
 	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
 }
@@ -199,12 +199,12 @@ GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 
 int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
-	
+
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	uint64_t row, col;
-	
+
 	double out[2];
 
 	struct X2SYS_INFO *s = NULL;
@@ -240,16 +240,16 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
-	
+
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
-		
+	
 	if (s->geographic) {	/* Meaning longitude, latitude */
 		gmt_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else	/* Cartesian data */
 		gmt_set_cartesian (GMT, GMT_OUT);
-		
+	
 	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
 	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
@@ -260,7 +260,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		for (ii = missing = 0; ii < s->n_out_columns; ++ii)
 			missing |= X2SYS_bit (s->out_order[ii]);
 	}
-	
+
 	x2sys_bix_init (GMT, &B, false);
 
 	/* Read existing track-information from <ID>_tracks.d file */
@@ -303,7 +303,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		n_match = gmt_M_memory (GMT, NULL, n_tracks, char);
 	}
 	in_bin_flag = gmt_M_memory (GMT, NULL, n_tracks, uint32_t);
-	
+
 	wmode = (Ctrl->C.active) ? GMT_IS_POINT : GMT_IS_TEXT;
 	ncols = (Ctrl->C.active) ? 2 : 0;
 	cmode = (Ctrl->C.active) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX;
@@ -331,7 +331,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		Out = gmt_new_record (GMT, out, NULL);	/* Only data output */
 	else
 		Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
-	
+
 	/* Ok, now we can start finding the tracks requested */
 
 	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
@@ -381,7 +381,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-				
+			
 		}
 	}
 
@@ -446,11 +446,11 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Search found no tracks\n");
 	}
-	
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	
+
 	x2sys_bix_free (GMT, &B);
 
 	gmt_M_free (GMT, Out);

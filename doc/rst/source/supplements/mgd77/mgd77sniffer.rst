@@ -48,7 +48,7 @@ optionally output (**-De** option) using a computer-parseable format
 (see E77 ERROR FORMAT description below). Default error thresholds are
 derived from histograms of all MGD77 geophysical data collected between
 1952 and January, 2006. Thresholds are adjustable with the **-L**
-option. Grids for comparison with cruise data may be downloaded via the web. 
+option. Grids for comparison with cruise data may be downloaded via the web.
 
 Required Arguments
 ------------------
@@ -277,7 +277,7 @@ Optional Arguments
     (**o**)ffsets from grid (requires **-G**\ \|\ **g**), (**s**)peed
     out of range, (**t**)ime warnings, (**v**)alue out of range, (**x**)
     warning summaries. By default ALL warning messages are printed.Not
-    compatible with any **-D** options. 
+    compatible with any **-D** options.
 
 .. _-V:
 
@@ -285,7 +285,7 @@ Optional Arguments
 
 **-Z**
     Flag regression statistics that are outside the specified confidence
-    level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.) 
+    level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.)
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

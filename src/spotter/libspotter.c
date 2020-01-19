@@ -200,9 +200,9 @@ GMT_LOCAL bool must_do_track (int sideA[], int sideB[]) {
 GMT_LOCAL void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
 	/* Given the rectangular region in wesn, return -1, 0, +1 for
 	 * x and y if the point is left/below (-1) in (0), or right/above (+1).
-	 * 
+	 *
 	 */
-	 
+	
 	if (y < wesn[YLO])
 		sideXY[1] = -1;
 	else if (y > wesn[YHI])
@@ -222,7 +222,7 @@ GMT_LOCAL void set_inout_sides (double x, double y, double wesn[], int sideXY[2]
 void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[]) {
 	/* Translates an Euler covariance matrix to the 9 values needed for printout
 	 * covariance matrix is stored as [k_hat a b c d e f g df] */
-	
+
 	unsigned int k;
 	gmt_M_unused(GMT);
 	K[0] = e->k_hat;
@@ -240,7 +240,7 @@ void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[])
 GMT_LOCAL void record_to_covar (struct EULER *e, double K[]) {
 	/* Translates the 9 values read from plate motion file [k_hat a b c d e f g df]
 	 * into the Euler covariance matrix */
-	
+
 	unsigned int k, j;
 	e->has_cov = true;
 	e->k_hat   = K[0];
@@ -272,9 +272,9 @@ void spotter_cov_of_inverse (struct GMT_CTRL *GMT, struct EULER *e, double Ct[3]
 	/* If A and cov(u) is a rotation and its covariance matrix and
 	 * let A' and cov(v) be the inverse rotation and its covariacne matrix,
 	 * then cov(v) = A*cov(u)*A' */
-	
+
 	double A[3][3], At[3][3], tmp[3][3];
-	
+
 	gmt_make_rot_matrix (GMT, e->lon, e->lat, e->omega, A);
 	spotter_matrix_transpose (GMT, At, A);	/* Get A' */
 	spotter_matrix_mult (GMT, e->C, At, tmp);	/* Calculate the cov(u)*A' product */
@@ -293,7 +293,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 	 * finite_rates	: true if finite rotations given in degree/my [else we have opening angle]
 	 * stage_rates	: true if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
-	 
+	
 	unsigned int i;
 	double *elon = NULL, *elat = NULL, *ew = NULL, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
@@ -563,9 +563,9 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 		gmt_M_free(GMT, e);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
-	
+
 	/* Sort the rotations to make sure they are in the expected order */
-	
+
 	n = i;
 	if (total_in) {
 		qsort (e, n, sizeof (struct EULER), spotter_comp_total);
@@ -573,7 +573,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	}
 	else
 		qsort (e, n, sizeof (struct EULER), spotter_comp_stage);
-	
+
 	if (total_in && !total_out) spotter_total_to_stages (GMT, e, n, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	if (!total_in && total_out) {
 		spotter_stages_to_total (GMT, e, n, true, true);	/* Convert forward stage poles to total reconstruction poles */
@@ -588,7 +588,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 		for (i = 0; i < n; i++) {e[i].omega = -e[i].omega; e[i].omega_r = - e[i].omega_r;}
 		spotter_total_to_stages (GMT, e, n, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	}
-	
+
 	if (flowline) {	/* Get the forward stage poles from the total reconstruction poles */
 		spotter_total_to_fwstages (GMT, e, n, true, true);
 	}
@@ -673,7 +673,7 @@ int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned in
 }
 
 /* spotter_backtrack: Given a seamount location and age, trace the
- *	hotspot-track between this seamount and a seamount of 
+ *	hotspot-track between this seamount and a seamount of
  *	age t_zero.  For t_zero = 0 this means the hotspot
  */
 
@@ -1041,7 +1041,7 @@ void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 	 * finite_rates	: true if finite rotations given in degree/my [else we have opening angle]
 	 * stage_rates	: true if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
-	 
+	
 	unsigned int i;
 	double *elon = NULL, *elat = NULL, *ew = NULL, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
@@ -1350,7 +1350,7 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 	unsigned int i;
 	struct EULER e[2];
 	double R[3][3], dR[3][3], X[3][3], omega;
-	
+
 	for (i = 0; i < np && t > p[i].t_start; i++);	/* Wind to first partial rotation stage */
 	if (doubleAlmostEqualZero (t, p[i].t_start)) {	/* Hit an exact finite rotation, just return those parameters */
 		*lon = p[i].lon;
@@ -1364,9 +1364,9 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 		*w = p[0].omega * t;
 		return;
 	}
-	
+
 	/* Here we must add a partial rotation to the last finite rotation */
-	
+
 	i--;
 	if ((i+2) > np) {	/* p[i] and p[i+1] must should exist but Coverity is not sure */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "spotter_get_rotation: Internal error - cannot copy two rotations!");
@@ -1480,7 +1480,7 @@ void spotter_matrix_2Dto1D (struct GMT_CTRL *GMT, double *M, double X[3][3]) {
 void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3]) {
 	/* Return the inverse of a covariance matrix
 	 * (or any symmetric 3x3 matrix) */
-	
+
 	double inv_D;
 	gmt_M_unused(GMT);
 	inv_D = 1.0 / (-C[0][0]*C[1][1]*C[2][2] + C[0][0]*C[1][2]*C[1][2] + C[0][1]*C[0][1]*C[2][2] - 2.0*C[0][1]*C[0][2]*C[1][2] + C[0][2]*C[0][2]*C[1][1]);
@@ -1489,7 +1489,7 @@ void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3]) {
 	Ci[0][2] = Ci[2][0] = (C[0][2]*C[1][1] - C[0][1]*C[1][2]) * inv_D;
 	Ci[1][1] = (C[0][2]*C[0][2] - C[0][0]*C[2][2]) * inv_D;
 	Ci[1][2] = Ci[2][1] = (C[0][0]*C[1][2] - C[0][1]*C[0][2]) * inv_D;
-	Ci[2][2] = (C[0][1]*C[0][1] - C[0][0]*C[1][1]) * inv_D;	
+	Ci[2][2] = (C[0][1]*C[0][1] - C[0][0]*C[1][1]) * inv_D;
 }
 
 unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y) {
@@ -1497,7 +1497,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
-	
+
 #if DEBUG
 	bool dump = true;
 	FILE *fp = NULL;
@@ -1516,7 +1516,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 
 #if 0
 	if (rot_debug) spotter_confregion_radial_debug (alpha, p);	/* For testing purposes only */
-#endif	
+#endif
 	c2 = gmt_chi2crit (GMT, alpha, nu);
 	c = sqrt (c2);
 	gmt_M_memset (phi, SPOTTER_N_FINE_STEPS+1, double);
@@ -1557,7 +1557,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	axis[GMT_Y] = axis[GMT_X] + 1;				/* Let v be the next (either second or third) */
 	if (axis[GMT_Y] == axis[GMT_Z]) axis[GMT_Y]++;	/* Occupied by w, go to next */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Spinning in the %c-%c coordinate system\n", name[axis[GMT_X]], name[axis[GMT_Y]]);
-	
+
 	/* We will loop over 360 degrees and determine where the radial vector intersects the projected ellipse P'(u,v)
 	 * (1) If the origin (0,0) is inside P' then we will always get two real roots that differ in sign. in that case
 	 * we simply always go with the positive root for all angles.  (2) If origin is outside P'(u,v) then there will
@@ -1567,7 +1567,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	 * roots represents two different angles 180 degrees apart so therefore we store both and do the stitching
 	 * further down.
 	*/
-	
+
 	na = SPOTTER_N_STEPS;	/* Initial trial */
 	done = bail = false;
 	try = 0;
@@ -1624,7 +1624,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 		na = i;
 	}
 	/* Here we have a valid t(phi) relationship.  Build output arrays lon,lat */
-	
+
 	n_alloc = na;
 	lon = gmt_M_memory (GMT, NULL, n_alloc, double);
 	lat = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -1678,18 +1678,18 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 		lon = gmt_M_memory (GMT, lon, n, double);
 		lat = gmt_M_memory (GMT, lat, n, double);
 	}
-	
+
 	*X = lon;
 	*Y = lat;
 	return (n);
-}			
+}		
 
 unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y) {
 	/* ORTHOGRAPHIC PROJECTION */
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
-		
+	
 	unsigned int i;
 #ifdef DEBUG
 	bool dump = true;
@@ -1700,7 +1700,7 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 	double *lon = NULL, *lat = NULL;
 
 	double nu = 3.0;	/* Three degrees of freedom for the rotation pole */
-	
+
 	mu = sqrt (gmt_chi2crit (GMT, alpha, nu));	/* Scaling of all axes */
 	spotter_tangentplane (GMT, p->lon, p->lat, R);	/* Rotation that relates tangent plane coordinates (p,q,s) with Earth (x,y,z) */
 	spotter_matrix_transpose (GMT, Rt, R);				/* Get the transpose of R */
@@ -1708,7 +1708,7 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 	spotter_matrix_mult (GMT, T, Rt, C);
 	spotter_project_ellipsoid_new (GMT, C, par);	/* Get projection of ellipsoid onto tangent plane */
 	sincosd (par[0], &sin_phi, &cos_phi);
-	
+
 #ifdef DEBUG
 	if (dump) fp = fopen ("dump_o.txt","w");
 #endif
@@ -1732,11 +1732,11 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 #ifdef DEBUG
 	if (dump) fclose (fp);
 #endif
-		
+	
 	*X = lon;
 	*Y = lat;
 	return (i);
-}			
+}		
 
 void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3][3], double *par) {
 	/* Project an arbitrarily oriented ellipsoid orthographically onto a plane
@@ -1755,32 +1755,32 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 #endif
 	double A, B, C, F, G, H, a2, b2, c2, r;
 	gmt_M_unused(GMT);
-	
+
 #ifdef DEBUG
 	if (override) {
 		spotter_matrix_transpose (GMT, tmp, D);
 		gmt_M_memcpy (D, tmp, 9, double);
 	}
 #endif
-	
+
 	/* Get square of each axis */
-	
+
 	a2 = axis[0] * axis[0];	b2 = axis[1] * axis[1];	c2 = axis[2] * axis[2];
-	
+
 	/* Get F, G, H, per equation (20) */
-	
+
 	F = D[0][0] * D[0][2] / a2 + D[1][0] * D[1][2] / b2 + D[2][0] * D[2][2] / c2;
 	G = D[0][1] * D[0][2] / a2 + D[1][1] * D[1][2] / b2 + D[2][1] * D[2][2] / c2;
 	H = D[0][2] * D[0][2] / a2 + D[1][2] * D[1][2] / b2 + D[2][2] * D[2][2] / c2;
-	
+
 	/* Then get A, B, C per equation (23) */
-	
+
 	A = pow (D[0][0] - D[0][2] * F / H, 2.0) / a2 + pow (D[1][0] - D[1][2] * F / H, 2.0) / b2 + pow (D[2][0] - D[2][2] * F / H, 2.0) / c2;
 	B = 2.0 * (D[0][0] - D[0][2] * F / H) * (D[0][1] - D[0][2] * G / H) / a2 +
 	    2.0 * (D[1][0] - D[1][2] * F / H) * (D[1][1] - D[1][2] * G / H) / b2 +
 		2.0 * (D[2][0] - D[2][2] * F / H) * (D[2][1] - D[2][2] * G / H) / c2;
 	C = pow (D[0][1] - D[0][2] * G / H, 2.0) / a2 + pow (D[1][1] - D[1][2] * G / H, 2.0) / b2 + pow (D[2][1] - D[2][2] * G / H, 2.0) / c2;
-	
+
 	r = sqrt (A*A - 2*A*C + C*C + 4*B*B);
 	par[1] = 1.0/sqrt (0.5 * (A + C + r));
 	par[2] = 1.0/sqrt (0.5 * (A + C - r));
@@ -1821,7 +1821,7 @@ void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double 
 	 */
 
 	double sa, ca, Rlat[3][3], Rlon[3][3];
-		
+	
 	sincosd (lat, &sa, &ca);
 	Rlat[0][0] = 1.0;	Rlat[0][1] = 0.0;	Rlat[0][2] = 0.0;
 	Rlat[1][0] = 0.0;	Rlat[1][1] = -sa;	Rlat[1][2] = ca;

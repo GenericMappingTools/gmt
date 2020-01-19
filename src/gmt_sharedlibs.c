@@ -17,7 +17,7 @@ void *dlopen (const char *module_name, int mode) {	/* Opens a dll file*/
 	UINT err_code;
 	HINSTANCE dll_handle;
 	gmt_M_unused (mode);
-  
+ 
 	err_code = SetErrorMode (SEM_FAILCRITICALERRORS);
 	dll_handle = LoadLibrary (module_name);
 	if (!dll_handle) {
@@ -27,14 +27,14 @@ void *dlopen (const char *module_name, int mode) {	/* Opens a dll file*/
  	}
 
 	/* Clear the last error*/
-	SetLastError (0); 
+	SetLastError (0);
 	return (void *)dll_handle;
 }
 
 int dlclose (void *handle) {
 	/* Closes handle */
 	/* POSIX call returns zero for success, non-zero for failure */
-	return (!FreeLibrary (handle)); 
+	return (!FreeLibrary (handle));
 }
 
 void *dlsym (void *handle, const char *name) {
@@ -46,26 +46,26 @@ char *dlerror (void) {
 	/* Reports last error occurred */
 	int len, error_code;
 	static char errstr[GMT_LEN128];
-        
+       
 	if ((error_code = GetLastError ()) == 0)
 		return NULL;
 
-	/* POSIX dlerror call needs to report no error (null) 
+	/* POSIX dlerror call needs to report no error (null)
 	   when it is called 2nd time consequently, so clear error */
-	SetLastError (0); 
+	SetLastError (0);
 
 	/* Format the error string */
 	len = snprintf (errstr, GMT_LEN128, "Error <%d>: ", error_code);
-	len += FormatMessage ( 
+	len += FormatMessage (
 		FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL,
 		error_code,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* Default language */
 		(LPTSTR) errstr + len,
 		sizeof(errstr) - len,
-		NULL 
+		NULL
 		);
-    
+   
 	/* Replace \r\n */
 	if (len > 1 && errstr[len-2] == '\r' && errstr[len-1] == '\n') {
 		if (len > 2 && errstr[len-3] == '.')
