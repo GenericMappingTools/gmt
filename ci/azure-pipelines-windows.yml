@@ -16,7 +16,7 @@ steps:
     set -x -e
     # Update vcpkg and checkout specific tag
     cd ${VCPKG_INSTALLATION_ROOT}
-    git pull
+    git fetch --tags
     git tag
     git checkout tags/2019.12
     # By default, vcpkg builds both release and debug configurations.
