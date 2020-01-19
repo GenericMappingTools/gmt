@@ -6864,6 +6864,7 @@ GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double 
 	gmt_setpen (GMT, &pen);
 	PSL_plotsegment (GMT->PSL, xt, -dy2, xt, dy2);	/* Draw foreground crossmark at label time */
 	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
+	PSL_setlinecap (GMT->PSL, PSL_BUTT_CAP);	/* Want the rounded line effect */
 }
 
 GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
@@ -6923,7 +6924,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
 }
 
-GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, struct GMT_FONT *F) {
+GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, double fsize, struct GMT_FONT *F) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
 	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis;
@@ -6962,6 +6963,9 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	else	/* Use as is */
 		strcpy (region, label);
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
+		GMT->common.R.active[RSET] = GMT->common.J.active = false;
+	if (fsize == 0.0)
+			F->size = 3.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
 	if (kind == 'F')	/* Want annotations so add a */
 		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
 	else	/* Only axis with ticks */
@@ -7361,12 +7365,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 progress indicators set via movie.c's -P option */
 		
-		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {\nV\n");
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {\n");
 		PSL_comment (PSL, "Start of movie progress indicators\n");
 		PSL_comment (PSL, "Will not execute until end of plot\n");
 		
 		for (T = 0; T < n_movie_items[k]; T++) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
+			PSL_command (PSL, "V\n");
 			/* Replace the 13 leading bars first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%c %lg %lg %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, &plot_x, &plot_y, &t, &width, &justify, &clearance[GMT_X], &clearance[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
@@ -7403,7 +7408,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
 					break;
 				case 'f': /* Moving triangle on basemap time-line */
-					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width, &Tfont);
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width, fsize, &Tfont);
 					break;
 				default:	/* Just for Coverity */
 					break;
@@ -7415,9 +7420,11 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 			}
+			PSL->current.linewidth = -1.0;	/* Make sure pen widths reprocessed */
+		PSL_command (PSL, "U\n");
 		}
 		PSL_comment (PSL, "End of movie progress indicators\n");
-		PSL_command (PSL, "U\n}!\n");
+		PSL_command (PSL, "}!\n");
 	}
 	
 	return (PSL);

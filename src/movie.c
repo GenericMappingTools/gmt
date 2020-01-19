@@ -531,10 +531,10 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, struct MOVIE_CTR
 	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
 	if (I->pen[0] == '-') {	/* Set pen for foreground (changing) feature */
 		switch (kind) {
-			case 'b': sprintf (I->pen, "%dp,blue", irint (I->width * 0.15 * 72.0)); break; /* Give default moving ring pen width (15% of width) and blue color */
-			case 'c': sprintf (I->pen, "%dp,red", irint (I->width * 0.05 * 72.0)); break; /* Give default moving math angle pen width (5% of width) and red color */
-			case 'd': sprintf (I->pen, "1p,yellow"); break; /* Give default crossbar pen width and color yellow */
-			case 'e': sprintf (I->pen, "%dp,red", MIN (irint (I->width * 0.025 * 72.0), 8)); break;	/* Give a variable pen thickness >= 8p in red */
+			case 'b': sprintf (I->pen, "%gp,blue", 0.1 * rint (I->width * 1.5 * 72.0)); break; /* Give default moving ring pen width (15% of width) and blue color */
+			case 'c': sprintf (I->pen, "%gp,red", 0.1 * rint (I->width * 0.5 * 72.0)); break; /* Give default moving math angle pen width (5% of width) and red color */
+			case 'd': sprintf (I->pen, "%gp,yellow", 0.1 * MIN (irint (I->width * 0.05 * 72.0), 80)); break; /* Give default crossbar pen width (0.5% of length) and color yellow */
+			case 'e': sprintf (I->pen, "%gp,red", 0.1 * MIN (rint (I->width * 0.25 * 72.0), 80)); break;	/* Give a variable pen thickness >= 8p in red */
 		}
 	}
 	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {	/* Found +P<pen> */
@@ -542,10 +542,10 @@ GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, struct MOVIE_CTR
 	}
 	if (I->pen2[0] == '-') {	/* Set pen for background (static) feature */
 		switch (kind) {
-			case 'b': sprintf (I->pen2, "%dp,lightblue", irint (I->width * 0.15 * 72.0)); break; /* Give default static ring pen width (15% of width) and color lightblue */
-			case 'c': sprintf (I->pen2, "0.5p,darkred,-"); break; /* Give default static ring pen width (0.5p) and color darkred */
-			case 'd': sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.025 * 72.0), 8)); break;	/* Give a variable pen thickness >= 8p in black */
-			case 'e': sprintf (I->pen2, "%dp,lightgreen", MIN (irint (I->width * 0.025 * 72.0), 8)); break;/* Give a variable pen thickness >= 8p in lightgreen */
+			case 'b': sprintf (I->pen2, "%gp,lightblue", 0.1 * rint (I->width * 1.5 * 72.0)); break; /* Give default static ring pen width (15% of width) and color lightblue */
+			case 'c': sprintf (I->pen2, "%gp,darkred,-", 0.1 * rint (I->width * 0.1 * 72.0)); break; /* Give default static ring dashed pen width (1% of width) and color darkred */
+			case 'd': sprintf (I->pen2, "%gp,black", 0.1 * MIN (irint (I->width * 0.25 * 72.0), 80)); break;	/* Give a variable pen thickness <= 8p in black */
+			case 'e': sprintf (I->pen2, "%gp,lightgreen", 0.1 * MIN (irint (I->width * 0.25 * 72.0), 80)); break;/* Give a variable pen thickness <= 8p in lightgreen */
 		}
 	}
 	return (n_errors);
@@ -557,8 +557,8 @@ GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, struct MOVIE_CTR
 	gmt_M_unused (arg);
 	/* Default progress indicator: line and filled symbol */
 	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
-	if (I->pen2[0] == '-')	/* Give default static line pen thickness >= 4p in black */
-			sprintf (I->pen2, "%dp,black", MIN (irint (I->width * 0.05 * 72.0), 4));
+	if (I->pen2[0] == '-')	/* Give default static line pen thickness <= 3p in black */
+			sprintf (I->pen2, "%gp,black", 0.1 * MIN (irint (I->width * 0.15 * 72.0), 30));
 	if (I->fill[0] == '-')	/* Give default moving triangle the red color */
 		strcpy (I->fill, "red"); /* Give default moving color */
 	return (n_errors);
@@ -903,6 +903,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					case 'e':	case 'E':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* progress line on line */
 					case 'f':	case 'F':	 n_errors += get_item_pen_fill (GMT, Ctrl, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
 					default: n_errors += get_item_default (GMT, Ctrl, opt->arg, I);  break;	/* Default pie progression circle (a)*/
+				}
+				if (I->kind == 'F' && I->mode == MOVIE_LABEL_IS_ELAPSED) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
+					if (Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR] == 0) Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = false;
+					continue;
 				}
 				Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]++;	/* Got one more progress indicator */
 				break;

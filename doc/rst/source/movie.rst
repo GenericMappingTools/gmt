@@ -355,22 +355,24 @@ Progress Indicators
    The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
    but these can be overridden by the corresponding modifiers (see below).
 
-The letters a-f select one of the six progress indicators shown above. Indicator a) needs a static [lightgreen] and moving [lightred]
-*fill* (set via **+G** and **+g**); there is no label option. Indicator b) takes a static [lightblue]
-and moving [blue] *pen* (set via **+P** and **+p**), and if **+a** is set we place a centered label with a font size scaled to 30%
+The letters a-f select one of the six progress indicators shown above.
+Indicator a) needs a static [lightgreen] and moving [lightred]
+*fill* (set via **+G** and **+g**); there is no label option.
+Indicator b) takes a static [lightblue] and moving [blue] *pen* (set via **+P** and **+p**),
+and if **+a** is set we place a centered label with a font size scaled to 30%
 of indicator size (unless **+f** was set which is used as given).
-Indicator c) takes a static [dashed darkred, 0.5p width] and moving [red] *pen* (default pen width is
-5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
+Indicator c) takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red]
+*pen* (default pen width is 5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
 label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
-Indicator d) takes a static [black] and moving [yellow] *pen* for a rounded line with a cross-mark. If
+Indicator d) takes a static [black] and moving [yellow, width 0.5% of length] *pen* for a rounded line with a cross-mark. If
 label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
 Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
 use a font size that is twice the static pen thickness (unless **+f** was set).
 Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
-the triangle size is scaled to twice the axis width (see below).
+the triangle size is scaled to twice the axis width (see below), and a font size scaled to thrice the axis width.
 Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
 otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
-The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (4p for f).
+The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
 If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
 60% of the relevant canvas dimension for the linear indicators.
 
