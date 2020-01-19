@@ -3,7 +3,7 @@
 #
 # Purpose:  Illustrates spherical surface gridding with Green's function of splines
 # GMT modules:  makecpt, grdcontour, grdimage, grdmath greenspline, colorbar, text
-# Unix progs:   echo, rm
+# Unix progs:   rm
 #
 gmt begin ex29
 	# This example uses 370 radio occultation data for Mars to grid the topography.
