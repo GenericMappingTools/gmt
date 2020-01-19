@@ -224,7 +224,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The 1-3 specifiers may be combined and appear in any order to produce the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   separate segments into one file per contour level, and %%d would write all segments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see manual page for more examples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see module documentation for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force dumped contours to be oriented so that the higher z-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");

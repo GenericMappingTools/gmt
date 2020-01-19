@@ -436,7 +436,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The 1-3 specifiers may be combined and appear in any order to produce the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   separate segments into one file per contour level, and %%d would write all segments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see manual page for more examples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see module documentation for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E File with triplets of point indices for each triangle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose among five algorithms:\n");
