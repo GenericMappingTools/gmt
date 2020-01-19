@@ -167,7 +167,7 @@ Optional Arguments
     **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
     **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
+    *col* from the trailing text in *timefile* (first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
@@ -273,7 +273,8 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested by **-T+w** then
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicity requested by **-T+w** or
+implicitly by selecting word labels in **-F** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files

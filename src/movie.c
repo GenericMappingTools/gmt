@@ -448,7 +448,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     p selects the percent of completion as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w; first word is 0).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (first word is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
@@ -981,14 +981,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select at least one output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Syntax error: Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Syntax error -H: factor must be and integer > 1\n");
-	if (!Ctrl->T.split) {
+	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
 		char which[2] = {"LP"};
-		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
-			for (T = 0; T < Ctrl->n_items[k]; T++) {
-				I = &Ctrl->item[k][T];
-				n_errors += gmt_M_check_condition (GMT, I->mode == MOVIE_LABEL_IS_COL_T, "Syntax error -%c: Must split trailing text to use a word label\n", which[k]);
-			}
-		}
+		unsigned int n_used = 0;
+		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++)
+			for (T = 0; T < Ctrl->n_items[k]; T++)
+				if (Ctrl->item[k][T].mode == MOVIE_LABEL_IS_COL_T) n_used++;
+		if (n_used) Ctrl->T.split = true;
 	}
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
 					"Syntax error -C: Bad unit given for cancas dimensions\n");
