@@ -107,11 +107,11 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ROTCONVERTER_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct ROTCONVERTER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->M.value = 0.5;	/* To get half-angles */
 	C->F.mode = true;	/* Default format is total reconstruction rotation poles for both input and output */
 	return (C);
@@ -119,7 +119,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
-	
+
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
@@ -150,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only one of -N, -S, -W may be used at the same time.\n");
 	GMT_Option (API, "h,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 				break;
 
 			/* Supplemental parameters */
-			
+		
 			case 'A':	/* Angle, not time */
 				Ctrl->A.active = true;
 				break;
@@ -250,7 +250,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6':
 				case '7': case '8': case '9': case '.':
 				break;	/* Probably a rotation lon/lat/angle with negative longitude */
-				
+			
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -309,10 +309,10 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	 * have been decoded as options -4 and option -., respectively.  Here we simply
 	 * undo these and make them all "file" options -<.
 	 * Also, a single - sign would have been decoded as the synopsis option.  */
-	
+
 	for (opt = options; opt; opt = opt->next, n_opt++) {
 		switch (opt->option) {
-			case '0': case '1': case '2': case '3': case '4': case '5': 
+			case '0': case '1': case '2': case '3': case '4': case '5':
 			case '6': case '7': case '8': case '9': case '.':
 				sprintf (record, "-%c%s", opt->option, opt->arg);
 				gmt_M_str_free (opt->arg);
@@ -350,7 +350,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_LON);
 		strcpy (GMT->current.setting.format_float_out, "%g");
 	}
-	
+
 	last_sign = +1;
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_INFILE) continue;	/* Only consider files (or rotations) from here on */
@@ -447,7 +447,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	if (online_rot && n_out > 3) n_out--;
 	if (a[0].has_cov) n_out += 9;
 	if (Ctrl->G.active) n_out = 6;
-	
+
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, a);
 		Return (error);
@@ -478,7 +478,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		printf (record, "longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	}
 	if (GMT->current.setting.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
-	
+
 	for (stage = 0; stage < n_a; stage++) {
 		if (Ctrl->T.active) a[stage].omega = -a[stage].omega;
 		if ((Ctrl->W.active && a[stage].omega > 0.0) || (Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active || Ctrl->W.active) && a[stage].omega < 0.0))	/* flip to antipole */
@@ -516,13 +516,13 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		}
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
-	
+
 	gmt_M_free (GMT, a);
 	gmt_M_free (GMT, Out);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {		/* Disables further data output */
 		Return (API->error);
 	}
-	
+
 	Return (GMT_NOERROR);
 }

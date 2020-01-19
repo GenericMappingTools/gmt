@@ -113,7 +113,7 @@ GMT_LOCAL double proj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *
 
 GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */ {
 	double lon0 = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-	
+
 	if (GMT->current.map.is_world && lon0 != *clon) {
 		GMT->common.R.wesn[XLO] = *clon - 180.0;
 		GMT->common.R.wesn[XHI] = *clon + 180.0;
@@ -971,7 +971,7 @@ void gmt_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, d
 	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
 	sincosd (pha, &sin_pha, &cos_pha);
 	sincosd (phb, &sin_phb, &cos_phb);
-	
+
 	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - GMT->current.proj.ECC *
 		sin_pha) / (1.0 + GMT->current.proj.ECC * sin_pha), GMT->current.proj.half_ECC);
 	m_pha = cos_pha / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_pha * sin_pha);

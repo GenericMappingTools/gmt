@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77manage** *GEODAS-ids*
-[ |-A|\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**]\ ] 
+[ |-A|\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**]\ ]
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
 [ |-F| ]
@@ -42,7 +42,7 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below. 
+issues, see the DISCUSSION section below.
 
 Required Arguments
 ------------------
@@ -194,22 +194,22 @@ Optional Arguments
 
 **-N**\ *unit*
     Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
-    Only relevant when **-Ag**\ \|\ **i** is selected. 
+    Only relevant when **-Ag**\ \|\ **i** is selected.
 
 .. _-R:
 
-.. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
+.. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected.
 .. include:: ../../explain_-R.rst_
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
-.. |Add_-bi| replace:: 
+   
+.. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some
     of the **-A** options. The binary input option is only available for
-    numerical data columns. 
+    numerical data columns.
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

@@ -14,7 +14,7 @@ Author of the symbols: José A. Álvarez-Gómez (jaag@ucm.es). I greatly appreci
 suggestions and feedback.
 These symbols are freely available under a GNU Library General Public License (version 3, or later).
 
- 
+
 How to use the symbols?
 -----------------------
 
@@ -93,6 +93,6 @@ each symbol; see the gallery for visual representation.
     | Trend and plunge of lineation 3                               | geo-lineation-3    | Trend, Plunge     |
     +---------------------------------------------------------------+--------------------+-------------------+
 
-    Symbols of the GMT geological symbols collection. The symbol short name is the name that should 
+    Symbols of the GMT geological symbols collection. The symbol short name is the name that should
     be used in :doc:`plot </plot>` **-Sk**\ *symbolname*\ /*size*. The extra parameters needed for each symbol are
     shown on the order that is expected for the symbol definition.

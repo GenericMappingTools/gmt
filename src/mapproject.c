@@ -275,11 +275,11 @@ GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned i
 			GMT_Report (API, GMT_MSG_NORMAL, "Signed unit is not allowed - ignored\n");
 			return arg[1];
 		}
-		
+	
 	}
-	
+
 	/* Fall through here if in compatibility mode */
-	
+
 	switch (arg[0]) {
 		case '-': *mode = GMT_FLATEARTH;	k = 1; break;
 		case '+': *mode = GMT_GEODESIC;		k = 1; break;
@@ -650,7 +650,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				}
 				if (opt->arg[0])
 					Ctrl->Z.speed = atof (opt->arg);
-				else 
+				else
 					Ctrl->Z.mode |= GMT_MP_Z_SPEED;
 				if (p) p[0] = '+';	/* Restore arg */
 				if (Ctrl->Z.mode == 0) Ctrl->Z.mode = GMT_MP_Z_DELT;	/* Default is time increments */
@@ -666,7 +666,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	}
 
 	if (n_errors) return GMT_PARSE_ERROR;	/* Might as well return here since otherwise we may get some false warnings from below as well */
-	
+
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
 	/* The following lousy hack allows NOT having to specify -R */
@@ -739,7 +739,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 int GMT_mapproject (void *V_API, int mode, void *args) {
 	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
-	
+
 	bool line_start = true, do_geo_conv = false, double_whammy = false, first = true;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
 
@@ -843,7 +843,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (Ctrl->G.mode & GMT_MP_PAIR_DIST) speed_col = 4;
 		if (Ctrl->Z.mode & GMT_MP_Z_ABST) extra[MP_COL_AT] = Ctrl->Z.epoch;	/* Need to initiate epoch time */
 	}
-		
+	
 	if (Ctrl->T.active && GMT->current.proj.projection_GMT != GMT_LINEAR && GMT->common.R.active[RSET]) {	/* Do datum shift & project coordinates */
 		double_whammy = true;
 		if (Ctrl->I.active) {	/* Need to set the ellipsoid to that of the old datum */
@@ -892,7 +892,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	Out = gmt_new_record (GMT, NULL, NULL);
-	
+
 	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
 		double w_out[2] = {0.0, 0.0}, x_orig, y_orig;
 		unsigned int wmode = 0;
@@ -1388,7 +1388,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 							if (Ctrl->used[col]) {
 								gmt_set_column (GMT, GMT_OUT, (unsigned int)k, ecol_type[col]);
 								k++;
-							}	
+							}
 						}
 					}
 				}

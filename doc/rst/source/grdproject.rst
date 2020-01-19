@@ -44,7 +44,7 @@ of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.
 
 The **-R** option can be used to select a map region larger or smaller
-than that implied by the extent of the grid file. 
+than that implied by the extent of the grid file.
 
 Required Arguments
 ------------------
@@ -55,7 +55,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *out_grdfile*
-    Specify the name of the output grid file. (See GRID FILE FORMATS below.) 
+    Specify the name of the output grid file. (See GRID FILE FORMATS below.)
 
 .. _-J:
 
@@ -112,7 +112,7 @@ Optional Arguments
 
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region
-    [Default is the region given by the grid file]. 
+    [Default is the region given by the grid file].
 .. include:: explain_-R.rst_
 
 .. _-V:

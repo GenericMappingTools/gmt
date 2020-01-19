@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Enables new module names without the leading "ps" but only when used 
+ * Enables new module names without the leading "ps" but only when used
  * in modern mode.  This was done because since in modern mode the default
  * output format is no longer PostScript but PFD and furthermore can be
  * set to any other format (e.g., PNG) as well or in addition to others.
@@ -31,9 +31,9 @@
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
 	size_t L = strlen (module);
-	
+
 	if (L >= 32U) return module;	/* Safety valve to protect modname array from oversize */
-	
+
 	/* First check for modern names and set the classic name in modname */
 	if      (!strncmp (module, "histogram",    9U)) { strcpy (modname, "pshistogram"); return module; }
 	else if (!strncmp (module, "colorbar",     8U)) { strcpy (modname, "psscale");     return module; }
@@ -91,7 +91,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 	gmt_M_unused (API);
 	/* Given a named module, return its full name if a leading gmt is missing */
-	
+
 	/* Look for classic modules that now have a different modern mode name */
 	if      (!strcmp (module, "2kml"))      return "gmt2kml";
 	else if (!strcmp (module, "connect"))   return "gmtconnect";
@@ -117,7 +117,7 @@ const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 
 const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
 	/* Given a classic name module, return its name according to the run mode */
-	
+
 	if (!API->GMT->current.setting.use_modern_name)
 		return module;
 	/* Look for classic modules that now have a different modern mode name */
@@ -152,7 +152,7 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module) {
 	bool is_modern = false;	/* If classic */
 	gmt_M_unused (API);
 	/* Returns true if module is a modern name */
-	
+
 	/* Look for modern mode name modules  */
 	if      (!strncmp (module, "histogram", 11U)) is_modern = true;
 	else if (!strncmp (module, "ternary",    9U)) is_modern = true;

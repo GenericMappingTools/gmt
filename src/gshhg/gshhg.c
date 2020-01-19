@@ -76,9 +76,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->Out.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->Out.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -101,10 +101,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
 	GMT_Option (API, "V,bo2,do,o,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
-	
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gshhg and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -230,7 +230,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 
 	if (gmt_access (GMT, Ctrl->In.file, F_OK)) {
@@ -307,7 +307,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		area = h.area / scale;				/* Now in km^2 */
 		f_area = h.area_full / scale;			/* Now in km^2 */
 		this_id = h.id;
-		
+	
 		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = false;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
@@ -316,7 +316,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 			continue;	/* Back to top of loop */
 		}
-		
+	
 
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
@@ -340,7 +340,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		gmt_ascii_format_col (GMT, east,  e, GMT_OUT, GMT_X);
 		gmt_ascii_format_col (GMT, south, s, GMT_OUT, GMT_Y);
 		gmt_ascii_format_col (GMT, north, n, GMT_OUT, GMT_Y);
-		
+	
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
 			sprintf (header, "%6d%8d%3d%2c %s %s %s %s", h.id, h.n, level, source, west, east, south, north);
@@ -386,7 +386,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 	}
 	gmt_fclose (GMT, fp);
-	
+
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
 			T[0]->text = gmt_M_memory (GMT, T[0]->text, seg_no, char *);

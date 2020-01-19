@@ -790,7 +790,7 @@ void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	 * Since these are clearly global we do now want to pass 0/359 to the projection
 	 * machinery but 0/360.  Hence we test if the grid is truly global and make this decision. */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
-	
+
 	gmt_M_memcpy (GMT->common.R.wesn, header->wesn, 4, double);	/* Initially we set -R as is from grid header */
 	if (HH->grdtype != GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT) return;	/* Nothing to do */
 	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_columns * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
@@ -1080,7 +1080,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 				strncpy (HH->name, tmp, GMT_LEN256-1);
 			}
 			else
-				memmove (HH->name, &HH->name[i+3], strlen(&HH->name[i+3])+1); 
+				memmove (HH->name, &HH->name[i+3], strlen(&HH->name[i+3])+1);
 			magic = 0;	/* We don't want it to try to prepend any path */
 		} /* if (header->type == GMT_GRID_IS_GD && HH->name[i+2] && HH->name[i+2] == '?') */
 		else if (header->type == GMT_GRID_IS_GD && HH->name[i+2] && HH->name[i+2] == '+' && HH->name[i+3] == 'b') { /* A Band request for GDAL */
@@ -1192,7 +1192,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
-		
+	
 	}
 	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
@@ -1302,7 +1302,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	double round_inc, scale, inc, slop;
 	unsigned int side;
 	static char *type[2] = {"longitude", "latitude"};
-	
+
 	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 		scale = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
 		inc = header->inc[side] * scale;
@@ -1334,7 +1334,7 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 		if ((header->wesn[YHI]-90.0) > (GMT_CONV4_LIMIT*header->inc[GMT_Y]))
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
 	}
-	
+
 	/* If boundaries are close to multiple of inc/2 fix them */
 	for (k = XLO; k <= YHI; k++) {	/* Check all limits for closeness to 0.5*increments */
 		d = 0.5 * ((k < YLO) ? header->inc[GMT_X] : header->inc[GMT_Y]);
@@ -1388,7 +1388,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	gmtlib_grd_get_units (GMT, header);
 	grdio_round_off_patrol (GMT, header);	/* Ensure limit/inc consistency */
 	//gmtlib_clean_global_headers (GMT, header);
-	
+
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
@@ -2031,7 +2031,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot rotate grid, width is too small\n");
 		return;
 	}
-	
+
 	/* Shift boundaries */
 
 	tmp = gmt_M_memory (GMT, NULL, G->header->n_columns, gmt_grdfloat);
@@ -2647,7 +2647,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
 			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, gmt_grdfloat);
 		}
-		
+	
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
 	}
@@ -3158,7 +3158,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	unsigned char data[16] = {""};
 	char *F = NULL, *p = NULL, path[PATH_MAX] = {""};
 	int j, code, pos_ext;
-	
+
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
 	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
 		j = gmt_download_file_if_not_found (GMT, file, 0);
@@ -3166,7 +3166,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	}
 	else
 		F = strdup (file);
-	
+
 	if ((p = strstr(F, "=gd")) != NULL) *p = '\0';	/* Chop off any =gd<stuff> so that the opening test doesn't fail */
 	if (!gmt_getdatapath (GMT, F, path, R_OK)) {
 		gmt_M_str_free (F);
@@ -3187,10 +3187,10 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	/* Different magic chars for different image formats:
 	   .jpg:  FF D8 FF
 	   .png:  89 50 4E 47 0D 0A 1A 0A
-	   .gif:  GIF87a      
+	   .gif:  GIF87a     
 	          GIF89a
-	   .bmp:  BM 
-	   .webp: RIFF ???? WEBP 
+	   .bmp:  BM
+	   .webp: RIFF ???? WEBP
 	   .ras   59 A6 6A 95
 	   .pbm   P 1-6
 	   .rgb   01 da
@@ -3201,7 +3201,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	   .fits  53 49 4d 50 4c 45
 	   .ewc   06 02 01 02
  	*/
-	
+
 	switch (data[0]) {
 		case 0x00:	/* JP2 */
 			code = ( !strncmp( (const char *)data, "\x00\x00\x00\x0C\x6A\x50\x20\x20\x0d\x0a\x87\x0a", 12 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
@@ -3251,7 +3251,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			code = (data[1] >= '1' && data[1] <= '6' && tolower (path[pos_ext]) == 'p') ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'R':	/* Google WEBP */
-			if ( !strncmp ((const char *)data, "RIFF", 4) || !strncmp ((const char *)(data+8), "WEBP", 4)) 
+			if ( !strncmp ((const char *)data, "RIFF", 4) || !strncmp ((const char *)(data+8), "WEBP", 4))
 				code = GMT_IS_IMAGE;
 			else
 				code = GMT_NOTSET;
@@ -3280,7 +3280,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 
 int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Make sure that img Mercator grids are not used with map projections for plotting */
-	
+
 	if (strncmp (h->remark, "Spherical Mercator Projected with -Jm1 -R", 41U)) return GMT_NOERROR;	/* Not a Mercator img grid since missing the critical remark format */
 	if (h->registration == GMT_GRID_NODE_REG) return GMT_NOERROR;		/* Cannot be a Mercator img grid since they are pixel registered */
 	if (GMT->current.proj.projection == GMT_LINEAR) return GMT_NOERROR;	/* Only linear projection is allowed with this projected grid */

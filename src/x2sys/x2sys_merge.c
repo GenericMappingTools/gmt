@@ -17,7 +17,7 @@
 /* x2sys_merge will read two crossovers data base and output the contents
  * of the main one updated with the COEs in the second one. The second
  * file should only contain updated COEs relatively to the first one.
- * That is, it MUST NOT contain any new two tracks intersections. 
+ * That is, it MUST NOT contain any new two tracks intersections.
  *
  * Author:	Joaquim Luis
  * Date:	09-Jun-2009
@@ -78,7 +78,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Result is printed to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -124,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
-			
+		
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 

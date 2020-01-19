@@ -77,7 +77,7 @@ GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, 
 	}
 
 	args = breakMe(GMT, opts);
-	psOptions = GDALInfoOptionsNew(args, NULL); 
+	psOptions = GDALInfoOptionsNew(args, NULL);
 	info = GDALInfo(hDataset, psOptions);
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GDAL Info\n\n%s\n", info);
 

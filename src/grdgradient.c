@@ -28,7 +28,7 @@
  * Date: 	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgradient"
@@ -42,7 +42,7 @@
 enum grdgradient_mode {
 	GRDGRADIENT_FIX = 1,
 	GRDGRADIENT_VAR = 2};
-		
+	
 struct GRDGRADIENT_CTRL {
 	struct In {
 		bool active;
@@ -88,32 +88,32 @@ struct GRDGRADIENT_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDGRADIENT_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.ambient = 0.55;
 	C->E.diffuse = 0.6;
 	C->E.specular = 0.4;
 	C->E.shine = 10;
-	C->N.norm = 1.0;		
+	C->N.norm = 1.0;	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->A.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->S.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->A.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s) {
 	/* SPECULAR Specular reflectance.
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
-	   to the light source and to the viewer, respectively. 
+	   to the light source and to the viewer, respectively.
 	   For the time being I'm using V = [azim elev] = [0 90] so the following
 
 	   V[0] =  sind(V[0])*cosd(V[1]);
@@ -175,7 +175,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, "n,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						Ctrl->E.mode = 1;
 						break;
 					case 's':	/* "simple" Lambertian case */
-						Ctrl->E.mode = 2;						
+						Ctrl->E.mode = 2;					
 						n_errors += gmt_M_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
 						break;
 					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */
@@ -407,16 +407,16 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
-	
+
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
-	
+
 	double dx_grid, dy_grid, x_factor = 0.0, x_factor_set, y_factor, y_factor_set, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output, one;
 	double x_factor2 = 0.0, x_factor2_set = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2] = {0.0, 0.0};
 	double def_offset = 0.0, def_sigma = 0.0;
-	
+
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL, *A = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -472,7 +472,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	
+
 	if (Ctrl->N.active) {	/* Report what was set if debug is enabled */
 		char *answer = "NY";
 		if (Ctrl->N.set[1] == 2) Ctrl->N.offset = def_offset, Ctrl->N.set[1] = 1;
@@ -484,7 +484,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	gmt_M_memset (s, 3, double);
 	gmt_M_memset (wesn, 4, double);
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
-	
+
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
 		if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Got variable azimuth(s) */
 			if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {
@@ -559,7 +559,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 #endif
 #endif
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, Surf, &Out);	/* true if input is a read-only array */
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
@@ -678,7 +678,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					norm_z = dx_grid * dy_grid;
 					mag = d_sqrt (dzdx * dzdx + dzdy * dzdy + norm_z * norm_z);
 					dzdx /= mag;	dzdy /= mag;	norm_z /= mag;
-					diffuse = MAX (0, s[0] * dzdx + s[1] * dzdy + s[2] * norm_z); 
+					diffuse = MAX (0, s[0] * dzdx + s[1] * dzdy + s[2] * norm_z);
 					spec = specular (dzdx, dzdy, norm_z, s);
 					spec = pow (spec, Ctrl->E.shine);
 					output = (Ctrl->E.ambient + Ctrl->E.diffuse * diffuse + Ctrl->E.specular * spec) / k_ads;
@@ -716,7 +716,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (gmt_grdfloat)sum;
 		}
 	}
-	
+
 	if (Ctrl->E.active) {	/* data must be scaled to the [-1,1] interval, but we'll do it into [-.95, .95] to not get too bright */
 		scale = 1.0 / (r_max - r_min);
 		gmt_M_grd_loop (GMT, Out, row, col, ij) {

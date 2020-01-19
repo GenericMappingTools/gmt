@@ -7,21 +7,21 @@
  *
  *  Authors:    J. Luis translated from original Fortran code
  *		P. Wessel further massaged it into this form
- *		
+ *	
  *  Version:	1.0
  *  Revised:	1-MAY-2009
- * 
- * 
+ *
+ *
  *  NOTES:	The original Fortran code written by Terry Sabaka from
  *		- Planetary Geodynamics Lab at Goddard Space Flight Center -
- *		can be found at 
+ *		can be found at
  *        	denali.gsfc.nasa.gov/cm/cm4field.f
- *        	This C version is a bit more limited (it doesn't allow computing the 
- *        	source coefficients - the GMDL array in original) and was striped of 
- *        	the long help/comments section. Many of those comments make no sense 
- *        	here since we changed the subroutine interface. With regard to this point, 
- *        	a substantial difference is that all is need is one single call to the 
- *        	function (with location arrays transmitted in input), and all selected 
+ *        	This C version is a bit more limited (it doesn't allow computing the
+ *        	source coefficients - the GMDL array in original) and was striped of
+ *        	the long help/comments section. Many of those comments make no sense
+ *        	here since we changed the subroutine interface. With regard to this point,
+ *        	a substantial difference is that all is need is one single call to the
+ *        	function (with location arrays transmitted in input), and all selected
  *        	field sources contribution add up to the final result.
  *
  *-------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@
 static void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
 static void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
 static double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
-static double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int idom, int *idim, 
+static double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int idom, int *idim,
 	int msec, double *f107x, int *cerr);
 static double getmut2(double thenmp, double phinmp, int iyear, int iday, int msec);
 static void sun2(int iyr, int iday, double secs, double *gst, double *slong, double *srasn, double *sdec);
@@ -54,17 +54,17 @@ static void getgmf(int nder, int ns, double *ep, double *tm, double *b, double *
 static void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b, double *w);
 static void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *g, double *t);
 static void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
-	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re, 
-	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt, 
-	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni, 
-	double *bkpi, int *tdgi, int *dste, int *bore, int *bkne, double *bkpe, int *tdge, double *a, 
-	double *b, double *c, double *p, double *r, double *t, int *u, double *w, double *dsdc, 
+	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re,
+	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt,
+	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni,
+	double *bkpi, int *tdgi, int *dste, int *bore, int *bkne, double *bkpe, int *tdge, double *a,
+	double *b, double *c, double *p, double *r, double *t, int *u, double *w, double *dsdc,
 	double *dldc, double *dlda, int *cerr);
 static void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, int *nmxi, int *
 	nmne, int *nmxe, int *mmni, int *mmxi, int *mmne, int *mmxe, int *nmax, int *mmin, int *mmax, int *
 	ns, int *nsi, int *nse, int *nc, int *nci, int *nce, int *na, int *np, int *ii, int *ie, int *
 	atyp, int *dsti, int *bori, int *bkni, int *tdgi, int *dste, int *bore, int *bkne, int *tdge, int *u, int *cerr);
-static void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h, double *re, 
+static void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h, double *re,
 	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
 	mmin, int *mmax, double *theta, double *p, double *r, double *t, int *u, double *w, double *dldc, int *cerr);
@@ -75,7 +75,7 @@ static void srecur_(int *grad, int *nmax, int *mmin, int *mmax, int *ksm2, int *
 static void trigmp(int mmax, double phi, double *t);
 static void tdc(int grad, int nc, double clat, double theta, double *dldc, double *r);
 static void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *nci, double *ta,
-	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi, 
+	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi,
 	int *dste, int *bore, int *bkne, double *bkpe, int *tdge, int *u, double *w, double *dsdc, int *cerr);
 static void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsdt, double *dsdc);
 static void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int *cerr);
@@ -88,10 +88,10 @@ static void bngen_(double *b);
 static void tec(int grad, int k, int nc, double *theta, double *phi, double *b, double *dldc, double *r);
 static void tse(int grad, int k, int nc, double *rse, double *b, double *dldc, double *r);
 static void tms(int grad, int k, int nc, int na, int ia, double *a, double *b, double *dldc, double *dlda, double *r);
-static void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly, 
+static void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly,
 	double *seulz, double *ceulz, double *r, double *b, double *dlda);
 static void tnm_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
-static void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy, 
+static void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy,
 	double *schiz, double *cchiz, double *r, double *b, double *dlda);
 static void fdldsl_(int *k, int *na, int *ia, double *b, double *dlda);
 static void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
@@ -146,13 +146,13 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double *bkpo = NULL, *ws = NULL, *gamf = NULL, *epmg = NULL, *esmg = NULL;	/* was bkpo[12415], ws[4355], gamf[8840], epmg[1356], esmg[1356] */
 	double *f107x = NULL;		/* was [100][12] */
 	double *hymg = NULL;		/* was [1356][6] */
-	double *gcto_or = NULL;		/* was [13680][5][2] */ 
-	double *gcto_mg = NULL;		/* was [2736][3][2][2] */ 
+	double *gcto_or = NULL;		/* was [13680][5][2] */
+	double *gcto_mg = NULL;		/* was [2736][3][2][2] */
 	double *gpsq = NULL;		/* was [13680][5][2] */
 	double *gssq = NULL;		/* was [13680][5] */
-	double *gpmg = NULL;		/* was [1356][5][2] */ 
-	double *gsmg = NULL;		/* was [1356][5][2] */  
-	double *hysq = NULL;		/* was [1356][6] */  
+	double *gpmg = NULL;		/* was [1356][5][2] */
+	double *gsmg = NULL;		/* was [1356][5][2] */ 
+	double *hysq = NULL;		/* was [1356][6] */ 
 	double *epsq = NULL;		/* was [13680] */
 	double *essq = NULL;		/* was [13680] */
 	double *ecto = NULL;		/* was [16416] */
@@ -200,14 +200,14 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		fclose (fp);
 		return 1;
 	}
-	
+
 	if (lsmf > 4355 || lpos > 12415 || lcmf > 8840) {	/* Mainly to shut up CID 39232 (TAINTED variables), but it maybe right */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Suspicious values in first line of umdl.CM4 file\n");;
 		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
 		fclose (fp);
 		return 1;
 	}
-	
+
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	(void)(c_unused++); /* silence -Wunused-but-set-variable and PVS warning of double assignment */
 	sscanf (line, "%d", &lum1);
@@ -472,9 +472,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			nmin = MIN(Ctrl->CM4_S.nlmf[0], Ctrl->CM4_S.nlmf[1]);
 			nobo = nshx(nmin - 1, 1, nmin - 1, 0);
 			nopo = i8ssum(1, nobo, bkno) + (nobo << 1);
-			bfield(1, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0, 
-				epch, re, rp, rm, date, clat, elon, alt, dst, dstt, rse, &nz, 
-				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us, 
+			bfield(1, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0,
+				epch, re, rp, rm, date, clat, elon, alt, dst, dstt, rse, &nz,
+				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us,
 				ws, us, gamf, bc, gamf, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) {
 				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -491,7 +491,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			blsgen(nimf, nz, 3, &bmdl[0], &gamf[noga], &hq[nohq]);
 			if (Ctrl->CM4_DATA.coef) {
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm1, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1], 
+				getgmf(4, nsm1, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1],
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) {
 					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -512,7 +512,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				nygo = MAX(nygo,nsm2 * 5);
 				nout += nygo * MIN(1,nsm1);
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm2, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1], 
+				getgmf(4, nsm2, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1],
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) {
 					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -561,8 +561,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 		if (Ctrl->CM4_DATA.pred[1]) {
 			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				date, cdip, edip, alt, dst, dstt, rse, &nu, &mu, 
-				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur, 
+				date, cdip, edip, alt, dst, dstt, rse, &nu, &mu,
+				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur,
 				trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) {
 				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -606,7 +606,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
 					date, cdip, edip, alt, dst, dstt, rse, &nu,
-					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
+					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq,
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) {
 					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -651,8 +651,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			}
 			else {
 				bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-					date, cdip, edip, alt, dst, dstt, 
-					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
+					date, cdip, edip, alt, dst, dstt,
+					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq,
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) {
 					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -725,7 +725,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			}
 			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
 				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
-				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
+				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg,
 				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) {
 				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
@@ -771,51 +771,51 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		x = y = z = 0.0;
 		if (!Ctrl->CM4_L.curr) {		/* Magnetic field */
 			for (k = 0; k < Ctrl->CM4_F.n_field_sources; k++) {		/* Sum all field sources */
-				x += bmdl[Ctrl->CM4_F.field_sources[k]*3]; 
-				y += bmdl[Ctrl->CM4_F.field_sources[k]*3+1]; 
-				z += bmdl[Ctrl->CM4_F.field_sources[k]*3+2]; 
+				x += bmdl[Ctrl->CM4_F.field_sources[k]*3];
+				y += bmdl[Ctrl->CM4_F.field_sources[k]*3+1];
+				z += bmdl[Ctrl->CM4_F.field_sources[k]*3+2];
 			}
 			for (j = 0; j < Ctrl->CM4_F.n_field_components; j++) {	/* Loop over vector field components */
 				h = 0.;
 				if (Ctrl->CM4_F.field_components[j] == 0) {
-					t = sqrt(x*x + y*y + z*z); 
+					t = sqrt(x*x + y*y + z*z);
 					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = t;
 				}
 				else if (Ctrl->CM4_F.field_components[j] == 1) {
-					h = sqrt(x*x + y*y); 
+					h = sqrt(x*x + y*y);
 					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = h;
 				}
 				else if (Ctrl->CM4_F.field_components[j] == 2)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = x; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = x;
 				else if (Ctrl->CM4_F.field_components[j] == 3)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = y; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = y;
 				else if (Ctrl->CM4_F.field_components[j] == 4)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = z; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = z;
 				else if (Ctrl->CM4_F.field_components[j] == 5)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = atan2(y,x) * R2D; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = atan2(y,x) * R2D;
 				else if (Ctrl->CM4_F.field_components[j] == 6) {
 					if (!h) h = sqrt(x*x + y*y);
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = atan2(z,h) * R2D; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_F.n_field_components+j] = atan2(z,h) * R2D;
 				}
 			}
 		}
 		else {				/* Current density field (J) */
 			for (k = 0; k < Ctrl->CM4_L.n_curr_sources; k++) {		/* Sum all current sources */
-				x += jmdl[Ctrl->CM4_L.curr_sources[k]*3]; 
-				y += jmdl[Ctrl->CM4_L.curr_sources[k]*3+1]; 
-				z += jmdl[Ctrl->CM4_L.curr_sources[k]*3+2]; 
+				x += jmdl[Ctrl->CM4_L.curr_sources[k]*3];
+				y += jmdl[Ctrl->CM4_L.curr_sources[k]*3+1];
+				z += jmdl[Ctrl->CM4_L.curr_sources[k]*3+2];
 			}
 			for (j = 0; j < Ctrl->CM4_L.n_curr_components; j++) {	/* Loop over current components */
 				if (Ctrl->CM4_L.curr_components[j] == 0) {
-					t = sqrt(x*x + y*y + z*z); 
+					t = sqrt(x*x + y*y + z*z);
 					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = t;
 				}
 				else if (Ctrl->CM4_L.curr_components[j] == 1)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = x; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = x;
 				else if (Ctrl->CM4_L.curr_components[j] == 2)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = y; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = y;
 				else if (Ctrl->CM4_L.curr_components[j] == 3)
-					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = z; 
+					Ctrl->CM4_DATA.out_field[n*Ctrl->CM4_L.n_curr_components+j] = z;
 			}
 		}
 	}
@@ -1622,7 +1622,7 @@ void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b,
 	    delx = x[ik] - x[jk];
 	    if (delx == 0.)
 		temp = 0.;
-	    else if (j < *n) 
+	    else if (j < *n)
 		    temp /= delx;
 
 	    b[posb] = temp;
@@ -1707,11 +1707,11 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
 }
 
 static void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
-	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re, 
-	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt, 
-	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni, 
-	double *bkpi, int *tdgi, int *dste, int *bore, int *bkne, double *bkpe, int *tdge, double *a, 
-	double *b, double *c, double *p, double *r, double *t, int *u, double *w, double *dsdc, 
+	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re,
+	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt,
+	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni,
+	double *bkpi, int *tdgi, int *dste, int *bore, int *bkne, double *bkpe, int *tdge, double *a,
+	double *b, double *c, double *p, double *r, double *t, int *u, double *w, double *dsdc,
 	double *dldc, double *dlda, int *cerr) {
 
     int ia, ie, ii, np, ns, nce, nci, nse, nsi, nmax, mmin, mmax;
@@ -1719,8 +1719,8 @@ static void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, i
 
     if (*cerr <= 49) {
 	phi = elon;
-	prebf_(&rgen, &ityp, &etyp, &dtyp, &grad, &nmni, &nmxi, &nmne, &nmxe, &mmni, &mmxi, &mmne, &mmxe, &nmax, &mmin, &mmax, &ns, &nsi, 
-		&nse, nc, &nci, &nce, na, &np, &ii, &ie, &atyp[0], &dsti[0], &bori[0], &bkni[0], &tdgi[0], &dste[0], &bore[0], 
+	prebf_(&rgen, &ityp, &etyp, &dtyp, &grad, &nmni, &nmxi, &nmne, &nmxe, &mmni, &mmxi, &mmne, &mmxe, &nmax, &mmin, &mmax, &ns, &nsi,
+		&nse, nc, &nci, &nce, na, &np, &ii, &ie, &atyp[0], &dsti[0], &bori[0], &bkni[0], &tdgi[0], &dste[0], &bore[0],
 		&bkne[0], &tdge[0], &u[0], cerr);
 	if (*cerr >= 50) return;
 	if (*nc > 0) {
@@ -1870,7 +1870,7 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
     nx = MIN(1,nx);
 }
 
-void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h__, double *re, 
+void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h__, double *re,
 	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
 	mmin, int *mmax, double *theta, double *p, double *r__, double *t, int *u, double *w, double *dldc, int *cerr) {
@@ -2122,7 +2122,7 @@ void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sint
     /* Function Body */
     if (*rgen > 6)
 	srecur_(grad, nmax, mmin, mmax, &ksm2, &ktm2, &np, &np1sec, &nd0sec, &np1tes, &np2tes, &nd0tes, &nd1tes, &nq0nnp, &nq0msq, &r[1]);
- 
+
     if (*nmax >= 1) {
 	kp0 = 1;
 	kp2 = kp0;
@@ -2361,7 +2361,7 @@ void tdc(int grad, int nc, double clat, double theta, double *dldc, double *r) {
 }
 
 void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *nci, double *ta,
-	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi, 
+	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi,
 	int *dste, int *bore, int *bkne, double *bkpe, int *tdge, int *u, double *w, double *dsdc, int *cerr) {
 
 	static double tbo = 0.;
@@ -2825,7 +2825,7 @@ void tms(int grad, int k, int nc, int na, int ia, double *a, double *b, double *
     }
 }
 
-void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly, 
+void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly,
 	double *seulz, double *ceulz, double *r, double *b, double *dlda) {
 
     int i, j;
@@ -2926,7 +2926,7 @@ void tnm_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
     }
 }
 
-void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy, 
+void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy,
 	double *schiz, double *cchiz, double *r, double *b, double *dlda) {
 
     int i, j;
@@ -3120,7 +3120,7 @@ int nshx(int nmax, int nmin, int mmax, int mmin) {
 	kmax = mmax + 1;
 	i__5 = MIN(nmin,mmin);
 	i__6 = MIN(nmin,kmax);
-	i__2 = kmax * kmax - mmin * mmin + i__5 * i__5 - i__6 * i__6 + (nmax - mmax - I_DIM(nmin, kmax)) * 
+	i__2 = kmax * kmax - mmin * mmin + i__5 * i__5 - i__6 * i__6 + (nmax - mmax - I_DIM(nmin, kmax)) *
 		((mmax << 1) + 1) + (I_DIM(nmin, mmin) - nmax + mmin - 1) * MAX(0, (mmin << 1) - 1);
 	ret_val = MAX(0,i__2);
 	return ret_val;
@@ -3246,7 +3246,7 @@ double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b) {
     badr = bbeg;
     for (i = 0; i < vlen; ++i)
 	ret_val += a[aadr++] * b[badr++];
- 
+
     return ret_val;
 }
 

@@ -24,7 +24,7 @@
  * Brief synopsis: Reads a grid file and writes a portion within it
  * to a new file.
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
@@ -84,9 +84,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +N to strip off outside rows and cols that are all populated with NaNs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to consider NaNs to be within the range [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'G':	/* Output file */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 				break;
 		}
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
@@ -226,7 +226,7 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k, dim[4] = {0, 0, 0, 0};
 	uint64_t node;
-	
+
 	gmt_M_memset (count, 4, unsigned int);	/* Reset count */
 	dim[GMT_X] = col1 - col0 + 1;	/* Number of remaining nodes in x */
 	dim[GMT_Y] = row1 - row0 + 1;	/* Number of remaining nodes in y */
@@ -261,9 +261,9 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
 	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
-	
+
 	/* Here we got an oblique area and a projection; find the corresponding rectangular -R that covers this oblique area */
-	
+
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn), "")) return (GMT_PROJECTION_ERROR);
 
 	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO],
@@ -313,7 +313,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
 	bool outside[4] = {false, false, false, false}, all;
-	
+
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
 	double wesn_new[4], wesn_old[4], wesn_requested[4];
@@ -349,7 +349,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
 		struct GMT_GRID_HIDDEN *GH = NULL;
-		
+	
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
@@ -360,7 +360,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off a leftmost column\n");
-				} 
+				}
 				else if (side == 1 && col1 > col0) {	/* Need to move in from the right */
 					col1--;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off rightmost column\n");
@@ -386,7 +386,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off a leftmost column\n");
-				} 
+				}
 				else if (side == 1 && col1 > col0) {	/* Need to move in from the right */
 					col1--;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off rightmost column\n");
@@ -469,7 +469,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
 		int row, col;
 		bool wrap;
-		
+	
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
@@ -562,7 +562,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Get header only */
 		}
 	}
-	
+
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
@@ -628,7 +628,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
-	
+
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
@@ -699,7 +699,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
 		uint64_t n_nodes = 0;
-		
+	
 		for (row = 0; row < G->header->n_rows; row++) {
 			for (col = 0; col < G->header->n_columns; col++) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, G->x[col], G->y[row]);
@@ -712,9 +712,9 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
-	
+
 	/* Send the subset of the grid to the gridfile destination. */
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		Return (API->error);

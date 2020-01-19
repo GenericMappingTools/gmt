@@ -150,7 +150,7 @@ Optional Arguments
 **-T**\ *maskgrid*
     Only evaluate the solutions at the nodes
     in the *maskgrid* that are not set to NaN. This option eliminates
-    the need to specify options **-R**, **-I** (and **-r**). 
+    the need to specify options **-R**, **-I** (and **-r**).
 
 .. _-W:
 
@@ -211,7 +211,7 @@ Haines, A. J. et al., 2015, *Enhanced Surface Imaging of Crustal Deformation*, S
 doi:10.1007/978-3-319-21578-5_2.
 
 Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
-*Geophys. Res. Lett., 43*, 10,703-10,709, 
+*Geophys. Res. Lett., 43*, 10,703-10,709,
 `http://dx.doi.org/10.1002/2016GL070340 <http://dx.doi.org/10.1002/2016GL070340>`_
 
 See Also

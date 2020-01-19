@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: Reads stdin or file of x y z triples, or weighted data, x y z w.  Fit 
+ * Brief synopsis: Reads stdin or file of x y z triples, or weighted data, x y z w.  Fit
  * a regression model z = f(x,y) + e, where e are error misfits and f(x,y)
  * has some user-prescribed functional form.  The user may choose the number
  * of terms in the model to fit, whether to seek iterative refinement robust
@@ -103,7 +103,7 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 		}
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		(*data)[i].x = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
 		(*data)[i].z = in[GMT_Z];
@@ -252,7 +252,7 @@ GMT_LOCAL void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *
 
 	/* First find median { fabs(data[].r) },
 	   estimate scale from this,
-	   and compute chisq based on this.  */ 
+	   and compute chisq based on this.  */
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
 	gmt_sort_array (GMT, work, n_data, GMT_DOUBLE);
@@ -404,18 +404,18 @@ GMT_LOCAL void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TREND2D_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct TREND2D_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
+	C->C.value = 1.0e06;		/* Condition number for matrix solution  */
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -446,7 +446,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_Option (API, "bo,d,e,f,h,i,q,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -539,7 +539,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	unsigned int i, n_model, rank, np;
 	int error = 0;
 	bool significant;
-	
+
 	uint64_t n_data;
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
@@ -750,7 +750,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		struct GMT_RECORD Rec;
 		Rec.data = c_model;	Rec.text = NULL;
 		GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
-		
+	
 	}
 	else
 		write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);

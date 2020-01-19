@@ -20,7 +20,7 @@
 
 /* Placing content of PSL_label.ps */
 
-static char *PSL_label_str = 
+static char *PSL_label_str =
 "%-----------------------------------------------------------------------------\n"
 "%-	PS routines for handling contour labels and clipping of\n"
 "%-	contour lines going through labels.\n"
@@ -669,7 +669,7 @@ static char *PSL_label_str =
 
 /* Placing content of PSL_text.ps */
 
-static char *PSL_text_str = 
+static char *PSL_text_str =
 "%-----------------------------------------------------------------------------\n"
 "%-	P. Wessel, version 1\n"
 "%-	Text justification for paragraphs.\n"
@@ -916,7 +916,7 @@ static char *PSL_text_str =
 
 /* Placing content of PSL_prologue.ps */
 
-static char *PSL_prologue_str = 
+static char *PSL_prologue_str =
 "%-----------------------------------------------------------------------------\n"
 "%- NOTE: No longer used as replaced by static string in PSL_strings.h.\n"
 "%- 	 We keep the file in the repository as it may be simpler to see\n"

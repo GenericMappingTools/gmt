@@ -16,7 +16,7 @@ Synopsis
 |-C|\ *canvas*
 |-N|\ *prefix*
 |-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
-[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
+[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
@@ -40,7 +40,7 @@ Description
 -----------
 
 The **movie** module can generate GMT animation sequences using a single-plot script
-that is repeated for all frames, with some variation using specific frame variables.  The 
+that is repeated for all frames, with some variation using specific frame variables.  The
 module simplifies (and hides) most of the steps normally needed to set up a full-blown
 animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
@@ -314,9 +314,9 @@ variables (e.g., frame number and anything given via **-T**).  The pre- and post
 access to the information in *movie_init* while the frame script in addition has access to the frame-
 specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
-The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_. 
+The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_. 
+PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
 
 Hints for Movie Makers
 ----------------------

@@ -6,10 +6,10 @@ T=0.56
 L=0.10
 C=1.04
 R=1.98
-gmt text -R0/3/0/1.5 -Jx1i -N -C0 -Wthin,- -F+f36p,Helvetica-Bold+jLB << EOF 
+gmt text -R0/3/0/1.5 -Jx1i -N -C0 -Wthin,- -F+f36p,Helvetica-Bold+jLB << EOF
 0.1	0.2	My Text
 EOF
-gmt plot -N << EOF 
+gmt plot -N << EOF
 >
 0.05	$B
 2.04	$B
@@ -29,7 +29,7 @@ $C	0.65
 $R	0
 $R	0.65
 EOF
-gmt plot -N -Wthinner << EOF 
+gmt plot -N -Wthinner << EOF
 >
 0.7	-0.1
 $L	$M
@@ -37,7 +37,7 @@ $L	$M
 1.3	-0.1
 $R	$T
 EOF
-gmt text -N -F+f8p+j << EOF 
+gmt text -N -F+f8p+j << EOF
 $L	0.69	CB	L (Left)
 $C	0.69	CB	C (Center)
 $R	0.69	CB	R (Right)
@@ -47,7 +47,7 @@ $R	0.69	CB	R (Right)
 0.6	-0.05	LM	LM
 1.37	-0.05	RM	TR
 EOF
-gmt plot -Sc0.05 << EOF 
+gmt plot -Sc0.05 << EOF
 $L	$B
 $L	$M
 $L	$T

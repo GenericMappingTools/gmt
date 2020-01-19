@@ -414,7 +414,7 @@ Optional Arguments
 **-Qv**\ *min*/*max*
     Specify an accepted range (*min*/*max*; or just *min* if there is no
     upper limit) of velocities. Records whose track speed falls outside
-    this range are ignored [0/infinity]. 
+    this range are ignored [0/infinity].
 
 .. _-R:
 
@@ -466,7 +466,7 @@ Optional Arguments
 **-Z**\ **n**\ \|\ **p**
     Append the sign you want for **depth**, **carter**, and **msd**
     values below sea level (**-Zn** gives negative bathymetry) [Default
-    is **-Zp** for positive down]. 
+    is **-Zp** for positive down].
 
 .. |Add_-bo| replace:: ignored if **-bo** is selected. Likewise,
     string-fields cannot be selected. Note that if time is one of the

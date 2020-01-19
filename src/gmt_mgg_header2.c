@@ -13,7 +13,7 @@
  * Public functions (5):
  *
  *	gmt_is_mgg2_grid	:
- *	gmt_mgg2_read_grd_info  : 
+ *	gmt_mgg2_read_grd_info  :
  *	gmt_mgg2_write_grd_info	:
  *	gmt_mgg2_read_grd       :
  *	gmt_mgg2_write_grd      :

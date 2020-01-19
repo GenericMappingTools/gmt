@@ -28,27 +28,27 @@
  *       that this is not historical.
  *
  *       W H F Smith, April 2000
- *       
+ *      
  * Public functions (18):
  *
- * gmt_dt2rdc           : 
- * gmt_format_calendar  : 
- * gmtlib_g_ymd_is_bad     : 
- * gmt_gcal_from_dt     : 
- * gmt_gcal_from_rd     : 
- * gmtlib_get_time_label   : 
- * gmtlib_gmonth_length    : 
- * gmtlib_is_gleap         : 
- * gmtlib_iso_ywd_is_bad   : 
- * gmtlib_moment_interval  : 
- * gmt_rd_from_gymd     : 
- * gmtlib_rd_from_iywd     : 
- * gmt_rdc2dt           : 
- * gmtlib_splitinteger     : 
- * gmtlib_verify_time_step : 
- * gmtlib_y2_to_y4_yearfix : 
- * gmt_cal_imod         : 
- * gmt_gyear_from_rd    : 
+ * gmt_dt2rdc           :
+ * gmt_format_calendar  :
+ * gmtlib_g_ymd_is_bad     :
+ * gmt_gcal_from_dt     :
+ * gmt_gcal_from_rd     :
+ * gmtlib_get_time_label   :
+ * gmtlib_gmonth_length    :
+ * gmtlib_is_gleap         :
+ * gmtlib_iso_ywd_is_bad   :
+ * gmtlib_moment_interval  :
+ * gmt_rd_from_gymd     :
+ * gmtlib_rd_from_iywd     :
+ * gmt_rdc2dt           :
+ * gmtlib_splitinteger     :
+ * gmtlib_verify_time_step :
+ * gmtlib_y2_to_y4_yearfix :
+ * gmt_cal_imod         :
+ * gmt_gyear_from_rd    :
 */
 
 #include "gmt_dev.h"

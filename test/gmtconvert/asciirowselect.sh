@@ -49,7 +49,7 @@ cat << EOF > truth3.txt
 2011-01-02T00:00:00	101
 EOF
 diff truth3.txt answer3.txt --strip-trailing-cr >> fail
-# Case 4: Exclude rows with data values 
+# Case 4: Exclude rows with data values
 gmt convert one.txt two.txt -q~200-400,0-127+c1 > answer4.txt
 cat << EOF > truth4.txt
 > Seg 2 File 1

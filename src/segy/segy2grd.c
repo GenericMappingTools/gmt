@@ -23,7 +23,7 @@
  * Date:	30-JUN-2002
  * Version:	3.4.1, ported to GMT5 by P. Wessel
  */
- 
+
 #include "gmt_dev.h"
 #include "segy_io.h"
 
@@ -145,7 +145,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
 	GMT_Option (API, "V,r,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -273,7 +273,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	unsigned int n_empty = 0, n_stuffed = 0, n_confused = 0, check, ix;
 
 	uint64_t ij, ij0, n_samp = 0, isamp;
-	
+
 	double idy, x0, yval;
 
 	char line[GMT_BUFSIZ] = {""};
@@ -292,7 +292,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);

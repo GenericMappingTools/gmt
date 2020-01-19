@@ -16,18 +16,18 @@ Synopsis
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line* ]
-[ |-N| ] 
+[ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
 [ |-V|\ [*level*] ] [ |-Z| ]
-[ |SYN_OPT-b| ] 
-[ |SYN_OPT-d| ] 
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
-[ |SYN_OPT-f| ] 
-[ |SYN_OPT-g| ] 
-[ |SYN_OPT-h| ] 
-[ |SYN_OPT-i| ] 
-[ |SYN_OPT-j| ] 
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
@@ -70,7 +70,7 @@ Required Arguments
     constrained points and NaN elsewhere, and (3) Img file
     with constraints coded, return 1 at constraints and 0 elsewhere, and
     optionally the max latitude in the IMG file [80.738]. You may repeat
-    **-G** as many times as you have grids you wish to sample. 
+    **-G** as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a list of file names.
     The grids are sampled and results are output in the order given.
     (See GRID FILE FORMAT below.)
@@ -140,10 +140,10 @@ Optional Arguments
     which will connect segments with shared joints into a single segment.
     In addition to line coordinates, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if a
-    single grid is given via **-G**). You may append 
+    single grid is given via **-G**). You may append
     **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then
     we default to half the minimum grid interval.  Instead of two coordinates
-    you can specify an origin and one of **+a**, **+o**, or **+r**. 
+    you can specify an origin and one of **+a**, **+o**, or **+r**.
     The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile
     on the origin; both require **+l**. For circular sampling specify
@@ -163,7 +163,7 @@ Optional Arguments
 
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
-    [Default only output points within grid domain]. 
+    [Default only output points within grid domain].
 
 .. _-R:
 
@@ -224,12 +224,12 @@ Optional Arguments
 
 **-:**
     Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)]. 
+    input/output. [Default is (longitude,latitude)].
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is one more than input]. 
+.. |Add_-bo| replace:: [Default is one more than input].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

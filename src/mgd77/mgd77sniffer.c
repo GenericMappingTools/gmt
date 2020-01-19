@@ -1892,7 +1892,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				(m == 1) ? sprintf (text,"+eot ") : sprintf (text," ");
 				if (stats[MGD77_RLS_SIG] == 1.0) {
 					if (((1.0 < (stats[MGD77_RLS_SLOPE]-range) || 1.0 > (stats[MGD77_RLS_SLOPE]+range)) || (0.0 < (stats[MGD77_RLS_ICEPT]-range2) || 0.0 > (stats[MGD77_RLS_ICEPT]+range2)))) {
-						if (m == 0) { 
+						if (m == 0) {
 							if (!strcmp(display,"E77"))
 								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,M.NGDC_id,\
 								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
@@ -1912,7 +1912,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
                                                 	}
 						}
 					} else {
-						if (m == 0) { 
+						if (m == 0) {
 							if (!strcmp(display,"E77"))
 								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,M.NGDC_id,\
 								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
@@ -1929,8 +1929,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
                                                                 sprintf (buffer, "%s (faa) anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,fstats[MGD77_RLS_SLOPE],\
                                                                 fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
                                                                 gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
-                                                        }	
-						}	
+                                                        }
+						}
 					}
 					if (m == 1 && stats[MGD77_RLS_CORR] > lastCorr) {
 						if (!strcmp(display,"E77"))

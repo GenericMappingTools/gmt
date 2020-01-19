@@ -59,12 +59,12 @@ Optional Arguments
     parameter names. You may also specify the number of a parameter. For
     the raw, punchcard-formatted MGD77 original header block, append
     **r** instead. For the M77T format, append **t** instead.
- 
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
+   
 .. include:: ../../explain_help.rst_
 
 Header Item Sample File

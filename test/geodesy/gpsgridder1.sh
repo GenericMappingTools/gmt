@@ -26,7 +26,7 @@ gmt grdmath tmp_mask1.grd tmp_mask2.grd MUL 0 NAN = mask.grd
 gmt grdmath tmp_u.nc mask.grd MUL = GPS_u.grd
 gmt grdmath tmp_v.nc mask.grd MUL = GPS_v.grd
 
-# make a plot of GPS velocity vectors 
+# make a plot of GPS velocity vectors
 #
 #
 gmt set FORMAT_GEO_MAP dddF
@@ -35,7 +35,7 @@ gmt select blk.lluv $R -fg | awk '{ print($0," 0 ") }' > data.lluvenct
 #   first make a mask
 #
 gmt grdlandmask -Gtmp_mask1.grd -RGPS_u.grd -Df
-gmt grdmask corner.ll -Gtmp_mask2.grd -RGPS_u.grd -N1/0/0 
+gmt grdmask corner.ll -Gtmp_mask2.grd -RGPS_u.grd -N1/0/0
 gmt grdmath tmp_mask1.grd tmp_mask2.grd MUL 0 NAN = mask.grd
 gmt grdmath GPS_u.grd mask.grd MUL = GPS_u.nc
 gmt grdmath GPS_v.grd mask.grd MUL = GPS_v.nc

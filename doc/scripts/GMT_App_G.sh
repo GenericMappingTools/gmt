@@ -27,7 +27,7 @@ gmt text -Y${yy}i -F+f10p+jBC <<EOF
 2.85	0.05	\\043
 4.15	0.05	Font Name
 EOF
-gmt plot <<EOF 
+gmt plot <<EOF
 0	0
 5.4	0
 EOF

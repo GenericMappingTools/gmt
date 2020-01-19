@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_API_use
-	gmt plot -R-4.5/4.5/-2/2 -Jx0.8i -W2p+ve0.2i+gblack+h0.5 -Xc << EOF 
+	gmt plot -R-4.5/4.5/-2/2 -Jx0.8i -W2p+ve0.2i+gblack+h0.5 -Xc << EOF
 >
 -2	0.75
 -0.65	0.4

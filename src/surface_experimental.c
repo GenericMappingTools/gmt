@@ -314,7 +314,7 @@ GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	double alpha4, loose, a0;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set finite-difference coefficients [stride = %d]\n", C->current_stride);
-	
+
 	loose = 1.0 - C->interior_tension;
 	C->alpha2 = C->alpha * C->alpha;
 	alpha4 = C->alpha2 * C->alpha2;
@@ -383,17 +383,17 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	unsigned char *status = C->status;
 	double c, sx, sy, sxy, r_prev_size, c_plus_sy_dy, sx_plus_sxy_dy;
 	gmt_grdfloat *u = C->Grid->data;
-	
+
 	/* First we expand the active grid to allow for more nodes. We do this by
 	 * looping backwards from last node to first so that the locations we copy
 	 * the old node values to will always have higher node number than their source.
 	 * The previous grid solution has dimensions previous_nx x previous_ny while
 	 * the new grid has dimensions current_nx x current_ny.  We thus loop over
 	 * the old grid and place these nodes into the new grid.  */
-	
+
 	expand = C->previous_stride / C->current_stride;	/* Multiplicity of new nodes in both x and y dimensions */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Expand grid by factor of %d when going from stride = %d to %d\n", expand, C->previous_stride, C->current_stride);
-	
+
 	for (previous_row = C->previous_ny - 1; previous_row >= 0; previous_row--) {	/* Loop backward over the previous grid rows */
 		row = previous_row * expand;	/* Corresponding row in the new extended grid */
 		for (previous_col = C->previous_nx - 1; previous_col >= 0; previous_col--) {	/* Loop backward over previous grid cols */
@@ -401,7 +401,7 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 			current_node  = row_col_to_node (row, col, C->current_mx);			/* Current node index */
 			previous_node = row_col_to_node (previous_row, previous_col, C->previous_mx);	/* Previous node index */
 			C->Grid->data[current_node] = C->Grid->data[previous_node];			/* Copy the value over */
-			//fprintf (stderr, "prow = %d pcol = %d pnode = %d crow = %d ccol = %d, cnode = %d z = %g\n", 
+			//fprintf (stderr, "prow = %d pcol = %d pnode = %d crow = %d ccol = %d, cnode = %d z = %g\n",
 			//	previous_row, previous_col, (int)previous_node, row, col, (int)current_node, C->Grid->data[current_node]);
 		}
 	}
@@ -413,11 +413,11 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 * based on the coarser (previous) nodes.  At the end all nodes in the active grid are valid, except
 	 * in the boundary rows/cols.  These are reset by set_BC before the iteration starts.
 	 */
-	
+
 	/* Precalculate the fractional increments of rows and cols in-between the old constrained rows and cols.
-	 * These are all fractions between 0 and 1.  E.g., if we quadruple the grid dimensions in x and y then 
+	 * These are all fractions between 0 and 1.  E.g., if we quadruple the grid dimensions in x and y then
 	 * expand == 4 and we need 4 fractions = {0, 0.25, 0.5, 0.75}. */
-	
+
 	r_prev_size = 1.0 / (double)C->previous_stride;
 	for (i = 0; i < expand; i++) C->fraction[i] = i * r_prev_size;
 
@@ -564,14 +564,14 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
 GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, gmt_grdfloat *b, double xx, double yy, gmt_grdfloat z) {
 	/* Given the normalized offset (xx,yy) from current node (value z) we determine the
-	 * Briggs coefficients b_k, k = 1,5  [Equation (A-6) in the reference] 
+	 * Briggs coefficients b_k, k = 1,5  [Equation (A-6) in the reference]
 	 * Here, xx, yy are the fractional distances, accounting for any anisotropy.
 	 * Note b[5] initially contains the sum of the 5 Briggs coefficients but
 	 * we actually need to divide by it so we do that change here as well.
 	 * Finally, b[4] will be multiplied with the off-node constraint so we do that here.
 	 */
 	double xx2, yy2, xx_plus_yy, xx_plus_yy_plus_one, inv_xx_plus_yy_plus_one, inv_delta, b_4;
-	
+
 	xx_plus_yy = xx + yy;
 	xx_plus_yy_plus_one = 1.0 + xx_plus_yy;
 	inv_xx_plus_yy_plus_one = 1.0 / xx_plus_yy_plus_one;
@@ -588,7 +588,7 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, gmt_grdfloat *
 	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
 	 * add add b[4] to the rest of the sum inside the iteration loop. */
 	b[4] = (gmt_grdfloat)(b_4 * z);
-	
+
 	/* b[5] is part of a denominator so we do the division here instead of inside iterate loop */
 	b[5] = (gmt_grdfloat)(1.0 / (C->a0_const_1 + C->a0_const_2 * b[5]));
 }
@@ -604,13 +604,13 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
-	
+
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
 	}
-	
+
 	last_index = UINTMAX_MAX;	briggs_index = 0U;
-	
+
 	for (k = 0; k < C->npoints; k++) {	/* Find constraining value  */
 		if (C->data[k].index != last_index) {	/* Moving to the next node to address its nearest data constraint */
 			/* Note: Index calculations do not consider the boundary padding */
@@ -636,7 +636,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			 * corresponding dx,dy in units of current grid fractions we must scale both
 				 * dx and dy by current_stride; this is equivalent to scaling the trend.
 				 * This trend then is normalized by dividing by the z rms.*/
-	 			
+	 		
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
 	 			if (C->constrained) {
 					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && z_at_node < C->Bound[LO]->data[node])
@@ -692,11 +692,11 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine mean data constraints and set Briggs coefficients [stride = %d]\n", C->current_stride);
-	
+
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
 	}
-	
+
 	briggs_index = 0U;	k = 0;
 	while (k < C->npoints) {	/* While there are more data constraints...  */
 		last_index = C->data[k].index;	/* This is the current index we are working on */
@@ -719,7 +719,7 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		/* Get offsets dx,dy of mean data point location relative to this node (dy is positive up) */
 		dx = x_to_fcol (mean_x, x0, C->r_inc[GMT_X]);
 		dy = y_to_frow (mean_y, y0, C->r_inc[GMT_Y]);
-	
+
  		/* "Really close" will mean within 5% of the current grid spacing from the center node */
 
 		if (fabs (dx) < SURFACE_CLOSENESS_FACTOR && fabs (dy) < SURFACE_CLOSENESS_FACTOR) {	/* Close enough to assign fixed value to node */
@@ -731,7 +731,7 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  			 * corresponding dx,dy in units of final grid fractions we must scale both
 			 * dx and dy by current_stride; this is equivalent of scaling the trend.
 			 * This trend then is normalized by dividing by the z rms.*/
-			
+		
  			mean_z += (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
  			if (C->constrained) {
 				if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && mean_z < C->Bound[LO]->data[node])
@@ -806,7 +806,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Initialize grid using moving average scheme [stride = %d]\n", C->current_stride);
-	
+
 	del_col = irint (ceil (C->radius / C->inc[GMT_X]));
 	del_row = irint (ceil (C->radius / C->inc[GMT_Y]));
 	rfact = -4.5 / (C->radius*C->radius);
@@ -867,7 +867,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
-	
+
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 		return (error);
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Establishes data input */
@@ -893,7 +893,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;	/* Cannot use NaN values */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue; /* Outside y-range (or latitude) */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI]))  continue; /* Outside x-range (or longitude) */
@@ -940,7 +940,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		}
 	} while (true);
 
-	
+
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_NOERROR)	/* Disables further data input */
 		return (GMT->parent->error);
 
@@ -1043,7 +1043,7 @@ GMT_LOCAL int write_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char 
 	if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
 		/* Reload the constraints, but this time do not transform the data */
 		if ((err = load_constraints (GMT, C, false)) != 0) return (err);
-		
+	
 		gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Make sure we clip to the specified bounds */
 			if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && u[node] < C->Bound[LO]->data[node]) u[node] = C->Bound[LO]->data[node];
 			if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && u[node] > C->Bound[HI]->data[node]) u[node] = C->Bound[HI]->data[node];
@@ -1077,7 +1077,7 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gmt_grdflo
 	double y_denom = 2 * C->alpha * (1.0 - C->boundary_tension) + C->boundary_tension;
 	double y_0_const = 4 * C->alpha * (1.0 - C->boundary_tension) / y_denom;
 	double y_1_const = (C->boundary_tension - 2 * C->alpha * (1.0 - C->boundary_tension) ) / y_denom;
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Apply all boundary conditions [stride = %d]\n", C->current_stride);
 
 	/* First set (1-T)d2[]/dn2 + Td[]/dn = 0 along edges */
@@ -1231,7 +1231,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 
 		set_BCs (GMT, C, u_old);	/* Set the boundary rows and columns */
-		
+	
 #ifndef PARALLEL_MODE
 		briggs_index = 0;	/* Reset the Briggs constraint table index  */
 #endif
@@ -1255,8 +1255,8 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 					continue;
 				}
-				
-				/* Here we must estimate a solution via equations (A-4) [SURFACE_UNCONSTRAINED] or (A-7) [SURFACE_CONSTRAINED] */	
+			
+				/* Here we must estimate a solution via equations (A-4) [SURFACE_UNCONSTRAINED] or (A-7) [SURFACE_CONSTRAINED] */
 				//dump = (row == 19 && col == 32 && (iteration_count > 0 && iteration_count < 20));
 				u_00 = 0.0;	/* Start with zero, build updated solution for central node */
 				set = (status[node] == SURFACE_IS_UNCONSTRAINED) ? SURFACE_UNCONSTRAINED : SURFACE_CONSTRAINED;	/* Index to C->coeff set to use */
@@ -1297,7 +1297,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 			}	/* End of loop over columns */
 		}	/* End of loop over rows [and possibly threads via OpenMP] */
-	
+
 		iteration_count++;	C->total_iterations++;	/* Update iteration counts for this stride and for total */
 		max_z_change = max_u_change * C->z_rms;		/* Scale max_u_change back into original z units -> max_z_change */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, C->format,
@@ -1326,7 +1326,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			G->data = NULL;	/* Since it is not ours */
 		}
 #endif
-		
+	
 	} while (!finished);
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
@@ -1335,7 +1335,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #ifdef DEBUG_SURF
 	if (debug) {	/* Free this iteration grid */
 		GMT_Destroy_Data (GMT->parent, &G);
-	}	
+	}
 #endif
 	return (iteration_count);
 }
@@ -1354,7 +1354,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	gmt_grdfloat *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute rms misfit and curvature.\n");
 
 	set_BCs (GMT, C, u);	/* First update the boundary values */
@@ -1372,7 +1372,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		/* Get dx,dy of data point away from this node */
 		dx = x_to_fcol (C->data[k].x, x0, HH->r_inc[GMT_X]);
 		dy = y_to_frow (C->data[k].y, y0, HH->r_inc[GMT_Y]);
- 
+
 	 	du_dx = 0.5 * (u[node+d_node[E1]] - u[node+d_node[W1]]);
 	 	du_dy = 0.5 * (u[node+d_node[N1]] - u[node+d_node[S1]]);
 	 	d2u_dx2 = u[node+d_node[E1]] + u[node+d_node[W1]] - 2 * u[node];
@@ -1389,20 +1389,20 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 		- (u[node+d_node[NW]] + u[node+d_node[SW]] - 2 * u[node+d_node[W1]]));
 
 	 	/* Compute the 3rd order Taylor approximation from current node */
-	 
+	
 	 	z_est = u[node] + dx * (du_dx +  dx * ((0.5 * d2u_dx2) + dx * (d3u_dx3 / 6.0)))
 			+ dy * (du_dy +  dy * ((0.5 * d2u_dy2) + dy * (d3u_dy3 / 6.0)))
 	 		+ dx * dy * (d2u_dxdy) + (0.5 * dx * d3u_dx2dy) + (0.5 * dy * d3u_dxdy2);
-	 
+	
 	 	z_err = z_est - C->data[k].z;	/* Misfit between surface estimate and observation */
 	 	mean_error += z_err;
 	 	mean_squared_error += (z_err * z_err);
 	 }
 	 mean_error /= C->npoints;
 	 mean_squared_error = sqrt (mean_squared_error / C->npoints);
-	 
-	/* Compute the total curvature of the grid */
 	
+	/* Compute the total curvature of the grid */
+
 	curvature = 0.0;
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {
  		c = u[node+d_node[E1]] + u[node+d_node[W1]] + u[node+d_node[N1]] + u[node+d_node[S1]] - 4.0 * u[node+d_node[E1]];
@@ -1522,7 +1522,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		last_kind = C->data[k].kind;
 #endif
 	}
-	
+
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be sorted to end of the array */
 		qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points, &(C->info));
 		C->npoints -= n_outside;	/* Effectively chopping off the eliminated points */
@@ -1672,7 +1672,7 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	C->my			= C->Grid->header->my;
 	C->mxmy			= C->Grid->header->size;
 	gmt_M_memcpy (C->p, p, 20, unsigned int);
-	
+
 	gmt_M_memcpy (C->info.wesn, C->Grid->header->wesn, 4, double);
 #ifdef DEBUG_SURF
 	C->save = Ctrl->E.save;
@@ -1774,7 +1774,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 		}
 		x[k] = xline[row];	y[k] = yline[row];	z[k] = zline[row];
 		if (file) fprintf (fp1, "%g\t%g\t%g\n", x[k], y[k], z[k]);
-	
+
 		/* 2. Go along the (x,y,z), k = 1:new_n line and find the closest point to each bin node */
 		if (file) fprintf (fp2, "> Segment %d\n", (int)seg);
 		scol = x_to_col (x[0], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
@@ -1839,7 +1839,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 		fclose (fp1);
 		fclose (fp2);
 	}
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d breakline points, reinterpolated to %d points, reduced to %d points\n", (int)T->n_records, (int)new_n, (int)nb);
 
 	/* Now append the interpolated breakline to the C data structure */
@@ -1897,27 +1897,27 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SURFACE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;	/* Real xinc == yinc in terms of distances */
 	C->W.file = strdup ("surface_log.txt");
 	C->Z.value = SURFACE_OVERRELAXATION;
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	if (C->D.file) gmt_M_str_free (C->D.file);	
-	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);	
-	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);	
-	if (C->M.arg) gmt_M_str_free (C->M.arg);	
-	if (C->W.file) gmt_M_str_free (C->W.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	if (C->D.file) gmt_M_str_free (C->D.file);
+	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);
+	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);
+	if (C->M.arg) gmt_M_str_free (C->M.arg);
+	if (C->W.file) gmt_M_str_free (C->W.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1932,7 +1932,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1954,7 +1954,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +m : Two grids, use memcpy to move latest to old, then update on new grid\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +p : Two grids, use pointers to alternate old and new grid\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +s : Save data constraints & breakline table after throw_away_unusables is done\n");
-#endif	
+#endif
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
@@ -1984,7 +1984,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi3,di,e,f,h,i,r,s,x,:,.");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -2190,7 +2190,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	unsigned int old_verbose;
 	char *limit[2] = {"lower", "upper"};
 	double wesn[4];
-	
+
 	struct SURFACE_INFO C;
 	struct SURFACE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -2211,7 +2211,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the surface main code ----------------------------*/
 
 	old_verbose = GMT->current.setting.verbose;
@@ -2237,10 +2237,10 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  We reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
-	
+
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
@@ -2284,11 +2284,11 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		}
 		interpolate_add_breakline (GMT, &C, Lin->table[0], file);	/* Pass the single table since we read a single file */
 	}
-	
+
 	throw_away_unusables (GMT, &C);		/* Eliminate data points that will not serve as constraints */
 	remove_planar_trend (GMT, &C);		/* Fit best-fitting plane and remove it from the data; plane will be restored at the end */
 	key = rescale_z_values (GMT, &C);	/* Divide residual data by their rms value */
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lie exactly on a plane; write a grid with the plan and exit */
 		gmt_M_free (GMT, C.data);	/* The data set is no longer needed */
@@ -2299,7 +2299,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 			Return (error);
 		Return (GMT_NOERROR);	/* Clean up and return */
 	}
-	
+
 	load_constraints (GMT, &C, true);	/* Set lower and upper constraint grids, if requested */
 
 	/* Set up factors and reset current_stride to its initial (and largest) value  */
@@ -2325,7 +2325,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		C.logging = true;
 		fprintf (C.fp_log, "#grid\tmode\tgrid_iteration\tchange\tlimit\ttotal_iteration\n");
 	}
-	
+
 	/* Now the data are ready to go for the first iteration.  */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report on memory usage for this run */
@@ -2378,7 +2378,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	/* Here is the main multigrid loop, were we first grid using a coarse grid and the
 	 * progressively refine the grid until we reach the final configuration. */
-	
+
 	C.previous_stride = C.current_stride;
 #ifdef DEBUG_SURF
 	if (average)
@@ -2387,7 +2387,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 #endif
 	find_nearest_constraint (GMT, &C);		/* Assign nearest data value to nodes and evaluate Briggs coefficients */
 	iterate (GMT, &C, GRID_DATA);			/* Grid the data using the data constraints */
-	 
+	
 	while (C.current_stride > 1) {	/* More intermediate grids remain, go to next */
 		smart_divide (&C);			/* Set the new current_stride */
 		set_grid_parameters (&C);		/* Update node book-keeping constants */
@@ -2436,7 +2436,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		struct GMT_VECTOR *V = NULL;
 		double *data[2] = {NULL, NULL};
 		uint64_t row, col, ij, dim[3] = {2, C.npoints, GMT_DOUBLE};		/* ncols, nrows, type */
-		
+	
 		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -2482,7 +2482,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_M_free (GMT, C.data);
-	
+
 	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write the output grid */
 		Return (error);
 

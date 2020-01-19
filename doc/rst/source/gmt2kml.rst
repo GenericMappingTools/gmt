@@ -264,9 +264,9 @@ Optional Arguments
     is visible to infinite size. Append **+f**\ *fade\_min/fade\_max* to
     fade in and out over a ramp [abrupt]. Append **+v** to make a
     feature *not* visible when loaded [visible]. Append **+o** to open a
-    folder or document in the sidebar when loaded [closed]. 
+    folder or document in the sidebar when loaded [closed].
 
-.. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings]. 
+.. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -466,7 +466,7 @@ like local PNG images), you can consolidate these into a single KMZ file
 for saving space and for grouping related files together.  The bash function
 **gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
 do this.  You need to source gmt_shell_functions.sh first before you can
-use it. 
+use it.
 
 See Also
 --------

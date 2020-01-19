@@ -19,7 +19,7 @@ int main () {
 	int coord[NM] = {1, 2, 2, 3, 3, 4};	/* 3 points */
 	char *strings[NROWS] = {"First label", "Second label", "Third label"};
 	struct GMTAPI_CTRL *API = NULL;
-	
+
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
  	/* Create a blank matrix container that will hold our user in_data */

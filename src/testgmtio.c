@@ -45,11 +45,11 @@ int main (int argc, char *argv[]) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) exit (EXIT_FAILURE);
 
 	/* 4. Initializing data input via stdin */
-	
+
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) exit (EXIT_FAILURE);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Establishes data input */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Establishes data output */
-	
+
 	/* 5. Read individual records until end of data set */
 	/*    The GMT_READ_FILEBREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
 	 *    data table when there are more tables to process.  The end of the last file yields the actual EOF.
@@ -58,7 +58,7 @@ int main (int argc, char *argv[]) {
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON)) != GMT_NOERROR) exit (error);				/* Enables data input and sets access mode */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON)) != GMT_NOERROR) exit (error);				/* Enables data output and sets access mode */
-	
+
 	do {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DATA;	/* Normally we treat data as double precision values */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -100,11 +100,11 @@ int main (int argc, char *argv[]) {
 		}
 		GMT_Put_Record (API, mode, In);
 	} while (true);
-	
+
 	API->print_func (stdout, "B: --- End of All Files ---\n");
 	if ((error = GMT_End_IO (API, GMT_IN,  0)) != GMT_NOERROR) exit (error);				/* Disables further data input */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0)) != GMT_NOERROR) exit (error);				/* Disables further data output */
-	
+
 	/* 5. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);
 

@@ -74,7 +74,7 @@ Required Arguments
 
 **-G**\ *outputfile.nc*
     Output file name. Output is a binary 2-D *.nc* file. Note that the
-    smallest grid dimension must be at least 4. 
+    smallest grid dimension must be at least 4.
 
 .. _-I:
 
@@ -196,12 +196,12 @@ Optional Arguments
     to set interior tension, and **-Tb**\ *tension_factor* to set
     boundary tension. If you do not prepend **i** or **b**, both will be
     set to the same value. [Default = 0 for both gives minimum curvature
-    solution.] 
+    solution.]
 
 .. _-V:
 
-.. |Add_-V| replace:: 
-    **-V3** will report the convergence after each iteration; 
+.. |Add_-V| replace::
+    **-V3** will report the convergence after each iteration;
     **-V** will report only after each regional grid is converged.
 .. include:: explain_-V.rst_
 
@@ -215,11 +215,11 @@ Optional Arguments
     convergence, and will reach a solution more rapidly but may become
     unstable. If you use a large value for this factor, it is a good
     idea to monitor each iteration with the **-Vl** option. [Default =
-    1.4 converges quickly and is almost always stable.] 
+    1.4 converges quickly and is almost always stable.]
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -233,7 +233,7 @@ Optional Arguments
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
-    
+   
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-qi.rst_

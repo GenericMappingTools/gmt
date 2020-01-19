@@ -157,7 +157,7 @@ remote file hotspots.txt and then contour them on a sphere with a 200 km interva
 and annotations every 1000 km, try::
 
     gmt begin map
-      gmt sphtriangulate @hotspots.txt -Qv -D > t.txt 
+      gmt sphtriangulate @hotspots.txt -Qv -D > t.txt
       gmt sphdistance -Rg -I1 -Qt.txt -Gt.nc -Lk
       gmt grdcontour t.nc -JG-140/30/7i -C200 -A1000 -Bafg
     gmt end show

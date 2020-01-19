@@ -246,7 +246,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 	bool grid_was_read = false, do_J = false;
-	
+
 	unsigned int row, col;
 	int error;
 
@@ -301,7 +301,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	grid_was_read = Ctrl->G.active;
 	HH = gmt_get_H_hidden (G->header);
-	
+
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_Report (API, GMT_MSG_NORMAL, "(Use grdconvert to convert to GMT default format and work on that file)\n");
@@ -331,7 +331,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		nan_value = G->header->nan_value;
 		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
 			Return (GMT_PARSE_ERROR);
-		
+	
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
@@ -349,7 +349,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Wipe history */
 		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
 	}
-	
+
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Shifting longitudes in file %s by %g degrees\n", out_file, shift_amount);
@@ -509,7 +509,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->L.active) {	/* Wrap the longitude boundaries */
 		double wesn[4];
-		
+	
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}

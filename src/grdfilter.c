@@ -373,10 +373,10 @@ GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVA
 void reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
 	/* Parameters computed from width and other settings */
 	double x_width, y_width;
-	
+
 	par[GRDFILTER_WIDTH] = width;
 	par[GRDFILTER_HALF_WIDTH] = 0.5 * width;
-	if (F->filter_type == GRDFILTER_COSINE) 
+	if (F->filter_type == GRDFILTER_COSINE)
 		par[GRDFILTER_INV_R_SCALE] = 2.0 / width;
 	else if (F->filter_type == GRDFILTER_GAUSSIAN)	/*  Gaussian filter weights */
 		par[GRDFILTER_INV_R_SCALE] = -18.0 / (width * width);
@@ -425,7 +425,7 @@ GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, d
 	if (variable) {	/* Update since filterwidth has changed */
 		reset_F_parameters (F, F->W[node], par);
 	}
-	
+
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point input grid (i,j) = (0,0) */
 	if (F->d_flag == GRDFILTER_GEO_MERCATOR) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
 	if (F->rect) {
@@ -660,7 +660,7 @@ GMT_LOCAL double get_filter_width (struct GMTAPI_CTRL *API, struct GRDFILTER_CTR
 	/* Most filter setups expact a constant filter width, but some may pass a grid.  if so
 	   then we must read the grid and find the largest filter and return that value. */
 	double width = 0.0;
-		
+	
 	if (gmt_access (API->GMT, text, R_OK))	/* Not a readable file */
 		width = atof (text);
 	else {	/* Must read the grid */
@@ -675,7 +675,7 @@ GMT_LOCAL double get_filter_width (struct GMTAPI_CTRL *API, struct GRDFILTER_CTR
 			if (W->data[node] > width) width = W->data[node];
 		}
 		Ctrl->F.W = W;
-		Ctrl->F.varwidth = true;	
+		Ctrl->F.varwidth = true;
 	}
 	return (width);
 }
@@ -796,7 +796,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						Ctrl->F.width = get_filter_width (API, Ctrl, &txt[1]);
 					if ((p = strstr (txt, "+h"))) Ctrl->F.highpass = true;
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
-						if (gmt_M_compat_check (GMT, 5)) { 
+						if (gmt_M_compat_check (GMT, 5)) {
 							GMT_Report (API, GMT_MSG_COMPAT,
 							            "Negative filterwidth for highpass-filtering is deprecated; +h was added instead, use this in the future.\n", opt->arg);
 							Ctrl->F.highpass = true;
@@ -945,7 +945,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	}
 	if (GMT->common.R.active[GSET])	/* Explicitly set the output registration */
 		one_or_zero = (GMT->common.R.registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
-	
+
 	else if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
 	else				/* Same as input grid registration */
@@ -1004,7 +1004,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		}
 		fast_way = false;
 	}
-	
+
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if output grid spacing is a multiple of input grid spacing */
 
@@ -1326,7 +1326,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_LEN256];
 			static char *V_level = "qntcvld";
-			
+		
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {

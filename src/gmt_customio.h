@@ -14,7 +14,7 @@
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
- 
+
 /*
  * Include file for gmt_customio functions.
  *

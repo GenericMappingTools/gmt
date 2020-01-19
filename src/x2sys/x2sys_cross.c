@@ -121,7 +121,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n\n");
-	
+
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
@@ -147,7 +147,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of crossover to use in interpolation [Default is 3].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
 	GMT_Option (API, "bo,do,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 				break;
 
 			/* Processes program-specific parameters */
-			
+		
 			case 'A':	/* Get list of approved filepair combinations to check */
 				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->A.file = strdup (opt->arg);
@@ -375,7 +375,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	bool has_time[2];			/* true for each tracks that actually has a time column */
 	bool *duplicate = NULL;			/* Array, true for any track that is already listed */
 	bool cmdline_files = false;		/* true if files where given directly on the command line */
-	
+
 	size_t n_alloc = 1;
 
 	double dt;				/* Time between crossover and previous node */
@@ -441,14 +441,14 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Must give at least one data set!\n");
 		x2sys_end (GMT, s);
-		Return (GMT_RUNTIME_ERROR);		
+		Return (GMT_RUNTIME_ERROR);	
 	}
 	n_tracks = (uint64_t)error;
-	
+
 	GMT->current.setting.interpolant = Ctrl->I.mode;
 	if (Ctrl->Q.active) {
 		if (Ctrl->Q.mode == 1) internal = false;
@@ -474,7 +474,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		}
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
-	
+
 	if (Ctrl->A.active) {	/* Read list of acceptable trk_name combinations */
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Explicit combinations found: ");
@@ -537,12 +537,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	gmt_set_column (GMT, GMT_OUT, GMT_Y, (!strcmp (s->info[s->y_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT);
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
 	gmt_set_column (GMT, GMT_OUT, 3, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
-	
+
 	for (i = 0; i < n_data_col+2; i++) {
 		gmt_set_column (GMT, GMT_OUT, 4+2*(unsigned int)i, GMT_IS_FLOAT);
 		gmt_set_column (GMT, GMT_OUT, 5+2*(unsigned int)i, GMT_IS_FLOAT);
 	}
-	
+
 	if (n_data_col == 0) {
 		xover_locations_only = true;
 		n_output = 2;
@@ -591,7 +591,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Based on -D setting we will polar project all data using pole latitude %g\n", plat[SET_A]);
 	}
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
-		
+	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale, -1);	/* Sets output scale for distances using in velocities */
 	switch (s->unit[X2SYS_SPEED_SELECTION][0]) {
@@ -620,7 +620,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			break;
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
-	
+
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Crashout (error);
 	}
@@ -648,7 +648,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			x2sys_free_data (GMT, data[SET_A], s->n_out_columns, &data_set[SET_A]);
 			continue;
 		}
-		
+	
 		has_time[SET_A] = false;
 		if (got_time) {	/* Check to make sure we do in fact have time */
 			for (i = n_bad = 0; i < n_rec[SET_A]; i++) n_bad += gmt_M_is_dnan (data[SET_A][s->t_col][i]);
@@ -687,7 +687,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			if (!external && !same) continue;	/* Only do internal errors */
 
 			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
-			
+		
 			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
 			if (same) {	/* Just set pointers */
@@ -714,7 +714,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				}
 
 				if ((dist[SET_B] = gmt_dist_array_2 (GMT, data[SET_B][s->x_col], data[SET_B][s->y_col], n_rec[SET_B], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
-				
+			
 				if (do_examine) {	/* Check the coordinates and find suitable pole */
 					ymin[SET_B] = ymax[SET_B] = data[SET_B][s->y_col][0];
 					for (i = 1; i < n_rec[SET_B]; i++) {
@@ -786,7 +786,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 						left[k]  = lrint (floor (XC.xnode[k][i]));
 						right[k] = lrint (ceil  (XC.xnode[k][i]));
-						
+					
 						if (left[k] == right[k]) {	/* Crosses exactly on a node; move left or right so interpolation will work */
 							if (left[k] > 0)
 								left[k]--;	/* Move back so cross occurs at right[k] */

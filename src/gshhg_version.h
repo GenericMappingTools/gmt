@@ -24,7 +24,7 @@
 
 /*!
  * \file gshhg_version.h
- * \brief 
+ * \brief
  */
 
 #ifndef GMT_GSHHG_VERSION_H

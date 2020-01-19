@@ -8,7 +8,7 @@
 
 /*!
  * \file segy_io.h
- * \brief 
+ * \brief
  */
 
 #ifndef SEGY_IO_H

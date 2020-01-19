@@ -385,7 +385,7 @@ GMT_LOCAL void move_model_a_to_b_1d (double *model_a, double *model_b, unsigned 
 }
 
 GMT_LOCAL void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, struct GMT_MODEL *M) {
- 
+
    	/* mp is row dimension of gtg  */
 
 	uint64_t i;

@@ -96,8 +96,8 @@ struct GMT_RANGE {
 /*! For information on 1-D array */
 
 struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */
-	bool temporal;	/* true if array will be in absolute time */ 
-	bool vartime;	/* true if <unit> implies a variable calendar unit */ 
+	bool temporal;	/* true if array will be in absolute time */
+	bool vartime;	/* true if <unit> implies a variable calendar unit */
 	bool count;	/* true if we got number of items rather than increment */
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
@@ -106,7 +106,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
-	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
+	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
 	unsigned int col;	/* The column that this array goes with */
 	int distmode;	/* Type of geospatial calculation mode for distances */
@@ -277,8 +277,8 @@ struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
 };
 
 struct GMT_MOMENT_INTERVAL {
-	struct GMT_GCAL	cc[2];		
-	double dt[2];		
+	struct GMT_GCAL	cc[2];	
+	double dt[2];	
 	double sd[2];		/* Seconds since the start of the day.  */
 	int64_t rd[2];
 	unsigned int step;
@@ -348,9 +348,9 @@ struct GMT_CURRENT {
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
 #ifdef HAVE_GDAL
-	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */ 
-	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */ 
-	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */ 
+	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */
+	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */
+	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */
 #endif
 };
 

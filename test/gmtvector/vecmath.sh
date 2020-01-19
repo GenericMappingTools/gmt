@@ -59,7 +59,7 @@ gmt vector -A0.612372436/0.612372436/0.5 -Ci -fg >> result
 # 3-D cross product
 echo "# gmtvector -A1/1/0 -S0/0/1 -Tx -C" >> result
 gmt vector -A1/1/0 -S0/0/1 -Tx -C >> result
-# Bisector pole 
+# Bisector pole
 echo "# gmtvector -A30/30 -S-30/-30 -Tb -fg" >> result
 gmt vector -A30/30 -S-30/-30 -Tb -fg >> result
 diff -q --strip-trailing-cr result "${src:-.}"/result > fail

@@ -288,7 +288,7 @@ GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 	unsigned char *iu = C->iu;
 	double delta_x, delta_y, a0, a1, a2, a3, old_size, a0_plus_a1_dx, a2_plus_a3_dx;
 	gmt_grdfloat *u = C->Grid->data;
-	
+
 	old_size = 1.0 / (double)C->old_grid;
 
 	/* First do from southwest corner */
@@ -364,7 +364,7 @@ GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v) {
 	uint64_t block_i, block_j, index_1, index_2;
 	double x0, y0, dist_1, dist_2;
 	const struct SURFACE_DATA *point_1 = point_1v, *point_2 = point_2v;
-	
+
 	index_1 = point_1->index;
 	index_2 = point_2->index;
 	if (index_1 < index_2) return (-1);
@@ -448,7 +448,7 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 			 * possibly clip the range if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (grid * x|y_inc) so to recover the
 	 			 * dx,dy in final grid fractions we must scale by grid */
-	 			 
+	 			
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_scale * C->grid * (C->plane_c1 * dx + C->plane_c2 * dy));
 	 			if (C->constrained) {	/* Must use ij_v2 since constrained grids are in standard scanline format */
 					ij_v2 = gmt_M_ijp (C->Grid->header, C->n_rows - block_j * C->grid - 1, block_i * C->grid);
@@ -579,7 +579,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
-	
+
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		return (error);
 	}
@@ -608,7 +608,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
@@ -658,7 +658,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		}
 	} while (true);
 
-	
+
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		return (GMT->parent->error);
 	}
@@ -768,7 +768,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	gmt_grdfloat *u = C->Grid->data, *v2 = NULL;
 
 	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
-		
+	
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
 	v2 = gmt_M_memory_aligned (GMT, NULL, C->Grid->header->size, gmt_grdfloat);
@@ -902,7 +902,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			/* South side */
 			kase = x_case * 5;
 			ij = C->ij_sw_corner + i * C->my;
-			u[ij + C->offset[kase][11]] = 
+			u[ij + C->offset[kase][11]] =
 				(gmt_grdfloat)(u[ij + C->offset[kase][0]] + C->eps_m2*(u[ij + C->offset[kase][1]] + u[ij + C->offset[kase][3]]
 					- u[ij + C->offset[kase][8]] - u[ij + C->offset[kase][10]])
 					+ C->two_plus_em2 * (u[ij + C->offset[kase][9]] - u[ij + C->offset[kase][2]]) );
@@ -910,7 +910,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			/* North side */
 			kase = x_case * 5 + 4;
 			ij = C->ij_nw_corner + i * C->my;
-			u[ij + C->offset[kase][0]] = 
+			u[ij + C->offset[kase][0]] =
 				-(gmt_grdfloat)(-u[ij + C->offset[kase][11]] + C->eps_m2 * (u[ij + C->offset[kase][1]] + u[ij + C->offset[kase][3]]
 					- u[ij + C->offset[kase][8]] - u[ij + C->offset[kase][10]])
 					+ C->two_plus_em2 * (u[ij + C->offset[kase][9]] - u[ij + C->offset[kase][2]]) );
@@ -942,7 +942,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				/* West side */
 				kase = y_case;
 				ij = C->ij_sw_corner + j;
-				u[ij+C->offset[kase][4]] = 
+				u[ij+C->offset[kase][4]] =
 					u[ij + C->offset[kase][7]] + (gmt_grdfloat)(C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
 					-u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
 					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]));
@@ -950,7 +950,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				/* East side */
 				kase = 20 + y_case;
 				ij = C->ij_se_corner + j;
-				u[ij + C->offset[kase][7]] = 
+				u[ij + C->offset[kase][7]] =
 					- (gmt_grdfloat)(-u[ij + C->offset[kase][4]] + C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
 					- u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
 					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]) );
@@ -1054,7 +1054,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	gmt_grdfloat *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	
+
 	move_over[0] = 2;
 	move_over[1] = 1 - C->my;
 	move_over[2] = 1;
@@ -1098,13 +1098,13 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	for (i = 0; i < C->n_columns; i ++) {
 
 		ij = C->ij_sw_corner + i * C->my;
-		u[ij + move_over[11]] = 
+		u[ij + move_over[11]] =
 			(gmt_grdfloat)(u[ij + move_over[0]] + C->eps_m2*(u[ij + move_over[1]] + u[ij + move_over[3]]
 				- u[ij + move_over[8]] - u[ij + move_over[10]])
 				+ C->two_plus_em2 * (u[ij + move_over[9]] - u[ij + move_over[2]]) );
 
 		ij = C->ij_nw_corner + i * C->my;
-		u[ij + move_over[0]] = 
+		u[ij + move_over[0]] =
 			-(gmt_grdfloat)(-u[ij + move_over[11]] + C->eps_m2 * (u[ij + move_over[1]] + u[ij + move_over[3]]
 				- u[ij + move_over[8]] - u[ij + move_over[10]])
 				+ C->two_plus_em2 * (u[ij + move_over[9]] - u[ij + move_over[2]]) );
@@ -1113,19 +1113,19 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	for (j = 0; j < C->n_rows; j ++) {
 
 		ij = C->ij_sw_corner + j;
-		u[ij+move_over[4]] = 
+		u[ij+move_over[4]] =
 			u[ij + move_over[7]] + (gmt_grdfloat)(C->eps_p2 * (u[ij + move_over[3]] + u[ij + move_over[10]]
 			-u[ij + move_over[1]] - u[ij + move_over[8]])
 			+ C->two_plus_ep2 * (u[ij + move_over[5]] - u[ij + move_over[6]]));
 
 		ij = C->ij_se_corner + j;
-		u[ij + move_over[7]] = 
+		u[ij + move_over[7]] =
 			- (gmt_grdfloat)(-u[ij + move_over[4]] + C->eps_p2 * (u[ij + move_over[3]] + u[ij + move_over[10]]
 			- u[ij + move_over[1]] - u[ij + move_over[8]])
 			+ C->two_plus_ep2 * (u[ij + move_over[5]] - u[ij + move_over[6]]) );
 	}
 
-	/* That resets the boundary values.  Now we can test all data.  
+	/* That resets the boundary values.  Now we can test all data. 
 		Note that this loop checks all values, even though only nearest were used.  */
 
 	for (k = 0; k < C->npoints; k++) {
@@ -1137,7 +1137,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 	y0 = h->wesn[YLO] + j*h->inc[GMT_Y];
 	 	dx = (C->data[k].x - x0)*HH->r_inc[GMT_X];
 	 	dy = (C->data[k].y - y0)*HH->r_inc[GMT_Y];
- 
+
 	 	du_dx = 0.5 * (u[ij + move_over[6]] - u[ij + move_over[5]]);
 	 	du_dy = 0.5 * (u[ij + move_over[2]] - u[ij + move_over[9]]);
 	 	d2u_dx2 = u[ij + move_over[6]] + u[ij + move_over[5]] - 2 * u[ij];
@@ -1154,20 +1154,20 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 				- ( u[ij + move_over[1]] + u[ij + move_over[8]] - 2 * u[ij + move_over[5]] ) );
 
 	 	/* 3rd order Taylor approx */
-	 
+	
 	 	z_est = u[ij] + dx * (du_dx +  dx * ( (0.5 * d2u_dx2) + dx * (d3u_dx3 / 6.0) ) )
 				+ dy * (du_dy +  dy * ( (0.5 * d2u_dy2) + dy * (d3u_dy3 / 6.0) ) )
 	 			+ dx * dy * (d2u_dxdy) + (0.5 * dx * d3u_dx2dy) + (0.5 * dy * d3u_dxdy2);
-	 
+	
 	 	z_err = z_est - C->data[k].z;
 	 	mean_error += z_err;
 	 	mean_squared_error += (z_err * z_err);
 	 }
 	 mean_error /= C->npoints;
 	 mean_squared_error = sqrt (mean_squared_error / C->npoints);
-	 
-	/* Compute the total curvature of the grid */
 	
+	/* Compute the total curvature of the grid */
+
 	 curvature = 0.0;
 	 for (i = 0; i < C->n_columns; i++) {
 	 	for (j = 0; j < C->n_rows; j++) {
@@ -1230,7 +1230,7 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		yy = (C->data[i].y - h->wesn[YLO]) * HH->r_inc[GMT_Y];
 		C->data[i].z -= (gmt_grdfloat)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
@@ -1282,7 +1282,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		else
 			last_index = C->data[k].index;
 	}
-	
+
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
@@ -1416,8 +1416,8 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	y = gmt_M_memory (GMT, NULL, n_alloc, double);
 	z = gmt_M_memory (GMT, NULL, n_alloc, double);
 
-	r_dx = 1.0 / C->grid_xinc; 
-	r_dy = 1.0 / C->grid_yinc; 
+	r_dx = 1.0 / C->grid_xinc;
+	r_dy = 1.0 / C->grid_yinc;
 	for (seg = 0; seg < xyzline->n_segments; seg++) {
 		for (row = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
 			dx = xyzline->segment[seg]->data[GMT_X][row+1] - xyzline->segment[seg]->data[GMT_X][row];
@@ -1501,24 +1501,24 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SURFACE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;
 	C->Z.value = SURFACE_OVERRELAXATION;
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->L.low);	
-	gmt_M_str_free (C->L.high);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->L.low);
+	gmt_M_str_free (C->L.high);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1533,7 +1533,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1574,7 +1574,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi3,di,e,f,h,i,r,s,:,.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -1737,7 +1737,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 int GMT_surface_old (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1;
 	double wesn[4];
-	
+
 	struct GMT_DATATABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct SURFACE_INFO C;
@@ -1760,7 +1760,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the surface main code ----------------------------*/
 
 	gmt_M_memset (&C, 1, struct SURFACE_INFO);
@@ -1788,10 +1788,10 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
-	
+
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
@@ -1844,7 +1844,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	throw_away_unusables (GMT, &C);
 	remove_planar_trend (GMT, &C);
 	key = rescale_z_values (GMT, &C);
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		gmt_M_free (GMT, C.data);
@@ -1855,7 +1855,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 		Return (GMT_NOERROR);
 	}
-	
+
 	load_constraints (GMT, &C, true);
 
 	/* Set up factors and reset grid to first value  */
@@ -1887,7 +1887,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	C.old_grid = C.grid;
 	find_nearest_point (&C);
 	iterate (GMT, &C, 1);
-	 
+	
 	while (C.grid > 1) {
 		smart_divide (&C);
 		set_grid_parameters (&C);

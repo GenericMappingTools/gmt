@@ -186,7 +186,7 @@
 #			define restrict
 # 		endif
 
-		/* isspace, isalpha, ...: avoid assert (only happens with debug CRT) 
+		/* isspace, isalpha, ...: avoid assert (only happens with debug CRT)
 		   if passed a parameter that isn't EOF or in the range of 0 through 0xFF. */
 #		ifdef _DEBUG
 #			define isspace(c) (c > 0 && c < 0xFF && isspace(c))

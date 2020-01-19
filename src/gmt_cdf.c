@@ -201,7 +201,7 @@ int gmt_cdf_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	gmt_M_err_trap (nc_open (HH->name, NC_WRITE, &ncid));
-	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'u'));
 	gmt_M_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -212,7 +212,7 @@ int gmt_cdf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	gmt_M_err_trap (nc_create (HH->name, NC_CLOBBER, &ncid));
-	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'w'));
 	gmt_M_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -371,7 +371,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if ((err = nc_set_fill (ncid, NC_NOFILL, &old_fill_mode))) {
 		gmt_M_free (GMT, actual_col);
 		return (err);
-	} 
+	}
 	if ((err = gmt_cdf_grd_info (GMT, ncid, header, 'w'))) {
 		gmt_M_free (GMT, actual_col);
 		return (err);

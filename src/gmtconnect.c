@@ -698,7 +698,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		b_len = strlen (buffer);
 		/* Select the endpoint that has the closest buddy */
 		end_order = first_end_order = (segment[id].buddy[0].dist < segment[id].buddy[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
-		
+	
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */

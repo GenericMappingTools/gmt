@@ -239,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				else 		/* Then the default */
 					{Ctrl->T.night = true;		Ctrl->T.radius[0] = 90.833;}
 				if (pch) pch[0] = '+';	/* Restore it */
-					
+				
 				break;
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 	}
 
 	for (j = 0; j < 4; j++)	/* Count requested terminators */
-		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
+		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
@@ -471,7 +471,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			gmt_M_free (GMT, Out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -562,7 +562,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	else {	/* Plotting the terminator as line, polygon, or clip path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
-		
+	
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);

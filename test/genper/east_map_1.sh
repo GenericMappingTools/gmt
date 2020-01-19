@@ -17,7 +17,7 @@ twist=0
 Width=0.0
 Height=0.0
 
-# now point from an altitude of 160 km 
+# now point from an altitude of 160 km
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 

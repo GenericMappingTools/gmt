@@ -236,7 +236,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column or a comma-separated list.\n");
 	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -392,7 +392,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 		Ctrl->T.T.distmode = Ctrl->N.mode;
 	}
 	if (Ctrl->N.add_col) Ctrl->T.T.add = true;	/* Obsolete -N+a settings propagated to -T */
-	
+
 	/* Check arguments */
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
@@ -435,7 +435,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i, i1, i2;
 	double t_0, t_1, time, w_sum;
 	double (*get_weight[3]) (double, double);	/* Pointers to desired weight function.  */
-	
+
 	t_0 = F->data[F->t_col][0];
 	t_1 = F->data[F->t_col][F->n_rows-1];
 	if (F->equidist) F->dt = (t_1 - t_0) / (F->n_rows - 1);
@@ -609,7 +609,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		for (last_k = F->n_rows-1; last_k && F->data[F->t_col][last_k] > F->t_stop; --last_k);	/* Bypass points outside */
 	}
 	small = (F->T.array[1] - F->T.array[0]) * GMT_CONV8_LIMIT;
-	
+
 	while (k <= last_k) {
 		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
 		while (right < F->n_rows && (F->data[F->t_col][right] - F->T.array[k] - small) <= F->half_width) ++right;
@@ -677,7 +677,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		if (F->filter_type > FILTER1D_CONVOLVE) {
 
 			/* Need to count how many good ones; use data_sum area  */
-			
+		
 			Out->data = data_sum;
 			n_good_ones = 0;
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
@@ -850,7 +850,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	unsigned int save_col, n_out_cols;
 
 	double last_time, new_time, in;
-	
+
 	struct GMT_OPTION *options = NULL;
 	struct FILTER1D_INFO F;
 	struct GMT_DATASET *D = NULL;
@@ -909,7 +909,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->T.T.add) n_out_cols++;
 	}
-	
+
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
@@ -989,9 +989,9 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	}
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter the data columns\n");
-	
+
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
@@ -1027,7 +1027,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
-			
+		
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
 			if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
@@ -1042,11 +1042,11 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			if (set_up_filter (GMT, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
 
 			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
-			
+		
 			if (do_the_filter (API, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
 		}
 	}
-	
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error, "Error in End_IO\n");
 	}

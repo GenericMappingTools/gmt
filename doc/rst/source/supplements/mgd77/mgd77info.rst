@@ -35,7 +35,7 @@ section or its individual members.
 If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
 x2sys tools to set up a tracks index data base (see **x2sys\_init** for
-more information). 
+more information).
 
 Required Arguments
 ------------------
@@ -102,12 +102,12 @@ Optional Arguments
     (93) CHILE, (J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV
     TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
     (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
- 
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
+   
 .. include:: ../../explain_help.rst_
 
 Examples

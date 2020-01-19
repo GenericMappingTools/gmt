@@ -105,7 +105,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*fact*]
-    Scale opening angles by *fact* on output [0.5]. 
+    Scale opening angles by *fact* on output [0.5].
     Typically used to get half-rates needed for flowlines.
 
 .. _-N:

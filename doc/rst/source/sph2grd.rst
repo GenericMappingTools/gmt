@@ -34,7 +34,7 @@ Description
 -----------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
-L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid. 
+L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid.
 
 Required Arguments
 ------------------
@@ -42,7 +42,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.) 
+    *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.)
 
 .. _-I:
 
@@ -100,7 +100,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 4 input columns]. 
+.. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-h| replace:: Not used with binary data.

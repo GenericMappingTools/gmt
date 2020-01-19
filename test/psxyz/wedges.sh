@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Check wedges 
+# Check wedges
 
 ps=wedges.ps
 gmt set PROJ_ELLIPSOID Sphere

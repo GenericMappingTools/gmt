@@ -51,7 +51,7 @@ this case, the program will iteratively reweight the data based on a
 robust scale estimate, in order to converge to a solution insensitive to
 outliers. This may be handy when separating a "regional" field from a
 "residual" which should have non-zero mean, such as a local mountain on
-a regional surface. 
+a regional surface.
 
 Required Arguments
 ------------------
@@ -97,7 +97,7 @@ Optional Arguments
     model is not significant at the *confidence\_level* level. You may
     set **-I** only, without an attached number; in this case the fit
     will be iterative with a default confidence level of 0.51. Or choose
-    your own level between 0 and 1. See remarks section. 
+    your own level between 0 and 1. See remarks section.
 
 .. _-V:
 
@@ -110,12 +110,12 @@ Optional Arguments
     Weights are supplied in input column 4. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
     fit]. Append **+s** to instead read data uncertainties (one sigma)
-    and create weights as 1/sigma^2 [Default reads only the first 3 columns.] 
+    and create weights as 1/sigma^2 [Default reads only the first 3 columns.]
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) input columns]. 
+.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**]. 
+.. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -179,7 +179,7 @@ means that the influence of outliers is reduced only slightly at each
 iteration; consequently the reduction in Chi-Squared is not very
 significant. If the procedure needs a few iterations to successfully
 attenuate their effect, the significance level of the F test must be
-kept low. 
+kept low.
 
 .. include:: explain_precision.rst_
 

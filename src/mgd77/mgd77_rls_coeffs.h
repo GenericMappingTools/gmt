@@ -10,9 +10,9 @@
  *		Ship gravity vs recomputed ship gravity (slope, intercept, rms)
  *		Ship residual magnetics vs recomputed ship residual magnetics (slope, intercept, rms)
  *
- *	Each table consists of the regression statistic along with the portion 
+ *	Each table consists of the regression statistic along with the portion
  *	of data less than or equal to that statistic (i.e., 1.0936% of cruises have
- *	bathymetry/S2004 regression slope <= 0.699999) 
+ *	bathymetry/S2004 regression slope <= 0.699999)
  *
  *	This information is derived directly from regression statistics for all
  *  marine geophysical trackline data available as of June 2007.
@@ -25,14 +25,14 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	June 2007
- * 
+ *
  * ------------------------------------------------------------------*/
 
 /*!
  * \file mgd77_rls_coeffs.h
- * \brief  
+ * \brief 
  */
 
 #define RLS_N_DEPTH         4490

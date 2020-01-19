@@ -61,7 +61,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -87,11 +87,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		return GMT_PARSE_ERROR;
 	}
 	gmt_filename_set (opt->arg);
-	
+
 	/* Gave a figure prefix so can go on to check optional items */
-	
+
 	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
-	
+
 	while (opt) {
 		gmt_filename_set (opt->arg);
 		arg_category = GMT_NOTSET;	/* We know noothing */
@@ -116,9 +116,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		opt = opt->next;
 		if (opt && opt->option == 'V') opt = opt->next;	/* Skip the verbose option */
 	}
-	
+
 	/* If we get here without errors then we know the input arguments are all valid */
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -158,7 +158,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	if (options) arg = GMT_Create_Cmd (API, options);
 	if (gmt_add_figure (API, arg))
 		error = GMT_RUNTIME_ERROR;
-		
+	
 	if (options) GMT_Destroy_Cmd (API, &arg);
 
 	opt = options;
@@ -166,8 +166,8 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		gmt_filename_get (opt->arg);
 		opt = opt->next;
 	}
-	
+
 	gmt_reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
-	
+
 	Return (error);
 }

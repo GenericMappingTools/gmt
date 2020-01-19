@@ -154,7 +154,7 @@ struct GMT_CONTOUR {
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	struct GMT_DATASET *Out;	/* Textset with positions, angles and labels used in contouring */
 	/* Contour line section */
-	
+
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
 };
 

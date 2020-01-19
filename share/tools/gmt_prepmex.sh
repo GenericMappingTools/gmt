@@ -96,12 +96,12 @@ if [ "$1" == "gs" ]; then
 		echo "Sorry, no libgs.dylib under fink yet"
 	elif [ -d /opt/local/lib ]; then	# Macports
 		FROM=/opt/local/lib
-		cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib 
+		cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib
 		cp $FROM/libfreetype.6.dylib libXfreetype.6.dylib
-		install_name_tool -id /opt/gmt/lib/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
+		install_name_tool -id /opt/gmt/lib/libXgs.${GSV}.dylib libXgs.${GSV}.dylib
 		install_name_tool -id /opt/gmt/lib/libXfreetype.6.dylib libXfreetype.6.dylib
-		install_name_tool -change $FROM/libtiff.5.dylib /opt/gmt/lib/libXtiff.5.dylib libXgs.${GSV}.dylib 
-		install_name_tool -change $FROM/libfreetype.6.dylib /opt/gmt/lib/libXfreetype.6.dylib libXgs.${GSV}.dylib 
+		install_name_tool -change $FROM/libtiff.5.dylib /opt/gmt/lib/libXtiff.5.dylib libXgs.${GSV}.dylib
+		install_name_tool -change $FROM/libfreetype.6.dylib /opt/gmt/lib/libXfreetype.6.dylib libXgs.${GSV}.dylib
 	elif [ -d /usr/local/lib ]; then		# Brew
 		FROM=/usr/local/lib
 		echo "Sorry, no libgs.dylib under HomeBrew yet"

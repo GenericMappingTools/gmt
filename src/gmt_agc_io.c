@@ -193,7 +193,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	
+
 	header->registration = GMT_GRID_NODE_REG;	/* Hardwired since no info about this in the header */
 	HH->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
 	header->wesn[XLO]  = recdata[2];
@@ -210,7 +210,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	agchead[BUFFHEADSIZE-2] = recdata[RECORDLENGTH-2];
 	agchead[BUFFHEADSIZE-1] = recdata[RECORDLENGTH-1];
 	agc_save_header (header->remark, agchead);
-	
+
 	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
@@ -230,7 +230,7 @@ int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 	else if ((fp = gmt_fopen (GMT, HH->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, HH->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
+
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
 	if (gmt_M_fwrite (prez, sizeof(gmt_grdfloat), PREHEADSIZE, fp) < PREHEADSIZE) {
@@ -266,7 +266,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	gmt_grdfloat z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
-	
+
 	if (!strcmp (HH->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
 		gmt_setmode (GMT, GMT_IN);
@@ -286,12 +286,12 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	/* Because of the 40x40 blocks we read the entire file and only use what we need */
 
 	/* Rows are read south to north */
-	
+
 	gmt_M_memset (z, ZBLOCKWIDTH * ZBLOCKHEIGHT, gmt_grdfloat); /* Initialize buffer to zero */
 
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-	
+
 	n_blocks_y = urint (ceil ((double)header->n_rows / (double)ZBLOCKHEIGHT));
 	n_blocks_x = urint (ceil ((double)header->n_columns / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
@@ -335,7 +335,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -372,7 +372,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	}
 	else if ((fp = gmt_fopen (GMT, HH->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
+
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 

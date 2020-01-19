@@ -37,7 +37,7 @@ on standard input [or *file*] and fits a regression model y = f(x) + e
 by [weighted] least squares. The functional form of f(x) may be chosen
 as polynomial or Fourier or a mix of the two, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
-terms in f(x) which significantly reduce the variance in y. 
+terms in f(x) which significantly reduce the variance in y.
 
 Required Arguments
 ------------------
@@ -117,10 +117,10 @@ Optional Arguments
     fit]. Append **+s** to instead read data uncertainties (one sigma)
     and create weights as 1/sigma^2 [Default reads only the first 2 columns].
 
-.. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns]. 
+.. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**]. 
+.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

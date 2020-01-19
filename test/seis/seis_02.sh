@@ -24,7 +24,7 @@ gmt psmeca -Fo -R -J -Sa0.4i/16p -C0.25p,blueP5p -O -K -N << EOF >> $ps
 241.459  34.2088    120.0  60.0  86.0   5.2     238. 34.0 second
 241.459  34.2088    290.0  55.0  90.0   5.9     238. 33.0 third
 EOF
- 
+
 # Plot P and T axis and only the best double couple
 # derived from moment tensor
 gmt psmeca -R -J -Sd1c -O -K -N -Fa0.2c/id << EOF >> $ps

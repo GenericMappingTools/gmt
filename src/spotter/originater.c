@@ -87,7 +87,7 @@
  *    the id is a 3-character tag (e.g., HWI), the name is the
  *    full name of the hotspot (e.g., Hawaii).
  *
- * Example: 
+ * Example:
  *
  * # Partial list (Pacific) of HotSpots from Table 1 of Yamaji, 1992
  * #Lon		Lat	Abbreviation	Hotspot_name
@@ -102,7 +102,7 @@
  * 192		-15	SAM	Samoa
  * 212		-18	SOC	Society
  */
- 
+
 #include "gmt_dev.h"
 #include "spotter.h"
 
@@ -136,7 +136,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	/* active is true if the option has been activated */
 	struct D {	/* -D<factor */
 		bool active;
-		double value;	
+		double value;
 	} D;
 	struct E {	/* -Erotfile[+i] */
 		bool active;
@@ -179,11 +179,11 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ORIGINATOR_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->D.value = 5.0;
 	C->N.t_upper = 180.0;
 	C->S.n = 1;
@@ -193,9 +193,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->E.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->E.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
@@ -237,7 +237,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
 	GMT_Option (API, "bi5,d,e,h,i,q,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -363,7 +363,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
-	
+
 	int error = 0, ns;
 	bool better;
 
@@ -445,12 +445,12 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->data[GMT_Y][row] = gmt_lat_swap (GMT, hotspot[spot].D->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 		}
 	}
-	
+
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
 	hot = gmt_M_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
-	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, 
+	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out,
 		GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator,
 		GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	if (Ctrl->Z.active)
@@ -505,7 +505,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 		Out->text = In->text;
-	
+
 		if (n_input == 3) {	/* Set constant r,t values based on -Q */
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
@@ -623,10 +623,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			/* Assign sign to distance: If the vector from the hotspot pointing up along the trail is positive
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
-			 
+			
 			gmt_M_set_delta_lon (hot[spot].np_lon, lon, dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
-			 
+			
 			/* Assign stage id for this point on the flowline */
 
 			k = 0;
@@ -677,7 +677,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, c);
 		smt++;
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}

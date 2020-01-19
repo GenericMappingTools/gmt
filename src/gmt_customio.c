@@ -262,7 +262,7 @@ int gmt_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->registration = GMT_GRID_PIXEL_REG;	/* Always pixel format */
 	header->z_scale_factor = 1.0;	header->z_add_offset = 0.0;
 	HH->orig_datatype = GMT_CHAR;
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -955,8 +955,8 @@ int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, g
 	unsigned int *k = NULL;		/* Array with indices */
 	unsigned int width_in;		/* Number of items in one row of the subregion */
 	uint64_t kk, ij, j2, width_out, imag_offset;	/* Width of row as return (may include padding) */
-	size_t size;			/* Length of data type */ 
-	size_t n_expected;		/* Length of row to read */ 
+	size_t size;			/* Length of data type */
+	size_t n_expected;		/* Length of row to read */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for reading in rows of data */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -1077,7 +1077,7 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	unsigned int *k = NULL;		/* Array with indices */
 	uint64_t ij, width_in, imag_offset, j2;
 	size_t size;			/* Length of data type */
-	size_t n_expected;		/* Length of row to read */ 
+	size_t n_expected;		/* Length of row to read */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for writing in rows of data */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -1928,7 +1928,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *grid pointer */
 	to_gdalread->f_ptr.active = true;
 	to_gdalread->f_ptr.grd = grid;
-	
+
 	/* If header->nan_value != NaN tell gdalread to replace nan_value by NaN (in floats only) */
 	to_gdalread->N.nan_value = header->nan_value;
 

@@ -17,7 +17,7 @@
 /*
  * Brief synopsis: read a file of lon, lat, zvalue[, distance, azimuth]
  * and split it into profile segments.
- * 
+ *
  * Author:	W. H. F. Smith
  * Date:	1 JAN 2010
  * Version:	6 API
@@ -126,9 +126,9 @@ GMT_LOCAL void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPLITXYZ_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.azimuth = 90.0;
 	C->A.tolerance = 360.0;
@@ -138,9 +138,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->Out.file);	
-	gmt_M_str_free (C->N.name);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->Out.file);
+	gmt_M_str_free (C->N.name);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -181,7 +181,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
 	GMT_Option (API, "bo,d,e,f,g,h,i,q,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-G option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
-					if (gmt_M_is_geographic (GMT, GMT_IN))	
+					if (gmt_M_is_geographic (GMT, GMT_IN))
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
 					else
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
@@ -310,13 +310,13 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool ok, first = true, no_z_column;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};
-	
+
 	size_t n_alloc_seg = 0, n_alloc = 0;
 	uint64_t tbl, col, n_out = 0, k, n, row, seg, seg2 = 0, begin, end, n_total = 0, n_columns = 0, nprofiles = 0, *rec = NULL;
 
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
-	
+
 	char header[GMT_LEN64] = {""};
 
 	struct GMT_DATASET *D[2] = {NULL, NULL};
@@ -363,7 +363,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
 	no_z_column = (D[GMT_IN]->n_columns == 2);
-	
+
 	if (no_z_column && Ctrl->S.active) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: The -S option requires a 3rd data column\n");
 		Return (GMT_PARSE_ERROR);
@@ -376,7 +376,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Cannot request z if unless data have a 3rd column\n");
 		Return (GMT_PARSE_ERROR);
 	}
-	
+
 	for (k = n_outputs = 0; k < SPLITXYZ_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {
 		switch (Ctrl->Q.col[k]) {
 			case 'x':
@@ -441,7 +441,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 	z_cols = 2;
 	S_out = gmt_get_segment (GMT);
-	
+
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		T = D[GMT_IN]->table[tbl];
@@ -462,7 +462,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				S->max = gmt_M_memory (GMT, S->max, n_columns, double);
 				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 			}
-			
+		
 			if (Ctrl->S.active) S->data[h_col][0] = D2R * (90.0 - S->data[h_col][0]);	/* Angles are stored as CCW angles in radians */
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
@@ -483,11 +483,11 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 						S->data[h_col][row] = d_atan2(dy,dx);	/* Angles are stored as CCW angles in radians */
 					}
 				}
-				else 
+				else
 					S->data[h_col][row] = D2R * (90.0 - S->data[h_col][row]);	/* Angles are stored as CCW angles in radians */
 			}
 			if (!Ctrl->S.active) S->data[h_col][0] = S->data[h_col][1];
-			
+		
 			/* Here a complete segment is ready for further processing */
 			/* Now we have read the data and can filter z, if necessary.  */
 
@@ -567,7 +567,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		gmt_free_segment (GMT, &S_out);
 		Return (API->error);
 	}
-	
+
 	/* Get here when all profiles have been found and written.  */
 
 	if (nprofiles > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */

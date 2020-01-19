@@ -10,21 +10,21 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	23-Feb-2004
- * 
+ *
  * ------------------------------------------------------------------*/
 
 /*!
  * \file mgd77sniffer.h
- * \brief  
+ * \brief 
  */
- 
+
  #include "gmt_dev.h"
  #include "mgd77.h"
  #include "mgd77_e77.h"
  #include "mgd77_rls_coeffs.h"
- 
+
 /* Constants */
 #define MGD77_N_DATA_FIELDS         27
 #define MGD77_NM_PER_DEGREE         60

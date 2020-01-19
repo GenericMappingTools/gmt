@@ -123,7 +123,7 @@ functions made available are:
 
 **gmt_movie_script**
     Creates an animation bash script template based on the arguments
-    that set size, number of frames, video format etc. 
+    that set size, number of frames, video format etc.
     Without arguments the function will display its usage.
 
 **gmt_launch_jobs**

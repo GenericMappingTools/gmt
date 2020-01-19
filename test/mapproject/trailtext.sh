@@ -3,7 +3,7 @@
 # http://gmt.soest.hawaii.edu/boards/1/topics/6027
 # Expanded to test a few of the -o settings
 
-cat << EOF > line.txt 
+cat << EOF > line.txt
 1 2
 3 4
 EOF

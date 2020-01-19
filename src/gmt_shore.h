@@ -78,7 +78,7 @@ struct GMT_GSHHS_pol {	/* Information pertaining to each GSHHS polygon */
 struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	/* Global variables that remain fixed for all bins */
-	
+
 	int nb;		/* Number of bins to use */
 	int *bins;		/* Array with the nb bin numbers to use */
 	int min_level;	/* Lowest level to include [0] */
@@ -88,9 +88,9 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double min_area;	/* Smallest feature to include in km^2 */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
-	
+
 	/* Variables associated with the current bin */
-	
+
 	int ns;			/* Number of segments to use in current bin */
 	unsigned char node_level[4];
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
@@ -108,7 +108,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	double lat_corner[4];		/* Latitudes of 4 corners (depends on direction) */
 
 	/* Data variables associated with shoreline database */
-	
+
 	int bin_size;		/* Size of square bins in minutes */
 	int bin_nx;		/* Number of bins in 360 degrees of longitude */
 	int bin_ny;		/* Number of bins in 180 degrees of latitude */
@@ -117,12 +117,12 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int n_seg;		/* Number of segments present in the data set */
 	int n_pt;		/* Number of points present in the data set */
 	int n_nodes;		/* Number of grid nodes present in the data set */
-	
+
 	int *GSHHS_node;	/* Array with ids of the polygon that enclose each node */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
 	short int *bin_nseg;	/* Array with number of segments per bin */
-	
+
 	int *GSHHS_parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
 	double *GSHHS_area;		/* Array with areas in km^2 of the GSHHS polygons */
 	int *GSHHS_area_fraction;	/* Array with micro-fraction fractions of area relative to full res area  */
@@ -134,9 +134,9 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	char res;		/* Resolution f,g,i,l,c */
 
 	/* netCDF ID variables */
-	
+
 	int cdfid;		/* netCDF File id for coastbin file */
-	
+
 	int bin_size_id;	/* Id for variable bin_size */
 	int bin_nx_id;		/* Id for variable bin_nx */
 	int bin_ny_id;		/* Id for variable bin_ny */
@@ -149,17 +149,17 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int bin_info_id;	/* Id for variable bin_info */
 	int bin_info_id_ANT;	/* Id for variable bin_info */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
-	
+
 	int seg_info_id;	/* Id for variable seg_info */
 	int seg_info_id_ANT;	/* Id for variable seg_info for Antarctica */
 	int seg_start_id;	/* Id for variable seg_start */
 	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
-	
+
 	int GSHHS_parent_id;	/* Id for variable GSHHS_parent */
 	int GSHHS_area_id;	/* Id for variable GSHHS_area */
 	int GSHHS_areafrac_id;	/* Id for variable GSHHS_area_fraction */
 	int GSHHS_node_id;	/* Id for variable GSHHS_node_id */
-	
+
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
 };
@@ -182,13 +182,13 @@ struct GSHHS_SIDE {
 struct GMT_BR {	/* Structure for Borders and Rivers */
 
 	/* Global variables that remain fixed for all bins */
-	
+
 	int nb;		/* Number of bins to use */
 	int *bins;		/* Array with the nb bin numbers to use */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
-	
+
 	/* Variables associated with the current bin */
-	
+
 	int ns;		/* Number of segments to use in current bin */
 	struct GMT_BR_SEGMENT *seg;	/* Array of these segments */
 	double lon_sw;		/* Longitude of SW corner */
@@ -196,26 +196,26 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 	double bsize;		/* Size of square bins in degrees */
 
 	/* Data variables associated with shoreline database */
-	
+
 	int bin_size;	/* Size of square bins in minutes */
 	int bin_nx;	/* Number of bins in 360 degrees of longitude */
 	int bin_ny;	/* Number of bins in 180 degrees of latitude */
 	int n_bin;		/* Number of bins present in the data set */
 	int n_seg;		/* Number of segments present in the data set */
 	int n_pt;		/* Number of points present in the data set */
-	
+
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_nseg;	/* Array with number of segments per bin */
-	
+
 	char units[80];		/* Units of lon/lat */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
 	char version[GMT_LEN8];	/* Version of data set */
 
 	/* netCDF ID variables */
-	
+
 	int cdfid;		/* File id for coastbin file */
-	
+
 	int bin_size_id;	/* Id for variable bin_size */
 	int bin_nx_id;		/* Id for variable bin_nx */
 	int bin_ny_id;		/* Id for variable bin_ny */
@@ -224,11 +224,11 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 	int n_pt_id;		/* Id for variable n_pt */
 	int bin_firstseg_id;	/* Id for variable bin_firstseg */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
-	
+
 	int seg_n_id;		/* Id for variable seg_n */
 	int seg_level_id;	/* Id for variable seg_level */
 	int seg_start_id;	/* Id for variable seg_start */
-	
+
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
 };

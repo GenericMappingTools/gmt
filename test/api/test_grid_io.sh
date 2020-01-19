@@ -25,7 +25,7 @@ while read code; do
 		extra=""
 	fi
 	# Create two different grids with same region and size in this grid format
-	gmt grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code} 
+	gmt grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code}
 	gmt grdmath in_real.grd=${code} NX NY MUL ADD $extra  = in_imag.grd=${code}
 	# Run the test with this codec
 	testgrdio =$code
