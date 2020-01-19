@@ -2372,7 +2372,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 		tangle[PSL_BEGIN] = angle[PSL_BEGIN] + off[PSL_BEGIN];
 	}
 	if (heads) {	/* Will draw at least one head */
-		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
+		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], 1);	/* Set fill for head(s) */
 		PSL_command (PSL, "PSL_vecheadpen\n");	/* Switch to vector head pen */
 		psl_forcelinewidth (PSL, 2.0 * h_penwidth);	/* Force pen width update; double width due to clipping below */
 	}
@@ -4500,7 +4500,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* Set default line color and no-rgb */
 	PSL_setcolor (PSL, black, PSL_IS_STROKE);
-	PSL_setfill (PSL, no_rgb, false);
+	PSL_setfill (PSL, no_rgb, 0);
 
 	/* Set origin of the plot */
 	

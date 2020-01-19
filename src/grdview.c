@@ -95,9 +95,9 @@ struct GRDVIEW_CTRL {
 	} N;
 	struct GRDVIEW_Q {	/* -Q<type>[g] */
 		bool active, special;
-		bool outline;
 		bool mask;
 		bool monochrome;
+		int outline;
 		unsigned int mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
 		unsigned int dpi;
 		struct GMT_FILL fill;
@@ -280,7 +280,7 @@ GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_
 	(*k)++;
 }
 
-GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, bool outline) {
+GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, int outline) {
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
@@ -654,7 +654,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						break;
 					case 's':	/* Color without contours */
 						Ctrl->Q.mode = GRDVIEW_SURF;
-						if (opt->arg[1] == 'm') Ctrl->Q.outline = true;
+						if (opt->arg[1] == 'm') Ctrl->Q.outline = 1;
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
@@ -1515,7 +1515,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place Y waterfall plot\n");
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
-		gmt_setfill (GMT, &Ctrl->Q.fill, true);
+		gmt_setfill (GMT, &Ctrl->Q.fill, 1);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = gmt_M_yiq (Ctrl->Q.fill.rgb);	/* Do gmt_M_yiq transformation */
 		for (i = start[ix]+1; i != stop[ix]; i += inc[ix]) {
@@ -1536,7 +1536,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place X waterfall plot\n");
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
-		gmt_setfill (GMT, &Ctrl->Q.fill, true);
+		gmt_setfill (GMT, &Ctrl->Q.fill, 1);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = gmt_M_yiq (Ctrl->Q.fill.rgb);	/* Do gmt_M_yiq transformation */
 		for (j = start[iy]-1; j != stop[iy]; j += inc[iy]) {
@@ -1580,7 +1580,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				gmt_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
 				gmt_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
 				gmt_geoz_to_xy (GMT, x_left, y_top, (double)(Topo->data[ij+ij_inc[3]]), &xx[3], &yy[3]);
-				gmt_setfill (GMT, &Ctrl->Q.fill, true);
+				gmt_setfill (GMT, &Ctrl->Q.fill, 1);
 				PSL_plotpolygon (PSL, xx, yy, 4);
 				if (Ctrl->W.contour) {
 					pen_set = false;
@@ -1791,7 +1791,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 								/* Now paint the polygon piece */
 
-								paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, false);
+								paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 								/* Reset the anchor points to previous contour */
 
@@ -1822,7 +1822,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, false);
+							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 						} /* End triangular piece */
 
@@ -1888,7 +1888,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, false);
+							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 							/* Reset the anchor points to previous contour */
 
@@ -1917,7 +1917,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						/* Now paint the polygon piece */
 
-						paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, false);
+						paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 					} /* End non-saddle case */
 
@@ -1941,7 +1941,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					if (pen_set) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 					if (Ctrl->Q.outline) {
 						for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
-						PSL_setfill (PSL, GMT->session.no_rgb, true);
+						PSL_setfill (PSL, GMT->session.no_rgb, 1);
 						PSL_plotpolygon (PSL, xmesh, ymesh, 4);
 					}
 				}
@@ -1970,7 +1970,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->N.facade) {	/* Cover the two front sides */
 		PSL_comment (PSL, "Painting the frontal facade\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[2]);
-		gmt_setfill (GMT, &Ctrl->N.fill, true);
+		gmt_setfill (GMT, &Ctrl->N.fill, 1);
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (col = 0, n = 0, ij = sw; col < Z->header->n_columns; col++, ij++) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;

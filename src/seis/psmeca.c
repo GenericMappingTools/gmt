@@ -771,7 +771,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			if (fabs (xynew[GMT_X]) > EPSIL || fabs (xynew[GMT_Y]) > EPSIL) {
 				gmt_setpen (GMT, &Ctrl->C.pen);
 				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
-				gmt_setfill (GMT, &Ctrl->G.fill, true);
+				gmt_setfill (GMT, &Ctrl->G.fill, 1);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, PSL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
@@ -856,7 +856,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 				label_y += Ctrl->S.offset[1];
 
 			gmt_setpen (GMT, &Ctrl->W.pen);
-			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, 0);
 			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);
@@ -866,10 +866,10 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
 			meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 			gmt_setpen (GMT, &Ctrl->P2.pen);
-			gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
+			gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active ? 1 : 0);
 			PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
 			gmt_setpen (GMT, &Ctrl->T2.pen);
-			gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
+			gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active ? 1 : 0);
 			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */

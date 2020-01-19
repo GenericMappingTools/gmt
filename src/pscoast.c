@@ -659,7 +659,7 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 			p[k].n = 0;	/* Mark as used */
 
 			if (k0 == -1 && fill) {	/* At start level: done nesting, time to paint the assembled swiss cheese polygon */
-				gmt_setfill (GMT, &fill[p[k].fid], false);
+				gmt_setfill (GMT, &fill[p[k].fid], 0);
 				PSL_command (PSL, "FO\n");
 			}
 		}
@@ -955,7 +955,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Painting entire map with ocean color first, then draw land on top later\n");
 		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-		gmt_setfill (GMT, &Ctrl->S.fill, false);
+		gmt_setfill (GMT, &Ctrl->S.fill, 0);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
 			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
@@ -1083,7 +1083,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
 					if (p[k].level % 2 == level_to_be_painted[lp] || p[k].level > 2) {
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -1094,14 +1094,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					if (donut_hell && gmt_non_zero_winding (GMT, x_0, y_0, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_Report (API, GMT_MSG_DEBUG, "Doing donut filling for bin %d\n", bin);
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 						gmt_M_free (GMT, xtmp);
 						gmt_M_free (GMT, ytmp);
 					}
 					else {
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}

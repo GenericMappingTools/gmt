@@ -72,7 +72,7 @@ struct PSXY_CTRL {
 	struct PSXY_L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
-		bool outline;		/* true when +p<pen> is given */
+		int outline;		/* true when +p<pen> is given */
 		unsigned int mode;	/* Which side for the anchor */
 		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors, 3 = +/-dy, 4 = -dy1, +dy2 */
 		double value;
@@ -214,7 +214,7 @@ GMT_LOCAL void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_plotsegment (PSL, xx[3], yy[1], xx[3], yy[2]);		/* Right whisker */
 	PSL_plotsegment (PSL, xx[3], yy[0], xx[2], yy[0]);
 
-	PSL_setfill (PSL, rgb, true);
+	PSL_setfill (PSL, rgb, 1);
 	if (kind == 2) {	/* Notched box-n-whisker plot */
 		double xp[10], yp[10], s, p;
 		s = 1.7 * ((1.25 * (xx[2] - xx[1])) / (1.35 * hinge[4]));	/* 5th term in hinge has n */
@@ -257,7 +257,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_plotsegment (PSL, xx[1], yy[3], xx[2], yy[3]);		/* Top whisker */
 	PSL_plotsegment (PSL, xx[0], yy[3], xx[0], yy[2]);
 
-	PSL_setfill (PSL, rgb, true);
+	PSL_setfill (PSL, rgb, 1);
 	if (kind == 2) {	/* Notched box-n-whisker plot */
 		double xp[10], yp[10], s, p;
 		s = 1.7 * ((1.25 * (yy[2] - yy[1])) / (1.35 * hinge[4]));	/* 5th term in hinge has n */
@@ -751,7 +751,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
 						n_errors++;
 					}
-					Ctrl->L.outline = true;
+					Ctrl->L.outline = 1;
 				}
 				break;
 			case 'N':		/* Do not skip points outside border */
@@ -855,7 +855,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
-	int error = GMT_NOERROR;
+	int error = GMT_NOERROR, outline_setting;
 
 	char s_args[GMT_BUFSIZ] = {""};
 
@@ -1217,7 +1217,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 				continue;							/* Go back and read the next record */
 			}
-
+			outline_setting = (outline_active) ? 1 : 0;
+			
 			/* Data record to process */
 			
 			in = In->data;
@@ -1377,7 +1378,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (get_rgb) S.v.fill = current_fill;
 			}
 			else if (!may_intrude_inside) {
-				gmt_setfill (GMT, &current_fill, outline_active);
+				gmt_setfill (GMT, &current_fill, outline_setting);
 				gmt_setpen (GMT, &current_pen);
 			}
 
@@ -1481,7 +1482,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->A.active)	/* May need to resample */
 								S_Diag->n_rows = gmt_fix_up_path (GMT, &S_Diag->data[GMT_X], &S_Diag->data[GMT_Y], S_Diag->n_rows, Ctrl->A.step, Ctrl->A.mode);
 							/* Plot it */
-							gmt_setfill (GMT, &current_fill, outline_active);
+							gmt_setfill (GMT, &current_fill, outline_setting);
 							gmt_geo_polygons (GMT, S_Diag);
 							break;
 						}
@@ -1530,7 +1531,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							}
 							else
@@ -1541,7 +1542,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							}
 							else
@@ -1552,9 +1553,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (Ctrl->G.active && !outline_active)
 							PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 						else if (!Ctrl->G.active)
-							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+							PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 						(void) gmt_setfont (GMT, &S.font);
-						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
+						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_setting);
 						break;
 					case PSL_VECTOR:
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
@@ -1738,7 +1739,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-						gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_active);
+						gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting);
 						break;
 				}
 			}
@@ -1869,7 +1870,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
-
+				outline_setting = outline_active ? 1 : 0;
 				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 
 				duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
@@ -1957,7 +1958,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
-					gmt_setfill (GMT, &current_fill, outline_active);
+					gmt_setfill (GMT, &current_fill, outline_setting);
 					gmt_geo_polygons (GMT, L);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */

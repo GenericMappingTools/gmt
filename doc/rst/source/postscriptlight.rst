@@ -372,7 +372,8 @@ affect the current state of parameters such as line and fill attributes.
     the image pattern indicated by the second (green) element of *rgb*).
     For PDF transparency, set *rgb*\ [3] to a value between 0 (opaque)
     and 1 (fully transparent). Set outline to PSL_OUTLINE
-    (1) to draw the outlines of polygons and symbols using the current pen.
+    (1) to draw the outlines of polygons and symbols using the current pen,
+    0 to turn outline off, and -2 to leave existing setting as is.
 
 **long PSL_setfont** (**struct PSL_CTRL** *\*P*, **long** *fontnr*)
 

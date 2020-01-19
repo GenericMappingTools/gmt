@@ -337,7 +337,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
 			continue;
 		}
-		gmt_setfill (GMT, &F, false);
+		gmt_setfill (GMT, &F, 0);
 		dim[0] = xoff[col+1] - xoff[col];
 		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, PSL_RECT);
 	}
@@ -884,7 +884,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Disabling your -F... +r modifier since not implemented yet for automatic width setting\n");
 			PSL_command (PSL, "V\n");
 			if (Ctrl->F.panel->mode & GMT_PANEL_SHADOW) {	/* Draw offset background shadow first */
-				gmt_setfill (GMT, &Ctrl->F.panel->sfill, false);	/* The shadow has no outline */
+				gmt_setfill (GMT, &Ctrl->F.panel->sfill, 0);	/* The shadow has no outline */
 				PSL_setcurrentpoint (PSL, Ctrl->F.panel->off[GMT_X], Ctrl->F.panel->off[GMT_Y]);
 				PSL_command (PSL, "PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N\n");
 			}
@@ -894,7 +894,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			if (Ctrl->F.panel->mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
 				PSL_defunits (PSL, "PSL_legend_box_shrink", 2.0 * Ctrl->F.panel->gap);
 				gmt_setpen (GMT, &Ctrl->F.panel->pen2);	/* Set inner border pen */
-				gmt_setfill (GMT, NULL, true);	/* Never fill for inner frame */
+				gmt_setfill (GMT, NULL, 1);	/* Never fill for inner frame */
 				PSL_setcurrentpoint (PSL, Ctrl->F.panel->gap, Ctrl->F.panel->gap);
 				PSL_command (PSL, "PSL_legend_box_width PSL_legend_box_shrink sub 0 D 0 PSL_legend_box_height PSL_legend_box_shrink sub D PSL_legend_box_width PSL_legend_box_shrink sub neg 0 D P FO N\n");
 			}
