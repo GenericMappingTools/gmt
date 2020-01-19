@@ -28,5 +28,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Z $opt
+gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Pb -Z $opt
 rm -rf main.sh pre.sh

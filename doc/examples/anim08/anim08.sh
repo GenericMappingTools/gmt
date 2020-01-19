@@ -36,5 +36,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Ttimes.txt -Nanim08 -Gblack -H2 -Lc1 -Z --FONT_TAG=20p,Helvetica,white --FORMAT_CLOCK_MAP=- $opt
+gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Ttimes.txt -Nanim08 -Gblack -H2 -Z -Lc0+f20p,Helvetica,white --FORMAT_CLOCK_MAP=- $opt
 rm -rf main.sh pre.sh

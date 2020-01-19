@@ -45,6 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
+EXTERN_MSC int gmt_set_length_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]);
 EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);

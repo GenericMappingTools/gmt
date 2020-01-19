@@ -63,14 +63,36 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 
 enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 	MOVIE_LABEL_IS_ELAPSED,
+	MOVIE_LABEL_IS_PERCENT,
 	MOVIE_LABEL_IS_COL_C,
 	MOVIE_LABEL_IS_COL_T,
 	MOVIE_LABEL_IS_STRING};
+
+struct MOVIE_ITEM {
+	struct GMT_FONT font;
+	char format[GMT_LEN128];
+	char fill[GMT_LEN64], fill2[GMT_LEN64];
+	char pen[GMT_LEN64], pen2[GMT_LEN64];
+	char kind;				/* Either a-f|A-F for progress indicators or L for label */
+	unsigned int mode;		/* What type of "time" selected for label */ 
+	unsigned int justify;	/* Placement location of label or indicator */
+	unsigned int col;		/* Which data column to use for labels (if active) */
+	unsigned int ne;		/* Number of elements in elapsed format */
+	unsigned int n_labels;	/* Number of labels for progress indicator */
+	double scale;			/* Scaling from frame number to elapsed time [1/framerate] */
+	double width;			/* Width of progress indicator */
+	double x, y;			/* Placement of progress indicator or label in inches */
+	double off[2];			/* Offset from justification point for progress indicators */
+	double clearance[2];	/* Space bewteen label and text box (if selected) for -L labels */
+};
 
 /* Control structure for movie */
 
 struct MOVIE_CTRL {
 	bool animate;	/* True if we are making any animated product (GIF, movies) */
+	struct MOVIE_ITEM item[2][GMT_LEN32];	/* 0 for labels, 1 for progress indicators */
+	unsigned int n_items[2];				/* 0 for labels, 1 for progress indicators */
+	bool item_active[2];					/* 0 for labels, 1 for progress indicators */
 	struct MOVIE_In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
 		enum enum_script mode;
@@ -116,21 +138,6 @@ struct MOVIE_CTRL {
 	} I;
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
-		unsigned int n_tags;
-		struct MOVIE_TAG {
-			struct GMT_FONT font;
-			char format[GMT_LEN128];
-			char fill[GMT_LEN64];
-			char pen[GMT_LEN64];
-			char placement[3];
-			unsigned int mode;
-			unsigned int col;
-			unsigned int ne;	/* Number of elements in elapsed format */
-			double scale;
-			double x, y;
-			double off[2];
-			double clearance[2];
-		} tag[GMT_LEN32];
 	} L;
 	struct MOVIE_M {	/* -M[<frame>][,format] */
 		bool active;
@@ -142,6 +149,9 @@ struct MOVIE_CTRL {
 		bool active;
 		char *prefix;
 	} N;
+	struct MOVIE_P {	/* Repeatable: -P[kind][+wwidth][+ppen1][+Ppen2][+gfill1][+Gfill2][+ooffset][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
+		bool active;
+	} P;
 	struct MOVIE_Q {	/* -Q[s] */
 		bool active;
 		bool scripts;
@@ -272,7 +282,7 @@ GMT_LOCAL void set_ivalue (FILE *fp, int mode, bool env, char *name, int value) 
 
 GMT_LOCAL void set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
-	if (strchr (value, ' ') || strchr (value, '\t')) {	/* String has spaces or tabs */
+	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
 			case CSH_MODE:  if (env)
@@ -380,10 +390,10 @@ GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<timefile>[+p<width>][+s<first>][+w]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>[+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<script>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<script>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -411,8 +421,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom canvas with dimensions and dots-per-unit manually by\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>[<unit>]x<height>[<unit>]x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for movie files and directory names.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, or give name of file with frame-specific information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the -Sf script.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the foreground script given via -Sf.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the frame tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
@@ -435,9 +446,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     p selects the percent of completion as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w; first word is 0).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (first word is 0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
@@ -449,6 +461,19 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) and consult the movie documentation for which attributes are needed:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to specify size [5%% of max canvas dimension for circles, 60%% for axes].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
+		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_SECONDARY]));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +G to set background (static) color fill for indicator [Depends in indicator selected].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to set foreground (moving) color fill for indicator [Depends in indicator selected].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +P to set background (static) pen for indicator [Depends in indicator selected].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to set foreground (moving) pen for indicator [Depends in indicator selected].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for background script).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional background and foreground GMT scripts [none]:\n");
@@ -470,6 +495,157 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL void set_default_width (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct MOVIE_ITEM *I) {
+	double def_width = (strchr ("defDEF", I->kind) && (I->justify == PSL_ML || I->justify == PSL_MR)) ? Ctrl->C.dim[GMT_Y] : Ctrl->C.dim[GMT_X];
+	if (I->width > 0.0) return;
+	/* Assign default widths */
+	I->width = (strchr ("abcABC", I->kind)) ? 0.05 * def_width : 0.6 * def_width;
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No width given for progress indicator %c. Setting width to %g%c.\n", I->kind, I->width, Ctrl->C.unit);
+	if (Ctrl->C.unit == 'c') I->width /= 2.54; else if (Ctrl->C.unit == 'p') I->width /= 72.0;	/* Now in inches */
+}
+
+GMT_LOCAL unsigned int get_item_default (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
+	unsigned int n_errors = 0;
+	/* Default progress indicator: Pie-wedge with different colors */
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
+	if (I->fill[0] == '-') /* Give default color for foreground wedge */
+		strcpy (I->fill, "lightred");
+	if (gmt_get_modifier (arg, 'G', I->fill2) && I->fill2[0]) {	/* Found +G<fill> */
+		struct GMT_FILL fill;	/* Only used to make sure fill is given with correct syntax */
+		if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
+	}
+	if (I->fill2[0] == '-') /* Give default fixed circle color */
+		strcpy (I->fill2, "lightgreen");
+	if (I->kind == 'A') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Progress indicator a does not place any labels. modifier +a ignored\n");
+			I->kind = 'a';
+	}
+	return (n_errors);
+}
+
+GMT_LOCAL unsigned int get_item_two_pens (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
+	unsigned int n_errors = 0;
+	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+	char kind = tolower (I->kind);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
+	if (I->pen[0] == '-') {	/* Set pen for foreground (changing) feature */
+		switch (kind) {
+			case 'b': sprintf (I->pen, "%gp,blue", 0.1 * rint (I->width * 1.5 * 72.0)); break; /* Give default moving ring pen width (15% of width) and blue color */
+			case 'c': sprintf (I->pen, "%gp,red", 0.1 * rint (I->width * 0.5 * 72.0)); break; /* Give default moving math angle pen width (5% of width) and red color */
+			case 'd': sprintf (I->pen, "%gp,yellow", 0.1 * MIN (irint (I->width * 0.05 * 72.0), 80)); break; /* Give default crossbar pen width (0.5% of length) and color yellow */
+			case 'e': sprintf (I->pen, "%gp,red", 0.1 * MIN (rint (I->width * 0.25 * 72.0), 80)); break;	/* Give a variable pen thickness >= 8p in red */
+		}
+	}
+	if (gmt_get_modifier (arg, 'P', I->pen2) && I->pen2[0]) {	/* Found +P<pen> */
+		if (gmt_getpen (GMT, I->pen2, &pen)) n_errors++;
+	}
+	if (I->pen2[0] == '-') {	/* Set pen for background (static) feature */
+		switch (kind) {
+			case 'b': sprintf (I->pen2, "%gp,lightblue", 0.1 * rint (I->width * 1.5 * 72.0)); break; /* Give default static ring pen width (15% of width) and color lightblue */
+			case 'c': sprintf (I->pen2, "%gp,darkred,-", 0.1 * rint (I->width * 0.1 * 72.0)); break; /* Give default static ring dashed pen width (1% of width) and color darkred */
+			case 'd': sprintf (I->pen2, "%gp,black", 0.1 * MIN (irint (I->width * 0.25 * 72.0), 80)); break;	/* Give a variable pen thickness <= 8p in black */
+			case 'e': sprintf (I->pen2, "%gp,lightgreen", 0.1 * MIN (irint (I->width * 0.25 * 72.0), 80)); break;/* Give a variable pen thickness <= 8p in lightgreen */
+		}
+	}
+	return (n_errors);
+}
+
+GMT_LOCAL unsigned int get_item_pen_fill (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, char *arg, struct MOVIE_ITEM *I) {
+	unsigned int n_errors = 0;
+	gmt_M_unused (GMT);
+	gmt_M_unused (arg);
+	/* Default progress indicator: line and filled symbol */
+	set_default_width (GMT, Ctrl, I);	/* Initialize progress indicator width if not set */
+	if (I->pen2[0] == '-')	/* Give default static line pen thickness <= 3p in black */
+			sprintf (I->pen2, "%gp,black", 0.1 * MIN (irint (I->width * 0.15 * 72.0), 30));
+	if (I->fill[0] == '-')	/* Give default moving triangle the red color */
+		strcpy (I->fill, "red"); /* Give default moving color */
+	return (n_errors);
+}
+
+GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char option, char *arg, struct MOVIE_ITEM *I) {
+	/* Initialize and parse the modifiers for item attributes for both labels and progress indicators */
+	unsigned int n_errors = 0;
+	char *c = NULL, *t = NULL, string[GMT_LEN128] = {""}, placement[4] = {""};
+	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
+	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+
+	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens set yet */
+	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% offset of TAG font size */
+	I->clearance[GMT_X] = I->clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% of TAG font size */
+	if (I->kind == 'L')	/* Default label placement is top left of canvas */
+		I->justify = PSL_TL;
+	else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
+		I->justify = PSL_TR;
+	else 	/* Default line progress indicator placement is bottom center of canvas */
+		I->justify = PSL_BC;
+
+	/* Check for modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
+	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;	/* ALso tolerate +G +P */
+	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for a text box */
+		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
+	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font for labeling */
+		if (!string[0]) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +f not given any font\n", option);
+			n_errors++;
+		}
+		else
+			n_errors += gmt_getfont (GMT, string, &(I->font));
+	}
+	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {	/* Primary fill color */
+		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
+	}
+	if (gmt_get_modifier (arg, 'j', placement)) {	/* Placement on cancas for this item */
+		if (I->kind == 'L')	/* Default label placement is top left of canvas */
+			gmt_just_validate (GMT, placement, "TL");
+		else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
+			gmt_just_validate (GMT, placement, "TR");
+		else 	/* Default line progress indicator placement is bottom center of canvas */
+			gmt_just_validate (GMT, placement, "BC");
+		I->justify = gmt_just_decode (GMT, placement, PSL_NO_DEF);
+	}
+	if (gmt_get_modifier (arg, 'o', string))	/* Offset of refpoint */
+		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->off) < 0) n_errors++;
+	if (gmt_get_modifier (arg, 'p', I->pen) && I->pen[0]) {	/* Primary pen */
+		if (gmt_getpen (GMT, I->pen, &pen)) n_errors++;
+	}
+	if (gmt_get_modifier (arg, 't', I->format) && !I->format[0]) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: +t not given any format\n", option);
+		n_errors++;
+	}
+
+	if (I->kind == 'L') {	/* This is a label item with type the first letter in arg */
+		if ((c = strchr (arg, '+'))) c[0] = '\0';	/* Chop off all modifiers for now */
+		t = arg;	/* Start of required label type information */
+		I->mode = MOVIE_LABEL_IS_FRAME;	/* Frame number is default for -L just in case nothing is set */
+	}
+	else if ((t = strstr (arg, "+a")))	/* A progress indicator wants to be labeled */
+		t += 2;		/* Start of optional progress indicator time information following +a */
+
+	if (t) {	/* Parse attributes specific to the movie labels */
+		switch (t[0]) {	/* We got some */
+			case 'c':	I->mode = MOVIE_LABEL_IS_COL_C;	I->col = atoi (&t[1]);	break;
+			case 't':	I->mode = MOVIE_LABEL_IS_COL_T;	I->col = atoi (&t[1]);	break;
+			case 'e':	I->mode = MOVIE_LABEL_IS_ELAPSED;	break;
+			case 'p':	I->mode = MOVIE_LABEL_IS_PERCENT;	break;
+			case 's':	I->mode = MOVIE_LABEL_IS_STRING;	strncpy (I->format, &t[1], GMT_LEN128); break;
+			case 'f': case '\0': I->mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
+			default:	/* Not recognized argument */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -%c: Select label flag e|f|p|s, c<col> or t<col>\n", option);
+				n_errors++;
+				break;
+		}
+		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
+		I->n_labels = (strchr ("EF", I->kind)) ? 2 : 1;
+		if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
+		I->scale = atof (string);
+	}
+}
+	if (c) c[0] = '+';	/* Restore the modifiers */
+	return (n_errors);
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
@@ -483,6 +659,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	double width = 24.0, height16x9 = 13.5, height4x3 = 18.0, dpu = 160.0;	/* SI values for dimensions and dpu */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+	struct MOVIE_ITEM *I = NULL;
 	struct GMT_OPTION *opt = NULL;
 	
 	if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Switch from SI to US dimensions in inches given format names */
@@ -666,63 +843,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				break;
 
 			case 'L':	/* Label frame and get attributes */
-				Ctrl->L.active = true;
-				if ((T = Ctrl->L.n_tags) == GMT_LEN32) {
+				Ctrl->L.active = Ctrl->item_active[MOVIE_ITEM_IS_LABEL] = true;
+				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_LABEL]) == GMT_LEN32) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Cannot handle more than %d tags\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
-				Ctrl->L.tag[T].fill[0] = Ctrl->L.tag[T].pen[0] = '-';	/* No fill or outline */
-				Ctrl->L.tag[T].off[GMT_X] = Ctrl->L.tag[T].off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
-				Ctrl->L.tag[T].clearance[GMT_X] = Ctrl->L.tag[T].clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
-				sprintf (Ctrl->L.tag[T].placement, "TL");
-				gmt_M_memcpy (&(Ctrl->L.tag[T].font), &(GMT->current.setting.font_tag), 1, struct GMT_FONT);
-				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
-				switch (opt->arg[0]) {
-					case 'c':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_C;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
-					case 't':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_T;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
-					case 'e':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_ELAPSED;	break;
-					case 's':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_STRING;	strncpy (Ctrl->L.tag[T].format, &opt->arg[1], GMT_LEN128); break;
-					case 'f': case '\0': Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
-					default:	/* Not recognized */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Select -Lf, -Lc<col> or -Lt<col>\n");
-						n_errors++;
-						break;
-				}
-				if (c) {	/* Gave modifiers so we must parse those now */
-					c[0] = '+';	/* Restore modifiers */
-					/* Modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "cfgjopst")) n_errors++;
-					if (gmt_get_modifier (&opt->arg[1], 'c', string) && string[0])	/* Clearance for box */
-						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.tag[T].clearance) < 0) n_errors++;
-					if (gmt_get_modifier (&opt->arg[1], 'f', string)) {	/* Gave a separate font */
-						if (!string[0]) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: +f not given any font\n");
-							n_errors++;
-						}
-						else
-							n_errors += gmt_getfont (GMT, string, &(Ctrl->L.tag[T].font));
-					}
-					if (gmt_get_modifier (&opt->arg[1], 'g', Ctrl->L.tag[T].fill) && Ctrl->L.tag[T].fill[0]) {
-						if (gmt_getfill (GMT, Ctrl->L.tag[T].fill, &fill)) n_errors++;
-					}
-					if (gmt_get_modifier (&opt->arg[1], 'j', Ctrl->L.tag[T].placement)) {	/* Inside placement */
-						gmt_just_validate (GMT, Ctrl->L.tag[T].placement, "TL");
-					}
-					if (gmt_get_modifier (&opt->arg[1], 'o', string))	/* Offset refpoint */
-						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.tag[T].off) < 0) n_errors++;
-					if (gmt_get_modifier (&opt->arg[1], 'p', Ctrl->L.tag[T].pen) && Ctrl->L.tag[T].pen[0]) {
-						if (gmt_getpen (GMT, Ctrl->L.tag[T].pen, &pen)) n_errors++;
-					}
-					if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (&opt->arg[1], 's', string)) {	/* Gave frame time length */
-						Ctrl->L.tag[T].scale = atof (string);
-					}
-					if (gmt_get_modifier (&opt->arg[1], 't', Ctrl->L.tag[T].format) && !Ctrl->L.tag[T].format[0]) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: +t not given any format\n");
-						n_errors++;
-					}
-				}
-				Ctrl->L.n_tags++;
+				I = &Ctrl->item[MOVIE_ITEM_IS_LABEL][T];	/* Shorthand for current label item */
+				I->kind = 'L';			/* This is a label item */
+				n_errors += parse_common_item_attributes (GMT, 'L', opt->arg, I);
+				Ctrl->n_items[MOVIE_ITEM_IS_LABEL]++;	/* One more label specified */
 				break;
 
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
@@ -746,6 +876,40 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			case 'N':	/* Movie prefix and directory name */
 				Ctrl->N.active = true;
 				Ctrl->N.prefix = strdup (opt->arg);
+				break;
+
+			case 'P':	/* Movie progress bar(s) */
+				Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = true;
+				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]) == GMT_LEN32) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
+					n_errors++;
+					break;
+				}
+				I = &Ctrl->item[MOVIE_ITEM_IS_PROG_INDICATOR][T];	/* Shorthand for the current progress indicator item */
+				I->kind = opt->arg[0];	/* This is a progress indicator item */
+				n_errors += parse_common_item_attributes (GMT, 'P', opt->arg, I);
+				if (gmt_get_modifier (opt->arg, 'G', I->fill2) && I->fill2[0]) {	/* Secondary fill */
+					if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
+				}
+				if (gmt_get_modifier (opt->arg, 'P', I->pen2) && I->pen2[0]) {	/* Secondary pen */
+					if (gmt_getpen (GMT, I->pen2, &pen)) n_errors++;
+				}
+				if (gmt_get_modifier (opt->arg, 'w', string))	/* Progress indicator dimension (length or width) */
+					I->width = gmt_M_to_inch (GMT, string);
+				switch (I->kind) {	/* Deal with any missing required attributes for each progress indicator type */
+					case 'b':	case 'B':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress ring */
+					case 'c':	case 'C':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress arrow  */
+					case 'd':	case 'D':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* Progress rounded line */
+					case 'e':	case 'E':	 n_errors += get_item_two_pens (GMT, Ctrl, opt->arg, I); break;	/* progress line on line */
+					case 'f':	case 'F':	 n_errors += get_item_pen_fill (GMT, Ctrl, opt->arg, I); break;	/* Progress bar with time-axis and triangle  */
+					default: n_errors += get_item_default (GMT, Ctrl, opt->arg, I);  break;	/* Default pie progression circle (a)*/
+				}
+				if (I->kind == 'F' && I->mode == MOVIE_LABEL_IS_ELAPSED) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
+					if (Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR] == 0) Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = false;
+					continue;
+				}
+				Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]++;	/* Got one more progress indicator */
 				break;
 			
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
@@ -823,10 +987,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select at least one output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Syntax error: Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Syntax error -H: factor must be and integer > 1\n");
-	if (!Ctrl->T.split) {
-		for (T = 0; T < Ctrl->L.n_tags; T++)
-			n_errors += gmt_M_check_condition (GMT, Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T, "Syntax error -L: Must split trailing text to use -Lt\n");
+	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
+		unsigned int n_used = 0;
+		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++)
+			for (T = 0; T < Ctrl->n_items[k]; T++)
+				if (Ctrl->item[k][T].mode == MOVIE_LABEL_IS_COL_T) n_used++;
+		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
+	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
+					"Syntax error -C: Bad unit given for cancas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -886,6 +1055,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
+
 GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 	/* Close all files when an error forces us to quit */
 	fclose (Ctrl->In.fp);
@@ -934,26 +1105,27 @@ GMT_LOCAL bool is_gmt_end_show (char *line) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_movie (void *V_API, int mode, void *args) {
-	int error = 0, precision;
+	int error = 0, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 	
 	unsigned int n_values = 0, n_frames = 0, frame, i_frame, col, p_width, p_height, k, T;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
-	unsigned int dd, hh, mm, ss, flavor = 0;
+	unsigned int dd, hh, mm, ss, flavor[2] = {0, 0};
 	
-	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false, upper_case = false;
-	bool n_written = false;
+	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false};
+	bool n_written = false, has_text = false, is_classic = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%";
+	char var_token[4] = "$$%", spacer;;
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
-	char dir_sep = '/';
-	double percent = 0.0, L_col = 0;
+	char dir_sep = '/', which[2] = {"LP"};
+	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
+	double percent = 0.0, L_col = 0, sx, sy;
 	
 	FILE *fp = NULL;
 	
@@ -962,6 +1134,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct MOVIE_STATUS *status = NULL;
 	struct MOVIE_CTRL *Ctrl = NULL;
+	struct MOVIE_ITEM *I = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -988,29 +1161,32 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->C.unit == 'c') Ctrl->C.dim[GMT_Z] *= 2.54;		/* Since gs requires dots per inch but we gave dots per cm */
 	else if (Ctrl->C.unit == 'p') Ctrl->C.dim[GMT_Z] *= 72.0;	/* Since gs requires dots per inch but we gave dots per point */
 	
-	if (Ctrl->L.active) {	/* Compute auto label placement */
-		int col, row, justify;
-		for (T = 0; T < Ctrl->L.n_tags; T++) {
-			justify = gmt_just_decode (GMT, Ctrl->L.tag[T].placement, PSL_TL);
-			col = (justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
-			row = justify / 4;		/* Split the 2-D justify code into y just 0-2 */
-			Ctrl->L.tag[T].x = 0.5 * Ctrl->C.dim[GMT_X] * col;
-			Ctrl->L.tag[T].y = 0.5 * Ctrl->C.dim[GMT_Y] * row;
-			if (col != 1) Ctrl->L.tag[T].x += (1-col) * Ctrl->L.tag[T].off[GMT_X];
-			if (row != 1) Ctrl->L.tag[T].y += (1-row) * Ctrl->L.tag[T].off[GMT_Y];
-			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T && !strchr (Ctrl->L.tag[T].format, 's')) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L: Using +f<format> with word variables requires a \'%%s\'-style format.\n");
+	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
+		/* Compute auto label placement */
+		for (T = 0; T < Ctrl->n_items[k]; T++) {
+			I = &Ctrl->item[k][T];	/* Shorthand for this item */
+			scol = (I->justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
+			srow = I->justify / 4;			/* Split the 2-D justify code into y just 0-2 */
+			/* Must compute x,y in inches since off is in inches already */
+			I->x = 0.5 * Ctrl->C.dim[GMT_X] * scol * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+			I->y = 0.5 * Ctrl->C.dim[GMT_Y] * srow * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+			sx = (scol == 2) ? -1 : 1;
+			sy = (srow == 2) ? -1 : 1;
+			I->x += sx * I->off[GMT_X];
+			I->y += sy * I->off[GMT_Y];
+			if (I->mode == MOVIE_LABEL_IS_COL_T && !strchr (I->format, 's')) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
 			}
-			else if (Ctrl->L.active && Ctrl->L.tag[T].format[0] && !(strchr (Ctrl->L.tag[T].format, 'd') || strchr (Ctrl->L.tag[T].format, 'e') || strchr (Ctrl->L.tag[T].format, 'f') || strchr (Ctrl->L.tag[T].format, 'g'))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n");
+			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
 			}
 		}
 	}
-	
+		
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
 		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
@@ -1225,6 +1401,29 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
+		else if (gmtlib_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
+			char output[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
+			unsigned int V = GMT->current.setting.verbose;
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+				Return (API->error);
+			}
+			if (GMT->common.f.active[GMT_IN])
+				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=false T = %s", Ctrl->T.file, GMT->common.f.string, output);
+			else
+				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=false T = %s", Ctrl->T.file, output);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Calling gmtmath with args %s\n", cmd);
+			GMT->current.setting.verbose = GMT_MSG_NORMAL;	/* So we don't get unwanted verbosity from gmtmath */
+  			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
+				Return (API->error);	/* Some sort of failure */
+			}
+			GMT->current.setting.verbose = V;	/* Restore */
+			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
+				Return (API->error);	/* Some sort of failure */
+			}
+			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
+			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+		}
 		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
 			n_frames = atoi (Ctrl->T.file);
 	}
@@ -1234,18 +1433,20 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (Ctrl->L.active) {    /* Make sure we have the information requested if -Lc or -Lt were used */
-		for (T = 0; T < Ctrl->L.n_tags; T++) {
-			if ((Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C || Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
-				GMT_Report (API, GMT_MSG_NORMAL, "No table given via -T for data-based labels - exiting\n");
+	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
+		/* Make sure we have the information requested if data colums or trailing text is needed */
+		for (T = 0; T < Ctrl->n_items[k]; T++) {
+			I = &Ctrl->item[k][T];	/* Shorthand for this item */
+			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
+				GMT_Report (API, GMT_MSG_NORMAL, "No table given via -T for data-based labels in %c - exiting\n", which[k]);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C && Ctrl->L.tag[T].col >= D->n_columns) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have enough columns for your -Lc%d request - exiting\n", Ctrl->L.tag[T].col);
+			if (I->mode == MOVIE_LABEL_IS_COL_C && I->col >= D->n_columns) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have enough columns for your -%c c%d request - exiting\n", which[k], I->col);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have trailing text for your -Lt%d request - exit\n", Ctrl->L.tag[T].col);
+			if (I->mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Data table does not have trailing text for your -%c t%d request - exit\n", which[k], I->col);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -1317,44 +1518,46 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->L.active) {	/* Set elapse time label format if chosen */
+	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
+		/* Set elapse time label format if chosen */
 		char *format = NULL;
-		for (T = 0; T < Ctrl->L.n_tags; T++) {
-			if (Ctrl->L.tag[T].mode != MOVIE_LABEL_IS_ELAPSED) continue;
+		for (T = 0; T < Ctrl->n_items[k]; T++) {
+			I = &Ctrl->item[k][T];	/* Shorthand for this item */
+			if (I->mode != MOVIE_LABEL_IS_ELAPSED) continue;
 			frame = n_frames + Ctrl->T.start_frame;	/* Max frame number */
-			L_col = (Ctrl->L.tag[T].scale > 0.0) ? frame * Ctrl->L.tag[T].scale : frame / Ctrl->D.framerate;
+			L_col = (I->scale > 0.0) ? frame * I->scale : frame / Ctrl->D.framerate;
 			ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes */
 			mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
 			hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
 			dd = urint (L_col);
 			if (dd > 0)
-				Ctrl->L.tag[T].ne = 4, strcpy (Ctrl->L.tag[T].format, "%d %2.2d:%2.2d:%2.2d");
+				I->ne = 4, strcpy (I->format, "%d %2.2d:%2.2d:%2.2d");
 			else if (hh > 0)
-				Ctrl->L.tag[T].ne = 3, strcpy (Ctrl->L.tag[T].format, "%2.2d:%2.2d:%2.2d");
+				I->ne = 3, strcpy (I->format, "%2.2d:%2.2d:%2.2d");
 			else if (mm > 0)
-				Ctrl->L.tag[T].ne = 2, strcpy (Ctrl->L.tag[T].format, "%2.2d:%2.2d");
+				I->ne = 2, strcpy (I->format, "%2.2d:%2.2d");
 			else
-				Ctrl->L.tag[T].ne = 1, strcpy (Ctrl->L.tag[T].format, "%2.2d");
+				I->ne = 1, strcpy (I->format, "%2.2d");
 		}
 		format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
 		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
-				upper_case = true;
+				upper_case[k] = true;
 				/* fall through on purpose to 'f' */
 			case 'f':	/* Full name, lower case */
-				flavor = 0;
+				flavor[k] = 0;
 				break;
 			case 'A':	/* Abbreviated name, upper case */
-				upper_case = true;
+				upper_case[k] = true;
 				/* fall through on purpose to 'a' */
 			case 'a':	/* Abbreviated name, lower case */
-				flavor = 1;
+				flavor[k] = 1;
 				break;
 			case 'C':	/* 1-char name, upper case */
-				upper_case = true;
+				upper_case[k] = true;
 				/* fall through on purpose to 'c' */
 			case 'c':	/* 1-char name, lower case */
-				flavor = 2;
+				flavor[k] = 2;
 				break;
 			default:
 				break;
@@ -1380,7 +1583,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
 		set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", frame);		/* Current frame number */
 		if (!n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
-		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
+		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
@@ -1401,82 +1604,112 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				gmt_M_str_free (orig);
 			}
 		}
-		if (Ctrl->L.active) {	/* Want to place a user label in a corner of the frame */
-			char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
-			unsigned int type;
-			/* Set MOVIE_N_LABELS as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movie in session directory */
-			fprintf (fp, "%s", export[Ctrl->In.mode]);
-			set_ivalue (fp, Ctrl->In.mode, true, "MOVIE_N_LABELS", Ctrl->L.n_tags);
-			for (T = 0; T < Ctrl->L.n_tags; T++) {
-				sprintf (name, "MOVIE_LABEL_ARG%d", T);
-				/* Place x/y/just/clearance_x/clearance_Y/pen/fill/font/txt in MOVIE_LABEL_ARG */
-				sprintf (label, "%g%c/%g%c/%s/%g/%g/%s/%s/%s/", Ctrl->L.tag[T].x, Ctrl->C.unit, Ctrl->L.tag[T].y, Ctrl->C.unit,
-					Ctrl->L.tag[T].placement, Ctrl->L.tag[T].clearance[GMT_X], Ctrl->L.tag[T].clearance[GMT_Y], Ctrl->L.tag[T].pen,
-					Ctrl->L.tag[T].fill, gmt_putfont (GMT, &Ctrl->L.tag[T].font));
-				if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
-					if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as integer */
-						sprintf (string, Ctrl->L.tag[T].format, (int)frame);
-					else if (Ctrl->L.tag[T].format[0])	/* Set as floating point */
-						sprintf (string, Ctrl->L.tag[T].format, (double)frame);
-					else	/* Default to the frame tag string */
-						strcpy (string, state_tag);
-				}
-				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
-					gmt_M_memset (string, GMT_LEN128, char);
-					L_col = (Ctrl->L.tag[T].scale > 0.0) ? frame * Ctrl->L.tag[T].scale : frame / Ctrl->D.framerate;
-					ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
-					mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
-					hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
-					dd = urint (L_col);
-					switch (Ctrl->L.tag[T].ne) {
-						case 4: 	sprintf (string, Ctrl->L.tag[T].format, dd, hh, mm, ss); break;
-						case 3: 	sprintf (string, Ctrl->L.tag[T].format, hh, mm, ss); break;
-						case 2: 	sprintf (string, Ctrl->L.tag[T].format, mm, ss); break;
-						case 1: 	sprintf (string, Ctrl->L.tag[T].format, ss); break;
-					}
-				}
-				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
-					L_col = D->table[0]->segment[0]->data[Ctrl->L.tag[T].col][frame];
-					if ((type = gmt_M_type (GMT, GMT_IN, Ctrl->L.tag[T].col)) == GMT_IS_ABSTIME) {	/* Time formatting */
-						char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
-						gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case, flavor, L_col);
-						if (GMT->current.plot.calclock.clock.skip)
-							sprintf (string, "%s", date);
-						else if (GMT->current.plot.calclock.date.skip)
-							sprintf (string, "%s", clock);
-						else
-							sprintf (string, "%s %s", date, clock);
-					}
-					else {	/* Regular floating point (or latitude, etc.) */
-						if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as an integer */
-							sprintf (string, Ctrl->L.tag[T].format, (int)irint (L_col));
-						else if (Ctrl->L.tag[T].format[0])	/* Set as floating point */
-							sprintf (string, Ctrl->L.tag[T].format, L_col);
-						else	/* Uses standard formatting*/
-							gmt_ascii_format_one (GMT, string, L_col, type);
-					}
-				}
-				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
-					char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);
-					col = 0;	trail = orig;
-					while (col != Ctrl->L.tag[T].col && (word = strsep (&trail, " \t")) != NULL) {
-						if (*word != '\0')	/* Skip empty strings */
-							col++;
-					}
-					strcpy (L_txt, word);
-					gmt_M_str_free (orig);
-					if (Ctrl->L.tag[T].format[0])	/* Use the given string format */
-						sprintf (string, Ctrl->L.tag[T].format, L_txt);
-					else	/* Plot as is */
-						strcpy (string, L_txt);
-				}
-				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
-					strcpy (string, Ctrl->L.tag[T].format);
-				strcat (label, string);
-				/* Set MOVIE_LABEL_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie in session directory */
+		spacer = ' ';	/* Use a space to separate date and clock for labels; this will change to T for progress -R settings */
+		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
+			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
+				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
+				unsigned int type, use_frame, p;
+				double t;
+				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
+				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
-				set_tvalue (fp, Ctrl->In.mode, true, name, label);
+				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
+				set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
+				for (T = 0; T < Ctrl->n_items[k]; T++) {
+					t = (frame + 1.0) / n_frames;
+					I = &Ctrl->item[k][T];	/* Shorthand for this item */
+					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
+					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
+					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
+						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
+						I->fill, I->fill2, (I->font.size > 0.0) ? gmt_putfont (GMT, &I->font) : "-");
+					string[0] = '\0';
+					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
+						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
+							use_frame = (p == 0) ? 0 : n_frames - 1;
+						else	/* Current frame only */
+							use_frame = frame;
+						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
+						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
+						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
+							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+								sprintf (string, I->format, (int)use_frame);
+							else if (I->format[0])	/* Set as floating point */
+								sprintf (string, I->format, (double)use_frame);
+							else	/* Default to the frame tag string format */
+								sprintf (string, "%*.*d", precision, precision, use_frame);
+						}
+						else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
+							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+								sprintf (string, I->format, (int)irint (100.0 * t));
+							else if (I->format[0])	/* Set as floating point */
+								sprintf (string, I->format, (100.0 * t));
+							else	/* Default to xxx % */
+								sprintf (string, "%3d%%", (int)irint (100.0 * t));
+						}
+						else if (I->mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
+							gmt_M_memset (string, GMT_LEN128, char);
+							L_col = (I->scale > 0.0) ? use_frame * I->scale : use_frame / Ctrl->D.framerate;
+							ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
+							mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
+							hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
+							dd = urint (L_col);
+							switch (I->ne) {
+								case 4: 	sprintf (string, I->format, dd, hh, mm, ss); break;
+								case 3: 	sprintf (string, I->format, hh, mm, ss); break;
+								case 2: 	sprintf (string, I->format, mm, ss); break;
+								case 1: 	sprintf (string, I->format, ss); break;
+							}
+						}
+						else if (I->mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
+							L_col = D->table[0]->segment[0]->data[I->col][use_frame];
+							if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
+								char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
+								gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
+								if (GMT->current.plot.calclock.clock.skip)
+									sprintf (string, "%s", date);
+								else if (GMT->current.plot.calclock.date.skip)
+									sprintf (string, "%s", clock);
+								else
+									sprintf (string, "%s%c%s", date, spacer, clock);
+							}
+							else {	/* Regular floating point (or latitude, etc.) */
+								if (I->format[0] && strchr (I->format, 'd'))	/* Set as an integer */
+									sprintf (string, I->format, (int)irint (L_col));
+								else if (I->format[0])	/* Set as floating point */
+									sprintf (string, I->format, L_col);
+								else	/* Uses standard formatting*/
+									gmt_ascii_format_one (GMT, string, L_col, type);
+							}
+						}
+						else if (I->mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
+							char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[use_frame]);
+							col = 0;	trail = orig;
+							while (col != I->col && (word = strsep (&trail, " \t")) != NULL) {
+								if (*word != '\0')	/* Skip empty strings */
+									col++;
+							}
+							strcpy (L_txt, word);
+							gmt_M_str_free (orig);
+							if (I->format[0])	/* Use the given string format */
+								sprintf (string, I->format, L_txt);
+							else	/* Plot as is */
+								strcpy (string, L_txt);
+						}
+						else if (I->mode == MOVIE_LABEL_IS_STRING)	/* Place a fixed string */
+							strcpy (string, I->format);
+						strcat (label, string);
+						if (I->kind == 'F' && p == 0) 
+							strcat (label, "/");
+						else if (p < (I->n_labels-1)) strcat (label, ";");
+					}
+					if (I->kind == 'F') strcat (label, "/0/1");
+					/* Set MOVIE_{LABEL|PROG_INDICATOR}_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie{label|prog_indicator}s in session directory */
+					fprintf (fp, "%s", export[Ctrl->In.mode]);
+					set_tvalue (fp, Ctrl->In.mode, true, name, label);
+				}
 			}
+			spacer = 'T';	/* For ISO time stamp as used in -R */
 		}
 		fclose (fp);	/* Done writing this parameter file */
 	}
@@ -1810,7 +2043,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #else
 		char dir_sep_ = '/';
 #endif
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files saved in directory: %s\n", n_frames, Ctrl->N.prefix);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files saved in directory: %s\n", n_frames, workdir);
 		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
 			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
 		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */

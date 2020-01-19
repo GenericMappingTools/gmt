@@ -15,7 +15,7 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
 [ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
@@ -24,6 +24,7 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
+[ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ **-Sb**\ *backgroundscript* ]
 [ **-Sf**\ *foregroundscript* ]
@@ -87,8 +88,9 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
-    Either specify how many image frames to make or supply a file with a set of parameters,
+**-T**\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+    Either specify how many image frames to make, create a one-column data set width values from
+    *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
@@ -162,9 +164,10 @@ Optional Arguments
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **s**\ *string* uses the fixed text *string* as the label,
-    **f** selects the running frame number as the label, **c**\ *col* uses the value in column
+    **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
+    **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
+    *col* from the trailing text in *timefile* (first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
@@ -186,6 +189,19 @@ Optional Arguments
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+
+.. _-P:
+
+**-P**\ *progress*
+    Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
+    Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
+    linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
+    circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
+    [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
+    **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
+    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
+    Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
 
@@ -257,7 +273,8 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested by **-T+w** then
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicity requested by **-T+w** or
+implicitly by selecting word labels in **-F** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -327,6 +344,37 @@ indirectly by :doc:`grdimage` or  :doc:`grdview`).  Instead, you must create CPT
 files and pass those names to the modules that require CPT information.  In modern mode, this means
 you need to use the **-H** option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
 to named files.
+
+Progress Indicators
+-------------------
+
+.. figure:: /_images/GMT_movie_progress.*
+   :width: 500 px
+   :align: center
+
+   The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
+   but these can be overridden by the corresponding modifiers (see below).
+
+The letters a-f select one of the six progress indicators shown above.
+Indicator a) needs a static [lightgreen] and moving [lightred]
+*fill* (set via **+G** and **+g**); there is no label option.
+Indicator b) takes a static [lightblue] and moving [blue] *pen* (set via **+P** and **+p**),
+and if **+a** is set we place a centered label with a font size scaled to 30%
+of indicator size (unless **+f** was set which is used as given).
+Indicator c) takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red]
+*pen* (default pen width is 5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
+label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
+Indicator d) takes a static [black] and moving [yellow, width 0.5% of length] *pen* for a rounded line with a cross-mark. If
+label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
+Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
+use a font size that is twice the static pen thickness (unless **+f** was set).
+Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
+the triangle size is scaled to twice the axis width (see below), and a font size scaled to thrice the axis width.
+Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
+otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
+The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
+If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
+60% of the relevant canvas dimension for the linear indicators.
 
 Examples
 --------

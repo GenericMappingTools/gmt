@@ -5399,6 +5399,19 @@ GMT_LOCAL unsigned int gmtinit_key_lookup (char *name, char **list, unsigned int
 	return (i);
 }
 
+int gmt_set_length_unit (struct GMT_CTRL *GMT, char unit) {
+	/* UPdate the current setting for length unit index */
+	switch (unit) {
+		case 'c': GMT->current.setting.proj_length_unit = GMT_CM;   break;
+		case 'i': GMT->current.setting.proj_length_unit = GMT_INCH; break;
+		case 'p': GMT->current.setting.proj_length_unit = GMT_PT;   break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized projected length unit given (%c)!\n", unit);
+			return GMT_NOTSET;
+	}
+	return (GMT_NOERROR);
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL;
@@ -10161,12 +10174,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("PROJ_LENGTH_UNIT");
 			break;
 		case GMTCASE_PROJ_LENGTH_UNIT:
-			switch (lower_value[0]) {
-				case 'c': GMT->current.setting.proj_length_unit = GMT_CM; break;
-				case 'i': GMT->current.setting.proj_length_unit = GMT_INCH; break;
-				case 'p': GMT->current.setting.proj_length_unit = GMT_PT; break;
-				default: error = true;
-			}
+			if (gmt_set_length_unit (GMT, lower_value[0]) == GMT_NOTSET)
+					error = true;
 			break;
 		case GMTCASE_PROJ_MEAN_RADIUS:
 			if (!strncmp (lower_value, "mean", 4U)) /* Mean radius R_1 */
@@ -16475,6 +16484,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	bool found = false;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
 	char *L = NULL;
+	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"}, *F_name[2] = {"label", "prog_indicator"};
 	struct GMT_FIGURE *fig = NULL;
 	FILE *fp = NULL;
 
@@ -16532,35 +16542,39 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if (gmtlib_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
 
-	/* See if movie set up a set of frame labels */
+	/* See if movie set up a set of frame labels and/or progress indicators */
 
-	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
-		unsigned int T, n_tags;
-		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
-		if (!gmt_is_integer (L)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "MOVIE_N_LABELS = %s but must be an integer\n", L);
-			return GMT_RUNTIME_ERROR;
-		}
-		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special MOVIE_N_LABELS = %s\n", L);
-		snprintf (file, PATH_MAX, "%s/gmt.movie", API->gwf_dir);
-		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
-			return GMT_ERROR_ON_FOPEN;
-		}
-		fprintf (fp, "# movie label information file\n");
-		n_tags = atoi (L);
-		for (T = 0; T < n_tags; T++) {
-			snprintf (name, GMT_LEN32, "MOVIE_LABEL_ARG%d", T);
-			if ((L = getenv (name)) != NULL) {	/* MOVIE_LABEL_ARG# was set */
-				/* Special processing for gmt movie: If -L is used to set labeling then we
-			 	* need to ensure the label is on top of the frame and unaffected by any
-			 	* -X -Y that may have been used in the main script. We do this by implementing
-			 	* the label via a PSL procedure that is called at the end of the file.
-			 	* This is set up by gmt_plotinit in gmt_plot.c */
-				fprintf (fp, "%s\n", L);
+	for (k = 0; k < 2; k++) {
+		sprintf (prefix, "MOVIE_N_%sS", LP_name[k]);	/* Recycle prefix here as name */
+		if ((L = getenv (prefix)) != NULL) {	/* MOVIE_N_{LABEL|PROG_INDICATOR}S was set */
+			unsigned int T, n_tags;
+			char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
+			if (!gmt_is_integer (L)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "%s = %s but must be an integer\n", prefix, L);
+				return GMT_RUNTIME_ERROR;
 			}
+			GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special %s = %s\n", prefix, L);
+			snprintf (file, PATH_MAX, "%s/gmt.movie%ss", API->gwf_dir, F_name[k]);
+			if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
+				return GMT_ERROR_ON_FOPEN;
+			}
+			fprintf (fp, "# movie %s information file\n", F_name[k]);
+			n_tags = atoi (L);
+			for (T = 0; T < n_tags; T++) {
+				snprintf (name, GMT_LEN32, "MOVIE_%s_ARG%d", LP_name[k], T);
+				if ((L = getenv (name)) != NULL) {	/* MOVIE_{LABEL|PROG_INDICATOR}_ARG# was set */
+					/* Special processing for gmt movie:
+					 * If -L is used to set labeling or -P to set progress indicators then we
+				 	* need to ensure the item is on top of the frame and unaffected by any
+				 	* -X -Y that may have been used in the main script. We do this by implementing
+				 	* the item via a PSL procedure that is called at the end of the file.
+				 	* This is set up by gmt_plotinit in gmt_plot.c */
+					fprintf (fp, "%s\n", L);
+				}
+			}
+			fclose (fp);
 		}
-		fclose (fp);
 	}
 
 	return GMT_NOERROR;
