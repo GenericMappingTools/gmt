@@ -195,12 +195,12 @@ Optional Arguments
 **-P**\ *progress*
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
     Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
-    linear axis-like indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
-    circular indicators and 60% of relevant canvas dimension for the axis indicators] and placement via **+j**\ *justify*
+    linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
+    circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
     **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
-    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [no fill].
+    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
@@ -357,19 +357,19 @@ Progress Indicators
 The letters a-f select one of the six progress indicators shown above. Indicator a) needs a static [lightgreen] and moving [lightred]
 *fill* (set via **+G** and **+g**); there is no label option. Indicator b) takes a static [lightblue]
 and moving [blue] *pen* (set via **+P** and **+p**), and if **+a** is set we place a centered label with a font size scaled to 30%
-of indicator size (unless **+f** was set which is used as).
+of indicator size (unless **+f** was set which is used as given).
 Indicator c) takes a static [dashed darkred, 0.5p width] and moving [red] *pen* (default pen width is
 5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
 label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
 Indicator d) takes a static [black] and moving [yellow] *pen* for a rounded line with a cross-mark. If
-labels are requested (**+a**) we use a font size that is 2 times the static pen thickness (unless **+f** was set).
+label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
 Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
-use a font size that is 2 times the static pen thickness (unless **+f** was set).
+use a font size that is twice the static pen thickness (unless **+f** was set).
 Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
-the triangle size is scaled to 2 times the axis width (see below).
-Note for indicators d-f: If percentages are selected (**+ap**), then the axes display a unit label,
+the triangle size is scaled to twice the axis width (see below).
+Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
 otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
-The default pen thicknesses for the long bars are the smallest of 2.5% of their lengths or 8p (4p for f).
+The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (4p for f).
 If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
 60% of the relevant canvas dimension for the linear indicators.
 
