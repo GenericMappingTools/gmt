@@ -33,9 +33,7 @@ installed fonts and their metrics. In order to use extra fonts in
 GMT you need to specify the PostScript name of the relevant fonts in
 the file ``PSL_custom_fonts.txt``. We recommend you place this file in
 your GMT user directory (~/.gmt) as GMT will look there as well as in your
-home directory.  Below is an example of a typical entry for two separate fonts:
-
-   ::
+home directory.  Below is an example of a typical entry for two separate fonts::
 
     LinBiolinumO      0.700    0
     LinLibertineOB    0.700    0
@@ -47,10 +45,8 @@ additional fonts will most likely not come in standard
 PostScript encoding. GMT determines how tall typical annotations
 might be from the font size ratio so that the vertical position of
 labels and titles can be adjusted to a more uniform typesetting. This
-ratio can be estimated from the height of the letter A for a unit font size.
-Now, you can set the GMT font parameters to your non-standard fonts:
-
-   ::
+ratio can be estimated from the height of the letter **A** for a unit font size.
+Now, you can set the GMT font parameters to your non-standard fonts::
 
     gmt set FONT              LinBiolinumO \
             FONT_TITLE        28p,LinLibertineOB \
@@ -58,7 +54,7 @@ Now, you can set the GMT font parameters to your non-standard fonts:
             MAP_DEGREE_SYMBOL degree
 
 After setting the encoding and the degree symbol, the configuration part
-for GMT is finished and you can proceed to create GMT-maps as usual.
+for GMT is finished and you can proceed to create GMT maps as usual.
 An example script is discussed in Example :ref:`example_31`.
 
 Embedding fonts in PostScript and PDF
@@ -78,11 +74,11 @@ only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 :doc:`/psconvert` in the usual way. Likewise
 you can specify Ghostscript's ``-sFONTPATH`` option on the
-command line with ``C -sFONTPATH=/path/to/fontdir``. Ghostscript,
+command line with ``-C-sFONTPATH=/path/to/fontdir``. Ghostscript,
 which is invoked by :doc:`/psconvert`, does
 not depend on file names. It will automatically find the relevant font
 files by their PostScript names and embed and subset them in
-PDF-files. This is quite convenient as the document can be displayed and
+PDF files. This is quite convenient as the document can be displayed and
 printed even on other computers when the font is not available locally.
 There is no need to convert your fonts as Ghostscript can handle
 all Type 1, TrueType and OpenType fonts. Note also, that you do not need
@@ -90,11 +86,9 @@ to edit Ghostscript's Fontmap.
 
 If you do not want or cannot embed the fonts you can convert them to
 outlines (shapes with fills) with Ghostscript in the following
-way:
+way::
 
-   ::
-
-     gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
+     gs -q -dNOCACHE -dNOSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
         -sDEVICE=ps2write -sFONTPATH="/path/to/fontdir" \
         -sOutputFile=mapWithOutlinedFonts.ps map.ps
 
@@ -117,4 +111,3 @@ substitute all non ASCII characters with their corresponding octal
 codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
-

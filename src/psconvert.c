@@ -522,7 +522,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
