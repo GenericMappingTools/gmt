@@ -413,6 +413,22 @@ The default pen thickness for the linear static lines is the smallest of 2.5% of
 If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
 60% of the relevant canvas dimension for the linear indicators.
 
+Title Sequence and Fading
+-------------------------
+
+.. figure:: /_images/GMT_title_fade.*
+   :width: 500 px
+   :align: center
+
+   The fade-level (0 means black, 1 means normal visibility) for the complete movie, including
+   an optional title sequence.
+
+The complete movie may have a leading title sequence (**-E**) of a given duration. A short part
+at the beginning and end may be designated to fade in/out via black.  The main animation
+sequence may also have fade in/out (**-K**). Here, you can choose to fade in/out during parts of
+the animation or you can "freeze" the first and last animation frame and only fade in/out using
+those static images (via modifier **+p** to preserve the animation sequence).
+
 Examples
 --------
 
