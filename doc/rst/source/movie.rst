@@ -18,12 +18,12 @@ Synopsis
 |-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
-[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]]]
+[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]] ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
-[ |-K|\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]]
+[ |-K|\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
@@ -127,11 +127,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\ \|\ **o**]\ *fade*\ [**s**]]]
+**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\ \|\ **o**]\ *fade*\ [**s**]]
     Give *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a PostScript plot layer of dimensions exacly matching the cancas size.
-    Control how long it should be displayed with **+d** in frames (append *s** for duration in seconds instead) [4s].
-    Optionally, supply fade **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
+    Control how long it should be displayed with **+d** in number of frames (append *s** for duration in seconds instead) [4s].
+    Optionally, supply *fade* **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
     Fading affects the beginning and end of the title page *duration*.
 
 .. _-F:
@@ -172,13 +172,13 @@ Optional Arguments
 .. _-K:
 
 
-**-K**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]]
+**-K**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
     For different lengths of fading in and out you can repeat the **-K** option
     by appending the **i** or **o** directives.  Normally, fading will affect the
     first and last animation frames.  Append **+p** to preserve these by instead
-    fading in and out on only the first and last animation frame.
+    fading in and out on only the first and last (repeated) animation frames.
 
 .. _-L:
 
@@ -217,7 +217,7 @@ Optional Arguments
 
 **-P**\ *progress*
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
-    Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
+    Select from six indicators called a-f [a].  Indicators a-c are different types of circular indicators while d-f are
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
@@ -331,7 +331,7 @@ Instead of passing GMT modern scripts to **-S** you can alternatively provide th
 plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
 making a HD movie using the US unit dimensions then a background pink layer would be created by::
 
-    gmt psbasemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 -P --PS_MEDIA=9.6ix5.4i > background.ps
+    gmt basemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 --PS_MEDIA=9.6ix5.4i -ps background
 
 Note the canvas selection via :ref:`PS_MEDIA <PS_MEDIA>`, the matching region and projection, and
 the zero location of the origin.
@@ -423,20 +423,20 @@ Title Sequence and Fading
    The fade-level (0 means black, 1 means normal visibility) for the complete movie, including
    an optional title sequence.
 
-The complete movie may have a leading title sequence (**-E**) of a given duration. A short part
+The complete movie may have a leading title sequence (**-E**) of given *duration*. A short section
 at the beginning and end may be designated to fade in/out via black.  The main animation
-sequence may also have fade in/out (**-K**). Here, you can choose to fade in/out during parts of
+sequence may also have fade in/out (**-K**). Here, you can choose to fade in/out during the beginning and end section of
 the animation or you can "freeze" the first and last animation frame and only fade in/out using
-those static images (via modifier **+p** to preserve the animation sequence).
+those static images (via modifier **+p** to preserve the whole animation sequence).
 
 Examples
 --------
 
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
 frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
-and place a frame counter in the top left corner, try::
+place a frame counter in the top left corner, and place a progress indicator in the top right corner, try::
 
-    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf
+    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
 as the center longitude::
@@ -448,7 +448,7 @@ as the center longitude::
 As the automatic frame loop is executed the different frames will be produced with different
 longitudes.  The equivalent DOS batch script setup would be::
 
-    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf
+    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
 
 Now, the globe.bat DOS script is simply::
 

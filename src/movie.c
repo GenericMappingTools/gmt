@@ -497,7 +497,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) and consult the movie documentation for which attributes are needed:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to specify size [5%% of max canvas dimension for circles, 60%% for axes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
@@ -984,7 +984,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					break;
 				}
 				I = &Ctrl->item[MOVIE_ITEM_IS_PROG_INDICATOR][T];	/* Shorthand for the current progress indicator item */
-				I->kind = opt->arg[0];	/* This is a progress indicator item */
+				I->kind = (opt->arg[0] && strchr ("abcdef", opt->arg[0])) ? opt->arg[0] : 'a';	/* This is a progress indicator item [Default to a] */
 				n_errors += parse_common_item_attributes (GMT, 'P', opt->arg, I);
 				if (gmt_get_modifier (opt->arg, 'G', I->fill2) && I->fill2[0]) {	/* Secondary fill */
 					if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
