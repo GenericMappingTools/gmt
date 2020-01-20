@@ -1990,23 +1990,33 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		extra[0] = '\0';	/* Reset */
-		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+		if (Ctrl->K.active)
+			sprintf (extra, "A+n+r+f%s", place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+		else
+			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
-		if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
-			strcat (extra, ",Mb../movie_background.ps");
-		else if (Ctrl->S[MOVIE_PREFLIGHT].PS) {	/* Got a background PS layer directly */
-			strcat (extra, ",Mb../../");
-			strcat (extra, Ctrl->S[MOVIE_PREFLIGHT].file);
+		if (Ctrl->E.active) {	/* Master frame is from the title sequence */
+			if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
+				strcat (extra, ",Mb../../");
+				strcat (extra, Ctrl->E.file);
+			}
 		}
-		if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
-			strcat (extra, ",Mf../movie_foreground.ps");
-		else if (Ctrl->S[MOVIE_POSTFLIGHT].PS) {	/* Got a foreground PS layer directly */
-			strcat (extra, ",Mf../../");
-			strcat (extra, Ctrl->S[MOVIE_POSTFLIGHT].file);
+		else {	/* master is from main sequence */
+			if (!access ("movie_background.ps", R_OK))	/* Need to place a background layer first (which is in parent dir when loop script is run) */
+				strcat (extra, ",Mb../movie_background.ps");
+			else if (Ctrl->S[MOVIE_PREFLIGHT].PS) {	/* Got a background PS layer directly */
+				strcat (extra, ",Mb../../");
+				strcat (extra, Ctrl->S[MOVIE_PREFLIGHT].file);
+			}
+			if (!access ("movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+				strcat (extra, ",Mf../movie_foreground.ps");
+			else if (Ctrl->S[MOVIE_POSTFLIGHT].PS) {	/* Got a foreground PS layer directly */
+				strcat (extra, ",Mf../../");
+				strcat (extra, Ctrl->S[MOVIE_POSTFLIGHT].file);
+			}
 		}
 		if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 			sprintf (line, ",H%d", Ctrl->H.factor);
@@ -2024,10 +2034,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
 		fprintf (fp, "mkdir master\n");	/* Make a temp directory for this frame */
 		fprintf (fp, "cd master\n");		/* cd to the temp directory */
-		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
-			if (is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+		if (Ctrl->E.active) {	/* Process title page script or PS */
+			if (Ctrl->E.PS) {	/* There is no title script, just a PS, so we make a dummy script that plots nothing */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-				set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+				set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
+				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
 				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
@@ -2035,13 +2046,51 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				else
 					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
+				fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+				fprintf (fp, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			}
-			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			else {	/* Read the title script */
+				while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
+					if (is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+						fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
+						set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+						fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
+						fprintf (fp, " %s", extra);
+						if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
+							fprintf (fp, "\n");	/* No dpu needed */
+						else
+							fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
+						fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
+					}
+					else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
+						if (is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+						else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+						fprintf (fp, "%s", line);	/* Just copy the line as is */
+					}
+				}
+				rewind (Ctrl->E.fp);	/* Get ready for main_frame reading */
 			}
 		}
-		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
+		else {	/* Process main script */
+			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
+				if (is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
+					set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+					fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
+					fprintf (fp, " %s", extra);
+					if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
+						fprintf (fp, "\n");	/* No dpu needed */
+					else
+						fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
+					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
+				}
+				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
+					if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+					fprintf (fp, "%s", line);	/* Just copy the line as is */
+				}
+			}
+			rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
+		}
 		set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
 		fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, topdir);	/* Move master plot up to top dir */
 		fprintf (fp, "cd ..\n");	/* cd up to workdir */
@@ -2114,9 +2163,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		strcat (extra, ",Mb../movie_background.ps");
 		layers = true;
 	}
+	else if (Ctrl->S[MOVIE_PREFLIGHT].PS) {	/* Got a background PS layer directly */
+		strcat (extra, ",Mb../../");
+		strcat (extra, Ctrl->S[MOVIE_PREFLIGHT].file);
+	}
 	if (!access ("movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which will be in parent dir when script is run) */
 		strcat (extra, ",Mf../movie_foreground.ps");
 		layers = true;
+	}
+	else if (Ctrl->S[MOVIE_POSTFLIGHT].PS) {	/* Got a foreground PS layer directly */
+		strcat (extra, ",Mf../../");
+		strcat (extra, Ctrl->S[MOVIE_POSTFLIGHT].file);
 	}
 	if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 		char htxt[GMT_LEN16] = {""};
