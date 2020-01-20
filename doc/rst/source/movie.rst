@@ -420,7 +420,7 @@ Title Sequence and Fading
    :width: 500 px
    :align: center
 
-   The fade-level (0 means black, 1 means normal visibility) for the complete movie, including
+   The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
    an optional title sequence.
 
 The complete movie may have a leading title sequence (**-E**) of given *duration*. A short section
