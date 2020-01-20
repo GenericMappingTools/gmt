@@ -144,8 +144,9 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of include script */
 		FILE *fp;	/* Open file pointer to include script */
 	} I;
-	struct MOVIE_K {	/* -K[b|e]<duration>[s] */
+	struct MOVIE_K {	/* -K[b|e]<duration>[s][+p] */
 		bool active;
+		bool preserve;
 		unsigned int fade[2];	/* Duration of movie in and movie out fades [none]*/
 	} K;
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
@@ -415,7 +416,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<frontscript>[+f[b|e]<fade>[s]] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[i|o]<fade>[s][+p]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -470,6 +471,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-K Fade (i)n and/or (o)ut the main movie segment via black [no fading].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append duration of fading in frames or seconds (append s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Fading will darken frames at start and end of movie.  Append +p to preserve all frames\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     and instead use the first and last frames repeatedly during the fading.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
@@ -915,6 +920,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 
 			case 'K':	/* Fade from/to black settings  */
 				Ctrl->K.active = true;
+				if ((c = strstr (opt->arg, "+p"))) {
+					Ctrl->K.preserve = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
 				k = (strchr ("io", opt->arg[0])) ? 1 : 0;	/* Did we get a common fade */
 				frames = get_n_frames (GMT, &opt->arg[k], Ctrl->D.framerate);
 				if (k == 0) /* Set both fades */
@@ -923,6 +932,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					Ctrl->K.fade[GMT_IN] = frames;
 				else 	/* Set movie fade out */
 					Ctrl->K.fade[GMT_OUT] = frames;
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'L':	/* Label frame and get attributes */
@@ -1200,8 +1210,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	int error = 0, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
-	unsigned int n_values = 0, n_frames = 0, frame, i_frame, col, p_width, p_height, k, T;
-	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
+	unsigned int n_values = 0, n_frames = 0, n_data_frames, first_fade_out_frame = 0, frame, i_frame, col, p_width, p_height, k, T;
+	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, data_frame, n_cores_unused, n_fade_frames;
 	unsigned int dd, hh, mm, ss, flavor[2] = {0, 0};
 
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false};
@@ -1337,6 +1347,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
+	n_data_frames = n_frames;
 
 	if (Ctrl->W.active)
 		strcpy (workdir, Ctrl->W.dir);
@@ -1398,7 +1409,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
 	set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
-	if (n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_frames);	/* Total frames (write to init since known) */
+	if (n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
@@ -1493,7 +1504,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fclose (Ctrl->In.fp);
 				Return (API->error);
 			}
-			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
@@ -1516,17 +1527,27 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
 				Return (API->error);	/* Some sort of failure */
 			}
-			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
 		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
-			n_frames = atoi (Ctrl->T.file);
+			n_frames = n_data_frames = atoi (Ctrl->T.file);
 	}
 	if (n_frames == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_NORMAL, "No frames specified! - exiting.\n");
 		fclose (Ctrl->In.fp);
 		Return (GMT_RUNTIME_ERROR);
+	}
+
+	if (Ctrl->K.active) {
+		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
+		if (!Ctrl->K.preserve && n_fade_frames > n_data_frames) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -K: Combined fading duration cannot exceed animation duration\n");
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (!Ctrl->K.preserve) n_fade_frames = 0;	/* We are clobbering, not preserving */
 	}
 
 	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
@@ -1547,12 +1568,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of animation frames: %d\n", n_frames);
+	
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of main animation frames: %d\n", n_data_frames);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest frame number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames))));	/* Width needed to hold largest frame number */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames))));	/* Width needed to hold largest frame number */
 
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
@@ -1673,7 +1694,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		 */
 		unsigned int start;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create individual parameter include files per frame for %d title sequence frames\n", Ctrl->E.duration);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Parameter files for title sequence: %d\n", Ctrl->E.duration);
 		for (i_frame = 0; i_frame < Ctrl->E.duration; i_frame++) {
 			frame = i_frame + Ctrl->T.start_frame;	/* Actual frame number */
 			if (one_frame && frame != Ctrl->M.frame) continue;	/* Just doing a single frame for debugging */
@@ -1688,8 +1709,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (state_prefix, "Parameter file for pre-frame %s", state_tag);
 			set_comment (fp, Ctrl->In.mode, state_prefix);
 			sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
-			set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", frame);		/* Current frame number */
-			set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 			set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 			if (i_frame < Ctrl->E.fade[GMT_IN])	/* During title fade-in */
 				fade_level = 50 * (1.0 + cos (M_PI * i_frame / Ctrl->E.fade[GMT_IN]));
@@ -1780,9 +1799,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Create parameter include files, one for each frame */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create individual parameter include files per frame for %d frames\n", n_frames);
+	if (Ctrl->K.active) {	/* Must make room for the extra frame need for fading in and out */
+		if (!Ctrl->K.preserve)	/* No extra frames are created - just fading being applied to some */
+			first_fade_out_frame = n_frames - Ctrl->K.fade[GMT_IN] - 1;
+		else {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Parameter files for fade in/out of main animation: %d\n", n_fade_frames);
+			first_fade_out_frame = Ctrl->K.fade[GMT_IN] + n_frames;
+			n_frames += n_fade_frames;
+		}
+	}
+
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Parameter files for main animation: %d\n", n_frames);
 	for (i_frame = 0; i_frame < n_frames; i_frame++) {
-		frame = i_frame + Ctrl->T.start_frame;	/* Actual frame number */
+		frame = data_frame = i_frame + Ctrl->T.start_frame;	/* Actual frame is normally same as data_frame number */
 		if (one_frame && (frame + Ctrl->E.duration) != Ctrl->M.frame) continue;	/* Just doing a single frame for debugging */
 		sprintf (state_tag, "%*.*d", precision, precision, frame + Ctrl->E.duration);
 		sprintf (state_prefix, "movie_params_%s", state_tag);
@@ -1796,18 +1825,34 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
 		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
-		if (Ctrl->E.active) sprintf (state_tag, "%*.*d", precision, precision, frame);	/* Reset frame tag */
-		set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", frame);		/* Current frame number */
-		if (!n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
+
+		if (Ctrl->K.active) {	/* Must stay on either first or last actual frame repeadely to fade in/out the first/last true frame plot */
+			if (i_frame < Ctrl->K.fade[GMT_IN]) { /* Must keep fixed first dataframe but change fading in */
+				if (Ctrl->K.preserve) data_frame = 0;	/* Keep plotting the first data frame */
+				fade_level = 50 * (1.0 + cos (M_PI * i_frame / Ctrl->K.fade[GMT_IN]));
+			}
+			else if (i_frame >= first_fade_out_frame) { /* Must keep fixed plot but change fading out */
+				if (Ctrl->K.preserve) data_frame = n_data_frames - 1;	/* Keep plotting the last data frame */
+				fade_level = 50 * (1.0 - cos (M_PI * (i_frame - first_fade_out_frame) / Ctrl->K.fade[GMT_OUT]));
+			}
+			else {
+				fade_level = 0.0;	/* No fading */
+				if (Ctrl->K.preserve) data_frame = i_frame - Ctrl->K.fade[GMT_IN];
+			}
+			set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+		}
+		if (Ctrl->E.active) sprintf (state_tag, "%*.*d", precision, precision, data_frame);	/* Reset frame tag */
+		set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", data_frame);		/* Current frame number */
+		if (!n_written) set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
 		set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
-			set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][frame]);
+			set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
-			set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
+			set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[data_frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
-				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);
+				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_frame]);
 				col = 0;
 				trail = orig;
 				while ((word = strsep (&trail, " \t")) != NULL) {
@@ -1843,7 +1888,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
 							use_frame = (p == 0) ? 0 : n_frames - 1;
 						else	/* Current frame only */
-							use_frame = frame;
+							use_frame = data_frame;
 						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
 						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
 						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
@@ -2051,7 +2096,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
+	if (Ctrl->K.active)
+		sprintf (extra, "A+n+r+f%s", place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+	else
+		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
 	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
 		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
@@ -2116,19 +2164,20 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 #endif
 
+	n_frames += Ctrl->E.duration;	/* THis is the total set of frames to process */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total frames to process: %u\n", n_frames);
+
 	if (Ctrl->Q.scripts) {	/* No animation sequence generated */
 		Return (GMT_NOERROR);	/* We are done */
 	}
 
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
 
-	n_frames += Ctrl->E.duration;	/* THis is the total set of frames to process */
 	i_frame = first_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
 	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	if (Ctrl->E.active) script_file = intro_file; else script_file = main_file;
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total frames to process: %u\n", n_frames);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build frames using %u cores\n", n_cores_unused);
 	/* START PARALLEL EXECUTION OF FRAME SCRIPTS */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Execute movie frame scripts in parallel\n");

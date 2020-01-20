@@ -23,6 +23,7 @@ Synopsis
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
+[ |-K|\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
@@ -167,6 +168,17 @@ Optional Arguments
     Insert the contents of *includefile* into the movie_init.sh script that is accessed by all movie scripts.
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
     and any optional **-S** scripts rely on.
+
+.. _-K:
+
+
+**-K**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]]
+    Add fading in and out for the main animation sequence [no fading]. Append
+    the length of the fading in number of frames (or seconds by appending **s**).
+    For different lengths of fading in and out you can repeat the **-K** option
+    by appending the **i** or **o** directives.  Normally, fading will affect the
+    first and last animation frames.  Append **+p** to preserve these by instead
+    fading in and out on only the first and last animation frame.
 
 .. _-L:
 
