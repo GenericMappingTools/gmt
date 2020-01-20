@@ -18,6 +18,7 @@ Synopsis
 |-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
+[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]]]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*\ ]
@@ -122,6 +123,15 @@ Optional Arguments
 
 **-D**\ *displayrate*
     Set the display frame rate in frames per seconds for the final animation [24].
+
+.. _-E:
+
+**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\ \|\ **o**]\ *fade*\ [**s**]]]
+    Give *titlepage* script that creates a static title page for the movie [no title].
+    Alternatively, *titlepage* can be a PostScript plot layer of dimensions exacly matching the cancas size.
+    Control how long it should be displayed with **+d** in frames (append *s** for duration in seconds instead) [4s].
+    Optionally, supply fade **i**\ n and **o**\ ut durations (in frames or seconds) as well [no fading].
+    Fading affects the beginning and end of the title page *duration*.
 
 .. _-F:
 

@@ -121,7 +121,7 @@ struct PS2RASTER_CTRL {
 	struct PS2R_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PS2R_A {             /* -A[+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u] */
+	struct PS2R_A {             /* -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u] */
 		bool active;
 		bool max;          /* Only scale if dim exceeds the given size */
 		bool round;        /* Round HiRes BB instead of ceil (+r) */
@@ -131,7 +131,9 @@ struct PS2RASTER_CTRL {
 		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
 		bool paint;        /* Paint box behind plot with selected fill (+g) */
 		bool crop;         /* If true we must find the BB; turn off via -A+n */
+		bool fade;         /* If true we must fade out the plot to black*/
 		double scale;      /* Scale factor to go along with the 'rescale' option */
+		double fade_level;      /* Fade to black at this level of transparency */
 		double new_size[2];
 		double margin[4];
 		double new_dpi_x, new_dpi_y;
@@ -267,7 +269,7 @@ void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
 	/* Syntax:
-	 * New : -A[+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u]
+	 * New : -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u]
 	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]]
 	 */
 
@@ -313,6 +315,18 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	strncpy (txt, arg, GMT_LEN128-1);
 	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
+			case 'f':	/* Fade out */
+				Ctrl->A.fade = true;
+				if (!p[1]) {
+					GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A+f: Append the fade setting in 0-100 range.\n");
+					error++;
+				}
+				else if ((Ctrl->A.fade_level = atof (&p[1])) < 0.0 || Ctrl->A.fade_level > 100.0) {
+					GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A+f: Must specify fading in 0 (no fade) - 100 (fully faded) range.\n");
+					error++;
+				}
+				Ctrl->A.fade_level *= 0.01;	/* Normalized */
+				break;
 			case 'g':	/* Fill background */
 				Ctrl->A.paint = true;
 				if (!p[1]) {
@@ -521,7 +535,7 @@ GMT_LOCAL double smart_ceil (double x) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
@@ -539,6 +553,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[u] for uniform margin for all 4 sides,\n");
@@ -2233,6 +2248,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
+			}
+			else if (Ctrl->A.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->A.fade_level > 0.0) {
+				/* Place a transparent black rectangle over everything, at level of transparency */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Append fading to black at %d%%.\n", irint (100.0*Ctrl->A.fade_level));
+				fprintf (fpo, "gsave clippath 0 0 0 %g /Normal PSL_transp F N U\n", Ctrl->A.fade_level);
+				transparency = true;
 			}
 #ifdef HAVE_GDAL
 			else if (Ctrl->A.crop && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
