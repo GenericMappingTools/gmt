@@ -29,7 +29,10 @@
  * simple one-plot scripts and then movie takes care of the automation,
  * processing to PNG, assembly to a movie or animated GIF, and cleanup.
  * Frame scripts are run in parallel without need for OpenMP etc.
- * Experimental.
+ * Experimental.  Optionally, you can supply a title page script and
+ * request fading of title page and/or the main animation.  The
+ * fore-, back-gorund, and titlepage scripts can also just be ready-
+ * to-use PostScripts plot of correct canvas size.
  */
 
 #include "gmt_dev.h"
@@ -415,7 +418,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<frontscript>[+f[b|e]<fade>[s]] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+f[b|e]<fade>[s]] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[i|o]<fade>[s][+p]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -456,10 +459,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <stride> must be taken from the list 2, 5, 10, 20, 50, 100, 200, or 500.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set movie display frame rate in frames/second [24].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Give name for titlepage script that builds a title page [no title page].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give PostScript file of correct canvas size that will be the titlepage.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<duration> to set how long to display title in frames (append s for seconds) [4s].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to fade (i)n and/or (o)ut the title via black [no fading].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Give name of the <titlepage> script that builds a title page displayed before the animation [no title page].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give PostScript file of correct canvas size that will be the title page.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<duration> to set how long to display the title in frames (append s for seconds) [4s].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to fade (i)n and/or (o)ut the title via black [1s].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the final video format(s) from among these choices. Repeatable:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     webm:   Convert PNG frames into an WebM movie.\n");
@@ -471,10 +474,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-K Fade (i)n and/or (o)ut the main movie segment via black [no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append duration of fading in frames or seconds (append s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-K Fade (i)n and/or (o)ut the main animation via black [no fading].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append duration of fading in frames (append s for seconds) [1s].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fading will darken frames at start and end of movie.  Append +p to preserve all frames\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     and instead use the first and last frames repeatedly during the fading.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     and instead use the first and last frames repeatedly during the fading sequence.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
@@ -680,10 +683,11 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 	return (n_errors);
 }
 
-GMT_LOCAL unsigned int get_n_frames (struct GMT_CTRL *GMT, char *txt, double framerate) {
-	double fval = atof (txt);	/* Get frames or times in seconds */
+GMT_LOCAL unsigned int get_n_frames (struct GMT_CTRL *GMT, char *txt, double framerate, char *def) {
+	char *p = (!txt || !txt[0]) ? def : txt;	/* Get frames or times in seconds */
+	double fval = atof (p);	/* Get frames or times in seconds */
 	gmt_M_unused (GMT);
-	if (strchr (txt, 's')) fval *= framerate;	/* Convert from seconds to nearest number of frames */
+	if (strchr (p, 's')) fval *= framerate;	/* Convert from seconds to nearest number of frames */
 	return (urint (fval));
 }
 
@@ -826,11 +830,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					while (gmt_getmodopt (GMT, 'E', c, "df", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'd':	/* Duration of entire title/fade sequence */
-								Ctrl->E.duration = get_n_frames (GMT, &p[1], Ctrl->D.framerate);
+								Ctrl->E.duration = get_n_frames (GMT, &p[1], Ctrl->D.framerate, "4s");
 								break;
 							case 'f':	/* In/out fades */
-								k = (strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out */
-								frames = get_n_frames (GMT, &p[k], Ctrl->D.framerate);
+								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out */
+								frames = get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");
 								if (k == 1) /* Set both fades */
 									Ctrl->E.fade[GMT_IN] = Ctrl->E.fade[GMT_OUT] = frames;
 								else if (p[1] == 'i') /* Set input fade */
@@ -844,6 +848,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					}
 					c[0] = '\0';	/* Chop off modifiers */
 				}
+				if (Ctrl->E.duration == 0) Ctrl->E.duration = get_n_frames (GMT, NULL, Ctrl->D.framerate, "4s");
 				if (opt->arg[0])
 					Ctrl->E.file = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -918,14 +923,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 
-			case 'K':	/* Fade from/to black settings  */
+			case 'K':	/* Fade from/to a black background  */
 				Ctrl->K.active = true;
-				if ((c = strstr (opt->arg, "+p"))) {
+				if (opt->arg[0] && (c = strstr (opt->arg, "+p"))) {
 					Ctrl->K.preserve = true;
 					c[0] = '\0';	/* Chop off modifier */
 				}
-				k = (strchr ("io", opt->arg[0])) ? 1 : 0;	/* Did we get a common fade */
-				frames = get_n_frames (GMT, &opt->arg[k], Ctrl->D.framerate);
+				k = (opt->arg[0] && strchr ("io", opt->arg[0])) ? 1 : 0;	/* Did we get a common fade */
+				frames = get_n_frames (GMT, &opt->arg[k], Ctrl->D.framerate, "1s");
 				if (k == 0) /* Set both fades */
 					Ctrl->K.fade[GMT_IN] = Ctrl->K.fade[GMT_OUT] = frames;
 				else if (opt->arg[1] == 'i') /* Set movie fade in */

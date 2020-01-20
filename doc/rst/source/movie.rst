@@ -131,7 +131,7 @@ Optional Arguments
     Give *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a PostScript plot layer of dimensions exacly matching the cancas size.
     Control how long it should be displayed with **+d** in frames (append *s** for duration in seconds instead) [4s].
-    Optionally, supply fade **i**\ n and **o**\ ut durations (in frames or seconds) as well [no fading].
+    Optionally, supply fade **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
     Fading affects the beginning and end of the title page *duration*.
 
 .. _-F:
@@ -174,7 +174,7 @@ Optional Arguments
 
 **-K**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]]
     Add fading in and out for the main animation sequence [no fading]. Append
-    the length of the fading in number of frames (or seconds by appending **s**).
+    the length of the fading in number of frames (or seconds by appending **s**) [1s].
     For different lengths of fading in and out you can repeat the **-K** option
     by appending the **i** or **o** directives.  Normally, fading will affect the
     first and last animation frames.  Append **+p** to preserve these by instead
