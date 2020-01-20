@@ -1217,7 +1217,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	unsigned int n_values = 0, n_frames = 0, n_data_frames, first_fade_out_frame = 0, frame, i_frame, col, p_width, p_height, k, T;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, data_frame, n_cores_unused, n_fade_frames;
-	unsigned int dd, hh, mm, ss, flavor[2] = {0, 0};
+	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false};
 	bool n_written = false, has_text = false, is_classic = false;
@@ -1697,7 +1697,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		 * used to place labels or progress indicators to count them.  We need to add an offset that applies
 		 * to the naming of parameter files for the actual movie script but not the frame values used.
 		 */
-		unsigned int start;
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Parameter files for title sequence: %d\n", Ctrl->E.duration);
 		for (i_frame = 0; i_frame < Ctrl->E.duration; i_frame++) {
@@ -1875,7 +1874,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
 				unsigned int type, use_frame, p;
 				double t;
-				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_title : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
+				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_tag : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
@@ -1982,6 +1981,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Make the master frame plot */
 		char master_file[GMT_LEN32] = {""};
+		bool is_title = (Ctrl->M.frame < Ctrl->E.duration);
 		/* Because format may differ and name will differ we just make a special script for this job */
 		sprintf (master_file, "movie_master.%s", extension[Ctrl->In.mode]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create master frame script %s\n", master_file);
@@ -1990,7 +1990,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		if (Ctrl->K.active)
+		if (is_title) {	/* Master frame is from the title sequence */
+			if (Ctrl->M.frame < Ctrl->E.fade[GMT_IN])	/* During title fade-in */
+				fade_level = 50 * (1.0 + cos (M_PI * Ctrl->M.frame / Ctrl->E.fade[GMT_IN]));
+			else if (Ctrl->M.frame > (start = (Ctrl->E.duration -Ctrl->E.fade[GMT_OUT])))	/* During title fade-out */
+				fade_level = 50 * (1.0 - cos (M_PI * (Ctrl->M.frame - start) / Ctrl->E.fade[GMT_OUT]));
+			else /* No fading during main part of title */
+				fade_level = 0.0;
+			set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+		}
+		else if (Ctrl->K.active)
 			sprintf (extra, "A+n+r+f%s", place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 		else
 			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
@@ -1998,7 +2007,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
-		if (Ctrl->E.active) {	/* Master frame is from the title sequence */
+		if (is_title) {	/* Master frame is from the title sequence */
 			if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 				strcat (extra, ",Mb../../");
 				strcat (extra, Ctrl->E.file);
@@ -2034,7 +2043,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
 		fprintf (fp, "mkdir master\n");	/* Make a temp directory for this frame */
 		fprintf (fp, "cd master\n");		/* cd to the temp directory */
-		if (Ctrl->E.active) {	/* Process title page script or PS */
+		if (is_title) {	/* Process title page script or PS */
 			if (Ctrl->E.PS) {	/* There is no title script, just a PS, so we make a dummy script that plots nothing */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
