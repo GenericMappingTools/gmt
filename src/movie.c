@@ -1875,6 +1875,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
 				unsigned int type, use_frame, p;
 				double t;
+				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_title : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
 				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
@@ -1887,7 +1888,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
 					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
-						I->fill, I->fill2, (I->font.size > 0.0) ? gmt_putfont (GMT, &I->font) : "-");
+						I->fill, I->fill2, (I->font.size > 0.0) ? gmt_putfont (GMT, &I->font) : gmt_putfont (GMT, F));
 					string[0] = '\0';
 					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
 						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
