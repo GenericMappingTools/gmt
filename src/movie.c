@@ -1871,7 +1871,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		spacer = ' ';	/* Use a space to separate date and clock for labels; this will change to T for progress -R settings */
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
-				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
+				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""}, font[GMT_LEN64] = {""};
 				unsigned int type, use_frame, p;
 				double t;
 				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_tag : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
@@ -1884,10 +1884,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					t = (frame + 1.0) / n_frames;
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
+					/* Set selected font: Prepend + if user specified a font, else just give current default font */
+					if (I->font.size > 0.0)	/* Users selected font */
+						sprintf (font, "+%s", gmt_putfont (GMT, &I->font));
+					else	/* Default font */
+						sprintf (font, "%s", gmt_putfont (GMT, F));
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
 					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
-						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2,
-						I->fill, I->fill2, (I->font.size > 0.0) ? gmt_putfont (GMT, &I->font) : gmt_putfont (GMT, F));
+						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2, I->fill, I->fill2, font);
 					string[0] = '\0';
 					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
 						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
