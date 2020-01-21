@@ -232,8 +232,11 @@ and ocean across the shoreline, for instance).  CPTs with a hinge will
 have their two parts stretched to the required range separately, i.e.,
 the bottom part up to the hinge will be stretched independently of the
 part from the hinge to the top, according to the prescribed new range.
-If the selected range does not include the hinge then no such partitioning
-takes place.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
 
 Discrete versus Continuous CPT
 ------------------------------

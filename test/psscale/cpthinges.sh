@@ -7,10 +7,10 @@ gmt begin cpthinges ps
 	# No hinge selected, continuous CPT
 	gmt makecpt -Cpolar -T100/300
 	gmt colorbar -Baf -Dx0/0+w16c+h -Y2c
-	# hinge selected at z=0 which is outside - so ignored - discrete CPT
+	# hinge selected at z=0 which is outside range so only use top half - discrete CPT
 	gmt makecpt -Cpolar+h -T100/300/20
 	gmt colorbar -Baf -Dx0/0+w16c+h -Y2c
-	# hinge selected at z=0 which is outside - so ignored - continuous CPT
+	# hinge selected at z=0 which is outside range so only use top half - continuous CPT
 	gmt makecpt -Cpolar+h -T100/300
 	gmt colorbar -Baf -Dx0/0+w16c+h -Y2c
 	# hinge selected at z=200 becoming a hard hinge - discrete CPT

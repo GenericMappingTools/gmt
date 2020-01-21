@@ -1139,16 +1139,19 @@ are identified as such via the special comment
 
 | ``# HARD_HINGE``
 
-and all hard hinges occur at data value *z = 0*.
+and all hard hinges occur at data value *z = 0* (but you can change this value by
+adding **+h**\ *value* to the name of the CPT).
 Other CPTs may instead have a *soft* hinge which indicates a natural hinge or transition
 point in the CPT itself, unrelated to any natural data set *per se*. These CPTs
 are flagged by the special comment
 
 | ``# SOFT_HINGE``
 
-CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user
-appends **+h**\ [*hinge*] to the CPT name.  This modifier will convert the soft
+CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user activates then by
+appending **+h**\ [*hinge*] to the CPT name.  This modifier will convert the soft
 hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
+Note that if your specified data range *excludes* an activated soft or hard hinge then we
+only perform color sampling from the *half* of the CPT that pertains to the data range.
 All dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*

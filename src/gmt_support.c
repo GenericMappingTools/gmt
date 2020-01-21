@@ -1201,7 +1201,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction, unsigned int *hinge_mode, double *z_hinge) {
 	/* CPT file arg is <file>[+h[<hinge>]][+u|U<unit>]
 	 * The +h modifier is used to turn a soft hinge in a CPT to a hard hinge at the user-selected z-value [0]
-	 * It has no effect on hard hinges. */
+	 * or to adjust the location of the hinge for an hard hinge CPT. */
 	enum gmt_enum_units u_number;
 	unsigned int mode = 0;
 	char *c = NULL;
@@ -7339,13 +7339,11 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->mode |= GMT_CPT_HARD_HINGE;
 				X->has_hinge = 1;
 			}
-			else if (strstr (line, "HARD_HINGE")) {	/* Hard hinge the user cannot override */
+			else if (strstr (line, "HARD_HINGE")) {	/* Hard hinge is always active */
 				X->mode |= GMT_CPT_HARD_HINGE;
 				X->has_hinge = 1;
-				if (hinge_mode)
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot override hard hinges in CPT %s with +h. Modifier is ignored.\n", cpt_file);
 			}
-			else if (strstr (line, "SOFT_HINGE"))	/* Soft hinge the user can turn to a hard hinge via +h[<value>] */
+			else if (strstr (line, "SOFT_HINGE"))	/* Soft hinge the user can activate to a hard hinge via +h[<value>] */
 				X->mode |= GMT_CPT_SOFT_HINGE;
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
@@ -7446,9 +7444,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			continue;
 		}
 
-		if (hinge_mode && X->mode & GMT_CPT_SOFT_HINGE) { /* Activate a soft hinge for the CPT */
+		if (hinge_mode && ((X->mode & GMT_CPT_SOFT_HINGE) || (X->mode & GMT_CPT_HARD_HINGE))) { /* Activate a soft hinge for the CPT and/or adjust the hinge */
 			X->has_hinge = 1;
-			X->hinge = z_hinge;	/* This is now a user-selected hinge value */
+			X->hinge = z_hinge;	/* This is now the user-selected hinge value */
 		}
 
 		/* Here we have regular z-slices.  Allowable formats are
@@ -7941,22 +7939,17 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 	if (*z_low < P->hinge && *z_high > P->hinge) return ks;	/* Output range includes hinge, all is well */
 
 	/* Here we have a CPT with a hinge that is not included in the desired range.  Per policy:
-	 * If a hard hinge then we extend the range to reach the hinge and throw away the unreferenced CPT half.
-	 * If a soft hinge then we turn off the hinge.
+	 * We throw away the unreferenced CPT half and return the other relevant half.
 	 */
-	if (P->mode & GMT_CPT_HARD_HINGE) {	/* Output range excludes hard hinge, must move z_low or z_high to include the hinge */
-		if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
-			gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
-			P->n_colors -= ks;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
-		}
-		else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
-			P->n_colors = ks;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
-		}
+	if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
+		gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
+		P->n_colors -= ks;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
 	}
-	else	/* Soft hinge outside range means we ignore the hinge */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT soft hinge requested via +h[<hinge>] is outside actual data range - hinge is ignored.\n");
+	else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
+		P->n_colors = ks;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
+	}
 	/* Behave as a single CPT range with no hinge from now on */
 	P->has_hinge = 0;
 	return GMT_NOTSET;

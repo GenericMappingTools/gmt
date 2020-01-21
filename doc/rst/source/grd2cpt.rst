@@ -219,6 +219,22 @@ Optional Arguments
 
 .. include:: explain_transparency.rst_
 
+Color Hinges
+------------
+
+Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a *hinge*.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
+
 Discrete versus Continuous CPT
 ------------------------------
 
