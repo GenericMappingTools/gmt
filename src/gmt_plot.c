@@ -7316,10 +7316,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				return NULL;	/* Should never happen */
 			}
 			/* Because this PostScript procedure runs outside the main gsave/grestore block the origin is at (0,0) */
-			if (font[0] == '-')	/* Set default TAG font */
-				gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_tag), 1, struct GMT_FONT);	/* Tag font is the default labeling font for labels */
-			else	/* Gave a specific font */
-				gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+			if (font[0] == '+')	/* User provided a specific font/size which we must honor */
+				gmt_getfont (GMT, &font[1], &Tfont);	/* We already parsed the font string in movie.c for correctness */
+			else	/* Pick up the default font written in movie and scale it as needed */
+				gmt_getfont (GMT, font, &Tfont);
 			gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness so no need to check here */
 			form = gmt_setfont (GMT, &Tfont);	/* Obtain and set the tag font */
 			PSL_setfont (PSL, Tfont.id);
@@ -7380,13 +7380,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
 			if (isupper (kind) && kind != 'A') {	/* Requested text labels so initialize selected font */
-				if (font[0] == '-') {	/* Set default annotation secondary font */
-					gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_annot[GMT_SECONDARY]), 1, struct GMT_FONT);	/* Secondary annotation font is the default labeling font for progress indicators */
-					fsize = 0.0;	/* So we can scale at will for b-e */
+				if (font[0] == '+') {	/* User provided a specific font/size which we must honor */
+					gmt_getfont (GMT, &font[1], &Tfont);	/* We already parsed the font string in movie.c for correctness */
+					fsize = Tfont.size;	/* Must honor the given size */
 				}
-				else {	/* Gave a specific font */
-					gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
-					fsize = Tfont.size;	/* Must honor the given setting */
+				else {	/* Pick up the default font written in movie and scale it as needed */
+					gmt_getfont (GMT, font, &Tfont);
+					fsize = 0.0;	/* So we can scale at will for b-e */
 				}
 				form = gmt_setfont (GMT, &Tfont);	/* Set the font to be used */
 				PSL_setfont (PSL, Tfont.id);
