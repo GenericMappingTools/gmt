@@ -5668,6 +5668,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
 		return (GMT_NOTSET);
 	}
+	fprintf (fp, "# COLOR_LIST\n");	/* Flag that we are building a CPT from a list of discrete colors */
 
 	if ((*mode) & GMT_CPT_CONTINUOUS) {	/* Make a continuous cpt from the colors */
 		char last_color[GMT_LEN256] = {""};
@@ -7145,7 +7146,8 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				size_t len = strlen (file), elen;
 				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
 				elen = strlen (ext);
-				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';	/* Truncate modifier */
+				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';    /* Truncate modifier */
+				else if ((q = strstr (file, "+h"))) q[0] = '\0';    /* Truncate +h modifier */
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */

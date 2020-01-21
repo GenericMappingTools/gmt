@@ -90,15 +90,7 @@ Optional Arguments
 
 .. _-C:
 
-
-**-C**\ *cpt*
-    Selects the master color table to use in the interpolation. Choose
-    among the built-in tables (type **grd2cpt** to see the list) or give
-    the name of an existing CPT [Default gives the turbo CPT].
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous CPT from those colors automatically. 
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: create_cpt.rst_
 
 .. _-D:
 
@@ -213,15 +205,13 @@ Optional Arguments
 **-W**\ [**w**]
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
-    combination with a categorical color table. Cannot be used in
-    combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    combination with a categorical color table. Alternatively, use **-Ww**
+    to produce a wrapped (cyclic) color table that endlessly repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Will create a continuous color palette. [Default is discontinuous,
-    i.e., constant color intervals]
+    Force a continuous CPT [Default is discontinuous].
 
 .. include:: explain_help.rst_
 
@@ -229,14 +219,28 @@ Optional Arguments
 
 .. include:: explain_transparency.rst_
 
-Color Aliasing
---------------
+Color Hinges
+------------
 
-For best result when **-E** is used we recommend you do no append
-a specific *nlevels*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the grid limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a *hinge*.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
+
+Discrete versus Continuous CPT
+------------------------------
+
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------
@@ -265,7 +269,7 @@ file relief, run
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 See Also
 --------

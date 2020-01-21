@@ -42,7 +42,7 @@ if [ $mode = r ]; then	# Set a different cpt for radius in km
 	t=500
 else	# Just normalize the output to 0-1 and make a cpt to fit
 	gmt grdmath t.nc DUP UPPER DIV 0 NAN = t.nc
-	gmt makecpt -Crainbow -T0/1 -N -Z > t.cpt
+	gmt makecpt -Crainbow -T0/1 -N > t.cpt
 	t=0.1
 fi
 echo "N white" >> t.cpt	# White is NaN

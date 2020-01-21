@@ -1,10 +1,10 @@
 #
 # Color table for Earth's relief combining the gebco
-# and dem1 CPTs with a hinge at 0.
+# and dem1 CPTs with a hard hinge at 0.
 # Designed by P. Wessel, SOEST
 #------------------------------------------------
 # COLOR_MODEL = RGB
-# HINGE = 0
+# HARD_HINGE
 # RANGE = -8000/8000
 #------------------------------------------------
 -1	black		-0.875	20/30/53

@@ -2,7 +2,7 @@
 # IPGP Color table for magnetic anomaly maps
 #------------------------------------------------
 # COLOR_MODEL = RGB
-# HINGE = 0
+# HARD_HINGE
 # RANGE = -2000/2000
 #------------------------------------------------
 -1		0/0/204		-0.3	0/0/204

@@ -101,6 +101,7 @@ struct GRD2CPT_CTRL {
 	} Q;
 	struct T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
 		bool active;
+		bool interpolate;
 		unsigned int mode;	/* 0 or 1 (-Tn) */
 		unsigned int n_levels;
 		double low, high, inc;
@@ -184,8 +185,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <start> maps to data min and <stop> maps to data max (but see -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses equidistant steps for a Gaussian CDF].\n");
 	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Force a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
 	GMT_Option (API, "h,.");
 
 	return (GMT_MODULE_USAGE);
@@ -433,7 +434,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	bool write = false;
+	bool write = false, interpolate = true;
 
 	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
@@ -485,6 +486,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if ((API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &interpolate, &(Ctrl->Z.active))))
+			Return (API->error)
+
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
 
