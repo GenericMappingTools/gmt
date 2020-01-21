@@ -10334,6 +10334,27 @@ GMT_LOCAL int api_B_custom_annotations (struct GMT_OPTION *opt) {
 	return 1;
 }
 
+#define N_OPS_TAKING_DATASET 6
+
+GMT_LOCAL void check_if_dataset_operator (struct GMT_OPTION *opt, int *family, int *geometry) {
+	/* Check if the current explicit object reference is needed with one of the 6 operators that expect a dataset
+	 * instead of a grid.  If found we change the family setting and set correct geometry */
+	static char *op_taking_dataset[N_OPS_TAKING_DATASET] = {"INSIDE", "LDIST", "LDIST2", "PDIST", "PDIST2", "POINT"};
+	unsigned int k = 0;
+	bool found = false;
+	if (opt == NULL) return;	/* Nothing to look at */
+	while (!found && k < N_OPS_TAKING_DATASET) {
+		if (!strcmp (opt->arg, op_taking_dataset[k]))
+			found = true;	/* This also leaves k unchanged */
+		else
+			k++;	/* Go to next candidate operator */
+	}
+	if (found) {	/* Got me one of those operators that expects a dataset instead of grid */
+		*family = GMT_IS_DATASET;
+		*geometry = (op_taking_dataset[k][0] == 'P') ? GMT_IS_POINT : ((op_taking_dataset[k][0] == 'L') ? GMT_IS_LINE : GMT_IS_POLYGON);
+	}
+}
+
 #define api_is_required_IO(key) (key == API_PRIMARY_INPUT || key == API_PRIMARY_OUTPUT)			/* Returns true if this is a primary input or output item */
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
@@ -10424,7 +10445,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false;
+	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
@@ -10477,7 +10498,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
 	}
 	/* 1c. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
-	else if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
+	else if (!strncmp (module, "gmtmath", 7U) || (is_grdmath = !strncmp (module, "grdmath", 7U))) {
 		struct GMT_OPTION *delete = NULL;
 		for (opt = *head; opt && opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
@@ -10671,6 +10692,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 			if (k >= 0 && key[k][K_DIR] != '-')
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we don't add them later */
+			if (is_grdmath) check_if_dataset_operator (opt->next, &family, &geometry);	/* In case we use LDIST, INSIDE, etc. */
 			/* Add this item to our list */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
