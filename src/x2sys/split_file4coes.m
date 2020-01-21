@@ -21,7 +21,7 @@ function split_file4coes(fname, n_int)
 %			of 'cruzados_%d.txt', e.g. cruzados_5.txt
 
 %  -------------------------------------------------------------------------------------
-% 
+%
 %       Copyright (c) 1999-2020 by J. Luis
 %       See LICENSE.TXT file for copying and redistribution conditions.
 %
@@ -33,7 +33,7 @@ function split_file4coes(fname, n_int)
 %       but WITHOUT ANY WARRANTY; without even the implied warranty of
 %       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %       GNU Lesser General Public License for more details.
-% 
+%
 %       Contact info: www.generic-mapping-tools.org
 %  -------------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ function split_file4coes(fname, n_int)
 	fid = fopen(fname);
 	todos = fread(fid,'*char');		fclose(fid);
 	[fname1 fname2 n_cross times] = strread(todos,'%s %s %d %f');
-	
+
 	n_cross = logical(n_cross);
 	fname1 = fname1(n_cross);			% Get rid of cruise pairs that never actually crossed each other
 	fname2 = fname2(n_cross);

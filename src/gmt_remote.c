@@ -221,7 +221,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
 		return 1;
-	}  
+	} 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
 		return 1;
@@ -280,7 +280,7 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	FILE *fp = NULL;
 	struct GMT_DATA_HASH *L = NULL;
 	char line[GMT_LEN256] = {""};
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
@@ -304,7 +304,7 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s will be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
-	return (L);	
+	return (L);
 };
 
 GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
@@ -325,9 +325,9 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	struct stat buf;
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char hashpath[PATH_MAX] = {""}, old_hashpath[PATH_MAX] = {""}, new_hashpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
-	
+
 	if (GMT->current.io.hash_refreshed) return 0;	/* Already been here */
-	
+
 	snprintf (hashpath, PATH_MAX, "%s/server/gmt_hash_server.txt", GMT->session.USERDIR);
 
 	if (access (hashpath, R_OK)) {    /* Not found locally so need to download the first time */
@@ -351,7 +351,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", hashpath);
-		
+	
 	GMT->current.io.hash_refreshed = true;	/* Done our job */
 
 	/* Here we have the existing hash file and its path is in hashpath */
@@ -399,7 +399,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			gmt_remove_file (GMT, hashpath);		/* Remove corrupted hash file */
 			return 1;
 		}
-			
+		
 		O = hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
@@ -472,10 +472,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	struct FtpFile urlfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
-	
+
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return 0;   /* Not allowed to use remote copying */
 	if (GMT->current.io.internet_error) return 0;   			/* Not able to use remote copying in this session */
-	
+
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
 
 	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
@@ -522,7 +522,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
 	/* Any old files have now been replaced.  Now we can check if the file exists already */
-	
+
 	if (kind != GMT_URL_QUERY) {	/* Regular file, see if we have it already */
 		bool found;
 		if (kind == GMT_DATA_FILE) {	/* Special remote data est @earth_relief_xxm|s request */
@@ -535,14 +535,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 				gmt_M_str_free (tmpfile);
 			}
 		}
-		else 
+		else
 			found = (!gmt_access (GMT, &file[pos], F_OK));
 		if (found) {	/* Got it already */
 			gmt_M_free (GMT, file);
 			return (pos);
 		}
 	}
-	
+
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
@@ -563,7 +563,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 	}
-	
+
 	/* Create the remote URL */
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		snprintf (url, PATH_MAX, "%s", file);
@@ -574,7 +574,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
 			strncpy (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 	}
-	
+
 	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
 		char *S = strdup (gmt_memory_use (fsize, 3));
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
@@ -604,7 +604,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
 		gmt_M_free (GMT, file);
 		return 0;
-	}  
+	} 
 
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
 		if (is_srtm) {	/* Doing SRTM tiles */
@@ -657,7 +657,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return 0;
 	}
 	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (local_path);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
@@ -701,7 +701,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		strcpy (local_path, srtm_local);
 		gmt_M_str_free (srtm_local);
 	}
-	
+
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
@@ -761,7 +761,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	char srtmlist[PATH_MAX] = {""}, YS, XS, *file = NULL;
 	FILE *fp = NULL;
 	struct GMT_GRID *SRTM = NULL;
-	
+
 	/* Get nearest whole integer wesn boundary */
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
 	is = (int)floor (wesn[YLO]);	in = (int)ceil (wesn[YHI]);
@@ -838,7 +838,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			struct GMT_GRID *G = NULL;
 			struct GMT_DATASET *Din = NULL, *Dout = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
-			
+		
 			/* Create a grid header that we can use to create the perimeter coordinates */
 			if (res == 1) inc[GMT_X] = inc[GMT_Y] = GMT_SEC2DEG; else inc[GMT_X] = inc[GMT_Y] = 3.0 * GMT_SEC2DEG;
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, inc, \
@@ -929,7 +929,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
 	char grid[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
-	
+
 	tag[1] = res;
 	give_data_attribution (API->GMT, tag);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);

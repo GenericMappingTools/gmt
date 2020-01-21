@@ -610,7 +610,7 @@ void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	vdim[6] = 0.75;
 	vdim[7] = (double)(PSL_VEC_END|PSL_VEC_FILL);
 	vdim[9] = (double)PSL_VEC_ARROW;
-	gmt_setfill (GMT, &black, false);
+	gmt_setfill (GMT, &black, 0);
 	gmt_setpen (GMT, &pen);
 	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, black.rgb);
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
@@ -632,8 +632,8 @@ EXTERN_MSC void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double
 GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
-	int this_just, p_val;
-	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
+	int this_just, p_val, center = 0;
+	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
@@ -751,7 +751,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	/* So if CPT has pattern AND continuous color sections then use_image is false but we still need to do an image later */
 	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
-	
+
 	if (Ctrl->D.emode & (reverse+1)) elength[XLO] =  Ctrl->D.elength;
 	if (Ctrl->D.emode & (2-reverse)) elength[XHI] =  Ctrl->D.elength;
 	if (!strncmp (PSL->init.encoding, "Standard", 8U))
@@ -762,7 +762,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		endash = '-';	/* Use hyphen */
 
 	if ((gap >= 0.0 || Ctrl->L.interval) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
-		center = (Ctrl->L.interval || gap >= 0.0);
+		center = (Ctrl->L.interval || gap >= 0.0) ? 1 : 0;
 		if (gap > 0.0) skip_lines = true;
 		gap *= 0.5;
 		if (Ctrl->L.interval) {
@@ -874,7 +874,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Adjust if there is +n NaNmarker */
 			if (Ctrl->D.emode & 4)	/* Add NaN rectangle on left side */
 				dim[XLO] += 2.0 * Ctrl->D.elength + gap + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + 3.25 * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
-			
+		
 			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
@@ -1040,11 +1040,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1056,11 +1056,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->bfn[GMT_NAN].fill) != NULL)
-				gmt_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, 1);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, true);
+				PSL_setfill (PSL, rgb, 1);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
@@ -1072,11 +1072,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1291,11 +1291,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1307,11 +1307,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->bfn[GMT_NAN].fill) != NULL)
-				gmt_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, 1);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, true);
+				PSL_setfill (PSL, rgb, 1);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
@@ -1323,11 +1323,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1557,7 +1557,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
-	
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)

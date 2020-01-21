@@ -21,7 +21,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **t**\ \|\ **d**\ *gap* ]
-[ |SYN_OPT-j| ] 
+[ |SYN_OPT-j| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|

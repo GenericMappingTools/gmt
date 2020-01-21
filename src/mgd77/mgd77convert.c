@@ -19,7 +19,7 @@
  * Version:	1.2 for GMT 5
  *
  */
- 
+
 #include "gmt_dev.h"
 #include "mgd77.h"
 
@@ -60,28 +60,28 @@ struct MGD77CONVERT_CTRL {	/* All control options for this program (except commo
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77CONVERT_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77CONVERT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->F.format = C->T.format = MGD77_NOT_SET;
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -Fa|c|m|t -Ta|c|m|t[+f] [-C] [-D] [-L[e][w][+l]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
-        
+       
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-             
+            
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Files are read from data repositories and written to current directory]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				switch (opt->arg[0]) {									
+				switch (opt->arg[0]) {								
 					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->F.format = MGD77_FORMAT_M77;
 						break;
@@ -161,7 +161,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 					Ctrl->T.mode = true;	/* Force overwriting existing files */
 					c[0] = '\0';	/* Chop off modifier */
 				}
-				switch (opt->arg[code_pos]) {									
+				switch (opt->arg[code_pos]) {								
 					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
 						break;
@@ -217,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 
 int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	int i, argno, n_cruises = 0, n_paths, error = 0;
-	
+
 	char file[PATH_MAX] = {""}, **list = NULL, *fcode = "cmat";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77+ netCDF", "MGD77T ASCII", "MGD77 ASCII", "ASCII table"};
 
@@ -242,7 +242,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
 	if (Ctrl->C.active) {	/* Just build *.mgd77 from *.h77 and *.a77 */
@@ -250,8 +250,8 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		int pos, c, n_files = 0;
 		struct GMT_OPTION *opt = NULL;
 		FILE *fpa77 = NULL, *fph77 = NULL, *fpout = NULL;
-		
-		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
+	
+		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
 			if ((pos = (int)(strlen (opt->arg) - 4)) < 0) continue;	/* Odd item, skip */
@@ -295,14 +295,14 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 	/* Initialize MGD77 output order and other parameters*/
-	
+
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
-	
+
 	M.verbose_level = Ctrl->L.mode;
 	M.verbose_dest  = Ctrl->L.dest;
 
 	/* Check that the options selected are mutually consistent */
-	
+
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
@@ -310,17 +310,17 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	
+
 	if (Ctrl->F.format == Ctrl->T.format) GMT_Report (API, GMT_MSG_VERBOSE, "The two formats chosen are the same\n");
-	
+
 	if (Ctrl->T.format == MGD77_FORMAT_TBL && !(strcmp (GMT->current.setting.format_float_out, "%lg") & strcmp (GMT->current.setting.format_float_out, "%g"))) {
 		strcpy (GMT->current.setting.format_float_out, "%.10g");	/* To avoid losing precision upon rereading this file */
 	}
-	
+
 	if (Ctrl->T.format == MGD77_FORMAT_CDF && Ctrl->D.active) MGD77_select_high_resolution (GMT);
-	
+
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
-	
+
 		MGD77_Reset (GMT, &M);		/* Reset to start fresh for next file */
 
 		M.format = Ctrl->F.format;	/* Set input file's format and read everything into memory */
@@ -355,25 +355,25 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
-		
+	
 		/* OK, now we can read the data set */
-		
+	
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);
-		
+	
 		MGD77_Verify_Prep (GMT, &M, D);	/* Get key meta-data derived form data records */
 
 		MGD77_Verify_Header (GMT, &M, &(D->H), NULL);	/* Verify the header */
-	
+
 		if (Ctrl->F.format == MGD77_FORMAT_CDF && Ctrl->T.format != MGD77_FORMAT_CDF && (D->H.info[MGD77_CDF_SET].n_col || D->flags[0] || D->flags[1])) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "\nInput file contains enhanced material that the output file format cannot represent\n");
 		}
 
 		/* OK, ready to write out converted file */
-		
+	
 		M.format = Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
 		M.original = true;					/* Always write to original attributes */
 		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? true : false;	/* Only allow the specified output format */
@@ -393,9 +393,9 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 		n_cruises++;
 	}
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Converted %d MGD77 files\n", n_cruises);
-	
+
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);
 

@@ -479,7 +479,7 @@ void velo_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, 
 		transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
 
 	if (polygon) {
-		PSL_setfill (PSL, rgb, true);
+		PSL_setfill (PSL, rgb, 1);
 		PSL_plotpolygon (PSL, axe, aye, npoints);
 	}
 	else
@@ -492,7 +492,7 @@ void velo_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, 
 	for (i = 0; i < npoints - 1; i++) transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
 
 	if (epolygon) {
-		PSL_setfill (PSL, ergb, true);
+		PSL_setfill (PSL, ergb, 1);
 		PSL_plotpolygon (PSL, axe, aye, npoints - 1);
 	}
 	else

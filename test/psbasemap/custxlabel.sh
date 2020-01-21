@@ -12,7 +12,7 @@ cat << EOF > m.txt
 1.61803		afg	@~j@~
 2.71828		afg	e
 3.1415926 	afg	@~p@~
-5	 	f	
+5	 	f
 6.283186	afg	@~2p@~
 EOF
 gmt psbasemap -R-1/7/-1/7 -JX6i/2.75i -P -Bxcm.txt -Byafg -BWSne -K -Xc > $ps

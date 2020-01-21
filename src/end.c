@@ -43,7 +43,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -76,7 +76,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *sho
 				break;
 		}
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -116,9 +116,9 @@ int GMT_end (void *V_API, int mode, void *args) {
 
 	if (!((setting = getenv ("GMT_END_SHOW")) && !strcmp (setting, "off")))
 		display = (show) ? task : NULL;
-	
+
 	if (gmt_manage_workflow (API, GMT_END_WORKFLOW, display))
 		error = GMT_RUNTIME_ERROR;
-	
+
 	Return (error);
 }

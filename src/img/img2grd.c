@@ -65,7 +65,7 @@
 #define THIS_MODULE_OPTIONS "-VRn" GMT_OPT("m")
 
 /* The following values are used to initialize the default values
-	controlling the range covered by the img file and the size 
+	controlling the range covered by the img file and the size
 	of a pixel in minutes of longitude.  The values shown here
 	are for the 2-minute files currently in use (world_grav 7.2
 	and topo_polish 6.2).  */
@@ -78,8 +78,8 @@
 
 #define GMT_IMG_MPIXEL 2.0
 
-/* The following structure contains info corresponding to 
- * the above values, which may be altered by the user at 
+/* The following structure contains info corresponding to
+ * the above values, which may be altered by the user at
  * run time via argv[][] switches:  */
 
 struct GMT_IMG_RANGE {
@@ -89,14 +89,14 @@ struct GMT_IMG_RANGE {
 	double	mpixel;
 };
 
-/* The following structure contains info used to set up the 
+/* The following structure contains info used to set up the
  * coordinate transformations.  These are to be determined
  * based on the values in GMT_IMG_RANGE after argv[][] has
  * been parsed.  Two different structures will be used, one
  * representing the input file, and the other the output,
  * to simplify the computation of coordinates for N by N
  * averages in the output:  */
- 
+
 struct GMT_IMG_COORD {
 	double	radius;		/* # of pixels in 1 radian of longitude */
 	int	nx360;		/* # of pixels in 360 degrees of longtd */
@@ -338,7 +338,7 @@ GMT_LOCAL double  img_gud_fwd (double y) {
 	 * developed from a sphere of unit radius, returns the latitude
 	 * in radians.  Should be called with -oo < y < +oo.  Returned
 	 * value will be in -M_PI_2 < value < +M_PI_2.  */
-	 
+	
 	return(2.0 * atan(exp(y)) - M_PI_2);
 }
 
@@ -348,7 +348,7 @@ GMT_LOCAL double  img_gud_inv (double phi) {
 	 * latitude on a Mercator map tangent to a sphere of unit
 	 * radius.  Should be called with -M_PI_2 < phi < +M_PI_2.
 	 * Returned value will be in -oo < value < +oo.   */
-	
+
 	return(log(tan(M_PI_4 + 0.5 * phi)));
 }
 
@@ -356,15 +356,15 @@ GMT_LOCAL double img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
 	/* Given Latitude in degrees and pointer to coordinate struct,
 	 * return (double) coordinate from top edge of input img file
 	 * measured downward in coordinate pixels.  */
-	 
+	
 	 return(coord->nytop - coord->radius * img_gud_inv(lat*D2R));
 }
 
 GMT_LOCAL double  img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord) {
-	/* Given Y coordinate, measured downward from top edge of 
+	/* Given Y coordinate, measured downward from top edge of
 	 * input img file in pixels, and pointer to coordinate struct,
 	 * return Latitude in degrees.  */
-	
+
 	return( R2D * img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
@@ -376,13 +376,13 @@ GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, st
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR from img_setup_coord: Cannot handle maxlon < 360.\n");
 		return (-1);
 	}
-	
+
 	c->nxcol  = irint (r->maxlon * 60.0 / r->mpixel);
 	c->nx360  = irint (360.0 * 60.0 / r->mpixel);
 	c->radius = c->nx360 / (2.0 * M_PI);
 	c->nytop  = irint (c->radius * img_gud_inv(r->maxlat*D2R) );
 	c->nyrow  = c->nytop - irint (c->radius * img_gud_inv(r->minlat*D2R) );
-	
+
 	return (0);
 }
 
@@ -594,7 +594,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Set navgsq, rnavgsq, for the averaging */
 	navgsq = navg * navg;
 	rnavgsq = 1.0 / navgsq;
-	
+
 	/* Set up header with Mercatorized dimensions assuming -Jm1i  */
 	if (Ctrl->F.active || !Ctrl->M.active) {	/* Backwards support for old behavior in -M, or being internally consistent with central meridian */
 		wesn[XLO] = 0.0;
@@ -754,7 +754,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		gmt_M_str_free (GMT->init.history[id]);			/* Free the previous history string set during parsing */
 		GMT->init.history[id] = strdup (exact_R);		/* Replace it with the exact region */
 	}
-	
+
 	/* We now have the Mercator grid in Grid. */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);

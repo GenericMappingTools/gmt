@@ -603,7 +603,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		 * but cannot know if this is the case unless the adjusted coordinates in x has a range of 360 and in y a range of 180.
 		 * Finally, if there is no array just the actual_range, then we cannot tell the registration from the range but try
 		 * and leave it as gridline registration. */
-		
+	
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns, header->n_rows), double);
 
@@ -618,7 +618,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name);
 			dx = fabs (xy[1] - xy[0]);	/* Grid spacing in x */
 		}
-			
+		
 		/* Look for the x-coordinate range attributes */
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_range", dummy) ||
@@ -1804,8 +1804,8 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 	size_t lens[5];
 	char varname[GMT_GRID_VARNAME_LEN80], dimname[GMT_GRID_UNIT_LEN80], z_units[GMT_GRID_UNIT_LEN80];
 	double *z = NULL;
-	
-	
+
+
 	gmt_M_err_trap (nc_open (file, NC_NOWRITE, &ncid));
 
 	gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
@@ -1830,7 +1830,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
 	}
 	gmt_M_err_trap (nc_inq_vardimid (ncid, z_id, dims));
-	
+
 	/* Get the ids of the x and y (and depth and time) coordinate variables */
 	for (i = 0; i < ndims; i++) {
 		gmt_M_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
@@ -1840,10 +1840,10 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 	}
 	z_dim = ndims-3;
 	n_layers = lens[z_dim];
-	
+
 	/* Create enough memory to store the level-coordinate values */
 	z = gmt_M_memory (GMT, NULL, n_layers, double);
-	
+
 	/* Get information about z variable */
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);
 
@@ -1852,7 +1852,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No 3rd-dimension coordinate vector found in %s\n", file);
 		return GMT_GRDIO_NO_2DVAR;
 	}
-			
+		
 	*zarray = z;
 	*nz = n_layers;
 
@@ -1866,7 +1866,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlayers, double *layer, char *file, unsigned int mode) {
 	/* Depending on mode, we either write individual layer grid files or a single 3-D data cube */
 	uint64_t k;
-	
+
 	if (mode == GMT_WRITE_CUBE_LAYERS) {
 		char gfile[PATH_MAX] = {""};
 		for (k = 0; k < nlayers; k++) {
@@ -1878,7 +1878,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		return (GMT_NOERROR);
 	}
 	else {	/* Here we must write a 3-D netcdf data cube */
-	
+
 		int status = NC_NOERR;
 		bool adj_nan_value;   /* if we need to change the fill value */
 		bool do_round = true; /* if we need to round to integral */
@@ -1893,7 +1893,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 		width = header->n_columns;	height = header->n_rows;
-		
+	
 		/* Determine the value to be assigned to missing data, if not already done so */
 		switch (header->type) {
 			case GMT_GRID_IS_NB:
@@ -1922,7 +1922,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		last_row  = header->n_rows - 1;
 		level_min = DBL_MAX;
 		level_max = -DBL_MAX;
-		
+	
 		/* Adjust first_row */
 		if (HH->row_order == k_nc_start_south)
 			first_row = header->n_rows - 1 - last_row;

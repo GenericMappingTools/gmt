@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt splitxyz** [ *table* ] 
+**gmt splitxyz** [ *table* ]
 [ |-A|\ *azimuth*/*tolerance* ]
 [ |-C|\ *course_change*]
 [ |-D|\ *minimum_distance* ]
@@ -45,7 +45,7 @@ options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the z
 values and/or the x,y values. **splitxyz** is a useful filter between
 data extraction and :doc:`wiggle` plotting, and can also be used to
-divide a large x,y[,z] dataset into segments. 
+divide a large x,y[,z] dataset into segments.
 
 Required Arguments
 ------------------
@@ -141,10 +141,10 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**]. 
+.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 
+.. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -156,7 +156,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: Do not let a segment have a gap exceeding *gap*; instead, split it into two segments. [Default ignores gaps]. 
+.. |Add_-g| replace:: Do not let a segment have a gap exceeding *gap*; instead, split it into two segments. [Default ignores gaps].
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

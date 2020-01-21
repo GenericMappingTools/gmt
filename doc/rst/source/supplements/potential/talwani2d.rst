@@ -14,7 +14,7 @@ Synopsis
 
 **gmt talwani2d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
-[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ] 
+[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list* ]
@@ -97,7 +97,7 @@ Optional Arguments
     Set a constant observation level [0].  Optionally, and for gravity anomalies only (**-Ff**),
     append the finite extent limits of a 2.5-D body.
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -173,7 +173,7 @@ Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
 *J. Geophys. Res., 84(B8)*, 3793-3801.
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
-gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*, 
+gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
 `http://dx.doi.org/10.1002/2016GC006263 <http://dx.doi.org/10.1002/2016GC006263>`_.
 
 Talwani, M., J. L. Worzel, and M. Landisman, 1959, Rapid gravity computations for

@@ -31,7 +31,7 @@
  * Date:	1-AUG-2011
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 #include "gmt_sph.h"
 
@@ -63,15 +63,15 @@ struct SPHINTERPOLATE_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHINTERPOLATE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SPHINTERPOLATE_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
@@ -95,7 +95,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
-               
+              
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for the final gridded solution.\n");
@@ -121,7 +121,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
 	GMT_Option (API, "bi3,di,e,h,i,qi,r,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 				break;
 		}
 	}
-	
+
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
@@ -209,12 +209,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
 	int error = 0;
-	
+
 	bool skip;
 
 	size_t n_alloc = 0;
 	uint64_t i, n = 0, ij, ij_f, n_read = 0, n_skip = 0, n_duplicates = 0;
-	
+
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
 
@@ -259,12 +259,12 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */
 
 	gmt_M_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
 	n = 0;
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
-	
+
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
@@ -303,7 +303,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		}
 		n_read++;
 		if (skip) continue;	/* Current point was a duplicate of a previous point */
-		
+	
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
@@ -311,7 +311,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		if (++n == n_alloc) gmt_M_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	} while (true);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR || n_duplicates) {	/* Disables further data input */
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
@@ -334,9 +334,9 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		sf = 1.0 / (w_max - w_min);
 		for (i = 0; i < n; i++) ww[n] *= sf;
 	}
-	
+
 	/* Set up output grid */
-	
+
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
 		                         GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
@@ -345,16 +345,16 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate output grid\n");
 	surfd = gmt_M_memory (GMT, NULL, Grid->header->nm, double);
-	
+
 	/* Do the interpolation */
-	
+
 	gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
 
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
-	
+
 	/* Convert the doubles to gmt_grdfloat and unto the Fortran transpose order */
-	
+
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 		gmt_M_free (GMT, surfd);
@@ -366,9 +366,9 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) Grid->data[ij] *= (gmt_grdfloat)sf;
 	}
 	gmt_M_free (GMT, surfd);
-	
+
 	/* Write solution */
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);

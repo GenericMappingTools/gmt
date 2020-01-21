@@ -69,7 +69,7 @@ $c 100
 $d 100
 $e 100
 EOF
- 
+
 ### Set clipping perimeter
 gmt psclip $popt/0 -R -JZ -J -O -K << EOF >> $ps
 $a

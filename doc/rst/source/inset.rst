@@ -46,7 +46,7 @@ Required Arguments
 
 **-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:
- 
+
     .. include:: explain_refpoint.rst_
 
     Alternatively, Give *west/east/south/north* of geographic rectangle bounded by parallels

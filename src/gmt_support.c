@@ -1345,11 +1345,11 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	 * and the module with fail or create a CPT as needed. */
 	char *cpt = NULL;
 	bool ret = true;
-	
+
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return false;	/* No such thing in classic mode */
 	if (!(*active)) return false;		/* Did not give that option so nothing to do */
 	if (arg == NULL) return false;	/* No text pointer to work with */
-	
+
 	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
 		char string[PATH_MAX] = {""};
 		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
@@ -7769,7 +7769,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 		snprintf (file, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
 	else
 		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
-		
+	
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to save current CPT file to %s !\n", file);
 	else
@@ -7780,11 +7780,11 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
 	char path[PATH_MAX] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
-	
+
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;		/* Not available in classic mode */
 	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	/* Find the appropriate level CPT for where we are but may have to go up the list */
-	
+
 	if (inset) {	/* See if an inset CPT exists */
 		snprintf (path, PATH_MAX, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
@@ -8169,7 +8169,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 			x_hinge = 0.0;		/* Starting x is zero */
 			hinge = z[0];	/* There is no hinge so we need z-min */
 		}
-		
+	
 		for (i = 0; i < nz; i++) {
 			if (z[i] <= z_hinge)	/* Below or equal to hinge */
 				x[i] = (z[i] - z[0]) * scale_low;
@@ -16213,7 +16213,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	char cmd[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 	bool answer = false;
-	
+
 	/* Turn off any stderr messages coming to the terminal */
 	if (strchr (program, ' ')) {	/* Command has spaces [most likely under Windows] */
 		if (!(program[0] == '\'' || program[0] == '\"'))	/* Not in quotes, place double quotes */
@@ -16248,7 +16248,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		answer = true;
 	}
 	if (fp) pclose (fp);
-	
+
 	return (answer);
 }
 

@@ -34,7 +34,7 @@ possibly the name and description tags of each feature. The main use
 intended is to capture coordinates modified in Google Earth and then
 reinsert the modified data into the original GMT data file. For a more
 complete reformatting, consider using **ogr2ogr -f** "GMT" somefile.gmt
-somefile.kml. 
+somefile.kml.
 
 Required Arguments
 ------------------
@@ -65,7 +65,7 @@ Optional Arguments
 
 **-Z**
     Output the altitude coordinates as GMT z coordinates [Default will
-    output just longitude and latitude]. 
+    output just longitude and latitude].
 
 .. _-V:
 

@@ -43,7 +43,7 @@ longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
 values. **grdedit** only operates on files containing a grid header. Note:
 If it is important to retain the original data you should use **-G**
-to save the modified grid to a new file. 
+to save the modified grid to a new file.
 
 Required Arguments
 ------------------
@@ -110,7 +110,7 @@ Optional Arguments
 **-N**\ *table*
     Read the ASCII (or binary; see **-bi**) file
     *table* and replace the corresponding nodal values in the grid with
-    these *x*,\ *y*,\ *z* values. 
+    these *x*,\ *y*,\ *z* values.
 
 .. _-R:
 
@@ -132,14 +132,14 @@ Optional Arguments
     gridline-registered grid to a pixel-registered grid, or vice-versa.
     Basically, gridline-registered grids will have their domain extended
     by half the x- and y-increments whereas pixel-registered grids will
-    have their domain shrunk by the same amount. 
+    have their domain shrunk by the same amount.
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

@@ -104,22 +104,22 @@ enum Talwani2d_fields {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TALWANI2D_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct TALWANI2D_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->F.lat = 45.0;	/* So we compute normal gravity at 45 */
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
-	gmt_M_str_free (C->N.file);	
+	gmt_M_str_free (C->N.file);
 	gmt_free_array (GMT, &(C->T.T));
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -245,7 +245,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
  * Rasmussen & Pedersen, 1979, End corrections in potential field
  * modelling, Geophys. Prosp.
  */
- 
+
 GMT_LOCAL double integralI1 (double xa, double xb, double za, double zb, double y) {
 	/* This function performs the integral I1 (i,Y) from
 	 * Rasmussen & Pedersen's paper
@@ -288,12 +288,12 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 
 	double xx0, zz0, xx1, zz1, part_1, part_2, sum;
 	int i, i1;
-	
+
 	n--;	/* Since last point is repeated */
 	xx0 = x[0] - x0;
 	zz0 = z[0] - z0;
 	sum = 0.0;
-	if (hypot (xx0, zz0) == 0) {      
+	if (hypot (xx0, zz0) == 0) {     
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
@@ -301,7 +301,7 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xx1 = x[i1] - x0;
 		zz1 = z[i1] - z0;
-		if (hypot (xx1, zz1) == 0) {      
+		if (hypot (xx1, zz1) == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -332,7 +332,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 	zi = z[0] - z0;
 	phi_i = atan2 (zi, xi);
 	ri = hypot (xi, zi);
-	if (ri == 0) {      
+	if (ri == 0) {     
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
@@ -342,7 +342,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 		zi1 = z[i1] - z0;
 		phi_i1 = atan2 (zi1, xi1);
 		ri1 = hypot (xi1, zi1);
-		if (ri1 == 0) {      
+		if (ri1 == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -371,19 +371,19 @@ GMT_LOCAL double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned
 		x2 = x[i2] - x0;
 		z2 = z[i2] - z0;
 		r1sq = x1 * x1 + z1 * z1;
-		if (r1sq == 0) {      
+		if (r1sq == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
 		r2sq = x2 * x2 + z2 * z2;
-		if (r2sq == 0) {      
+		if (r2sq == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
 		dx = x2 - x1;	dz = z2 - z1;
 		two_theta2 = 2.0 * atan2 (z2, x2);	two_theta1 = 2.0 * atan2 (z1, x1);
 		sin_2th2 = sin (two_theta2);		sin_2th1 = sin (two_theta1);
-		
+	
 		if (dz == 0)	/* z1 == z2 so any z will do.  Both log and delta_angle terms vanish */
 			sum += log (z2) * (sin_2th2 - sin_2th1);
 		else if (dx == 0)	/* log term vanish */
@@ -421,11 +421,11 @@ GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsi
 		dy1 = y[i1] - y0;	dy2 = y[i2] - y0;
 		dz1 = z[i1] - z0;	dz2 = z[i2] - z0;
 		hyp1 = dy1 * dy1 + dz1 * dz1;	hyp2 = dy2 * dy2 + dz2 * dz2;
-		if (hyp1 == 0) {      
+		if (hyp1 == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
-		if (hyp2 == 0) {      
+		if (hyp2 == 0) {     
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -519,10 +519,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
 	double scl, rho = 0.0, G0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
-	
+
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
 	double *x = NULL, *z = NULL, *in = NULL;
-					
+				
 	struct BODY2D *body = NULL;
 	struct TALWANI2D_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Out = NULL;
@@ -549,10 +549,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the talwani2d main code ----------------------------*/
-	
+
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	scl = (Ctrl->M.active[TALWANI2D_HOR]) ? METERS_IN_A_KM : 1.0;	/* Perhaps convert to m */
-	
+
 	if (Ctrl->T.active) {
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
@@ -590,14 +590,14 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 
 	/* Set up cake slice array and pointers */
-	
+
 	n_alloc1 = GMT_CHUNK;
 	body = gmt_M_memory (GMT, NULL, n_alloc1, struct BODY2D);
 	n_bodies = 0;
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_VER]]);
-	
+
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -682,7 +682,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			}
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
  		for (k = 0; k < n_bodies; k++) {
 			gmt_M_free (GMT, body[k].x);	gmt_M_free (GMT, body[k].z);
@@ -690,25 +690,25 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, body);
 		Return (API->error);
 	}
-	
+
 	/* Finish allocation */
-	
+
 	body = gmt_M_memory (GMT, body, n_bodies, struct BODY2D);
-	
+
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
-	
+
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	G0 = g_normal (Ctrl->F.lat);
-	
+
 	/* Now we can write to the screen the user's polygon model characteristics. */
-	
+
 	for (k = 0, rho = 0.0; k < n_bodies; k++) {
 		rho += body[k].rho;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
-	
-	if (Out->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
+
+	if (Out->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	for (tbl = 0; tbl < Out->n_tables; tbl++) {
 		for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
 			S = Out->table[tbl]->segment[seg];	/* Current segment */
@@ -738,9 +738,9 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 		error++;
-		
-	/* Clean up memory */
 	
+	/* Clean up memory */
+
  	for (k = 0; k < n_bodies; k++) {
 		gmt_M_free (GMT, body[k].x);
 		gmt_M_free (GMT, body[k].z);

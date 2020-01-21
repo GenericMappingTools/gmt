@@ -18,7 +18,7 @@
  * grd.h contains the definition for a GMT-SYSTEM Version >= 2 grd file
  *
  * grd is stored in rows going from west (xmin) to east (xmax)
- * first row in file has yvalue = north (ymax).  
+ * first row in file has yvalue = north (ymax). 
  * This is SCANLINE orientation.
  *
  * Author:	Paul Wessel
@@ -28,7 +28,7 @@
 
 /*!
  * \file gmt_grd.h
- * \brief Definition for a GMT-SYSTEM Version >= 2 grd file 
+ * \brief Definition for a GMT-SYSTEM Version >= 2 grd file
  */
 
 #ifndef GMT_GRID_H

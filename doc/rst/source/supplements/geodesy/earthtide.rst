@@ -17,7 +17,7 @@ Synopsis
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
-[ |-L|\ *lon/lat* ] 
+[ |-L|\ *lon/lat* ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
@@ -45,7 +45,7 @@ Either **-G**, **-S** or **-L**
     Write one or more tide component directly to grids; no table data are written to standard output.
     If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
     so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
-    If only one component is selected with **-C** than no code is appended to grid name (an no need to 
+    If only one component is selected with **-C** than no code is appended to grid name (an no need to
     set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
 

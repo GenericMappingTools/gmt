@@ -23,19 +23,19 @@ F	white
 END
 
 # Top row, left to right. Using names.
-gmt colorbar -Cages.cpt  -D00/13+w-8/0.5+jML+ef         
-gmt colorbar -Cages.cpt  -D04/13+w-8/0.5+jML+ef -L     
-gmt colorbar -Cages.cpt  -D08/13+w-8/0.5+jML+ef -L0.0  
-gmt colorbar -Cages.cpt  -D12/13+w-8/0.5+jML+ef -L0.1  
-gmt colorbar -Cages.cpt  -D16/13+w08/0.5+jML+ef -L     
-gmt colorbar -Cages.cpt  -D20/13+w08/0.5+jML+ef -L0.1  
+gmt colorbar -Cages.cpt  -D00/13+w-8/0.5+jML+ef        
+gmt colorbar -Cages.cpt  -D04/13+w-8/0.5+jML+ef -L    
+gmt colorbar -Cages.cpt  -D08/13+w-8/0.5+jML+ef -L0.0 
+gmt colorbar -Cages.cpt  -D12/13+w-8/0.5+jML+ef -L0.1 
+gmt colorbar -Cages.cpt  -D16/13+w08/0.5+jML+ef -L    
+gmt colorbar -Cages.cpt  -D20/13+w08/0.5+jML+ef -L0.1 
 
 # Bottom row, left to right. Using numbers.
 sed 's/;.*$//' ages.cpt > years.cpt
-gmt colorbar -Cyears.cpt -D00/04+w08/0.5+jML+ef        
-gmt colorbar -Cyears.cpt -D04/04+w-8/0.5+jML+ef -L     
-gmt colorbar -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0  
-gmt colorbar -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1  
-gmt colorbar -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li    
+gmt colorbar -Cyears.cpt -D00/04+w08/0.5+jML+ef       
+gmt colorbar -Cyears.cpt -D04/04+w-8/0.5+jML+ef -L    
+gmt colorbar -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0 
+gmt colorbar -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1 
+gmt colorbar -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li   
 gmt colorbar -Cyears.cpt -D20/04+w-8/0.5+jML+ef -Li0.1
 gmt end show

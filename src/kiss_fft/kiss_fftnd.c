@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 struct kiss_fftnd_state{
     int dimprod; /* dimsum would be mighty tasty right now */
-    int ndims; 
+    int ndims;
     int *dims;
     kiss_fft_cfg *states; /* cfg states for each dimension */
     kiss_fft_cpx * tmpbuf; /*buffer capable of hold the entire input */
@@ -80,12 +80,12 @@ kiss_fftnd_cfg kiss_fftnd_alloc(const int *dims,int ndims,int inverse_fft,void*m
     /*
 Hi there!
 
-If you're looking at this particular code, it probably means you've got a brain-dead bounds checker 
+If you're looking at this particular code, it probably means you've got a brain-dead bounds checker
 that thinks the above code overwrites the end of the array.
 
 It doesn't.
 
--- Mark 
+-- Mark
 
 P.S.
 The below code might give you some warm fuzzies and help convince you.
@@ -128,15 +128,15 @@ Stage 0 ( D=2): treat the buffer as a 2x12 matrix
    Note fft([x y]) == [x+y x-y]
 
 Stage 1 ( D=3) treats the buffer (the output of stage D=2) as an 3x8 matrix,
-   [ [ a+m a-m b+n b-n c+o c-o d+p d-p ] 
+   [ [ a+m a-m b+n b-n c+o c-o d+p d-p ]
      [ e+q e-q f+r f-r g+s g-s h+t h-t ]
      [ i+u i-u j+v j-v k+w k-w l+x l-x ] ]
 
-   And perform FFTs (size=3) on each of the columns as above, transposing 
-   the matrix as it goes.  The output of stage 1 is 
+   And perform FFTs (size=3) on each of the columns as above, transposing
+   the matrix as it goes.  The output of stage 1 is
        (Legend: ap = [ a+m e+q i+u ]
                 am = [ a-m e-q i-u ] )
-   
+  
    [ [ sum(ap) fft(ap)[0] fft(ap)[1] ]
      [ sum(am) fft(am)[0] fft(am)[1] ]
      [ sum(bp) fft(bp)[0] fft(bp)[1] ]
@@ -156,10 +156,10 @@ Stage 2 ( D=4) treats this buffer as a 4*6 matrix,
 
    The resulting matrix is the 3d FFT of the 2x3x4 input matrix.
 
-   Note as a sanity check that the first element of the final 
-   stage's output (DC term) is 
+   Note as a sanity check that the first element of the final
+   stage's output (DC term) is
    sum( [ sum(ap) sum(bp) sum(cp) sum(dp) ] )
-   , i.e. the summation of all 24 input elements. 
+   , i.e. the summation of all 24 input elements.
 
 */
 void kiss_fftnd(kiss_fftnd_cfg st,const kiss_fft_cpx *fin,kiss_fft_cpx *fout)
@@ -182,7 +182,7 @@ void kiss_fftnd(kiss_fftnd_cfg st,const kiss_fft_cpx *fin,kiss_fft_cpx *fout)
         int curdim = st->dims[k];
         int stride = st->dimprod / curdim;
 
-        for ( i=0 ; i<stride ; ++i ) 
+        for ( i=0 ; i<stride ; ++i )
             kiss_fft_stride( st->states[k], bufin+i , bufout+i*curdim, stride );
 
         /*toggle back and forth between the two buffers*/

@@ -1374,6 +1374,8 @@ Shorthand notation for a few special European characters has also been added (fo
 you must use the full octal code):
 
 
+.. _tbl-shorthand:
+
 +----------+------------+----------+------------+
 | *Code*   | *Effect*   | *Code*   | *Effect*   |
 +==========+============+==========+============+

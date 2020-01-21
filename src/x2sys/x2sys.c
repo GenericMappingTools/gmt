@@ -391,7 +391,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		X->in_order[i] = X->out_order[i] = i;
 		X->use_column[i] = 1;
 		G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = (X->x_col == is) ? GMT_IS_LON : ((X->y_col == is) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
-		if (X->x_col == is) 
+		if (X->x_col == is)
 			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LON;
 		else if (X->y_col == is)
 			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LAT;
@@ -421,7 +421,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) gmt_M_free (GMT, x2sys_datadir[id]);
 	mggpath_free (GMT);
-	
+
 	MGD77_end (GMT, &M);
 }
 
@@ -690,7 +690,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	}
 	p->n_segments++;	/* To get the total number of segments 0-(n_segments-1) */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_read_file : File %s contained %" PRIu64 " segments\n", path, p->n_segments);
-	
+
 	fclose (fp);
 	gmt_M_free (GMT, rec);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, z[i], j, double);
@@ -1460,7 +1460,7 @@ int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B) {
 	uint32_t index, id, n_free; /* These must remain uint32_t */
 	struct X2SYS_BIX_TRACK *bin = NULL, *bdel = NULL;
 	struct X2SYS_BIX_TRACK_INFO *track = NULL, *tdel = NULL;
-	/* First free all the index structures allocated by x2sys_bix_read_index */	
+	/* First free all the index structures allocated by x2sys_bix_read_index */
 	for (index = 0; index < B->nm_bin; index++) {
 		bin = B->base[index].first_track;
 		n_free = 0;
@@ -1475,7 +1475,7 @@ int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Deleted %d bin structs but should have been %d\n", n_free, B->base[index].n_tracks);
 	}
 	gmt_M_free (GMT, B->base);
-	
+
 	/* Then free the track structures */
 	if (B->mode) {	/* Organized as fixed array */
 		for (id = 0; id < B->n_tracks; id++) {
@@ -1561,7 +1561,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 	fclose (fp);
 
 	/* Add cache dir, if set */
-	
+
 	if (GMT->session.CACHEDIR) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
@@ -1631,9 +1631,9 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 		else
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Failed path for %s: %s\n", track, track_path);
 	}
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: No successful path for %s found\n", track);
-	
+
 	return(1);	/* Schwinehund! */
 }
 
@@ -1826,7 +1826,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		/* Sanity check - make sure we don't already have this pair */
 		for (p = 0, skip = false; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, 
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 				            "Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
 				skip = true;
 			}

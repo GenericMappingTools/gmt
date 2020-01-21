@@ -176,7 +176,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to draw contours on the images [no contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and use the contours implied by the CPT file.\n");
 	GMT_Option (API, "f,n,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -383,13 +383,13 @@ EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi;
 	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false;
-	
+
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
 
 	uint64_t node;
-	
+
 	double factor, dim, west, east, wesn[4], ext_wesn[4], inc[2];
-	
+
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
@@ -452,7 +452,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Ctrl->C.active = tmp_cpt = true;
 		Ctrl->C.file = strdup (cfile);
 	}
-	
+
 	Ctrl->L.size /= Ctrl->M.magnify;
 	dpi = 100 * Ctrl->M.magnify;
 	/* Set specific grdimage option -Q or -Ei or neither */
@@ -486,13 +486,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	gmtlib_geo_C_format (GMT);	/* Update the format settings */
 	dim = dpi * 0.0001 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension in -L */
-	
+
 	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? ((G->header->wesn[XHI] > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
 
 	/* Create the container quadtree directory first */
 	if (gmt_mkdir (Ctrl->N.prefix))
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Directory %s already exist - will overwrite files\n", Ctrl->N.prefix);
-	
+
 	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from data grid to ensure constant scaling */
 		sprintf (file, "%s/grd2kml_intensity_tmp_%6.6d.grd", API->tmp_dir, uniq);
 		Ctrl->I.file = strdup (file);
@@ -611,12 +611,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		strcpy (K, " -K");	/* Since now we must do a contour overlay */
 	}
-	
+
 	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
 		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z -H%d", Ctrl->H.factor);
 	else
 		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z");
-	
+
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
 		factor = pow (2.0, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
@@ -655,12 +655,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			strcpy (Zgrid, Ctrl->In.file);
 			if (Ctrl->I.active) strcpy (Igrid, Ctrl->I.file);
 		}
-		
+	
 		/* Loop over all rows at this level */
 		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
-		 
+		
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = MIN (90.0, wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y]);	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_LAT);
@@ -690,7 +690,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						use_tile = !gmt_M_is_fnan (T->data[node]);
 					}
 				}
-					
+				
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
 					/* Build the grdimage command to make the PostScript plot */
 					char z_data[GMT_STR16] = {""}, psfile[PATH_MAX] = {""};
@@ -777,18 +777,18 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d tiles that passed the no-NaN test but gave a blank image (?)\n", n_bummer);
-	
+
 	/* Clean up any temporary grids */
-	
+
 	if (z_extend && !access (DataGrid, F_OK))
 		gmt_remove_file (GMT, DataGrid);
 	if (i_extend && !access (IntensGrid, F_OK))
 		gmt_remove_file (GMT, IntensGrid);
-	if (Ctrl->I.derive) 		
+	if (Ctrl->I.derive) 	
 		gmt_remove_file (GMT, Ctrl->I.file);
-		
-	/* Process quadtree links */
 	
+	/* Process quadtree links */
+
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processes quadtree links for %d tiles.\n", n);
 	Q = gmt_M_memory (GMT, Q, n, struct GMT_QUADTREE *);	/* Final size */
 	for (level = max_level; level > 0; level--) {
@@ -810,8 +810,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			Q[kk]->q++;			/* Count the links for this parent */
 		}
 	}
-	
-	/* Create the top-level KML file */ 
+
+	/* Create the top-level KML file */
 	sprintf (file, "%s/%s.kml", Ctrl->N.prefix, Ctrl->N.prefix);
 	cmd_args = GMT_Create_Cmd (API, options);
 	if ((fp = fopen (file, "w")) == NULL) {
@@ -849,7 +849,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fclose (fp);
 
 	/* Then create all the other KML files in the quadtree with their links down the tree */
-	
+
 	for (k = 0; k < n; k++) {
 		if (Q[k]->q) {	/* Only examine tiles with children */
 			if (Ctrl->D.dump) {
@@ -894,7 +894,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* Now add up to 4 quad links */
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
-					
+				
 				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 			        fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
@@ -912,7 +912,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			fprintf (fp, "    </Document>\n  </kml>\n");
 			fclose (fp);
-		        
+		       
 		}
 		gmt_M_str_free (Q[k]->region);	/* Free this tile region */
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */

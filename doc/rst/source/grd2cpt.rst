@@ -68,7 +68,7 @@ The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
 there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
 :ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
-line will be used. 
+line will be used.
 
 Required Arguments
 ------------------
@@ -171,7 +171,7 @@ Optional Arguments
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
-    colors, and writes out z. 
+    colors, and writes out z.
 
 .. _-R:
 

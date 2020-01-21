@@ -85,7 +85,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
 
-	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BYTEORDER */ 
+	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BYTEORDER */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* LAYOUT */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
@@ -121,7 +121,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */ 
+	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* TOTALROWBYTES */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDGAPBYTES  */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
@@ -160,7 +160,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-			
+		
 	gmt_fclose (GMT, fp);
 	HH->orig_datatype = (header->bits == 16) ? GMT_SHORT : GMT_INT;
 
@@ -195,28 +195,28 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 
 		header->inc[GMT_X] = header->inc[GMT_Y] = 30.0 * GMT_SEC2DEG;	/* 30 arc seconds */
 		header->wesn[YHI] = atof (&header->title[len-2]);
-		if ( header->title[len-3] == 'S' || header->title[len-3] == 's' ) header->wesn[YHI] *= -1; 
+		if ( header->title[len-3] == 'S' || header->title[len-3] == 's' ) header->wesn[YHI] *= -1;
 		c = header->title[len-3];
 		header->title[len-3] = '\0';
 		header->wesn[XLO] = atof (&header->title[len-6]);
 		header->title[len-3] = (char)c;		/* Reset because this function is called at least twice */
-		if ( header->title[len-7] == 'W' || header->title[len-7] == 'w' ) header->wesn[XLO] *= -1; 
+		if ( header->title[len-7] == 'W' || header->title[len-7] == 'w' ) header->wesn[XLO] *= -1;
 		if (header->wesn[YHI] > -60) {
-			header->wesn[YLO] = header->wesn[YHI] - 50; 
-			header->wesn[XHI] = header->wesn[XLO] + 40; 
+			header->wesn[YLO] = header->wesn[YHI] - 50;
+			header->wesn[XHI] = header->wesn[XLO] + 40;
 			header->n_columns = 4800;
 			header->n_rows = 6000;
 		}
 		else {	/* Antarctica tiles cover 30 degrees of latitude and 60 degrees of longitude each have 3,600 rows and 7,200 columns */
-			header->wesn[YLO] = -90; 
-			header->wesn[XHI] = header->wesn[XLO] + 60; 
+			header->wesn[YLO] = -90;
+			header->wesn[XHI] = header->wesn[XLO] + 60;
 			header->n_columns = 7200;
 			header->n_rows = 3600;
 		}
 		header->registration = GMT_GRID_PIXEL_REG;
 		gmt_set_geographic (GMT, GMT_IN);
 		gmtlib_grd_set_units (GMT, header);
-		
+	
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (HH->name, ".DEM") || strstr (HH->name, ".dem"))
 			header->nan_value = -9999.0f;
@@ -231,14 +231,14 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		struct stat F;
 
 		header->wesn[XLO] = atof (&header->title[len-3]);
-		if ( header->title[len-4] == 'W' || header->title[len-4] == 'w' ) header->wesn[XLO] *= -1; 
+		if ( header->title[len-4] == 'W' || header->title[len-4] == 'w' ) header->wesn[XLO] *= -1;
 		c = header->title[len-4];
 		header->title[len-4] = '\0';
 		header->wesn[YLO] = atof (&header->title[len-6]);
 		header->title[len-4] = (char)c;		/* Reset because this function is called at least twice */
-		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1; 
-		header->wesn[YHI] = header->wesn[YLO] + 1; 
-		header->wesn[XHI] = header->wesn[XLO] + 1; 
+		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1;
+		header->wesn[YHI] = header->wesn[YLO] + 1;
+		header->wesn[XHI] = header->wesn[XLO] + 1;
 		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
 		HH->orig_datatype = GMT_SHORT;
@@ -471,23 +471,23 @@ int gmt_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	gmt_fclose (GMT, fp);
-		
+	
 	return (GMT_NOERROR);
 }
 
 int gmt_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
-	
+
 	if (!strcmp (HH->name, "="))	/* Write to stdout */
 		fp = GMT->session.std[GMT_OUT];
 	else if ((fp = gmt_fopen (GMT, HH->name, "w")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
+
 	esri_write_info (GMT, fp, header);
 
 	gmt_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -509,7 +509,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if (HH->flags[0]) {	/* We are dealing with a ESRI .hdr file or GTOPO30, SRTM30, SRTM1|3 */
 		r_mode = "rb";
 		if (((HH->flags[0] == 'M' || HH->flags[0] == 'B') && !GMT_BIGENDIAN) ||
-			(HH->flags[0] == 'L' && GMT_BIGENDIAN)) 
+			(HH->flags[0] == 'L' && GMT_BIGENDIAN))
 			swap = true;
 		nBits = header->bits;
 		is_binary = true;
@@ -527,7 +527,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
-	
+
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 

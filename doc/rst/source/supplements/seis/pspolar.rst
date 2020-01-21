@@ -24,7 +24,7 @@ Synopsis
 [ |-K| ] [ |-N| ]
 [ |-O| ]
 [ |-Q|\ *mode*\ [*args*] ]
-[ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
+[ |-T|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\[/*dy*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -46,9 +46,9 @@ Synopsis
 Examples
 --------
 
-   ::
+::
 
-    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
+    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 << END > test.ps
     #stat azim ih pol
     0481 11 147 c
     6185 247 120 d
@@ -57,11 +57,9 @@ Examples
     0487 212 109 .
     END
 
-or
+Use special format derived from HYPO71 output::
 
-   ::
-
-    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
+    gmt pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 -Qh <<END > test.ps
     #Date Or. time stat azim ih
     910223 1 22 0481 11 147 ipu0
     910223 1 22 6185 247 120 ipd0

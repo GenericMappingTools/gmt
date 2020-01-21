@@ -20,10 +20,10 @@
  * Brief synopsis: grdredpol reads a grid file with the magnetic field anomaly and
  * computes the continuous reduction to the pole (RTP) anomaly by calculating the
  * filter coefficients in the frequency, inverse FT and convolve in space domain.
- * For details on the method see, Luis, J.F and J.M. Miranda (2008), 
- * "Reevaluation of magnetic chrons in the North Atlantic between 35N and 47N: 
- * Implications for the formation of the Azores Triple Junction and associated plateau, 
- * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573 
+ * For details on the method see, Luis, J.F and J.M. Miranda (2008),
+ * "Reevaluation of magnetic chrons in the North Atlantic between 35N and 47N:
+ * Implications for the formation of the Azores Triple Junction and associated plateau,
+ * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573
  *
  * Author:	Joaquim Luis / Miguel Miranda
  * Date:	18-Feb-2003 (original GMT4 version)
@@ -98,9 +98,9 @@ struct REDPOL_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct REDPOL_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct REDPOL_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.use_igrf = true;
 	C->M.pad_zero = true;
@@ -114,16 +114,16 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->E.dipfile);	
-	gmt_M_str_free (C->E.decfile);	
-	gmt_M_str_free (C->Z.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->E.dipfile);
+	gmt_M_str_free (C->E.decfile);
+	gmt_M_str_free (C->Z.file);
+	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar, 
-		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u, 
+GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar,
+		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u,
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
 	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
@@ -139,7 +139,7 @@ GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi
 
 	t2 = 1 / ((alfa_u_beta_v_2 + gama_ro_2) * (alfa_u_beta_v_2 + gama_ro_2));
 	t3 = t2 / (alfa_u_beta_v_2 + gama_ro_2);
-          					 
+          					
 	rnr = (gama_ro_2 - alfa_u_beta_v_2) * ro2;
 	rni = 2 * gama_ro * alfa_u_beta_v * ro2;
 
@@ -157,9 +157,9 @@ GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi
 }
 
 
-GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar, 
-		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr, 
-		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa, 
+GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar,
+		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr,
+		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa,
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
 
 	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
@@ -258,7 +258,7 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 	}
 }
 
-GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim, 
+GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim,
 	    double *cosphi, double *sinphi, double *cospsi, double *sinpsi) {
     /* Initialized data */
 
@@ -407,9 +407,9 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
   *
   *	Joaquim Luis 1-MARS-2005
   *	Converted to C (with help of f2c, which explains the ugliness)
-  *     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls 
-  *     used - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients) 
-  *     Susan Macmillan July 2005 (PW update Oct 2006) 
+  *     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls
+  *     used - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients)
+  *     Susan Macmillan July 2005 (PW update Oct 2006)
   *
   *	Joaquim Luis 21-JAN-2010
   *	Updated for IGRF 11th generation
@@ -883,12 +883,12 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
 	double rr, st, one, gmm, rho, two, three, ratio;
 	double p[105], q[105], r, t, a2, b2;
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
-	
+
 	if (date < 1900.0 || date > 2020.0) {
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2020)\n", date);
 		return (true);
 	}
-	
+
 	if (date < 2015.) {
 		t = 0.2 * (date - 1900.);
 		ll = (int) t;
@@ -1019,7 +1019,7 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
 	out[2] = X;		out[3] = Y;
 	out[4] = Z;
 	out[5] = dec;		out[6] = dip;
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -1031,7 +1031,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-                
+               
 	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1046,7 +1046,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Sets window width in degrees [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write filter file <filterfile> to disk.\n");
 	GMT_Option  (API, "V,n,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -1167,7 +1167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
-	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
+	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {
 		GMT_Report (API, GMT_MSG_NORMAL, "-E option overrides -C\n");
 		Ctrl->C.const_f = false;
 	}
@@ -1217,7 +1217,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) /* Get header only */
@@ -1233,7 +1233,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if (!GMT->common.R.active[RSET]) 
+	if (!GMT->common.R.active[RSET])
 		gmt_M_memcpy (wesn_new, Gin->header->wesn, 4, double);
 	else
 		gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
@@ -1269,14 +1269,14 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
 		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->E.dipfile, NULL)) == NULL)	/* Get header only */
 			Return (API->error);
-	
+
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->E.dipfile, Gdip) == NULL)
 			Return (API->error);
 	}
 	if (Ctrl->E.dip_dec_grd) {
 		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->E.decfile, NULL)) == NULL)
 			Return (API->error);
-	
+
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->E.decfile, Gdec) == NULL)
 			Return (API->error);
 	}
@@ -1302,7 +1302,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	ftlon  = gmt_M_memory (GMT, NULL, Gin->header->n_columns, double);
 	ftlat  = gmt_M_memory (GMT, NULL, Gin->header->n_rows, double);
 
-	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
+	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
 		gxtr = gmt_M_memory (GMT, NULL, n_coef, double);
 		gxti = gmt_M_memory (GMT, NULL, n_coef, double);
 		gxmr = gmt_M_memory (GMT, NULL, n_coef, double);
@@ -1326,19 +1326,19 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		beta =  cos(Ctrl->C.dip) * sin(Ctrl->C.dec);
 		gama = -sin(Ctrl->C.dip);
 	}
-	
+
 	fi  = TWO_PI / Ctrl->F.ncoef_row;
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_new, Gin->header->inc, \
 	                             Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-					
+				
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		double wesn[4], inc[2];
 		wesn[XLO] = 1;	wesn[XHI] = (double)Ctrl->F.ncoef_col;
 		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		inc[GMT_X] = inc[GMT_Y] = 1;
-		
+	
 		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
 		                              GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
@@ -1348,8 +1348,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	for (l = 0; l < n_jlat; l++) {		/* Main loop over the moving windows */
 		for (k = 0; k < n_jlon; k++) {
-			sloni = Gin->header->wesn[XLO] + k * Ctrl->W.wid; 
-			slati = Gin->header->wesn[YHI] - (l+1) * Ctrl->W.wid; 
+			sloni = Gin->header->wesn[XLO] + k * Ctrl->W.wid;
+			slati = Gin->header->wesn[YHI] - (l+1) * Ctrl->W.wid;
 			slonf = sloni + Ctrl->W.wid;
 			slatf = slati + Ctrl->W.wid;
 			slonm = (sloni + slonf) / 2;
@@ -1362,7 +1362,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				n21 = (Ctrl->F.ncoef_row+1) / 2;
 			}
 			/* Compute dec and dip at the central point of the moving window */
-			igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, slonm, slatm, out_igrf); 
+			igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, slonm, slatm, out_igrf);
 			if (!Ctrl->C.const_f) {
 				Ctrl->C.dec = out_igrf[5] * D2R;
 				Ctrl->C.dip = out_igrf[6] * D2R;
@@ -1387,7 +1387,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				}
 			}
 			if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE))
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r",
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
 			/* Compute the filter coefficients in the frequency domain */
@@ -1407,23 +1407,23 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			gxr[ij_mn(Ctrl,m21-1,0)]  = 1;	gxi[ij_mn(Ctrl,m21-1,0)]  = 0; 
-			gxar[ij_mn(Ctrl,m21-1,0)] = 0;	gxai[ij_mn(Ctrl,m21-1,0)] = 0; 
-			gxbr[ij_mn(Ctrl,m21-1,0)] = 0;	gxbi[ij_mn(Ctrl,m21-1,0)] = 0; 
-			gxgr[ij_mn(Ctrl,m21-1,0)] = 0;	gxgi[ij_mn(Ctrl,m21-1,0)] = 0; 
+			gxr[ij_mn(Ctrl,m21-1,0)]  = 1;	gxi[ij_mn(Ctrl,m21-1,0)]  = 0;
+			gxar[ij_mn(Ctrl,m21-1,0)] = 0;	gxai[ij_mn(Ctrl,m21-1,0)] = 0;
+			gxbr[ij_mn(Ctrl,m21-1,0)] = 0;	gxbi[ij_mn(Ctrl,m21-1,0)] = 0;
+			gxgr[ij_mn(Ctrl,m21-1,0)] = 0;	gxgi[ij_mn(Ctrl,m21-1,0)] = 0;
 
 			/* Compute iFT of the filter */
-			tfpoeq(fxr, Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi); 
-			tfpoeq(fxar,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxar,gxai, cosphi,sinphi,cospsi,sinpsi); 
-			tfpoeq(fxbr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxbr,gxbi, cosphi,sinphi,cospsi,sinpsi); 
-			tfpoeq(fxgr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxgr,gxgi, cosphi,sinphi,cospsi,sinpsi); 
+			tfpoeq(fxr, Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi);
+			tfpoeq(fxar,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxar,gxai, cosphi,sinphi,cospsi,sinpsi);
+			tfpoeq(fxbr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxbr,gxbi, cosphi,sinphi,cospsi,sinpsi);
+			tfpoeq(fxgr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxgr,gxgi, cosphi,sinphi,cospsi,sinpsi);
 
-			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-				gxtr[ij_mn(Ctrl,m21-1,0)] = 0;	gxti[ij_mn(Ctrl,m21-1,0)] = 0; 
-				gxmr[ij_mn(Ctrl,m21-1,0)] = 0;	gxmi[ij_mn(Ctrl,m21-1,0)] = 0; 
+			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
+				gxtr[ij_mn(Ctrl,m21-1,0)] = 0;	gxti[ij_mn(Ctrl,m21-1,0)] = 0;
+				gxmr[ij_mn(Ctrl,m21-1,0)] = 0;	gxmi[ij_mn(Ctrl,m21-1,0)] = 0;
 				gxnr[ij_mn(Ctrl,m21-1,0)] = 0;	gxni[ij_mn(Ctrl,m21-1,0)] = 0;
-				tfpoeq(fxtr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxtr,gxti, cosphi,sinphi,cospsi,sinpsi); 
-				tfpoeq(fxmr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxmr,gxmi, cosphi,sinphi,cospsi,sinpsi); 
+				tfpoeq(fxtr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxtr,gxti, cosphi,sinphi,cospsi,sinpsi);
+				tfpoeq(fxmr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxmr,gxmi, cosphi,sinphi,cospsi,sinpsi);
 				tfpoeq(fxnr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxnr,gxni, cosphi,sinphi,cospsi,sinpsi);
 			}
 
@@ -1434,7 +1434,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
 					/* Compute dec and dip at current point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */
-						igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf); 
+						igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf);
 						Ctrl->C.dec = out_igrf[5] * D2R;
 						Ctrl->C.dip = out_igrf[6] * D2R;
 						if (Ctrl->E.dip_grd_only) {
@@ -1463,7 +1463,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 					/* Rebuild the filter */
 					if (!Ctrl->C.const_f) {
-						if (Ctrl->C.use_igrf) { 
+						if (Ctrl->C.use_igrf) {
 							for (i2 = 0; i2 < n_coef; i2++)
 								fix[i2] = fxr[i2] + da * fxar[i2] + db * fxbr[i2] + dg * fxgr[i2];
 						}
@@ -1497,7 +1497,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n"); 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n");
 
 	gmt_M_free (GMT, cosphi);      gmt_M_free (GMT, sinphi);
 	gmt_M_free (GMT, cospsi);      gmt_M_free (GMT, sinpsi);

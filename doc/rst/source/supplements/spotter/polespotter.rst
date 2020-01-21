@@ -123,7 +123,7 @@ Optional Arguments
     default we report summary statistics (*chi2*, *table*, *segment*, *type*)
     for each line segment. Append **+m** to instead report the misfit information
     (*mlon*, *mlat*, *del_angle*, *chi2*, *table*, *segment*, *type*) for each
-    mid-point along all multi-point line segments.  The information is written 
+    mid-point along all multi-point line segments.  The information is written
     to standard output.
 
 **-Sp**

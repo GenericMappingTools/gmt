@@ -99,7 +99,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw clip path with given pen attributes [Default is no line].", 0);
 	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -259,7 +259,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	}
 
 	/* Here we have -R -J etc to deal with */
-	
+
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -308,9 +308,9 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			if (Ctrl->W.active) {
 				gmt_setpen (GMT, &Ctrl->W.pen);
-				gmt_setfill (GMT, &no_fill, true);
+				gmt_setfill (GMT, &no_fill, 1);
 			}
-				
+			
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */

@@ -44,7 +44,7 @@ variable, here called *time* (it may of course be any type of quantity) when tha
 Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
-is not supported. 
+is not supported.
 
 Required Arguments
 ------------------
@@ -89,7 +89,7 @@ Optional Arguments
 
 **-N**\ *col*
     Sets the column number of the independent *time* variable [Default is 0
-    (first)]. 
+    (first)].
 
 .. _-T:
 
@@ -102,7 +102,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)]. 
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

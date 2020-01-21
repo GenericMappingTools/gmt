@@ -2,7 +2,7 @@
 gmt begin GMT_-B_geo_1
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF
 	gmt basemap -R-1/2/0/0.4 -JM3i -Ba1f15mg5m -BS
-	gmt plot -Sv2p+e+a60 -W0.5p -Gblack -Y-0.35i -N << EOF 
+	gmt plot -Sv2p+e+a60 -W0.5p -Gblack -Y-0.35i -N << EOF
 -0.5 0 0 0.5
 -0.5 0 180 0.5
 0.375 0 0 0.125

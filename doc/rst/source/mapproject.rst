@@ -59,7 +59,7 @@ to a line.
 Alternatively, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which
 must have (longitude,latitude) or (x,y). See option **-:** on how to
-read (latitude,longitude) files. 
+read (latitude,longitude) files.
 Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
@@ -92,7 +92,7 @@ Optional Arguments
 
 **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
-    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth 
+    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth
     to each data point. Use **-Ab** to get back-azimuth from data points
     to fixed point. Use **-Ao** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
@@ -211,7 +211,7 @@ Optional Arguments
     be used in conjunction with **-R** **-J** to change the datum before
     coordinate projection (add **-I** to apply the datum conversion
     after the inverse projection). Make sure that the
-    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` setting is correct for your case. 
+    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` setting is correct for your case.
 
 .. _-V:
 
@@ -241,7 +241,7 @@ Optional Arguments
     *incremental* travel times between successive points, **+a**
     to obtain *accumulated* travel times, or both to get both kinds
     of time information.  Use **+f** to format the accumulated
-    (elapsed) travel time according to the ISO 8601 convention. 
+    (elapsed) travel time according to the ISO 8601 convention.
     As for the number of decimals used to represent seconds we
     consult the :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`
     setting. Finally, append **+t**\ *epoch* to report absolute
@@ -250,7 +250,7 @@ Optional Arguments
     **+i** modifier is required.
     See `Output Order`_ for how **-Z** affects the output record.
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

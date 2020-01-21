@@ -32,7 +32,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-r| ] 
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -159,7 +159,7 @@ Optional Arguments
 **-Z**\ *level*
     Set the background depth [0].
 
-.. |Add_-bi| replace:: [Default is 4 input columns]. 
+.. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code

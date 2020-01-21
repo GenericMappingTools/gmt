@@ -105,13 +105,13 @@ void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned 
 	 * of a Fourier transform of size n_columns,n_rows.  Also gives s, the size
 	 * of the workspace that will be needed by the transform.
 	 * To use this routine for a 1-D transform, set n_rows = 1.
-	 * 
+	 *
 	 * This is all based on the comments in Norman Brenner's code
 	 * FOURT, from which our C codes are translated.
 	 * Brenner says:
 	 * r = 3 * pow(2, -FSIGNIF) * sum{ pow(prime_factors, 1.5) }
 	 * where FSIGNIF is the smallest bit in the floating point fraction.
-	 * 
+	 *
 	 * Let m = largest prime factor in the list of factors.
 	 * Let p = product of all primes which appear an odd number of
 	 * times in the list of prime factors.  Then the worksize needed
@@ -120,7 +120,7 @@ void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned 
 	 * of at least 2.  So I will return s = 0 when max(m,p) = 2.
 	 *
 	 * I have two different versions of the comments in FOURT, with
-	 * different formulae for t.  The simple formula says 
+	 * different formulae for t.  The simple formula says
 	 * 	t = n * (sum of prime factors of n).
 	 * The more complicated formula gives coefficients in microsecs
 	 * on a cdc3300 (ancient history, but perhaps proportional):
@@ -134,7 +134,7 @@ void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned 
 	 * non-2 factors.  So I will use the more complicated formula.
 	 * However, I realize that the actual numbers are wrong for today's
 	 * architectures, and the relative proportions may be wrong as well.
-	 * 
+	 *
 	 * W. H. F. Smith, 26 February 1992.
 	 *  */
 
@@ -1526,10 +1526,10 @@ L920:
 GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows) {
         /* Find the size of the workspace that will be needed by the transform.
          * To use this routine for a 1-D transform, set n_rows = 1.
-         * 
+         *
          * This is all based on the comments in Norman Brenner's code
          * FOURT, from which our C codes are translated.
-         * 
+         *
          * Let m = largest prime factor in the list of factors.
          * Let p = product of all primes which appear an odd number of
          * times in the list of prime factors.  Then the worksize needed
@@ -1541,14 +1541,14 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int n_colu
          *  */
         unsigned int f[32], n_factors, nonsymx, nonsymy, nonsym;
         size_t storage, ntotal;
-	
+
         /* Find workspace needed.  First find non_symmetric factors in n_columns, n_rows  */
         n_factors = gmt_get_prime_factors (GMT, n_columns, f);
         nonsymx = (unsigned int)fft_get_non_symmetric_f (f, n_factors);
         n_factors = gmt_get_prime_factors (GMT, n_rows, f);
         nonsymy = (unsigned int)fft_get_non_symmetric_f (f, n_factors);
         nonsym = MAX (nonsymx, nonsymy);
-	
+
         /* Now get factors of ntotal  */
         ntotal = gmt_M_get_nm (GMT, n_columns, n_rows);
         n_factors = gmt_get_prime_factors (GMT, ntotal, f);
@@ -1568,18 +1568,18 @@ GMT_LOCAL int fft_1d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned
         /* Forward(-1) or Inverse(+1) */
         /* Real(0) or complex(1) data */
         /* Work array */
-	
+
         int ksign, ndim = 1, n_signed = n, kmode = mode;
         size_t work_size = 0;
         gmt_grdfloat *work = NULL;
-	
+
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = fft_brenner_worksize (GMT, n, 1))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
         (void) fft_brenner_fourt_f (data, &n_signed, &ndim, &ksign, &kmode, work);
-        gmt_M_free (GMT, work);	
+        gmt_M_free (GMT, work);
         return (GMT_OK);
 }
-	
+
 GMT_LOCAL int fft_2d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
         /* Data array */
         /* Dimension array */
@@ -1663,7 +1663,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	struct GMT_CTRL *GMT = API->GMT;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = fft_2d_selection (GMT, n_columns, n_rows);
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft2d[use] (GMT, data, n_columns, n_rows, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */

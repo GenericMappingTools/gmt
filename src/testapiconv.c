@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* Test reading several grid headers */
-	
+
 	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, "*.nc", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	/* Then read grid data */
 	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
@@ -63,18 +63,18 @@ int main (int argc, char *argv[]) {
 	n = 0;
 	if ((P = GMT_Read_Group (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	if (GMT_Destroy_Group (API, &P, n) != GMT_NOERROR) exit (EXIT_FAILURE);
-	
+
 	/* 1. Read in two data tables; this DATASET is our starting point */
 
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "[AB].txt", NULL)) == NULL) exit (EXIT_FAILURE);
-	
+
 	/* Write a matrix */
 	flag[0] = 3; flag[1] = 0; if ((M = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_MATRIX, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to matrix */
 	if (GMT_Write_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, "AB_dataM.txt", M) != GMT_NOERROR)  exit (EXIT_FAILURE);	/* run module */
 	/* Write a vector */
 	if ((V = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_VECTOR, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to vector */
 	if (GMT_Write_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, "AB_dataV.txt", V) != GMT_NOERROR)  exit (EXIT_FAILURE);	/* run module */
-	
+
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
 }

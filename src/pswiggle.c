@@ -29,7 +29,7 @@
  * Version:	6 API
  *
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
@@ -93,9 +93,9 @@ struct PSWIGGLE_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSWIGGLE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.mode = 1;	/* Default is -A0 */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
@@ -109,8 +109,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* De
 	if (!C) return;
 	if (C->D.scale.refpoint) gmt_free_refpoint (GMT, &C->D.scale.refpoint);
 	gmt_M_free (GMT, C->D.scale.panel);
-	gmt_M_str_free (C->S.label);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->S.label);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, unsigned int adjust_az, double start_az, double stop_az, int fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, int paint_wiggle, int negative, int outline, int track) {
@@ -146,7 +146,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 			}
 			else
 				x_inc = y_inc = 0.0;
-		
+	
 			GMT->current.plot.x[n] = x[i] + x_inc;
 			GMT->current.plot.y[n] = y[i] + y_inc;
 			n++;
@@ -168,7 +168,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", negative ? "Negative" : "Positive");
-		gmt_setfill (GMT, fill, false);
+		gmt_setfill (GMT, fill, 0);
 		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n);
 	}
 
@@ -260,7 +260,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append any unit from among %s [c].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,qi,t,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					GMT->common.g.active = true;
 					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 						sprintf (txt_a, "d%s", &opt->arg[1]);
-					else if (gmt_M_is_geographic (GMT, GMT_IN))	
+					else if (gmt_M_is_geographic (GMT, GMT_IN))
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
 					else
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
@@ -452,9 +452,9 @@ int GMT_wiggle (void *V_API, int mode, void *args) {
 int GMT_pswiggle (void *V_API, int mode, void *args) {
 	bool negative;
 	int error = 0;
-	
+
 	unsigned int tbl;
-	
+
 	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;
 
@@ -543,7 +543,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		TH = gmt_get_DT_hidden (T);
-		
+	
                 GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
@@ -554,7 +554,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 			lon = T->segment[seg]->data[GMT_X];	/* lon, lat, z are just shorthands */
 			lat = T->segment[seg]->data[GMT_Y];
 			z = T->segment[seg]->data[GMT_Z];
-			
+		
 			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
 
 			gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
@@ -586,14 +586,14 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 				if (!gmt_M_is_dnan (z[row])) j++;
 				if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 			}
-	
+
 			if (j > 1) {
 				negative = zz[j-1] < 0.0;
 				plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, Ctrl->A.mode, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 			}
 		}
 	}
-	
+
 	gmt_map_clip_off (GMT);
 	gmt_map_basemap (GMT);
 

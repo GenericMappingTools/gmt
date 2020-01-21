@@ -390,7 +390,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			n_errors++;
 		}
 	}
-	
+
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -H\n");
@@ -491,7 +491,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
-	
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
@@ -590,7 +590,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
 	}
-	
+
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
 		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
@@ -737,7 +737,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;
 
-	if (!write) 
+	if (!write)
 		gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 
 	gmt_M_free (GMT, cdf_cpt);

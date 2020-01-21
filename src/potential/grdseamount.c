@@ -56,7 +56,7 @@ struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double scale;	/* Scale factor from year to given user unit */
 	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
 	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
-	
+
 };
 
 struct GRDSEAMOUNT_CTRL {
@@ -124,9 +124,9 @@ EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *form
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDSEAMOUNT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.value[GMT_IN] = GMT->session.f_NaN;
 	C->A.value[GMT_OUT] = 1.0f;
@@ -134,16 +134,16 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->S.value = 1.0;
 	C->T.n_times = 1;
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->M.file);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->M.file);
 	gmt_M_free (GMT, C->T.time);
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -195,7 +195,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
 	GMT_Option (API, "h,i,r,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -432,14 +432,14 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 	double s_scale;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], s_unit;
 	gmt_M_unused (GMT);
-	
+
 	for (col = 0; col < n_expected; col++) in[col] = data[col][rec];	/* Just copy over this numerical part of the record */
 	if (Ctrl->T.active && text) {	/* Force start and stop times to be multiples of the increment */
 		sscanf (text[rec], "%s %s", txt_x, txt_y);
 		in[n_expected-2] = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
 		in[n_expected-1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
 	}
-	
+
 	if (!map) {	/* Scale horizontal units to meters */
 		in[GMT_X] *= inv_scale;
 		in[GMT_Y] *= inv_scale;
@@ -450,10 +450,10 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 		else	/* Radius */
 			in[2] *= inv_scale;
 	}
-	
+
 	if (Ctrl->T.active && in[n_expected-2] < in[n_expected-1])
 		gmt_M_double_swap (in[n_expected-2], in[n_expected-1]);	/* Ensure start time is always larger */
-	return 0;	/* OK */	
+	return 0;	/* OK */
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -461,16 +461,16 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 
 int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
-	
+
 	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0;
 	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
-	
+
 	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
-	
+
 	bool map = false, periodic = false, replicate, first, empty;
-	
+
 	char unit, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
-	
+
 	gmt_grdfloat *data = NULL;
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
 	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, h_scl = 0.0, noise = 0.0, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
@@ -479,7 +479,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
 	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*phi_solver) (double in[], double f, double v, bool elliptical);
-	
+
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
 	struct GMT_DATASEGMENT *S = NULL;
@@ -506,7 +506,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != GMT_NOERROR) Return (error);
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
-	
+
 	/* Specify inputexpected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
@@ -538,12 +538,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	build_mode = (Ctrl->T.active) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building we use disc increments regardless of shape */
-	
+
 	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
 		DEG_PR_KM = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
 		d_mode = 2, unit = 'k';	/* Select km and great-circle distances */
-	}	
+	}
 	else {	/* Cartesian scaling */
 		unsigned int s_unit;
 		s_unit = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name);
@@ -576,12 +576,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
-	
+
 	if (Ctrl->T.active) {	/* Have requested a time series of bathymetry */
 		t0_col = (unsigned int)(n_expected_fields - 2);
 		t1_col = (unsigned int)(n_expected_fields - 1);
 	}
-	
+
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
 		unsigned int k, j;
@@ -599,7 +599,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Format for time will be %s\n", time_fmt);
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
-	
+
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_memset (in, 9, double);
 	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
@@ -651,11 +651,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 		Return (GMT_NOERROR);
 	}
-				
+			
 	/* Set up and allocate output grid */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-		
+	
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	nx1 = Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
@@ -677,21 +677,21 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
 		empty = true;	/* So far, no seamounts have left a contribution */
-				
+			
 		/* 2. VISIT ALL SEAMOUNTS */
 		for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
 					if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
-					
+				
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
 					/* Ok, we are inside the region - process data */
-					
+				
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
 						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
 						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
@@ -737,14 +737,14 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 							in[3] = h_mean;
 						}
 					}
-					
+				
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
 					if ((col_0 = scol_0) >= Grid->header->n_columns) continue;	/* Still outside x-range */
 					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
 					if ((row_0 = srow_0) >= Grid->header->n_rows) continue;	/* Still outside y-range */
-					
+				
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
 						a = in[3];			/* Semi-major axis */
@@ -789,7 +789,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					gmt_M_free (GMT, d_col);
 					d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
-		
+	
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
 						if ((row = srow) >= Grid->header->n_rows) continue;
@@ -870,7 +870,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 			continue;
 		}
-		
+	
 		/* Time to write the grid */
 		if (Ctrl->T.active)
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &(Ctrl->T.time[t]));
@@ -888,7 +888,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
-		
+	
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
@@ -918,6 +918,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
-	
+
 	Return (GMT_NOERROR);
 }

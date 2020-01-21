@@ -26,7 +26,7 @@
  * Date:	1-JUN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sample1d"
@@ -72,20 +72,20 @@ struct SAMPLE1D_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SAMPLE1D_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SAMPLE1D_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.mode = GMT->current.setting.interpolant;
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->Out.file);	
+	gmt_M_str_free (C->Out.file);
 	gmt_free_array (GMT, &(C->T.T));
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -126,7 +126,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,q,s,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -164,7 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
-	
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
@@ -248,7 +248,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
-				
+			
 				break;
 			case 'T':
 				if (old_syntax && gmt_M_compat_check (GMT, 5)) {
@@ -297,9 +297,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 int GMT_sample1d (void *V_API, int mode, void *args) {
 	unsigned int geometry, int_mode;
 	int error = 0, result;
-	
+
 	unsigned char *nan_flag = NULL;
-	
+
 	uint64_t k, tbl, col, row, seg, m = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 
 	double *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
@@ -328,7 +328,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
@@ -336,7 +336,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->N.col] = true;				/* ... But disallow NaN in "time" column */
 	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
-	
+
 	if (Ctrl->T.T.spatial) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Loxodrome mode ignored for Cartesian data.\n");
@@ -354,7 +354,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	/* First read input data to be sampled */
-	
+
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
@@ -375,7 +375,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		if (gmt_parse_array (GMT, 'T', string, &(Ctrl->T.T), 0, Ctrl->N.col))
 			Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	if (Ctrl->T.T.file) {	/* Read file with abscissae */
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
@@ -440,12 +440,12 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			SH = gmt_get_DS_hidden (Sout);
 			Sout->n_rows = SH->n_alloc = m;
-				
+			
 			for (col = 0; m && col < Din->n_columns; col++) {
 
 				if (col == Ctrl->N.col && !Ctrl->T.T.spatial) continue;	/* Skip the time column */
 				if (Ctrl->T.T.spatial && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
-				
+			
 				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
 					ttime = gmt_M_memory (GMT, NULL, S->n_rows, double);
@@ -483,6 +483,6 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, nan_flag);
-	
+
 	Return (GMT_NOERROR);
 }

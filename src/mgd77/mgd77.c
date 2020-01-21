@@ -3526,7 +3526,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 				else	/* 4-digit year given */
 					rfEnd = y;
 				/* IGRF is typically definitive up to the ref field code year (e.g., IGRF-85 is definitive to 1985), then predictive for five years */
-				rfEnd += 5; 
+				rfEnd += 5;
 				rfStart = rfEnd - 5;
 			}
 			else {

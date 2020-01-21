@@ -126,7 +126,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -213,9 +213,9 @@ GMT_LOCAL unsigned int prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION 
 	unsigned int k, n_axis = 0;
 	struct GMT_OPTION *opt = NULL, *bopt = NULL;
 	char string[GMT_LEN256] = {""};
-	
+
 	/* Unless -M, append -Jz1 so that -Ramin/amax/bmin/bmax/cmin/cmax is accepted without specifying -Jz on command line */
-	
+
 	if ((opt = GMT_Find_Option (API, 'M', *options)) == NULL) {
 		if ((opt = GMT_Make_Option (API, 'J', "z1i")) == NULL) return (GMT_PARSE_ERROR);
 		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return GMT_PARSE_ERROR;	/* Failure to append this option */
@@ -224,7 +224,7 @@ GMT_LOCAL unsigned int prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION 
 		GMT_Report (API, GMT_MSG_NORMAL, "Only -JX<width>[unit] is available for this module\n");
 		return (GMT_PARSE_ERROR);
 	}
-	
+
 	/* Next, find any references to A|B|C|a|b|c in -B and replace with X|Y|Z|x|y|z to survive the parser */
 	for (opt = *options; opt; opt = opt->next) {	/* Linearly search for the specified option */
 		if (opt->option == 'B') {
@@ -307,7 +307,7 @@ GMT_LOCAL char * get_Bsetting (struct GMT_OPTION *B) {
 	static char bopt[GMT_LEN64] = {""};
 	if (B == NULL) return NULL;	/* No option... */
 	if ((g = get_gridint (B)) == NULL) return (&B->arg[1]);	/* No gridlines requested so use the entire thing */
-	
+
 	c = strstr (B->arg, g);	/* Start of g[<pars>] */
 	if (c) c[0] = '\0';	/* Hide g for now */
 	strncpy (bopt, &B->arg[1], 63U);	/* Place start of b up to g[<pars>] in bopt, skipping the leading a,b,c */
@@ -346,9 +346,9 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int n_sides = 0, side[3];
 	uint64_t tbl, seg, row, col, k;
-	
+
 	bool clip_set = false;
-	
+
 	char cmd[GMT_LEN256] = {""}, code, *name = "ABC", cmode[3] = {""}, *g = NULL;
 
 	double x, y, rect[4] = {0.0, 0.0, 0.0, 0.0}, tri_x[4] = {0.0, 0.0, 0.0, 0.0}, tri_y[4] = {0.0, 0.0, 0.0, 0.0};
@@ -371,7 +371,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	if ((error = prep_options (API, &options, boptions))) bailout (error);	/* Enforce common option syntax temporarily to get passed GMT_Parse_Common */
-	
+
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
@@ -385,7 +385,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		Return (API->error);
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		Return (API->error);
-	
+
 	/* Convert a,b,c[,z] to to x,y[,z] */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -400,7 +400,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	}
 	gmt_adjust_dataset (GMT, D, D->n_columns-1);	/* Remove all traces of the extra column */
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
-	
+
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to write x,y file to stdout\n");
@@ -408,9 +408,9 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-	
+
 	/* Here we are doing some sort of plotting */
-	
+
 	rect[XHI] = gmt_M_to_inch (GMT, &GMT->common.J.string[1]);
 	rect[YHI] =  0.5 * SQRT3 * rect[XHI];
 	tri_x[1] = rect[XHI];	tri_x[2] = 0.5 * rect[XHI];	tri_y[2] = rect[YHI];
@@ -423,7 +423,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	width = GMT->current.map.width;
 	height = 0.5 * SQRT3 * width;
-	
+
 	/* First deal with the ternary "psbasemap" task.  This is complicated since there is no ternary
 	 * map projection and region settings in GMT core.  We simulate the ternary diagram using
 	 * regular psbasemap calls (one per active axis),  Because gridlines must be clipped to inside
@@ -431,9 +431,9 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	 * per axis case.  We must therefore separate the gridline arguments (if any) from the remaining
 	 * axis arguments.  We also must handle the cancas filling separately.  The three axis are 60 degrees
 	 * relative to each other and we do this directly with PSL calls. */
-	
+
 	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
 		PSL_plotpolygon (PSL, tri_x, tri_y, 4);
 		GMT->current.map.frame.paint = false;
 	}
@@ -444,7 +444,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	if (n_sides) {	/* Draw some or all of the triangular sides */
 		PSL_comment (PSL, "Draw triangular frame sides\n");
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
-		gmt_setfill (GMT, NULL, true);
+		gmt_setfill (GMT, NULL, 1);
 		if (n_sides == 3)
 			PSL_plotpolygon (PSL, tri_x, tri_y, 4);
 		else if (n_sides == 2) {	/* Must find the open jaw */
@@ -486,7 +486,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	x_origin[0] = 0.0;	y_origin[0] = 0.0;	rot[0] = 0.0;	sign[0] = +1;	side[0] = GMT->current.map.frame.side[S_SIDE]; cmode[0] = 'S';	/* S_SIDE settings */
 	x_origin[1] = -width * 0.25;	y_origin[1] = 0.5 * height;	rot[1] = -60.0;	sign[1] = -1;	side[1] = GMT->current.map.frame.side[E_SIDE]; cmode[1] = 'N';	/* E_SIDE settings */
 	x_origin[2] = 0.75 * width;	y_origin[2] = -0.5 * height;	rot[2] = 60.0;	sign[2] = -1;	side[2] = GMT->current.map.frame.side[W_SIDE]; cmode[2] = 'N';	/* W_SIDE settings */
-	
+
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
 		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
@@ -500,7 +500,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
-	
+
 	/* Deal with gridline requests separately */
 	for (k = 0; k <= GMT_Z; k++) {
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
@@ -545,9 +545,9 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
 			return (API->error);
 	}
-	
+
 	/* Done plotting */
-	
+
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

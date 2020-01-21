@@ -1515,7 +1515,7 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		if (!flip && (GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
 			if (sides[i] % 2)
 				xx[i] += (sides[i] == 1) ? GMT->current.setting.map_annot_offset[level] : -GMT->current.setting.map_annot_offset[level];
-			else             
+			else            
 				yy[i] += (sides[i] == 2) ? GMT->current.setting.map_annot_offset[level] : -GMT->current.setting.map_annot_offset[level];
 		}
 
@@ -1887,7 +1887,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	if (GMT->current.map.frame.axis[GMT_X].file_custom) dx[0] = 1.0;	/* To pass checks below */
 	if (GMT->current.map.frame.axis[GMT_Y].file_custom) dy[0] = 1.0;	/* To pass checks below */
-	
+
 	if (dx[0] <= 0.0 && dy[0] <= 0.0) return;
 
 	dual[GMT_X] = (dx[1] > 0.0);
@@ -2197,10 +2197,10 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	/* Now draw black box with GMT logo, and white box with time stamp */
 
-	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 	PSL_plotsymbol (PSL, 0.5*dim[0], 0.5*dim[1], dim, PSL_RECT);
 	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, 220, 90, 1);
-	PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+	PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 	PSL_command (PSL, "PSL_g_h PSL_b_w PSL_g_w 0 Sb\n");
 	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, PSL_BL, 0);
 
@@ -2214,7 +2214,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	PSL_command (PSL, "U\n%% End GMT time-stamp\n");
 
 	/* Reset fill style to empty and no outline and reset linewidth */
-	PSL_setfill (PSL, unset_rgb, false);
+	PSL_setfill (PSL, unset_rgb, 0);
 	PSL->current.linewidth = -1.0;
 }
 
@@ -2278,7 +2278,7 @@ GMT_LOCAL void plot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
-		PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+		PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 		PSL_plotpolygon (PSL, x, y, 4);
 		/* Hollow half */
 		x[0] = x[3] = x0, y[0] = y[3] = y0;
@@ -2289,7 +2289,7 @@ GMT_LOCAL void plot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
-		PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+		PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 		PSL_plotpolygon (PSL, x, y, 4);
 	}
 }
@@ -2332,7 +2332,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
 		if (level == GMT_ROSE_PRIMARY && mr->kind != 2) continue;	/* Sorry, not magnetic directions */
 		if (mr->draw_circle[level]) {
-			gmt_setfill (GMT, NULL, true);
+			gmt_setfill (GMT, NULL, 1);
 			PSL_comment (PSL, "Draw magnetic rose %s circle\n", type[level]);
 			gmt_setpen (GMT, &mr->pen[level]);
 			s = 2.0 * R[level];
@@ -2419,7 +2419,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		dim[2] = M_VW * mr->size, dim[3] = M_HL * mr->size, dim[4] = M_HW * mr->size,
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 		gmt_setpen (GMT, &GMT->current.setting.map_default_pen);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, x[0], y[0], dim, PSL_VECTOR);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
@@ -2442,16 +2442,16 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		dim[0] = xp[1], dim[1] = yp[1];
 		dim[2] = F_VW * mr->size, dim[3] = F_HL * mr->size, dim[4] = F_HW * mr->size;
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], dim, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 	}
-	
+
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
@@ -2496,11 +2496,11 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 			x[3] = x[5] = -x[1], x[4] = -x[0];
 			y[5] = y[7] = -y[1], y[6] = -y[2];
 			gmtlib_rotate2D (GMT, x, y, 8, mr->refpoint->x, mr->refpoint->y, rot[kind] + angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
-			PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
+			PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 			PSL_plotpolygon (PSL, xp, yp, 8);	/* Outline of 4-pointed star */
 			tx[0] = mr->refpoint->x, ty[0] = mr->refpoint->y;
 			/* Fill positive halves of the 4-pointed blades */
-			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
+			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 			tx[1] = xp[0], ty[1] = yp[0], tx[2] = xp[7], ty[2] = yp[7];
 			PSL_plotpolygon (PSL, tx, ty, 3);	/* East */
 			tx[1] = xp[1], ty[1] = yp[1], tx[2] = xp[2], ty[2] = yp[2];
@@ -2527,12 +2527,12 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		x[0] = xp[1], x[1] = yp[1];
 		x[2] = F_VW * mr->size, x[3] = F_HL * mr->size, x[4] = F_HW * mr->size;
 		x[5] = GMT->current.setting.map_vector_shape, x[6] = PSL_VEC_END | PSL_VEC_FILL;
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], x, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
-		gmt_setfill (GMT, &f, true);
+		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 		if (mr->label[2][0]) {	/* Wanted the north label */
@@ -2608,12 +2608,12 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 	double arg[3];
 
 	/* Determine if we have text comparisons to deal with, if so, call the string version of this function */
-	
+
 	for (k = 0; k < 2; k++)
 		if (s->var[k] == GMT_VAR_STRING) return (plot_custum_failed_bool_test_string (GMT, s, size, text));
-	
+
 	/* Here we have numerical comparisons only */
-	
+
 	/* Perform the boolean comparison and return false if test is true */
 
 	for (k = 0; k < 3; k++) {	/* Load up the left and 1-2 right operands */
@@ -2674,10 +2674,9 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 	return (!result);			/* Return the opposite of the test result */
 }
 
-GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush) {
-	bool draw_outline;
+GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, int outline, bool *flush) {
+	int draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
 
-	draw_outline = (outline && p->rgb[0] != -1) ? true : false;
 	if (draw_outline) gmt_setpen (GMT, p);
 	if (outline == 2) {	/* Stroke path only */
 		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE|PSL_STROKE);
@@ -3189,7 +3188,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 
 		if ((GMT->current.plot.n = gmt_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return 0;		/* All points are outside region */
 		//dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
-		
+	
 		if (init) {
 			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
 			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
@@ -4367,7 +4366,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		struct GMT_FILL arrow;
 		double vector_width, dim[PSL_MAX_DIMS], g_scale_begin = 0.0, g_scale_end = 0.0, g_ext = 0.0;
 		gmt_init_fill (GMT, &arrow, GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
-		gmt_setfill (GMT, &arrow, false);
+		gmt_setfill (GMT, &arrow, 0);
 		gmt_M_memset (dim, PSL_MAX_DIMS, double);
 		vector_width = rint (PSL_DOTS_PER_INCH * GMT->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / PSL_DOTS_PER_INCH;	/* Round off vector width same way as pen width */
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
@@ -4388,7 +4387,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			g_scale_end = 1.0;
 			g_ext = GMT->current.setting.map_graph_extension + dim[3];
 		}
-		
+	
 		if (horizontal) {
 			double x = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
@@ -4608,7 +4607,7 @@ GMT_LOCAL double get_border_angle (struct GMT_CTRL *GMT, double xc, double yc, u
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
 	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
 	angle = atan2 (y1 - y0, x1 - x0) * R2D;	/* Get angle of line in direction from "on" point to "in" point */
-	
+
 	return angle;
 }
 
@@ -4696,7 +4695,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	 * 1) The map border must be rectangular
 	 * 2) The line must be a linear spline and not the Bezier spline
 	 * Hopefully we can work to avoid the first case soon */
-	
+
 	uint64_t i, j, im1, ip1, k;
 	int way;
 	bool close, stop;
@@ -4979,7 +4978,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Vertical walls */
 
 	if (GMT->current.map.frame.draw_box) {
-		PSL_setfill (PSL, GMT->session.no_rgb, true);
+		PSL_setfill (PSL, GMT->session.no_rgb, 1);
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		if (fore) {
 			plot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw, false);
@@ -5087,7 +5086,7 @@ void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	work_x[1] = work_x[2] = GMT->current.proj.rect[XHI];
 	work_y[0] = work_y[1] = work_y[4] = GMT->current.proj.rect[YLO];
 	work_y[2] = work_y[3] = GMT->current.proj.rect[YHI];
-	
+
 	PSL_comment (PSL, "Activate BoundingBox Map clip path\n");
 	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
@@ -5113,12 +5112,12 @@ unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	PSL_setfont (GMT->PSL, F->id);	/* Set the current font ID */
 	if (F->form & 2) {	/* Outline font requested; set pen and fill (rgb[0] == -1 means no fill) */
 		gmt_setpen (GMT, &F->pen);		/* Stroke the text outline with this pen */
-		gmt_setfill (GMT, &F->fill, true);	/* Use this color or pattern (if any) for the text fill */
+		gmt_setfill (GMT, &F->fill, 1);	/* Use this color or pattern (if any) for the text fill */
 		outline = 1;	/* Indicates outline font is needed and should be stroked */
 		if (F->form & 8) outline = 3;	/* Indicates that the outline is allowed to overlap the font */
 	}
 	else if (F->form & 4) {	/* Want to use a pattern to fill the text but do not draw outline */
-		gmt_setfill (GMT, &F->fill, false);
+		gmt_setfill (GMT, &F->fill, 0);
 		outline = 2;	/* Indicates outline font is needed for filling but will not be stroked */
 	}
 	else {	/* Regular, solid text fill is set via stroke color */
@@ -5174,13 +5173,12 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 		}
 		else {	/* Curved map inset */
 			uint64_t np;
-			int outline;
+			int outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE) ? 1 : 0;	/* Does the panel have an outline? */
 			double *lon = NULL, *lat = NULL;
 			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);	/* Just get empty array pointers */
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
-			outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 			if ((panel->mode & 1)) gmt_setfill (GMT, &panel->fill, outline);
 			if ((panel->mode & 2)) gmt_setpen (GMT, &panel->pen1);
 			gmt_geo_polygons (GMT, S);
@@ -5199,7 +5197,7 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 		if ((B->refpoint = gmt_get_refpoint (GMT, fake, 'D')) == NULL)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse arg %s\n", fake);
 	}
-	
+
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map inset lower left corner and dimensions (in %s): %g %g %g %g\n",
@@ -5236,7 +5234,7 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 	}
 	else	/* No inset clipping set */
 		PSL_command (GMT->PSL, "/PSL_inset_clip 0 def\n");
-	
+
 	if (B->translate)	/* Translate the plot origin */
 		PSL_setorigin (GMT->PSL, rect[XLO], rect[YLO], 0.0, PSL_FWD);
 }
@@ -5354,7 +5352,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 		PSL_plotsegment (PSL, x_left, ms->refpoint->y - bar_tick_len, x_left, ms->refpoint->y);
 		for (j = 0; j < n_f_ticks[i]; j++) {
-			PSL_setfill (PSL, (j%2) ? GMT->PSL->init.page_rgb : GMT->current.setting.map_default_pen.rgb, true);
+			PSL_setfill (PSL, (j%2) ? GMT->PSL->init.page_rgb : GMT->current.setting.map_default_pen.rgb, 1);
 			PSL_plotbox (PSL, x_left + j * dx_f, ms->refpoint->y, x_left + (j+1) * dx_f, ms->refpoint->y - bar_height);
 			PSL_plotsegment (PSL, x_left + (j+1) * dx_f, ms->refpoint->y - bar_tick_len, x_left + (j+1) * dx_f, ms->refpoint->y);
 		}
@@ -5427,7 +5425,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		if (gmt_M_is_geographic (GMT, GMT_IN))
 			snprintf (txt, GMT_LEN256, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
 		else {	/* No unit for Cartesian scales, only label */
-			if (ms->do_label) 
+			if (ms->do_label)
 				snprintf (txt, GMT_LEN256, "%s %s", format, ms->label);
 			else
 				strcpy (txt, format);
@@ -5461,7 +5459,7 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
 	gmt_adjust_refpoint (GMT, ms->refpoint, dim, ms->off, ms->justify, PSL_ML);	/* Adjust refpoint to ML */
-		
+	
 	x0 = ms->refpoint->x;	y0 = ms->refpoint->y;
 	if (ms->panel && ms->panel->mode) {	/* Place rectangle behind the map scale */
 		double x_center, y_center;
@@ -5557,7 +5555,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	int outline;
 	struct GMT_FILL *fill = NULL;	/* Default is no fill */
 	if (!P) return;	/* No panel given */
-	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
+	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE) ? 1 : 0;	/* Does the panel have an outline? */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Clearance: %g/%g/%g/%g\n", P->padding[XLO], P->padding[XLO], P->padding[YLO], P->padding[YHI]);
 	dim[GMT_X] = P->width  + P->padding[XLO] + P->padding[XHI];	/* Rectangle width */
@@ -5568,7 +5566,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	y += 0.5 * (P->padding[YHI] - P->padding[YLO]);
 	if (mode == 1) outline = 0;	/* Do not draw outlines (even if requested) at this time since mode == 1*/
 	if ((mode & 1) && (P->mode & GMT_PANEL_SHADOW)) {	/* Draw offset background shadow first */
-		gmt_setfill (GMT, &P->sfill, false);	/* The shadow has no outline */
+		gmt_setfill (GMT, &P->sfill, 0);	/* The shadow has no outline */
 		PSL_plotsymbol (GMT->PSL, x + P->off[GMT_X], y + P->off[GMT_Y], dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	if ((mode & 2) && outline) gmt_setpen (GMT, &P->pen1);	/* Need to set frame outline pen */
@@ -5579,7 +5577,7 @@ void gmt_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 		dim[GMT_X] -= 2.0 * P->gap;	/* Shrink dimension of panel by the uniform gap on all sides */
 		dim[GMT_Y] -= 2.0 * P->gap;
 		gmt_setpen (GMT, &P->pen2);	/* Set inner border pen */
-		gmt_setfill (GMT, NULL, true);	/* Never fill for inner frame */
+		gmt_setfill (GMT, NULL, 1);	/* Never fill for inner frame */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	/* Reset color */
@@ -5624,9 +5622,9 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], char *tr_text, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
-	int action, ifs;
+	int action, ifs, this_outline = 0;
 	unsigned int na, i, id = 0, level;
-	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
+	bool flush = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, az, angle1, angle2, p_width = 0.0, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
@@ -5734,7 +5732,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			continue;
 		}
 		done[level] = true;	/* Here we will actually draw something */
-		
+	
 		/* Scale coordinates and size parameters by the scale in size[0] */
 
 		x = s->x * size[0];
@@ -5846,7 +5844,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				PSL_plotsymbol (PSL, x, y, dim, action);
@@ -5857,7 +5855,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] = s->p[0];
@@ -5869,7 +5867,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
@@ -5883,7 +5881,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
@@ -5899,7 +5897,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				get_the_fill (&f, s, current_pen, current_fill);
 				get_the_pen (&p, s, current_pen, current_fill);
-				this_outline = (p.rgb[0] == -1) ? false : outline;
+				this_outline = (p.rgb[0] == -1) ? 0 : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
 				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size */
@@ -6171,11 +6169,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		else if (!strcmp(prjcode, "mill")) strcat (opt_J, "J");
 		else strcat (opt_J, "C");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+			if ((pch = strstr(token, "lon_0=")) != NULL) {
 				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {
 				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
@@ -6231,11 +6229,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		int zone = 100;
 		strcat (opt_J, "U");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "zone=")) != NULL) {	
+			if ((pch = strstr(token, "zone=")) != NULL) {
 				zone = atoi(&token[5]);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "south=")) != NULL) {	
+			else if ((pch = strstr(token, "south=")) != NULL) {
 				zone *= -1;
 				//wipe_substr(szProj4, token);
 			}
@@ -6248,11 +6246,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			}
 		}
 		if (zone == 100) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj selected but no info about utm zone.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj selected but no info about utm zone.\n");
 			return (pStrOut);
 		}
 		else if (zone > 64) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj The lon_0 argument was not correctly parsed.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj The lon_0 argument was not correctly parsed.\n");
 		}
 		else {
 			char t[4];
@@ -6268,19 +6266,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		else if (!strcmp(prjcode, "lcc")) strcat (opt_J, "L");
 		else strcat (opt_J, "Poly/");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+			if ((pch = strstr(token, "lon_0=")) != NULL) {
 				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {
 				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_1=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_1=")) != NULL) {
 				strncat(lat_1, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_2=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_2=")) != NULL) {
 				strncat(lat_2, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
@@ -6310,15 +6308,15 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		else if (!strcmp(prjcode, "gnom")) strcat (opt_J, "F");
 		else strcat (opt_J, "S");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+			if ((pch = strstr(token, "lon_0=")) != NULL) {
 				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {
 				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
-			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
+			else if ((pch = strstr(token, "lat_ts=")) != NULL) {
 				strncat(lat_ts, &token[7], 31);
 				//wipe_substr(szProj4, token);
 			}
@@ -6446,7 +6444,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		memset(&from, 0, sizeof(struct GMT_DATUM));
 
 		if (ename[0] == '\0' && (!got_a || !got_b)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 			            " Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
 					    "(miss +ellips=xxxx OR +a=xxxx +b=xxxx)\n");
 			return (pStrOut);
@@ -6465,7 +6463,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		gmt_set_datum (GMT, "-", &from);		/* 'to' is WG84 */
 		gmt_set_datum (GMT, t, &to);
 		gmt_datum_init(GMT, &from, &to, false);
-	
+
 		for (k = 0; k < 7; k++)
 			GMT->current.proj.datum.bursa[k] = GMT->current.proj.datum.to.xyz[k];
 
@@ -6492,7 +6490,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		wipe_substr(szProj4, token);
 	}
 
-	/* Remove known unused fields in proj4 string */ 
+	/* Remove known unused fields in proj4 string */
 	if ((pch = strstr(szProj4, "+no_defs")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		wipe_substr(szProj4, token);
@@ -6513,7 +6511,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	}
 	/* If a +width=xx is given, append it a 'W' so that we identify this in gmt_parse_common_options() and act */
 	if ((pch = strstr(szProj4, "+width=")) != NULL) {
-		pos = 0;	
+		pos = 0;
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%sW", &token[6]);
 		//wipe_substr(szProj4, token);
 		GMT->current.proj.gave_map_width = 1;
@@ -6541,7 +6539,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 #endif
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
-	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
+	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */
 
 	pStrOut = strdup(opt_J);
 	return pStrOut;
@@ -6709,15 +6707,290 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	return (pStrOut);
 }
 
+GMT_LOCAL void gmtplot_just_f_xy (int justify, double *fx, double *fy) {
+	/* Factors to multiply feature width/height and add to x,y that updates its mid-point location */
+	*fy = -0.5 * ((justify / 4) - 1);
+	*fx = -0.5 * ((justify % 4) - 2);
+}
+
+/* Here are 6 (a-f) different progress indicator plotting functions.  See the movie documentation for how they look */
+
+GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *F1, char *F2) {
+	/* Place default progress indicator pie */
+	double dim[PSL_MAX_DIMS], fx, fy;
+	struct GMT_FILL fill;
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	x += fx * w;	y += fy * w;	/* Move to center of circle */
+	dim[0] = w;
+	if (t < 1.0) {	/* Need the background full circle since partly visible */
+		gmt_getfill (GMT, F2, &fill);	/* Want to paint background full circle*/
+		PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Full circle color */
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	}
+	gmt_getfill (GMT, F1, &fill);	/* Want to paint inside of tag box */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);	/* Wedge color */
+	if (doubleAlmostEqual (t, 1.0)) {
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_CIRCLE);	/* Plot full circle */
+	}
+	else {
+		dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
+		dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
+		dim[2] = 90.0;	/* Start is 12 'oclock */
+		dim[7] = 1;	/* Lay down filled wedge */
+		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
+		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
+	}
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
+	/* Place growing ring */
+	double fx, fy, dr2;
+	struct GMT_PEN pen;
+
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	x += fx * (w+dr2);	y += fy * (w+dr2);	/* Move to center of circle */
+	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
+	if (kind == 'B') {
+		if (fsize == 0.0) fsize = 0.3 * w * PSL_POINTS_PER_INCH;
+		PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	}
+	if (t < 1.0) {	/* Need to plot the background full circle since partly visible */
+		gmt_setpen (GMT, &pen);	/* Full circle pen */
+		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	}
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
+	gmt_setpen (GMT, &pen);	/* Full circle pen */
+	PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+	if (doubleAlmostEqual (t, 1.0))
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	else
+		PSL_plotarc (GMT->PSL, x, y, 0.5*w, 90.0 - 360 * t, 90.0, PSL_MOVE | PSL_STROKE);	/* Draw the arc */
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
+	/* Place growing math arrow */
+	double fx, fy, dr2, dim[PSL_MAX_DIMS];
+	struct GMT_PEN pen;
+
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
+	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
+	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle, add 15% to get more space so arrow head won't clip at canvas edge */
+	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
+	if (kind == 'C') {	/* Place center label */
+		if (fsize == 0.0) fsize = 0.3 * w * PSL_POINTS_PER_INCH;
+		PSL_plottext (GMT->PSL, x, y, fsize, label, 0.0, PSL_MC, 0);
+	}
+	if (t < 1.0) {	/* Need to plot the background full circle */
+		gmt_setpen (GMT, &pen);	/* Full circle pen */
+		PSL_setfill (GMT->PSL, GMT->session.no_rgb, 1);
+		PSL_plotsymbol (GMT->PSL, x, y, &w, PSL_CIRCLE);	/* Plot full circle */
+	}
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Always draw foreground circle */
+	gmt_setpen (GMT, &pen);	/* Front circle pen */
+	PSL_setfill (GMT->PSL, pen.rgb, 1);
+	dim[0] = 0.5 * w;	/* Apparently we take radius for wedge */
+	dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
+	dim[2] = 90.0;	/* Start is 12 'oclock */
+	dim[3] = 0.2 * w, dim[4] = 0.2 * w, dim[5] = pen.width / PSL_POINTS_PER_INCH;
+	dim[6] = 0.75;	/* Fixed shape setting */
+	dim[7] = (double)(PSL_VEC_BEGIN | PSL_VEC_FILL);
+	dim[8] = (double)PSL_VEC_ARROW;	dim[9] = (double)PSL_VEC_ARROW;
+	dim[12] = 0.5 * pen.width;
+	PSL_command (GMT->PSL, "/PSL_vecheadpen {} def\n");	/* So wedge won't fuss about not being set (like in psxy) */
+	PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_MARC);
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_D (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
+	/* Place rounded line indicator with a single crossmark line and optional label.
+	 * If label is in percent then we strip off the percent and place it at end of line insteadl */
+	int text_justify, just_p;
+	char *p = NULL;
+	double fx, fy, dy, dy2, xt, del_x = 0.0, del_y = 0.0, angle = 0.0, xp;
+	struct GMT_PEN pen;
+
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
+	dy2 = dy / 2.0;	/* Half pen-width */
+	x += fx * (w + dy);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
+	xt = w * (t - 0.5);	/* Location of label and tick along x-axis */
+	w /= 2;	/* From here on, w is half-length of fixed line */
+	if (kind == 'D') {	/* Want a label at the curent crossmark */
+		if (fsize == 0.0) fsize = 2.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
+		if ((p = strchr (label, '%'))) p[0] = '\0';	/* Remove % here and add separately later */
+		switch (justify) {	/* Deal with justification of text and possibly rotation */
+			case PSL_BL: case PSL_BC: case PSL_BR:
+				text_justify = PSL_BC; del_y = dy; break;
+			case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:
+				text_justify = PSL_TC; del_y = -dy; break;
+			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
+			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
+		}
+		if (p) {	/* Got percentages; must plot it separately */
+			if (justify == PSL_ML || justify == PSL_MR)
+				just_p = PSL_BC, xp = w + dy;
+			else {
+				just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
+				xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+			}
+		}
+	}
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line */
+	if (kind == 'D') {
+		PSL_plottext (GMT->PSL, xt+del_x, del_y, fsize, label, -angle, text_justify, 0);
+		if (p) {
+			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
+			p[0] = '%';	/* Restore it */
+		}
+	}
+	PSL_command (GMT->PSL, "V\n");	/* Do a save/restore around the line cap change */
+	gmt_setpen (GMT, &pen);
+	PSL_setlinecap (GMT->PSL, PSL_ROUND_CAP);	/* Want the rounded line effect */
+	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
+	PSL_command (GMT->PSL, "U\n");	/* grestore to restore to whatever line cap was set to before */
+	gmt_M_memset (&pen, 1, struct GMT_PEN);	/* Wipe pen */
+	gmt_getpen (GMT, P1, &pen);	/* Get pen for crossmark */
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, xt, -dy2, xt, dy2);	/* Draw foreground crossmark at label time */
+	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
+	PSL_setlinecap (GMT->PSL, PSL_BUTT_CAP);	/* Want the rounded line effect */
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
+	/* Place solid line indicator with optional start/end labels */
+	int text_justify, just_p;
+	double fx, fy, dy, dy2, xt, xp, del_x = 0.0, del_y = 0.0, angle = 0.0;
+	struct GMT_PEN pen;
+
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P2, &pen);	/* Pen for the background fixed line */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Pen width in inches */
+	dy2 = dy / 2.0;	/* Half pen-width */
+	x += fx * (w + dy2);	y += fy * dy;	/* Adjust center (x,y) depending on justification */
+	xt = w * (t - 0.5);	/* Point of current time on axis */
+	w /= 2;	/* From here on, w is half-length of fixed line length */
+	if (kind == 'E') {	/* Want a label at the current crossmark */
+		if (fsize == 0.0) fsize = 2.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
+		switch (justify) {	/* Deal with justification of text and possibly rotation */
+			case PSL_BL: case PSL_BC: case PSL_BR:
+				text_justify = PSL_BC; del_y = dy; break;
+			case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:
+				text_justify = PSL_TC; del_y = -dy; break;
+			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
+			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
+		}
+	}
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line and we have possibly rotated 90 degrees */
+	if (kind == 'E') {	/* Place the two labels */
+		char *c = strchr (label, ';'), *p = NULL;
+		c[0] = '\0';	/* Chop of label at t == 1 and place the first at t == 0 */
+		if ((p = strchr (label, '%')))	/* Watch for percentage sign; if found place 0 and add % to axis label */
+			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, "0", -angle, text_justify, 0);
+		else
+			PSL_plottext (GMT->PSL, del_x-w, del_y, fsize, label, -angle, text_justify, 0);
+		if ((p = strchr (&c[1], '%')))	/* Watch for percentage sign; if found place 100 and add % to axis label */
+			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, "100", -angle, text_justify, 0);
+		else
+			PSL_plottext (GMT->PSL, del_x+w, del_y, fsize, &c[1], -angle, text_justify, 0);
+		if (p) {	/* Since we found percentage we add it as an axis label */
+			if (justify == PSL_ML || justify == PSL_MR)
+				just_p = PSL_BC, xp = w + dy;
+			else {
+				just_p = (justify % 4 == 3) ? PSL_MR : PSL_ML;
+				xp = (just_p == PSL_MR) ? -dy-w : w+dy;
+			}
+			PSL_plottext (GMT->PSL, xp, 0.0, fsize, "%", -angle, just_p, 0);
+		}
+		c[0] = ';';	/* Restore the semi-colon separator */
+	}
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, -w, 0.0, +w, 0.0);	/* Draw thick rounded line */
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Pen for time-variable line */
+	gmt_setpen (GMT, &pen);
+	PSL_plotsegment (GMT->PSL, w, 0.0, xt, 0.0);
+	PSL_setorigin (GMT->PSL, -x, -y, -angle, PSL_INV);	/* Undo coordinate transformation */
+}
+
+GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, double fsize, struct GMT_FONT *F) {
+	/* Place time axis indicator via call to basemap plus adding triangle here */
+	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
+	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis;
+	bool was = GMT->current.map.frame.init;
+	double fx, fy, dy, dy2, xt, s = 1.0, angle = 0.0, h;
+	struct GMT_PEN pen;
+	struct GMT_FILL fill;
+
+	gmtplot_just_f_xy (justify, &fx, &fy);
+	gmt_M_memset (&pen, 1, struct GMT_PEN);
+	gmt_getpen (GMT, P1, &pen);	/* Pen for the time axis */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width t odetermine triangle size */
+	dy2 = dy / 2.0;	/* Half pen width */
+	x += fx * w;	y += fy * dy;	/* Adjust the (x,y) to be mid-point of axis */
+	xt = w * t;	/* Relative fraction of w along the axis from left point */
+	/* Must allow for the space needed for tick-mark, annot-offset, and possibly annotations */
+	h = GMT->current.setting.map_tick_length[GMT_PRIMARY] + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);
+	if (kind == 'F') h += GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+	x -= 0.5 * w;	/* Let x be start position of axis rather than middle */
+	switch (justify) {	/* Deal with justification and adjust x,y for starting point of axis */
+		case PSL_BL: case PSL_BC: case PSL_BR:	/* At bottom we need to move up to give space for annotations below axis */
+			axis = 'S'; y += h; break;
+		case PSL_TL: case PSL_TC: case PSL_TR: case PSL_MC:	/* At top (and middle) we likewise need space above, plus switch to TRIANGE */
+			axis = 'N'; y-= h; s = -1; symbol = PSL_TRIANGLE; break;
+		case PSL_ML: angle = 90.0; y -= 0.5*w; axis = 'N'; x += h; s = -1; symbol = PSL_TRIANGLE; break;	/* Left is like TC but rotated 90 */
+		case PSL_MR: angle = 90.0; y -= 0.5*w; axis = 'S'; x += w - h; break;	/* Right is like BC but rotated 90 */
+	}
+	if (strchr (label, '%')) {	/* Cannot have percentages in the -R string */
+		sprintf (region, "-R0/100/0/1");	/* Always 0-100 % */
+		strcpy (unit, "+u%");
+	}
+	else if (label[2] == ' ') { /* Eliminate leading spaces... */
+		int k = 2; while (label[k] && label[k] == ' ') k++;	/* Find first non-space character */
+		sprintf (region, "-R%s", &label[k]);
+	}
+	else	/* Use as is */
+		strcpy (region, label);
+	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
+		GMT->common.R.active[RSET] = GMT->common.J.active = false;
+	if (fsize == 0.0)
+			F->size = 3.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
+	if (kind == 'F')	/* Want annotations so add a */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+	else	/* Only axis with ticks */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
+	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to call basemap with args %s ???\n", cmd);
+	}
+	GMT->current.map.frame.init = was;	/* Reset how we found it */
+	gmt_getfill (GMT, F1, &fill);	/* Get and set color for the triangle; no outline */
+	PSL_setfill (GMT->PSL, fill.rgb, 0);
+	w = dy * 2;	/* Set triangle size to 2 times the axis width */
+	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
+}
+
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active, auto_media = false;
-	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_labels = 0;
-	char *mode[2] = {"w","a"}, *movie_label_arg[GMT_LEN32];
-	static char *ps_mode[2] = {"classic", "modern"};
+	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_items[2] = {0, 0};
+	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32];
+	static char *ps_mode[2] = {"classic", "modern"}, *F_name[2] = {"label", "prog_indicator"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
@@ -6773,24 +7046,26 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
-			char file[PATH_MAX] = {""}, record[GMT_LEN128] = {""};
+			char file[PATH_MAX] = {""}, record[GMT_LEN256] = {""};
 			FILE *fpl = NULL;
-			snprintf (file, PATH_MAX, "%s/gmt.movie", GMT->parent->gwf_dir);
-			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
-				while (fgets (record, GMT_LEN128, fpl)) {
-					if (record[0] == '#') continue;	/* Skip header */
-					if (n_movie_labels == GMT_LEN32) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie labels exceed capacity [%d] - skipped.\n", n_movie_labels);
-						continue;
+			for (k = 0; k < 2; k++) {
+				snprintf (file, PATH_MAX, "%s/gmt.movie%ss", GMT->parent->gwf_dir, F_name[k]);
+				if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
+					while (fgets (record, GMT_LEN256, fpl)) {
+						if (record[0] == '#') continue;	/* Skip header */
+						if (n_movie_items[k] == GMT_LEN32) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of movie %ss exceed capacity [%d] - skipped.\n", F_name[k], n_movie_items[k]);
+							continue;
+						}
+						gmt_chop (record);		/* Chop off LF or CR/LF */
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_items[k], record);
+						movie_item_arg[k][n_movie_items[k]++] = strdup (record);
 					}
-					gmt_chop (record);		/* Chop off LF or CR/LF */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_labels, record);
-					movie_label_arg[n_movie_labels++] = strdup (record);
-				}
-				fclose (fpl);
-				if (gmt_remove_file (GMT, file)) {	/* Now remove the file since done */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot delete file %s\n", file);
-					GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+					fclose (fpl);
+					if (gmt_remove_file (GMT, file)) {	/* Now remove the file since done */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot delete file %s\n", file);
+						GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+					}
 				}
 			}
 		}
@@ -6863,12 +7138,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		GMT->current.setting.map_origin[GMT_Y] += (I->dy);
 		I->active = I->first = false;	/* For MATLAB mostly */
 	}
-	
+
 	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
 		GMT->current.ps.switch_set = false;
 		switch_charset = 4;
 	}
-	
+
 	/* Get title */
 
 	snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
@@ -6925,7 +7200,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT->current.map.width * 72.0, GMT->current.map.height * 72.0);
 		GMT->current.ps.layer = 0;
 	}
-	
+
 	PSL_beginlayer (GMT->PSL, ++GMT->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (GMT->common.t.active) {
@@ -6996,13 +7271,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				}
 				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
 					gmt_fill_syntax (GMT, 'g', NULL, " ");
-					
+				
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
 			}
-			else	
+			else
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
 			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
@@ -7015,58 +7290,62 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row, P->col, P->gap, P->tag, 0))
 			return NULL;	/* Should never happen */
 	}
-	if (n_movie_labels) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
-		/* Decode x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
-		double off[2] = {0.0, 0.0};
-		char just[4] = {""}, x[GMT_LEN32] = {""}, y[GMT_LEN32] = {""}, FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
+	if (n_movie_items[MOVIE_ITEM_IS_LABEL]) {	/* Obtained movie frame labels, implement them via a completion PostScript procedure */
+		/* Decode x/y/just/clearance_x/clearance_Y|offX|offY//pen/-/fill/-/font/txt in MOVIE_LABEL_ARG */
+		double clearance[2] = {0.0, 0.0};
+		char FF[GMT_LEN64] = {""}, PP[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
 		int kk, nc;
 		unsigned int T;
 		struct GMT_FONT Tfont;
-		
-		/* Create special PSL_movie_completion PostScript procedure and define it here in the output PS.
-		 * It will be called at the end of everything else in PSL_endplot. It always exist but is NULL by default.
+		k = MOVIE_ITEM_IS_LABEL;	/* Just a short hand to avoid repeating that long constant */
+		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
+		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
 		 * If not NULL then it will plot 1-32 labels set via movie.c's -L option */
-		
-		PSL_command (PSL, "/PSL_movie_completion {\nV\n");
+	
+		PSL_command (PSL, "/PSL_movie_label_completion {\nV\n");
 		PSL_comment (PSL, "Start of movie labels\n");
 		PSL_comment (PSL, "Will not execute until end of plot\n");
-		
-		for (T = 0; T < n_movie_labels; T++) {
-			/* Replace the 8 leading slashes first with spaces */
-			for (kk = nc = 0; movie_label_arg[T][kk] && nc < 8; kk++) if (movie_label_arg[T][kk] == '/') { movie_label_arg[T][kk] = ' '; nc++;}
-			if (sscanf (movie_label_arg[T], "%s %s %s %lg %lg %s %s %s %[^\n]", x, y, just, &off[GMT_X], &off[GMT_Y], PP, FF, font, label) != 9) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to parse MOVIE_LABEL_ARG %s for 8 required items\n", movie_label_arg[T]);
+
+		for (T = 0; T < n_movie_items[k]; T++) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
+			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|offX|offY|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
+			/* Replace the 15 leading slashes first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			if (sscanf (movie_item_arg[k][T], "%*c %lg %lg %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", &plot_x, &plot_y, &justify, &clearance[GMT_X], &clearance[GMT_Y], PP, FF, font, label) != 9) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_LABEL_ARG %s for 9 required items\n", movie_item_arg[k][T]);
 				return NULL;	/* Should never happen */
 			}
-			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
-			gmt_getfont (GMT, font, &Tfont);	/* Since we already parsed the font string in movie.c for correctness */
-			plot_x = gmt_M_to_inch (GMT, x);	plot_y = gmt_M_to_inch (GMT, y);
-			justify = gmt_just_decode (GMT, just, PSL_NO_DEF);		/* Convert XX refpoint code to PSL number */
-			form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+			/* Because this PostScript procedure runs outside the main gsave/grestore block the origin is at (0,0) */
+			if (font[0] == '-')	/* Set default TAG font */
+				gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_tag), 1, struct GMT_FONT);	/* Tag font is the default labeling font for labels */
+			else	/* Gave a specific font */
+				gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+			gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness so no need to check here */
+			form = gmt_setfont (GMT, &Tfont);	/* Obtain and set the tag font */
 			PSL_setfont (PSL, Tfont.id);
-			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Must deal with textbox fill/outline */
-				int outline = 0;
+			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Requested textbox fill and/or outline */
+				int outline = 0;	/* No outline */
 				struct GMT_FILL fill;
-				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
+				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize to no fill */
 				if (PP[0] != '-') {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
-					gmt_getpen (GMT, PP, &pen);	/* No need to check since we verified it in movie.c */
+					gmt_getpen (GMT, PP, &pen);	/* No need to check since we verified pen syntax in movie.c */
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
-				if (FF[0] != '-')	/* Want to paint inside of tag box */
-					gmt_getfill (GMT, FF, &fill);	/* No need to check since we verified it in movie.c */
-				
-				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
-				PSL_plottextbox (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, off, 0);
-				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font */
+				if (FF[0] != '-')	/* Want to paint the background of tag box */
+					gmt_getfill (GMT, FF, &fill);	/* No need to check since we verified fill syntax in movie.c */
+			
+				PSL_setfill (PSL, fill.rgb, outline);	/* Box color (or nothing) */
+				PSL_plottextbox (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, clearance, 0);
+				form = gmt_setfont (GMT, &Tfont);	/* Set the tag font (again?) */
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, NULL, 0.0, justify, form);
 			}
-			else	
+			else
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, form);
-			gmt_M_str_free (movie_label_arg[T]);
-			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
+			gmt_M_str_free (movie_item_arg[k][T]);	/* Done with this label */
+			/* Because PSL_movie_label_completion is called at the end of the module, we must forget we used any fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
@@ -7074,7 +7353,80 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_comment (PSL, "End of movie labels\n");
 		PSL_command (PSL, "U\n}!\n");
 	}
+	if (n_movie_items[MOVIE_ITEM_IS_PROG_INDICATOR]) {	/* Obtained movie frame progress indicators, implement them via a completion PostScript procedure */
+		/* Decode kind|x|y|t|width|just|clearance_x|clearance_Y||offX|offY|pen|pen2|fill|fill2|font|txt in MOVIE_PROG_INDICATOR_ARG# strings */
+		double clearance[2] = {0.0, 0.0}, width = 0.0, t, fsize;
+		char kind, F1[GMT_LEN64] = {""}, F2[GMT_LEN64] = {""}, P1[GMT_LEN64] = {""}, P2[GMT_LEN64] = {""}, font[GMT_LEN64] = {""}, label[GMT_LEN64] = {""};
+		int kk, nc;
+		unsigned int T;
+		struct GMT_FONT Tfont;
+		k = MOVIE_ITEM_IS_PROG_INDICATOR;	/* Just a short hand to avoid repeating that long constant */
+		/* Create special PSL_movie_label_completion PostScript procedure and define it here in the output PS.
+		 * It will be called at the end of all plotting in PSL_endplot. It always exist but is NULL by default.
+		 * If not NULL then it will plot 1-32 progress indicators set via movie.c's -P option */
 	
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {\n");
+		PSL_comment (PSL, "Start of movie progress indicators\n");
+		PSL_comment (PSL, "Will not execute until end of plot\n");
+	
+		for (T = 0; T < n_movie_items[k]; T++) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
+			PSL_command (PSL, "V\n");
+			/* Replace the 13 leading bars first with spaces */
+			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
+			if (sscanf (movie_item_arg[k][T], "%c %lg %lg %lg %lg %d %lg %lg %s %s %s %s %s %[^\n]", &kind, &plot_x, &plot_y, &t, &width, &justify, &clearance[GMT_X], &clearance[GMT_Y], P1, P2, F1, F2, font, label) < 13) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse MOVIE_PROG_INDICATOR_ARG %s for 14 required items\n", movie_item_arg[k][T]);
+				return NULL;	/* Should never happen */
+			}
+			/* Because this runs outside main gsave/grestore block the origin is (0,0) */
+			if (isupper (kind) && kind != 'A') {	/* Requested text labels so initialize selected font */
+				if (font[0] == '-') {	/* Set default annotation secondary font */
+					gmt_M_memcpy (&Tfont, &(GMT->current.setting.font_annot[GMT_SECONDARY]), 1, struct GMT_FONT);	/* Secondary annotation font is the default labeling font for progress indicators */
+					fsize = 0.0;	/* So we can scale at will for b-e */
+				}
+				else {	/* Gave a specific font */
+					gmt_getfont (GMT, font, &Tfont);	/* We already parsed the font string in movie.c for correctness */
+					fsize = Tfont.size;	/* Must honor the given setting */
+				}
+				form = gmt_setfont (GMT, &Tfont);	/* Set the font to be used */
+				PSL_setfont (PSL, Tfont.id);
+			}
+			switch (tolower (kind)) {	/* Set the selected progress indicator a-f */
+				case 'a': 	/* Default pie symbol (no label) */
+					gmtplot_prog_indicator_A (GMT, plot_x, plot_y, t, width, justify, F1, F2);
+					break;
+				case 'b': 	/* Growing ring symbol with optional label */
+					gmtplot_prog_indicator_B (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
+					break;
+				case 'c': /* Growing circular arrow with optional label */
+					gmtplot_prog_indicator_C (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
+					break;
+				case 'd': /* Rounded time line with vertical bar and optional label */
+					gmtplot_prog_indicator_D (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
+					break;
+				case 'e': /* Straight line on top of fixed line with optional start/end labels */
+					gmtplot_prog_indicator_E (GMT, plot_x, plot_y, t, width, justify, P1, P2, label, kind, fsize);
+					break;
+				case 'f': /* Moving triangle on basemap time-line */
+					gmtplot_prog_indicator_F (GMT, plot_x, plot_y, t, width, justify, P2, F1, label, kind, width, fsize, &Tfont);
+					break;
+				default:	/* Just for Coverity */
+					break;
+			}
+			gmt_M_str_free (movie_item_arg[k][T]);	/* Free since done with this string */
+			if (isupper (kind)) {
+				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used any fonts here */
+				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
+				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
+				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+			}
+			PSL->current.linewidth = -1.0;	/* Make sure pen widths reprocessed */
+		PSL_command (PSL, "U\n");
+		}
+		PSL_comment (PSL, "End of movie progress indicators\n");
+		PSL_command (PSL, "}!\n");
+	}
+
 	return (PSL);
 }
 
@@ -7085,7 +7437,7 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 		bool donut;
 		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill));
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));
 		gmt_M_free (GMT, x);
 		gmt_M_free (GMT, y);
@@ -7102,7 +7454,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		unsigned int id;
 		size_t size;
 	} *layer = NULL;
-	
+
 	fig = gmt_get_current_figure (API);
 	/* Get the name of the corresponding gmt.layers.<fig> file */
 	snprintf (file, PATH_MAX, "%s/gmt.layers.%d", API->gwf_dir, fig);
@@ -7119,7 +7471,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No layers available [no file: %s]\n", file);
 		return GMT_FILE_NOT_FOUND;
 	}
-	
+
 	/* OK, the file exist, can we read it? */
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not open file %s\n", file);
@@ -7140,7 +7492,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
-	
+
 	snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not truncate file %s!\n", file);
@@ -7533,7 +7885,7 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Arcs will be approximated by %d-point lines\n", n_arc);
 		PSL_comment (GMT->PSL, "Drawing Spider Arcs\n");
-		
+	
 		if (dr > 0.0)	/* Must draw several arcs */
 			n_seg = gmtlib_linear_array (GMT, (radius_i > 0.0) ? radius_i : dr, radius_o, dr, 0.0, &r);
 		else {	/* One or two arcs only */
@@ -7546,7 +7898,7 @@ GMT_LOCAL void gmt_geo_spider (struct GMT_CTRL *GMT, double xlon, double xlat, d
 				r[0] = radius_o;
 			}
 		}
-		
+	
 		d_az = -d_az;	/* Since we have a right-handed rotation but gave azimuths */
 		for (k = 0; k < n_seg; k++) {
 			S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_arc, 2, NULL, NULL);
@@ -7659,7 +8011,7 @@ GMT_LOCAL void gmt_geo_wedge_fill (struct GMT_CTRL *GMT, double xlon, double xla
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)))
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-		
+	
 	gmt_free_segment (GMT, &S);
 }
 
@@ -7677,7 +8029,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, fill, outline);
 		return;
 	}
-	
+
 	/* Here we need to lay down fill first (if active), then spider web, then wedge outline (if active) */
 
 	if (fill) gmt_geo_wedge_fill (GMT, xlon, xlat, radius_i, radius_o, az_start, az_stop, true, false);	/* Just fill (if active) */
@@ -8101,7 +8453,7 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	int k;
 	/* Returns 0 or 1 if successful and -1 if failure */
 	GMT->current.ps.figure = gmt_get_current_figure (GMT->parent);
-	
+
 	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set!\n");
 		return GMT_NOTSET;
@@ -8117,14 +8469,14 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 /*! . */
 int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest) {
 	/* Append parts of the PS from source file to destination stream.  The part is decided by mode:
-	 * mode & 1: Include the header. [-K] 
+	 * mode & 1: Include the header. [-K]
 	 * mode & 2: Include the trailer. [-O]
 	 * The middle part is always included.
 	 */
 	FILE *fp = NULL;
 	char buffer[GMT_BUFSIZ] = {""};
 	bool go = true;
-	
+
 	if ((fp = fopen (source, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open PostScript file %s\n", source);
 		return GMT_NOTSET;

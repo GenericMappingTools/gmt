@@ -28,7 +28,7 @@ basemap -R0/5/0/5 -JX3cd/3c -Bg1 -Xf4c >> $ps
 # Stereographic Equal-Angle
 coast -R-30/30/60/72 -JS0/90/3c -Bg5 -A10000 -Xf8c >> $ps
 
-# Oblique Mercator 
+# Oblique Mercator
 coast -R270/20/305/25r -JOc280/25.5/22/69/3c -Bg5 -A10 -Xf12c >> $ps
 
 # Cassini cylindrical

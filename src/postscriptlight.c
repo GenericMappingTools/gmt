@@ -640,7 +640,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 				in_string[k] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
 		}
 	}
-	
+
 	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
 	for (k = 0; in_string[k]; k++) {
@@ -656,7 +656,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	if (utf8_codes == 0) return;	/* Nothing to do */
 
 	out_string = PSL_memory (PSL, NULL, strlen(in_string) + 1, char);	/* Get a new string of same length (extra byte for '\0') */
-	
+
 	for (k = kout = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
 			k++;	/* Skip the control code */
@@ -1667,9 +1667,9 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 			}
 		}
 	}
-	
+
 	psl_fix_utf8 (PSL, string);
-	
+
 	return (string);
 }
 
@@ -1791,7 +1791,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
 		string = strdup (PSL_prologue_str);
 	else if (!strcmp (text, "PSL_text"))
 		string = strdup (PSL_text_str);
-		
+	
 	while ((buf = strsep (&string, "\n")) != NULL) {
 		if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
@@ -2372,7 +2372,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 		tangle[PSL_BEGIN] = angle[PSL_BEGIN] + off[PSL_BEGIN];
 	}
 	if (heads) {	/* Will draw at least one head */
-		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
+		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], 1);	/* Set fill for head(s) */
 		PSL_command (PSL, "PSL_vecheadpen\n");	/* Switch to vector head pen */
 		psl_forcelinewidth (PSL, 2.0 * h_penwidth);	/* Force pen width update; double width due to clipping below */
 	}
@@ -2886,14 +2886,14 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	int status = lrint (param[3]), flags = lrint (param[7]);
 	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
 	bool fill = flags & 1, outline = flags & 2;
-	
+
 	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
 		PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 		return (PSL_NO_ERROR);
 	}
 	/* Somewhat more involved */
 	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
-		if (windshield) 
+		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
@@ -2944,7 +2944,7 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	}
 	if (status) PSL_command (PSL, "U\n");	/* Restore graphics state after messing with spiders */
 	if (outline) {	/* Draw wedge outline on top */
-		if (windshield) 
+		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
@@ -3195,7 +3195,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 	else {
 		PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "No PSL_custom_fonts.txt found\n");
 	}
-	
+
 	/* Final allocation of font array */
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 	return PSL_NO_ERROR;
@@ -3510,8 +3510,8 @@ int PSL_copy (struct PSL_CTRL *PSL, const char *txt) {
 	/* Just copies the given text as is to the PSL output stream or buffer */
 	if (PSL->internal.memory) {
 		size_t len = strlen (txt);
-		psl_prepare_buffer (PSL, len); /* Make sure we have enough memory to hold the text */ 
-		strncat (&(PSL->internal.buffer[PSL->internal.n]), txt, len); 
+		psl_prepare_buffer (PSL, len); /* Make sure we have enough memory to hold the text */
+		strncat (&(PSL->internal.buffer[PSL->internal.n]), txt, len);
 		PSL->internal.n += len;
 	}
 	else	/* Just write to the PS file */
@@ -3902,7 +3902,7 @@ int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
 		return (PSL_BAD_RANGE);
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
-	
+
 	PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
 	return (PSL_NO_ERROR);
@@ -3970,7 +3970,7 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 * Returns image number
 	 * DEPRECATED
 	 */
-	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb); 
+	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb);
 	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
 	return (PSL_NO_ERROR);
 }
@@ -4268,8 +4268,10 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
-		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
-		PSL_command (PSL, "PSL_movie_completion /PSL_movie_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie label completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_label_completion /PSL_movie_label_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie progress indicator completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def\n");	/* Run then make it a null function */
 		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");
 		if (PSL->init.runmode) {
@@ -4486,9 +4488,10 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		/* Save page size */
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
-		
+	
 		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
-		PSL_command (PSL, "/PSL_movie_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_label_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);
@@ -4500,10 +4503,10 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* Set default line color and no-rgb */
 	PSL_setcolor (PSL, black, PSL_IS_STROKE);
-	PSL_setfill (PSL, no_rgb, false);
+	PSL_setfill (PSL, no_rgb, 0);
 
 	/* Set origin of the plot */
-	
+
 	if (PSL->internal.comments)  PSL_command (PSL, "%% Set plot origin:\n");
 	for (i = 0; i < 2; i++) {
 		switch (PSL->internal.origin[i]) {
@@ -4737,7 +4740,7 @@ int PSL_settextmode (struct PSL_CTRL *PSL, int mode) {
 		case PSL_TXTMODE_MINUS:
 			PSL->current.use_minus = PSL_TXTMODE_MINUS;
 			break;
-		default:	
+		default:
 			PSL_message (PSL, PSL_MSG_NORMAL, "Error: bad argument passed to PSL_settextmode (%d)!\n", mode);
 			return (PSL_BAD_FLAG);
 			break;
@@ -5709,7 +5712,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	}
 
 	/* Check magic key */
-	
+
 	if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
 		fclose (fp);
@@ -5724,7 +5727,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 		return (-1);
 	}
 	h->magic = (int)value;
-	
+
 	/* Scan for BoundingBox */
 
 	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
@@ -5740,12 +5743,12 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	h->maplength = 0;
 	h->xorigin = llx;
 	h->yorigin = lly;
-	
+
 	if (picture == NULL) {
 		fclose (fp);
 		return (0);	/* Just wanted dimensions */
 	}
-	
+
 	/* Rewind and load into buffer */
 
 	n=0;

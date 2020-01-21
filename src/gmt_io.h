@@ -29,7 +29,7 @@
 
 /*!
  * \file gmt_io.h
- * \brief  
+ * \brief 
  */
 
 #ifndef GMT_IO_H
@@ -212,7 +212,7 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 	unsigned int order;	/* The initial order (0,1,...) but this will be sorted on col */
 	unsigned int convert;	/* 2 if we must convert the data by log10, 1 if scale, offset */
 	double scale;		/* Multiplier for raw in value */
-	double offset;		/* Offset applied after multiplier */ 
+	double offset;		/* Offset applied after multiplier */
 };
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */

@@ -88,7 +88,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r : Memory Reference\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,h,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID;
 	int geometry[] = {GMT_IS_POINT, GMT_IS_SURFACE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_NONE};
-	
+
 	char *ikind[] = {"DATASET", "GRID", "IMAGE", "PALETTE", "POSTSCRIPT", "TEXTSET", "MATRIX", "VECTOR", "COORD"};
 	char *method[] = {"FILE", "STREAM", "FDESC", "COPY", "REF"};
 	char *ifile[] = {"dtesti.txt", "gtesti.nc", "itesti.jpg", "ctesti.cpt", "ptesti.ps", "ttesti.txt", "mtesti.bin", "vtesti.bin", "-"};
@@ -165,7 +165,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 
 	FILE *fp = NULL;
 	int *fdp = NULL, fd = 0;
-	
+
 	struct TESTAPI_CTRL *Ctrl = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
@@ -192,11 +192,11 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the testapi main code ----------------------------*/
-	
+
 	/* Get input and register it */
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %s %s with method %s and write to %s with method %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], ofile[Ctrl->T.mode], method[Ctrl->W.mode]);
-	
+
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_NOERROR) {	/* Registers default input destination, unless already set */
 		Return (API->error);
 	}
@@ -250,13 +250,13 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-		
-	/* Now get the data from the registered source */
 	
+	/* Now get the data from the registered source */
+
 	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
 		Return (API->error);
 	}
-	
+
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];
 
@@ -276,9 +276,9 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-	
+
 	/* Get output and register it */
-	
+
 	switch (Ctrl->W.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
 			if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, ofile[Ctrl->T.mode])) == GMT_NOTSET) {
@@ -329,16 +329,16 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-			
+		
 	/* Now put the data to the registered destination */
-	
+
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Put_Data (API, out_ID, 0, In) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	
+
 	if (Ctrl->W.mode == GMT_IS_DUPLICATE || Ctrl->W.mode == GMT_IS_REFERENCE) {	/* Must write out what is in memory to the file */
 		if ((Out = GMT_Retrieve_Data (API, out_ID)) == NULL) {
 			Return (API->error);
@@ -347,7 +347,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	if (GMT_Destroy_Data (API, &Intmp) != GMT_NOERROR) {
 		Return (API->error);
 	}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Tests gmt earthtide against the values of the original FORTRAN version 
+# Tests gmt earthtide against the values of the original FORTRAN version
 
 
 rm -f test_earthtide.dat

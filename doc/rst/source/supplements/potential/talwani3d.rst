@@ -14,7 +14,7 @@ Synopsis
 
 **gmt talwani3d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
-[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ] 
+[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
 [ |-M|\ [**h**]\ [**v**] ]
@@ -28,7 +28,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
-[ |SYN_OPT-r| ] 
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -118,7 +118,7 @@ Optional Arguments
     Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -181,7 +181,7 @@ References
 ----------
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
-gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*, 
+gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
 `http://dx.doi.org/10.1002/2016GC006263 <http://dx.doi.org/10.1002/2016GC006263>`_.
 
 Talwani, M., and M. Ewing, 1960, Rapid computation of gravitational attraction of

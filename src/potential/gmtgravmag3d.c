@@ -425,9 +425,9 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the gmtgravmag3d main code ----------------------------*/
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = true;
 
 	if (!Ctrl->box.is_geog)
@@ -494,7 +494,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
 
 		/* Build observation point vectors */
@@ -690,7 +690,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-	}	
+	}
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active) {
@@ -798,7 +798,7 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
         	okabe_mag_var3 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR3);
 	else if (Ctrl->T.m_var4)
         	okabe_mag_var4 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
-	
+
 	if (Ctrl->box.is_geog) {	/* take a first read just to compute the central longitude */
 		while (fgets (line, GMT_LEN256, fp)) {
 			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done below */
@@ -885,7 +885,7 @@ GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
 	vert = gmt_M_memory (GMT, NULL, n_alloc, struct VERT);
-	
+
 	while (fgets (line, GMT_LEN256, fp)) {
 		if (sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_t+1, fname);
@@ -895,7 +895,7 @@ GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
                	}
 		if (in[0] < 0 || in[1] < 0 || in[2] < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative indices for line %d of %s\n", ndata_t+1, fname);
-	
+
 		}
 		vert[ndata_t].a = in[0];
 		vert[ndata_t].b = in[1];
@@ -914,13 +914,13 @@ GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	double in[9];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
-	
+
 	if ((fp = gmt_fopen (GMT, fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
 	raw_mesh = gmt_M_memory (GMT, NULL, n_alloc, struct RAW);
-	
+
 	while (fgets (line, GMT_LEN256, fp)) {
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg",
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)

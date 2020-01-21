@@ -15,18 +15,19 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
-[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
+|-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
-[ |-G|\ *fill*\ ]
+[ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
+[ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *backgroundscript* ]
-[ **-Sf**\ *foregroundscript* ]
+[ **-Sb**\ *background* ]
+[ **-Sf**\ *foreground* ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |-W|\ *workdir* ]
@@ -39,7 +40,7 @@ Description
 -----------
 
 The **movie** module can generate GMT animation sequences using a single-plot script
-that is repeated for all frames, with some variation using specific frame variables.  The 
+that is repeated for all frames, with some variation using specific frame variables.  The
 module simplifies (and hides) most of the steps normally needed to set up a full-blown
 animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
@@ -87,8 +88,9 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
-    Either specify how many image frames to make or supply a file with a set of parameters,
+**-T**\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+    Either specify how many image frames to make, create a one-column data set width values from
+    *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
@@ -131,8 +133,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ [*fill*]\ [**+p**\ *pen*] :ref:`(more ...) <-Gfill_attrib>`
     Set the canvas color or fill before plotting commences [none].
+    Optionally, append **+p** to draw the canvas outline with *pen* [no outline].
 
 .. _-H:
 
@@ -162,9 +165,10 @@ Optional Arguments
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **s**\ *string* uses the fixed text *string* as the label,
-    **f** selects the running frame number as the label, **c**\ *col* uses the value in column
+    **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
+    **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**; first word is 0).  Note: If you use **-Lc**
+    *col* from the trailing text in *timefile* (first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
@@ -187,6 +191,19 @@ Optional Arguments
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
 
+.. _-P:
+
+**-P**\ *progress*
+    Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
+    Select from six indicators called a-f.  Indicators a-c are different types of circular indicators while d-f are
+    linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
+    circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
+    [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
+    **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
+    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
+    Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
+
 .. _-Q:
 
 **-Q**\ [**s**]
@@ -197,19 +214,21 @@ Optional Arguments
 
 .. _-Sb:
 
-**-Sb**\ *backgroundscript*
-    The optional GMT modern mode *backgroundscript* (written in the same scripting language as *mainscript*) can be
+**-Sb**\ *background*
+    The optional GMT modern mode *background* (written in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
-    so that the layered plot will stack correctly (unless you actually want a different offset).
+    so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
+    *background* can be a PostScript plot layer of dimensions exacly matching the cancas size.
 
 .. _-Sf:
 
-**-Sf**\ *foregroundscript*
-    The optional GMT modern mode *foregroundscript* (written in the same scripting language as *mainscript*) can be
+**-Sf**\ *foreground*
+    The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
-    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.
+    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
+    *foreground* can be a PostScript plot layer of dimensions exacly matching the cancas size.
 
 .. _movie-V:
 
@@ -243,7 +262,7 @@ Parameters
 ----------
 
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
-*backgroundscript* and *foregroundscript* scripts. There are two sets of parameters: Those that are constants
+*background* and *foreground* scripts. There are two sets of parameters: Those that are constants
 and those that change with the frame number.  The constants are accessible by all the scripts:
 **MOVIE_WIDTH**\ : The width of the canvas,
 **MOVIE_HEIGHT**\ : The height of the canvas,
@@ -257,7 +276,8 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested by **-T+w** then
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicity requested by **-T+w** or
+implicitly by selecting word labels in **-F** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -277,10 +297,22 @@ slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"
 frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
-recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
-a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
-static data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
+recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
+a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
+static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
+
+External PostScript Layers
+--------------------------
+
+Instead of passing GMT modern scripts to **-S** you can alternatively provide the name of PostScript
+plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
+making a HD movie using the US unit dimensions then a background pink layer would be created by::
+
+    gmt psbasemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 -P --PS_MEDIA=9.6ix5.4i > background.ps
+
+Note the canvas selection via :ref:`PS_MEDIA <PS_MEDIA>`, the matching region and projection, and
+the zero location of the origin.
 
 Technical Details
 -----------------
@@ -297,9 +329,9 @@ variables (e.g., frame number and anything given via **-T**).  The pre- and post
 access to the information in *movie_init* while the frame script in addition has access to the frame-
 specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
-The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_. 
+The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_. 
+PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
 
 Hints for Movie Makers
 ----------------------
@@ -327,6 +359,37 @@ indirectly by :doc:`grdimage` or  :doc:`grdview`).  Instead, you must create CPT
 files and pass those names to the modules that require CPT information.  In modern mode, this means
 you need to use the **-H** option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
 to named files.
+
+Progress Indicators
+-------------------
+
+.. figure:: /_images/GMT_movie_progress.*
+   :width: 500 px
+   :align: center
+
+   The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
+   but these can be overridden by the corresponding modifiers (see below).
+
+The letters a-f select one of the six progress indicators shown above.
+Indicator a) needs a static [lightgreen] and moving [lightred]
+*fill* (set via **+G** and **+g**); there is no label option.
+Indicator b) takes a static [lightblue] and moving [blue] *pen* (set via **+P** and **+p**),
+and if **+a** is set we place a centered label with a font size scaled to 30%
+of indicator size (unless **+f** was set which is used as given).
+Indicator c) takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red]
+*pen* (default pen width is 5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
+label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
+Indicator d) takes a static [black] and moving [yellow, width 0.5% of length] *pen* for a rounded line with a cross-mark. If
+label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
+Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
+use a font size that is twice the static pen thickness (unless **+f** was set).
+Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
+the triangle size is scaled to twice the axis width (see below), and a font size scaled to thrice the axis width.
+Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
+otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
+The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
+If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
+60% of the relevant canvas dimension for the linear indicators.
 
 Examples
 --------

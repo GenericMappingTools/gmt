@@ -41,7 +41,7 @@ such as a local mountain on a regional surface.
 
 If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
-same locations. 
+same locations.
 
 Required Arguments
 ------------------
@@ -59,7 +59,7 @@ Optional Arguments
 ------------------
 
 **-D**\ *diff.nc*
-    Write the difference (input data - trend) to the file *diff.nc*. 
+    Write the difference (input data - trend) to the file *diff.nc*.
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the input grid. If this subsection
@@ -69,7 +69,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *trend.nc*
-    Write the fitted trend to the file *trend.nc*. 
+    Write the fitted trend to the file *trend.nc*.
 
 .. _-V:
 
@@ -83,7 +83,7 @@ Optional Arguments
     least-squares problem. [Default: Ordinary least-squares fit]. Append
     **+s** to instead read data uncertainties (one sigma) and create weights
     as 1/sigma^2.  If the robust option has been selected, the weights used
-    in the robust fit will be written to *weight.nc*. 
+    in the robust fit will be written to *weight.nc*.
 
 .. include:: explain_help.rst_
 
@@ -98,7 +98,7 @@ allow more accurate solutions. NOTE: The model parameters listed with
 equivalent to the m#s in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
-using the reported coefficients. 
+using the reported coefficients.
 
 .. include:: explain_grd_inout_short.rst_
 

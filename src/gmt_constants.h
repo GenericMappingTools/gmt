@@ -216,7 +216,7 @@ enum GMT_swap_direction {
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
-/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */ 
+/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */
 #define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
 #define GMT_N_CPT		3		/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
@@ -426,7 +426,7 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 enum GMT_enum_scales {	/* Various scale issues */
 	GMT_SCALE_MAP = 1,
 	GMT_SCALE_FREE = 2};
-		
+	
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
 	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */
@@ -497,6 +497,8 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 	GMT_DIST_DEG = 20,	/* 2-D lon, lat data, convert distance to spherical degree */
 	GMT_DIST_COS = 30};	/* 2-D lon, lat data, convert distance to cos of spherical degree */
 
+enum enum_item {MOVIE_ITEM_IS_LABEL = 0,	/* Item is a frame counter or time label in movie */
+	MOVIE_ITEM_IS_PROG_INDICATOR};			/* Item is a progress indicator symbol in movie */
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN

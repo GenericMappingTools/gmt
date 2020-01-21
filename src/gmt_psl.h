@@ -24,7 +24,7 @@
 
 /*!
  * \file gmt_psl.h
- * \brief Definition of the structure with PostScript settings 
+ * \brief Definition of the structure with PostScript settings
  */
 
 #ifndef GMT_PSL_H

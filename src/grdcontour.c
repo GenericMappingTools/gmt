@@ -224,7 +224,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The 1-3 specifiers may be combined and appear in any order to produce the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   separate segments into one file per contour level, and %%d would write all segments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see manual page for more examples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see module documentation for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force dumped contours to be oriented so that the higher z-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
@@ -869,7 +869,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			if (mode & 2) gmt_add_label_record (GMT, T, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high]);
 		}
 	}
-	
+
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 	PSL_comment (PSL, "End Embellishment of innermost contours\n");
 }
@@ -1028,12 +1028,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if ((optN = GMT_Find_Option (API, 'N', options))) {	/* Split into two module calls */
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
 	 	 * We DO NOT parse any options here or initialize GMT, and just bail after running the two modules */
-	
+
 		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""}, *ptr = NULL;
 		struct GMT_OPTION *opt = NULL;
 		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
-		
+	
 		/* Make sure we don't pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -D with -N\n");
@@ -1053,13 +1053,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			}
 			strncpy (cptfile, optN->arg, PATH_MAX-1);
 		}
-		
+	
 		/* Process all the options given.  Some are needed by both grdview and grdcontour while others are grdcontour only.
 		 * We must consider the situations arising form external API calls: The CPT's may be memory objects so we must
 		 * check for that and if found not free the resources.  Also, if a PostScript output file is set via ->file.ps then
 		 * we must make sure we append in the second module. Below cmd1 holds the grdview arguments and cmd2 holds the
 		 * overlay grdcontour arguments. These are built on the fly */
-		
+	
 		for (opt = options; opt; opt = opt->next) {
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
@@ -1107,7 +1107,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					sprintf (string, " -%c%c%s", opt->option, opt->option, opt->arg);	/* Must explicitly append */
 					strcat (cmd2, string);
 					break;
-				
+			
 				default:	/* These arguments go into both commands (may be -p -n etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
@@ -1132,7 +1132,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
 			bailout (GMT_PARSE_ERROR);
 		}
-		
+	
 		/* Required options for grdview to fill the grid */
 		strcat (cmd1, " -Qs");
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");	/* If classic mode then we need to say we will append more PostScript later */
@@ -1154,7 +1154,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		bailout (GMT_NOERROR);	/* And we made it to the end, so get out of here */
 	}
-	
+
 	/* NOT -N, so parse the command-line arguments as a normal module would */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
@@ -1191,7 +1191,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (need_proj && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to actually read the grid file */
-	
+
 	if (!gmt_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data within specified region\n");
@@ -1208,7 +1208,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-	
+
 	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -1216,7 +1216,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (P->categorical)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 	}
-	
+
 	/* Read data */
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
@@ -1291,7 +1291,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour interval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 	}
-	
+
 	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
 	if (Ctrl->A.interval == 0.0) Ctrl->A.interval = Ctrl->C.interval;
 
@@ -1412,7 +1412,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				}
 				cont[n_contours].penset = true;
 			}
-			
+		
 			n_contours++;
 		} while (true);
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
@@ -1560,7 +1560,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_memset (rgb, 4, double);
-	
+
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -1594,7 +1594,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
-		
+	
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (cont[c].val < Ctrl->L.low || cont[c].val > Ctrl->L.high)) continue;	/* Outside desired range */
@@ -1633,7 +1633,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
-			
+		
 			if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
 				if (Ctrl->Q.unit) {	/* Need length of contour */
 					c_length = gmt_line_length (GMT, x, y, n, Ctrl->Q.project);
@@ -1718,7 +1718,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	}
 
 	if (n_cont_attempts == 0) GMT_Report (API, GMT_MSG_VERBOSE, "No contours drawn, check your -A, -C, -L settings?\n");
-	
+
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -1783,7 +1783,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (make_plot || Ctrl->contour.save_labels) gmt_contlabel_free (GMT, &Ctrl->contour);
 
 	if (mem_G) gmt_M_memcpy (G->data, G_orig->data, G->header->size, gmt_grdfloat);		/* To avoid messing up an input memory grid */
-	
+
 	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_orig\n");
 	}

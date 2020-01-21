@@ -5,7 +5,7 @@
 
 /*!
  * \file gmt_mgg_header2.h
- * \brief 
+ * \brief
  */
 
 #ifndef _H_MGG_HEADER_2

@@ -627,7 +627,7 @@ GMT_LOCAL bool add_this_polygon_to_path (struct GMT_CTRL *GMT, int k0, struct GM
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
 	int j;
-	
+
 	if (p[k].level != level) return (false);	/* Sorry, this polygon does not have the correct level */
 	if (k0 == -1) return (true);			/* The start level is always used */
 	/* Must make sure the polygon is inside the mother polygon.  Because numerical noise can trick us we try up to two points */
@@ -644,7 +644,7 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 	 * using a recursive algorithm */
 
 	int k;
-	
+
 	if (level > GSHHS_MAX_LEVEL) return;
 	for (k = k0 + 1; k < np; k++) {
 		if (p[k].n == 0 || p[k].level < level) continue;
@@ -659,7 +659,7 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 			p[k].n = 0;	/* Mark as used */
 
 			if (k0 == -1 && fill) {	/* At start level: done nesting, time to paint the assembled swiss cheese polygon */
-				gmt_setfill (GMT, &fill[p[k].fid], false);
+				gmt_setfill (GMT, &fill[p[k].fid], 0);
 				PSL_command (PSL, "FO\n");
 			}
 		}
@@ -678,7 +678,7 @@ GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, 
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
-	
+
 	if ((status[0] = gmt_shore_level_at_point (GMT, c, inside, clon, clat)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection center outside -R region so cannot determine status\n");
 	}
@@ -723,7 +723,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	int i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	int level_to_be_painted[2] = {0, 0}, lp, direction, start_direction, stop_direction, last_pen_level;
-	
+
 	bool shift = false, need_coast_base, recursive;
 	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
 	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
@@ -819,7 +819,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->M.active && (Ctrl->W.active || Ctrl->I.active || Ctrl->N.active))
 		clip_to_extend_lines = (!(gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) || GMT->common.R.oblique);
-		
+	
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
@@ -851,7 +851,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;
 		else if (Ctrl->I.active) id = 2;
-		
+	
 		if (!Ctrl->M.single)
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
@@ -905,7 +905,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				gmt_map_basemap (GMT); /* Basemap needed */
 				gmt_plane_perspective (GMT, -1, 0.0);
 			}
-	
+
 			gmt_plotend (GMT);
 
 			Return (GMT_NOERROR);
@@ -955,7 +955,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Painting entire map with ocean color first, then draw land on top later\n");
 		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-		gmt_setfill (GMT, &Ctrl->S.fill, false);
+		gmt_setfill (GMT, &Ctrl->S.fill, 0);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
 			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
@@ -1048,9 +1048,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			/* State donut_hell if we are close (within 20%) to the horizon or if the bin contains the antipole.
 			 * This is simply done with a Cartesian inside/outside test, which is adequate.
 			 * the 0.8 factor is arbitrary of course [PW] */
-			
+		
 			donut_hell = (dist > 0.8 * GMT->current.proj.r || gmt_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
-			if (donut_hell) 
+			if (donut_hell)
 				GMT_Report (API, GMT_MSG_DEBUG, "Donut-hell is true for bin %d\n", bin);
 		}
 
@@ -1083,7 +1083,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
 					if (p[k].level % 2 == level_to_be_painted[lp] || p[k].level > 2) {
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -1094,14 +1094,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					if (donut_hell && gmt_non_zero_winding (GMT, x_0, y_0, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_Report (API, GMT_MSG_DEBUG, "Doing donut filling for bin %d\n", bin);
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 						gmt_M_free (GMT, xtmp);
 						gmt_M_free (GMT, ytmp);
 					}
 					else {
-						gmt_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], 0);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -1120,7 +1120,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {	/* Clip to specified region - this gives x,y coordinates in inches */
 					uint64_t unused, n_out;
-					
+				
 					if (!Ctrl->W.use[p[i].level-1]) continue;
 
 					n_out = map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
@@ -1165,7 +1165,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_shore_cleanup (GMT, &c);
 		GMT->current.map.coastline = false;
 	}
-	
+
 	if (Ctrl->E.info.mode > GMT_DCW_REGION)
 		(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
@@ -1238,7 +1238,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
-		
+	
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
@@ -1324,7 +1324,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Disables further data output */
 	}
 	gmt_M_free (GMT, Out);
-	
+
 	GMT->current.map.coastline = false;
 
 	Return (GMT_NOERROR);

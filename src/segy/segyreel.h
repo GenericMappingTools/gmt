@@ -9,7 +9,7 @@
 
 /*!
  * \file segyreel.h
- * \brief 
+ * \brief
  */
 
 #pragma once

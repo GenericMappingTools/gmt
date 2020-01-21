@@ -54,7 +54,7 @@ Gaussian option, you will have a grid whose values are distributed
 according to a Gaussian distribution with zero mean and unit variance.
 The locations of these values will correspond to the locations of the
 input; that is, the most negative output value will be in the (x,y)
-location of the most negative input value, and so on. 
+location of the most negative input value, and so on.
 
 Required Arguments
 ------------------
@@ -90,13 +90,13 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Quadratic output. Selects quadratic histogram equalization. [Default is linear]. 
+    Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
 .. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of *in_grdfile* grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted. 
+    exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
 .. _-V:

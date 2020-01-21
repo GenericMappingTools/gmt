@@ -122,7 +122,7 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 	double xk[4], yk[4], x0, y0;
 
 	m = *max - 2;	/* Note: *max starts at 2048 or so.  Allow for maybe needing 2 more than we have */
-	
+
 	more = true;
 	do {
 		/* Determine lower left corner of current 4-node box */
@@ -234,7 +234,7 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 		kk = (kk+2)%4;
 
 	} while (more);
-	
+
 	return (n);	/* Return length of polygon */
 }
 
@@ -244,13 +244,13 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
 	 * Note: info->offset is added to edge_word when looking at vertical edges.
 	 */
-	 
+	
 	unsigned int n_edges, edge_bit, i, j;
 	static unsigned int i0, j0, side;
 	uint64_t edge_word, ij, n = 0;
 	bool go_on = true;
-	 
-	 
+	
+	
 	n_edges = h->n_rows * (urint (ceil (h->n_columns / 16.0)));
 
 	if (first) {	/* Reset edge-flags to zero, if necessary */
@@ -310,7 +310,7 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 				if (go_on) i0 = 1;
 			}
 		}
-	}	
+	}
 	if (n>2) {	/* Properly connect last and first point given the half-pixel steps */
 		if (n >= (*max)) {	/* Awkward, must allocate memory for one more point */
 			(*max)++;
@@ -413,20 +413,20 @@ GMT_LOCAL void shrink_clip_contours (double *x, double *y, uint64_t np, double w
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMASK_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct PSMASK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
-		
+	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->L.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->L.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -449,7 +449,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename template is given we write all polygons to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If filename has no specifiers then we write all polygons to a single file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see manual page for more examples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see module documentation for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force clip contours to be oriented so that the higher z-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
@@ -469,7 +469,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
 	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,s,t,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -686,7 +686,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 	}
-	
+
 	if (make_plot) {
 		if (Ctrl->C.active)
 			GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
@@ -708,10 +708,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);	/* Specifically only need 1 row/col padding */
-		
+	
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
-		
+	
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -736,12 +736,12 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
 		/* Add GMT_CONV8_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
-		
+	
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Your search radius is too small to have any effect and is ignored.\n");
 		}
-		
+	
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -826,7 +826,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 				}
 			}
 		} while (true);
-		
+	
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -941,8 +941,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, xx);
 					gmt_M_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
-					
-					gmt_setfill (GMT, &Ctrl->G.fill, false);
+				
+					gmt_setfill (GMT, &Ctrl->G.fill, 0);
 					if ((*GMT->current.map.will_it_wrap) (GMT, xp, yp, plot_n, &start)) {	/* Polygon wraps */
 
 						/* First truncate against left border */

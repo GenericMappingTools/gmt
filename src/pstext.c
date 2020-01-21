@@ -179,7 +179,7 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
-		struct GMT_FILL *fill = NULL;		
+		struct GMT_FILL *fill = NULL;	
 		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));		/* Change current pen */
 		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
 		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
@@ -296,8 +296,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a, @c, @e, @i, @n, @o, @s, @u, @A, @C @E, @N, @O, @U for accented European characters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information).\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|in|o|s|u|A|C|E|N|O|U for accented European characters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
 	if (show_fonts) {	/* List fonts */
 		unsigned int i;
@@ -625,7 +625,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 						Ctrl->F.w_col++;	/* So 0th word is 1 */
 				}
 				break;
-			
+		
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -766,7 +766,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	int  error = 0, k, fmode, nscan = 0, *c_just = NULL;
 	int input_format_version = GMT_NOTSET, rec_number = 0;
-	
+
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_txt, check_if_outside;
 
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0, tcol;
@@ -783,7 +783,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""};
 
 	enum GMT_enum_geometry geometry;
-		
+	
 	struct GMT_FONT *c_font = NULL;
 	struct PSTEXT_INFO T;
 	struct GMT_RECORD *In = NULL;
@@ -844,12 +844,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
 	check_if_outside = !(Ctrl->N.active || Ctrl->F.get_xy_from_justify || Ctrl->F.R_justify);
-	
+
 	if (Ctrl->F.no_input) {	/* Plot the single label and bail.  However, must set up everything else as normal */
 		int ix, iy;
 		double coord[2];
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-		
+	
 		/* Here, in_txt holds the text we wish to plot */
 
 		strcpy (text, Ctrl->F.text);	/* Since we may need to do some replacements below */
@@ -976,7 +976,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		c_font = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
 	rec_number = Ctrl->F.first;	/* Number of first output record label if -F+r<first> was selected */
-	
+
 	do {	/* Keep returning records until we have no more files */
 		if ((In = GMT_Get_Record (API, rec_mode, NULL)) == NULL) {	/* Keep returning records until we have no more files */
 			if (gmt_M_rec_is_error (GMT)) {
@@ -1006,7 +1006,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				if (line && (nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 
 				if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
-				
+			
 				pos = 0;
 
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -1323,7 +1323,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (GMT->common.t.variable)	/* Reset the transparency */
 		PSL_settransparency (PSL, 0.0);
-		
+	
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
 			output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);

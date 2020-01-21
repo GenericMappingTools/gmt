@@ -310,7 +310,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 		pair[i].weight *= (gmt_grdfloat)wsum;
 		pair[i].weight += pair[i-1].weight;
 	}
-	
+
 	/* Find the division points using the normalized 0-1 weights */
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */

@@ -305,7 +305,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	uint64_t n_par = 0, n_in = 0, n, m, n_tracks = 0, n_active, n_constraints = 0;
 	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, w_col, id_col, bin_expect, *R = NULL, *col_off = NULL, *cluster = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
-	
+
 	double *N = NULL, *a = NULL, *b = NULL, *in = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2, C_i, C_j;
 	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx, var[N_BASIS];
 	struct GMT_RECORD *In = NULL, *Out = NULL;
@@ -398,7 +398,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			break;
 	}
 	if (Ctrl->W.active) n_in++;
-	
+
 	/* Allocate memory for COE data */
 
 	gmt_M_memset (data, N_COE_PARS, double *);
@@ -429,9 +429,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < bin_expect; k++)	/* All input columns are floating point numbers here */
 		gmt_set_column (GMT, GMT_IN, k, GMT_IS_FLOAT);
-	
+
 	/* Open the crossover info */
-	
+
 	rec_mode = (GMT->common.b.ncol[GMT_IN]) ? GMT_READ_DATA : GMT_READ_MIXED;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, rec_mode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data inputs */
 		x2sys_end (GMT, S);
@@ -440,7 +440,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	
+
 	/* Read the crossover file */
 
 	n_COE = 0;
@@ -494,7 +494,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			
+		
 		}
 		else {	/* Binary file with integer IDs */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keep track of min/max values */
@@ -550,7 +550,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
-		
+	
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
 		uint64_t n_tracks2;
@@ -813,7 +813,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		goto END;
 	}
 	Out = gmt_new_record (GMT, NULL, line);
-	
+
 	/* Calculate the format string for the cruise name so that the printed table is better formatted */
 	max_len = 0;
 	for (p = 0; p < n_tracks; p++)
