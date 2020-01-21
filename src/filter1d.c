@@ -181,7 +181,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E] [-I<ignore_val>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[<unit>][+e|n|a]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -216,7 +216,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   will be rounded off to a multiple of <increment>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore values; If an input value == <ignore_val> it will be set to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Check for lack of data condition.  If input data has a gap exceeding\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <width> then no output will be given at that point [Default does not check Lack].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the column that contains the independent variable (time) [0].\n");
@@ -587,12 +586,6 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
-	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
-	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	Out = gmt_new_record (GMT, NULL, NULL);
-
 	left = right = 0;		/* Left/right end of filter window */
 	iq = lrint (F->q_factor);
 
@@ -609,6 +602,12 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		for (last_k = F->n_rows-1; last_k && F->data[F->t_col][last_k] > F->t_stop; --last_k);	/* Bypass points outside */
 	}
 	small = (F->T.array[1] - F->T.array[0]) * GMT_CONV8_LIMIT;
+
+	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
+	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	Out = gmt_new_record (GMT, NULL, NULL);
 
 	while (k <= last_k) {
 		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
@@ -677,7 +676,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		if (F->filter_type > FILTER1D_CONVOLVE) {
 
 			/* Need to count how many good ones; use data_sum area  */
-		
+
 			Out->data = data_sum;
 			n_good_ones = 0;
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
@@ -1027,7 +1026,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
-		
+
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
 			if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
@@ -1039,11 +1038,17 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (set_up_filter (GMT, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
+			if (set_up_filter (GMT, &F)) {
+				free_space_filter1d (GMT, &F);
+				Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
+			}
 
 			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
-		
-			if (do_the_filter (API, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
+
+			if (do_the_filter (API, &F)) {
+				free_space_filter1d (GMT, &F);
+				Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
+			}
 		}
 	}
 

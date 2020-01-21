@@ -16165,6 +16165,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 		for (k = 0; k < T->n; k++) T->array[k] *= scale;
 	}
+	if (T->n == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Your min/max/inc arguments resulted in no items\n", option);
+		return (GMT_PARSE_ERROR);
+	}
 	return (GMT_NOERROR);
 }
 
