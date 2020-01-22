@@ -2,8 +2,9 @@ Generate 1D Array
 -----------------
 
 Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*.
-Append **+b** if we should take log2 of *min* and *max* and build an equidistant
-log2-array using *inc* integer increments in log2.
+Append **+b** if we should take log2 of *min* and *max*, get their nearest integers, build an equidistant
+log2-array using *inc* integer increments in log2, then undo the log2 conversion
+(e.g., 3/20/1+b will yield 4,8,16).
 Append **+l** if we should take log10 of *min* and *max* and build an
 array where *inc* can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  For less than every magnitude, use a negative integer *inc*.

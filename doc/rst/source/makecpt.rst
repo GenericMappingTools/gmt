@@ -84,14 +84,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cpt*
-    Selects the master color table CPT to use in the interpolation.
-    Choose among the built-in tables (type **makecpt** to see the list)
-    or give the name of an existing CPT [Default gives the turbo CPT].
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: create_cpt.rst_
 
 .. _-D:
 
@@ -206,18 +199,14 @@ Optional Arguments
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the color table, until colors for all
     intervals are assigned. This is particularly useful in combination
-    with a categorical color table, like "categorical". Cannot be used
-    in combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    with a categorical color table, like "categorical". Alternatively,
+    use **-Ww** to produce a wrapped (cyclic) color table that endlessly
+    repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Creates a continuous CPT [Default is discontinuous, i.e.,
-    constant colors for each interval]. This option has no effect when no **-T**
-    is used, or when using **-T**\ *z_min*/*z_max*; in the first case the input
-    CPT remains untouched, in the second case it is only scaled to match the
-    range *z_min*/*z_max*.
+    Force a continuous CPT when building from a list of colors and a list of *z*-values [discrete].
 
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
@@ -243,17 +232,18 @@ and ocean across the shoreline, for instance).  CPTs with a hinge will
 have their two parts stretched to the required range separately, i.e.,
 the bottom part up to the hinge will be stretched independently of the
 part from the hinge to the top, according to the prescribed new range.
-If the selected range does not include the hinge then no such partitioning
-takes place.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
 
-Color Aliasing
---------------
+Discrete versus Continuous CPT
+------------------------------
 
-For best result when **-T -Z** is used we recommend you do no append
-a specific *z_inc*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the stated limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------
@@ -272,7 +262,7 @@ continuous default turbo rainbow of colors:
 
    ::
 
-    gmt makecpt -T-2/6 -Z > colors.cpt
+    gmt makecpt -T-2/6 > colors.cpt
 
 To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
@@ -286,7 +276,7 @@ the remote ata table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
-    gmt makecpt -Cgebco @v3206_06.txt -i2 -Z -E24 > my_depths.cpt
+    gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try
@@ -307,8 +297,8 @@ To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
-  
-    gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
+   
+    gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval
 0 to 500, i.e., the color will be wrapped every 500 z-units so that
@@ -318,7 +308,7 @@ we always get a color regardless of the *z* value, try
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 Bugs
 ----

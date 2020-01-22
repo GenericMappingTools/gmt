@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%Title: GMT v6.1.0_f5f2ed6-dirty_2020.01.09 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:43 2018
+%%CreationDate: Fri Jan 10 10:30:57 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,7 +658,7 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
 /PSL_movie_completion {} def
 %PSL_End_Header
 gsave
@@ -673,7 +669,7 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdimage @SST.nc -Bafg -Rg -JG135/45/90/6i -K -Csst.cpt -X0.75i -Yc -P
-%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %GMTBoundingBox: 54 -216 432 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
@@ -934,8 +930,8 @@ clipsave
 P
 PSL_clip N
 V N -2 -3 T 7203 7207 scale [/Indexed /DeviceRGB 19 <
-80808000A0FF40C0FF0080FF40E0FF40FFFF40FFC040FF4080FF40C0FF40FFFF40FFA040FFE040FF6040FF2040FF60C0
-FFA0FFFFE0FFFFFFFF0040FF>] setcolorspace
+80808012A9FF40C7FF008AFF40E5FF40FFF740FFB642FF407EFF40BBFF40F7FF40FFAE40FFE540FF7240FF3540FF4890
+FF85E4FFC2FFFFFFFF0058FF>] setcolorspace
 << /ImageType 1 /Decode [0 255] /Width 2160 /Height 1080 /BitsPerComponent 8
    /ImageMatrix [2160 0 0 -1080 0 1080] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
@@ -4907,9 +4903,6 @@ P S
 -16 -9 D
 -22 -15 D
 P S
-3600 6146 M
-0 0 D
-P S
 8 W
 25 W
 N 3600 3600 3600 0 360 arc S
@@ -4921,7 +4914,7 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pscoast -Rg -JG135/45/90/6i -K -O -Wblack
-%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -70507,7 +70500,7 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psscale -Rg -JG135/45/90/6i -DJRM+w6i/0.2i -Csst.cpt -B8+lSST -O
-%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -70518,9 +70511,9 @@ O0
 90 R
 V N 0 0 T 7200 240 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 20 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [20 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+   /ImageMatrix [20 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-G[;DH!=]#`%"qBuU`a5H-DaTiV,#\B'1)a'd_Qo%dPBgWOn4X;"q*AmkI,KFeJ9E'~>
+5QH3Y)qt?prr@rV&ukmra8\Eds$6VY5l\8Zs$2&55eI%]p]!MYjZrjK5lYjis#!(A8<Ek*jT!*s~>
 U
 2 setlinecap
 N 0 240 M 7200 0 D S

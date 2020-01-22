@@ -563,8 +563,11 @@ enum GMT_enum_cpt {
 enum GMT_enum_cptflags {
 	GMT_CPT_NO_BNF     = 1,
 	GMT_CPT_EXTEND_BNF = 2,
-	GMT_CPT_HINGED     = 4,
-	GMT_CPT_TIME       = 8,
+	GMT_CPT_HARD_HINGE = 4,
+	GMT_CPT_SOFT_HINGE = 8,
+	GMT_CPT_TIME       = 16,
+	GMT_CPT_COLORLIST  = 32,
+	GMT_CPT_HINGED     = 4	/* Backwards compatibility with 6.0 API */
 };
 
 /* Here is the definition of the GMT_PALETTE structure that is used in programs

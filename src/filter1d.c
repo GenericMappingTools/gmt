@@ -586,12 +586,6 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
-	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
-	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
-	Out = gmt_new_record (GMT, NULL, NULL);
-
 	left = right = 0;		/* Left/right end of filter window */
 	iq = lrint (F->q_factor);
 
@@ -608,6 +602,12 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		for (last_k = F->n_rows-1; last_k && F->data[F->t_col][last_k] > F->t_stop; --last_k);	/* Bypass points outside */
 	}
 	small = (F->T.array[1] - F->T.array[0]) * GMT_CONV8_LIMIT;
+
+	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
+	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	Out = gmt_new_record (GMT, NULL, NULL);
 
 	while (k <= last_k) {
 		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
@@ -1038,11 +1038,17 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (set_up_filter (GMT, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
+			if (set_up_filter (GMT, &F)) {
+				free_space_filter1d (GMT, &F);
+				Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
+			}
 
 			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
 
-			if (do_the_filter (API, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
+			if (do_the_filter (API, &F)) {
+				free_space_filter1d (GMT, &F);
+				Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
+			}
 		}
 	}
 

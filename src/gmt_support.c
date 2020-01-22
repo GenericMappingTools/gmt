@@ -1197,15 +1197,37 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 }
 #endif
 
-/*! Decode the optional +u|U<unit> and determine scales */
-GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
+/*! Decode the optional +u|U<unit> and determine scales and +h[<z>] for hinge control */
+GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction, unsigned int *hinge_mode, double *z_hinge) {
+	/* CPT file arg is <file>[+h[<hinge>]][+u|U<unit>]
+	 * The +h modifier is used to turn a soft hinge in a CPT to a hard hinge at the user-selected z-value [0]
+	 * or to adjust the location of the hinge for an hard hinge CPT. */
 	enum gmt_enum_units u_number;
 	unsigned int mode = 0;
 	char *c = NULL;
 	struct CPT_Z_SCALE *Z = NULL;
 	gmt_M_unused(direction);
 
-	if ((c = gmtlib_file_unitscale (file)) == NULL) return NULL;	/* Did not find any modifier */
+	*hinge_mode = 0;	/* Default is no hinge modifier */
+	if ((c = strstr (file, "+h"))) {	/* Gave hinge modifier, examine and set parameters */
+		if (c[2]) {	/* Gave hinge value for soft hinge */
+			if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, &c[2], gmt_M_type (GMT, GMT_IN, GMT_Z), z_hinge), &c[2])) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "support_cpt_parse: CPT hinge modifier %s was not successfully parsed and is ignored.\n", c);
+			}
+			else {	/* Parsed successfully, this turns a soft CPT hinge to a hard user hinge */
+				c[0] = '\0';	/* Chop off the hinge specification from the file name */
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "support_cpt_parse: CPT hard hinge was added at z = %s for file %s\n", &c[2], file);
+				*hinge_mode = 1;
+			}
+		}
+		else {	/* Accept zero as hard hinge value */
+			*hinge_mode = 1;
+			c[0] = '\0';	/* Chop off the hinge specification from the file name */
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "support_cpt_parse: CPT CPT hard hinge was added at z = 0 for file %s\n", file);
+		}
+	}
+
+	if ((c = gmtlib_file_unitscale (file)) == NULL) return NULL;	/* Did not find any +u|U modifiers */
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
@@ -1225,11 +1247,11 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 
 /*! . */
 GMT_LOCAL int support_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	/* Return the slice number where z_low == hinge */
+	/* Return the slice number where z_low' = 0 for a CPT with hinge and normalized z' = -1 to +1 */
 	unsigned int k;
-	if (!P->has_hinge) return GMT_NOTSET;
-	for (k = 0; k < P->n_colors; k++) if (doubleAlmostEqualZero (P->hinge, P->data[k].z_low)) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge = %g for slice k = %u!\n", P->hinge, k);
+	if (!P->has_hinge) return GMT_NOTSET;	/* Does not have any hinge */
+	for (k = 0; k < P->n_colors; k++) if (doubleAlmostEqualZero (0.0, P->data[k].z_low)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge at z' = 0 for slice k = %u!\n", k);
 		return (int)k;
 	}
 	return GMT_NOTSET;
@@ -7152,7 +7174,7 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT_DEFAULT_CPT_NAME);
-	gmt_message (GMT, "\t   [Notes: R=Default z-range, H=Hinge, C=colormodel]\n");
+	gmt_message (GMT, "\t   [Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]\n");
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
@@ -7161,6 +7183,46 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	gmt_message (GMT, "\t   continuous CPT from those colors automatically.\n");
 
 	return (GMT_NOERROR);
+}
+
+/*! . */
+void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
+	unsigned int k, i;
+	gmt_M_unused(GMT);
+	if (P->is_continuous) return;	/* Nothing to do */
+	P->n_colors--;	/* One less slice */
+	for (k = 0; k < P->n_colors; k++) {	/* Copy next low color to previous high color */
+		gmt_M_rgb_copy (P->data[k].rgb_high, P->data[k+1].rgb_low);
+		gmt_M_rgb_copy (P->data[k].hsv_high, P->data[k+1].hsv_low);
+		/* Update color differences for interpolation function later (dz remains the same == 1) */
+		for (i = 0; i < 4; i++) P->data[k].rgb_diff[i] = P->data[k].rgb_high[i] - P->data[k].rgb_low[i];
+		for (i = 0; i < 4; i++) P->data[k].hsv_diff[i] = P->data[k].hsv_high[i] - P->data[k].hsv_low[i];
+	}
+	P->is_continuous = true;	/* Flag this as a continuous CPT */
+}
+
+/*! . */
+unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous) {
+	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate)) {	/* Color list with -T/min/max should be seen as continuous */
+		*force_continuous = true, P->mode |= GMT_CPT_CONTINUOUS;
+		gmtlib_make_continuous_colorlist (GMT, P);
+	}
+	if (*interpolate) {
+		if (!P->is_continuous && !(P->mode & GMT_CPT_COLORLIST)) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s is a discrete CPT. You can stretch it (-T<min>/<max>) but not interpolate it (-T<min>/<max>/<inc>).\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Selecting the given range and ignoring the increment setting.\n");
+			*interpolate = false;
+		}
+	}
+	else {	/* Did not request resampling */
+		if (P->categorical) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s is a special categorical, discrete CPT. You can select a subset only via (-Tmin/max/inc).\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This will yield a subset categorical CPT with [(max-min)/inc] - 1 entries.\n", file);
+			return GMT_RUNTIME_ERROR;
+		}		
+	}
+	return GMT_NOERROR;
 }
 
 /*! . */
@@ -7173,11 +7235,11 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model;
+	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, hinge_mode = 0;
 	size_t k;
 	bool gap, overlap, error = false, close_file = false, check_headers = true;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
-	double dz;
+	double dz, z_hinge;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
 	char T5[GMT_LEN64] = {""}, T6[GMT_LEN64] = {""}, T7[GMT_LEN64] = {""}, T8[GMT_LEN64] = {""}, T9[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[PATH_MAX] = {""};
@@ -7191,7 +7253,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		strncpy (cpt_file, source, PATH_MAX-1);
-		Z = support_cpt_parse (GMT, cpt_file, GMT_IN);
+		Z = support_cpt_parse (GMT, cpt_file, GMT_IN, &hinge_mode, &z_hinge);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open color palette table %s\n", cpt_file);
 			gmt_M_free (GMT, Z);
@@ -7271,11 +7333,18 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
-		else if ((h = strstr (line, "HINGE ="))) {	/* CPT is hinged at this z value */
-			X->mode &= GMT_CPT_HINGED;
-			X->has_hinge = 1;
-			k = 7;	while (h[k] == ' ' || h[k] == '\t') k++;	/* Skip any leading spaces or tabs */
-			gmt_scanf_arg (GMT, &h[k], GMT_IS_UNKNOWN, false, &X->hinge);
+		else if (strstr (line, "HINGE")) {	/* CPT has either a soft or hard hinge */
+			if (strstr (line, "HINGE =")) {	/* Bad mix of old CPTs with new GMT parsing - treat as hard hinge */
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mixing old CPT master tables with HINGE = <value> in %s.  Interpreted as HARD_HINGE.\n", cpt_file);
+				X->mode |= GMT_CPT_HARD_HINGE;
+				X->has_hinge = 1;
+			}
+			else if (strstr (line, "HARD_HINGE")) {	/* Hard hinge is always active */
+				X->mode |= GMT_CPT_HARD_HINGE;
+				X->has_hinge = 1;
+			}
+			else if (strstr (line, "SOFT_HINGE"))	/* Soft hinge the user can activate to a hard hinge via +h[<value>] */
+				X->mode |= GMT_CPT_SOFT_HINGE;
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		else if ((h = strstr (line, "RANGE ="))) {	/* CPT has a default range */
@@ -7296,6 +7365,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->is_wrapping = 1;
 		else if ((h = strstr (line, "ENABLE_B_OPTION")))	/* CPT was stretched to exact min/max with no dz rounding */
 			XH->auto_scale = 1;
+		else if ((h = strstr (line, "COLOR_LIST")))	/* CPT was created from a list of colors */
+			X->mode |= GMT_CPT_COLORLIST;
 
 		GMT->current.setting.color_model = X->model;
 
@@ -7371,6 +7442,11 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				if (X->is_bw && !gmt_M_is_bw(X->bfn[id].rgb)) X->is_bw = false;
 			}
 			continue;
+		}
+
+		if (hinge_mode && ((X->mode & GMT_CPT_SOFT_HINGE) || (X->mode & GMT_CPT_HARD_HINGE))) { /* Activate a soft hinge for the CPT and/or adjust the hinge */
+			X->has_hinge = 1;
+			X->hinge = z_hinge;	/* This is now the user-selected hinge value */
 		}
 
 		/* Here we have regular z-slices.  Allowable formats are
@@ -7592,6 +7668,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			X->data[i].i_dz = 1.0 / dz;
 		}
+		/* Add special flag since this CPT is basically a list of colors */
+		X->mode |= GMT_CPT_COLORLIST;
 	}
 	X->wrap_length = X->data[X->n_colors-1].z_high - X->data[0].z_low;
 
@@ -7848,33 +7926,68 @@ unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
 	return (mode);
 }
 
+int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
+	int ks;
+	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
+	/* Claims to have a hinge */
+	ks = support_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge found) */
+	if (ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
+		P->has_hinge = 0;
+		return GMT_NOTSET;
+	}
+	if (*z_low < P->hinge && *z_high > P->hinge) return ks;	/* Output range includes hinge, all is well */
+
+	/* Here we have a CPT with a hinge that is not included in the desired range.  Per policy:
+	 * We throw away the unreferenced CPT half and return the other relevant half.
+	 */
+	if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
+		gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
+		P->n_colors -= ks;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
+	}
+	else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
+		P->n_colors = ks;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
+	}
+	/* Behave as a single CPT range with no hinge from now on */
+	P->has_hinge = 0;
+	return GMT_NOTSET;
+}
+
 /*! . */
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
-	 * zero then we substitute the CPT's default range instead. */
-	int is, ks = 0;
+	 * zero then we substitute the CPT's default range instead (if available).
+	 * Note: If P has a hinge then its value is expected to be in the final user data values.
+	 * Default hinge is 0 but *h modifier can set this for CPTs with soft hinges.
+	 * Note: Input P has normalized z' values at this time (0-1) so z' hinge is at 0.5.
+	 * If a hinge is outside the requested data range then we make adjustments:
+	 *   hard hinge: include hinge in the final output range and ignore the other half of the CPT
+	 *   soft hinge: Ignore the hinge setting.
+	 */
+	int is, ks;
 	double z_min, z_start, scale;
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
 			return;
 		}
-		z_low =  P->minmax[0];	z_high = P->minmax[1];
+		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
+	ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high);	/* Deal with any issure related to hinges */
+
 	z_min = P->data[0].z_low;
 	z_start = z_low;
-	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+	if (P->has_hinge)	/* Separate scale on either side of hinge, start with scale for section below the hinge */
+		scale = (P->hinge - z_low) / (0.0 - P->data[0].z_low);
+	else	/* No hinge, single scale using the entire CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
-		P->has_hinge = 0;
-		ks = GMT_NOTSET;
-	}
-	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
-		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
 
 	for (is = 0; is < (int)P->n_colors; is++) {
 		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
-			z_min = z_start = P->hinge;
-			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);
+			z_min = 0.0; z_start = P->hinge;
+			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - 0.0);
 		}
 		P->data[is].z_low  = z_start + (P->data[is].z_low  - z_min) * scale;
 		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
@@ -7957,7 +8070,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 /*! . */
 struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter) {
 	/* Resamples the current CPT based on new z-array.
-	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
+	 * Old cpt is first normalized to z' = 0-1 range and scaled to fit new user z range.
 	 * New cpt may be continuous and/or reversed.
 	 * We write the new CPT to stdout. */
 
@@ -7972,14 +8085,24 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
 
-	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Making a continuous cpt from a discrete cpt may give unexpected results!\n");
-
 	if (nz_in < 0) {	/* Called from grd2cpt which wants equal area colors */
 		nz = abs (nz_in);
 		even = true;
 	}
 	else
 		nz = nz_in;
+
+	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
+		z_out = gmt_M_memory (GMT, NULL, nz, double);
+		for (i = 0; i < nz; i++) z_out[i] = pow (10.0, z[i]);
+	}
+	else	/* Just point to the incoming z values */
+		z_out = z;
+
+	(void) gmtsupport_validate_cpt (GMT, Pin, &z_out[0], &z_out[nz-1]);	/* Deal with any issure related to hinges */
+
+	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Making a continuous cpt from a discrete cpt may give unexpected results!\n");
+
 
 	dim_nz[0] = nz - 1;
 	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
@@ -7988,7 +8111,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	i += gmt_M_check_condition (GMT, (no_inter || set_z_only) && P->n_colors > Pin->n_colors, "Number of picked colors exceeds colors in input cpt!\n");
 
-	/* First normalize old CPT so z-range is 0-1 */
+	/* First normalize old CPT so z-range is normalized z' = 0-1 */
 
 	b = 1.0 / (Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
 	a = -Pin->data[0].z_low * b;
@@ -8019,12 +8142,6 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	/* Then set up normalized output locations x */
 
 	x = gmt_M_memory (GMT, NULL, nz, double);
-	if (log_mode) {	/* Our z values are actually log10(z), need array with z for output */
-		z_out = gmt_M_memory (GMT, NULL, nz, double);
-		for (i = 0; i < nz; i++) z_out[i] = pow (10.0, z[i]);
-	}
-	else
-		z_out = z;	/* Just point to the incoming z values */
 
 	if (nz < 2)	/* Want a single color point, assume range 0-1 */
 		nz = 2;
@@ -8033,17 +8150,17 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		for (i = 0; i < nz; i++) x[i] = i * x_inc;	/* Normalized z values 0-1 */
 	}
 	else {	/* As with LUT, translate users z-range to 0-1 range */
-		double scale_low, scale_high, z_hinge, hinge = 0.0;
-		if (!Pin->has_hinge || support_find_cpt_hinge (GMT, Pin) == GMT_NOTSET) { 	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+		double scale_low, scale_high, z_hinge = 0.0, hinge = 0.0;
+		if (Pin->has_hinge) {	/* Need separate scales on either side of hinge at 0.0 */
+			hinge = Pin->hinge;
+			scale_low  = x_hinge / (hinge - z[0]);	/* Convert z_out below the hinge to x = 0 - x_hinge */
+			scale_high = (1.0 - x_hinge) * (1.0 / (z[nz-1] - hinge));	/* Convert z)out above hinge to x_hinge - 1 */
+		}
+		else {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 			scale_high = 1.0 / (z[nz-1] - z[0]);
 			z_hinge = -DBL_MAX;	/* So the if-test in the loop below always fail */
 			x_hinge = 0.0;		/* Starting x is zero */
-            hinge = z[0];	/* There is no hinge so we need z-min */
-		}
-		else {	/* Need separate scales on either side of hinge */
-			z_hinge = Pin->hinge;
-			scale_low  = x_hinge / (hinge - z[0]);	/* Convert z_out below the hinge to x = 0 - x_hinge */
-			scale_high = (1.0 - x_hinge) * (1.0 / (z[nz-1] - hinge));	/* Convert z)out above hinge to x_hinge - 1 */
+			hinge = z[0];	/* There is no hinge so we need z-min */
 		}
 	
 		for (i = 0; i < nz; i++) {
@@ -8226,9 +8343,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int i, append = 0;
+	unsigned int i, append = 0, hinge_mode = 0;
 	bool close_file = false;
-	double cmyk[5];
+	double cmyk[5], z_hinge;
 	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
 	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
@@ -8245,7 +8362,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		static char *msg2[2] = {"create", "append to"};
 		strncpy (cpt_file, dest, PATH_MAX-1);
 		append = (cpt_file[0] == '>');	/* Want to append to existing file */
-		if ((Z = support_cpt_parse (GMT, &cpt_file[append], GMT_OUT))) {
+		if ((Z = support_cpt_parse (GMT, &cpt_file[append], GMT_OUT, &hinge_mode, &z_hinge))) {
 			support_cpt_z_scale (GMT, P, Z, GMT_OUT);
 			gmt_M_free (GMT, Z);
 		}
@@ -8285,6 +8402,13 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	PH = gmt_get_C_hidden (P);
 
+	if (hinge_mode && P->mode & GMT_CPT_SOFT_HINGE) { /* Add a hard hinge to the CPT */
+		P->mode -= GMT_CPT_SOFT_HINGE;
+		P->mode |= GMT_CPT_HARD_HINGE;
+		P->has_hinge = 1;
+		P->hinge = z_hinge;	/* This is the user-unit value to be used during stretching in gmt_stretch_cpt */
+	}
+
 	/* Start writing CPT info to fp */
 
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
@@ -8299,11 +8423,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		fprintf (fp, "# COLOR_MODEL = cmyk\n");
 	else
 		fprintf (fp, "# COLOR_MODEL = rgb\n");
-	if (P->has_hinge) {
-		fprintf (fp, "# HINGE = ");
-		fprintf (fp, GMT->current.setting.format_float_out, P->hinge);
-		fprintf (fp, "\n");
-	}
+	if (P->has_hinge)
+		fprintf (fp, "# HARD_HINGE\n");
 	if (P->is_wrapping)
 		fprintf (fp, "# CYCLIC\n");
 	if (PH->auto_scale)
@@ -15721,6 +15842,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
+	if (gmt_validate_modifiers (GMT, argument, option, "abelnt")) return (GMT_PARSE_ERROR);
+
 	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
@@ -15892,7 +16015,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: min >= max\n", option);
 			return GMT_PARSE_ERROR;
 		}
-		T->set += 2;
+		T->set += 2;	/* Read both min and max */
 	}
 	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
 		if (T->temporal) {
@@ -16041,6 +16164,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT->current.setting.time_system.unit = unit;
 		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 		for (k = 0; k < T->n; k++) T->array[k] *= scale;
+	}
+	if (T->n == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Your min/max/inc arguments resulted in no items\n", option);
+		return (GMT_PARSE_ERROR);
 	}
 	return (GMT_NOERROR);
 }

@@ -2,7 +2,7 @@
 # Testing horizontal psscale panel sizing if -+e +n and reverse scale.
 ps=horsclpanel.ps
 gmt set FONT_ANNOT_PRIMARY 9p,Helvetica,black
-gmt makecpt -T-200/1000/100 -Crainbow -Z > t.cpt
+gmt makecpt -T-200/1000 -Crainbow > t.cpt
 gmt psxy -R0/20/0/30 -Jx1c -P -K -Y0 << EOF > $ps
 8	0
 8	30

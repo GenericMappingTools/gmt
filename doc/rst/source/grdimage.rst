@@ -75,7 +75,7 @@ remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 See Also
 --------

@@ -48,8 +48,7 @@ Optional Arguments
     is given then we read stdin.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). If not given, the module
-    will read stdin. Like :doc:`grdview`, we can understand
+    color segment boundaries (but see **-B**). Like :doc:`grdview`, we can understand
     pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.

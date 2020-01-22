@@ -1128,17 +1128,31 @@ Master (dynamic) CPTs
 
 The CPTs distributed with GMT are *dynamic*.  This means they have several
 special properties that modify the behavior of programs that use them.
-All dynamic CPTs are normalized in one of two ways: If a CPT was designed
+Dynamic CPTs comes in a few different flavors: Some CPTs were designed
 to behave differently across a *hinge* value (e.g., a CPT designed specifically
 for topographic relief may include a discontinuity in color across the
-coastline at *z = 0*), then the CPT's *z*-values will range from -1, via 0
-at the hinge, to +1 at the other end.  The hinge value is specified via the special
-comment
+coastline at *z = 0*), and when users select these CPTs they will be stretched
+to fit the user's desired data range separately for each side of this *hard* hinge.
+Basically, a *hard* hinge CPT is the juxtaposition of two different CPTs joined
+at the hinge and these sections are stretched independently. Such CPT files
+are identified as such via the special comment
 
-| ``# HINGE = <hinge-value>``
+| ``# HARD_HINGE``
 
-CPTs without a hinge are instead normalized with *z*-values from 0 to 1.
-Dynamic CPTs will need to be stretched to the user's preferred range, and there
+and all hard hinges occur at data value *z = 0* (but you can change this value by
+adding **+h**\ *value* to the name of the CPT).
+Other CPTs may instead have a *soft* hinge which indicates a natural hinge or transition
+point in the CPT itself, unrelated to any natural data set *per se*. These CPTs
+are flagged by the special comment
+
+| ``# SOFT_HINGE``
+
+CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user activates then by
+appending **+h**\ [*hinge*] to the CPT name.  This modifier will convert the soft
+hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
+Note that if your specified data range *excludes* an activated soft or hard hinge then we
+only perform color sampling from the *half* of the CPT that pertains to the data range.
+All dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*
 specified in the master table via the special comment
@@ -1146,26 +1160,58 @@ specified in the master table via the special comment
 
 | ``# RANGE = <zmin/zmax>``
 
-and when used by applications the normalized *z*-values will be stretched to reflect
-this natural range.  In contrast, CPTs without a natural range are instead
+and when used by applications the CPT may be automatically stretched to reflect
+this natural range.  In contrast, dynamic CPTs *without* a natural range are instead
 stretched to fit the range of the data in question (e.g., a grid's range).
-Exceptions to these rules are implemented in the two CPT-producing modules
+Exceptions to these rules are implemented in the two *CPT-producing* modules
 :doc:`/makecpt` and :doc:`/grd2cpt`, both of which can read dynamic CPTs
 and produce *static* CPTs satisfying a user's specific range needs.  These
-tools can also read static CPTs where the new range must be specified (or computed
+tools can also read static CPTs for which a new range must be specified (or computed
 from data), reversing the order of colors, and even isolating a section
-of an incoming CPT.  Here, :doc:`/makecpt` can be told the range of compute it from data tables
-while :doc:`/grd2cpt` can derive the range from one or more grids.
+of an incoming CPT.  Here, :doc:`/makecpt` can be told the data range or compute
+it from data tables while :doc:`/grd2cpt` can derive the range from one or more grids.
 
 .. figure:: /_images/GMT_hinge.*
    :width: 500 px
    :align: center
 
-   The top color bar is a dynamic master CPT (here, globe) with a hinge at sea level and
+   The top color bar is a dynamic master CPT (here, globe) with a hard hinge at sea level and
    a natural range from -10,000 to +10,000 meters. However, our data range
    is asymmetrical, going from -8,000 meter depths up to +3,000 meter elevations.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range while utilizing the full color range.
+
+All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
+where those with hard or soft hinges are identified by triangles at their hinges.
+
+CPTs from color lists
+~~~~~~~~~~~~~~~~~~~~~
+
+GMT can build color tables "on the fly" from a comma-separated list of colors
+and a range of *z*-values to go with them.  As illustrated below, there are
+four different ways to create such CPTs. In this example, we will operate with
+a list of three colors: red,yellow and purple, given to modules with the option **-C**\ red,yellow,purple,
+and utilize a fixed data range of *z = 0-6*.
+Four different CPTs result because we either select a *continuous* or *discrete table*, and because the *z*-intervals are
+either *equidistant* or *arbitrary*.  The top continuous color table with equidistant spacing (a) is selected
+with the range **-T**\ 0/6, meaning the colors will continuously change from red (at *z = 0*) via
+yellow (at *z = 3*) to purple (at *z = 6*). Next, a discrete table with the same range (b)
+is obtained with **-T**\ 0/6/2, yielding colors that are either constant red (*z = 0-2*), yellow (*z = 2-4*)
+or purple (*z = 4-6*). The next discrete table (c) illustrates how to specify arbitrary
+node points in the CPT by providing a comma-separated list of values (**-T**\ 0,4,5.5,6). Now, the constant
+color intervals have unequal ranges, illustrated by red (*z = 0-4*), yellow (*z = 4-5.5*) and purple (*z = 5.5-6*).  Finally, we
+create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,2,6 and adding **-Z**;
+the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
+continuously change from red (at *z = 0*) via yellow (at *z = 2*) to purple (at *z = 6*).
+Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use the exact data range
+to set the quivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
+color list to have the *min* and *max* values rounded down and up to nearest multiple of *dz*, respectively.
+
+.. figure:: /_images/GMT_colorlist.*
+   :width: 500 px
+   :align: center
+
+   Lists of colors (here red,yellow,purple) can be turned into discrete or continuous CPT tables on the fly.
 
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1227,7 +1273,10 @@ A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
 "turbo" color table, but this is overridden if the user uses the @eart_relief
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
-these CPTs are read and scaled to match the range of the grid values.
+these CPTs are read and scaled to match the range of the grid values. You may append
+**+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
+THis is helpful if you plan to place a colorbar and prefer start and stop *z*-values
+that are multiples of *dz*.
 
 The Drawing of Vectors
 ----------------------
@@ -2544,4 +2593,3 @@ any of these directories.
 
 .. [19]
    Requires building GMT with GDAL.
-

@@ -7,11 +7,11 @@
 # Copyright (c) 2018, Fabio Crameri All rights reserved.
 # Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
 # Note: Original file converted to GMT version >= 5 CPT format.
-# Note: Range changed from 0-1 to -1/+1 to place hinge at zero.
+# Note: Range changed from 0-1 to -1/+1 to place soft hinge at zero.
 #
 #----------------------------------------------------------
 # COLOR_MODEL = RGB
-# HINGE = 0
+# SOFT_HINGE
 #----------------------------------------------------------
 -1.000000	222/217/255	-0.992156	219/215/254
 -0.992156	219/215/254	-0.984314	217/213/253
