@@ -7220,7 +7220,7 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s is a special categorical, discrete CPT. You can select a subset only via (-Tmin/max/inc).\n", file);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This will yield a subset categorical CPT with [(max-min)/inc] - 1 entries.\n", file);
 			return GMT_RUNTIME_ERROR;
-		}		
+		}
 	}
 	return GMT_NOERROR;
 }
@@ -7767,7 +7767,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 		snprintf (file, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
 	else
 		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
-	
+
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to save current CPT file to %s !\n", file);
 	else
@@ -7948,7 +7948,7 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 	}
 	else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
 		P->n_colors = ks;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ingored.\n", *z_high);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ignored.\n", *z_high);
 	}
 	/* Behave as a single CPT range with no hinge from now on */
 	P->has_hinge = 0;
@@ -8162,7 +8162,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 			x_hinge = 0.0;		/* Starting x is zero */
 			hinge = z[0];	/* There is no hinge so we need z-min */
 		}
-	
+
 		for (i = 0; i < nz; i++) {
 			if (z[i] <= z_hinge)	/* Below or equal to hinge */
 				x[i] = (z[i] - z[0]) * scale_low;

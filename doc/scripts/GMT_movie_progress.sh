@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Makes a plot of the six movie progress indicators avalable
+# Makes a plot of the six movie progress indicators available
 #
 # Make dummy map script for static "movie"
 cat << EOF > map.sh

@@ -723,7 +723,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t   Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n"
 		"\t-S Only write first row upon completion of calculations [write all rows].\n"
 		"\t   Optionally, append l for last row or f for first row [Default].\n"
-		"\t-T Set domain from <min> to <max> in steps of <inc>. Append +n to <inc if number of points was given instead.\n"
+		"\t-T Set domain from <min> to <max> in steps of <inc>. Append +n to <inc> if number of points was given instead.\n"
 		"\t   Append +b for log2 spacing in <inc> and +l for log10 spacing via <inc> = 1,2,3.\n"
 		"\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n"
 		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
@@ -4023,7 +4023,7 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				w = T_prev1->segment[s]->data[col][row];
 			pair[k].value  = (gmt_grdfloat)T_prev2->segment[s]->data[col][row];
 			pair[k].weight = (gmt_grdfloat)w;
-		
+
 			k++;
 		}
 		if (info->local) {
@@ -6702,7 +6702,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			}
 		}
 		free_sort_list (GMT, &info);	/* Frees helper array if SORT was called */
-	
+
 		nstack = new_stack;
 
 		for (kk = 1; kk <= created; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */

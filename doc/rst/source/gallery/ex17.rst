@@ -18,7 +18,7 @@ with the option **-Q** (See the Figure :ref:`fig_ex17`):
 
 We also plot a color legend on top of the land. So here we basically
 have three layers of "paint" stacked on top of each other: the
-underlaying geoid map, the land mask, and finally the color legend. This
+underlying geoid map, the land mask, and finally the color legend. This
 legend makes clear how :doc:`grd2cpt </grd2cpt>`
 distributed the colors over the range: they are not of equal length put
 are associated with equal amounts of area in the plot. Since the high
