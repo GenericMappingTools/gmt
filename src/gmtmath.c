@@ -34,7 +34,7 @@
 #define THIS_MODULE_MODERN_NAME	"gmtmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
-#define THIS_MODULE_KEYS	"<D{,AD(=,TD(,>D}"
+#define THIS_MODULE_KEYS	"<D(,AD(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
 
