@@ -43,7 +43,7 @@ Synopsis
 
 .. include:: coupe_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 .. include:: meca_notes.rst_
 
