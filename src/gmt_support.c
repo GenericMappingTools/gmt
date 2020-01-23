@@ -7204,7 +7204,7 @@ void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 
 /*! . */
 unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous) {
-	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate)) {	/* Color list with -T/min/max should be seen as continuous */
+	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate) && P->n_colors > 1) {	/* Color list with -T/min/max should be seen as continuous */
 		*force_continuous = true, P->mode |= GMT_CPT_CONTINUOUS;
 		gmtlib_make_continuous_colorlist (GMT, P);
 	}
