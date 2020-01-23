@@ -1074,22 +1074,22 @@ ignore all trailing text, use **-in**.
    these column numbers now refer to the logical record, not the physical, since
    after reading the data there is no physical record, only the logical record in memory.
 
-. _option_-j:
+.. _option_-j:
 
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
-    GMT has different ways to compute distances on planetary bodies.
-    By default (**-jg**) we perform great circle distance calculations, and parameters such
-    as distance increments or radii will be compared against calculated great
-    circle distances. To simplify and speed up calculations you can select Flat
-    Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
-    you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
-    (and slowest calculation time).  All spherical distance calculations depend on
-    the current ellipsoid (:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`), the definition of
-    the mean radius (:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`), and the specification
-    of latitude type (:ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`).  Geodesic distance
-    calculations is also controlled by method (:ref:`PROJ_GEODESIC <PROJ_GEODESIC>`).
+GMT has different ways to compute distances on planetary bodies.
+By default (**-jg**) we perform great circle distance calculations, and parameters such
+as distance increments or radii will be compared against calculated great
+circle distances. To simplify and speed up calculations you can select Flat
+Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
+you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
+(and slowest calculation time).  All spherical distance calculations depend on
+the current ellipsoid (:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`), the definition of
+the mean radius (:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`), and the specification
+of latitude type (:ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`).  Geodesic distance
+calculations is also controlled by method (:ref:`PROJ_GEODESIC <PROJ_GEODESIC>`).
 
 .. _option_-l:
 

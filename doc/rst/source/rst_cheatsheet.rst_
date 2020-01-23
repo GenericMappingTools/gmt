@@ -109,6 +109,8 @@ Link to a section title with `Lists`_.
 
 Link to a target with :ref:`Link to a table <tbl-grid>`.
 
+Link to a GMT parameter :ref:`FONT_TITLE <FONT_TITLE>`.
+
 
 
 Codes
