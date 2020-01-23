@@ -31,6 +31,8 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-b**   | Select binary input and/or output                                  |
 +----------+--------------------------------------------------------------------+
+| **-c**   | Advance plot focus to selected (or next) subplot panel             |
++----------+--------------------------------------------------------------------+
 | **-d**   | Replace user *nodata* values with IEEE NaNs                        |
 +----------+--------------------------------------------------------------------+
 | **-e**   | Only process data records that match a *pattern*                   |
@@ -912,6 +914,20 @@ processed. No **-bi** option is needed in this case.
 Currently, netCDF tables can only be input, not output. For more
 information, see Chapter :doc:`file_formats`.
 
+.. _option_-c:
+
+Selecting subplot panels: The **-c** option
+-------------------------------------------
+
+When using :doc:`/subplot` to assemble multiple individual panels in a
+matrix layout, we use **-c** to either advance the focus of plotting to
+the next panel in the sequence (either by row or by column as set by
+subplot's **-A** option) or to specify directly the *row*\ /*col* or
+1-D *index* of the desired panel.  The **-c** option is only allowed
+when in subplot mode.  If no **-c** option is given for the first plot
+then we default to *row* = *col* = *index* = 0, i.e., the upper left
+panel.  Note: *row*, *col*, and *index* all start at 0.
+
 .. _option_-d:
 
 Missing data conversion: The **-d** option
@@ -1306,6 +1322,19 @@ section :ref:`-Gfill_attrib`).  Finally, the modules
 :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
 on a record-by-record basis if **-t** is given without argument and the
 input file supplies variable transparencies as the last numerical column value.
+
+.. _option_-x:
+
+Selecting number of CPU cores: The **-x** option
+------------------------------------------------
+
+Specify the number of active cores to be used in any OpenMP-enabled
+multi-threaded algorithms. By default, we try to use all available cores.
+You may append *n* to only use *n* cores (if *n* is too large it will be truncated
+to the maximum number of cores available).  Finally, give a negative *n* to select
+all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
+option is only available to GMT modules compiled with OpenMP support, with
+the exception of :doc:`/movie` which handles its own parallel execution.
 
 .. _option_colon:
 
