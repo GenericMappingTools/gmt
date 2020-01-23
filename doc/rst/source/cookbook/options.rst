@@ -1024,8 +1024,9 @@ The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
 lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
-that start with the character # are automatically considered header
-records and skipped. Thus, *n_recs* refers to general text lines that
+that start with the character # are *automatically* considered header
+records and skipped, hence **-h** is not needed to skip such records.
+Thus, *n_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
 records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
