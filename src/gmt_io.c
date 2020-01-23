@@ -375,7 +375,7 @@ GMT_LOCAL void gmtio_adjust_periodic_lon (struct GMT_CTRL *GMT, double *val) {
 
 /*! . */
 GMT_LOCAL void gmtio_adjust_projected (struct GMT_CTRL *GMT) {
-	/* Case of incoming projected map coordinates that we wish to rever to lon/lat */
+	/* Case of incoming projected map coordinates that we wish to revert to lon/lat */
 	if (GMT->current.proj.inv_coord_unit != GMT_IS_METER) {	/* Must first scale to meters */
 		GMT->current.io.curr_rec[GMT_X] *= GMT->current.proj.m_per_unit[GMT->current.proj.inv_coord_unit];
 		GMT->current.io.curr_rec[GMT_Y] *= GMT->current.proj.m_per_unit[GMT->current.proj.inv_coord_unit];
@@ -3495,7 +3495,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 
 		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
-	
+
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			GMT->current.io.record_type[GMT_IN] = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record);
 			if (GMT->current.io.variable_in_columns) {	/* Never finalize # of fields since it can change from rec to rec */
@@ -3745,7 +3745,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 		S = table->segment[seg];
 		SH = gmt_get_DS_hidden (S);
 		if (SH->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
-	
+
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
 			if (SH->file[GMT_OUT])
 				out_file = SH->file[GMT_OUT];
@@ -4997,7 +4997,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 		pos = 0;
 		while (!found && (gmt_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
-		
+
 #ifdef HAVE_DIRENT_H_
 			if (dir[L-1] == '/' || (gmt_M_compat_check (GMT, 4) && dir[L-1] == '*')) {	/* Must search recursively from this dir */
 				N = (dir[L-1] == '/') ? L - 1 : L - 2;
@@ -8785,7 +8785,7 @@ int gmt_mkdir (const char *path)
 		errno = ENAMETOOLONG;
 		perror ("gmt_mkdir (too long) error");
 		return -1;
-	}  
+	}
 	strcpy (_path, path);	/* Copy string so its mutable */
 
 	/* Iterate the string */
@@ -8809,7 +8809,7 @@ int gmt_mkdir (const char *path)
 			*p = sep;	/* Reset the separator */
 		}
 		p++;
-	}  
+	}
 
 	/* Finally create the last directory name in the path */
 #ifndef _WIN32
@@ -8822,7 +8822,7 @@ int gmt_mkdir (const char *path)
 			perror ("gmt_mkdir (last dir) error");
 			return -1;
 		}
-	}  
+	}
 
 	return 0;
 }

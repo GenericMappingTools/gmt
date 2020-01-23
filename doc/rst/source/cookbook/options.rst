@@ -895,7 +895,7 @@ double-precision float). In addition, use **x** to skip *n* bytes
 anywhere in the record. For a mixed-type data record you can concatenate
 several [*n*]\ **t** combinations, separated by commas. You may append
 **w** to any of the items to force byte-swapping. Alternatively, append
-**+L**\ \|\ **B** to indicate that the entire data file should be
+**+l**\ \|\ **b** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
 number of each item in your binary file. Note that *n* may be larger
 than *m*, the number of columns that the GMT program requires to do

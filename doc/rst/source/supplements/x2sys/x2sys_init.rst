@@ -177,7 +177,7 @@ integers (-32768,+32767), **i** for signed 4-byte integers
 **d** for 8-byte double precision floating points. For netCDF, simply
 use **d** as netCDF will automatically handle type-conversions during reading.
 
-*NaN* is Y if certain values (e.g, -9999) are to be replaced by NAN, and N otherwise.
+*NaN* is Y if certain values (e.g, -9999) are to be replaced by NaN, and N otherwise.
 
 *NaN-proxy* is that special value (e.g., -9999).
 
@@ -351,7 +351,7 @@ to find it.
     obs3     d     N   0          1      0       %6.1f
     ======  ====  ===  =========  =====  ======  ========
 
-    Note we use no scaling or NAN proxies since those issues are usually
+    Note we use no scaling or NaN proxies since those issues are usually
     handled internally in the netCDF format description.
 
 Deprecated behavior
