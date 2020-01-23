@@ -922,7 +922,7 @@ Selecting subplot panels: The **-c** option
 When using :doc:`/subplot` to assemble multiple individual panels in a
 matrix layout, we use **-c** to either advance the focus of plotting to
 the next panel in the sequence (either by row or by column as set by
-subplot's **-A** option) or to specify directly the *row*\ /*col* or
+subplot's **-A** option) or to specify directly the *row*,\ *col* or
 1-D *index* of the desired panel.  The **-c** option is only allowed
 when in subplot mode.  If no **-c** option is given for the first plot
 then we default to *row* = *col* = *index* = 0, i.e., the upper left
