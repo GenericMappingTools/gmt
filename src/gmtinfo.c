@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				break;
 			case 'I':	/* Granularity */
 				Ctrl->I.active = true;
-				n_errors += gmt_parse_region_extender (GMT, 'I', opt->arg, &(Ctrl->I.extend), Ctrl->I.delta);	/* Possibly extend the final region before reporting */
+				if (strchr (opt->arg, '+')) n_errors += gmt_parse_region_extender (GMT, 'I', opt->arg, &(Ctrl->I.extend), Ctrl->I.delta);	/* Possibly extend the final region before reporting */
 				j = 1;
 				switch (opt->arg[0]) {
 					case 'p': special = true; break;
@@ -581,7 +581,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				if (Ctrl->I.mode == ACTUAL_BOUNDS) {
-					wesn[XLO]  = xyzmin[GMT_X];	wesn[XHI]  = xyzmax[GMT_X];
+					if (n == 1) GMT_Report (API, GMT_MSG_VERBOSE,
+					            "Only one data record processed; bounds will be meaningless\n");
+					wesn[XLO] = xyzmin[GMT_X];	wesn[XHI] = xyzmax[GMT_X];
 					wesn[YLO] = xyzmin[GMT_Y];	wesn[YHI] = xyzmax[GMT_Y];
 				}
 				else if (Ctrl->I.mode == BOUNDBOX) {	/* Write out bounding box */
