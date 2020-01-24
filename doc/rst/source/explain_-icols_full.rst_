@@ -1,6 +1,6 @@
 .. _-icols_full:
 
-**-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ *t*\ [*word*]]
+**-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order. Columns
     not listed will be skipped. Give individual columns (or column ranges
     in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
@@ -10,7 +10,7 @@
     the input values first; **+s**\ *scale*, subsequently multiplies by a
     given  scale factor [1]; **+o**\ *offset*, finally adds a given offset [0].
     To read from a given column until the end of the record, leave off *stop*.
-    Normally, any trailing text is read but when **i** is used you must explicitly add
-    the column *t* to retain the text. To only ingest a single word from the
+    Normally, any trailing text is read but when **-i** is used you must explicitly add
+    the column **t** to retain the text. To only ingest a single word from the
     trailing text, append the word number (first word is 0).  Finally, **-in**
     will simply read the numerical input and skip any trailing text.
