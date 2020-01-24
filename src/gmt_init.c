@@ -745,6 +745,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		k = 0;
 		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
 	}
+	if ((c = strchr (item, '+')))	/* Found modifiers */
+		c[0] = '\0';	/* Truncate modifiers for now */
 	if (isdigit (item[k])) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Can only set the number of input header records; %s ignored\n", &item[k]);
@@ -771,7 +773,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->current.setting.io_header[GMT_OUT] = true;
 	}
 
-	if ((c = strchr (item, '+'))) {	/* Found modifiers */
+	if (c) {	/* Return to the modifiers modifiers */
+		c[0] = '+';	/* Put back so strtok can work */
 		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'd':	/* Delete existing headers */
@@ -798,9 +801,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 					break;
 			}
 		}
-
+		*c = '\0';	/* Truncate the various modifiers to avoid duplicate titles, remarks etc output in command */
 	}
-	if ((c = strstr (item, "+t"))) *c = '\0';	/* Truncate the -h...+t<txt> option to avoid duplicate title output in command */
 	return (error);
 }
 
