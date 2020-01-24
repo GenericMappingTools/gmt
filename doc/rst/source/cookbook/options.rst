@@ -1033,7 +1033,7 @@ records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` 
 **-h**\ *n_header_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
 **-hi** to suppress the writing of header records. You can use the
-**-h** options modifiers to to tell programs to output extra header
+**-h** options modifiers to tell programs to output extra header
 records for titles (**+t**), remarks (**+r**), or column names (**+c**)
 identifying each data column, or delete (**+d**) the original headers.
 You can even add a single segment header (**+m**) after the initial header
