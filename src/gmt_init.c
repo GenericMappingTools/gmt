@@ -745,7 +745,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		k = 0;
 		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
 	}
-	if (item[k]) {	/* Specified how many records for input */
+	if (isdigit (item[k])) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Can only set the number of input header records; %s ignored\n", &item[k]);
 		}
