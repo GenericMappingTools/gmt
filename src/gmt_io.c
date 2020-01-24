@@ -4214,9 +4214,9 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	if (gmt_M_binary_header (GMT, GMT_OUT))		/* Must write a binary header */
 		gmtlib_io_binary_header (GMT, fp, GMT_OUT);
 	else if (!txt || !txt[0])				/* Blank header */
-		fprintf (fp, "#\n");
+		fprintf (fp, "%c\n", GMT->current.setting.io_head_marker[GMT_OUT]);
 	else {
-		if (txt[0] != GMT->current.setting.io_head_marker[GMT_OUT]) fputc (GMT->current.setting.io_head_marker[GMT_OUT], fp);	/* Make sure we have # at start ... if not multi-segment */
+		fputc (GMT->current.setting.io_head_marker[GMT_OUT], fp);	/* Make sure we have # at start */
 		while (strchr ("#\t ", *txt)) txt++;	/* Skip header record indicator and leading whitespace */
 		fprintf (fp, " %s", txt);
 		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
