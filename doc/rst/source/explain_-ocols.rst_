@@ -1,2 +1,2 @@
-**-o**\ *cols*\ [,...][*t*\ [*word*]] :ref:`(more ...) <-ocols_full>`
-    Select output columns (0 is first column; *t* is trailing text, append *word* to write one word only).
+**-o**\ *cols*\ [,...][,\ **t**\ [*word*]] :ref:`(more ...) <-ocols_full>`
+    Select output columns (0 is first column; **t** is trailing text, append *word* to write one word only).
