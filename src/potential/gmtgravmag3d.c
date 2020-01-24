@@ -405,9 +405,11 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct MAG_PARAM *okabe_mag_param = NULL;
+	struct MAG_VAR *okabe_mag_var = NULL;
 
-	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, okabe_mag_param = NULL;
-	okabe_mag_var = NULL, okabe_mag_var2 = NULL, okabe_mag_var3 = NULL, okabe_mag_var4 = NULL;
+	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL;
+	okabe_mag_var2 = NULL, okabe_mag_var3 = NULL, okabe_mag_var4 = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -672,7 +674,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 							if (!DO) continue;
 						}
 
-						a = okabe (GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
+						a = okabe (GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or, okabe_mag_param, okabe_mag_var);
 						Gout->data[ij] += (gmt_grdfloat)a;
 					}
 				}
@@ -685,7 +687,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 						DO = (DX*DX + DY*DY) < s_rad2;
 						if (!DO) continue;
 					}
-					a = okabe (GMT, x_obs[kk], y_obs[kk], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
+					a = okabe (GMT, x_obs[kk], y_obs[kk], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or, okabe_mag_param, okabe_mag_var);
 					g[kk] += (gmt_grdfloat)a;
 				}
 			}
