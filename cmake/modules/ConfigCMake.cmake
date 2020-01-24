@@ -208,6 +208,11 @@ if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-st
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 
+# Default to -fcommon for GCC 10
+if (CMAKE_C_COMPILER_ID MATCHES "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER 10)
+    set (CMAKE_C_FLAGS "-fcommon ${CMAKE_C_FLAGS}")
+endif ()
+
 # Handle the special developer option GMT_DOCS_DEPEND_ON_GMT
 # Normally this is ON.
 if (NOT DEFINED GMT_DOCS_DEPEND_ON_GMT)
