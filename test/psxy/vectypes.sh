@@ -19,10 +19,10 @@ gmt psxy t.txt -J -R-4/4/58/62 -SV0.3i+e+z0.1 -W2p,red -Gred -Bafg1 -BWsne -O -K
 # Scale vector lengths via -i..+s
 echo 2	0	0	100 > t.txt
 echo 2	0	90	100 >> t.txt
-gmt psxy t.txt -JM6i -R-4/4/-2/2 -SV0.3i+e -i0-2,3+s0.01 -W2p,blue -Gblue -O -K -Y-3.3i --PROJ_LENGTH_UNIT=inch >> $ps
+gmt psxy t.txt -JM6i -R-4/4/-2/2 -SV0.3i+e -i0:2,3+s0.01 -W2p,blue -Gblue -O -K -Y-3.3i --PROJ_LENGTH_UNIT=inch >> $ps
 echo 2	60	0	100 > t.txt
 echo 2	60	90	100 >> t.txt
-gmt psxy t.txt -J -R-4/4/58/62 -SV0.3i+e -i0-2,3+s0.01 -W2p,blue -Gblue -O -K -Y3.3i --PROJ_LENGTH_UNIT=inch >> $ps
+gmt psxy t.txt -J -R-4/4/58/62 -SV0.3i+e -i0:2,3+s0.01 -W2p,blue -Gblue -O -K -Y3.3i --PROJ_LENGTH_UNIT=inch >> $ps
 # Try geovector on these 111.13 km vectors pointing east and north
 echo 0	0	0	111.13 > t.txt
 echo 0	0	90	111.13 >> t.txt

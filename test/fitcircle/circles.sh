@@ -11,10 +11,10 @@ ps=circles.ps
 
 gmt fitcircle gcircle.txt -L3 > g.txt
 gmt fitcircle scircle.txt -L3 -S > s.txt
-gpole1=`gmt convert g.txt -e"L1 N Hemisphere" -o0-1 --IO_COL_SEPARATOR=/`
-gpole2=`gmt convert g.txt -e"L2 N Hemisphere" -o0-1 --IO_COL_SEPARATOR=/`
-spole1=`gmt convert s.txt -e"L1 Small Circle Pole" -o0-1 --IO_COL_SEPARATOR=/`
-spole2=`gmt convert s.txt -e"L2 Small Circle Pole" -o0-1 --IO_COL_SEPARATOR=/`
+gpole1=`gmt convert g.txt -e"L1 N Hemisphere" -o0:1 --IO_COL_SEPARATOR=/`
+gpole2=`gmt convert g.txt -e"L2 N Hemisphere" -o0:1 --IO_COL_SEPARATOR=/`
+spole1=`gmt convert s.txt -e"L1 Small Circle Pole" -o0:1 --IO_COL_SEPARATOR=/`
+spole2=`gmt convert s.txt -e"L2 Small Circle Pole" -o0:1 --IO_COL_SEPARATOR=/`
 slat1=`grep "L1 Small Circle" s.txt | $AWK '{print 90-$NF}'`
 slat2=`grep "L2 Small Circle" s.txt | $AWK '{print 90-$NF}'`
 gmt psxy -Rg -JG-30/40/7i -P -Bg -K gcircle.txt -Sc0.04i -Gred -Xc -Yc > $ps

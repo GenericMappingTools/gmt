@@ -7,12 +7,12 @@ ps=gpsgridder1.ps
 #V=-Vl
 INC=5m
 DEC=2
-gmt select @wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0-5 > data.lluv
+gmt select @wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0:5 > data.lluv
 # Use blockmean to avoid aliasing
 R=-R122.5W/115W/32.5N/38N
-gmt blockmean $R -I${INC} data.lluv -fg -i0,1,2,4 -W > blk.llu
+gmt blockmean $R -I${INC} data.lluv -fg -i:2,4 -W > blk.llu
 gmt blockmean $R -I${INC} data.lluv -fg -i0,1,3,5 -W > blk.llv
-gmt convert -A blk.llu blk.llv -o0-2,6,3,7 > blk.lluv
+gmt convert -A blk.llu blk.llv -o0:2,6,3,7 > blk.lluv
 #
 #  do the gridding. There are 2682 data and use about 1/4 this number of singular values
 #

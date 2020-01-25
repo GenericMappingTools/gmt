@@ -2,7 +2,7 @@
 # Test mapproject's distance and time calculations
 ps=waypoints.ps
 data=`gmt which -G @waypoints.txt`
-gmt mapproject -G+un+i+a -Af -Z20+i+a+t2017-01-01T --TIME_UNIT=h $data -: -o2-4,7 --FORMAT_FLOAT_OUT=%.1f > tmp
+gmt mapproject -G+un+i+a -Af -Z20+i+a+t2017-01-01T --TIME_UNIT=h $data -: -o2:4,7 --FORMAT_FLOAT_OUT=%.1f > tmp
 gmt psxy -R181/185/-7:30/-2 -JM6.5i -P -Baf -BWSne -W0.25p $data -: -K > $ps
 gmt psxy -R -J -O -K -Sc0.2c -Gblue $data -: >> $ps
 awk '{if (NR == 2) print $2, $1}' $data | gmt psxy -R -J -O -K -Sa0.4c -Gred >> $ps
