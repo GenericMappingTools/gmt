@@ -151,14 +151,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <filename> is the name of SAC file to plot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <X> and <Y> are the position of seismograms to plot on a map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      On linear plots, the default <X> is the begin time of SAC file, which will be adjusted if -T option is used, \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      the default <Y> is determined by **-E** option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      the default <Y> is determined by -E option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      On geographic plots, the default <X> and <Y> are station longitude and latitude specified in SAC header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      The <X> and <Y> given here will override the position determined by command line options.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <pen> is given, it will override the pen from -W option for current SAC file only.\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Read and plot seismograms in timewindow between <t0> and <t1> only. <t0> and <t1>* are relative to a reference time specified by -T.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Read and plot seismograms in timewindow between <t0> and <t1> only. <t0> and <t1> are relative to a reference time specified by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default to read and plot the whole trace. If only -C is used, t0 and t1 are determined from -R option\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset all traces by <dx>/<dy>. If <dy> is not given it is set equal to <dx>.\n");

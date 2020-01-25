@@ -745,7 +745,9 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		k = 0;
 		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
 	}
-	if (item[k]) {	/* Specified how many records for input */
+	if ((c = strchr (item, '+')))	/* Found modifiers */
+		c[0] = '\0';	/* Truncate modifiers for now */
+	if (isdigit (item[k])) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Can only set the number of input header records; %s ignored\n", &item[k]);
 		}
@@ -771,7 +773,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->current.setting.io_header[GMT_OUT] = true;
 	}
 
-	if ((c = strchr (item, '+'))) {	/* Found modifiers */
+	if (c) {	/* Return to the modifiers modifiers */
+		c[0] = '+';	/* Put back so strtok can work */
 		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'd':	/* Delete existing headers */
@@ -798,9 +801,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 					break;
 			}
 		}
-
+		*c = '\0';	/* Truncate the various modifiers to avoid duplicate titles, remarks etc output in command */
 	}
-	if ((c = strstr (item, "+t"))) *c = '\0';	/* Truncate the -h...+t<txt> option to avoid duplicate title output in command */
 	return (error);
 }
 
@@ -6776,15 +6778,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'h':	/* Header */
 
-			gmt_message (GMT, "\t-h[i|o][<n>][+c][+d][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n",
+			gmt_message (GMT, "\t-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n",
 			             GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
 			gmt_message (GMT, "\t   Optionally, append i for input or o for output only and/or number of header records [0].\n");
 			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output since none will be read.\n");
 			gmt_message (GMT, "\t   Append +c to add header record with column information [none].\n");
 			gmt_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
+			gmt_message (GMT, "\t   Append +m to insert a new segment header and <segheader> contentafter the headers [none].\n");
 			gmt_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
 			gmt_message (GMT, "\t   Append +t to add a <title> comment to the output [none].\n");
-			gmt_message (GMT, "\t     (these strings may contain \\n to indicate line-breaks)\n");
+			gmt_message (GMT, "\t     (these last two strings may contain \\n to indicate line-breaks)\n");
 			gmt_message (GMT, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
 
@@ -13763,7 +13766,13 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 
 	while ((gmt_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
-			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
+			case 'a': 	/* Vector head opening angle [30] */
+				S->v.v_angle = (float)atof (&p[1]);
+				if (S->v.v_angle >= 180) {	/* Bad apex angle */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Vector head angle cannot be >= 180 degrees\n");
+					error++;
+				}
+				break;
 			case 'b':	/* Vector head at beginning point */
 				S->v.status |= PSL_VEC_BEGIN;
 				switch (p[1]) {
@@ -13866,7 +13875,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					default:  S->v.v_kind[end] = PSL_VEC_ARROW;	break;	/* Default is arrow */
 				}
 				if (p[f] && p[f+1]) {
-	  	  			if (p[f+1] == 'l') S->v.status |= PSL_VEC_END_L;	/* Only left  half of head requested */
+	  	  			if (p[f+1] == 'l') S->v.status |= PSL_VEC_END_L;		/* Only left half of head requested */
 	  	  			else if (p[f+1] == 'r') S->v.status |= PSL_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
@@ -13933,8 +13942,22 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					error++;
 				}
 				else {	/* Successful parsing of trim(s) */
-					if (S->v.status & PSL_VEC_OFF_BEGIN) S->v.v_trim[0] = (float)value[0];
-					if (S->v.status & PSL_VEC_OFF_END)   S->v.v_trim[1] = (float)value[1];
+					if (S->v.status & PSL_VEC_OFF_BEGIN) {
+						if (value[PSL_BEGIN] < 0.0) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The +tb <trim> values cannot be negative\n");
+							error++;
+						}
+						else
+							S->v.v_trim[PSL_BEGIN] = (float)value[PSL_BEGIN];
+					}
+					if (S->v.status & PSL_VEC_OFF_END) {
+						if (value[PSL_END] < 0.0) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The +te <trim> values cannot be negative\n");
+							error++;
+						}
+						else
+							S->v.v_trim[PSL_END] = (float)value[PSL_END];
+					}
 				}
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */

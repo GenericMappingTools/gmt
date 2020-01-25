@@ -86,7 +86,7 @@ struct MOVIE_ITEM {
 	double width;			/* Width of progress indicator */
 	double x, y;			/* Placement of progress indicator or label in inches */
 	double off[2];			/* Offset from justification point for progress indicators */
-	double clearance[2];	/* Space bewteen label and text box (if selected) for -L labels */
+	double clearance[2];	/* Space between label and text box (if selected) for -L labels */
 };
 
 /* Control structure for movie */
@@ -729,7 +729,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				else
 					n_errors++;
 				break;
-			
+
 			case 'A':	/* Animated GIF */
 				Ctrl->A.active = Ctrl->animate = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
@@ -853,7 +853,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					Ctrl->E.file = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
-			
+
 			case 'F':	/* Set movie format and optional ffmpeg options */
 				if ((c = strstr (opt->arg, "+o"))) {	/* Gave encoding options */
 					s = &c[2];	/* Retain start of encoding options for later */
@@ -1009,7 +1009,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]++;	/* Got one more progress indicator */
 				break;
-		
+
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
@@ -1058,12 +1058,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->T.file = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
-			
+
 			case 'W':	/* Work dir where data files may be found */
 				Ctrl->W.active = true;
 				Ctrl->W.dir = strdup (opt->arg);
 				break;
-			
+
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
 				break;
@@ -1072,7 +1072,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				n_errors += parse_x_option (GMT, Ctrl, opt->arg);
 				Ctrl->x.active = true;
 				break;
-	
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -1293,7 +1293,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	
+
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
 		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
@@ -1556,7 +1556,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
-		/* Make sure we have the information requested if data colums or trailing text is needed */
+		/* Make sure we have the information requested if data columns or trailing text is needed */
 		for (T = 0; T < Ctrl->n_items[k]; T++) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
 			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
@@ -1573,7 +1573,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of main animation frames: %d\n", n_data_frames);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
@@ -1894,7 +1894,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2, I->fill, I->fill2, font);
 					string[0] = '\0';
 					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
-						if (I->n_labels == 2)	/* Want start/stop values, not currrent frame value */
+						if (I->n_labels == 2)	/* Want start/stop values, not current frame value */
 							use_frame = (p == 0) ? 0 : n_frames - 1;
 						else	/* Current frame only */
 							use_frame = data_frame;

@@ -1,2 +1,2 @@
-**-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ *t*\ [*word*]] :ref:`(more ...) <-icols_full>`
-    Select input columns and transformations (0 is first column, *t* is trailing text, append *word* to read one word only).
+**-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]] :ref:`(more ...) <-icols_full>`
+    Select input columns and transformations (0 is first column, **t** is trailing text, append *word* to read one word only).

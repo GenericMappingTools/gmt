@@ -1705,11 +1705,11 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	}
 	if (crossed_dateline && crossed_greenwich)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Longitude crossing both Dateline and Greenwich; not adjusted!\n");
-	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
+	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliance */
 		for (rec = 0; rec < S->H.n_records; rec++)
 			if (values[rec] < 0.0) values[rec] += 360.0;
 	}
-	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
+	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliance */
 		for (rec = 0; rec < S->H.n_records; rec++)
 			if (values[rec] > 180.0) values[rec] -= 360.0;
 	}

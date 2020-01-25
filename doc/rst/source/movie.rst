@@ -129,7 +129,7 @@ Optional Arguments
 
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\ \|\ **o**]\ *fade*\ [**s**]]
     Give *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a PostScript plot layer of dimensions exacly matching the cancas size.
+    Alternatively, *titlepage* can be a PostScript plot layer of dimensions exactly matching the cancas size.
     Control how long it should be displayed with **+d** in number of frames (append *s** for duration in seconds instead) [4s].
     Optionally, supply *fade* **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
     Fading affects the beginning and end of the title page *duration*.
@@ -242,7 +242,7 @@ Optional Arguments
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
-    *background* can be a PostScript plot layer of dimensions exacly matching the cancas size.
+    *background* can be a PostScript plot layer of dimensions exactly matching the cancas size.
 
 .. _-Sf:
 
@@ -250,7 +250,7 @@ Optional Arguments
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
-    *foreground* can be a PostScript plot layer of dimensions exacly matching the cancas size.
+    *foreground* can be a PostScript plot layer of dimensions exactly matching the cancas size.
 
 .. _movie-V:
 
@@ -298,7 +298,7 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicity requested by **-T+w** or
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
 implicitly by selecting word labels in **-F** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
