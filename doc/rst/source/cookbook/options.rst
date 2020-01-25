@@ -793,17 +793,23 @@ option can also be set by specifying the default :ref:`GMT_VERBOSE <GMT_VERBOSE>
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
-inches (Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`, :ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new
-plots [15]_ and (0,0) for overlays. By default, all
-translations are relative to the previous origin (see Figure
-:ref:`Plot positioning <XY_options>`). Supply
-offset as **c** to center the plot in that direction relative to the
-page margin. Absolute translations (i.e., relative to a fixed point
-(0,0) at the lower left corner of the paper) can be achieve by
-prepending "a" to the offsets. Subsequent overlays will be co-registered
-with the previous plot unless the origin is shifted using these options.
-The offsets are measured in the current coordinates system.
+The **-X** and **-Y** options shift plot origin relative to the current origin by
+(*xshift*,\ *yshift*); optionally append the length unit
+(**c**, **i**, or **p**). Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`,
+:ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new plots [15]_. Subsequent overlays will
+be co-registered with the previous plot unless the origin is shifted using
+these options.  You can prepend **a** to shift the origin
+back to the original position after the plot module completes, prepend **c** to
+center the plot on the center of the paper (optionally add a shift),
+prepend **f** to shift the origin relative to the fixed lower left
+corner of the page, or prepend **r** [Default] to move the origin
+relative to its current location.  When **-X**
+or **-Y** are used without any further arguments, the values from
+the last use of that option in a previous GMT command will be used.
+Note that **-X** and **-Y** can also access the previous plot bounding box dimensions
+*w* and *h* and construct offsets that involves them.  For instance, to move the origin
+up 2 cm beyond the height of the previous plot, use **-Y**\ *h*\ +2c.
+To move the origin half the width to the right, use **-X**\ *w*\ /2.
 
 .. _XY_options:
 
@@ -949,9 +955,17 @@ Data record pattern matching: The **-e** option
 
 Modules that read ASCII tables will normally process all the data records
 that are read.  The **-e** option offers a built-in pattern scanner that
-will only pass records that match the given patterns or regular expressions.
+will only pass records that match the given *pattern* or regular expressions.
 The test can also be inverted to only pass data records that *do not* match
 the pattern.  The test is *not* applied to header or segment headers.
+To reverse the search, i.e., to only accept data records that do *not*
+contain the specified pattern, use **-e~**. Should your pattern happen
+to start with ~ you will need to escape this character with a backslash
+[Default accepts all data records]. For matching data records
+against extended `Regular Expressions <https://en.wikipedia.org/wiki/Regular_expression>`_,
+please enclose the expression in slashes. Append **i** for case-insensitive matching.
+To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
+To give a single pattern starting with **+f**, escape it with a backslash.
 
 .. _option_-f:
 
@@ -966,11 +980,12 @@ column (or range of columns) separated by commas. Each string starts
 with the column number (0 is first column) followed by either **x**
 (longitude), **y** (latitude), **T** (absolute calendar time) or **t**
 (relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column, i.e., 0–4
-for the first 5 columns. For example, if our input file has geographic
+may specify a range of columns rather than a single column. Column ranges
+must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults
+to 1 if not specified).  For example, if our input file has geographic
 coordinates (latitude, longitude) with absolute calendar coordinates in
-the columns 3 and 4, we would specify
-**fi**\ 0\ **y**,1\ **x**,3–4\ **T**. All other columns are assumed to
+the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**.
+All other columns are assumed to
 have the default, floating point format and need not be set
 individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
 means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
