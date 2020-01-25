@@ -13943,12 +13943,12 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				else {	/* Successful parsing of trim(s) */
 					if (S->v.status & PSL_VEC_OFF_BEGIN) {
-						if (value[PSL_END] < 0.0) {
+						if (value[PSL_BEGIN] < 0.0) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The +tb <trim> values cannot be negative\n");
 							error++;
 						}
 						else
-							S->v.v_trim[PSL_END] = (float)value[PSL_END];
+							S->v.v_trim[PSL_BEGIN] = (float)value[PSL_BEGIN];
 					}
 					if (S->v.status & PSL_VEC_OFF_END) {
 						if (value[PSL_END] < 0.0) {
