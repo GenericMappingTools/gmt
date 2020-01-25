@@ -980,11 +980,12 @@ column (or range of columns) separated by commas. Each string starts
 with the column number (0 is first column) followed by either **x**
 (longitude), **y** (latitude), **T** (absolute calendar time) or **t**
 (relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column, i.e., 0–4
-for the first 5 columns. For example, if our input file has geographic
+may specify a range of columns rather than a single column. Column ranges
+must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults
+to 1 if not specified).  For example, if our input file has geographic
 coordinates (latitude, longitude) with absolute calendar coordinates in
-the columns 3 and 4, we would specify
-**fi**\ 0\ **y**,1\ **x**,3–4\ **T**. All other columns are assumed to
+the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**.
+All other columns are assumed to
 have the default, floating point format and need not be set
 individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
 means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
