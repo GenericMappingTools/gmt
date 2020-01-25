@@ -35,7 +35,7 @@ Synopsis
 
 .. include:: segyz_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 Examples
 --------
