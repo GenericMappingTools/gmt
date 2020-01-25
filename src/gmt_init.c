@@ -13766,7 +13766,13 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 
 	while ((gmt_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
-			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
+			case 'a': 	/* Vector head opening angle [30] */
+				S->v.v_angle = (float)atof (&p[1]);
+				if (S->v.v_angle >= 180) {	/* Bad apex angle */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Vector head angle cannot be >= 180 degrees\n");
+					error++;
+				}
+				break;
 			case 'b':	/* Vector head at beginning point */
 				S->v.status |= PSL_VEC_BEGIN;
 				switch (p[1]) {
@@ -13869,7 +13875,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					default:  S->v.v_kind[end] = PSL_VEC_ARROW;	break;	/* Default is arrow */
 				}
 				if (p[f] && p[f+1]) {
-	  	  			if (p[f+1] == 'l') S->v.status |= PSL_VEC_END_L;	/* Only left  half of head requested */
+	  	  			if (p[f+1] == 'l') S->v.status |= PSL_VEC_END_L;		/* Only left half of head requested */
 	  	  			else if (p[f+1] == 'r') S->v.status |= PSL_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
@@ -13936,8 +13942,22 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					error++;
 				}
 				else {	/* Successful parsing of trim(s) */
-					if (S->v.status & PSL_VEC_OFF_BEGIN) S->v.v_trim[0] = (float)value[0];
-					if (S->v.status & PSL_VEC_OFF_END)   S->v.v_trim[1] = (float)value[1];
+					if (S->v.status & PSL_VEC_OFF_BEGIN) {
+						if (value[PSL_BEGIN] < 0.0) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The +tb <trim> values cannot be negative\n");
+							error++;
+						}
+						else
+							S->v.v_trim[PSL_BEGIN] = (float)value[PSL_BEGIN];
+					}
+					if (S->v.status & PSL_VEC_OFF_END) {
+						if (value[PSL_END] < 0.0) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The +te <trim> values cannot be negative\n");
+							error++;
+						}
+						else
+							S->v.v_trim[PSL_END] = (float)value[PSL_END];
+					}
 				}
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
