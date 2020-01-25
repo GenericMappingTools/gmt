@@ -50,7 +50,7 @@ gmt begin ex03
 		gmt plot spectrum.ypower -Gblue -Sc5p -Ey+p0.5p -lSatellite
 		gmt legend -DjBL+o0.5c -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold
 		gmt subplot set 1,0 -A"Coherency@+2@+"
-		gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc0.07i -Gpurple -Ey+p0.5p
+		gmt plot spectrum.coh -JX-?l/? -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -R1/1000/0/1 -Sc5p -Gpurple -Ey+p0.5p
 	gmt subplot end
 gmt end show
 rm -f samp* *.pg spectrum.*
