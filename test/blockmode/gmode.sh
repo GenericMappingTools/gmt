@@ -4,7 +4,7 @@
 # else it is 0.  If any of the 4 outputs fail then the test fails, and
 # the file fail will indicate which one(s) caused the problem.
 
-gmt blockmode @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -o2-5 > dump.txt
+gmt blockmode @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -o2:5 > dump.txt
 gmt blockmode @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -Gfield_%s.grd -Az,s,l,h
 # Mode z:
 gmt grd2xyz field_z.grd -s -o2 > tmp

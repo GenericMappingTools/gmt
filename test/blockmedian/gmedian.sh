@@ -4,7 +4,7 @@
 # else it is 0.  If any of the 6 outputs fail then the test fails, and
 # the file fail will indicate which one(s) caused the problem.
 
-gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -o2-5 > dump.txt
+gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -o2:5 > dump.txt
 gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -E -Gfield_%s.grd -Az,s,l,h
 gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -Eb -o4,5 > qdump.txt
 gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -Eb -Gfield_%s.grd -Aq25,q75

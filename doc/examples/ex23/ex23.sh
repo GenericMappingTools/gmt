@@ -36,7 +36,7 @@ gmt begin ex23
 	echo "$lon $lat" | gmt plot -Sa0.2i -Gyellow -Wthin
 
 	# Sample the distance grid at the cities and use the distance in integer km for labels
-	gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f \
+	gmt grdtrack -Gdist.nc cities.txt -o0:2 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f \
 		| gmt text -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT
 
 	# Clean up after ourselves:
