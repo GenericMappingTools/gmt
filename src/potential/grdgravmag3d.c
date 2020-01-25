@@ -143,9 +143,9 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 	double *x_obs, double *y_obs, double *cos_vec, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
 GMT_LOCAL  double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
-	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, void *, void *);
+	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *, struct MAG_VAR *);
 GMT_LOCAL  double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
-	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, void *, void *);
+	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *, struct MAG_VAR *);
 GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t);
 GMT_LOCAL double nucleox(double u, double v, double w, double rl, double rm, double rn);
 GMT_LOCAL double nucleoy(double u, double v, double w, double rl, double rm, double rn);
@@ -1372,7 +1372,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 */
 
 GMT_LOCAL double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *mag_par, void *dumb1, void *dumb2) {
+		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *mag_par, struct MAG_PARAM *dumb1, struct MAG_VAR *dumb2) {
 
 	/* The MAG_PAR struct is used here to transmit the Ctrl->H members (components actually) */
 
@@ -1384,6 +1384,8 @@ GMT_LOCAL double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_
 	gmt_M_unused(is_grav);
 	gmt_M_unused(bd_desc);
 	gmt_M_unused(km);
+	gmt_M_unused(dumb1);
+	gmt_M_unused(dumb2);
 
 	eps1 = 1.0e-12;
 	eps2 = 5.0e-3;
@@ -1678,7 +1680,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 */
 
 GMT_LOCAL double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, void *dumb1, void *dumb2) {
+		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *dumb1, struct MAG_VAR *dumb2) {
 
 	/* x_o, y_o, z_o are the coordinates of the observation point
  	 * mag is the body magnetization in A/m
@@ -1692,6 +1694,8 @@ GMT_LOCAL double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_
 	gmt_M_unused(is_grav);
 	gmt_M_unused(bd_desc);
 	gmt_M_unused(km);
+	gmt_M_unused(dumb1);
+	gmt_M_unused(dumb2);
 
 	d_func[0] = nucleoy;
 	d_func[1] = nucleox;
