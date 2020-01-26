@@ -448,9 +448,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_Y]; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = f;
 					}
 					if (c) c[0] = '\0';	/* Chop off modifiers for now */
-					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) < 2) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -F requires width and height of plot area.\n");
-						n_errors++;
+					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) == 1) {	/* Square panel, duplicate */
+						Ctrl->F.dim[GMT_Y] = Ctrl->F.dim[GMT_X];
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
 					for (k = 0; k < 2; k++) Ctrl->F.dim[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
