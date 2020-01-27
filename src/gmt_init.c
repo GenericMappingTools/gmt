@@ -591,7 +591,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
 	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
 	 *
-	 * --longoption[=[<directive>:]<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]... 
+	 * --longoption[=[<directive>:]<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]...
 	 *
 	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
@@ -633,17 +633,17 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 			if (modifier) modifier[0] = '+';
 			continue;
 		}
-	
+
 		/* Here we found a matching long-format option name, returned as the kw[k] struct element */
 		/* Do the long to short option substitution */
-	
+
 		e_code = '=';	/* When we remove the '=' we will replace it, but in multi-sections the code may change after the first section */
 		n_sections = ((kw[k].separator) ? gmtlib_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
 		opt->option = kw[k].short_option;	/* Update the option character first */
 		sep[0] = kw[k].separator;			/* Need a string with separator to strcat below */
 		new_arg[0] = '\0';					/* Initialize short option arguments */
 		modified = true;					/* We have at least modified one option */
-	
+
 		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat together a single short option */
 			/* Make sure a few things are correct */
 			/* Find separator, set to 0, check if modifier is after, if so set to NULL. */
@@ -1571,7 +1571,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No arguments given!\n", option);
 		return -1;	/* No arg given */
 	}
-	/* Deal with backwards compatibilities fro GMT4: -N[f]<nmodel>[r] */
+	/* Deal with backwards compatibilities for GMT4: -N[f]<nmodel>[r] */
 	arg = gmtinit_old_trendsyntax (GMT, option, in_arg);	/* Returns a possibly recreated option string */
 	if ((c = strchr (arg, '+'))) {	/* Gave one or more modifiers */
 		if (gmtinit_trend_modifiers (GMT, option, c, 1U, M)) {
@@ -2681,7 +2681,7 @@ GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Current panel file found\n");
 	else
 		mode |= GMT_PANEL_NOTSET;
-	
+
 	return (mode);
 }
 
@@ -12334,7 +12334,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 				(*col)++;
 		}
 	}
-	
+
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
 }
@@ -13041,7 +13041,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 			snprintf (sclX, GMT_LEN64, "%gi", MIN(I->w, I->h));
 		else	/* Just append a dummy width */
 			snprintf (sclX, GMT_LEN64, "%gi", I->w);
-	}	
+	}
 	arg[0] = c[0] = '\0';	/* Chop off everything from first ? to end */
 	snprintf (arg, GMT_LEN128, "%s%s", opt_J->arg, sclX);	/* Build new -J<arg> from initial J arg, then replace first ? with sclX */
 	c[0] = '?';	/* Put back the ? we removed */
@@ -13215,7 +13215,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (!strncmp (opt->arg, "@earth_relief_", 14U) || !strncmp (opt->arg, "earth_relief_", 13U))
 			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
 	}
-		
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0, subplot_status = 0, inset_status = 0, n_slashes = 0;
 		int id, fig;
@@ -13503,7 +13503,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if (opt->option == 'J' && opt->arg[0] && strchr ("zZ", opt->arg[0]))
 					got_JZ = true;
 			}
-		
+
 			if (!got_JZ && (id = gmt_get_option_id (0, "Z")) >= 0 && GMT->init.history[id]) {	/* Did not specify vertical projection but there is history for Z */
 				str[1] = GMT->init.history[id][0];
 				if ((id = gmt_get_option_id (0, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -Jz|Z */

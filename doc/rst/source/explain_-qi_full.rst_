@@ -1,7 +1,7 @@
 .. _-qi_full:
 
 **-qi**\ [~]\ *rows*\ [**+c**\ *col*][**+a**\ \|\ **f**\ \|\ **s**]
-    Select specific data rows to be read durting input [all].
+    Select specific data rows to be read during input [all].
     Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where
     *inc* defaults to 1 if not specified) separated by commas [Default reads all rows,
     starting with the first row (0)]. By default (**+a**) we count rows in the data set;

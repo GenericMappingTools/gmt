@@ -5878,7 +5878,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 				c->modifier = &MGD77_Copy;
 				c->origin = 0.0;
 				c->power = c->scale = 1.0;
-				c->id = -1;	/* Means it is jus a constant factor - no fancy calculations needed */
+				c->id = -1;	/* Means it is just a constant factor - no fancy calculations needed */
 			}
 			else {	/* factor*basis */
 				sscanf (word, "%[^*]*%s", factor, basis);

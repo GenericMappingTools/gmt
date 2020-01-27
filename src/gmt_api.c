@@ -371,7 +371,7 @@ GMT_LOCAL bool valid_type (int type) {	/* Check for valid matrix/vector data typ
 
 /*! . */
 GMT_LOCAL int api_get_item (struct GMTAPI_CTRL *API, unsigned int family, void *data) {
-	/* Get the first item of requested family fro list of objects, allowing for
+	/* Get the first item of requested family from list of objects, allowing for
 	 * datasets and grids to masquerade as other things (Matrix, vector). */
 	unsigned int i;
 	int item;
