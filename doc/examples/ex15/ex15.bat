@@ -9,7 +9,7 @@ gmt begin ex15
 	gmt convert @ship_15.txt -bo > ship.b
 	gmt info ship.b -I1 -bi3d > region.txt
 	set /p region=<region.txt
-	gmt subplot begin 2x2 -M0.3c/0.1c -Fs7.5c/0 $region -JM7.5c -BWSne -T"Gridding with missing data"
+	gmt subplot begin 2x2 -M0.3c/0.1c -Fs7.5c/0 %region% -JM7.5c -BWSne -T"Gridding with missing data"
 		REM   Raw nearest neighbor contouring
 		gmt nearneighbor %region% -I10m -S40k -Gship.nc ship.b -bi
 		gmt grdcontour ship.nc -JM -C250 -A1000 -Gd5c -c1,0
