@@ -874,7 +874,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Adjust if there is +n NaNmarker */
 			if (Ctrl->D.emode & 4)	/* Add NaN rectangle on left side */
 				dim[XLO] += 2.0 * Ctrl->D.elength + gap + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + 3.25 * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
-		
+
 			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}

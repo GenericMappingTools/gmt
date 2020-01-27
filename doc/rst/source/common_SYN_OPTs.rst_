@@ -30,7 +30,7 @@
 
 .. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`
 
-.. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>` 
+.. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>`
 
 .. |SYN_OPT-f| replace:: **-f**\ :ref:`flags <-f_full>`
 
@@ -48,7 +48,7 @@
 
 .. |SYN_OPT-o| replace:: **-o**\ :ref:`flags <-ocols_full>`
 
-.. |SYN_OPT-p| replace:: **-p**\ :ref:`flags <perspective_full>`  
+.. |SYN_OPT-p| replace:: **-p**\ :ref:`flags <perspective_full>`
 
 .. |SYN_OPT-q| replace:: **-q**\ :ref:`flags <-q_full>`
 
@@ -66,7 +66,7 @@
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\ \|\ **o**]
 
-.. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments. 
+.. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments.
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 

@@ -239,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				else 		/* Then the default */
 					{Ctrl->T.night = true;		Ctrl->T.radius[0] = 90.833;}
 				if (pch) pch[0] = '+';	/* Restore it */
-				
+
 				break;
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
@@ -562,7 +562,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	else {	/* Plotting the terminator as line, polygon, or clip path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
-	
+
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);

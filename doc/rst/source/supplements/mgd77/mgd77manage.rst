@@ -205,7 +205,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some
     of the **-A** options. The binary input option is only available for

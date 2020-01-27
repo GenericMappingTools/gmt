@@ -2,7 +2,7 @@
 #E. glacialis is externally identical to E. australis, but you can wish to show both species in a map and in this case you'll need a symbol different for each one, so this inverted version is provided. Both are interchangeable.
 #high
 #Pablo Valdés - May 2008
-#comment the lines 78-83 and 97 AND uncomment the lines 85-90 and 99 if you want w/b symbols 
+#comment the lines 78-83 and 97 AND uncomment the lines 85-90 and 99 if you want w/b symbols
 0      0      M -G80
 0      24      D
 -1      24      D

@@ -250,7 +250,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-	
+
 	/* Now get the data from the registered source */
 
 	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
@@ -329,7 +329,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-		
+
 	/* Now put the data to the registered destination */
 
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

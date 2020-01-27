@@ -233,7 +233,7 @@ Optional Arguments
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
-   
+
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-qi.rst_

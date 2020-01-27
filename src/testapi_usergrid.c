@@ -79,7 +79,7 @@ void *get_array (unsigned int type, unsigned int set) {
 		case GMT_CHAR:
 			sc = vector = calloc (NM, sizeof (char));
 			if (set) for (k = 0; k < NM; k++) sc[k] = k;
-			break;	
+			break;
 	}
 	return (vector);
 }
@@ -128,7 +128,7 @@ void put_array (void *vector, unsigned int type, char *txt) {
 			break;
 		case GMT_CHAR:
 			sc = vector;	for (k = 0; k < NM; k++) printf (" %5.1f", (double)sc[k]);
-			break;	
+			break;
 	}
 	printf ("\n");
 }
@@ -177,7 +177,7 @@ double sum_array (void *vector, unsigned int type) {
 			break;
 		case GMT_CHAR:
 			sc = vector;	for (k = 0; k < NM; k++) sum += sc[k];
-			break;	
+			break;
 	}
 	return (sum);
 }

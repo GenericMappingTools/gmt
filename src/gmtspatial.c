@@ -442,7 +442,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			SH = gmt_get_DS_hidden (D->table[tbl]->segment[seg]);
 			if (SH->mode != 1) continue;	/* Not one of the close segments we flagged earlier */
 			SH->mode = 0;			/* Remove this temporary flag */
-		
+
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
 			if (S->n_rows == Sp->n_rows) {	/* Exactly the same number of data points; check for identical duplicate (possibly reversed) */
 				for (row = 0, d1 = d2 = 0.0; row < S->n_rows; row++) {	/* Compare each point along the trace in S and Sp and S and Sp-reversed */
@@ -1124,7 +1124,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				break;
 		}
 	}
-		
+
 	/* Read input data set */
 
 	if (Ctrl->D.active) geometry = GMT_IS_LINE|GMT_IS_POLY;	/* May be lines, may be polygons... */
@@ -1167,10 +1167,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		double A[3], B[3], w, iw, d_bar, out[7];
 		struct NN_DIST *NN_dist = NULL;
 		struct NN_INFO  *NN_info = NULL;
-	
+
 		gmt_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST);	/* Set the unit and distance calculation we requested */
-	
-		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */	
+
+		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */
 		NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* All data now in NN_dist so free original dataset */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);
@@ -1294,7 +1294,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
-		
+
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			gmt_M_free (GMT, NN_dist);
@@ -1311,7 +1311,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		double dx, dy, DX, DY, dist;
 
 		gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
-	
+
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
@@ -1352,7 +1352,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				}
 				if (!gap) write_record (GMT, S->data, S->n_columns, row-1);
 			}
-				
+
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
@@ -1375,7 +1375,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_ORDER *Q = NULL;
 
 		char line[GMT_LEN128] = {""};
-	
+
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
@@ -1509,7 +1509,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		char record[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
-	
+
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
 				gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
@@ -1579,7 +1579,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								bool go, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
-							
+
 								pair = gmt_M_memory (GMT, NULL, nx, struct PAIR);
 								xx = gmt_M_memory (GMT, NULL, nx, double);
 								yy = gmt_M_memory (GMT, NULL, nx, double);
@@ -1713,7 +1713,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct DUP_INFO **Info = NULL, *I = NULL;
-	
+
 		if (Ctrl->D.file) {	/* Get trial features via a file */
 			gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
@@ -1752,7 +1752,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g",
 		         GMT->current.setting.format_float_out);
-	
+
 		Out.text = record;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
@@ -1865,7 +1865,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-	
+
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
@@ -1887,7 +1887,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->N.mode == 2) gmt_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
-	
+
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
 		Out.text = record;
@@ -1974,7 +1974,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT **L = NULL;
-	
+
 		dim[GMT_TBL] = D->n_tables;	dim[GMT_COL] = D->n_columns;	/* Same number of tables and columns as the input */
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		/* Dout has no allocated segments yet */
@@ -2031,7 +2031,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 		struct GMT_TBLSEG *K = NULL;
-	
+
 		inside = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
 		kase = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
 		K = gmt_M_memory (GMT, NULL, D->n_segments, struct GMT_TBLSEG);
@@ -2084,9 +2084,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-	
+
 		/* Create an output dataset with unallocated segments since rows = 0 */
-	
+
 		dim[GMT_COL] = D->n_columns;
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		T1 = Dout->table[0];	/* Only one table used for output */
@@ -2126,7 +2126,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-	
+
 		gmt_M_free (GMT, kase);
 		gmt_M_free (GMT, inside);
 		gmt_M_free (GMT, K);

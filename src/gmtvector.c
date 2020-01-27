@@ -312,10 +312,10 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 
 GMT_LOCAL void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3]) {
 	/* Given points in A and B, return the bisector pole via P */
-	
+
 	unsigned int i;
 	double Pa[3], M[3];
-	
+
 	/* Get mid point between A and B */
 
 	for (i = 0; i < 3; i++) M[i] = A[i] + B[i];
@@ -574,7 +574,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 						gmt_polar_to_cart (GMT, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], vector_1, true);
 				}
 				else for (k = 0; k < n_components; k++) vector_1[k] = Sin->data[k][row];
-			
+
 				switch (Ctrl->T.mode) {
 					case DO_AVERAGE:	/* Get sum of 2-D or 3-D vectors and compute average */
 						for (k = 0; k < n_components; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);

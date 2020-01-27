@@ -912,7 +912,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	/* Set up bin boundaries array */
-	
+
 	if (F.center_box) {	/* Initial specification was for bin centers, adjust limits to get bin boundaries */
 		F.T->min -= 0.5 * F.T->inc;
 		F.T->max += 0.5 * F.T->inc;

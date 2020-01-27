@@ -17,7 +17,7 @@
 
 /*!
  * \file okbfuns.h
- * \brief 
+ * \brief
  */
 
 #ifndef OKBFUNS_H

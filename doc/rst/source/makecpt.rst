@@ -290,14 +290,14 @@ hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1
 earthquakes, use
 
    ::
-  
+
     gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
-   
+
     gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval

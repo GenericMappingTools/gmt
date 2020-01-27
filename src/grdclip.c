@@ -78,7 +78,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-		
+
 	return (C);
 }
 

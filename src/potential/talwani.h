@@ -17,7 +17,7 @@
 
 /*!
  * \file talwani.h
- * \brief 
+ * \brief
  */
 
 #ifndef TALWANI_H

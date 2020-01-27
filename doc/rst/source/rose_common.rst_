@@ -7,7 +7,7 @@ Description
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
-outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
+outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**.
 
 Required Arguments
 ------------------
@@ -28,7 +28,7 @@ Optional Arguments
 **-A**\ *sector_width*\ [**+r**]
     Gives the sector width in degrees for sector and rose diagram.
     [Default 0 means windrose diagram]. Append **+r** to draw rose
-    diagram instead of sector diagram. 
+    diagram instead of sector diagram.
 
 .. _-B:
 
@@ -58,7 +58,7 @@ Optional Arguments
     file. Alternatively, specify **-Em** to compute and plot mean direction. See
     **-M** to control the vector attributes.  Finally, to instead save the
     computed mean direction and other statistics, use [**m**\ ]\ **+w**\ *mode_file*.
-    The eight items saved to a single record are: 
+    The eight items saved to a single record are:
     *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
     where the last term is 0 or 1 depending on whether the mean resultant is significant
     at the level of confidence set via **-Q**.
@@ -151,7 +151,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
-    (requires **-E**) [Default is same as sector outline]. 
+    (requires **-E**) [Default is same as sector outline].
 
 .. _-X:
 
@@ -167,9 +167,9 @@ Optional Arguments
 
 **-:**
     Input file has (azimuth,radius) pairs rather than the expected
-    (radius,azimuth). 
+    (radius,azimuth).
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

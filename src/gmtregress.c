@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'A':	/* Explore E vs slope */
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {
@@ -382,7 +382,7 @@ GMT_LOCAL double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsig
 			break;
 	}
 	if (norm != GMTREGRESS_NORM_L2) gmt_M_free (GMT, ee);
-		
+
 	return (intercept);
 }
 
@@ -411,7 +411,7 @@ GMT_LOCAL double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uin
 			break;
 	}
 	if (norm != GMTREGRESS_NORM_L2) gmt_M_free (GMT, ee);
-		
+
 	return (intercept);
 }
 
@@ -1190,12 +1190,12 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				if (k < GMT_Z) for (row = 0; row < S->n_rows; row++) w[k][row] *= w[k][row];
 				col++;	/* Go to next potential input column */
 			}
-		
+
 			if (Ctrl->A.active) {	/* Explore E vs slope only - no final best regression is returned */
 				uint64_t min_row = 0;
 				double angle, min_E = DBL_MAX;
 				bool weighted = (Ctrl->E.mode == GMTREGRESS_X) ? (w[GMT_X]) : (w[GMT_Y]);	/* true if these pointers are not NULL */
-			
+
 				/* Determine x/y means, compute reduced coordinates U,V and return proper weights W once, unless orthogonal regression was selected */
 				if (Ctrl->E.mode != GMTREGRESS_XY) (void)gmt_demeaning (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 				for (row = 0; row < n_try; row++) {	/* For each new slope candidate */
@@ -1263,10 +1263,10 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					else {	/* Use the given data abscissae instead */
 						x = S->data[GMT_X];
 						n_t = S->n_rows;
-					}				
-			
+					}
+
 					/* 3. Evaluate the chosen output columns and write records */
-			
+
 					for (row = 0; row < n_t; row++) {
 						if (!Ctrl->T.active) outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
 						if (Ctrl->S.active) {	/* Restrict the output records */

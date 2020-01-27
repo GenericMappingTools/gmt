@@ -1192,7 +1192,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
-	
+
 	}
 	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
@@ -2647,7 +2647,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
 			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, gmt_grdfloat);
 		}
-	
+
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
 	}
@@ -3187,7 +3187,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	/* Different magic chars for different image formats:
 	   .jpg:  FF D8 FF
 	   .png:  89 50 4E 47 0D 0A 1A 0A
-	   .gif:  GIF87a     
+	   .gif:  GIF87a
 	          GIF89a
 	   .bmp:  BM
 	   .webp: RIFF ???? WEBP

@@ -28,7 +28,7 @@ end point of a segment:
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
     is controlled by :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` [0].
- 
+
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
 
     **+m** places a vector head at the mid-point the vector path [none].

@@ -251,7 +251,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->S.mode && Ctrl->S.mode != GRDMASK_N_CART_MASK && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
-	
+
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
 	                                        "Syntax error -I option: Must specify positive increment(s)\n");
@@ -566,7 +566,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
-				
+
 					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
 					if (periodic) {	/* Containing annulus test */
 						do_test = true;
@@ -602,7 +602,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						/* Here, point is inside or on edge, we must assign value */
 
 						ij = gmt_M_ijp (Grid->header, row, col);
-					
+
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
 					}

@@ -413,7 +413,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
@@ -421,7 +421,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		/* Store this point in memory */
-	
+
 		point[n].x = (gmt_grdfloat)in[GMT_X];
 		point[n].y = (gmt_grdfloat)in[GMT_Y];
 		point[n].z = (gmt_grdfloat)in[GMT_Z];
@@ -444,7 +444,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
-				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
+				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;

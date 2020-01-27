@@ -277,8 +277,8 @@ struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
 };
 
 struct GMT_MOMENT_INTERVAL {
-	struct GMT_GCAL	cc[2];	
-	double dt[2];	
+	struct GMT_GCAL	cc[2];
+	double dt[2];
 	double sd[2];		/* Seconds since the start of the day.  */
 	int64_t rd[2];
 	unsigned int step;

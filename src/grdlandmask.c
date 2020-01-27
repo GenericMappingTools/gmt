@@ -479,7 +479,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				int last_col, last_row, start_col, end_col, brow, bcol;
 				double dx, del_x, del_y, xc, yc, xb, yb;
 				bool last_not_set;
-			
+
 				if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {	/* Just get segments */
 					gmt_free_shore (GMT, &c);
 					continue;
@@ -497,7 +497,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 					/* To handle lines that exit the grid we pursue the entire line even if outside.
 					 * We only check if (row,col) is inside when filling in between points and assigning nodes */
-				
+
 					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {
 						/* Get (row,col) and index to nearest node for this point */
 						row = gmt_M_grd_y_to_row (GMT, p[k].lat[pt], C);
@@ -525,9 +525,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
 								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
 							}
-						
+
 							/* Now add all crossings between this line segment and the gridlines outlining the cells centered on the nodes */
-						
+
 							for (brow = MIN (last_row, row) + 1; brow <= MAX (last_row, row); brow++) {	/* If we go in here we know dy is non-zero */
 								if (brow < 0 || brow > (int)C->n_rows) continue;	/* Outside grid */
 								/* Determine intersections between the line segment and parallels */

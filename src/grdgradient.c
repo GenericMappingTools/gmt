@@ -42,7 +42,7 @@
 enum grdgradient_mode {
 	GRDGRADIENT_FIX = 1,
 	GRDGRADIENT_VAR = 2};
-	
+
 struct GRDGRADIENT_CTRL {
 	struct In {
 		bool active;
@@ -96,7 +96,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->E.diffuse = 0.6;
 	C->E.specular = 0.4;
 	C->E.shine = 10;
-	C->N.norm = 1.0;	
+	C->N.norm = 1.0;
 	return (C);
 }
 
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						Ctrl->E.mode = 1;
 						break;
 					case 's':	/* "simple" Lambertian case */
-						Ctrl->E.mode = 2;					
+						Ctrl->E.mode = 2;
 						n_errors += gmt_M_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
 						break;
 					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */

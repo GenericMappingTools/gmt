@@ -819,7 +819,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->M.active && (Ctrl->W.active || Ctrl->I.active || Ctrl->N.active))
 		clip_to_extend_lines = (!(gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) || GMT->common.R.oblique);
-	
+
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
@@ -851,7 +851,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;
 		else if (Ctrl->I.active) id = 2;
-	
+
 		if (!Ctrl->M.single)
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
@@ -1048,7 +1048,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			/* State donut_hell if we are close (within 20%) to the horizon or if the bin contains the antipole.
 			 * This is simply done with a Cartesian inside/outside test, which is adequate.
 			 * the 0.8 factor is arbitrary of course [PW] */
-		
+
 			donut_hell = (dist > 0.8 * GMT->current.proj.r || gmt_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
 			if (donut_hell)
 				GMT_Report (API, GMT_MSG_DEBUG, "Donut-hell is true for bin %d\n", bin);
@@ -1120,7 +1120,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {	/* Clip to specified region - this gives x,y coordinates in inches */
 					uint64_t unused, n_out;
-				
+
 					if (!Ctrl->W.use[p[i].level-1]) continue;
 
 					n_out = map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
@@ -1238,7 +1238,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
-	
+
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 

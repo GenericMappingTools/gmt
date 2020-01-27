@@ -750,7 +750,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		struct GMT_RECORD Rec;
 		Rec.data = c_model;	Rec.text = NULL;
 		GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
-	
+
 	}
 	else
 		write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);

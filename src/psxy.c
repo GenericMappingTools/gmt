@@ -337,7 +337,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file: %s\n", tmp_file);
 	}
-	
+
 	return GMT_NOERROR;
 }
 
@@ -627,7 +627,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				switch (opt->arg[0]) {
 					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
-				
+
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
 #endif
@@ -893,7 +893,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
 	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);
 	gmt_M_memset (&last_spiderpen, 1, struct GMT_PEN);
-       
+
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -1170,7 +1170,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");	/* Place all symbols under a gsave/grestore clause */
-	
+
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)	/* Specified a particular unit, so scale values unless we chose inches */
@@ -1186,7 +1186,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if (!Ctrl->W.active)	/* No outline of QR code */
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
-	
+
 		if (S.diagonal) {
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};	/* Put everything in one table */
 			if ((Diag = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_NO_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
@@ -1218,9 +1218,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				continue;							/* Go back and read the next record */
 			}
 			outline_setting = (outline_active) ? 1 : 0;
-		
+
 			/* Data record to process */
-		
+
 			in = In->data;
 			n_total_read++;
 
@@ -1312,7 +1312,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
-			
+
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
 					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, current_fill.rgb));
@@ -1402,7 +1402,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
-		
+
 			xpos[0] = plot_x;
 			if (periodic) {
 				width = 2.0 * gmt_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
@@ -1571,7 +1571,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 						else
 							d = in[ex1+S.read_size];
-					
+
 						if (!S.convert_angles)	/* Use direction as given */
 							direction = d;
 						else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
@@ -1844,7 +1844,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				SH = gmt_get_DS_hidden (L);
-			
+
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
@@ -1863,7 +1863,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
 				}
-			
+
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];

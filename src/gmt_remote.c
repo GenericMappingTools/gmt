@@ -221,7 +221,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
 		return 1;
-	} 
+	}
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
 		return 1;
@@ -351,7 +351,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", hashpath);
-	
+
 	GMT->current.io.hash_refreshed = true;	/* Done our job */
 
 	/* Here we have the existing hash file and its path is in hashpath */
@@ -399,7 +399,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			gmt_remove_file (GMT, hashpath);		/* Remove corrupted hash file */
 			return 1;
 		}
-		
+
 		O = hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
@@ -604,7 +604,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
 		gmt_M_free (GMT, file);
 		return 0;
-	} 
+	}
 
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
 		if (is_srtm) {	/* Doing SRTM tiles */
@@ -838,7 +838,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			struct GMT_GRID *G = NULL;
 			struct GMT_DATASET *Din = NULL, *Dout = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
-		
+
 			/* Create a grid header that we can use to create the perimeter coordinates */
 			if (res == 1) inc[GMT_X] = inc[GMT_Y] = GMT_SEC2DEG; else inc[GMT_X] = inc[GMT_Y] = 3.0 * GMT_SEC2DEG;
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, inc, \

@@ -448,7 +448,7 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 			 * possibly clip the range if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (grid * x|y_inc) so to recover the
 	 			 * dx,dy in final grid fractions we must scale by grid */
-	 			
+
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_scale * C->grid * (C->plane_c1 * dx + C->plane_c2 * dy));
 	 			if (C->constrained) {	/* Must use ij_v2 since constrained grids are in standard scanline format */
 					ij_v2 = gmt_M_ijp (C->Grid->header, C->n_rows - block_j * C->grid - 1, block_i * C->grid);
@@ -768,7 +768,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	gmt_grdfloat *u = C->Grid->data, *v2 = NULL;
 
 	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
-	
+
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
 	v2 = gmt_M_memory_aligned (GMT, NULL, C->Grid->header->size, gmt_grdfloat);
@@ -1125,7 +1125,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 			+ C->two_plus_ep2 * (u[ij + move_over[5]] - u[ij + move_over[6]]) );
 	}
 
-	/* That resets the boundary values.  Now we can test all data. 
+	/* That resets the boundary values.  Now we can test all data.
 		Note that this loop checks all values, even though only nearest were used.  */
 
 	for (k = 0; k < C->npoints; k++) {
@@ -1154,18 +1154,18 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 				- ( u[ij + move_over[1]] + u[ij + move_over[8]] - 2 * u[ij + move_over[5]] ) );
 
 	 	/* 3rd order Taylor approx */
-	
+
 	 	z_est = u[ij] + dx * (du_dx +  dx * ( (0.5 * d2u_dx2) + dx * (d3u_dx3 / 6.0) ) )
 				+ dy * (du_dy +  dy * ( (0.5 * d2u_dy2) + dy * (d3u_dy3 / 6.0) ) )
 	 			+ dx * dy * (d2u_dxdy) + (0.5 * dx * d3u_dx2dy) + (0.5 * dy * d3u_dxdy2);
-	
+
 	 	z_err = z_est - C->data[k].z;
 	 	mean_error += z_err;
 	 	mean_squared_error += (z_err * z_err);
 	 }
 	 mean_error /= C->npoints;
 	 mean_squared_error = sqrt (mean_squared_error / C->npoints);
-	
+
 	/* Compute the total curvature of the grid */
 
 	 curvature = 0.0;
@@ -1508,7 +1508,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;
 	C->Z.value = SURFACE_OVERRELAXATION;
-	
+
 	return (C);
 }
 
@@ -1887,7 +1887,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	C.old_grid = C.grid;
 	find_nearest_point (&C);
 	iterate (GMT, &C, 1);
-	
+
 	while (C.grid > 1) {
 		smart_divide (&C);
 		set_grid_parameters (&C);

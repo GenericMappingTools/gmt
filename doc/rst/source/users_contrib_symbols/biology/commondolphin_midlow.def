@@ -1,7 +1,7 @@
 #Delphinus delphis - Common Dolphin
 #middle low (between low and normal)
 #Pablo Valdes - jun 2007
-#comment the lines 5, 55 and 78 AND uncomment the lines 6, 56 and 79 if you want gray instead color 
+#comment the lines 5, 55 and 78 AND uncomment the lines 6, 56 and 79 if you want gray instead color
 0	0	M -G23/10/29
 0	0	M -G30
 0	9.6	D
@@ -77,7 +77,7 @@
 #gray-blue patch, comment this line AND uncomment the next if you want gray instead color
 10	10.9	M -G207/200/212 -W0/0/0
 #10	10.9	M -G130 -W0/0/0
-10.5	10.3	D 
+10.5	10.3	D
 9.8	10.3	D
 9	10.6	D
 8	10.8	D

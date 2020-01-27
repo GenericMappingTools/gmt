@@ -357,7 +357,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	/* Here we must write an output 3-D data cube - not implemented yet - but this case is caught earlier */
 
 	/* Done with everything; free up memory */
-	
+
 	if (!Ctrl->Z.active[GMT_IN])
 		gmt_M_free (GMT, level);
 	gmt_M_free (GMT, i_value);
@@ -368,6 +368,6 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->T.T.n; k++)
 		GMT_Destroy_Data (API, &(G[GMT_OUT][k]));
 	gmt_M_free (GMT, G[GMT_OUT]);
-	
+
 	Return (GMT_NOERROR);
 }

@@ -5,4 +5,4 @@
     NaN values in GMT.  For input data we replace any value that equals
     *nodata* with NaN. For output data we replace any NaN with the chosen
     *nodata* value.  Use **-di** or **-do** to only affect input or output.
-    
+

@@ -136,7 +136,7 @@ Stage 1 ( D=3) treats the buffer (the output of stage D=2) as an 3x8 matrix,
    the matrix as it goes.  The output of stage 1 is
        (Legend: ap = [ a+m e+q i+u ]
                 am = [ a-m e-q i-u ] )
-  
+
    [ [ sum(ap) fft(ap)[0] fft(ap)[1] ]
      [ sum(am) fft(am)[0] fft(am)[1] ]
      [ sum(bp) fft(bp)[0] fft(bp)[1] ]

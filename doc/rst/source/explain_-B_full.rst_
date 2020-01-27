@@ -111,12 +111,12 @@
     For non-geographical projections: Give negative scale (in **-Jx**)
     or axis length (in **-JX**) to change the direction of increasing
     coordinates (i.e., to make the y-axis positive down). |br|
-    For log10 axes: Annotations can be specified in one of three ways: 
+    For log10 axes: Annotations can be specified in one of three ways:
 
     1. *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
        1-2-5, or 1-2-3-4-...-9, respectively; for -*n* we annotate every
        *n*\ 't magnitude. This option can also be used for the frame and
-       grid intervals. 
+       grid intervals.
 
     2. An **l** is appended to the *tickinfo* string. Then, log10 of the
        tick value is plotted at every integer log10 value.

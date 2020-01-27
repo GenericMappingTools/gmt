@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Option (API, "<");  
+	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute propagated uncertainty via CURVE algorithm. Give name of input slope grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid (in degrees) also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -G and annot be used with -D, -M, -N, -Q, -S, or -T.\n");
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Qn for natural nearest neighbors [Default is linear triangulation]\n");
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be combined with -N.\n");
-	GMT_Option (API, "I,J-");  
+	GMT_Option (API, "I,J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Write indices of vertices to stdout when -G is used [only write the grid].\n");
@@ -612,7 +612,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		uint64_t n_set = 0;
 		double *grid_lon = NULL, *grid_lat = NULL;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Perform natural nearest neighbor gridding\n");
-	
+
 		nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
 		periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 		duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
@@ -771,7 +771,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-	
+
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);

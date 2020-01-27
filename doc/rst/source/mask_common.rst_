@@ -13,7 +13,7 @@ Having found the reliable/not reliable points, the module will either
 paint tiles to mask these nodes (with the **-T** switch), or use
 contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
-second call to the module using the **-C** option. 
+second call to the module using the **-C** option.
 
 Required
 --------
@@ -24,7 +24,7 @@ Required
 
 .. _-J:
 
-.. |Add_-J| replace:: [Not mandatory when -D]. 
+.. |Add_-J| replace:: [Not mandatory when -D].
 .. include:: explain_-J.rst_
 
 .. _-R:
@@ -62,7 +62,7 @@ Optional Arguments
     different files; otherwise all polygons are written to the specified
     file (*template*). The files are ASCII unless
     **-bo** is used. See **-Q** to exclude small
-    polygons from consideration. 
+    polygons from consideration.
 
 .. _-F:
 
@@ -74,7 +74,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *fill*
-    Paint the clip polygons (or tiles) with a selected fill [Default is no fill]. 
+    Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
 
 .. _-L:
 
@@ -87,7 +87,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Invert the sense of the test, i.e., clip regions where there is data coverage. 
+    Invert the sense of the test, i.e., clip regions where there is data coverage.
 
 .. _-Q:
 
@@ -106,7 +106,7 @@ Optional Arguments
 
 **-T**
     Plot tiles instead of clip polygons. Use **-G** to set tile color or
-    pattern. Cannot be used with **-D**. 
+    pattern. Cannot be used with **-D**.
 
 .. _-U:
 
@@ -121,7 +121,7 @@ Optional Arguments
 
 .. include:: explain_-XY.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
-    
+
 .. include:: explain_-icols.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

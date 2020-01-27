@@ -414,7 +414,7 @@ struct GMT_GRID_HEADER {
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
- * first row in file has yvalue = north (ymax). 
+ * first row in file has yvalue = north (ymax).
  * This is SCANLINE orientation.*/
 
 /*-----------------------------------------------------------------------------------------

@@ -139,7 +139,7 @@ GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi
 
 	t2 = 1 / ((alfa_u_beta_v_2 + gama_ro_2) * (alfa_u_beta_v_2 + gama_ro_2));
 	t3 = t2 / (alfa_u_beta_v_2 + gama_ro_2);
-          					
+
 	rnr = (gama_ro_2 - alfa_u_beta_v_2) * ro2;
 	rni = 2 * gama_ro * alfa_u_beta_v * ro2;
 
@@ -1031,7 +1031,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-               
+
 	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1332,13 +1332,13 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_new, Gin->header->inc, \
 	                             Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-				
+
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		double wesn[4], inc[2];
 		wesn[XLO] = 1;	wesn[XHI] = (double)Ctrl->F.ncoef_col;
 		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		inc[GMT_X] = inc[GMT_Y] = 1;
-	
+
 		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
 		                              GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");

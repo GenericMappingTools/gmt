@@ -275,7 +275,7 @@ GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned i
 			GMT_Report (API, GMT_MSG_NORMAL, "Signed unit is not allowed - ignored\n");
 			return arg[1];
 		}
-	
+
 	}
 
 	/* Fall through here if in compatibility mode */
@@ -843,7 +843,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (Ctrl->G.mode & GMT_MP_PAIR_DIST) speed_col = 4;
 		if (Ctrl->Z.mode & GMT_MP_Z_ABST) extra[MP_COL_AT] = Ctrl->Z.epoch;	/* Need to initiate epoch time */
 	}
-	
+
 	if (Ctrl->T.active && GMT->current.proj.projection_GMT != GMT_LINEAR && GMT->common.R.active[RSET]) {	/* Do datum shift & project coordinates */
 		double_whammy = true;
 		if (Ctrl->I.active) {	/* Need to set the ellipsoid to that of the old datum */

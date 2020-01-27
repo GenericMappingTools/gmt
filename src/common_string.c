@@ -32,7 +32,7 @@
  *  gmt_strrep              Replaces all occurrences of a string s2 in the string s1 by s3
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  gmt_strtok              Reiterant replacement of strtok
- *  gmt_strtok_m            A Matlab style strtok 
+ *  gmt_strtok_m            A Matlab style strtok
  *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
@@ -805,11 +805,11 @@ char *basename(char *path) {
 	 newstr_len = s1_without_s2_len + count * s3_len;
 	 if (s3_len && ((newstr_len <= s1_without_s2_len) || (newstr_len + 1 == 0))) /* Overflow. */
 		 return 0;
-	
+
 	 newstr = (char *)calloc(newstr_len + 1, sizeof(char)); /* w/ terminator */
 	 if (!newstr)		/* ENOMEM, but no good way to signal it. */
 		 return 0;
-	
+
 	 dst = newstr;
 	 start_substr = s1;
 	 for (i = 0; i != count; ++i) {

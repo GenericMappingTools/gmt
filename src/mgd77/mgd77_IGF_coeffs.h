@@ -6,7 +6,7 @@
 
 /*!
  * \file mgd77_IGF_coeffs.h
- * \brief 
+ * \brief
  */
 
 #define MGD77_IGF24_G0	978052.0

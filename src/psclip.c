@@ -310,7 +310,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				gmt_setfill (GMT, &no_fill, 1);
 			}
-			
+
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */

@@ -1,7 +1,7 @@
 #Ziphius cavirostris - Cuvier's Beaked Whale
 #normal
 #Pablo Valdes - mar 2007 / may 2008
-#comment the lines 5, 53 and 81 AND uncomment the lines 6, 54 and 82 if you want gray instead color 
+#comment the lines 5, 53 and 81 AND uncomment the lines 6, 54 and 82 if you want gray instead color
 0	0	M -G92/50/17
 #0	0	M -G140
 0	18.5	D

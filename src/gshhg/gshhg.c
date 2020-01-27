@@ -307,7 +307,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		area = h.area / scale;				/* Now in km^2 */
 		f_area = h.area_full / scale;			/* Now in km^2 */
 		this_id = h.id;
-	
+
 		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = false;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
@@ -316,7 +316,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 			continue;	/* Back to top of loop */
 		}
-	
+
 
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
@@ -340,7 +340,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		gmt_ascii_format_col (GMT, east,  e, GMT_OUT, GMT_X);
 		gmt_ascii_format_col (GMT, south, s, GMT_OUT, GMT_Y);
 		gmt_ascii_format_col (GMT, north, n, GMT_OUT, GMT_Y);
-	
+
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
 			sprintf (header, "%6d%8d%3d%2c %s %s %s %s", h.id, h.n, level, source, west, east, south, north);

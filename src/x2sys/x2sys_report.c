@@ -164,7 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'A':
 				Ctrl->A.active = true;
 				break;
@@ -422,7 +422,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		struct COE_ADJLIST *adj = NULL;
 
 		gmt_set_cartesian (GMT, GMT_OUT);	/* Since we will write (dist, COE) pairs */
-	
+
 		adj = gmt_M_memory (GMT, NULL, n_tracks, struct COE_ADJLIST);
 		for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 			for (i = n = 0; i < P[p].nx; i++) {	/* For each COE between this pair */
@@ -452,7 +452,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			adj[k].K[adj[k].n].d = R[k].d_max;			/* Add in anchor point (d_max,0) */
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
-		
+
 			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = gmt_fopen (GMT, file, "w")) == NULL) {

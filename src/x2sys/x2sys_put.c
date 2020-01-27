@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 			case 'S':
 				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
-			
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -160,7 +160,7 @@ GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, s
 		for (track = B->base[bin].first_track; track->next_track && track->next_track->track_id != track_id; track = track->next_track);	/* Finds the track or end-of-list */
 
 		if (!track->next_track) continue;	/* Got end-of-list so not found in this bin; move on */
-	
+
 		/* Ok, found it. Remove it from this bin's list by moving pointer and freeing the memory */
 		skip_track = track->next_track;			/* Get pointer to item to be removed */
 		track->next_track = skip_track->next_track;	/* Bypass this item in the link */

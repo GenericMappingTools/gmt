@@ -522,7 +522,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		else
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
 	}
-	
+
 	/* Set up arrays */
 
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);
@@ -593,6 +593,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (!write)
 		gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
-	
+
 	Return (GMT_NOERROR);
 }

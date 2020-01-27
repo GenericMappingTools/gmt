@@ -178,7 +178,7 @@ GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P,
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
-	
+
 	unsigned int i, j, k, k2, i1, nx, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
 	bool ok;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
@@ -334,13 +334,13 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			ymin = MIN (ymin, save[pol].y[j]);
 			ymax = MAX (ymax, save[pol].y[j]);
 		}
-	
+
 		/* Now try to find a data point inside this contour */
-	
+
 		for (j = 0, k = -1; k < 0 && j < nn; j++) {
 			if (gmt_M_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (gmt_M_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use gmt_M_y_is_outside since projected x-coordinates)*/
-		
+
 			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
 		}
@@ -926,7 +926,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		if (skip_points) {	/* Must check if points are inside plot region */
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			skip = (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1);
@@ -1162,7 +1162,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		} while (true);
-	
+
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -1494,7 +1494,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		bool use_it;
 		struct PSCONTOUR_CHAIN *head_c = NULL, *last_c = NULL, *this_c = NULL;
 		struct PSCONTOUR_PT *p = NULL, *q = NULL;
-			
+
 		if (Ctrl->contour.half_width == 5) Ctrl->contour.half_width = 0;	/* Since contours are straight line segments we override the default */
 
 		for (c = 0; c < n_contours; c++) {	/* For all selected contour levels */
@@ -1522,7 +1522,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			}
 			else if ((Ctrl->contour.font_label.set & 1) == 0) /* Did not specify a font color; fault to pen color */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
-			
+
 			head_c = last_c = gmt_M_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
 			while (cont[c].nl) {	/* Still more line segments at this contour level */
@@ -1585,7 +1585,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, cont[c].L);	/* Done with temporary contour segment array for this level */
 
 			/* Now, turn this linked list of segment pointers into x,y arrays */
-		
+
 			this_c = head_c->next;
 			while (this_c) {
 				p = this_c->begin;
@@ -1608,7 +1608,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				this_c = this_c->next;
 				gmt_M_free (GMT, last_c);	/* Free last item */
 				if (!use_it) continue;	/* No, go to next */
-			
+
 				is_closed = !gmt_polygon_is_open (GMT, xp, yp, m);
 
 				if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */

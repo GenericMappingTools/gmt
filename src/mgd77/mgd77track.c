@@ -165,9 +165,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\n", API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
-    
+
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-            
+
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -628,7 +628,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	}
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
-	
+
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_PROJECTION_ERROR);
@@ -655,13 +655,13 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
-	
+
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			continue;
 		}
 		last_julian = -1;
-	
+
 		if (abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
 			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_LEN64-1);
 		else {			/* Use file name prefix */
@@ -689,9 +689,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		last_rec = rec;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
 		PSL_comment (PSL, "Tracking %s", list[argno]);
-	
+
 		/* First draw the track line, clip segments outside the area */
-	
+
 		if (Ctrl->G.active[GAP_D] || Ctrl->G.active[GAP_T]) {
 			uint64_t start, stop;
 			start = first_rec;
@@ -769,9 +769,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						tick_time[i] = ceil (track_time[rec] / info[i]->tick_int_time) * info[i]->tick_int_time;
 				}
 			}
-		
+
 			/* See if we need to annotate/tick the trackline for time/km and/or ID marks */
-		
+
 			for (i = 0; i < 2; i++) {
 				if (info[i]->annot_int_time && (track_time[rec] >= annot_time[i])) {
 					annot_time[i] += info[i]->annot_int_time;
@@ -862,7 +862,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, track_dist);
 		n_cruises++;
 	}
-	
+
 	gmt_map_clip_off (GMT);
 
 	gmt_map_basemap (GMT);

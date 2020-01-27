@@ -24,7 +24,7 @@
     Draw a map magnetic rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
- 
+
     .. include:: explain_refpoint.rst_
 
     By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this

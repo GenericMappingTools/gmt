@@ -227,7 +227,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		char r_in[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
 		double weight;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
-	
+
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
@@ -237,7 +237,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 				continue;							/* Go back and read the next record */
 			}
 			/* Data record to process */
-		
+
 			/* Data record to process.  We permint this kind of records:
 			 * file [-Rinner_region ] [weight]
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
@@ -294,7 +294,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			strncpy (tile, &L[n].file[1], 7U);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, tile);
 		}
-		
+
 		strncpy (B[n].file, L[n].file, PATH_MAX-1);
 		B[n].memory = gmt_M_file_is_memory (B[n].file);	/* If grid in memory then we only read once and have everything at once */
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
@@ -305,7 +305,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			gmt_M_free (GMT, L);	gmt_M_free (GMT, B);
 			return (-1);
 		}
-	
+
 		if ((not_supported = found_unsupported_format (GMT, B[n].G->header, B[n].file)) == GMT_GRDIO_UNKNOWN_FORMAT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal snafu - please report the problem on the GMT issues page\n");
 			return (-1);
@@ -352,7 +352,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 	HH = gmt_get_H_hidden (h);
 	one_or_zero = !h->registration;
-		
+
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		/* Skip the file if its outer region does not lie within the final grid region */
 		if (h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
@@ -469,7 +469,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 		/* The following works for both pixel and grid-registered grids since we are here using the i,j to measure the width of the
 		 * taper zone in units of dx, dy. */
-		
+
 		B[n].out_i0 = irint ((B[n].G->header->wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X]);
 		B[n].in_i0  = irint ((B[n].wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X]) - 1;
 		B[n].in_i1  = irint ((B[n].wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X]) + one_or_zero;
@@ -950,7 +950,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->C.sign && m == 0) m = 1, w = 1.0;	/* Since we started off with the first grid and never set m,w at that time */
-		
+
 			if (m) {	/* OK, at least one grid contributed to an output value */
 				switch (out_case) {
 					case 0: /* Blended average */

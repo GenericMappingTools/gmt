@@ -28,7 +28,7 @@
  *       that this is not historical.
  *
  *       W H F Smith, April 2000
- *      
+ *
  * Public functions (18):
  *
  * gmt_dt2rdc           :

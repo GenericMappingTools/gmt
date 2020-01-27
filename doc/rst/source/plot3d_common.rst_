@@ -48,7 +48,7 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically.  
+    to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
@@ -111,7 +111,7 @@ Optional Arguments
 **-Q**
     Turn off the automatic sorting of items based on their distance from the
     viewer. The default is to sort the items so that items in the foreground
-    are plotted after items in the background. 
+    are plotted after items in the background.
 
 .. _-S:
 
@@ -148,7 +148,7 @@ Optional Arguments
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings]. 
+.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -160,7 +160,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set. 
+.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set.
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

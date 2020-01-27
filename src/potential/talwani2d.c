@@ -293,7 +293,7 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 	xx0 = x[0] - x0;
 	zz0 = z[0] - z0;
 	sum = 0.0;
-	if (hypot (xx0, zz0) == 0) {     
+	if (hypot (xx0, zz0) == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
@@ -301,7 +301,7 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xx1 = x[i1] - x0;
 		zz1 = z[i1] - z0;
-		if (hypot (xx1, zz1) == 0) {     
+		if (hypot (xx1, zz1) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -332,7 +332,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 	zi = z[0] - z0;
 	phi_i = atan2 (zi, xi);
 	ri = hypot (xi, zi);
-	if (ri == 0) {     
+	if (ri == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
@@ -342,7 +342,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 		zi1 = z[i1] - z0;
 		phi_i1 = atan2 (zi1, xi1);
 		ri1 = hypot (xi1, zi1);
-		if (ri1 == 0) {     
+		if (ri1 == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -371,19 +371,19 @@ GMT_LOCAL double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned
 		x2 = x[i2] - x0;
 		z2 = z[i2] - z0;
 		r1sq = x1 * x1 + z1 * z1;
-		if (r1sq == 0) {     
+		if (r1sq == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
 		r2sq = x2 * x2 + z2 * z2;
-		if (r2sq == 0) {     
+		if (r2sq == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
 		dx = x2 - x1;	dz = z2 - z1;
 		two_theta2 = 2.0 * atan2 (z2, x2);	two_theta1 = 2.0 * atan2 (z1, x1);
 		sin_2th2 = sin (two_theta2);		sin_2th1 = sin (two_theta1);
-	
+
 		if (dz == 0)	/* z1 == z2 so any z will do.  Both log and delta_angle terms vanish */
 			sum += log (z2) * (sin_2th2 - sin_2th1);
 		else if (dx == 0)	/* log term vanish */
@@ -421,11 +421,11 @@ GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsi
 		dy1 = y[i1] - y0;	dy2 = y[i2] - y0;
 		dz1 = z[i1] - z0;	dz2 = z[i2] - z0;
 		hyp1 = dy1 * dy1 + dz1 * dz1;	hyp2 = dy2 * dy2 + dz2 * dz2;
-		if (hyp1 == 0) {     
+		if (hyp1 == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
-		if (hyp2 == 0) {     
+		if (hyp2 == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
@@ -522,7 +522,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
 	double *x = NULL, *z = NULL, *in = NULL;
-				
+
 	struct BODY2D *body = NULL;
 	struct TALWANI2D_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Out = NULL;
@@ -738,7 +738,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 		error++;
-	
+
 	/* Clean up memory */
 
  	for (k = 0; k < n_bodies; k++) {

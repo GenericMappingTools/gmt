@@ -61,7 +61,7 @@ Optional Arguments
 
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [\ **+w**\ *length*\ [/\ *width*\ ]]\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**\ \|\ **v**\ ][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
- 
+
     .. include:: explain_refpoint.rst_
 
     For **-Dj** or **-DJ** with codes TC, BC, ML, MR (i.e., centered on one of the map sides) we

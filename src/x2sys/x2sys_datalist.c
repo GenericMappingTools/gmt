@@ -139,7 +139,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'A':
 				Ctrl->A.active = true;
 				break;
@@ -267,7 +267,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (GMT_RUNTIME_ERROR);	
+		Return (GMT_RUNTIME_ERROR);
 	}
 	n_tracks = (uint64_t)error;
 
@@ -413,7 +413,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (GMT_RUNTIME_ERROR);	
+			Return (GMT_RUNTIME_ERROR);
 		}
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection_GMT = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
