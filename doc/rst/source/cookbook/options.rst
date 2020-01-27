@@ -1217,12 +1217,11 @@ select perspective view with the **-p** option by setting the azimuth
 and elevation of the viewpoint [Default is 180/90]. When **-p** is used
 in consort with **-Jz** or **-JZ**, a third value can be appended which
 indicates at which *z*-level all 2-D material, like the plot frame, is
-plotted (in perspective) [Default is at the bottom of the z-axis]. For
-frames used for animation, you may want to append **+** to fix the
-center of your data domain (or specify a particular world coordinate
-point with **+w**\ *lon0/lat*\ [*z*\ ]) which will project to the center
-of your page size (or you may specify the coordinates of the *projected*
-view point with **+v**\ *x0/y0*. When **-p** is used without any further
+plotted (in perspective) [Default is at the bottom of the z-axis].
+For frames used for animation, we fix the center of your data domain.
+Specify another center using a particular world coordinate point with **+w**\ *lon0*/\ *lat0*\ [/*z0*],
+which will project to the center of your page size, or specify the coordinates of
+the projected 2-D view point with **+v**\ *x0/y0*. When **-p** is used without any further
 arguments, the values from the last use of **-p** in a previous
 GMT command will be used.  Alternatively, you can perform a simple rotation
 about the z-axis by just giving the rotation angle.  Optionally, use **+v**
