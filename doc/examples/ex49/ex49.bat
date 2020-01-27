@@ -11,7 +11,7 @@ gmt begin ex49
 	REM Image depths with color-coded age contours
 	gmt makecpt -Cabyss -T-7000/0 -H > z.cpt
 	gmt makecpt -Chot -T0/100/10 -H > t.cpt
-	gmt grdimage @depth_pixel.nc -JX15c/10c -Q -Y12c -Ct.cpt --FORMAT_GEO_MAP=dddF
+	gmt grdimage @depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF
 	gmt plot -W1p @ridge_49.txt
 	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
 	gmt colorbar -Cz.cpt -DjTR+w5c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige
