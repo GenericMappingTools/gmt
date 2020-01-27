@@ -609,7 +609,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	}
 
 	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "-J means all data will be projected before tests are applied\n");
-	
+
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 		if (Ctrl->D.active) base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
@@ -681,10 +681,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[seg]->data[GMT_Z][row] : Ctrl->C.dist;
 				}
 			}
-		
+
 			/* Sort on x to speed up inside testing */
 			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
-		
+
 			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
 					point->segment[seg]->data[GMT_X][row] = data[k].x;
@@ -793,7 +793,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 			continue;							/* Go back and read the next record */
 		}
-	
+
 		/* Data record to process */
 
 		if (n_output == 0) {
@@ -844,7 +844,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			xx = lon;
 			yy = In->data[GMT_Y];
 		}
-	
+
 		if (Ctrl->C.active) {	/* Check for distance to points */
 			inside = gmt_near_a_point (GMT, xx, yy, point, Ctrl->C.dist);
 			if (inside != Ctrl->I.pass[GMT_SELECT_C]) { output_header = need_header; continue;}

@@ -331,9 +331,9 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
 	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
 	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr, nx1_2, ny_2;
-   
+
 	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
-   
+
 	/* starting with nx = ny */
 	nx = (int64_t)(sqrt((double)(*r2) / 2.0));
 	/* loop over possible nx, find smallest rr */
@@ -407,7 +407,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	int64_t *is = NULL, *js = NULL, *xs = NULL, *ys = NULL;
 	gmt_grdfloat *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
 	double rad2;
- 
+
  	/* Allocate memory for temporary indexes */
  	is = gmt_M_memory (GMT, NULL, 2048, int64_t);
  	js = gmt_M_memory (GMT, NULL, 2048, int64_t);
@@ -532,7 +532,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
-	
+
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write output grid!\n");
 			Return (API->error);

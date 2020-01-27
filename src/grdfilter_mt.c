@@ -800,7 +800,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 			F.radius_func = &SphericalRadius;
 			break;
 	}
-		
+
 	/* Assign filter_type number */
 
 	for (filter_type = 0; filter_type < GRDFILTER_N_FILTERS && filter_code[filter_type] != Ctrl->F.filter; filter_type++);
@@ -1151,7 +1151,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			if (y > 90.0 && (F.n_columns - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When n_columns is even we may come up short by 1 */
 			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->n_columns);	/* Must make sure we only visit each node once along a row */
 		}
-		
+
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights for this latitude */
 		if (!fast_way) y_shift = y_out - gmt_M_grd_row_to_y (GMT, row_origin, Gin->header);
 

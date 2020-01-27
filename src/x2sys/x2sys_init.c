@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'C':	/* Distance calculation flag */
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");

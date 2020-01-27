@@ -20,7 +20,7 @@
  * Author:	Paul Wessel
  * Date:	10-FEB-2015
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2sph"
@@ -52,20 +52,20 @@ GMT_LOCAL struct GRD2SPH_CTRL {	/* All control options for this program (except 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2SPH_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRD2SPH_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.mode = 'm';
-		
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2SPH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
+	if (C->In.file) free (C->In.file);
 	if (C->Out.file) free (C->Out.file);
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
 	GMT_explain_options ("V,bo4,h,o,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -148,7 +148,7 @@ int GMT_grd2sph (void *V_API, int mode, void *args) {
 	void *New_Ctrl (), Free_Ctrl (struct GRD2SPH_CTRL *C);
 
 	Ctrl = (struct GRD2SPH_CTRL *) New_Ctrl ();		/* Allocate and initialize defaults in a new control structure */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -163,20 +163,20 @@ int GMT_grd2sph (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the grd2sph main code ----------------------------*/
 
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	
+
 	/* Do all the hard work! */
-	
+
 	/* Write out the coefficients in D */
-	
+
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 		Return (API->error);
 	}
-		
+
 	Return (EXIT_SUCCESS);
 }

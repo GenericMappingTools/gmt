@@ -6610,7 +6610,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 
 		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-	
+
 		pos = (consumed_operands[op]) ? nstack - 1 : nstack;
 		(*call_operator[op]) (GMT, &info, stack, pos);	/* Do it */
 

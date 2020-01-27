@@ -23,7 +23,7 @@ Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and C
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)). 
+characters, except in paragraph mode (**-M**)).
 
 Required Arguments
 ------------------
@@ -65,7 +65,7 @@ Optional Arguments
 
 **-A**
     Angles are given as azimuths; convert them to directions using the
-    current projection. 
+    current projection.
 
 .. _-B:
 
@@ -82,7 +82,7 @@ Optional Arguments
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
     mode (**-M**) you can also append lower case **c** to get a concave
-    rectangle or append upper case **C** to get a convex rectangle. 
+    rectangle or append upper case **C** to get a convex rectangle.
 
 .. _-D:
 
@@ -166,7 +166,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip text at map boundaries [Default will clip]. 
+    Do NOT clip text at map boundaries [Default will clip].
 
 .. _-Q:
 
@@ -198,7 +198,7 @@ Optional Arguments
 **-Z**
     For 3-D projections: expect each item to have its own level given in
     the 3rd column, and **-N** is implicitly set. (Not implemented for
-    paragraph mode). 
+    paragraph mode).
 
 .. include:: explain_-aspatial.rst_
 
@@ -220,7 +220,7 @@ Optional Arguments
 
 .. include:: explain_colon.rst_
 
-.. |Add_perspective| replace:: (Not implemented for paragraph mode). 
+.. |Add_perspective| replace:: (Not implemented for paragraph mode).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-qi.rst_

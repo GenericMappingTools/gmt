@@ -285,7 +285,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		char msg[GMT_BUFSIZ] = {""}, *kind[2] = {"regular", "oblique"};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-	
+
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 		dim[GMT_ROW] = 2 * (nx + ny) + 1;

@@ -426,7 +426,7 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 enum GMT_enum_scales {	/* Various scale issues */
 	GMT_SCALE_MAP = 1,
 	GMT_SCALE_FREE = 2};
-	
+
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
 	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */

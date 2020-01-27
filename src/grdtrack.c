@@ -1169,7 +1169,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Out = gmt_new_record (GMT, out, NULL);
 				Out->text = (GMT->current.io.trailing_text[GMT_OUT]) ? In->text : NULL;
 			}
-		
+
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);

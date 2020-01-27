@@ -17,7 +17,7 @@ void *dlopen (const char *module_name, int mode) {	/* Opens a dll file*/
 	UINT err_code;
 	HINSTANCE dll_handle;
 	gmt_M_unused (mode);
- 
+
 	err_code = SetErrorMode (SEM_FAILCRITICALERRORS);
 	dll_handle = LoadLibrary (module_name);
 	if (!dll_handle) {
@@ -46,7 +46,7 @@ char *dlerror (void) {
 	/* Reports last error occurred */
 	int len, error_code;
 	static char errstr[GMT_LEN128];
-       
+
 	if ((error_code = GetLastError ()) == 0)
 		return NULL;
 
@@ -65,7 +65,7 @@ char *dlerror (void) {
 		sizeof(errstr) - len,
 		NULL
 		);
-   
+
 	/* Replace \r\n */
 	if (len > 1 && errstr[len-2] == '\r' && errstr[len-1] == '\n') {
 		if (len > 2 && errstr[len-3] == '.')

@@ -202,7 +202,7 @@ GMT_LOCAL void set_inout_sides (double x, double y, double wesn[], int sideXY[2]
 	 * x and y if the point is left/below (-1) in (0), or right/above (+1).
 	 *
 	 */
-	
+
 	if (y < wesn[YLO])
 		sideXY[1] = -1;
 	else if (y > wesn[YHI])
@@ -293,7 +293,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 	 * finite_rates	: true if finite rotations given in degree/my [else we have opening angle]
 	 * stage_rates	: true if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
-	
+
 	unsigned int i;
 	double *elon = NULL, *elat = NULL, *ew = NULL, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
@@ -1041,7 +1041,7 @@ void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 	 * finite_rates	: true if finite rotations given in degree/my [else we have opening angle]
 	 * stage_rates	: true if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
-	
+
 	unsigned int i;
 	double *elon = NULL, *elat = NULL, *ew = NULL, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
@@ -1682,14 +1682,14 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	*X = lon;
 	*Y = lat;
 	return (n);
-}		
+}
 
 unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y) {
 	/* ORTHOGRAPHIC PROJECTION */
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
-	
+
 	unsigned int i;
 #ifdef DEBUG
 	bool dump = true;
@@ -1732,11 +1732,11 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 #ifdef DEBUG
 	if (dump) fclose (fp);
 #endif
-	
+
 	*X = lon;
 	*Y = lat;
 	return (i);
-}		
+}
 
 void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3][3], double *par) {
 	/* Project an arbitrarily oriented ellipsoid orthographically onto a plane
@@ -1821,7 +1821,7 @@ void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double 
 	 */
 
 	double sa, ca, Rlat[3][3], Rlon[3][3];
-	
+
 	sincosd (lat, &sa, &ca);
 	Rlat[0][0] = 1.0;	Rlat[0][1] = 0.0;	Rlat[0][2] = 0.0;
 	Rlat[1][0] = 0.0;	Rlat[1][1] = -sa;	Rlat[1][2] = ca;

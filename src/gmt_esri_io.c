@@ -160,7 +160,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-		
+
 	gmt_fclose (GMT, fp);
 	HH->orig_datatype = (header->bits == 16) ? GMT_SHORT : GMT_INT;
 
@@ -216,7 +216,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		header->registration = GMT_GRID_PIXEL_REG;
 		gmt_set_geographic (GMT, GMT_IN);
 		gmtlib_grd_set_units (GMT, header);
-	
+
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (HH->name, ".DEM") || strstr (HH->name, ".dem"))
 			header->nan_value = -9999.0f;
@@ -471,7 +471,7 @@ int gmt_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	gmt_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 

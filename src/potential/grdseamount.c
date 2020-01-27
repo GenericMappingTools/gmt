@@ -651,11 +651,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 		Return (GMT_NOERROR);
 	}
-			
+
 	/* Set up and allocate output grid */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	nx1 = Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
@@ -677,21 +677,21 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
 		empty = true;	/* So far, no seamounts have left a contribution */
-			
+
 		/* 2. VISIT ALL SEAMOUNTS */
 		for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
 					if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
-				
+
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
 					/* Ok, we are inside the region - process data */
-				
+
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
 						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
 						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
@@ -737,14 +737,14 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 							in[3] = h_mean;
 						}
 					}
-				
+
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
 					if ((col_0 = scol_0) >= Grid->header->n_columns) continue;	/* Still outside x-range */
 					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
 					if ((row_0 = srow_0) >= Grid->header->n_rows) continue;	/* Still outside y-range */
-				
+
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
 						a = in[3];			/* Semi-major axis */
@@ -789,7 +789,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					gmt_M_free (GMT, d_col);
 					d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
-	
+
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
 						if ((row = srow) >= Grid->header->n_rows) continue;
@@ -870,7 +870,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 			continue;
 		}
-	
+
 		/* Time to write the grid */
 		if (Ctrl->T.active)
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &(Ctrl->T.time[t]));
@@ -888,7 +888,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
-	
+
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);

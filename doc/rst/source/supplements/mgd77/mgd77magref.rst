@@ -203,7 +203,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used].
 .. include:: ../../explain_-bi.rst_
 

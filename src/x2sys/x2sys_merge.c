@@ -124,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
-		
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 

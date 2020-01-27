@@ -14,7 +14,7 @@ ps=lookup.ps
 
 cat << EOF > ogr.txt
 # @VGMT1.0 @GPOLYGON
-# @R-180.000002508/185.593483405/-53.6649710199/82.1554661247            
+# @R-180.000002508/185.593483405/-53.6649710199/82.1554661247
 # @Jp"+proj=longlat +datum=WGS84 +no_defs "
 # @Jw"GEOGCS[\"wgs84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]]"
 # @Ncat|minor_group|major_group|name|grassrgb|gmtrgb|major_group_name

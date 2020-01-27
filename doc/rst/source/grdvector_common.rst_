@@ -15,7 +15,7 @@ Required Arguments
 *compx.nc*
     Contains the x-components of the vector field.
 *compy.nc*
-    Contains the y-components of the vector field. (See GRID FILE FORMATS below.) 
+    Contains the y-components of the vector field. (See GRID FILE FORMATS below.)
 
 .. _-J:
 
@@ -29,7 +29,7 @@ Optional Arguments
 
 **-A**
     The grid files contain polar (r, theta) components instead of
-    Cartesian (x, y) [Default is Cartesian components]. 
+    Cartesian (x, y) [Default is Cartesian components].
 
 .. _-B:
 
@@ -50,19 +50,19 @@ Optional Arguments
     Only plot vectors at nodes every *x\_inc*, *y\_inc* apart (must be
     multiples of original grid spacing). Append **m** for arc minutes or
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
-    multiples *multx*\ [/*multy*] directly [Default plots every node]. 
+    multiples *multx*\ [/*multy*] directly [Default plots every node].
 
 .. _-N:
 
 **-N**
-    Do NOT clip vectors at map boundaries [Default will clip]. 
+    Do NOT clip vectors at map boundaries [Default will clip].
 
 .. _-Q:
 
 **-Q**\ *parameters*
     Modify vector parameters. For vector heads, append vector head
     *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
-    specifying additional attributes. 
+    specifying additional attributes.
 
 .. _-R:
 
@@ -108,7 +108,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes used for vector outlines [Default: width =
-    default, color = black, style = solid]. 
+    default, color = black, style = solid].
 
 .. _-X:
 
@@ -117,7 +117,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies **-A**). 
+    The theta grid provided contains azimuths rather than directions (implies **-A**).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

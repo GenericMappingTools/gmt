@@ -15,7 +15,7 @@
 
 /*!
  * \file mgd77_recalc.h
- * \brief 
+ * \brief
  */
 
 #define N_E77_CORR_FIELDS	5

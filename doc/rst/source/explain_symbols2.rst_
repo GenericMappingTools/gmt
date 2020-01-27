@@ -107,7 +107,7 @@
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
         unchanged.) Furthermore, the dimensions must be given in geographical instead of
-        plot-distance units. 
+        plot-distance units.
 	For a degenerate rectangle (square) with one dimension given, use **-SJ-**.
 	The dimension is excepted to be given in column 4.  Alternatively, append
 	the dimension diameter to **-SJ-** and this fixed dimension is used instead.

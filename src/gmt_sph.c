@@ -163,7 +163,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 			gmt_M_free (GMT, list);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-	
+
 		/* Adjust Fortran to GMT indices */
 		n_alloc = 6 * (n - 2);
 		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;

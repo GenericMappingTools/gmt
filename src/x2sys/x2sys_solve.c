@@ -494,7 +494,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-		
+
 		}
 		else {	/* Binary file with integer IDs */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keep track of min/max values */
@@ -550,7 +550,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
-	
+
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
 		uint64_t n_tracks2;

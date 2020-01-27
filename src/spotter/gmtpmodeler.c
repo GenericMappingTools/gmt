@@ -78,7 +78,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct GMTPMODELER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTPMODELER_CTRL);
-	
+
 	return (C);
 }
 
@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 				break;
 
 			/* Supplemental parameters */
-		
+
 			case 'E':	/* File with stage poles */
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
@@ -192,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;
-			
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;

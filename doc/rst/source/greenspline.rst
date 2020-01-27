@@ -254,7 +254,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].
 .. include:: explain_-bi.rst_
-   
+
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
@@ -411,7 +411,7 @@ Considerations
    (such as the natural cubic spline, which sets the curvatures at the ends
    to zero).  In contrast, **greenspline**\ 's 1-D spline, as is explained in
    note 1, does *not* specify boundary conditions at the end of the data domain.
-  
+
 Tension
 -------
 

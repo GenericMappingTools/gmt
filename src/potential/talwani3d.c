@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]), Ctrl->F.lset = true;
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
-					default: 
+					default:
 						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
@@ -308,9 +308,9 @@ GMT_LOCAL double parint (double x[], double y[], int n) {
 
 	int i, ip1, im1;
 	double c2top, c2bot, c2, c1, c0, x1, x2, x1_2, x2_2, area;
-	
+
 	if (n == 2) return (0.5 * (x[1] - x[0]) * (y[0] + y[1])); /* Linear integration */
-	 
+
 	area = 0.0;
 	for (i = 1; i < n-1; i++) {
 		im1 = i - 1;	ip1 = i + 1;
@@ -352,7 +352,7 @@ GMT_LOCAL double get_grav3d (double x[], double y[], int n, double x_obs, double
 		xr1 = x1 * ir1;
 		yr1 = y1 * ir1;
 	}
-			
+
 	for (k = 1; k < n; k++) {	/* Loop over vertices */
 		/* Get coordinates of next vectex */
 		if (flat) {
@@ -403,22 +403,22 @@ GMT_LOCAL double get_grav3d (double x[], double y[], int n, double x_obs, double
 				}
 			}
 		}
-				
+
 		if (!zerog) gsum += part1 - part2 + part3;
-				
+
 		/* Move this vertex to last vertex */
-				
+
 		x1 = x2;
 		y1 = y2;
 		r1 = r2;
 		xr1 = xr2;
 		yr1 = yr2;
 	}
-			
+
 	/* If z axis is positive down, then gsum should have the same sign as z. */
-				
+
 	gsum = (z_obs > 0.0) ? fabs (gsum) : -fabs (gsum);
-			
+
 	return (GAMMA * rho * gsum);	/* Return contribution in mGal */
 }
 
@@ -445,7 +445,7 @@ GMT_LOCAL double get_vgg3d (double x[], double y[], int n, double x_obs, double 
 		xr1 = x1 * ir1;
 		yr1 = y1 * ir1;
 	}
-   
+
 	for (k = 1; k < n; k++) {	/* Loop over vertices */
         	/* Get coordinates to the next vertex */
 		if (flat) {
@@ -496,11 +496,11 @@ GMT_LOCAL double get_vgg3d (double x[], double y[], int n, double x_obs, double 
 				}
 			}
 		}
-       
+
 		if (!zerog) vsum += -part2 + part3;
-       
+
 		/* Move this vertex to last vertex : */
-       
+
 		x1 = x2;
 		y1 = y2;
 		r1 = r2;
@@ -621,9 +621,9 @@ GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, doubl
 			}
 		}
 		if (!zerog) nsum += part2;
-				
+
 		/* Move this vertex to last vertex */
-				
+
 		x1 = x2;
 		y1 = y2;
 		r1 = r2;
@@ -631,7 +631,7 @@ GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, doubl
 		yr1 = yr2;
 	}
 	/* If z axis is positive down, then nsum should have the same sign as z */
-				
+
 	nsum = (z_j > 0.0) ? fabs (nsum) : -fabs (nsum);
 
 	return (1.0e-2 * GAMMA * rho * nsum / G0);	/* To get geoid in meter */
@@ -701,7 +701,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"}, remark[GMT_LEN64] = {""};
 	double z_level, depth = 0.0, rho = 0.0, lat = 45.0, G0;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
-				
+
 	struct SLICE *sl = NULL, *slnext = NULL;
 	struct CAKE *cake = NULL;
 	struct TALWANI3D_CTRL *Ctrl = NULL;
@@ -859,7 +859,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
-	
+
 		/* Clean data record to process */
 
 		in = In->data;	/* Only need to process numerical part here */
@@ -1022,7 +1022,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	/* Clean up memory */
 
 	for (k = 0; k < ndepths; k++) {	/* Wind through the depthd and free up slices */

@@ -416,7 +416,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 				weight = weight_s2 = in[3];
 				if (Ctrl->E.mode != BLK_MODE_OBSOLETE) weight_pos = weight;
 			}
-		
+
 		}
 		weighted_z = in[GMT_Z] * weight;			/* Weighted value */
 		node = gmt_M_ijp (Grid->header, row, col);		/* Bin node */

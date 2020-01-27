@@ -9,7 +9,7 @@ ps=geodesy_03.ps
 
 gmt psvelo -Xc -R-3/6/-3/7 -Wthin,red -Se1.5c/0.39+f12p -Bpxa1g1 \
 	-Bpya1g1 -BWeSn+t"E = 3 @~\261@~ 1; N = 4 @~\261@~ 2" -Jx1.5c -Ggreen -Eblue -L -N \
-	-A1c+p3p+e -P -h2 << EOF > $ps   
+	-A1c+p3p+e -P -h2 << EOF > $ps
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)
     0.    0.     3.0    0.0     1.    2.0  -0.5  A

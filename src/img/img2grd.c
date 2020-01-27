@@ -338,7 +338,7 @@ GMT_LOCAL double  img_gud_fwd (double y) {
 	 * developed from a sphere of unit radius, returns the latitude
 	 * in radians.  Should be called with -oo < y < +oo.  Returned
 	 * value will be in -M_PI_2 < value < +M_PI_2.  */
-	
+
 	return(2.0 * atan(exp(y)) - M_PI_2);
 }
 
@@ -356,7 +356,7 @@ GMT_LOCAL double img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
 	/* Given Latitude in degrees and pointer to coordinate struct,
 	 * return (double) coordinate from top edge of input img file
 	 * measured downward in coordinate pixels.  */
-	
+
 	 return(coord->nytop - coord->radius * img_gud_inv(lat*D2R));
 }
 

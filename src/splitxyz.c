@@ -462,7 +462,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				S->max = gmt_M_memory (GMT, S->max, n_columns, double);
 				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 			}
-		
+
 			if (Ctrl->S.active) S->data[h_col][0] = D2R * (90.0 - S->data[h_col][0]);	/* Angles are stored as CCW angles in radians */
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
@@ -487,7 +487,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 					S->data[h_col][row] = D2R * (90.0 - S->data[h_col][row]);	/* Angles are stored as CCW angles in radians */
 			}
 			if (!Ctrl->S.active) S->data[h_col][0] = S->data[h_col][1];
-		
+
 			/* Here a complete segment is ready for further processing */
 			/* Now we have read the data and can filter z, if necessary.  */
 

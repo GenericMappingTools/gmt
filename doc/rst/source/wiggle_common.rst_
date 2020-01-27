@@ -115,7 +115,7 @@ Optional Arguments
 
 **-T**\ *pen*
     Draw track [Default is no track]. Append pen attributes to use
-    [Defaults: width = 0.25p, color = black, style = solid]. 
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. _-U:
 
@@ -131,7 +131,7 @@ Optional Arguments
 **-W**\ *pen*
     Specify outline pen attributes [Default is no outline].
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

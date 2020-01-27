@@ -71,7 +71,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDPROJECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
@@ -322,7 +322,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				wesn[YLO] -= Ctrl->C.northing;	wesn[YHI] -= Ctrl->C.northing;
 			}
 			if (unit) for (k = 0; k < 4; k++) wesn[k] *= fwd_scale;
-		
+
 			wesn[XLO] *= GMT->current.proj.scale[GMT_X];	wesn[XHI] *= GMT->current.proj.scale[GMT_X];
 			wesn[YLO] *= GMT->current.proj.scale[GMT_Y];	wesn[YHI] *= GMT->current.proj.scale[GMT_Y];
 
@@ -483,7 +483,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_grd_project (GMT, Rect, Geo, true);
 
 		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
-	
+
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Geo) != GMT_NOERROR) {
@@ -498,7 +498,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		if ((Rect = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Geo)) == NULL) Return (API->error);	/* Just to get a header we can change */
 		HH = gmt_get_H_hidden (Rect->header);	/* Get the hidden info structure */
-	
+
 		gmt_M_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->F.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */

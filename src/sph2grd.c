@@ -78,7 +78,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->F.lc = C->F.lp = 0.0;	/* No low-cutting is the default */
 
 	C->N.mode = 'm';
-	
+
 	return (C);
 }
 
@@ -395,7 +395,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		n_bytes += n_PLM * sizeof (double);				/* P_lm */
 		n_bytes += 2 * n_CS_nx * sizeof (double);			/* Sinmx and Cosmn */
 		n_bytes += 2 * Grid->header->n_columns * sizeof (double *);		/* Sinm and Cosm pointers */
-	
+
 		mem = n_bytes / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);

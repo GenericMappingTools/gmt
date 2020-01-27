@@ -655,12 +655,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			strcpy (Zgrid, Ctrl->In.file);
 			if (Ctrl->I.active) strcpy (Igrid, Ctrl->I.file);
 		}
-	
+
 		/* Loop over all rows at this level */
 		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
-		
+
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = MIN (90.0, wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y]);	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_LAT);
@@ -690,7 +690,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						use_tile = !gmt_M_is_fnan (T->data[node]);
 					}
 				}
-				
+
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
 					/* Build the grdimage command to make the PostScript plot */
 					char z_data[GMT_STR16] = {""}, psfile[PATH_MAX] = {""};
@@ -784,9 +784,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_remove_file (GMT, DataGrid);
 	if (i_extend && !access (IntensGrid, F_OK))
 		gmt_remove_file (GMT, IntensGrid);
-	if (Ctrl->I.derive) 	
+	if (Ctrl->I.derive)
 		gmt_remove_file (GMT, Ctrl->I.file);
-	
+
 	/* Process quadtree links */
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processes quadtree links for %d tiles.\n", n);
@@ -894,7 +894,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* Now add up to 4 quad links */
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
-				
+
 				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 			        fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
@@ -912,7 +912,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			fprintf (fp, "    </Document>\n  </kml>\n");
 			fclose (fp);
-		       
+
 		}
 		gmt_M_str_free (Q[k]->region);	/* Free this tile region */
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */

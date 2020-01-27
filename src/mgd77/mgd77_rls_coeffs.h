@@ -32,7 +32,7 @@
 
 /*!
  * \file mgd77_rls_coeffs.h
- * \brief 
+ * \brief
  */
 
 #define RLS_N_DEPTH         4490

@@ -8,7 +8,7 @@
 
 /*!
  * \file mgd77_codes.h
- * \brief 
+ * \brief
  */
 
 #define MGD77_N_AGENCIES 53

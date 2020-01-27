@@ -115,7 +115,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'D':
 				Ctrl->D.active = true;
 				break;
@@ -221,7 +221,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (GMT_RUNTIME_ERROR);	
+		Return (GMT_RUNTIME_ERROR);
 	}
 	n_tracks = (uint64_t)error;
 
@@ -231,7 +231,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		Return (GMT_RUNTIME_ERROR);	
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (s->geographic) {
@@ -328,18 +328,18 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%s]\n", s->path);
-	
+
 		if (p.n_rows == 0) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "No data records found - skipping %s\n", trk_name[trk]);
 			x2sys_free_data (GMT, data, s->n_fields, &p);
 			continue;
 		}
-	
+
 		if (Ctrl->E.active) {	/* Project coordinates */
 			for (row = 0; row < p.n_rows; row++)
 				gmt_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
 		}
-	
+
 		/* Reset bin flags */
 
 		gmt_M_memset (B.binflag, B.nm_bin, unsigned int);
@@ -360,16 +360,16 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep
 			 * turning the data flags on again and again. */
-			
+
 			B.binflag[this_bin_index] |= get_data_flag (data, row, s);
 
 			if (!Ctrl->D.active) continue;	/* Not worried about trackline lengths */
-		
+
 			if (last_not_set) {	/* Initialize last bin to this bin the first time */
 				last_bin_index = this_bin_index;
 				last_not_set = false;
 			}
-		
+
 			if (row > 0) { /* Can check for gaps starting with 1st to 2nd point */
 				gap = false;
 				if (s->t_col >= 0) {	/* There is a time column in the data*/
@@ -380,7 +380,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 				}
 				else if ((dist_km[row] - dist_km[row-1]) > B.dist_gap) /* There is no time column, must test for gaps based on distance */
 					gap = true;
-			
+
 				if (gap) {
 					last_bin_index = this_bin_index;	/* Update the last point's index info */
 					last_bin_col = this_bin_col;
@@ -408,11 +408,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					end_col = MAX (last_bin_col, this_bin_col);
 					dx = data[s->x_col][row] - data[s->x_col][row-1];
 				}
-			
+
 				/* Find all the bin-line intersections */
-			
+
 				/* Add the start and stop coordinates to the xc/yc arrays so we can get mid-points of the intervals */
-			
+
 				X[0].x = data[s->x_col][row-1];	X[0].y = data[s->y_col][row-1];	X[0].d = 0.0;
 				X[1].x = data[s->x_col][row];	X[1].y = data[s->y_col][row];	X[1].d = hypot (dx, data[s->y_col][row] - data[s->y_col][row-1]);
 				nx = 2;
@@ -445,11 +445,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 						X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
-			
+
 				/* Here we have 1 or more intersections */
-			
+
 				qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);
-			
+
 				for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
 					dx = X[curr_x_pt].x - X[prev_x_pt].x;
 					if (s->geographic && dx < -180.0)

@@ -295,7 +295,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			if (name[0] && description[0]) strcat (GMT->current.io.segment_header, " ");
 			if (description[0]) { strcat (GMT->current.io.segment_header, "-D\""); strcat (GMT->current.io.segment_header, description); strcat (GMT->current.io.segment_header, "\""); }
 		}
-	
+
 		if (Ctrl->E.active && strstr (line, "<ExtendedData>")) {
 			/* https://developers.google.com/kml/documentation/kmlreference#extendeddata
 			   But only a single <SimpleData name="string" is implemented here. */
@@ -316,7 +316,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-	
+
 		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
 		}
@@ -326,7 +326,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 
 		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
-	
+
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);

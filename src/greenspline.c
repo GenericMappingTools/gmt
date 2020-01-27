@@ -1669,7 +1669,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				break;
 		}
-	
+
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
@@ -2082,7 +2082,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		 * original A and obs vectors so that the continuation of the code can work as is.
 		 * Weighted solution idea credit: Leo Uieda.  Jan 14, 2018.
 		 */
-	
+
 		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Forming weighted normal equations A'SAx = A'Sb -> Nx = r\n");
@@ -2206,18 +2206,18 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		uint64_t m_dim[GMT_DIM_SIZE] = {1, 1, 0, 1};	/* Do not allocate any rows */
 		char header[GMT_LEN64] = {""};
 		struct GMT_DATASET *M = NULL;
-	
+
 		if ((M = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, m_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving misfit estimates\n");
 			Return (API->error);
 		}
 		M->table[0]->segment[0]->n_rows = nm;
 		M->table[0]->segment[0]->data[GMT_X] = alpha;
-	
+
 		sprintf (header, "N: %" PRIu64 " S: %s G: %s", nm, (Ctrl->C.active) ? "SVD" : "G-J", Ctrl->S.arg);
 		gmt_insert_tableheader (GMT, M->table[0], header);
 		GMT->current.setting.io_header[GMT_OUT] = true;
-	
+
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->M.file, M) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -2252,7 +2252,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				chi2 = pow (dev * X[j][dimension], 2.0);
 				chi2_sum += chi2;
 			}
-		
+
 			/* Use Welford (1962) algorithm to compute mean and variance */
 			m++;
 			value = orig_obs[j] - predicted[j];

@@ -623,10 +623,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			/* Assign sign to distance: If the vector from the hotspot pointing up along the trail is positive
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
-			
+
 			gmt_M_set_delta_lon (hot[spot].np_lon, lon, dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
-			
+
 			/* Assign stage id for this point on the flowline */
 
 			k = 0;

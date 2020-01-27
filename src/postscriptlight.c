@@ -1791,7 +1791,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
 		string = strdup (PSL_prologue_str);
 	else if (!strcmp (text, "PSL_text"))
 		string = strdup (PSL_text_str);
-	
+
 	while ((buf = strsep (&string, "\n")) != NULL) {
 		if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
@@ -4488,7 +4488,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		/* Save page size */
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
-	
+
 		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
 		PSL_command (PSL, "/PSL_movie_label_completion {} def\n");	/* Initialize custom procedure as a null function */
 		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {} def\n");	/* Initialize custom procedure as a null function */

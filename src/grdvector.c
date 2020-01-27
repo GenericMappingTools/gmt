@@ -537,7 +537,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT->common.R.inc[GMT_X] = d_col * Grid[0]->header->inc[GMT_X];	/* Get exact x-increment in case of slop */
-	
+
 		/* Determine starting row/col for straddled access */
 		tmp = ceil (Grid[0]->header->wesn[YHI] / GMT->common.R.inc[GMT_Y]) * GMT->common.R.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= GMT->common.R.inc[GMT_Y];
@@ -570,7 +570,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		double v_min = DBL_MAX, v_max = -DBL_MAX, v_mean = 0.0;
 		uint64_t v_n = 0;
 		char v_unit[GMT_LEN8] = {""};
-	
+
 		for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
 			y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
 			for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
@@ -610,7 +610,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			v_max *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 			v_mean *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 		}
-					
+
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Minimum length of scaled vector in %s  : %g\n", v_unit, v_min);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Maximum length of scaled vector in %s  : %g\n", v_unit, v_max);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean length of the scaled vector in %s : %g\n", v_unit, v_mean);
@@ -646,11 +646,11 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				vec_azim = 90.0 - atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);	/* Convert dy,dx to azimuth */
 				value = vec_length;
 			}
-		
+
 			if (Ctrl->C.active) {	/* Get color based on the vector length */
 				gmt_get_fill_from_z (GMT, P, value, &Ctrl->G.fill);
 			}
-		
+
 			if (Ctrl->W.cpt_effect) {	/* Should color apply to pen, fill, or both [fill] */
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
@@ -670,7 +670,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 
 			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
-		
+
 			if (Geographic) {	/* Draw great-circle geo-vectors */
 				warn = gmt_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
 				n_warn[warn]++;

@@ -64,7 +64,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. include:: ../../explain_help.rst_
 
 Header Item Sample File

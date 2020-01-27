@@ -146,7 +146,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 			}
 			else
 				x_inc = y_inc = 0.0;
-	
+
 			GMT->current.plot.x[n] = x[i] + x_inc;
 			GMT->current.plot.y[n] = y[i] + y_inc;
 			n++;
@@ -543,7 +543,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		TH = gmt_get_DT_hidden (T);
-	
+
                 GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
@@ -554,7 +554,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 			lon = T->segment[seg]->data[GMT_X];	/* lon, lat, z are just shorthands */
 			lat = T->segment[seg]->data[GMT_Y];
 			z = T->segment[seg]->data[GMT_Z];
-		
+
 			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
 
 			gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
