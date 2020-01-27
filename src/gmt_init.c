@@ -6222,7 +6222,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 GMT_LOCAL void explain_R_geo (struct GMT_CTRL *GMT) {
 	gmt_message (GMT, "\t-R Specify the min/max coordinates of your data region in user units.\n");
 	gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds].\n");
-	gmt_message (GMT, "\t   Use -R<xmin/xmax/ymin/ymax>+<unit> for regions given in projected coordinates.\n");
+	gmt_message (GMT, "\t   Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates.\n");
 	gmt_message (GMT, "\t     with <unit> selected from %s.\n", GMT_LEN_UNITS2_DISPLAY);
 	gmt_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 	gmt_message (GMT, "\t   Append +r if -R specifies the coordinates of the lower left and\n");
