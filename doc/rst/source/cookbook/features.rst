@@ -176,8 +176,8 @@ different journals or simply reflecting font changes necessary to make
 readable overheads and slides.  At the end of such scripts you should then
 delete the (temporary) gmt.conf file.  Note that any arguments given on the
 command line (see below) will take precedent over the default values.
-E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
-**-X**\ 1.5\ **i** option will override the default and set the offset to 1.5 inches.
+E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
+**-X**\ 5\ **c** option will override the default and set the offset to 5 cm.
 
 .. _gmt_defaults_a:
 
@@ -278,7 +278,7 @@ letter, and number or string. *Do* space between options. Example:
 
    ::
 
-    gmt coast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -pdf map
+    gmt coast -R0/20/0/20 -Ggray -JM15c -Wthin -Baf -V -pdf map
 
 Command line history
 --------------------
@@ -420,7 +420,7 @@ grid via
 
 ::
 
- gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM6i -B @earth_relief_01s -png easter
+ gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM15c -B @earth_relief_01s -png easter
 
 Verbose operation
 -----------------
@@ -1494,11 +1494,11 @@ the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the fi
    is the preferred mechanism when you just want to place the feature **inside** the basemap at
    one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
    are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
-   An example of such a reference point might be **j**\ TL. When used, the anchor point on the map feature
-   will default to the same justification, i.e., TL in this example.
+   An example of such a reference point might be **jTL**\ . When used, the anchor point on the map feature
+   will default to the same justification, i.e., **TL** in this example.
 
 #. [**J**] This is the same as **j** except it implies that the default anchor point is the mirror opposite of the
-   justification code. Thus, when using **J**\ TL, the anchor point on the map feature will default to BR.
+   justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
@@ -1520,9 +1520,9 @@ discussed for the **j** reference point code above.  Add **+j**\ *anchor* to ind
 point of the map feature should be co-registered with the chosen reference point.  If an anchor point is not
 specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
 used to set it), or to the mirror opposite of the reference point (if **J**\ *code* was used); with all other
-specifications of the reference point, the anchor point takes on the default value of MC (for map rose and
-map scale) or BL (all other map features). Adding **+j**\ *anchor* overrules those defaults.
-For instance, **+j**\ TR would select the top right point on the map feature as the anchor.
+specifications of the reference point, the anchor point takes on the default value of **MC** (for map rose and
+map scale) or **BL** (all other map features). Adding **+j**\ *anchor* overrules those defaults.
+For instance, **+jTR**\  would select the top right point on the map feature as the anchor.
 
 It is likely that you will wish to offset the anchor point away from
 your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ \|\ **J**\ *code*.
@@ -1531,13 +1531,13 @@ These increments are added to the projected plot coordinates of the anchor point
 positive values moving the reference point in the same direction as the 2-character code of the anchor point implies.
 Finally, the adjusted anchor point is matched with the reference point.
 
-Take for example an anchor point on the top left of the map feature, either by using a reference point **j**\ TL, or **J**\ BR,
+Take for example an anchor point on the top left of the map feature, either by using a reference point **jTL**\ , or **JBR**\ ,
 or explicitly setting **+j**\ TL.
 Then **+o**\ 2c/1c will move the anchor point 2 cm left and 1 cm above the top left corner of the map feature.
 In other words, the top left corner of the map feature will end up 2 cm to the right and 1 cm below the selected reference point.
 
-Similarly **+j**\ BR will align the bottom right corner of the map feature, and **+o**\ 2c/1c will offset it 2 cm to the left
-and 1 cm up. When using middle (M) or center (C) justifications, to offset works the same way as bottom (B) or left (L),
+Similarly, **+jBR** will align the bottom right corner of the map feature, and **+o**\ 2c/1c will offset it 2 cm to the left
+and 1 cm up. When using middle (**M**) or center (**C**) justifications, to offset works the same way as bottom (**B**) or left (**L**),
 respectively, i.e., moving the map feature up or to the right.
 
 
@@ -1559,8 +1559,8 @@ the attributes that are under your control:
    [Default is no outline].  A very bold red outline might look like **+p**\ thick,red.
 
 #. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
-   you can round the corners [Default is no rounding]. Here is a 0.2-inch radius rounding:
-   **+r**\ 0.2i.
+   you can round the corners [Default is no rounding]. Here is a 0.5-cm radius rounding:
+   **+r**\ 0.5c.
 
 #. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
    **+i**\ [[*gap*/]\ *pen*].  The default pen is given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`,
@@ -1806,7 +1806,7 @@ first, then supply suitable required and optional modifiers:
    Example of a map legend placed with :doc:`/legend`.  Apart from the placement and dimensions discussed
    here, :doc:`/legend` reads macro commands that specifies each item of the legend, including colors,
    widths of columns, the number of columns, and presents a broad selection of items.  Here, we
-   simply used **-Dx**\ 0/0\ **+w**\ 5.6i\ **+j**\ *BL*.
+   simply used **-Dx**\ 0/0\ **+w**\ 14c\ **+j**\ *BL*.
 
 Placing raster and EPS images on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1870,7 +1870,7 @@ the other map features there are two ways to specify the placement of the map in
 The first is the standard way of specifying the reference and anchor points and the inset dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
 map inset area.  Depending on the map projection this may or may not be a rectangular area.
-Map insets are produced by the module :doc:`/basemap` via the **-D** option. Unless you
+Map insets are produced by the module :doc:`/inset` and located via the **-D** option. Unless you
 use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
 where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
 distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
@@ -1887,14 +1887,9 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
 
 #. Save the location and dimensions.  For all but the simplest of map insets you will need to
    know the exact location of the resulting inset and its dimensions.  For instance, if you
-   specified the inset using the TR anchor point and a width and height of 100 km you will need to
+   specified the inset using the **TR** anchor point and a width and height of 100 km you will need to
    know what this means in terms of positions on the map in plot units.  In terms of the modifiers
-   this would be **j**\ TR\ **+w**\ 100k.  Running :doc:`/basemap`
-   in verbose mode will provide this information and you can use it accordingly.  However, for
-   users who wish to script this automatically you can use **+s**\ *file* to save this information
-   in a file that your script can ingest and act upon.  The file contains a single record with the
-   four tab-separated values *x0 y0 width height* in the current plot units [cm], where *x0 y0* refers
-   to the lower-left point on the inset.  See the figure caption for an example.
+   this would be **jTR**\ **+w**\ 100k.  See the figure caption for an example.
 
 .. figure:: /_images/GMT_inset.*
    :width: 500 px
@@ -1902,10 +1897,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
 
    Demonstration of how a map inset may be used to place a global overview map as an inset in a
    regional map.  Main map shows the regional area of Australia.  We place an inset in the upper
-   right area with **-Dj**\ TR\ **+w**\ 1.5i\ **+o**\ 0.15i\ **+s**\ tmp and then read in the coordinates
-   of the lower-right corner of the inset and its dimension with UNIX ("read x0 y0 w h < tmp").
-   Knowing the placement (we know the size of the circular global map) we can correctly position it
-   in the inset with **-X$x0** and **-Y$y0**.
+   right area with **-Dj**\ TR\ **+w**\ 3.8c\ **+o**\ 0.4c/0.25c.
    See Example :ref:`example_44` for more details.
 
 Placing a vertical scale on maps
