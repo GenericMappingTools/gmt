@@ -19,7 +19,7 @@ cat << EOF >| yannots.txt
 EOF
 
 gmt begin GMT_-B_custom
-	gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
-	gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -Bsy0 -BWS \
+	gmt basemap -R416/542/0/6.2831852 -JX-12c/6c -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue
+	gmt basemap -R416/542/0/6.2831852 -Bsxcxannots.txt -Bsy0 -BWS \
 		--MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
 gmt end show

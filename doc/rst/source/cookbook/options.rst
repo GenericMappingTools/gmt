@@ -505,7 +505,7 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
    Linear Cartesian projection axis.  Long tick-marks accompany
    annotations, shorter ticks indicate frame interval. The axis label is
-   optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``
+   optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
@@ -554,7 +554,7 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
    values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
    powers of 10, and 3 means every 0.1 times powers of 10.  We used
-   -R1/1000/0/1 -JX3il/0.25i -Ba1f2g3. (middle) Here, we have chosen to
+   -R1/1000/0/1 -JX7.5cl/0.6c -Ba1f2g3. (middle) Here, we have chosen to
    annotate :math:`\log_{10}` of the actual values, with -Ba1f2g3l.
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
