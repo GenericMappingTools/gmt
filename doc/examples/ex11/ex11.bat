@@ -31,7 +31,7 @@ gmt begin ex11
 	echo 204  26 -90 12p 0.8	>> tmp.txt
 	echo 10  140 180 16p G		>> tmp.txt
 	gmt text tmp.txt --FONT=white -F+a+f
-	echo 0 0 0 128 | gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+	echo 0 0 0 128 | gmt plot -N -Sv0.4c+s+e -Gwhite -W2p,white
 
 	gmt grdimage x1.nc c1.nc y1.nc -JX6c/6c -Y6c
 	gmt plot -Wthinner,white,- @rays_11.txt
