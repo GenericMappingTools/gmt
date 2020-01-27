@@ -1109,7 +1109,7 @@ ignore all trailing text, use **-in**.
    these column numbers now refer to the logical record, not the physical, since
    after reading the data there is no physical record, only the logical record in memory.
 
-.. _option_-j:
+.. _option_-j_distcalc:
 
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
@@ -1341,7 +1341,7 @@ section :ref:`-Gfill_attrib`).  Finally, the modules
 on a record-by-record basis if **-t** is given without argument and the
 input file supplies variable transparencies as the last numerical column value.
 
-.. _option_-x:
+.. _option_-x_core:
 
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
