@@ -5,7 +5,7 @@ steps:
 # Cache vcpkg installed libraries
 # Currently, caches are immutable and can't be updated.
 # To rebuild the cache, you have to change the date in the key list
-- task: CacheBeta@0
+- task: Cache@2
   inputs:
     key: $(Agent.OS) | vcpkg | 20200118
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
@@ -73,7 +73,7 @@ steps:
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
 
-- task: CacheBeta@0
+- task: Cache@2
   inputs:
     key: coastline
     path: $(COASTLINEDIR)
