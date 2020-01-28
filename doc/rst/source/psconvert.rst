@@ -22,10 +22,10 @@ Synopsis
 [ |-H|\ *factor* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
-[ **-Mb**\ \|\ **f**\ *pslayer* ]
-[ |-Q|\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4] ]
+[ **-Mb**\|\ **f**\ *pslayer* ]
+[ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
-[ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**\ [**+m**\ ] ]
+[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *params* ]
 [ |-Z| ]
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+f**\ *fade*\ ][**+g**\ *paint*\ ][**+m**\ *margins*][**+n**][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
+**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **+n** to leave the BoundingBoxes as they are
     (e.g., to override any automatic setting of **-A** by **-W**).
@@ -88,7 +88,7 @@ Optional Arguments
     If **-V** is used we also report the dimensions of the illustration.
     Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
     Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
-    use **-A+p**\ [\ *pen*] to draw the BoundingBox outline (append a pen or accept
+    use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
     the default pen of 0.25p,black).
 
 .. _-C:
@@ -163,14 +163,14 @@ Optional Arguments
 
 .. _-M:
 
-**-Mb**\ \|\ **f**\ *pslayer*
+**-Mb**\|\ **f**\ *pslayer*
     Sandwich the current *psfile* between an optional background (**-Mb**) and
     optional foreground (**-Mf**) Postscript plots.  These files are expected
     to be stand-alone plots that will align when stacked.
 
 .. _-Q:
 
-**-Q**\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4]
+**-Q**\ [**g**\|\ **p**\|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
     Append the size of the subsample box (1, 2, or 4) [4]. For vector
     formats the default is no anti-aliasing (same as *bits* = 1).
@@ -186,7 +186,7 @@ Optional Arguments
 
 .. _-T:
 
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**\ [**+m**\ ]
+**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**]
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means

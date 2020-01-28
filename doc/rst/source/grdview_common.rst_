@@ -51,7 +51,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensgrid*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere; this simply affects the
     ambient light.  If just **+** is given then we derive an intensity
@@ -102,7 +102,7 @@ Optional Arguments
 
 .. _-t:
 
-**-T**\ [\ **+o**\ [*pen*]][**+s**]
+**-T**\ [**+o**\ [*pen*]][**+s**]
     Plot image without any interpolation. This involves converting each
     node-centered bin into a polygon which is then painted separately.
     Append **+s** to skip nodes with z = NaN. This option is useful for
@@ -122,7 +122,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **c**\ \|\ **m**\ \|\ **f**\ *pen*
+**-W**\ **c**\|\ **m**\|\ **f**\ *pen*
 
     **-Wc**
         Draw contour lines on top of surface or mesh (not image). Append pen

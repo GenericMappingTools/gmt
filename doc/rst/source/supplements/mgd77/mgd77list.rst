@@ -13,23 +13,23 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77list** *GEODAS-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
-[ |-A|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ] ]
-[ |-D|\ **A**\ \|\ **a**\ *startdate* ]
-[ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
+[ |-A|\ **c**\|\ **d**\|\ **f**\|\ **m**\|\ **t**\ *code*\ [**+f**] ]
+[ |-D|\ **A**\|\ **a**\ *startdate* ]
+[ |-D|\ **B**\|\ **b**\ *stopdate* ]
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
 [ |-I|\ *ignore* ]
 [ |-L|\ [*corrtable*] ]
-[ |-N|\ **d**\ \|\ **s**\ *unit* ]
-[ |-Q|\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
+[ |-N|\ **d**\|\ **s**\ *unit* ]
+[ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **a**\ *startdist*\ [unit] ]
 [ |-S|\ **b**\ *stopdist*\ [unit] ]
-[ |-T|\ [**m**\ \|\ **e**] ]
+[ |-T|\ [**m**\|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *weight* ]
-[ |-Z|\ **n**\ \|\ **p** ]
+[ |-Z|\ **n**\|\ **p** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-j| ]
@@ -246,7 +246,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ]
+**-A**\ **c**\|\ **d**\|\ **f**\|\ **m**\|\ **t**\ *code*\ [**+f**]
     By default, corrected depth (**depth**), magnetic residual anomaly
     (**mag**), free-air gravity anomaly (**faa**), and the derived
     quantity Carter depth correction (**carter**) are all output as is
@@ -332,7 +332,7 @@ Optional Arguments
     **x** is the sensor (**2** or **1**) *not* indicated by the
     **msens** data field (defaults to **2** if unspecified).
 
-    **-Amc**\ *offset*\ [*unit*\ ] applies a correction to compensate
+    **-Amc**\ *offset*\ [*unit*] applies a correction to compensate
     for the fact that the magnetic field was not acquired at the same
     position as the ship's position [i.e., the navigation]. This is
     accomplished by re-interpolating the total magnetic field to what it
@@ -394,7 +394,7 @@ Optional Arguments
 
 .. _-N:
 
-**-Nd**\ \|\ **s**\ *unit*
+**-Nd**\|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
     km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
@@ -436,7 +436,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**m**\ \|\ **e**]
+**-T**\ [**m**\|\ **e**]
     Turns OFF the otherwise automatic adjustment of values based on
     correction terms that are stored in the MGD77+ file and used to
     counteract such things as wrong units used by the source institution
@@ -463,7 +463,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ **n**\ \|\ **p**
+**-Z**\ **n**\|\ **p**
     Append the sign you want for **depth**, **carter**, and **msd**
     values below sea level (**-Zn** gives negative bathymetry) [Default
     is **-Zp** for positive down].

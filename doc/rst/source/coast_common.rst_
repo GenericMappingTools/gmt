@@ -48,7 +48,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *fill*\ [**+l**\ \|\ **+r**\ ] :ref:`(more ...) <-Gfill_attrib>`
+**-C**\ *fill*\ [**+l**\|\ **+r**] :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
     separate fills by appending **+l** for lakes or **+r** for
@@ -87,7 +87,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [**l**\|\ **t**][**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the map scale or rose using
     :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
@@ -103,7 +103,7 @@ Optional Arguments
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
     Requires **-L** or **-T**.  To specify separate parameters if both **-L** are **-T**
-    are selected, append  **l**\ \|\ **t** to **-F**
+    are selected, append  **l**\|\ **t** to **-F**
     to specify panel parameters for just that panel [Default uses the same panel
     parameters for all selected map features].
 

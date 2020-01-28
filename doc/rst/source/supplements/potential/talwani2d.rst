@@ -14,11 +14,11 @@ Synopsis
 
 **gmt talwani2d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
-[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ]
+[ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list* ]
-[ |-Z|\ *level*\ [*ymin*\ /*ymax*\ ] ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v**
+**-F**\ **f**\|\ **n**\ [*lat*]\|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid; optionally append average latitude for normal gravity reference value [45])
     or **v** (vertical gravity gradient).
@@ -87,13 +87,13 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list*
     Specify an equidistant output lattice.
     For details on array creation, see `Generate 1D Array`_.
 
 .. _-Z:
 
-**-Z**\ *level*\ [*ymin*\ /*ymax*\ ]
+**-Z**\ *level*\ [*ymin*\ /*ymax*]
     Set a constant observation level [0].  Optionally, and for gravity anomalies only (**-Ff**),
     append the finite extent limits of a 2.5-D body.
 

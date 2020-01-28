@@ -7,7 +7,7 @@ By default GMT writes out grids as single precision floats in a COARDS-complaint
 However, GMT is able to produce and read grid files in many other commonly used grid file formats
 and also facilitates so called "packing" of grids, writing out floating point data as 1- or 2-byte
 integers. To specify the precision, scale and offset, the user should add the suffix
-[**=**\ *id*\ ][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*], where
+[**=**\ *id*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*], where
 *id* is a two-letter identifier of the grid type and precision, and the
 *scale*, *offset* and *invalid* are the arguments of optional modifiers to be applied
 to all grid values,  Here, *invalid* is the value used to indicate missing

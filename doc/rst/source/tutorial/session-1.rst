@@ -416,7 +416,7 @@ We conclude the survey of map projections with the Eckert IV and VI projections
 (**-JK**), two of several projections used for global thematic maps; They
 are both equal-area projections whose syntax is
 
-**-JK**\ [**f**\ \|\ **s**]\ *lon_0/width*
+**-JK**\ [**f**\|\ **s**]\ *lon_0/width*
 
 where **b** gives Eckert IV (4) and **s** (Default) gives Eckert VI (6).
 The *lon_0* is the central meridian (which takes precedence over

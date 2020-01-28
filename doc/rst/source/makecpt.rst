@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**\ ] ]
+**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**i**\ \|\ **o**] ]
+[ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -24,8 +24,8 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
-[ |-V|\ [*level*\ ] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*] ]
+[ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *transparency*\ [**+a**\ ]
+**-A**\ *transparency*\ [**+a**]
     Sets a constant level of transparency (0-100) for all color slices.
     Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
@@ -88,7 +88,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**i**\ \|\ **o**]
+**-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -169,7 +169,7 @@ Optional Arguments
 **-S**\ *mode*
     Determine a suitable range for the **-T** option from the input table(s) (or stdin).
     Choose from several types of range determinations:
-    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
+    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
     and ±\ *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
@@ -180,7 +180,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.

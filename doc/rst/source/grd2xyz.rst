@@ -12,10 +12,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
+**gmt grd2xyz** *grid* [ |-C|\ [**f**\|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\ \|\ *weight*] ] [ |-Z|\ [*flags*] ]
+[ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -50,7 +50,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**f**\ \|\ **i**]
+**-C**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
     **f** to start at 1 (Fortran-style counting). Alternatively, append
@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**a**\ \|\ *weight*]
+**-W**\ [**a**\|\ *weight*]
     Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
     supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
     weights equal to the area each node represents.

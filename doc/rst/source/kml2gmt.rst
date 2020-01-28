@@ -14,7 +14,7 @@ Synopsis
 
 **gmt kml2gmt** [ *kmlfiles* ]
 [ |-E| ]
-[ |-F|\ **s**\ \|\ **l**\ \|\ **p** ]
+[ |-F|\ **s**\|\ **l**\|\ **p** ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bo| ]
@@ -57,7 +57,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **s**\ \|\ **l**\ \|\ **p**
+**-F**\ **s**\|\ **l**\|\ **p**
     Specify a particular feature type to output. Choose from points (**s**),
     **l**\ ine, or **p**\ olygon.  By default we output all geometries.
 

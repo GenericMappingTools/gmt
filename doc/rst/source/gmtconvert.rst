@@ -12,18 +12,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt convert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
+**gmt convert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
-[ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
-[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*] ]
+[ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ] [ |-L| ]
+[ |-F|\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
-[ |-N|\ *col*\ [**+a**\ \|\ **d**\ ] ]
+[ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
-[ |-T|\ [**h**\ \|\ **d**\ ] ]
+[ |-T|\ [**h**\|\ **d**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**+n**\ ] ]
-[ |-Z|\ [*first*\ ][/\ *last*] ]
+[ |-W|\ [**+n**] ]
+[ |-Z|\ [*first*][/\ *last*] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]
+**-C**\ [**+l**\ *min*][**+u**\ *max*][**+i**]
     Only output segments whose number of records matches your given criteria:
     Append **+l**\ *min* to ensure all segment must have at least *min* records
     to be written to output [0], and append **+u**\ *max*  to ensure all segments
@@ -106,7 +106,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*]
+**-E**\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*]
     Only extract the first and last record for each segment of interest
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
@@ -115,7 +115,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
@@ -131,7 +131,7 @@ Optional Arguments
     reference point is reset to the first point of each incoming segment [Default].
     **r**\ : Same as **s**, but the group reference point is reset after
     each record to the previous point (this method is only available with the **-Fr** scheme).
-    Instead of the codes **a**\ \|\ **f**\ \|\ **s**\ \|\ **r** you may append
+    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
@@ -153,7 +153,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *col*\ [**+a**\ \|\ **d**\ ]
+**-N**\ *col*\ [**+a**\|\ **d**]
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
@@ -193,7 +193,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**h**\ \|\ **d**\ ]
+**-T**\ [**h**\|\ **d**]
     Suppress the writing of certain records on output.  Append **h** to
     suppress segment headers [Default] or **d** to suppress duplicate
     data records.  Use **-Thd** to suppress both types of records.
@@ -205,14 +205,14 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**+n**\ ]
+**-W**\ [**+n**]
     Attempt to convert each word in the trailing text to a number and append
     such values to the numerical output columns.  Text that cannot be converted
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  Note: These columns are identified based on
     the first input record only.
 
-**-Z**\ [*first*\ ][/\ *last*]
+**-Z**\ [*first*][/\ *last*]
     Limit output to the specified record range.  If *first* is not set it defaults
     to record 0 (very first record) and if *last* is not set then it defaults to the
     very last record.  Only records in the given range will be written out [all].

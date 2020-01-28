@@ -35,7 +35,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*pen*\ ][\ **+s**\ *size*]
+**-C**\ [*pen*][**+s**\ *size*]
     Offsets focal mechanisms to the longitude, latitude specified in the
     last two columns of the input file before the (optional) text
     string. A small circle is plotted at the initial location and a line
@@ -57,7 +57,7 @@ Optional Arguments
 
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
-**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
+**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*]]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
@@ -71,14 +71,14 @@ Optional Arguments
     set by **-G**]
 **-Fo**
     Use the **psvelomeca** input format without depth in the third column.
-**-Fp**\ [*pen*\ ]
+**-Fp**\ [*pen*]
     Draws the P axis outline using default pen (see **-W**), or sets pen attributes.
-**-Fr**\ [*fill*\ ]
+**-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
-**-Ft**\ [*pen*\ ]
+**-Ft**\ [*pen*]
     Draws the T axis outline using default pen (see **-W**), or sets pen
     attributes.
-**-Fz**\ [*pen*\ ]
+**-Fz**\ [*pen*]
     Overlay zero trace moment tensor using default pen (see **-W**), or
     sets pen attributes.
 
@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*pen*\ ]
+**-L**\ [*pen*]
     Draws the "beach ball" outline with *pen* attributes instead of with
     the default pen set by **-W**.
 
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*nplane*\ ][\ **/**\ *pen*]
+**-T**\ [*nplane*][**/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
     If *nplane* is
 

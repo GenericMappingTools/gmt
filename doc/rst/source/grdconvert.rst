@@ -69,7 +69,7 @@ Required Arguments
     GDAL library. Append the format *:driver* and optionally the output
     *datatype*. The driver names are those used by GDAL itself (e.g.,
     netCDF, GTiFF, etc.), and the data type is one of
-    *u8*\ \|\ *u16*\ \|\ *i16*\ \|\ *u32*\ \|\ *i32*\ \|\ *float32*,
+    *u8*\|\ *u16*\|\ *i16*\|\ *u32*\|\ *i32*\|\ *float32*,
     where 'i' and 'u' denote signed and unsigned integers respectively.
     The default type is *float32*. Note also that both driver names and
     data types are case insensitive.

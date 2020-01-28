@@ -723,7 +723,7 @@ complex curves. The projection was developed in the early 1900s by
 several workers. Several parameters must be provided to define the
 projection. GMT offers three different definitions:
 
-#. Option **-Jo**\ [**a**\ \|\ **A**] or **-JO**\ [**a**\ \|\ **A**]:
+#. Option **-Jo**\ [**a**\|\ **A**] or **-JO**\ [**a**\|\ **A**]:
 
    -  Longitude and latitude of projection center.
 
@@ -732,7 +732,7 @@ projection. GMT offers three different definitions:
    -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-#. Option **-Jo**\ [**b**\ \|\ **B**] or **-JO**\ [**b**\ \|\ **B**]:
+#. Option **-Jo**\ [**b**\|\ **B**] or **-JO**\ [**b**\|\ **B**]:
 
    -  Longitude and latitude of projection center.
 
@@ -741,7 +741,7 @@ projection. GMT offers three different definitions:
    -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-#. Option **-Joc**\ \|\ **C** or **-JOc**\ \|\ **C**:
+#. Option **-Joc**\|\ **C** or **-JOc**\|\ **C**:
 
    -  Longitude and latitude of projection center.
 
@@ -750,7 +750,7 @@ projection. GMT offers three different definitions:
    -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-For all three definitions, the upper case **A**\ \|\ **B**\ \|\ **C** means we
+For all three definitions, the upper case **A**\|\ **B**\|\ **C** means we
 will allow projection poles in the southern hemisphere [By default we map any such
 poles to their antipodes in the north hemisphere].  Our example was produced by the command
 

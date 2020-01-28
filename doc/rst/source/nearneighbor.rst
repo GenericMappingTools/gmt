@@ -125,7 +125,7 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
    adding **g** for geographic, **p** for periodic, or **n** for
    natural boundary conditions. For the latter two you may append **x**

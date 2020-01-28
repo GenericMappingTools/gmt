@@ -66,7 +66,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**l**\ \|\ **r**]
+**-F**\ [**l**\|\ **r**]
     Force clip contours (polygons) to be oriented so that data points are to the
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the perimeter
     [Default is arbitrary orientation]. Requires **-D**.
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *nodegrid*\ [**+i**\ \|\ **o**\ ]
+**-L**\ *nodegrid*\ [**+i**\|\ **o**]
     Save the internal grid with ones (data constraint) and zeros (no data) to
     the named *nodegrid* [no grid saved].  Append **+o** to convert the outside (no data)
     nodes to NaNs before writing the grid, while appending **+i** will instead convert
@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\ [*unit*\ ]
+**-S**\ *search\_radius*\ [*unit*]
     Sets radius of influence. Grid nodes within *radius* of a data point
     are considered reliable. [Default is 0, which means that only grid
     cells with data in them are reliable]. Append the distance unit (see `Units`_).

@@ -13,17 +13,17 @@ end point of a segment:
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
-    Further append **l**\ \|\ **r** to only draw the left or right
+    Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
     **+e** places a vector head at the end of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
-    Further append **l**\ \|\ **r** to only draw the left or right
+    Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
-    **+g**\ [fill*] sets the vector head fill [Default fill is used, which may be no fill].
+    **+g**\ [*fill*] sets the vector head fill [Default fill is used, which may be no fill].
     Turn off vector head fill by not appending a *fill*.
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
@@ -35,7 +35,7 @@ end point of a segment:
     Append **f** or **r** for forward or reverse direction of the vector [forward].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
-    and **I** for plain open tail. Further append **l**\ \|\ **r** to only draw the left or right
+    and **I** for plain open tail. Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].  Cannot be combined with **+b** or **+e**.
 
     **+n**\ *norm* scales down vector attributes (pen thickness, head size)
@@ -44,7 +44,7 @@ end point of a segment:
     invariant to length]. For Cartesian vectors specify a length in plot units, while
     for geovectors specify a length in km.
 
-    **+o**\ [*plon*\ /\ *plat*\ ] specifies the oblique pole for the great or
+    **+o**\ [*plon*\ /\ *plat*] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no
     pole is appended then we default to the north pole.
 
@@ -58,9 +58,9 @@ end point of a segment:
 
     **+r** draws half-arrows, using only the right side of specified heads [both sides].
 
-    **+t**\ [**b**\ \|\ **e**]\ *trim*\ [*unit*] will shift the beginning or end point (or both)
+    **+t**\ [**b**\|\ **e**]\ *trim*\ [*unit*] will shift the beginning or end point (or both)
     along the vector segment by the given *trim*; append suitable unit (**c**, **i**, or **p**). If the modifiers
-    **b**\ \|\ **e** are not used then *trim* may be two values separated by a slash,
+    **b**\|\ **e** are not used then *trim* may be two values separated by a slash,
     which is used to specify different trims for the beginning and end.  Positive trims
     will shorted the vector while negative trims will lengthen it [no trim].
 
@@ -80,7 +80,7 @@ Finally, Cartesian vectors may take these modifiers:
 Note: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
 be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
-you specify a vector (**-Sv**\ \|\ **V**) using the GMT4 syntax, explained here: *size*, if present, will
+you specify a vector (**-Sv**\|\ **V**) using the GMT4 syntax, explained here: *size*, if present, will
 be interpreted as *arrowwidth/headlength/headwidth* [Default is 0.075c/0.3c/0.25c (or
 0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
 arrow. To have the size of the vector scale down with decreasing size, append **n**\ *norm*,

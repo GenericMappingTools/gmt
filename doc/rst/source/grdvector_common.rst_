@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\ \|\ **l**\ ]\ *scale*\ [*unit*]
+**-S**\ [**i**\|\ **l**]\ *scale*\ [*unit*]
     Sets scale for vector plot length in data units per plot distance measurement
     unit [1]. Append **c**, **i**, or **p** to indicate the measurement
     unit (cm, inch, or point); if no unit is given we use the default value that

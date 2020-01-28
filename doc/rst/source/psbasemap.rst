@@ -39,7 +39,7 @@ Synopsis
 
 .. _-D:
 
-**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
     Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and

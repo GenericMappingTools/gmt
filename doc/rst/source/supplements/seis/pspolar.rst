@@ -17,7 +17,7 @@ Synopsis
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ *pointsize*] ]
+[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]
 [ |-G|\ *fill* ]

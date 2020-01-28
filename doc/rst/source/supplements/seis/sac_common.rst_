@@ -53,7 +53,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *dx*\ [\ **/**\ *dy*]
+**-D**\ *dx*\ [**/**\ *dy*]
     Offset seismogram positions by the given mount *dx/dy* [Default is no offset].
     If *dy* is not given it is set equal to *dx*.
 
@@ -85,8 +85,8 @@ Optional Arguments
 
         **r**: remove mean value
 
-    **i**\ \|\ **q**\ \|\ **r** can repeat multiple times. For example, **-Frii** will convert acceleration to displacement.
-    The order of **i**\ \|\ **q**\ \|\ **r** controls the order of the data processing.
+    **i**\|\ **q**\|\ **r** can repeat multiple times. For example, **-Frii** will convert acceleration to displacement.
+    The order of **i**\|\ **q**\|\ **r** controls the order of the data processing.
 
 .. _-G:
 

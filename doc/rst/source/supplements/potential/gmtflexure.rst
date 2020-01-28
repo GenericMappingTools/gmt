@@ -16,7 +16,7 @@ Synopsis
 [ |-A|\ [**l**\|\ **r**]\ *bc*\ [/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *force* ] [ |-L| ]
-[ |-Q|\ *args*\ ] [ |-S| ] [ |-T|\ *wfile*\ ]
+[ |-Q|\ *args*] [ |-S| ] [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*]
@@ -94,7 +94,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qn**\ \|\ **q**\ \|\ **t**\ [*args*]
+**-Qn**\|\ **q**\|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or

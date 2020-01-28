@@ -51,7 +51,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *n\_model*\ [**+r**\ ]
+**-N**\ *n\_model*\ [**+r**]
     *n\_model* sets the number of model parameters to fit.
     Append **+r** for robust fit.
 

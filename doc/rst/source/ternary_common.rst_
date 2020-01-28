@@ -24,7 +24,7 @@ Optional Arguments
 
 .. _-B:
 
-**-B**\ [**a**\ \|\ **b**\ \|\ **c**\ ]\ *args*
+**-B**\ [**a**\|\ **b**\|\ **c**]\ *args*
     For ternary diagrams the three sides are referred to as **a**, **b**, and **c**.  Thus,
     to give specific settings for one of these axis you must include the
     axis letter before the arguments.  If all axes have the same arguments

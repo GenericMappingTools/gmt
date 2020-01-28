@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
+|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
 [ |-C|\ [*side*]\ /*clearance*\ [**u**]]
 [ |SYN_OPT-B| ]
@@ -50,7 +50,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -91,7 +91,7 @@ Optional Arguments
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
-    Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
+    Use **+j**\|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
     Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*side*]\ /*clearance*\ [**u**\ ]
+**-C**\ [*side*]\ /*clearance*\ [**u**]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
@@ -176,7 +176,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col*\ \|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
 Note: If any **-J** option is passed with **?** as scale or width when plotting subplots,
@@ -203,7 +203,7 @@ Optional Arguments
 
 .. _subplot_set-C2:
 
-**-C**\ *side*\ /*clearance*\ [**u**\ ]
+**-C**\ *side*\ /*clearance*\ [**u**]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can

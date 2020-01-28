@@ -14,11 +14,11 @@ Synopsis
 
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
 |-G|\ *outgrid*
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
-[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**] ]
+**-T**\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list*
+[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ **i**\ *levels*\ \|\ **o** ]
+[ |-Z|\ **i**\ *levels*\|\ **o** ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -50,7 +50,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`.
 
@@ -59,7 +59,7 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Zi**\ *levels*\ \|\ **o**
+**-Zi**\ *levels*\|\ **o**
     Use **-Zi** to obtain the *levels* and then we read the corresponding number of
     2-D input grids given on the command line [Default is a single 3-D data cube].
     The *levels* are specified the same way as in **-T**.

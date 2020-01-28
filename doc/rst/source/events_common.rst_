@@ -32,7 +32,7 @@ Required Arguments
 
 **-S**\ *symbol*\ [*size*\ [*unit*]]
     Specify the symbol to use for the event.  Optionally, append symbol *size* with unit from
-    (**c**\ \|\ **i**\ \|\ **p**\ ).  If no *size* is given then we read an event-specific size
+    (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
     from the data file's third column (fourth if **-C** is used). Note: Not all the symbols that
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
@@ -61,7 +61,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*\ ]]
+**-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]]
     Offset the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
     **-Dj** to offset the text away from the point instead (i.e., the
@@ -73,7 +73,7 @@ Optional Arguments
 
 .. _-E:
 
-**-Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
+**-Es**\|\ **t**\ [**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
     Set the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **+z**\ [*format*]]
     By default, event label text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by specifying up to three
@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*length*\ \|\ **t**\ ]
+**-L**\ [*length*\|\ **t**]
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
     or leave blank if lengths can be read from the input file after the *time* column.  If **-L** is not
@@ -113,7 +113,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*]
+**-M**\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*]
     Modify the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
     the *rise* interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value

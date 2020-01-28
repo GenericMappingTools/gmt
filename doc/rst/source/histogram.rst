@@ -12,16 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt histogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
-|-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
+**gmt histogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ |-F| ]
-[ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-I|\ [**o**\ \|\ **O**] ]
-[ |-L|\ **l**\ \|\ **h**\ \|\ **b**] ]
+[ |-G|\ *fill* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-I|\ [**o**\|\ **O**] ]
+[ |-L|\ **l**\|\ **h**\|\ **b**] ]
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
 [ |-Q|\ **r** ]
 [ |SYN_OPT-R| ]

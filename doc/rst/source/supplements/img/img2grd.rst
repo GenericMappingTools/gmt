@@ -59,7 +59,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*minlat/maxlat*\ ]
+**-D**\ [*minlat/maxlat*]
     Use the extended latitude range -80.738/+80.738. Alternatively,
     append *minlat/maxlat* as the latitude extent of the input img file.
     [Default is -72.006/72.006]. Not usually required since we can
@@ -123,7 +123,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*scale*\ ]
+**-S**\ [*scale*]
     Multiply the img file values by *scale* before storing in grid file.
     [Default is 1.0]. For recent img files: img topo files are stored in
     (corrected) meters [**-S**\ 1]; free-air gravity files in mGal\*10

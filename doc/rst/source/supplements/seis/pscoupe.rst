@@ -24,7 +24,7 @@ Synopsis
 [ |-M| ] [ |-N| ]
 [ |-O| ]
 [ |-Q| ]
-[ |-T|\ *nplane*\ [/*pen*\ ] ]
+[ |-T|\ *nplane*\ [/*pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

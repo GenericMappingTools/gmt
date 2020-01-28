@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *f107file* ]
 [ |-F|\ *flags* ]
 [ |-G| ]
-[ |-S|\ **c**\ \|\ **l**\ *low/high* ]
+[ |-S|\ **c**\|\ **l**\ *low/high* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]

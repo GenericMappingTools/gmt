@@ -13,23 +13,23 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt plot3d** [ *table* ] |-J|\ *parameters*
-|-J|\ **z**\ \|\ **Z**\ *parameters*
+|-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ [*intens*] ]
-[ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
+[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N| ]
 [ |-Q| ]
-[ |-S|\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ]
+[ |-S|\ [*symbol*][*size*\ [**unit**]][/*size_y*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
+[ |-Z|\ [**l**\|\ **f**]\ *value* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]

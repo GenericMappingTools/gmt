@@ -44,7 +44,7 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:
 
     .. include:: explain_refpoint.rst_
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the map inset using
     :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].

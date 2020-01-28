@@ -1,6 +1,6 @@
 .. _-V_full:
 
-**-V**\ [*level*\ ]
+**-V**\ [*level*]
     Select verbose mode, which will send progress reports to *stderr*.
     Choose among 6 levels of verbosity; each level adds more messages:
     **q** - Complete silence, not even fatal error messages are produced.

@@ -1,6 +1,6 @@
 .. _-bi_full:
 
-**-bi**\ [*ncols*][*type*][**w**\ ][\ **+l**\ \|\ **b**]
+**-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
     Select native binary format for primary input (secondary inputs are always ASCII).
     Here, *ncols* is the number of data columns of
     given *type*, which must be one of **c** (int8_t, aka char), **u**
@@ -13,7 +13,7 @@
     bytes anywhere in the record.
     For records with mixed types, simply append additional comma-separated
     combinations of *ncols* *type* (no space). Append **w** to any item to force
-    byte-swapping. Alternatively, append **+l**\ \|\ **b** to indicate
+    byte-swapping. Alternatively, append **+l**\|\ **b** to indicate
     that the entire data file should be read as little- or big-endian,
     respectively. The cumulative number of *ncols* may exceed the columns
     actually needed by the program. If *ncols* is not specified we assume
