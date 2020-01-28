@@ -343,7 +343,7 @@ Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
-    gmt coast -R-25/59/70/72+rr -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
+    gmt coast -R-25/59/70/72+r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
 
 .. _GMT_stereographic_rect:
 
