@@ -36,7 +36,7 @@ static unsigned char PSL_pattern[90][512] = {
 EOF
 let k=1
 while [ $k -le 90 ]; do
-	name=`echo $k | awk '{printf "PSL_pattern_%2.2d.ras\n", $1}'`
+	name=$(echo $k | awk '{printf "PSL_pattern_%2.2d.ras\n", $1}')
 	printf "\t{\t/* $name */\n" >> PSL_patterns.h
 	od -j32 -t uC -v -An $name | sed '/^$/d' | awk '{printf "\t\t%3d", $1}; {for (i=2; i<=NF;i++) printf ", %3d", $i}; {printf ",\n"}' >> PSL_patterns.h
 	printf "\t},\n" >> PSL_patterns.h

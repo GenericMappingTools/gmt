@@ -8,9 +8,9 @@ ps=oblmerc_down.ps
 lon=-30
 lat=60
 az_x=-75
-az_y=`gmt math -Q $az_x 90 SUB =`
-plon=`gmt vector -A$lon/$lat -Tp$az_x} | cut -f1`
-plat=`gmt vector -A$lon/$lat -Tp$az_x} | cut -f2`
+az_y=$(gmt math -Q $az_x 90 SUB =)
+plon=$(gmt vector -A$lon/$lat -Tp$az_x} | cut -f1)
+plat=$(gmt vector -A$lon/$lat -Tp$az_x} | cut -f2)
 scale=1:30000000
 scale_km=1:30000
 LL_lon=-56
@@ -19,16 +19,16 @@ UR_lon=20
 UR_lat=50
 # Find gmt projected coordinates of LL and UR points in desired gmt projection
 echo $LL_lon $LL_lat | gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$scale -Fk >tmp
-LL_x=`cut -f1 tmp`
-LL_y=`cut -f2 tmp`
+LL_x=$(cut -f1 tmp)
+LL_y=$(cut -f2 tmp)
 echo $UR_lon $UR_lat | gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$scale -Fk >tmp
-UR_x=`cut -f1 tmp`
-UR_y=`cut -f2 tmp`
+UR_x=$(cut -f1 tmp)
+UR_y=$(cut -f2 tmp)
 # Create rectangle in these gmt projected units
-xstart=`gmt math -Q $LL_x $UR_x MIN =`
-xstop=`gmt math -Q $LL_x $UR_x MAX =`
-ystart=`gmt math -Q $LL_y $UR_y MIN =`
-ystop=`gmt math -Q $LL_y $UR_y MAX =`
+xstart=$(gmt math -Q $LL_x $UR_x MIN =)
+xstop=$(gmt math -Q $LL_x $UR_x MAX =)
+ystart=$(gmt math -Q $LL_y $UR_y MIN =)
+ystop=$(gmt math -Q $LL_y $UR_y MAX =)
 gmt math -T$xstart/$xstop/101+n $LL_y = > box.xy
 gmt math -o1,0 -T$ystart/$ystop/101+n $UR_x = >> box.xy
 gmt math -I -T$xstart/$xstop/101+n $UR_y = >> box.xy

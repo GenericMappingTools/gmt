@@ -7,7 +7,7 @@
 # 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
-GMT_SHAREDIR=`gmt --show-sharedir`
+GMT_SHAREDIR=$(gmt --show-sharedir)
 
 cat << EOF > skip.lis
 acton
@@ -40,12 +40,12 @@ EOF
 #sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
 sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis | awk '{print $1}' | sort -r > tt.lis
 
-n=`cat tt.lis | wc -l`
+n=$(cat tt.lis | wc -l)
 let n2=n/2
 let n2=22
 # dy is line spacing and y0 is total box height
 dy=0.75
-y0=`gmt math -Q $n2 2 ADD $dy MUL 0.5 MUL =`
+y0=$(gmt math -Q $n2 2 ADD $dy MUL 0.5 MUL =)
 
 gmt begin GMT_App_M_1a
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
@@ -56,9 +56,9 @@ y=0.475
 y2=0.35
 while [ $i -le $n ]
 do
-	j=`expr $i + 1`
-	left=`sed -n ${j}p tt.lis`
-	right=`sed -n ${i}p tt.lis`
+	j=$(expr $i + 1)
+	left=$(sed -n ${j}p tt.lis)
+	right=$(sed -n ${i}p tt.lis)
 	if [ "$left" = "categorical" ]; then
 		gmt makecpt -H -C$left > tt.left.cpt
 	else
@@ -79,19 +79,19 @@ do
 	1.55 $y ${left}
 	4.50 $y ${right}
 	END
-	if [ `grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt` -eq 1 ]; then # Plot hard hinge symbol for left CPT
+	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot hard hinge symbol for left CPT
 		echo 1.55 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
-	elif [ `grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt` -eq 1 ]; then # Plot soft hinge symbol for left CPT
+	elif [ $(grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot soft hinge symbol for left CPT
 		echo 1.55 $y | gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
 	fi
-	if [ `grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt` -eq 1 ]; then # Plot hard hinge symbol for right CPT
+	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot hard hinge symbol for right CPT
 		echo 4.50 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
-	elif [ `grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt` -eq 1 ]; then # Plot soft hinge symbol for right CPT
+	elif [ $(grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot soft hinge symbol for right CPT
 		echo 4.50 $y | gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
 	fi
-	i=`expr $i + 2`
-	y=`gmt math -Q $y $dy ADD =`
-	y2=`gmt math -Q $y2 $dy ADD =`
+	i=$(expr $i + 2)
+	y=$(gmt math -Q $y $dy ADD =)
+	y2=$(gmt math -Q $y2 $dy ADD =)
 done
 
 gmt end show

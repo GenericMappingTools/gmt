@@ -13,7 +13,7 @@ gmt begin ex24
 	180	0
 	180	-90
 	END
-	R=`gmt info -I10 @oz_quakes_24.txt`
+	R=$(gmt info -I10 @oz_quakes_24.txt)
 	gmt coast $R -JM22c -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
 	gmt plot @oz_quakes_24.txt -Sc0.1c -Gred
 	gmt select @oz_quakes_24.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -Il \

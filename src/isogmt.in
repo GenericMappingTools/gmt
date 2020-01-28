@@ -29,7 +29,7 @@ END
 	exit
 fi
 
-export GMT_TMPDIR=`mktemp -d ${TMPDIR:-/tmp}/gmt.XXXXXX`
+export GMT_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp}/gmt.XXXXXX)
 gmt $1 =
 if test $? -eq 0; then
 	gmt "$@"

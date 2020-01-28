@@ -22,15 +22,15 @@ gmt begin ex03
 	gmt set GMT_FFT kiss
 	# First, we use "gmt fitcircle" to find the parameters of a great circle
 	# most closely fitting the x,y points in "sat_03.txt":
-	cpos=`gmt fitcircle @sat_03.txt -L2 -Fm --IO_COL_SEPARATOR=/`
-	ppos=`gmt fitcircle @sat_03.txt -L2 -Fn --IO_COL_SEPARATOR=/`
+	cpos=$(gmt fitcircle @sat_03.txt -L2 -Fm --IO_COL_SEPARATOR=/)
+	ppos=$(gmt fitcircle @sat_03.txt -L2 -Fn --IO_COL_SEPARATOR=/)
 	# Now we use "gmt project" to project the data in both sat_03.txt and ship_03.txt
 	# into data.pg, where g is the same and p is the oblique longitude around
 	# the great circle.  We use -Q to get the p distance in kilometers, and -S
 	# to sort the output into increasing p values.
 	gmt project  @sat_03.txt -C$cpos -T$ppos -S -Fpz -Q > sat.pg
 	gmt project @ship_03.txt -C$cpos -T$ppos -S -Fpz -Q > ship.pg
-	bounds=`gmt info ship.pg sat.pg -I1 -Af -L -C -i0  --IO_COL_SEPARATOR=/`
+	bounds=$(gmt info ship.pg sat.pg -I1 -Af -L -C -i0  --IO_COL_SEPARATOR=/)
 	# Now we can use $bounds in gmt math to make a sampling points file for gmt sample1d:
 	gmt math -T$bounds/1 -N1/0 T = samp.x
 	# Now we can resample the gmt projected satellite data:

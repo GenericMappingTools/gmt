@@ -32,7 +32,7 @@ let col=2
 while read t color; do
 	let c=2*col
 	gmt psxy -R -J a.txt -i0,${col} -W0.5p,$color -O -K >> $ps
-	y=`gmt info a.txt -C -o${c}`
+	y=$(gmt info a.txt -C -o${c})
 	echo 0 $y $t | gmt pstext -R -J -O -K -F+f10p,+jCM -Gwhite >> $ps
 	let col=col+1
 done < times.txt
@@ -43,10 +43,10 @@ gmt grdtrack -Gsmt.nc t.txt | gmt psxy -R -J -i0,2 -O -K -L+yb -Gbrown >> $ps
 echo -200 -6000 LOAD | gmt pstext -R -J -O -K -F+f18p+jLB -Dj0.1i >> $ps
 # Calc and plot gravity
 gmt psbasemap -R-200/200/-40/200 -J -O -K -BWsne+t"T@-e@- = 10 km   @~\150@~ = 2\26410@+20@+ Pa\264s" -Bafg1000 -Y3i >> $ps
-drho=`gmt math -Q ${rhol} ${rhow} SUB =`
+drho=$(gmt math -Q ${rhol} ${rhow} SUB =)
 gmt gravfft smt.nc+uk -Gsmt_grav.nc -Nf+a -Ff -E4 -D${drho} -W6k
 paste flist times.txt > flist.txt
-drho=`gmt math -Q ${rhom} ${rhos} SUB =`
+drho=$(gmt math -Q ${rhom} ${rhos} SUB =)
 while read file t t2 color; do
 	gmt gravfft ${file}+uk -Gflx_grav.nc -Nf+a -Ff -E2 -D${drho} -W13k
 	gmt grdtrack t.txt -Gflx_grav.nc > b.txt

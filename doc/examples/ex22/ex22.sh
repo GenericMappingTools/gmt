@@ -18,17 +18,17 @@ gmt begin ex22
 	# curl -s $URL > usgs_quakes_22.txt
 
 	# Count the number of events (to be used in title later. one less due to header)
-	file=`gmt which @usgs_quakes_22.txt -G`
-	n=`gmt info $file -h1 -Fi -o2`
+	file=$(gmt which @usgs_quakes_22.txt -G)
+	n=$(gmt info $file -h1 -Fi -o2)
 
 	# Pull out the first and last timestamp to use in legend title
-	first=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o0 --FORMAT_CLOCK_OUT=-`
-	last=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o1 --FORMAT_CLOCK_OUT=-`
+	first=$(gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o0 --FORMAT_CLOCK_OUT=-)
+	last=$(gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o1 --FORMAT_CLOCK_OUT=-)
 
 	# Assign a string that contains the current user @ the current computer node.
 	# Note that two @@ is needed to print a single @ in gmt text:
 
-	#set me = "$user@@`hostname`"
+	#set me = "$user@@$(hostname)"
 	me="GMT guru @@ GMTbox"
 
 	# Create standard seismicity color table

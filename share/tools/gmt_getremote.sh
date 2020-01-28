@@ -33,7 +33,7 @@ elif [ "X$1" = "Xdata" ]; then	# Not do cache
 fi
 
 # Get current remote data server
-SERVER=`gmt get GMT_DATA_SERVER`
+SERVER=$(gmt get GMT_DATA_SERVER)
 curl -sk ${SERVER}/gmt_hash_server.txt > /tmp/gmt_hash_server.txt
 if [ $? -ne 0 ]; then
 	echo "Error: curl failed with error $?" >&2
