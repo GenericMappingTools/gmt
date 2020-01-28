@@ -438,8 +438,8 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
-#include <gdal_utils.h>
-#include "gmt_gdal_librarified.c"
+//#include <gdal_utils.h>
+//#include "gmt_gdal_librarified.c"
 #endif
 
 int GMT_grdinfo (void *V_API, int mode, void *args) {
@@ -539,8 +539,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
-		if (Ctrl->G.active)
-			grid_gdal_librarified (GMT, opt->arg, Ctrl->G.opts);
+		//if (Ctrl->G.active)
+			//grid_gdal_librarified (GMT, opt->arg, Ctrl->G.opts);
 #endif
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */

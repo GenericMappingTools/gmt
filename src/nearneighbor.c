@@ -66,6 +66,10 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 	struct W {	/* -W */
 		bool active;
 	} W;
+	struct A {
+		bool active;
+		char *opts;
+	} A;
 };
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
@@ -242,6 +246,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
 				break;
+			case 'A':	/* TESTING */
+				Ctrl->A.active = true;
+				Ctrl->A.opts = strdup(opt->arg);
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -270,6 +278,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+#ifdef TEST_LIBRARIFIED
+#include <gdal_utils.h>
+#include "gmt_gdal_librarified.c"
+#endif
 int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
@@ -345,6 +357,17 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
+#ifdef TEST_LIBRARIFIED
+	struct GMT_OPTION *opt = NULL;
+	if (Ctrl->A.active) {
+		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
+			if (opt->option != '<') continue;	/* We are only processing filenames here */
+			grid_gdal(GMT, opt->arg, Ctrl->A.opts, Ctrl->G.file);
+			break;
+		}
+	}
+	return 0;
+#endif
 	/* Regular nearest neighbor moving average operation */
 
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
