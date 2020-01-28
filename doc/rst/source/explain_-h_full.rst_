@@ -1,6 +1,6 @@
 .. _-h_full:
 
-**-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *remark*][\ **+t**\ *title*]
+**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
     Primary input file(s) has *n* extra header record(s). If used, the default number of
     header records is :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` [0]. Use **-hi** if only
     the primary input data should have header records [Default will write out header

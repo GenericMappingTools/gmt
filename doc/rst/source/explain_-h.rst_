@@ -1,2 +1,2 @@
-**-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *remark*][\ **+t**\ *title*] :ref:`(more ...) <-h_full>`
+**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] :ref:`(more ...) <-h_full>`
     Skip or produce header record(s). |Add_-h|
