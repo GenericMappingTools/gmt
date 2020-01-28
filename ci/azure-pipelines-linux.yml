@@ -34,7 +34,7 @@ steps:
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
 
-- task: CacheBeta@0
+- task: Cache@2
   inputs:
     key: coastline
     path: $(COASTLINEDIR)
