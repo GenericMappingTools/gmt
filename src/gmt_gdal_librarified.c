@@ -15,11 +15,18 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
+#include "gmt_dev.h"
+#include "gmt_internals.h"
+
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
+
+#include <gdal_utils.h>
+
 GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
-	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc dd" */
+	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, k;
-	int  n_args = -1;
+	int  n_args = 0;
 	bool quoted;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
@@ -44,14 +51,7 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 		for (i = o = 0; p[i]; i++)
 			if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
 		p[o] = '\0';
-		args[++n_args] = strdup(p);
-		//if (p[0] == '-')
-			//args[++n_args] = strdup(p);
-		//else {		/* If string doesn't start with a '-' it means it's an argument to the option and must be packed together */
-			//args[n_args] = (char *)realloc(args[n_args], strlen(args[n_args])+strlen(p)+3);	/* Make room to the to be appended string */
-			//strcat(args[n_args], " ");
-			//strcat(args[n_args], p);
-		//}
+		args[n_args++] = strdup(p);
 
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
@@ -61,12 +61,12 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
 		if (txt_in[k] == GMT_ASCII_GS) txt_in[k] = '\t';
 		else if (txt_in[k] == GMT_ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
-	//args[n_args] = NULL;	/* Close the list with a NULL */
+
 	free (txt_in);
 	return args;
 }
 
-GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
+int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 	char	*info = NULL, **args;
 	GDALDatasetH	hDataset;
 	GDALInfoOptions *psOptions;
@@ -85,7 +85,7 @@ GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, 
 	args = breakMe(GMT, opts);
 	psOptions = GDALInfoOptionsNew(args, NULL);
 	info = GDALInfo(hDataset, psOptions);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GDAL Info\n\n%s\n", info);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDAL Info\n\n%s\n", info);
 
 	GDALInfoOptionsFree(psOptions);
 	GDALClose(hDataset);
@@ -94,7 +94,7 @@ GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, 
 }
 
 
-int grid_gdal(struct GMT_CTRL *GMT, char *gdal_filename, char *opts, char *outname) {
+int gmt_gdal_grid(struct GMT_CTRL *GMT, char *gdal_filename, char *opts, char *outname) {
 	char **args, ext_opts[GMT_LEN512] = {""};
 	unsigned char *tmp = NULL;
 	int   nXSize, nYSize, nPixelSize;
@@ -161,3 +161,5 @@ int grid_gdal(struct GMT_CTRL *GMT, char *gdal_filename, char *opts, char *outna
 	GDALDestroyDriverManager();
 	return 0;
 }
+
+#endif		//defined(HAVE_GDAL) && ...

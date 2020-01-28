@@ -365,6 +365,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
 	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
+	gmt_gdal_librarified.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
 	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})

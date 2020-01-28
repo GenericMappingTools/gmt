@@ -151,6 +151,8 @@ void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, dou
 #	if GDAL_VERSION_MAJOR >= 2
 		EXTERN_MSC struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename);
 #	endif
+EXTERN_MSC int gmt_gdal_info (struct GMT_CTRL *GMT, char *file, char *opts);
+EXTERN_MSC int gmt_gdal_grid (struct GMT_CTRL *GMT, char *file, char *opts, char *outname);
 #endif
 
 /* gmt_fft.c: */
