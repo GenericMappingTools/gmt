@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [\ **i**\ \|\ *dpi*]
+**-E**\ [**i**\|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color*\ [**+b**\ \|\ **+f**]
+**-G**\ *color*\ [**+b**\|\ **+f**]
     This option only applies when a resulting 1-bit image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint
@@ -100,7 +100,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grd_z*

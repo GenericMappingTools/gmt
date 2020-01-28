@@ -484,7 +484,7 @@ the same form as the arguments to the **-R** option (see
 Section :ref:`option_-R`), with additional flexibility for calendar data.
 Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
-[±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+[±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
 format (e.g., 123:27:15W). With **-fp** you may even supply projected
 data like UTM coordinates.
 
@@ -568,7 +568,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c**\ \|\ **i**\ \|\ **p**]],[*color*],[\ *style*\ [**c**\ \|\ **i**\ \|\ **p**]]
+**-W**\ [*width*\ [**c**\|\ **i**\|\ **p**]],[*color*],[*style*\ [**c**\|\ **i**\|\ **p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
@@ -577,7 +577,7 @@ option argument, with commas separating the given attributes, e.g.,
     you zoom in on the feature in a display, the line thickness stays
     at the minimum. Finally, a few predefined
     pen names can be used: default, faint, and {thin, thick,
-    fat}[er\ \|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
+    fat}[er\|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
     list and the corresponding pen widths.
 
 .. _tbl-pennames:
@@ -616,8 +616,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. Name. Specify one of 663 valid color names. See :doc:`/gmtcolors` for
        a list of all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
-       [light\ \|\ dark]{*red, orange, yellow, green, cyan, blue,
-       magenta, gray\ \|\ grey, brown*\ }. The color names are
+       [light\|\ dark]{*red, orange, yellow, green, cyan, blue,
+       magenta, gray\|\ grey, brown*\ }. The color names are
        case-insensitive, so mixed upper and lower case can be used (like
        *DarkGreen*).
 
@@ -629,7 +629,7 @@ option argument, with commas separating the given attributes, e.g.,
     relative to the pen width (dots has a length that equals the pen
     width while dashes are 8 times as long; gaps between segments are 4
     times the pen width). For more detailed attributes including exact
-    dimensions you may specify *string*\ [:*offset*\ ], where *string* is a
+    dimensions you may specify *string*\ [:*offset*], where *string* is a
     series of numbers separated by underscores. These numbers represent
     a pattern by indicating the length of line segments and the gap
     between segments. The optional *offset* phase-shifts the pattern from the
@@ -747,7 +747,7 @@ specification. The line attribute modifiers are:
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
    the points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
 
-* **+v**\ [**b**\ \|\ **e**]\ *vspecs*
+* **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can
     place arrow-heads pointing outward at one (or both) ends of the line.  Use **+v** if you
     want the same vector attributes for both ends, or use **+vb** and **+ve** to specify a vector
@@ -784,7 +784,7 @@ use **-G** for this task and some have several options specifying different fill
     specifying the pen color settings (see pen color discussion under
     Section `Specifying pen attributes`_).
 
-**-GP**\ \|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
+**-GP**\|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1–90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
@@ -968,7 +968,7 @@ work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
 Section `Specifying area fill attributes`_. The z-values in CPTs can
-be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
+be scaled by using the **+u**\|\ **U**\ *unit* mechanism.  Append these
 modifiers to your CPT names when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
@@ -1481,8 +1481,8 @@ It may be helpful to consider the analog of a boat dropping an anchor: The boat 
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
 There are four different ways to specify the reference point on a map, allowing for complete freedom
-to select any location inside or outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
-the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the five ways:
+to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
+the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
@@ -1525,7 +1525,7 @@ map scale) or **BL** (all other map features). Adding **+j**\ *anchor* overrules
 For instance, **+jTR**\  would select the top right point on the map feature as the anchor.
 
 It is likely that you will wish to offset the anchor point away from
-your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ \|\ **J**\ *code*.
+your selection by some arbitrary amount, particularly if the reference point is specified with **j**\|\ **J**\ *code*.
 Do so with  **+o**\ *dx*\ [/*dy*], where *dy* equals *dx* if it is not provided.
 These increments are added to the projected plot coordinates of the anchor point, with
 positive values moving the reference point in the same direction as the 2-character code of the anchor point implies.
@@ -1702,7 +1702,7 @@ should be pinned.  There is one required and several optional modifiers.  First 
 
 The remaining modifiers are optional:
 
-#. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*\ ], where
+#. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*], where
    *dec* is the declination value in decimal or ddd:mm:ss format, and *dlabel* is an optional string
    that replaces the default label (which is "d = *dec*", with d being a Greek delta and we format
    the specified declination).  Append **d**\ *dec*/- to indicate you do not want any declination label.
@@ -1871,7 +1871,7 @@ The first is the standard way of specifying the reference and anchor points and 
 while the second specifies a *subregion* in the current plot that should be designated the
 map inset area.  Depending on the map projection this may or may not be a rectangular area.
 Map insets are produced by the module :doc:`/inset` and located via the **-D** option. Unless you
-use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
+use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*],
 where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
 distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
 map coordinates (e.g., geographic *west*, *east*, *south*, and *north*).  For oblique
@@ -2038,7 +2038,7 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*\ ][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
+name[=\ *ID*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
 
 where anything in brackets is optional. If you are reading a grid then
 no options are needed: just continue to pass the name of the grid file.

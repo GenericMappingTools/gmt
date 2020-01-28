@@ -1,4 +1,4 @@
-.. |SYN_OPT-B| replace:: |-B|\ [**p**\ \|\ **s**]\ *parameters*
+.. |SYN_OPT-B| replace:: |-B|\ [**p**\|\ **s**]\ *parameters*
 
 .. |SYN_OPT-I| replace:: |-I|\ *increment*
 
@@ -6,9 +6,9 @@
 
 .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
 
-.. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *xshift*\ [**u**\ ]]
+.. |SYN_OPT-X| replace:: |-X|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*\ [**u**]]
 
-.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *yshift*\ [**u**\ ]]
+.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*\ [**u**]]
 
 .. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
 
@@ -64,13 +64,13 @@
 
 .. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
 
-.. |SYN_OPT-:| replace:: **-:**\ [**i**\ \|\ **o**]
+.. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
 
 .. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments.
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
-.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+a**\ [**g**\ \|\ **i**\ ][**s**\ \|\ **S**]][\ **+r**\ \|\ **l**][\ **+p**\ *percent*]
+.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+r**\|\ **l**][**+p**\ *percent*]
 
 
 .. |br| raw:: html

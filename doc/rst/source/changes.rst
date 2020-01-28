@@ -172,7 +172,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  Both :doc:`grdcontour` and :doc:`contour` can now accept a list of comma-separated contours instead
    of always creating equidistant lists. Also, if no contours are specified we auto-compute a reasonable
-   selection of 10 to 20 contours.  We also added **-Ln**\ \|\ **N**\ \|\ **p**\ \|\ **P** for selecting
+   selection of 10 to 20 contours.  We also added **-Ln**\|\ **N**\|\ **p**\|\ **P** for selecting
    just negative or positive contours.  Finally, we added modifier **+z** to **-Q** to exclude the zero-contour
    entirely.
 
@@ -216,7 +216,7 @@ Several modules have obtained new options to extend their capabilities:
 *  Improve the vertical scale bar for :doc:`wiggle` as well.
 
 *  :doc:`gmtconvert` has new option **-W** that attempts to convert trailing text to numbers, if possible.
-   Append modifier **+n** to suppress NaN columns.  We also added **-N**\ *column*\ [**+a**\ \|\ **d**] to
+   Append modifier **+n** to suppress NaN columns.  We also added **-N**\ *column*\ [**+a**\|\ **d**] to
    sort a table based on specified *column*.  Finally, **-EM**\ *stride* is similar to **-Em** but it will
    always include the last point.
 
@@ -340,7 +340,7 @@ Several modules have obtained new options to extend their capabilities:
 
 *  :doc:`gmt` has new session management option that lets you clear various
    files and cache directories via the new commands
-   **gmt clear** *all*\ \|\ *history*\ \|\ *conf*\ \|\ *cache*.
+   **gmt clear** *all*\|\ *history*\|\ *conf*\|\ *cache*.
 
 *  :doc:`gmt2kml` adds option **-Fw** for drawing wiggles along track.
 
@@ -431,7 +431,7 @@ used across GMT and will get a special mention first:
 
 *  Many modules use **-G** to specify the fill (solid color or pattern).
    The pattern specification has now changed to be
-   **-Gp**\ \|\ **P**\ *pattern*\ [**+b**\ *color*\ ][**+f**\ *color*\ ][**+r**\ *dpi*\ ]
+   **-Gp**\|\ **P**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
 
 *  When specifying grids one can always add information such as grid type, scaling,
    offset, etc.  This is now done using a cleaner syntax for grids:
@@ -439,34 +439,34 @@ used across GMT and will get a special mention first:
 
 Here is a list of modules with revised options:
 
-*  :doc:`grdcontour` now expects **-Z**\ [**+**\ *scale*\ ][**+o**\ *offset*\ ][**+p**\ ].
+*  :doc:`grdcontour` now expects **-Z**\ [**+**\ *scale*][**+o**\ *offset*][**+p**].
 
 *  In :doc:`grdedit` and :doc:`xyz2grd`, the mechanism to change a grid's
    metadata is now done via modifiers to the **-D** option, such as
    **+x**\ *xname*, **+t**\ *title*, etc.
 
-*  :doc:`grdfft` has changed to **-E**\ [**+w**\ [**k**\ ]][**+n**\ ].
+*  :doc:`grdfft` has changed to **-E**\ [**+w**\ [**k**]][**+n**].
 
 *  :doc:`grdgradient` modifies the syntax of **-E** and **-N** by introducing modifiers,
-   i.e., **-E**\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] and
-   **-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ].
+   i.e., **-E**\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] and
+   **-N**\ [**e**\|\ **t**][*amp*][**+s**\ *sigma*][**+o**\ *offset*].
 
-*  :doc:`grdtrend` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**\ ].
+*  :doc:`grdtrend` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**].
 
 *  :doc:`mapproject` introduces new and consistent syntax for **-G** and **-L** as
-   **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**] and
-   **-L**\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**].
+   **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\|\ **-**]\ *unit*][**+v**] and
+   **-L**\ *line.xy*\ [**+u**\ [**+**\|\ **-**]\ *unit*][**+p**].
 
-*  :doc:`project` expects **-G**\ *inc*\ [/*lat*\ ][**+h**\ ].
+*  :doc:`project` expects **-G**\ *inc*\ [/*lat*][**+h**].
 
-*  :doc:`rose` now wants **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] to
+*  :doc:`rose` now wants **-L**\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] to
    match the other labeling options.
 
-*  :doc:`text` now expects **-D**\ [**j**\ \|\ **J**\ ]\ *dx*\ [/*dy*\ ][**+v**\ [*pen*\ ]].
+*  :doc:`text` now expects **-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]].
 
-*  :doc:`plot` expects **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*].
+*  :doc:`plot` expects **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*].
 
-*  :doc:`trend2d` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**\ ].
+*  :doc:`trend2d` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**].
 
 
 New Features in GMT 5.3
@@ -694,7 +694,7 @@ New common options
 We have added two new lower-case GMT common options:
 
 *  Programs that need to specify which values should represent "no data"
-   can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
+   can now use **-d**\ [**i**\|\ **o**]\ *nodata*. For instance, this
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
    (but is backwards compatible).
 
@@ -745,10 +745,10 @@ Two of the established GMT common options have seen minor improvements:
 *  Implemented modifier **-B+n** to *not* draw the frame at all.
 
 *  Allow oblique Mercator projections to select projection poles in the
-   southern hemisphere by using upper-case selectors **A**\ \|\ **B**\ \|\ **C**.
+   southern hemisphere by using upper-case selectors **A**\|\ **B**\|\ **C**.
 
 *  Added a forth way to specify the region for a new grid via the new
-   **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
+   **-R**\ [**L**\|\ **C**\|\ **R**][**T**\|\ **M**\|\ **B**]\ *x0*/*y0*/*nx*/*ny*
    syntax where you specify an reference point and number of points in the two
    dimensions (requires **-I** to use the increments).  The optional justification
    keys specify how the reference point relate to the grid region.
@@ -882,7 +882,7 @@ changes to existing syntax will be backwards compatible:
 
 *  :doc:`grdtrack` add the modifier **-G+l**\ *list* to pass a list of grids.
 
-*  :doc:`grdview` implements the Waterfall plot mode via **-Qmx**\ \|\ **y**.
+*  :doc:`grdview` implements the Waterfall plot mode via **-Qmx**\|\ **y**.
 
 *  :doc:`kml2gmt` acquires a **-F** option to control which geometry to output.
 
@@ -914,7 +914,7 @@ changes to existing syntax will be backwards compatible:
 *  :doc:`contour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidates the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
-*  :doc:`histogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
+*  :doc:`histogram` added modifiers **-W**\ *width*\ [**+l**\|\ **h**\|\ **b**]
    to allow for more control on what happens to points falling in the tails.
 
 *  :doc:`image` added a new uniform **-D** option to specify location of the image and new uniform
@@ -929,7 +929,7 @@ changes to existing syntax will be backwards compatible:
    **-F** option to specify background panel and its many settings.
 
 *  :doc:`plot` has seen considerable enhancements. We added two new quoted
-   line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
+   line (**-Sq**) modifiers: **S**\|\ **s** for treating input as consecutive
    two-point line segments that should be individually quoted,
    and **+x**\ [*first*\ ,\ *last*] for automating cross-section labeling.
    We added a new symbol (**-S~**) for *decorated lines*.  These are very similar
@@ -938,9 +938,9 @@ changes to existing syntax will be backwards compatible:
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
    shorthand **-SE-**\ *diameter* for degenerated ellipses (i.e., circles).
    The **-L** option has been enhanced to create envelope polygons around y(x),
-   say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
-   polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
-   The **-A**\-option now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
+   say for confidence envelopes (modifiers **+b**\|\ **d**\|\ **D**), and to complete a closed
+   polygon by adding selected corners (modifiers **+xl**\|\ **r**\|\ *x0* or **+yb**\|\ **t**\|\ *y0*).
+   The **-A**\-option now has new modifiers **x**\|\ **y** for creating stair-case curves.
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    The custom symbols definition tests can now compare two input variables.
    We also added a **-F** option to draw line segments from an input data sets using
@@ -953,8 +953,8 @@ changes to existing syntax will be backwards compatible:
    modifiers for handling periodic plot symbols.  Like, plot it gets the same improvements
    to quoted lines and adds decorated lines as a new symbol.  Likewise,
    the **-L** option has been enhanced to create envelope polygons around y(x),
-   say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
-   polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
+   say for confidence envelopes (modifiers **+b**\|\ **d**\|\ **D**), and to complete a closed
+   polygon by adding selected corners (modifiers **+xl**\|\ **r**\|\ *x0* or **+yb**\|\ **t**\|\ *y0*).
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    Finally, to match :doc:`plot` we have added the option **-T** for specifying no data input.
 
@@ -1263,7 +1263,7 @@ ways, such as
    option **+U**\ *unit*, which can be used to convert your grid
    coordinates *from* meters *to* the specified unit.
 
-*  CPTs also support the **+u**\ \|\ **U**\ *unit* mechanism.  Here, the scaling
+*  CPTs also support the **+u**\|\ **U**\ *unit* mechanism.  Here, the scaling
    applies to the z values.  By appending these modifiers to your CPT names you
    can avoid having two CPTs (one for meter and one for km) since only one is needed.
 
@@ -1382,7 +1382,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    any of the 36 GMT color tables and scale them to fit the grid range.
 
 *  :doc:`grdmask` has new option
-   **-Ni**\ \|\ I\ \|\ p\ \|\ P to set inside of
+   **-Ni**\|\ I\|\ p\|\ P to set inside of
    polygons to the polygon IDs. These may come from OGR aspatial values,
    segment head **-L**\ ID, or a running number, starting at a specified
    origin [0]. Now correctly handles polygons with perimeters and holes.
@@ -1413,7 +1413,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    any of the 36 GMT color tables and scale them to fit the grid range.
 
 *  :doc:`grdvolume` can let **-S** accept more distance units than just km. It also
-   has a modified **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
+   has a modified **-T**\ [**c**\|\ **h**] for ORS estimates based on max
    curvature or height. **-Cr** to compute the *outside* volume between two contours
    (for instances, the volume of water from a bathymetry grid).
 
@@ -1429,7 +1429,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`mapproject` has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
    for inverse conversions. Also, we have extended **-A** to accept
-   **-A**\ **o**\ \| \ **O** to compute line orientations (-90/90).
+   **-A**\ **o**\| \ **O** to compute line orientations (-90/90).
    In **-G**, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.
 
 *  :doc:`project` has added **-G**...[+] so

@@ -75,7 +75,7 @@ Optional Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
-    **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
+    **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
 .. _-F:

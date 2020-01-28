@@ -14,8 +14,8 @@ Synopsis
 
 **gmt grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
-[ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ **+e**\ \|\ **n**]] ]
-[ |-E|\ *dpi* ] [ |-F|\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**\ ] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]
+[ |-D|\ *xinc*\ [*unit*][**+e**\|\ **n**][/\ *yinc*\ [*unit*][**+e**\|\ **n**]] ]
+[ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
@@ -67,7 +67,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*dx/dy*\ ]
+**-C**\ [*dx/dy*]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
     projected units to be added (or subtracted when **-I** is set) to
@@ -76,7 +76,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *xinc*\ [*unit*\ ][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*\ ][\ **+e**\ \|\ **n**]]
+**-D**\ *xinc*\ [*unit*][**+e**\|\ **n**][/\ *yinc*\ [*unit*][**+e**\|\ **n**]]
     Set the grid spacing for the new grid. Append **m** for arc minute,
     **s** for arc second. If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.
@@ -88,9 +88,9 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**\ ]
+**-F**\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
-    actual projected meters [**e**\ ]. To specify other units, append
+    actual projected meters [**e**]. To specify other units, append
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
     (point). Without **-F**, the output (or input, see **-I**) are in
@@ -103,7 +103,7 @@ Optional Arguments
 
 .. _-M:
 
-**-Mc**\ \|\ **i**\ \|\ **p**
+**-Mc**\|\ **i**\|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
     :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-F**.

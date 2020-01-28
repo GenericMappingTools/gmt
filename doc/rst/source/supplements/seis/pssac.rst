@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pssac** [ *saclist*\ \|\ *SACfiles* ] |-J|\ *parameters*
+**gmt pssac** [ *saclist*\|\ *SACfiles* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]

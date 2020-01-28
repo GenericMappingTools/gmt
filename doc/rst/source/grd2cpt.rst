@@ -12,19 +12,19 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**\ ] ]
+**gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
 [ |-L|\ *minlimit/maxlimit* ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [**i**\ \|\ **o**] ]
+[ |-Q|\ [**i**\|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u** ]
+[ |-S|\ **h**\|\ **l**\|\ **m**\|\ **u** ]
 [ |-T|\ *start/stop/inc* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
@@ -83,7 +83,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *transparency*\ [**+a**\ ]
+**-A**\ *transparency*\ [**+a**]
     Sets a constant level of transparency (0-100) for all color slices.
     Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -167,7 +167,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**i**\ \|\ **o**]
+**-Q**\ [**i**\|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
@@ -180,7 +180,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u**
+**-S**\ **h**\|\ **l**\|\ **m**\|\ **u**
     Force the color table to be symmetric about zero (from -*R* to +\ *R*).
     Append flag to set the range *R*: **l** for *R* =\|zmin\|, **u** for *R* =
     \|zmax\|, **m** for *R* = min(\|zmin\|, \|zmax\|), or **h** for *R* =

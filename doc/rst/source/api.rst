@@ -2142,7 +2142,7 @@ API-only modules
 
 There are two general-purpose modules that are not part of the command-line version of
 GMT.  These are the read and write modules.  Both take an option to specify what GMT
-resource is being read of written: **-Tc**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **p**,
+resource is being read of written: **-Tc**\|\ **d**\|\ **g**\|\ **i**\|\ **p**,
 which selects CPT, dataset, grid, image, or PostScript, respectively.  In addition
 both modules accept the *infile* and *outfile* argument for source and destination.  These
 may be actual files of memory locations, of course.

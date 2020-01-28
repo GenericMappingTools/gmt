@@ -15,12 +15,12 @@ Synopsis
 **gmt x2sys_init** *TAG* |-D|\ *fmtfile*
 [ |-E|\ *suffix* ]
 [ |-F| ]
-[ |-G|\ **d**\ \|\ **g** ]
+[ |-G|\ **d**\|\ **g** ]
 [ |-I|\ *dx*\ [/*dy*] ]
-[ |-N|\ **d**\ \|\ **s**\ *unit* ]
+[ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **t**\ \|\ **d**\ *gap* ]
+[ |-W|\ **t**\|\ **d**\ *gap* ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT--| ]
 
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-G:
 
-**-Gd**\ \|\ **g**
+**-Gd**\|\ **g**
     Selects geographical coordinates. Append **d** for discontinuity at
     the Dateline (makes longitude go from -180 to + 180) or **g** for
     discontinuity at Greenwich (makes longitude go from 0 to 360
@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-N:
 
-**-Nd**\ \|\ **s**\ *unit*
+**-Nd**\|\ **s**\ *unit*
     Sets the units used for distance and speed when requested by other
     programs. Append **d** for distance or **s** for speed, then give
     the desired *unit* as **c** (Cartesian userdist or
@@ -119,7 +119,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-Wt**\ \|\ **d**\ *gap*
+**-Wt**\|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap
     (in user units; this is typically seconds [Infinity]), or distance
     (for units, see |-N|) gap [Infinity]) allowed between the two data

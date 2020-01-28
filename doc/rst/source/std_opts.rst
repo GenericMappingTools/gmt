@@ -14,7 +14,7 @@ Common Options
      - Select map projection :ref:`(...) <-J_full>`
    * - **-R**\ *west/east/south/north*\ [*/zmin/zmax*][**+r**][**+u**\ *unit*]
      - Specify region of interest :ref:`(...) <-R_full>`
-   * - **-U**\ [*label*][**+c**][**+j**\ *just*\ ][**+o**\ *dx*/*dy*\ ]
+   * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
      - Plot time-stamp on plot :ref:`(...) <-U_full>`
    * - **-V**\ [*verbosity*]
      - Run in verbose mode :ref:`(...) <-V_full>`
@@ -24,17 +24,17 @@ Common Options
      - Shift plot origin in *y*-direction :ref:`(...) <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
      - Associates aspatial data with columns :ref:`(...) <-aspatial_full>`
-   * - **-bi**\ [*ncols*][*type*][**w**\ ][\ **+l**\ \|\ **b**]
+   * - **-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
      - Select binary input :ref:`(...) <-bi_full>`
-   * - **-bo**\ [*ncols*][*type*][**w**\ ][\ **+l**\ \|\ **b**]
+   * - **-bo**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
      - Select binary output :ref:`(...) <-bo_full>`
-   * - **-c**\ [*row*\ ,\ *col*\ \|\ *index*\ ]
+   * - **-c**\ [*row*\ ,\ *col*\|\ *index*]
      - Advance plot focus to selected (or next) subplot panel :ref:`(...) <-c_full>`
-   * - **-d**\ [**i**\ \|\ **o**]\ *nodata*
+   * - **-d**\ [**i**\|\ **o**]\ *nodata*
      - Replace columns with *nodata* with NaN :ref:`(...) <-d_full>`
    * - **-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
      - Filter data records that match the given pattern :ref:`(...) <-e_full>`
-   * - **-f**\ [**i**\ \|\ **o**]\ *colinfo*
+   * - **-f**\ [**i**\|\ **o**]\ *colinfo*
      - Set formatting of ASCII input or output :ref:`(...) <-f_full>`
    * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**u**][**+n**\|\ **p**]
      - Segment data by detecting gaps :ref:`(...) <-g_full>`
@@ -54,7 +54,7 @@ Common Options
      - Control 3-D perspective view :ref:`(...) <perspective_full>`
    * - **-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
      - Selection of input or output rows :ref:`(...) <-q_full>`
-   * - **-r**\ [**g**\|\ **p**\ ]
+   * - **-r**\ [**g**\|\ **p**]
      - Sets grid registration :ref:`(...) <nodereg_full>`
    * - **-s**\ [*cols*][**+a**\|\ **r**]
      - Control treatment of NaN records :ref:`(...) <-s_full>`

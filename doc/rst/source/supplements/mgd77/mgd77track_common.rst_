@@ -56,7 +56,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ **d**\ \|\ **t**\ \|\ **n**\ *gap*
+**-G**\ **d**\|\ **t**\|\ **n**\ *gap*
     Let successive point separations exceeding **d**\ *gap* (km) or
     **t**\ *gap* (minutes) indicate a break in the track where we should
     not draw a line [no gaps recognized]. Repeat to use both types of
@@ -94,7 +94,7 @@ Optional Arguments
 
 .. _-T:
 
-**-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc*
+**-TT**\|\ **t**\|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc*
     Controls the attributes of the three kinds of markers (**T** for the
     first time marker in a new day, **t** for additional time markers in
     the same day, and **d** for distance markers). For each of these you

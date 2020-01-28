@@ -12,8 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt set** [ |-C| \| |-D|\ [**s**\ \|\ **u**] \|
-|-G|\ *defaultsfile* ] [ **-**\ [**BJRXxYycp**\ ]\ *value* ]
+**gmt set** [ |-C| \| |-D|\ [**s**\|\ **u**] \|
+|-G|\ *defaultsfile* ] [ **-**\ [**BJRXxYycp**]\ *value* ]
 PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ...
 
@@ -53,7 +53,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**s**\ \|\ **u**]
+**-D**\ [**s**\|\ **u**]
     Modify the GMT defaults based on the system settings. Append
     **u** for US defaults or **s** for SI defaults. [**-D** alone gives
     the version selected at compile time]

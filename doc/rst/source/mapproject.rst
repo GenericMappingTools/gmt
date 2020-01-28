@@ -14,19 +14,19 @@ Synopsis
 
 **gmt mapproject** [ *tables* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ **b**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*][**+v**] ]
+[ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*] ]
-[ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
-[ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
+[ |-D|\ **c**\|\ **i**\|\ **p** ]
+[ |-E|\ [*datum*] ] [ |-F|\ [*unit*] ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
 [ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
-[ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
-[ |-Q|\ [**d**\ \|\ **e**] ]
+[ |-N|\ [**a**\|\ **c**\|\ **g**\|\ **m**] ]
+[ |-Q|\ [**d**\|\ **e**] ]
 [ |-S| ]
-[ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
+[ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**] ]
+[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*][**+v**]
+**-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
     with *lon0/lat0*.  **-Af** calculates the (forward) azimuth
     to each data point. Use **-Ab** to get back-azimuth from data points
@@ -117,13 +117,13 @@ Optional Arguments
 
 .. _-D:
 
-**-Dc**\ \|\ **i**\ \|\ **p**
+**-Dc**\|\ **i**\|\ **p**
     Temporarily override :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` and use **c** (cm),
     **i** (inch), or **p** (points) instead. Cannot be used with **-F**.
 
 .. _-E:
 
-**-E**\ [*datum*\ ]
+**-E**\ [*datum*]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
     (add **-I** for the inverse conversion). Append datum ID (see **-Qd**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [*unit*\ ]
+**-F**\ [*unit*]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
@@ -178,7 +178,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**]
+**-N**\ [**a**\|\ **c**\|\ **g**\|\ **m**]
     Convert from geodetic latitudes (using the current ellipsoid; see
     :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from **a**\ uthalic,
@@ -188,7 +188,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**d**\ \|\ **e**]
+**-Q**\ [**d**\|\ **e**]
     List all projection parameters. To only list datums, use **-Qd**. To
     only list ellipsoids, use **-Qe**.
 
@@ -199,7 +199,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**h**\ ]\ *from*\ [/*to*]
+**-T**\ [**h**]\ *from*\ [/*to*]
     Coordinate conversions between datums *from* and *to* using the
     standard Molodensky transformation. Use **-Th** if 3rd input column
     has height above ellipsoid [Default assumes height = 0, i.e., on the
@@ -220,7 +220,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**]
+**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.

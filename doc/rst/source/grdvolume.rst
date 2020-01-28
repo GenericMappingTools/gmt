@@ -15,7 +15,7 @@ Synopsis
 **gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [*unit*] ] [ |-T|\ [**c**\ \|\ **h**] ]
+[ |-S|\ [*unit*] ] [ |-T|\ [**c**\|\ **h**] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
@@ -64,12 +64,12 @@ Optional Arguments
 
 **-S**\ [*unit*]
     For geographical grids, append a unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
+    **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**
     [Default is meter (**e**)].
 
 .. _-T:
 
-**-T**\ [**c**\ \|\ **h**]
+**-T**\ [**c**\|\ **h**]
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height

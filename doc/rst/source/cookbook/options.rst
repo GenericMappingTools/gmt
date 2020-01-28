@@ -132,7 +132,7 @@ data), the boundary coordinates may take on several different formats:
 Geographic coordinates:
     These are longitudes and latitudes and may be given in decimal
     degrees (e.g., -123.45417) or in the
-    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
     format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
     shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
     **-R**\ *-180*/*180*/*-90*/*90*, respectively.
@@ -203,7 +203,7 @@ Relative time coordinates:
 Radians:
     For angular regions (and increments) specified in radians you may use a set of
     forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
-    [±][\ *s*\ ]pi[*f*\ ], where *s* and *f* are any integer or floating point numbers,
+    [±][*s*]pi[*f*], where *s* and *f* are any integer or floating point numbers,
     e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
     of these forms we alert the labeling machinery to look for certain combinations of pi,
     limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
@@ -214,7 +214,7 @@ Other coordinates:
     These are simply any coordinates that are not related to geographic
     or calendar time or relative time and are expected to be simple
     floating point values such as
-    [±]\ *xxx.xxx*\ [**E**\ \|\ **e**\ \|\ **D**\ \|\ **d**\ [±]\ *xx*\ ],
+    [±]\ *xxx.xxx*\ [**E**\|\ **e**\|\ **D**\|\ **d**\ [±]\ *xx*],
     i.e., regular or exponential notations, with the enhancement to understand
     FORTRAN double precision output which may use **D** instead of **E** for
     exponents. These values are simply converted as they are to internal
@@ -313,11 +313,11 @@ will appear centered above the plot frame.
 
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][**+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+s**\ \|\ **S**\ *seclabel*][**+u**\ *unit*]
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
@@ -865,7 +865,7 @@ entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
 stored as options in segment headers be used as the source for the name
 aspatial field. Finally, for output you must append
 +\ **g**\ *geometry*, where *geometry* can be any of
-[**M**]\ **POINT**\ \|\ **LINE**\ \|\ **POLY**; the
+[**M**]\ **POINT**\|\ **LINE**\|\ **POLY**; the
 **M** represent the multi-versions of these three geometries. Use
 upper-case +\ **G** to signal that you want to split any line or polygon
 features that straddle the Dateline.
@@ -895,7 +895,7 @@ double-precision float). In addition, use **x** to skip *n* bytes
 anywhere in the record. For a mixed-type data record you can concatenate
 several [*n*]\ **t** combinations, separated by commas. You may append
 **w** to any of the items to force byte-swapping. Alternatively, append
-**+l**\ \|\ **b** to indicate that the entire data file should be
+**+l**\|\ **b** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
 number of each item in your binary file. Note that *n* may be larger
 than *m*, the number of columns that the GMT program requires to do
@@ -987,8 +987,8 @@ coordinates (latitude, longitude) with absolute calendar coordinates in
 the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**.
 All other columns are assumed to
 have the default, floating point format and need not be set
-individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
-means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
+individually. The shorthand **-f**\ [**i**\|\ **o**]\ **g**
+means **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic
 coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
 which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
@@ -1035,7 +1035,7 @@ column value.
 Header data records: The **-h** option
 --------------------------------------
 
-The **-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+m**\ *segheader*][\ **+r**\ *remark*][\ **+t**\ *title*] option
+The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
 lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
@@ -1075,7 +1075,7 @@ on columns from the physical record. For instance, to use the 4th,
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as given. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][\ **+s**\ *scale*][\ **+o**\ *offset*] to
+Do so by appending [**+l**][**+s**\ *scale*][**+o**\ *offset*] to
 each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
@@ -1243,7 +1243,7 @@ will only read the 2nd data record from each of the segments found.  Note that h
 increase the row counters; only data records do.  Instead of rows you may specify data
 *limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
 data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
-note that when **+c** is used the **+a**\ \|\ **f**\ \|\ **s** have no effect.
+note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
 
 .. _option_nodereg:
 

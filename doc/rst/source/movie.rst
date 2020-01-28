@@ -15,15 +15,15 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
-[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]] ]
-[ |-F|\ *format*\ [**+o**\ *options*\ ]]
+[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]] ]
+[ |-F|\ *format*\ [**+o**\ *options*]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
-[ |-H|\ *factor*\ ]
+[ |-H|\ *factor*]
 [ |-I|\ *includefile* ]
-[ |-K|\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**] ]
+[ |-K|\ [**+i**\|\ **o**]\ *fade*\ [**s**]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
@@ -90,7 +90,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\ \|\ *min*/*max*/*inc*\ [**+n**\ ]\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
@@ -127,7 +127,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\ \|\ **o**]\ *fade*\ [**s**]]
+**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]
     Give *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a PostScript plot layer of dimensions exactly matching the cancas size.
     Control how long it should be displayed with **+d** in number of frames (append *s** for duration in seconds instead) [4s].
@@ -136,7 +136,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format*\ [**+o**\ *options*\ ]
+**-F**\ *format*\ [**+o**\ *options*]
     Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
     **webm** (WebM movie).  You may optionally add additional ffmpeg encoding settings for this format
     via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
@@ -172,7 +172,7 @@ Optional Arguments
 .. _-K:
 
 
-**-K**\ [**+i**\ \|\ **o**]\ *fade*\ [**s**]\ [**+p**]
+**-K**\ [**+i**\|\ **o**]\ *fade*\ [**s**]\ [**+p**]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
     For different lengths of fading in and out you can repeat the **-K** option
@@ -195,12 +195,12 @@ Optional Arguments
     :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
-    used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
+    used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
-    **c**\ \|\ **i**\ \|\ **p** or % of the font size [20% of font size].
+    **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
     If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
@@ -221,7 +221,7 @@ Optional Arguments
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**\ \|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.

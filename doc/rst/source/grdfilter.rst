@@ -16,7 +16,7 @@ Synopsis
 |-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
 |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
-[ |-N|\ **i**\ \|\ **p**\ \|\ **r** ]
+[ |-N|\ **i**\|\ **p**\|\ **r** ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
 [ |SYN_OPT-V| ]
@@ -77,7 +77,7 @@ Required Arguments
 
 .. _-F:
 
-**-Fx**\ *width*\ [/*width2*][*modifiers*\ ]
+**-Fx**\ *width*\ [/*width2*][*modifiers*]
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
@@ -134,7 +134,7 @@ Required Arguments
 
     (**U**) Upper: Return maximum or all negative values only.
 
-    In the case of **L**\ \|\ **U** it is possible that no data passes
+    In the case of **L**\|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return NaN.
 
 .. _-G:
@@ -151,7 +151,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ **i**\ \|\ **p**\ \|\ **r**
+**-N**\ **i**\|\ **p**\|\ **r**
     Determine how NaN-values in the input grid affects the filtered
     output: Append **i** to ignore all NaNs in the calculation of
     filtered value [Default], **r** is same as **i** except if the input
@@ -171,7 +171,7 @@ Optional Arguments
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
-    the input grid]. Alternatively, use **-r**\ [**g**\ \|\ **p**\ ] to
+    the input grid]. Alternatively, use **-r**\ [**g**\|\ **p**] to
     set the registration explicitly.
 
 .. _-V:

@@ -88,7 +88,7 @@ Optional Arguments
 
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
-    stdout, or to a file via **-D**\ ].
+    stdout, or to a file via **-D**].
 
 .. _-R:
 

@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][\ *size*\ [**u**]]
+**-S**\ [*symbol*][*size*\ [**u**]]
     Plot individual symbols.
     If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
@@ -32,20 +32,20 @@
     **-Sa**
         st\ **a**\ r. *size* is diameter of circumscribing circle.
 
-    **-Sb**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
+    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
-        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
+        By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.  Use **+B**\ [*base*\ ] if the bar height is measured relative
+        data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin].
 
-    **-SB**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
+    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
-        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
+        By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.  Use **+B**\ [*base*\ ] if the bar length is measured relative
+        data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin].
 
     **-Sc**

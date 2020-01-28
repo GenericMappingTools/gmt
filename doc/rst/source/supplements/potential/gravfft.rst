@@ -14,10 +14,10 @@ Synopsis
 
 **gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
 [ |-C|\ *n/wavelength/mean\_depth/tbw* ]
-[ |-D|\ *density*\ \|\ *rhogrid* ]
+[ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
-[ |-F|\ [**f**\ [**+s**]\ \|\ **b**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ]
-[ |-I|\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**\ \|\ **k** ]
+[ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
+[ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
@@ -85,7 +85,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *density*\ \|\ *rhogrid*
+**-D**\ *density*\|\ *rhogrid*
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ [**+s**]\ \|\ **b**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
+**-F**\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
@@ -120,14 +120,14 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**\ \|\ **k**
+**-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
     Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
     write it to stdout (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of *ingrd1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
-    three) from **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**.
+    three) from **w**\|\ **b**\|\ **c**\|\ **t**.
     **w** writes wavelength instead of wavenumber, **k**
     selects km for wavelength unit [m], **c** computes coherence instead of
     admittance, **b** writes a fourth column with "loading from below"

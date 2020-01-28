@@ -13,9 +13,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
-[ |-C|\ [**i**\ \|\ **o**] ]
+[ |-C|\ [**i**\|\ **o**] ]
 [ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
-[ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ]
+[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **r**\ [*arg*\|\ **R**\|\ **s**\|\ **x**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -66,7 +66,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **m**\ [*conf*\ ]\|\ *vector*
+**-A**\ **m**\ [*conf*]\|\ *vector*
     Specify a single, primary vector instead of reading *tables*; see
     *tables* for possible vector formats. Alternatively, append **m**
     to read *tables* and set the single, primary vector to be the mean
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**i**\ \|\ **o**]
+**-C**\ [**i**\|\ **o**]
     Select Cartesian coordinates on input and output. Append **i** for
     input only or **o** for output only; otherwise both input and output
     will be assumed to be Cartesian [Default is polar r/theta for 2-D
@@ -106,7 +106,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **x**]
+**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **s**\|\ **r**\ [*arg*\|\ **R**\|\ **x**]
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two

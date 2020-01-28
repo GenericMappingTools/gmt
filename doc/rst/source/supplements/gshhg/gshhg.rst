@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
-[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
+[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-o| ]
@@ -87,7 +87,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qe**\ \|\ **i**
+**-Qe**\|\ **i**
     Control what to do with river-lakes (river sections large enough to
     be stored as closed polygons). Use **-Qe** to exclude them and
     **-Qi** to exclude everything else instead [Default outputs all

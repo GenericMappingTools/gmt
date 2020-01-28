@@ -17,12 +17,12 @@ Synopsis
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *factor* ]
-[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
+[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
 [ |-Q| ]
 [ |-T|\ *title* ]
-[ |-W|\ *cfile*\ \|\ *pen* ]
+[ |-W|\ *cfile*\|\ *pen* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -83,7 +83,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grid*
@@ -124,7 +124,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *cfile*\ \|\ *pen*
+**-W**\ *cfile*\|\ *pen*
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
     If *cfile* is not a valid file we assume you instead gave a *pen* and want

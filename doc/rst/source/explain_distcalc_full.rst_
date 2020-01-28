@@ -1,6 +1,6 @@
 .. _-distcalc_full:
 
-**-je**\ \|\ **f**\ \|\ **g**
+**-je**\|\ **f**\|\ **g**
     Determine how spherical distances are calculated in modules that support this.
     By default (**-jg**), we perform great circle distance calculations and parameters such
     as distance increments or radii will be compared against calculated great

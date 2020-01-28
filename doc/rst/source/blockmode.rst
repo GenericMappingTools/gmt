@@ -17,12 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-D|\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
-[ |-E|\ **r**\ \|\ **s**\ [**+l**\ \|\ **h**\ ] ]
+[ |-D|\ [*width*]\ [**+c**][**+a**\|\ **+l**\|\ **+h** ]
+[ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -70,7 +70,7 @@ Optional Arguments
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
     **-bi**] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
-    data values. [\ *w*] is an optional weight for the data. If no file
+    data values. [*w*] is an optional weight for the data. If no file
     is specified, **blockmode** will read from standard input.
 
 .. _-A:
@@ -80,7 +80,7 @@ Optional Arguments
     Append comma-separated codes for available fields: **z** (the modal
     data z), **s** (the L1 scale of the mode), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
-    Note **s**\ \|\ **l**\ \|\ **h** requires **-E**, and **Es**\ \|\ **r**
+    Note **s**\|\ **l**\|\ **h** requires **-E**, and **Es**\|\ **r**
     cannot be used. [Default is just **z**].
 
 .. _-C:
@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h**]
+**-D**\ [*width*]\ [**+c**][**+a**\|\ **+l**\|\ **+h**]
     Perform unweighted mode calculation via histogram binning, using the
     specified histogram *width*. Append **+c** to center bins so that
     their mid point is a multiple of *width* [uncentered].
@@ -110,13 +110,13 @@ Optional Arguments
     block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-**-E**\ **r**\ \|\ **s**\ [**+l**\ \|\ **h**\ ]
+**-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the modal value. If
     tied then report the record number of the higher of the two values (i.e., **+h** is the default);
     append **+l** to instead report the record number of the lower value.
     Note that **-E** may be repeated so that both both **-E** and
-    **-E**\ **r**\ [**+l**\ \|\ **h**\ ] may be specified.
+    **-E**\ **r**\ [**+l**\|\ **h**] may be specified.
     For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
@@ -142,7 +142,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\ \|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted modal values for each
