@@ -28,7 +28,7 @@ document.
    conversion into your own hands for the best results.
 
 Using GMT modern mode you simply select the format most suitable for your
-purpuse when running :doc:`begin` or :doc:`figure`.
+purpuse when running :doc:`/begin` or :doc:`/figure`.
 
 The remainder of this Chapter will show how to include GMT classicly produced
 PostScript graphics into documents and how to achieve the best quality results.
