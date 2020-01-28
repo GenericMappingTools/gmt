@@ -9,7 +9,7 @@ to a document, an article, a report, your dissertation, a poster, a web
 page, or a presentation. Of course, you could try the old-fashioned
 scissors and glue stick. More likely, you want to incorporate your
 graphics electronically into the document. Depending on the application,
-it is best to set your GMT script to produce the most suitable foramt,
+it is best to set your GMT script to produce the most suitable format,
 such as Encapsulated PostScript (EPS), Portable Document Format (PDF), or some raster
 format (e.g., JPEG, PNG, or TIFF) in order to incorporate them into the
 document.
