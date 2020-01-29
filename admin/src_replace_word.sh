@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # Script to do a simple source-code substitution where we
-# wish to replace one word with another.  E.g.,
+# wish to replace one word with another word throughout all
+# C source and include files.  E.g.,
 #
 # admin/replace.sh GMT_MSG_LONG_VERBOSE GMT_MSG_INFORMATION
 #

@@ -2078,7 +2078,7 @@ progress reports, etc., and are sent to standard error.
     +----------------------+--------------------------------------+
     | GMT_MSG_WARNING      | Warnings                             |
     +----------------------+--------------------------------------+
-    | GMT_MSG_TIMING       | Time usage for slow algorithms       |
+    | GMT_MSG_TICTOC       | Time usage for slow algorithms       |
     +----------------------+--------------------------------------+
     | GMT_MSG_INFORMATION  | Informational messages               |
     +----------------------+--------------------------------------+
