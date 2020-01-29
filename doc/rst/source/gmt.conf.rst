@@ -525,7 +525,7 @@ fonts can be found in the :doc:`gmt` man page.
     programs. Choose among 7 levels; each level adds to the verbosity of
     the lower levels: **q**\ uiet, **e**\ rrors, **w**\ arnings,
     **t**\ imings (for slow algorithms only), **i**\ nformation,
-    **c**\ ompatibility warnings, and **d**\ ebugging messages [w].
+    **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
 
 .. _I/O Parameters:
 
