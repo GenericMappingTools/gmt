@@ -166,7 +166,7 @@ attributes:
 use the special names *lon* (or *x* if Cartesian) and *lat* (or *y*) for
 the two required coordinate columns, *time* when optional absolute time data
 are present, and *rtime* when relative time data are given (make sure the
-GMT defaults **TIME_UNIT** and **TIME_EPOCH** are set properly). Regardless
+GMT defaults :term:`TIME_UNIT` and :term:`TIME_EPOCH` are set properly). Regardless
 of input time flavor, we will write absolute time on output.
 
 *type* is always **a** for ASCII representations of numbers, whereas for

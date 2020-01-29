@@ -1004,7 +1004,7 @@ segmentation. Typically, data segments are separated by multiple segment
 header records (see Chapter :doc:`file_formats`). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
-**IO_NAN_RECORDS** which by default is set to *skip*, meaning such
+:term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
 records are considered bad and simply skipped. If you wish such records
 to indicate a segment boundary then set this parameter to *pass*.
 Finally, you may wish to indicate gaps based on the data values
@@ -1043,7 +1043,7 @@ Thus, *n_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
 records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
-(**IO_N_HEADER_RECS**, by default 0), but can be overridden by
+(:term:`IO_N_HEADER_RECS`, by default 0), but can be overridden by
 **-h**\ *n_header_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
 **-hi** to suppress the writing of header records. You can use the

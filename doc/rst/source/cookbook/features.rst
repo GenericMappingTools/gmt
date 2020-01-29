@@ -403,7 +403,7 @@ Three classes of files are given special treatment in GMT.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
    set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
 
-The user cache (**DIR_CACHE**) and all its contents can be cleared any time
+The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
 can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
 we also check if that file has changed at the server and re-download the updated file;
