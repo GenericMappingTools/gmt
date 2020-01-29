@@ -1108,18 +1108,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					break;
 				case PSL_RNDRECT:
 					if (gmt_M_is_dnan (in[ex3])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					data[n].dim[2] = in[ex3];	/* radius */
 					/* Now fall through to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (gmt_M_is_dnan (in[ex1])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle width = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle width = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle height = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle height = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					data[n].dim[0] = in[ex1];	/* x-dim */
@@ -1128,15 +1128,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				case PSL_ELLIPSE:
 				case PSL_ROTRECT:
 					if (gmt_M_is_dnan (p_in[ex1])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (p_in[ex2])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (p_in[ex3])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
@@ -1186,11 +1186,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[0] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
 					if (gmt_M_is_dnan (data[n].dim[0])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Vector azimuth = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector azimuth = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
@@ -1242,11 +1242,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					data[n].dim[0] = in[ex1+S.read_size];	/* direction */
@@ -1263,7 +1263,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
 					length = fabs (data[n].dim[2]-data[n].dim[1]);	/* Arc length in degrees */
 					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
@@ -1278,11 +1278,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					break;
 				case PSL_WEDGE:
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {
