@@ -679,7 +679,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 					case 'o': Ctrl->C.mode = BLEND_LAST;  break;
 					case 'u': Ctrl->C.mode = BLEND_UPPER; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Modifiers are f|l|o|u only\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C option: Modifiers are f|l|o|u only\n");
 						n_errors++;
 						break;
 				}
@@ -693,7 +693,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 						case '+':  Ctrl->C.sign = +1; break;
 						case '\0': Ctrl->C.sign =  0; break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C%c option: Sign modifiers are +n|p\n", opt->arg[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C%c option: Sign modifiers are +n|p\n", opt->arg[0]);
 							n_errors++;
 							break;
 					}
@@ -713,7 +713,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 				if (opt->arg[0])
 					Ctrl->N.nodata = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -821,7 +821,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	}
 
 	if ((err = gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false)) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file);
+		GMT_Report (API, GMT_MSG_ERROR, "%s [%s]\n", GMT_strerror(err), Ctrl->G.file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	HH = gmt_get_H_hidden (Grid->header);
@@ -832,7 +832,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	reformat = found_unsupported_format (GMT, Grid->header, Ctrl->G.file);
 	type = GMT->session.grdformat[Grid->header->type][0];
 	if (Ctrl->Q.active && (reformat || (type == 'c' || type == 'n'))) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Not supported for grid format %s\n", GMT->session.grdformat[Grid->header->type]);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Not supported for grid format %s\n", GMT->session.grdformat[Grid->header->type]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

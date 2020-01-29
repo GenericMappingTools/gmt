@@ -277,8 +277,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s, t and z\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Option -E: Choose among c, d, g, h, s, t and z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -345,7 +345,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C must specify a single column name\n");
 		x2sys_end (GMT, S);
 		Return (GMT_RUNTIME_ERROR);
 	}

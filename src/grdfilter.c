@@ -726,7 +726,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					Ctrl->D.mode = (opt->arg[0] == 'p') ? GRDFILTER_XY_PIXEL : atoi (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -D<mode>, where mode is one of %s\n", GRDFILTER_MODES);
+					GMT_Report (API, GMT_MSG_ERROR, "Expected -D<mode>, where mode is one of %s\n", GRDFILTER_MODES);
 					n_errors++;
 				}
 				break;
@@ -745,7 +745,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F%c: Cannot access filter weight grid %s\n",
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F%c: Cannot access filter weight grid %s\n",
 								            Ctrl->F.filter, &opt->arg[1]);
 								n_errors++;
 							}
@@ -761,7 +761,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							c[0] = '\0';	/* Hide modifiers */
 						}
 						if (sscanf (&txt[1], "%[^/]/%s", a, b) != 2) {	/* Get filter width and bin width */
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Fh: Must supply <filterwidth>/<binwidth>\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Fh: Must supply <filterwidth>/<binwidth>\n");
 							n_errors++;
 						}
 						else {	/* Ok to parse the strings */
@@ -777,7 +777,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							if ((p = strstr (c, "+s"))) {
 								Ctrl->F.span = atof (&c[2]) / 100.0;	/* Got span in percent */
 								if (Ctrl->F.span <= 0.0 || Ctrl->F.span > 0.5) {
-									GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Fp: Span must be in 0-0.5 range\n");
+									GMT_Report (API, GMT_MSG_ERROR, "Option -Fp: Span must be in 0-0.5 range\n");
 									n_errors++;
 								}
 							}
@@ -802,7 +802,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							Ctrl->F.highpass = true;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Filter width cannot be negative\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Filter width cannot be negative\n");
 							n_errors++;
 						}
 					}
@@ -818,7 +818,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -Fx<width>, where x is one of %s\n", GRDFILTER_FILTERS);
+					GMT_Report (API, GMT_MSG_ERROR, "Expected -Fx<width>, where x is one of %s\n", GRDFILTER_FILTERS);
 					n_errors++;
 				}
 				break;
@@ -844,7 +844,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						Ctrl->N.mode = NAN_PRESERVE;	/* Preserve */
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -Ni|p|r\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Expected -Ni|p|r\n");
 						n_errors++;
 						break;
 				}
@@ -859,28 +859,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Choose from p or 0-5\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Choose from p or 0-5\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.mode < GRDFILTER_XY_PIXEL || Ctrl->D.mode > GRDFILTER_GEO_MERCATOR),
-				"Syntax error -D option: Choose from p or 0-5\n");
+				"Option -D: Choose from p or 0-5\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && Ctrl->F.rect,
-				"Syntax error -F option: Rectangular Cartesian filtering requires -Dp|0\n");
+				"Option -F: Rectangular Cartesian filtering requires -Dp|0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && Ctrl->F.custom,
-				"Syntax error -Ff|o option: Custom Cartesian convolution requires -D0\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F option is required:\n");
+				"Option -Ff|o: Custom Cartesian convolution requires -D0\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F is required:\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.quantile < 0.0 || Ctrl->F.quantile > 1.0 ,
-				"Syntax error: The quantile must be in the 0-1 range.\n");
+				"Option -F: The quantile must be in the 0-1 range.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0,
-				"Syntax error -F option: filter fullwidth must be nonzero.\n");
+				"Option -F: filter fullwidth must be nonzero.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.rect && Ctrl->F.width2 <= 0.0,
-				"Syntax error -F option: Rectangular y-width filter must be nonzero.\n");
+				"Option -F: Rectangular y-width filter must be nonzero.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
-				"Syntax error -I option: Must specify positive increment(s)\n");
+				"Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && GMT->common.R.active[ISET] && Ctrl->F.highpass,
-				"Syntax error -F option: Highpass filtering requires original -R -I\n");
+				"Option -F: Highpass filtering requires original -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active,
-						"Syntax error -T option: Cannot give both -T and -r\n");
+						"Cannot give both -T and -r\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -955,13 +955,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -Dp requires filter width given as an odd number of pixels\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Dp requires filter width given as an odd number of pixels\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
 			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -Dp requires filter y-width given as an odd number of pixels\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Dp requires filter y-width given as an odd number of pixels\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
@@ -1012,7 +1012,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	same_grid = !(GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || Gin->header->registration == one_or_zero);
 	if (!fast_way && !Ctrl->F.varwidth) {	/* Not optimal... */
 		if (Ctrl->F.custom) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: For -Ff or -Fo the input and output grids must be coregistered.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: For -Ff or -Fo the input and output grids must be coregistered.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_WARNING, "Your output grid spacing is such that filter-weights must\n");

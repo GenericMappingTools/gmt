@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 					Ctrl->In.file= strdup (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot find input file %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Cannot find input file %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 						if (opt->arg[1]) Ctrl->A.value =  atof (&opt->arg[1]);
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -161,7 +161,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Specify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "ecify only one output file\n");
 					n_errors++;
 				}
 				else
@@ -180,8 +180,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Syntax error: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Must specify output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

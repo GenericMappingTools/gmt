@@ -6075,7 +6075,7 @@ int gmt_parse_z_io (struct GMT_CTRL *GMT, char *txt, struct GMT_PARSE_Z_IO *z) {
 				z->format[k++] = txt[start];
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Z: Must begin with [TBLR][TBLR]!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Must begin with [TBLR][TBLR]!\n");
 				return (GMT_PARSE_ERROR);
 				break;
 		}
@@ -6099,7 +6099,7 @@ int gmt_parse_z_io (struct GMT_CTRL *GMT, char *txt, struct GMT_PARSE_Z_IO *z) {
 				if (txt[i]) {	/* Read the byte count for skipping */
 					value = atoi (&txt[i]);
 					if (value < 0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Z: Skip must be positive\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Skip must be positive\n");
 						return (GMT_PARSE_ERROR);
 					}
 					z->skip = value;
@@ -6129,7 +6129,7 @@ int gmt_parse_z_io (struct GMT_CTRL *GMT, char *txt, struct GMT_PARSE_Z_IO *z) {
 				break;
 
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Z: %c not a valid modifier!\n", txt[i]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: %c not a valid modifier!\n", txt[i]);
 				return (GMT_PARSE_ERROR);
 				break;
 		}
@@ -6264,14 +6264,14 @@ int gmt_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT_
 				if (first) r->format = GMT_IS_COL_FORMAT;
 				r->x_step = -1;	first = false;	break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Z: %c not a valid format specifier!\n", format[k]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: %c not a valid format specifier!\n", format[k]);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
 	}
 
 	if (!strchr ("AacuhHiIlLfd", type)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Z: %c not a valid data type!\n", type);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: %c not a valid data type!\n", type);
 		GMT_exit (GMT, GMT_NOT_A_VALID_TYPE); return GMT_NOT_A_VALID_TYPE;
 
 	}

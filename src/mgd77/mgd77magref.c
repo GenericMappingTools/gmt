@@ -396,11 +396,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0)
 		GMT->common.b.ncol[GMT_IN] = n_out;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
-			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
+			"Binary input data (-bi) must have at least %d columns\n", n_out);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr,
-			"Syntax error: You cannot select both -F and -L options\n");
+			"You cannot select both -F and -L options\n");
 	n_errors += gmt_M_check_condition (GMT, (do_CM4core && Ctrl->do_IGRF) || (do_CM4core && Ctrl->joint_IGRF_CM4),
-			"Syntax error: You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
+			"You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -481,7 +481,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			}
 			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) &&
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error: In mix CM4/IGRF mode -F option can only be -Ft[r]/... or -Fxyz[r]/...\n");
+				GMT_Report (API, GMT_MSG_ERROR, "In mix CM4/IGRF mode -F option can only be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;
 			}
 

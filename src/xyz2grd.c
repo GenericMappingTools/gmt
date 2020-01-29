@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 					Ctrl->A.mode = 'z';
 				}
 				else if (!strchr ("dflmnrSsuz", opt->arg[0])) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Select -Ad, -Af, -Al, -Am, -An, -Ar, -AS, -As, -Au, or -Az\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Select -Ad, -Af, -Al, -Am, -An, -Ar, -AS, -As, -Au, or -Az\n");
 					n_errors++;
 				}
 				else {
@@ -228,7 +228,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 						n_errors += gmt_parse_d_option (GMT, arg);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Must specify value or NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
 						n_errors++;
 					}
 				}
@@ -256,10 +256,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 		n_errors += gmt_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Option -S: Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */
 		if (n_files > 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -S can only handle one input file\n");
+			GMT_Report (API, GMT_MSG_ERROR, "-S can only handle one input file\n");
 			n_errors++;
 		}
 		else {
@@ -280,10 +280,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 
 	do_grid = !(Ctrl->S.active || Ctrl->E.active);
 	if (do_grid) {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file\n");
 	n_req = (Ctrl->Z.active) ? 1 : ((Ctrl->A.mode == 'n') ? 2 : 3);
 	n_errors += gmt_check_binary_io (GMT, n_req);
 

@@ -653,7 +653,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 
 	current = *head;
 	if (current && current->option < 0) {
-		GMT_Report(API, GMT_MSG_ERROR, "WARNING in GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
+		GMT_Report(API, GMT_MSG_ERROR, "GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
 		*head = NULL;
 		return (GMT_OK);	/* Should we return an error state instead? */
 	}

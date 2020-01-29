@@ -661,7 +661,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				Ctrl->In.active = true;
 				if (Ctrl->In.n_grids >= 2) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
 				else if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
@@ -674,19 +674,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'A':	/* Directional derivative */
 				Ctrl->A.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
-						"Syntax error -A option: Cannot read azimuth\n");
+						"Option -A: Cannot read azimuth\n");
 				add_operation (GMT, Ctrl, GRDFFT_AZIMUTHAL_DERIVATIVE, 1, par);
 				break;
 			case 'C':	/* Upward/downward continuation */
 				Ctrl->C.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
-						"Syntax error -C option: Cannot read zlevel\n");
+						"Option -C: Cannot read zlevel\n");
 				add_operation (GMT, Ctrl, GRDFFT_UP_DOWN_CONTINUE, 1, par);
 				break;
 			case 'D':	/* d/dz */
 				Ctrl->D.active = true;
 				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
-				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
+				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -D: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical, n for normalize */
@@ -730,7 +730,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);
 				}
-				n_errors += gmt_M_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Syntax error -F option");
+				n_errors += gmt_M_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Option -F");
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -739,7 +739,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'I':	/* Integrate */
 				Ctrl->I.active = true;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
+				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -I: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
 			case 'L':	/* Leave trend alone */
@@ -779,7 +779,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 					n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 					for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
 					n_errors += gmt_M_check_condition (GMT, n_scan != 5 || k > 0,
-						"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
+						"Option -T: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
 					add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
 				}
 				else
@@ -805,10 +805,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	if (Ctrl->N.info && gmt_M_compat_check (GMT, 4) && Ctrl->T.active)
 		Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count), "Must specify at least one operation\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale == 0.0, "Option -S: scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

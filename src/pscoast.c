@@ -368,12 +368,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			case 'I':
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -I option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
 				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: usage is -I<feature>[/<pen>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: usage is -I<feature>[/<pen>]\n");
 					n_errors++;
 					continue;
 				}
@@ -406,7 +406,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					default:
 						ks = atoi (opt->arg);
 						if (ks < 0 || ks >= GSHHS_N_RLEVELS) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -433,12 +433,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			case 'N':
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -N option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
 				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: usage is -N<feature>[/<pen>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: usage is -N<feature>[/<pen>]\n");
 					n_errors++;
 					continue;
 				}
@@ -456,7 +456,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					default:
 						ks = opt->arg[0] - '1';
 						if (ks < 0 || ks >= GSHHS_N_BLEVELS) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -568,45 +568,45 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Syntax error: Cannot combine -E -M with -W\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Syntax error: Cannot combine -E -M with -G\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Syntax error: Cannot combine -E -M with -I\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->N.active, "Syntax error: Cannot combine -E -M with -N\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Cannot combine -E -M with -W\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Cannot combine -E -M with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Cannot combine -E -M with -I\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->N.active, "Cannot combine -E -M with -N\n");
 		if (Ctrl->E.active) Ctrl->E.info.mode |= GMT_DCW_DUMP;	/* -M -E combo means dump DCW data */
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.pen[k].width < 0.0,
-		                                 "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
+		                                 "Option -W: Pen thickness for feature %d cannot be negative\n", k);
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files allowed\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping,
-	                                 "Syntax error: Cannot combine -C, -G, -S while clipping\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
+	                                 "Cannot combine -C, -G, -S while clipping\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Must choose between clipping land OR water\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active),
-	                                 "Syntax error: Must choose between dumping and clipping/plotting\n");
+	                                 "Must choose between dumping and clipping/plotting\n");
 	n_errors += gmt_M_check_condition (GMT, clipping && GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
 	                                 GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0,
-	                                 "-JE not implemented for global clipping - I quit\n");
+	                                 "Option -JE not implemented for global clipping - I quit\n");
 	n_errors += gmt_M_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active),
 	                                 "Cannot do clipping AND draw coastlines, rivers, or borders\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
 	                                 Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active),
-	                                 "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	                                 "Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
-	                                 "Syntax error -M: Must specify one of -E, -I, -N, and -W\n");
+	                                 "Option -M: Must specify one of -E, -I, -N, and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
-	                                 "Syntax error: -F is only allowed with -L and -T\n");
+	                                 "Option: -F is only allowed with -L and -T\n");
 
 	if (Ctrl->I.active) {	/* Generate list of desired river features in sorted order */
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
 			if (!Ctrl->I.use[k]) continue;
 			n_errors += gmt_M_check_condition (GMT, Ctrl->I.pen[k].width < 0.0,
-			                                 "Syntax error -I option: Pen thickness cannot be negative\n");
+			                                 "Option -I: Pen thickness cannot be negative\n");
 			Ctrl->I.list[Ctrl->I.n_rlevels++] = k;	/* Since goes from 0-10 */
 		}
 	}
@@ -615,7 +615,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		for (k = Ctrl->N.n_blevels = 0; k < GSHHS_N_BLEVELS; k++) {
 			if (!Ctrl->N.use[k]) continue;
 			n_errors += gmt_M_check_condition (GMT, Ctrl->N.pen[k].width < 0.0,
-			                                 "Syntax error -N option: Pen thickness cannot be negative\n");
+			                                 "Option -N: Pen thickness cannot be negative\n");
 			Ctrl->N.list[Ctrl->N.n_blevels++] = k + 1;	/* Add one so we get range 1-3 */
 		}
 	}

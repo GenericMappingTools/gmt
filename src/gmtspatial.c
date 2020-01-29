@@ -1017,18 +1017,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				}
 				if (strstr (s, "++") || (s[0] && s[strlen(s)-1] == '+')) {	/* Deal with the old-style single "+" to mean header */
 					Ctrl->Q.header = true;
-					GMT_Report (API, GMT_MSG_ERROR, "Warning:-Q+ is interpreted as -Q+h\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Option -Q+ is interpreted as -Q+h\n");
 				}
 				break;
 			case 'S':	/* Spatial polygon operations */
 				Ctrl->S.active = true;
 				if (opt->arg[0] == 'u') {
 					Ctrl->S.mode = POL_UNION;
-					GMT_Report (API, GMT_MSG_ERROR, "Su not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Su not implemented yet\n");
 				}
 				else if (opt->arg[0] == 'i') {
 					Ctrl->S.mode = POL_INTERSECTION;
-					GMT_Report (API, GMT_MSG_ERROR, "Si not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Si not implemented yet\n");
 				}
 				else if (opt->arg[0] == 's')
 					Ctrl->S.mode = POL_SPLIT;
@@ -1036,7 +1036,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					Ctrl->S.mode = POL_HOLE;
 				else if (opt->arg[0] == 'j') {
 					Ctrl->S.mode = POL_JOIN;
-					GMT_Report (API, GMT_MSG_ERROR, "Sj not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Sj not implemented yet\n");
 				}
 				else
 					n_errors++;
@@ -1135,7 +1135,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_WARNING, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -1276,7 +1276,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write points of NN info to stdout */
 		}
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			d_bar /= n_points;
 			if (GMT->common.R.active[RSET]) {
 				int geo = gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0;
@@ -1290,10 +1290,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				gmt_free_segment (GMT, &S);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
-				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
+				GMT_Report (API, GMT_MSG_INFORMATION, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
 			}
 			else
-				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
+				GMT_Report (API, GMT_MSG_INFORMATION, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
 
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -1957,7 +1957,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}

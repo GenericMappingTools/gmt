@@ -275,7 +275,7 @@ int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 	int day_offset, yearm1;
 
 	if (gm < 1 || gm > 12 || gd < 1 || gd > 31) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: gmt_rd_from_gymd given bad month (%d) or day (%d).\n", gm, gd);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_rd_from_gymd given bad month (%d) or day (%d).\n", gm, gd);
 		return 0;
 	}
 
@@ -442,7 +442,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 	int retval = 0;
 
 	if (step < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps must be positive.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps must be positive.\n");
 		return (-1);
 	}
 
@@ -452,33 +452,33 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				if (step > 60) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in seconds must be <= 60\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
 					retval = -1;
 				}
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Unrecognized time axis unit.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
 				retval = -1;
 			}
 			break;
 		case 's':
 		case 'S':
 			if (step > 60) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in seconds must be <= 60\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'm':
 		case 'M':
 			if (step > 60) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in minutes must be <= 60\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in minutes must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'h':
 		case 'H':
 			if (step > 24) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in hours must be <= 24\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in hours must be <= 24\n");
 				retval = -1;
 			}
 			break;
@@ -489,14 +489,14 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			/* The letter d is used for both days of the month and days of the (Gregorian) year */
 			if (GMT->current.plot.calclock.date.day_of_year) {
 				if (step > 365) {	/* This is probably an error.  */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in year days must be <= 365\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in year days must be <= 365\n");
 					retval = -1;
 				}
 			}
 			else {
 				/* If step is longer than 31 it is probably an error. */
 				if (step > 31) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in days of the month must be <= 31\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in days of the month must be <= 31\n");
 					retval = -1;
 				}
 			}
@@ -504,28 +504,28 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'k':
 		case 'K':
 			if (step > 7) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in weekdays must be <= 7\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weekdays must be <= 7\n");
 				retval = -1;
 			}
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
 			if (step != 1) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time step must be 1 for Gregorian weeks\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time step must be 1 for Gregorian weeks\n");
 				retval = -1;
 			}
 			break;
 		case 'u':	/* ISO week */
 		case 'U':
 			if (step > 52) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in weeks must be <= 52\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weeks must be <= 52\n");
 				retval = -1;
 			}
 			break;
 		case 'o':
 		case 'O':
 			if (step > 12) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: time steps in months must be <= 12\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in months must be <= 12\n");
 				retval = -1;
 			}
 			break;
@@ -536,7 +536,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'p':
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Unrecognized time axis unit.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
 			retval = -1;
 			break;
 	}

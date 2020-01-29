@@ -3863,7 +3863,7 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 			}
 		}
 		if (n_duplicates) {	/* Clearly not monotonically increasing or decreasing in x */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "WARNING: Bug Report Advice for Watson ACORD External Code:\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bug Report Advice for Watson ACORD External Code:\n");
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The Watson algorithm can fail if there are duplicate (x,y) records.\n");
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "We found %" PRIu64 " duplicate records in your data set.\n", n_duplicates);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please remove duplicates and redo your analysis if the results are corrupted.\n");
@@ -4045,17 +4045,17 @@ GMT_LOCAL int support_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char opt
 				case 'c':	/* Got inset center */
 					center = true;
 					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Must specify +c<lon>/<lat> for center [Also note this is obsolete syntax]\n", option);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Must specify +c<lon>/<lat> for center [Also note this is obsolete syntax]\n", option);
 						return (1);
 					}
 					break;
 				case 'g':	/* Fill specification [Obsolete, now done via panel attributes ] */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Warning -%c option:  Insert fill attributes now given with panel setting (-F)\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Insert fill attributes now given with panel setting (-F)\n", option);
 					strcat (panel_txt, "+g");
 					strcat (panel_txt, &p[1]);
 					break;
 				case 'p':	/* Pen specification [Obsolete, now done via panel attributes ] */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Warning -%c option:  Insert pen attributes now given with panel setting (-F)\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Insert pen attributes now given with panel setting (-F)\n", option);
 					strcat (panel_txt, "+p");
 					strcat (panel_txt, &p[1]);
 					break;
@@ -4109,7 +4109,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	char txt_sx[GMT_LEN256] = {""}, txt_sy[GMT_LEN256] = {""}, txt_len[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 
 	if (!text) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error %c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 
@@ -4144,7 +4144,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	}
 	else {	/* Wrong number of slashes */
 		error++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Not enough arguments given, including no width\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Not enough arguments given, including no width\n", option);
 		return (error);
 	}
 	i = (int)strlen (txt_len) - 1;
@@ -4157,7 +4157,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 		if (strchr (GMT_LEN_UNITS2, ms->measure))	/* Gave a valid distance unit */
 			txt_len[i] = '\0';
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
 			error++;
 		}
 	}
@@ -4168,27 +4168,27 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
 	if ((ms->refpoint = gmt_get_refpoint (GMT, string, option)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error:  Scale reference point was not accepted\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Scale reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
 	}
 
 	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->origin[GMT_Y]), txt_sy);
 	if (fabs (ms->origin[GMT_Y]) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Latitude where scale should apply is out of range\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Latitude where scale should apply is out of range\n", option);
 		error++;
 	}
 	if (k == 5)	{/* Must also decode longitude of scale */
 		error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_sx, GMT_IS_LON, &ms->origin[GMT_X]), txt_sx);
 		if (fabs (ms->origin[GMT_X]) > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Scale longitude is out of range\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale longitude is out of range\n", option);
 			error++;
 		}
 	}
 	else		/* Default to central meridian [this will be the result if we assign NaN here] */
 		ms->origin[GMT_X] = GMT->session.d_NaN;
 	if (ms->length <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Length must be positive\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Length must be positive\n", option);
 		error++;
 	}
 
@@ -4277,7 +4277,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	 */
 
 	if (!text[0]) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error %c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 
@@ -4311,7 +4311,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	if (plus > 0) {		/* Get annotation interval(s) */
 		k = sscanf (&text[plus], "%lf/%lf/%lf/%lf/%lf/%lf", &ms->a_int[1], &ms->f_int[1], &ms->g_int[1], &ms->a_int[0], &ms->f_int[0], &ms->g_int[0]);
 		if (k < 1) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Give annotation interval(s)\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Give annotation interval(s)\n", option);
 			error++;
 		}
 		if (k == 3) ms->a_int[0] = ms->a_int[1], ms->f_int[0] = ms->f_int[1], ms->g_int[0] = ms->g_int[1];
@@ -4320,7 +4320,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
 		for (k = colon; text[k] && text[k] != ':'; k++);	/* Look for terminating colon */
 		if (text[k] != ':') { /* Ran out, missing terminating colon */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Labels must be given in format :w,e,s,n:\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Labels must be given in format :w,e,s,n:\n", option);
 			error++;
 			return (error);
 		}
@@ -4337,7 +4337,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 			ms->do_label = false;
 		}
 		else if (k != 4) {	/* Ran out of labels */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Labels must be given in format :w,e,s,n:\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Labels must be given in format :w,e,s,n:\n", option);
 			error++;
 		}
 		text[colon-1] = '\0';	/* Break string so sscanf won't get confused later */
@@ -4347,7 +4347,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	if (ms->type == GMT_ROSE_MAG) {	/* Magnetic rose */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Correct syntax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Correct syntax\n", option);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "\t-%c[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n", option);
 			error++;
 		}
@@ -4365,7 +4365,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%d", txt_a, txt_b, txt_c, &ms->kind);
 		if (k == 3) ms->kind = 1;
 		if (k < 3 || k > 4) {	/* Wrong number of parameters */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Correct syntax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Correct syntax\n", option);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "\t-%c[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n", option);
 			error++;
 		}
@@ -4377,18 +4377,18 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
 	if ((ms->refpoint = gmt_get_refpoint (GMT, string, option)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error:  Map rose reference point was not accepted\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map rose reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */
 	}
 	ms->justify = PSL_MC;	/* Center it is */
 	ms->size = gmt_M_to_inch (GMT, txt_c);
 	if (ms->size <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Size must be positive\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Size must be positive\n", option);
 		error++;
 	}
 	if (ms->kind < 1 || ms->kind > 3) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  <kind> must be 1, 2, or 3\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  <kind> must be 1, 2, or 3\n", option);
 		error++;
 	}
 
@@ -5337,7 +5337,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Dataset does not have at least 2 columns with coordinates\n");
 		return (NULL);
 	}
 
@@ -5486,7 +5486,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Dataset does not have at least 2 columns with coordinates\n");
 		return (NULL);
 	}
 
@@ -6530,7 +6530,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 						case 'f':   P->cptmode = 2; break;
 						case '\0':  P->cptmode = 3; break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error parsing pen modification +%s\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure parsing pen modification +%s\n", p);
 							return false;
 						break;
 					}
@@ -6568,7 +6568,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 						sscanf (v_args[n], "%[^+]%s", T[BEG], T[END]);
 						P->end[n].V->size_x = gmt_M_to_inch (GMT, T[BEG]);
 						if (gmt_parse_vector (GMT, 'v', T[END], P->end[n].V)) {	/* Error decoding new vector syntax */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error parsing vector specifications %s\n", T[END]);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure parsing vector specifications %s\n", T[END]);
 							return false;
 						}
 						if (P->end[n].V->v.status & PSL_VEC_BEGIN) P->end[n].V->v.status -= PSL_VEC_BEGIN;	/* Always at end in this context */
@@ -9230,7 +9230,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'x':	/* Crossection labeling for SqN2 only; add given text to start and end label */
 				if (!G->number || G->n_cont != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -Sq option: The +x modifier is only valid with -SqN2\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sq: The +x modifier is only valid with -SqN2\n");
 					bad++;
 				}
 				else {
@@ -9313,11 +9313,11 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
 			if (k == 2) L->min_dist = gmt_M_to_inch (GMT, txt_a);
 			if (L->n_cont == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Number of labels must exceed zero\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Number of labels must exceed zero\n", L->flag);
 				error++;
 			}
 			if (L->min_dist < 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Minimum label separation cannot be negative\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Minimum label separation cannot be negative\n", L->flag);
 				error++;
 			}
 			break;
@@ -9326,7 +9326,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
 			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->flag, L->file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read fixed point file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
@@ -9337,7 +9337,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->flag, L->file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read crossing line file %s\n", L->flag, L->file);
 				error++;
 			}
 			break;
@@ -9357,16 +9357,16 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			else
 				L->label_dist_spacing = gmt_M_to_inch (GMT, &txt_a[1]);
 			if (L->label_dist_spacing <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Spacing between labels must exceed 0.0\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Spacing between labels must exceed 0.0\n", L->flag);
 				error++;
 			}
 			if (L->label_dist_frac < 0.0 || L->label_dist_frac > 1.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Initial label distance fraction must be in 0-1 range\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Initial label distance fraction must be in 0-1 range\n", L->flag);
 				error++;
 			}
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Unrecognized modifier %c\n", L->flag, txt[0]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier %c\n", L->flag, txt[0]);
 			error++;
 			break;
 	}
@@ -9525,11 +9525,11 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
 			if (k == 2) L->min_dist = gmt_M_to_inch (GMT, txt_a);
 			if (L->n_cont == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Number of symbols must exceed zero\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Number of symbols must exceed zero\n", L->flag);
 				error++;
 			}
 			if (L->min_dist < 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Minimum symbols separation cannot be negative\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Minimum symbols separation cannot be negative\n", L->flag);
 				error++;
 			}
 			break;
@@ -9538,7 +9538,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read fixed point file %s\n", L->file);
 				error++;
 			}
 			break;
@@ -9549,7 +9549,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			L->crossing = GMT_DECORATE_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
 			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read crossing line file %s\n", L->file);
 				error++;
 			}
 			break;
@@ -9569,16 +9569,16 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			else
 				L->symbol_dist_spacing = gmt_M_to_inch (GMT, &txt_a[1]);
 			if (L->symbol_dist_spacing <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Spacing between symbols must exceed 0.0\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Spacing between symbols must exceed 0.0\n", L->flag);
 				error++;
 			}
 			if (L->symbol_dist_frac < 0.0 || L->symbol_dist_frac > 1.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Initial symbols distance fraction must be in 0-1 range\n", L->flag);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Initial symbols distance fraction must be in 0-1 range\n", L->flag);
 				error++;
 			}
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Unrecognized modifier %c\n", L->flag, txt[0]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier %c\n", L->flag, txt[0]);
 			error++;
 			break;
 	}
@@ -9655,11 +9655,11 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			}
 			/* Some sanity checking to make correct combos of modifiers are given */
 			if (((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT)) && (p_mode & GMT_GOT_LENGTH) == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Modifiers +a and +o requires +l<length>\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Modifiers +a and +o requires +l<length>\n", option);
 				error++;
 			}
 			if ((p_mode & GMT_GOT_RADIUS) && !((p_mode & GMT_GOT_NP) || (p_mode & GMT_GOT_INC))) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Modifies +r requires +i<inc> or +n<np>\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Modifies +r requires +i<inc> or +n<np>\n", option);
 				error++;
 			}
 			p[s] = '\0';	/* Chop off for now */
@@ -9709,7 +9709,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				}
 				else {
 					error++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  z+ option not applicable here\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  z+ option not applicable here\n", option);
 				}
 			}
 			else if (S->data[GMT_X][n] == -DBL_MAX) {	/* Meant zmin location */
@@ -9719,7 +9719,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				}
 				else {
 					error++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  z- option not applicable here\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  z- option not applicable here\n", option);
 				}
 			}
 		}
@@ -9727,7 +9727,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			gmt_M_free (GMT, T->segment);
 			gmt_M_free (GMT, T);
 			gmt_free_segment (GMT, &S);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
 			return (NULL);
 		}
 		if (p_mode & GMT_GOT_AZIM) {		/* Got center and azimuth of line; determine a suitable end point */
@@ -9830,7 +9830,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
 	if (G->dist_kind == 1 && gmt_M_is_cartesian (GMT, GMT_IN)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}
 
@@ -9844,11 +9844,11 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
 		else if (G->X->n_columns < 2 || G->X->n_records < 2) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
 			GMT_Destroy_Data (GMT, &(G->X));
 			error++;
 		}
@@ -9879,7 +9879,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
@@ -9903,14 +9903,14 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 		G->f_n = (unsigned int)k;
 		if ((G->f_n = (unsigned int)k) == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Fixed position file %s does not have any data records\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Fixed position file %s does not have any data records\n",
 				G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
 				G->flag, G->file);
 	}
 
@@ -9937,18 +9937,18 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	}
 	if (G->label_type == GMT_LABEL_IS_FFILE && !G->fixed) {	/* Requires fixed file */
 		error++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Labeling option +Lf requires the fixed label location setting\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Labeling option +Lf requires the fixed label location setting\n", G->flag);
 	}
 	if (G->label_type == GMT_LABEL_IS_XFILE && G->crossing != GMT_CONTOUR_XCURVE) {	/* Requires cross file */
 		error++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Labeling option +Lx requires the crossing lines setting\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Labeling option +Lx requires the crossing lines setting\n", G->flag);
 	}
 	if (G->spacing && G->dist_kind == 1 && G->label_type == GMT_LABEL_IS_MDIST && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
 	if ((G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) && gmt_M_is_cartesian (GMT, GMT_IN)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}
 	if (G->angle_type == 0)
@@ -9965,11 +9965,11 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
 		else if (G->X->n_columns < 2 || G->X->n_records < 2) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
 			GMT_Destroy_Data (GMT, &(G->X));
 			error++;
 		}
@@ -10001,7 +10001,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
@@ -10026,7 +10026,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			}
 		}
 		if ((G->f_n = (unsigned int)k) == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Fixed position file %s does not have any data records\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Fixed position file %s does not have any data records\n",
 			            G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
@@ -10034,7 +10034,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			if (G->f_label) gmt_M_free (GMT, G->f_label);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
 			            G->flag, G->file);
 	}
 
@@ -12023,7 +12023,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	struct GMT_MAP_PANEL *save_panel = B->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
 	if (!in_text || in_text[0] == '\0') {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option %c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	gmt_M_memset (B, 1, struct GMT_MAP_INSET);
@@ -12039,7 +12039,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 		char *q[2] = {NULL, NULL};
 		size_t len;
 		if ((B->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error:  Map inset reference point was not accepted\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map inset reference point was not accepted\n", option);
 			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 			return (1);	/* Failed basic parsing */
 		}
@@ -12050,7 +12050,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 		/* Required modifier +w */
 		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
 			if (string[0] == '\0') {	/* Got nutin' */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No dimensions given to +w modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No dimensions given to +w modifier\n", option);
 				error++;
 			}
 			else {	/* Gave some arguments */
@@ -12073,7 +12073,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 		/* Optional modifiers +j, +o, +s */
 		if (gmt_get_modifier (B->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
 			if (string[0] == '\0') {	/* Got nutin' */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No justification argument given to +j modifier\n", option);
 				error++;
 			}
 			else
@@ -12083,17 +12083,17 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			B->justify = gmt_M_just_default (GMT, B->refpoint, PSL_BL);
 		if (gmt_get_modifier (B->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse offset arguments for +o modifier\n", option);
 				error++;
 			}
 		}
 		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
 			if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in modern node */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  +s modifier is valid in classic mode only\n", option);
 				error++;
 			}
 			else if (string[0] == '\0') {	/* Got nutin' */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No filename given to +s modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No filename given to +s modifier\n", option);
 				error++;
 			}
 			else
@@ -12115,7 +12115,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 					case 'r': B->oblique = true;	break;
 					case 's':
 						if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Not valid in modern node */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  +s modifier is valid in classic mode only\n", option);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  +s modifier is valid in classic mode only\n", option);
 							error++;
 						}
 						else
@@ -12135,7 +12135,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 		}
 		/* Decode the w/e/s/n part */
 		if ((n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d)) != 4) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Must specify w/e/s/n or <unit>xmin/xmax/ymin/ymax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Must specify w/e/s/n or <unit>xmin/xmax/ymin/ymax\n", option);
 			return (GMT_PARSE_ERROR);
 		}
 		if (c) c[0] = '+';	/* Restore original argument */
@@ -12185,7 +12185,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
 	if (!text || text[0] == '\0') {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error %c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	vertical = ms->vertical;
@@ -12197,7 +12197,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	ms->alignment = (vertical) ? 'r' : 't';	/* Default label placement is on top for map scale and right for vertical scale */
 
 	if ((ms->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error:  Scale reference point was not accepted\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
 	}
@@ -12210,42 +12210,42 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* No use */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Not allowed for Cartesian projections\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Not allowed for Cartesian projections\n", option);
 		}
 		else if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No scale [<longitude>/]<latitude> argument given to +c modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No scale [<longitude>/]<latitude> argument given to +c modifier\n", option);
 			error++;
 		}
 		else if (strchr (string, '/')) {	/* Got both lon and lat for scale */
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Failed to parse scale <longitude>/<latitude> for +c modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse scale <longitude>/<latitude> for +c modifier\n", option);
 				error++;
 			}
 			else if (fabs (ms->origin[GMT_X]) > 360.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Scale longitude is out of range for +c modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale longitude is out of range for +c modifier\n", option);
 				error++;
 			}
 		}
 		else {	/* Just got latitude scale */
 			if (gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, string, GMT_IS_LON, &(ms->origin[GMT_Y])), string)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Failed to parse scale latitude for +c modifier\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse scale latitude for +c modifier\n", option);
 				error++;
 			}
 			ms->origin[GMT_X] = GMT->session.d_NaN;	/* Must be set after gmt_map_setup is called */
 		}
 		if (fabs (ms->origin[GMT_Y]) > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Scale latitude is out of range for +c modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale latitude is out of range for +c modifier\n", option);
 			error++;
 		}
 	}
 	else if ((flag & GMT_SCALE_MAP) && gmt_M_is_geographic (GMT, GMT_IN) && !vertical) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}
 
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No length argument given to +w modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No length argument given to +w modifier\n", option);
 			error++;
 		}
 		else if (gmt_M_is_geographic (GMT, GMT_IN) && isalpha ((int)string[n = (int)strlen (string) - 1])) {	/* Letter at end of distance value */
@@ -12257,24 +12257,24 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 			if (strchr (GMT_LEN_UNITS2, ms->measure))	/* Gave a valid distance unit */
 				string[n] = '\0';
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
 				error++;
 			}
 		}
 		ms->length = atof (string);	/* Length as given, no unit scaling here */
 		if (ms->length <= 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Length must be positive\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Length must be positive\n", option);
 			error++;
 		}
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Scale length modifier +w<length>[unit] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale length modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
 	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
 	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL)) {	/* Do fancy label */
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Not allowed' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No fancy map scale modifier allowed for Cartesian projections\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No fancy map scale modifier allowed for Cartesian projections\n", option);
 			error++;
 		}
 		else
@@ -12282,7 +12282,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'v', NULL)) {	/* Ask for vertical Cartesian scale */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not allowed' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No vertical scale modifier allowed for geographic projections\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No vertical scale modifier allowed for geographic projections\n", option);
 			error++;
 		}
 		else
@@ -12290,7 +12290,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
 		if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No justification argument given to +j modifier\n", option);
 			error++;
 		}
 		else
@@ -12323,7 +12323,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	if (gmt_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
 		ms->alignment = string[0];
 		if (!strchr ("lrtb", ms->alignment)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Valid label alignments (+a) are l|r|t|b\n", option);
 			error++;
 		}
 	}
@@ -12333,7 +12333,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
 		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse offset arguments for +o modifier\n", option);
 			error++;
 		}
 	}
@@ -12362,7 +12362,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	 */
 
 	if (!text || text[0] == '\0') {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error %c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	gmt_M_memset (ms, 1, struct GMT_MAP_ROSE);
@@ -12379,12 +12379,12 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		case 'd': ms->type = GMT_ROSE_DIR_PLAIN; break;
 		case 'm': ms->type = GMT_ROSE_MAG; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Append d for directional and m for magnetic rose\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Append d for directional and m for magnetic rose\n", option);
 			return (-1);
 			break;
 	}
 	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1], option)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error:  Map rose reference point was not accepted\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map rose reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */
 	}
@@ -12394,20 +12394,20 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	/* Get required +w modifier */
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	{	/* Get rose dimensions */
 		if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No width argument given to +w modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No width argument given to +w modifier\n", option);
 			error++;
 		}
 		else
 			ms->size = gmt_M_to_inch (GMT, string);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Rose dimension modifier +w<length>[unit] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
 	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */
 	if (gmt_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
 		if (ms->type != GMT_ROSE_MAG) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Cannot specify +d<info> when -Td is selected\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Cannot specify +d<info> when -Td is selected\n", option);
 			return (-1);
 		}
 		if (string[0]) {	/* Got optional arguments */
@@ -12423,13 +12423,13 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'f', string)) {	/* Want fancy rose, optionally set what kind */
 		if (ms->type == GMT_ROSE_MAG) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Cannot give both +f and +m\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Cannot give both +f and +m\n", option);
 			error++;
 		}
 		ms->type = GMT_ROSE_DIR_FANCY;
 		ms->kind = (string[0]) ? atoi (string) : 1;
 		if (ms->kind < 1 || ms->kind > 3) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Modifier +f<kind> must be 1, 2, or 3\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +f<kind> must be 1, 2, or 3\n", option);
 			error++;
 		}
 	}
@@ -12439,7 +12439,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
 		if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  No justification argument given to +j modifier\n", option);
 			error++;
 		}
 		else
@@ -12467,14 +12467,14 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 				k++;
 			}
 			if (n_comma < 3 && k != 4) {	/* Ran out of labels */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: 4 Labels must be given via modifier +lw,e,s,n\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: 4 Labels must be given via modifier +lw,e,s,n\n", option);
 				error++;
 			}
 		}
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
 		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Failed to parse offset arguments for +o modifier\n", option);
 			error++;
 		}
 	}
@@ -12487,7 +12487,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			&ms->a_int[GMT_ROSE_SECONDARY], &ms->f_int[GMT_ROSE_SECONDARY], &ms->g_int[GMT_ROSE_SECONDARY],
 			&ms->a_int[GMT_ROSE_PRIMARY], &ms->f_int[GMT_ROSE_PRIMARY], &ms->g_int[GMT_ROSE_PRIMARY]);
 		if (!(n == 3 || n == 6)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
 			error++;
 		}
 	}
@@ -15726,7 +15726,7 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 	k = 0;
 	while ((gmt_strtok (list, ",", &pos, p))) {	/* March along and convert each string to double */
 		if (gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, p, type, false, &(array[k])), p)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Unable to parse value %s from list %s\n", p, list);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse value %s from list %s\n", p, list);
 			gmt_M_free (GMT, array);
 			return NULL;
 		}
@@ -15809,7 +15809,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	size_t len = 0;
 
 	if (argument == NULL || argument[0] == '\0') {	/* A nothingburger */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: No arguments given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: No arguments given\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
@@ -15888,15 +15888,15 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 
 	/* 2. Dealt with the file option, now parse [<min/max/]<inc>[<unit>] */
 	if ((ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z])) < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Must specify valid min[/max[/inc[<unit>|+n]]] option\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min[/max[/inc[<unit>|+n]]] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	if ((flags & GMT_ARRAY_RANGE) && ns == 1 && (flags & GMT_ARRAY_SCALAR) == 0) {	/* Need to spell out all 3 items */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	if (!(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	has_inc = (ns != 2);	/* This means we gave an increment */
@@ -15904,19 +15904,19 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
 	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Logarithmic array requires an increment argument\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Logarithmic array requires an increment argument\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
 	if (ns > 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
 		T->temporal = true;
 		if (!(flags & GMT_ARRAY_TIME)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Calendar time not allowed for this module\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Calendar time not allowed for this module\n", option);
 			return GMT_PARSE_ERROR;
 		}
 #if 0	/* Not sure why I added this, commenting it out because it seems to work fine and why shouldn't it... */
 		if (T->count) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Cannot use +n modifier with calendar time data\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Cannot use +n modifier with calendar time data\n", option);
 			return GMT_PARSE_ERROR;
 		}
 #endif
@@ -15946,7 +15946,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	/* 4. Consider spatial distances */
 	if (has_inc && !T->temporal && strchr (GMT_LEN_UNITS "c", txt[ns][len])) {	/* Geospatial or Cartesian distances */
 		if (!(flags & GMT_ARRAY_DIST)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Distance units not allowed for this module\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Distance units not allowed for this module\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		if (txt[ns][len] == 'c') txt[ns][len] = '\0';	/* The c unit has served its purpose */
@@ -15965,7 +15965,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (has_inc && !T->spatial) {
 		gmt_scanf_float (GMT, txt[ns], &(T->inc));
 		if (gmt_M_is_zero (T->inc)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Increment is zero\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Increment is zero\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		if (T->inc < 0.0 && !T->logarithmic) {	/* Flag to be reversed */
@@ -15975,11 +15975,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		if (T->logarithmic || T->logarithmic2) {
 			int k_inc = irint (T->inc);
 			if (!gmt_M_is_zero (fabs (T->inc - (double)k_inc))) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Logarithmic increment must be an integer\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Logarithmic increment must be an integer\n", option);
 				return GMT_PARSE_ERROR;
 			}
 			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3 || k_inc < 0)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Logarithmic increment must be 1, 2, 3 (or a negative integer)\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Logarithmic increment must be 1, 2, 3 (or a negative integer)\n", option);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -15991,32 +15991,32 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			T->delay[GMT_X] = true;
 		else if (T->temporal) {
 			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
 				return GMT_PARSE_ERROR;
 			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
 		if (!strcmp (txt[GMT_Y], "-"))	/* Must get this value later */
 			T->delay[GMT_Y] = true;
 		else if (T->temporal) {
 			if (gmt_scanf_argtime (GMT, txt[GMT_Y], &(T->max)) == GMT_IS_NAN) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse max temporal value from %s\n", option, txt[GMT_Y]);
 				return GMT_PARSE_ERROR;
 			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse max value from %s (ISO datetime format required)\n", option, txt[GMT_Y]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse max value from %s (ISO datetime format required)\n", option, txt[GMT_Y]);
 			return GMT_PARSE_ERROR;
 		}
 		if ((T->delay[GMT_X] || T->delay[GMT_Y]) && !(flags & GMT_ARRAY_NOMINMAX)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Cannot specify - as min or max value in this module\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Cannot specify - as min or max value in this module\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		if (!(T->delay[GMT_X] || T->delay[GMT_Y]) && T->min >= T->max) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: min >= max\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: min >= max\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		T->set += 2;	/* Read both min and max */
@@ -16024,12 +16024,12 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
 		if (T->temporal) {
 			if (gmt_scanf_argtime (GMT, txt[GMT_X], &(T->min)) == GMT_IS_NAN) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
 				return GMT_PARSE_ERROR;
 			}
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
 		T->max = T->min;
@@ -16040,7 +16040,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (flags & GMT_ARRAY_ROUND)	/* Adjust increment to fit min/max so (max-min)/inc is an integer */
 		T->round = true;
 	if (T->exact_inc && T->set == 3) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: Modifier +e only applies when increment is given without any range\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Modifier +e only applies when increment is given without any range\n", option);
 		return GMT_PARSE_ERROR;
 
 	}
@@ -16077,7 +16077,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		if (D->n_segments > 1) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c: File %s has more than one segment\n", option, T->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: File %s has more than one segment\n", option, T->file);
 			GMT_Destroy_Data (GMT->parent, &D);
 			return GMT_PARSE_ERROR;
 		}
@@ -16148,12 +16148,12 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 				break;
 			case 2:
 				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: (max - min) is <= 0\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: (max - min) is <= 0\n", option);
 					return (GMT_PARSE_ERROR);
 				}
 				break;
 			case 3:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: inc is <= 0\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: inc is <= 0\n", option);
 				return (GMT_PARSE_ERROR);
 				break;
 			default:	/* OK as is */
@@ -16170,7 +16170,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		for (k = 0; k < T->n; k++) T->array[k] *= scale;
 	}
 	if (T->n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Your min/max/inc arguments resulted in no items\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Your min/max/inc arguments resulted in no items\n", option);
 		return (GMT_PARSE_ERROR);
 	}
 	return (GMT_NOERROR);

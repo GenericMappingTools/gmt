@@ -509,11 +509,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 	}
 
 	if (missing_equal) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Usage is <operations> = [outfile]\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Usage is <operations> = [outfile]\n");
 		n_errors++;
 	}
 	if (GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: Must specify positive increment(s)\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -I: Must specify positive increment(s)\n");
 		n_errors++;
 	}
 
@@ -5856,7 +5856,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 		return GRDMATH_ARG_IS_BAD;
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: %s is not a number, operator or file name\n", opt->arg);
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s is not a number, operator or file name\n", opt->arg);
 	return GRDMATH_ARG_IS_BAD;
 }
 
@@ -6226,7 +6226,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				opt = list;	/* GO back to start to avoid bad pointer */
 			}
 			else {	/* Standard output */
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error: No output file specified via = file mechanism\n");
+				GMT_Report (API, GMT_MSG_ERROR, "No output file specified via = file mechanism\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -6260,11 +6260,11 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot use -I together with -R<gridfile>\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot use -I together with -R<gridfile>\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else if  (GMT->common.R.active[GSET]) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot use -r when grid files are specified\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot use -r when grid files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
@@ -6287,7 +6287,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		GMT->current.io.inc_code[GMT_X]	= GMT->current.io.inc_code[GMT_Y] = 0;	/* Must reset this since later we don't use GMT->common.R.inc but G->header->inc */
 	}
 	else {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Expression must contain at least one grid file or -R, -I\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	info.nm = info.G->header->nm;	info.size = info.G->header->size;
@@ -6377,7 +6377,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
 			if (nstack <= 0) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error: No items on stack are available for output!\n");
+				GMT_Report (API, GMT_MSG_ERROR, "No items on stack are available for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 
@@ -6583,12 +6583,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* Here we have an operator */
 
 		if ((new_stack = nstack - consumed_operands[op] + produced_operands[op]) >= GRDMATH_STACK_SIZE) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Stack overflow (%s)\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Stack overflow (%s)\n", opt->arg);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (nstack < consumed_operands[op]) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
+			GMT_Report (API, GMT_MSG_ERROR, "Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
 			Return (GMT_RUNTIME_ERROR);
 		}
 

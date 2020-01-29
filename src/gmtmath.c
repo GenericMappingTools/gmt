@@ -781,7 +781,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 						k = 1;
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unable to decode arguments for -A\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unable to decode arguments\n");
 						n_errors++;
 					}
 				}
@@ -838,7 +838,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					case 'l': case 'L':
 						Ctrl->S.mode = +1; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Syntax is -S[f|l]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Syntax is -S[f|l]\n");
 						n_errors++;
 					break;
 				}
@@ -864,12 +864,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK),
-	                                   "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
-	n_errors += gmt_M_check_condition (GMT, missing_equal, "Syntax error: Usage is <operations> = [outfile]\n");
+	                                   "Option -A: Cannot read file %s!\n", Ctrl->A.file);
+	n_errors += gmt_M_check_condition (GMT, missing_equal, "Usage is <operations> = [outfile]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active),
-	                                   "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
+	                                   "Cannot use -T, -N, or -C when -Q has been set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol == 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
-	                                   "Syntax error: -N must have positive n_cols and 0 <= t_col < n_col\n");
+	                                   "Option -N must have positive n_cols and 0 <= t_col < n_col\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -5926,7 +5926,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 		return (GMTMATH_ARG_IS_BAD);
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: %s is not a number, operator or file name\n", txt);
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s is not a number, operator or file name\n", txt);
 	return (GMTMATH_ARG_IS_BAD);	/* Dummy return to satisfy some compilers */
 }
 
@@ -6304,12 +6304,12 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 	set_equidistant_t = (Ctrl->T.active && !Ctrl->T.T.file && !Ctrl->T.notime);	/* We were given -Tmin/max/inc */
 	if (D_in && set_equidistant_t) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot use -T when data files are specified\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot use -T when data files are specified\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (Ctrl->A.active) {	/* Always stored as t and f(t) in cols 0 and 1 */
 		if (D_in) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot have data files when -A is specified\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot have data files when -A is specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -A files */
@@ -6321,13 +6321,13 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Requires a file with at least 3 (t,f(t),w(t)|s(t)) columns\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -A: Requires a file with at least 3 (t,f(t),w(t)|s(t)) columns\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 		else {	/* Need at least 2 columns */
 			if (rhs->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Requires a file with at least 2 (t,f(t)) columns\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -A: Requires a file with at least 2 (t,f(t)) columns\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -6350,7 +6350,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active && Ctrl->T.T.file) {	/* Gave a file that we will use to obtain the T vector only */
 		if (D_in) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot use -T when data files are specified\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot use -T when data files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		use_t_col = 0;
@@ -6373,7 +6373,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.file) n_columns = Ctrl->N.ncol;
 
 	if (!(D_in || T_in || A_in || set_equidistant_t)) {	/* Neither a file nor -T given; must read data from stdin */
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expression must contain at least one table file or -T [and -N]\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Expression must contain at least one table file or -T [and -N]\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
@@ -6649,17 +6649,17 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 
 		if (!strncmp (opt->arg, "ROOTS", 5U) && !(opt->next && opt->next->arg[0] == '=')) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Only = may follow operator ROOTS\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Only = may follow operator ROOTS\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if ((new_stack = nstack - eaten + created) >= GMTMATH_STACK_SIZE) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Stack overflow (%s)\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Stack overflow (%s)\n", opt->arg);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (nstack < eaten) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], eaten);
+			GMT_Report (API, GMT_MSG_ERROR, "Operation \"%s\" requires %d operands\n", operator[op], eaten);
 			Return (GMT_RUNTIME_ERROR);
 		}
 

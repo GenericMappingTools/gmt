@@ -662,7 +662,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				break;
 			case 'A':	/* adjust slope and intercept */
 				if (!error && sscanf (opt->arg, "%[^,]", abbrev) != 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Give field abbreviation, slope and intercept\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give field abbreviation, slope and intercept\n");
 					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -670,11 +670,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				while (strcmp (abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: invalid field abbreviation\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: invalid field abbreviation\n");
 					error = true;
 				}
 				if (!error && sscanf (opt->arg, "%[^,],%lf,%lf", abbrev, &adjustScale[col], &adjustDC[col]) != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Give field abbreviation,slope,intercept\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give field abbreviation,slope,intercept\n");
 					error = true;
 				}
 				adjustData = true;
@@ -725,7 +725,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					n_out_columns = 12;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unrecognized option -%c%s\n",\
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n",\
 					opt->option, opt->arg);
 					error = true;
 				}
@@ -746,13 +746,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (n_comma == 4) { 	/* Mercator grid */
 					this_grid[n_grids].format = 1;
 					if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Give field abbreviation, img grid file, scale, mode [, and optionally max lat]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give field abbreviation, img grid file, scale, mode [, and optionally max lat]\n");
 						error = true;
 					}
 				}
 				else {	/* Regular grid */
 					if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Give field abbreviation and grid file\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give field abbreviation and grid file\n");
 						error = true;
 					}
 					else {
@@ -767,7 +767,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						while (strcmp (this_grid[n_grids].abbrev, mgd77defs[this_grid[n_grids].col].abbrev) && this_grid[n_grids].col < MGD77_N_NUMBER_FIELDS)
 							this_grid[n_grids].col++;
 						if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: invalid field abbreviation\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -G: invalid field abbreviation\n");
 							error = true;
 						}
 						if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
@@ -785,14 +785,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'b')
 					forced = false;
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option,\
 					opt->arg);
 					error = true;
 				}
 				break;
 			case 'I':	/* Pass ranges of data records to ignore for output to E77 */
 				if (!error && sscanf (opt->arg, "%[^,],%d,%d", BadSection[n_bad_sections].abbrev, &BadSection[n_bad_sections].start, &BadSection[n_bad_sections].stop) != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: Give field abbreviation,rec1,recN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Give field abbreviation,rec1,recN\n");
 					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -800,13 +800,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				while (strcmp (BadSection[n_bad_sections].abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: invalid field abbreviation\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: invalid field abbreviation\n");
 					error = true;
 				}
 				bad_sections = true;
 				BadSection[n_bad_sections++].col = col;
 				if (n_bad_sections == MAX_BAD_SECTIONS) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
 					error = true;
 				}
 				break;
@@ -834,14 +834,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					for (j = 0; j<MGD77_N_NUMBER_FIELDS; j++) maxSlope[j] = mgd77snifferdefs[j].maxTimeGrad;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option, opt->arg);
 					error = true;
 				}
 				break;
 			case 'T':	/* Specify maximum gap between records */
 				maxGap = atof (opt->arg);
 				if (maxGap < 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -M option: max gap cannot be negative\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -M: max gap cannot be negative\n");
 					error = true;
 				}
 				break;
@@ -865,7 +865,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						do_regression = true;
 						warn[SUMMARY_WARN] = true;
 					} else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option, opt->arg);
 						error = true;
 					}
 				}
@@ -913,7 +913,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	if (simulate && n_grids > 0) {
 		for (i = 0; i < n_grids; i++) {
 			if (sscanf (this_grid[i].fname, "%lf/%lf", &sim_m[i], &sim_b[i]) != 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Give m/b for simulated grid.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give m/b for simulated grid.\n");
 				Return (API->error);
 			}
 		}
@@ -1249,7 +1249,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		/* Adjust along-track gradient type for time */
 		if (!strcmp(derivative,"TIME") && !gotTime) {
 			/*derivative = "SPACE";*/
-			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_ERROR, "Warning: cruise contains no time - time gradients invalid.\n");
+			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_WARNING, "Warning: cruise contains no time - time gradients invalid.\n");
 		}
 
 		/* Allocate memory for error array */
@@ -1421,7 +1421,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				this_grid[i].g_pts = 0;
 				/* Skip if cruise lacks data field */
 				if (!(M.bit_pattern[0] & (1 << this_grid[i].col)) && strcmp (this_grid[i].abbrev, "nav")) {
-					GMT_Report (API, GMT_MSG_ERROR, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
+					GMT_Report (API, GMT_MSG_WARNING, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
 					continue;
 				}
 

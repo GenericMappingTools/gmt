@@ -300,7 +300,7 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
-			            "Syntax error -T option: Give low and high labels either as :LH or :<low>,<high>.\n");
+			            "Option -T: Give low and high labels either as :LH or :<low>,<high>.\n");
 			Ctrl->T.label = false;
 			n_errors++;
 		}
@@ -317,7 +317,7 @@ GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDC
 	unsigned int uerr = 0;
 	if (!txt || txt[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR,
-    		"Syntax error -Z option: No arguments given\n");
+    		"Option -Z: No arguments given\n");
 		return (GMT_PARSE_ERROR);
 	}
 	if (strstr (txt, "+s") || strstr (txt, "+o") || strstr (txt, "+p")) {
@@ -373,7 +373,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
 				if (gmt_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expected\n\t-A[-|[+]<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expected\n\t-A[-|[+]<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				c = NULL;
@@ -397,7 +397,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'C':	/* Contour interval/cpt */
 				if (Ctrl->C.active) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Given more than once\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Given more than once\n");
 					n_errors++;
 					break;
 				}
@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				}
 				else if (Ctrl->C.cpt) {	/* Passed a cpt file, it must exist */
 					if (!gmt_M_file_is_cache (opt->arg) && gmt_access (GMT, opt->arg, R_OK)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: CPT file %s not found\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: CPT file %s not found\n", opt->arg);
 						n_errors++;
 					}
 					else {	/* Found it or a cache file */
@@ -439,12 +439,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				else if (opt->arg[0] != '-') {
 					Ctrl->C.interval = atof (opt->arg);
 					if (gmt_M_is_zero (Ctrl->C.interval)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be zero\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be zero\n");
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be negative (%s)\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be negative (%s)\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 						Ctrl->F.value = +1;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -F[l|r]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Expected -F[l|r]\n");
 						break;
 				}
 				break;
@@ -506,7 +506,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					}
 					else {	/* Just a point count cutoff */
 						n = atoi (opt->arg);
-						n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Point count must be >= 0\n");
+						n_errors += gmt_M_check_condition (GMT, n < 0, "Option -Q: Point count must be >= 0\n");
 						Ctrl->Q.min = n;
 					}
 				}
@@ -515,7 +515,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
 				j = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, j < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
+				n_errors += gmt_M_check_condition (GMT, j < 0, "Option -S: Smooth_factor must be > 0\n");
 				Ctrl->S.value = j;
 				break;
 			case 'T':	/* Ticking of innermost closed contours */
@@ -548,7 +548,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 							}
 							else {
 								GMT_Report (API, GMT_MSG_ERROR,
-								            "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+								            "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
 								n_errors++;
 							}
 						}
@@ -560,13 +560,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 							n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_COMPAT, "Syntax error -T option: Your format for -T is deprecated; use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+							GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
 								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 							n_errors++;
 						}
 					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0,
-					                "Syntax error -T option: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+					                "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
 					                	GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
@@ -632,21 +632,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
-	                                 "Syntax error: Must specify a map projection with the -J option\n");
+	                                 "Must specify a map projection with the -J option\n");
 #if 0
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
 			gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
 	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
 #endif
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Option -L: lower limit > upper!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Option -F: Must also specify -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
-	                                 "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
+	                                 "Option -G: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Option -Z: factor must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cptmode && !Ctrl->C.cpt,
-	                                 "Syntax error -W option: Modifier +c only valid if -C sets a CPT\n");
+	                                 "Option -W: Modifier +c only valid if -C sets a CPT\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1048,7 +1048,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			strncpy (cptfile, optN->arg, PATH_MAX-1);
 		else if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
 			if (!gmt_M_file_is_cache (optN->arg) && gmt_access (API->GMT, optN->arg, R_OK)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N: CPT file %s not found\n", optN->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -N: CPT file %s not found\n", optN->arg);
 				bailout (GMT_PARSE_ERROR);
 			}
 			strncpy (cptfile, optN->arg, PATH_MAX-1);
@@ -1083,14 +1083,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					}
 					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_M_file_is_cache (opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: CPT file %s not found\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
 						}
 						strcpy (cptfile, opt->arg);
 						got_C_cpt = true;
 					}
 					else if (L < 4) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C or -N: No CPT given\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Options -C or -N: No CPT given\n");
 						bailout (GMT_PARSE_ERROR);
 					}
 					strcat (cmd1, string);	break;
@@ -1129,7 +1129,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (API->error);
 		}
 		if (is_continuous) {	/* More bad news */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N: CPT file must be discrete, not continuous\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -N: CPT file must be discrete, not continuous\n");
 			bailout (GMT_PARSE_ERROR);
 		}
 

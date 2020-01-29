@@ -367,7 +367,7 @@ GMT_LOCAL bool central_meridian_not_set (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL void set_default_central_meridian (struct GMT_CTRL *GMT) {
 	GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
 }
 
 /*! . */
@@ -2668,7 +2668,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[XLO] <= 0.0 || GMT->common.R.wesn[XHI] <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -JX|x option:  Limits must be positive for log10 option\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -JX|x:  Limits must be positive for log10 option\n");
 				GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 			}
 			xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
@@ -2703,7 +2703,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[YLO] <= 0.0 || GMT->common.R.wesn[YHI] <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -JX|x option:  Limits must be positive for log10 option\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -JX|x:  Limits must be positive for log10 option\n");
 				GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 			}
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);
@@ -2863,7 +2863,7 @@ GMT_LOCAL bool map_init_merc (struct GMT_CTRL *GMT) {
 		D = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius / GMT->current.proj.lat_swap_vals.rm;
 	}
 	if (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -R option:  Cannot include south/north poles with Mercator projection!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Cannot include south/north poles with Mercator projection!\n");
 		GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 	}
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -6010,7 +6010,7 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[ZLO] <= 0.0 || GMT->common.R.wesn[ZHI] <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error for -Jz -JZ option: limits must be positive for log10 projection\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jz -JZ: limits must be positive for log10 projection\n");
 				GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT_PROJECTION_ERROR;
 			}
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZLO]) : d_log10 (GMT, GMT->common.R.wesn[ZHI]);
@@ -9485,7 +9485,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			break;
 
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
 			GMT_exit (GMT, GMT_NOT_A_VALID_TYPE); return GMT_NOT_A_VALID_TYPE;
 			break;
 	}

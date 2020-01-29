@@ -359,7 +359,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 		nAttribs = OGR_FD_GetFieldCount(hFeatureDefn);
 
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Importing %lld features from layer <%s>\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Importing %lld features from layer <%s>\n",
 		            OGR_L_GetFeatureCount(hLayer, 1), out[ind].name);
 
 		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {		/* Loop over number of features of this layer */

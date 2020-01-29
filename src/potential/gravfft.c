@@ -200,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 				Ctrl->In.active = true;
 				if (Ctrl->In.n_grids >= 2) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
 				else if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 							Ctrl->misc.from_top = true;
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: [%s] is not valid, chose from [tbw]\n", &t_or_b[n]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: [%s] is not valid, chose from [tbw]\n", &t_or_b[n]);
 							n_errors++;
 							break;
 					}
@@ -231,7 +231,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			case 'D':
 				if (!opt->arg) {
 					GMT_Report (API, GMT_MSG_ERROR,
-					            "Syntax error -D option: must give constant density contrast or grid with density contrasts\n");
+					            "Option -D: must give constant density contrast or grid with density contrasts\n");
 					n_errors++;
 				}
 				else {
@@ -249,11 +249,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
 				if (Ctrl->E.n_terms > 10) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E: n_terms must be <= 10\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: n_terms must be <= 10\n");
 					n_errors++;
 				}
 				else if (Ctrl->E.n_terms <= 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "WARNING -E option: n_terms were 0 or nonsense. Reset to 3\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Option -E: n_terms were 0 or nonsense. Reset to 3\n");
 					Ctrl->E.n_terms = 3;
 				}
 				break;
@@ -301,7 +301,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 							Ctrl->misc.from_top = true;
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
 							n_errors++;
 							break;
 					}
@@ -380,37 +380,37 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 	}
 
 	if (Ctrl->C.active) {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Error: -T not set\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "-T not set\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_top && !Ctrl->Z.zm,
-		                                   "Error: -Z not set, must give moho compensation depth\n");
+		                                   "-Z not set, must give moho compensation depth\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_below && !(Ctrl->Z.zm && Ctrl->Z.zl),
-		                                   "Error: -Z not set, must give moho and swell compensation depths\n");
+		                                   "-Z not set, must give moho and swell compensation depths\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->I.active,
-					"Syntax error -G option: Must specify output file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !Ctrl->T.active, "Error: -Q implies also -T\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->T.active, "Error: -S implies also -T\n");
+					"Option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !Ctrl->T.active, "-Q implies also -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->T.active, "-S implies also -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.moho && !Ctrl->Z.zm,
-					"Error: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n");
+					"For computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += gmt_M_check_condition (GMT, !(Ctrl->D.active || Ctrl->T.active || Ctrl->S.active ||
-		                                   Ctrl->I.active), "Error: must set density contrast\n");
+		                                   Ctrl->I.active), "Must set density contrast\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->In.file[1],
-					"Error: for admittance|coherence need a gravity or geoid grid\n");
+					"For admittance|coherence need a gravity or geoid grid\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_below && Ctrl->misc.from_top,
-					"Error: -I, choose only one model\n");
+					"Option -I: Choose only one model\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->misc.from_top &&
 					!(Ctrl->T.rhow && Ctrl->T.rhol && Ctrl->T.rhom && Ctrl->Z.zm),
-					"Error: not all parameters needed for computing \"loading from top\" admittance were set\n");
+					"Not all parameters needed for computing \"loading from top\" admittance were set\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->misc.from_below &&
 			!(Ctrl->T.rhow && Ctrl->T.rhol && Ctrl->T.rhom && Ctrl->Z.zm && Ctrl->Z.zl),
-					"Error: not all parameters for computing \"loading from below\" admittance were set\n");
+					"Not all parameters for computing \"loading from below\" admittance were set\n");
 	}
 
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->misc.from_top || Ctrl->misc.from_below) &&
 			!(Ctrl->F.mode == GRAVFFT_FAA || Ctrl->F.mode == GRAVFFT_GEOID),
-				"Syntax error: Theoretical admittances are only defined for FAA or GEOID.\n");
+				"Theoretical admittances are only defined for FAA or GEOID.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

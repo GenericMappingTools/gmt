@@ -3946,7 +3946,7 @@ int MGD77_Select_Format (struct GMT_CTRL *GMT, int format) {
 		MGD77_format_allowed[format] = true;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Bad file format (%d) selected!\n", format);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad file format (%d) selected!\n", format);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	return GMT_OK;
@@ -3970,7 +3970,7 @@ int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format) {
 				MGD77_Ignore_Format (GMT, MGD77_FORMAT_M7T);
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Option -%c Bad format (%c)!\n", code, format[i]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c Bad format (%c)!\n", code, format[i]);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}

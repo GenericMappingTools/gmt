@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Failed to decode <minlat>/<maxlat>.\n");
 				}
 				else {
 					Ctrl->D.min = GMT_IMG_MINLAT_80;
@@ -276,7 +276,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				}
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -I requires a positive value.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I requires a positive value.\n");
 				}
 				if (sec) {
 					Ctrl->I.value /= 60.0;
@@ -300,14 +300,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -T requires an output type 0-3.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -W requires a longitude >= 360.0.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W requires a longitude >= 360.0.\n");
 				}
 				break;
 			default:	/* Report bad options */
@@ -316,18 +316,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify input imgfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: More than one world image file name given.\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option.\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Syntax error:Must specify -R with west < east and south < north.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Syntax error: Must specify output grid file name with -G.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Syntax error: Min/max latitudes are invalid.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error: Must specify output type in the range 0-3 with -T.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error: Requires a maximum longitude >= 360.0 with -W.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error: Requires a positive value with -I.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->M.active, "Syntax error: -F requires -M.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Syntax error: -E cannot be used with -M.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.value < 1, "Syntax error: -N requires an integer > 1.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify input imgfile name.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "More than one world image file name given.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Must specify -R with west < east and south < north.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Must specify output grid file name with -G.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Min/max latitudes are invalid.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Must specify output type in the range 0-3 with -T.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Requires a maximum longitude >= 360.0 with -W.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Requires a positive value with -I.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->M.active, "Option -F requires -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Option -E cannot be used with -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.value < 1, "Option -N requires an integer > 1.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -524,16 +524,16 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 
 	if (img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Error in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.active && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((fp = gmt_fopen (GMT, infile, "rb")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Cannot open %s for binary read.\n", infile);
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

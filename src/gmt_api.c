@@ -247,7 +247,7 @@ static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
 static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical", "Text"};
-static const char *GMT_class[] = {"QUIET", "ERROR", "TIMING", "COMPATIBILITY", "WARNING", "INFORMATION", "DEBUG"};
+static const char *GMT_class[] = {"QUIET", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
@@ -1482,14 +1482,14 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 	if ((text[0] == 'g' || text[0] == 'd') && (text[1] == '\0' || text[1] == '/')) {	/* Got -Rg or -Rd, possibly with trailing /zmin/zmax */
 		if (text[1] == '\0') return 2;	/* Got -Rg or -Rd and no more */
 		if (n_slashes == 2) return 3;	/* Got -Rg/zmin/zmax or -Rd/zmin/zmax */
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -R option: Give 2, 4, or 6 coordinates, a gridfile, or use -Rd|g[/zmin/zmax]\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -R: Give 2, 4, or 6 coordinates, a gridfile, or use -Rd|g[/zmin/zmax]\n");
 		return 0;
 	}
 	if (!gmt_access (API->GMT, text, R_OK))	/* Gave a readable file, we assume it is a grid since that is all that is allowed */
 		return 2;
 	/* Only get here if the above cases did not trip */
 	if (!(n_slashes == 1 || n_slashes == 3 || n_slashes == 5)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -R: Give 2, 4, or 6 coordinates\n");
 		return 0;
 	}
 	return ((n_slashes + 1) / 2);	/* Turns 1,3,5 into 1,2,3 */
@@ -9268,7 +9268,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
-	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	if (string)
 		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
 	else
@@ -11151,7 +11151,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here but we cannot report anything */
 	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
 	GMT = API->GMT;	/* Short-hand for the GMT sub-structure */
-	g_level = (GMT) ? GMT->current.setting.verbose : 0;
+	g_level = (GMT) ? GMT->current.setting.verbose : GMT_MSG_QUIET;
 	if (GMT) err = GMT->session.std[GMT_ERR];
 	if (level > MAX(API->verbose, g_level))
 		return 0;

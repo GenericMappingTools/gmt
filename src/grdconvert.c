@@ -125,7 +125,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 				}
 				else {
 					n_in++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Specify only one input file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Specify only one input file\n");
 					n_errors++;
 				}
 				break;
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Specify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
 				else
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.file && Ctrl->G.file), "Syntax error: Must specify both input and output file names\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.file && Ctrl->G.file), "Must specify both input and output file names\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

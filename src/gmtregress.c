@@ -758,7 +758,7 @@ GMT_LOCAL void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double
 		case GMTREGRESS_NORM_L2:  misfit = L2_misfit;  break;
 		case GMTREGRESS_NORM_LMS: misfit = LMS_misfit; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Internal error: misfit norm not specified? - set to L2\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Misfit norm not specified? - set to L2\n");
 			misfit = L2_misfit;
 			break;
 	}
@@ -808,7 +808,7 @@ GMT_LOCAL double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *
 		case GMTREGRESS_NORM_L2:  scl_func = L2_scale;  break;
 		case GMTREGRESS_NORM_LMS: scl_func = LMS_scale; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Internal error: misfit norm not specified? - set to L2\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Misfit norm not specified? - set to L2\n");
 			scl_func = L2_scale;
 			break;
 	}

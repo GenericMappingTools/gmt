@@ -179,7 +179,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				k = (both) ? 0 : 1;	/* Offset to <bc> argument */
 				n = atoi (&opt->arg[k]);
 				if (n < BC_INFINITY || n > BC_FREE) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: <bc> must be in 1-4 range\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: <bc> must be in 1-4 range\n");
 					n_errors++;
 					break;
 				}
@@ -202,7 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 					case 'p': Ctrl->C.nu = atof (&opt->arg[1]); break;
 					case 'y': Ctrl->C.E = atof (&opt->arg[1]); break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Unrecognized modifier %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized modifier %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->D.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->D.rhom, &Ctrl->D.rhol, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: must give 3-4 density values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
 					n_errors++;
 				}
 				if (n == 3) {	/* Assume no rhoi given, shuffle args */
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 					case 'q':	Ctrl->Q.mode = F_LOAD; break;
 					case 't':	Ctrl->Q.mode = T_LOAD; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Unrecognized mode -Q%c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized mode -Q%c\n", opt->arg[0]);
 						n_errors++;
 					break;
 				}
@@ -285,11 +285,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				break;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must specify plate thickness or rigidity\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Option -Q: Must specify load option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Option -Q: Must specify equidistant min/max/inc setting\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

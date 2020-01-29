@@ -102,7 +102,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Only two files may be pasted\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only two files may be pasted\n");
 				}
 				break;
 
@@ -121,8 +121,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Must specify two input files\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

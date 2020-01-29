@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
 					Ctrl->C.active = true;
 					if (!strchr ("cefg", (int)opt->arg[0])) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Flag must be c, f, g, or e\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Flag must be c, f, g, or e\n");
 						n_errors++;
 					}
 					if (!n_errors) Ctrl->C.string = strdup (opt->arg);
@@ -224,12 +224,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 						break;
 					case 's':	/* Speed unit selection */
 						if (!strchr ("c" GMT_LEN_UNITS2, (int)opt->arg[1])) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N: Choose from -Nd and -Ns\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Choose from -Nd and -Ns\n");
 						n_errors++;
 						break;
 				}
@@ -245,7 +245,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 					case 't':	/* Get new timegap */
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -Wt|d<width>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Syntax is -Wt|d<width>\n");
 						n_errors++;
 						break;
 				}
@@ -260,9 +260,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_tags == 0, "Syntax error: No system tag given!\n");
-	n_errors += gmt_M_check_condition (GMT, n_tags > 1, "Syntax error: Only give one system tag!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error: -Idx/dy must be positive!\n");
+	n_errors += gmt_M_check_condition (GMT, n_tags == 0, "o system tag given!\n");
+	n_errors += gmt_M_check_condition (GMT, n_tags > 1, "Only give one system tag!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Option -I: dx/dy must be positive!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

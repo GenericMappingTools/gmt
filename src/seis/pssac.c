@@ -249,7 +249,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'D':
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: Give x [and y] offsets\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Give x [and y] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 						case 't':  /* +t<t0>/<t1> */
 							Ctrl->G.cut[k] = true;
 							if (sscanf (&p[1], "%f/%f", &Ctrl->G.t0[k], &Ctrl->G.t1[k]) != 2) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G+t<t0>/<t1> option.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give -G+t<t0>/<t1>.\n");
 								n_errors++;
 							}
 							break;
@@ -323,7 +323,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -M option: -M<size>[/<alpha>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -M: Expects -M<size>[/<alpha>]\n");
 					n_errors++;
 				}
 
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				if (strchr(GMT_DIM_UNITS, (int)opt->arg[len])) /* Recognized unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {    /* Not decimal point or digit means trouble */
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (j == 0) {
@@ -399,11 +399,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.factor), "Syntax error -S option: <scale> must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Syntax error -T option: <reduce_vel> must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Syntax error -T option: <tmark> should be chosen from -5, -4, -3, -2, 0-9\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.factor), "Option -S: <scale> must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Option -T: <reduce_vel> must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Option -T: <tmark> should be chosen from -5, -4, -3, -2, 0-9\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -251,13 +251,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				Ctrl->A.active = true;
 				if (API->external) {	/* External interface only */
 					if ((n = strlen (opt->arg)) > 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: No output argument allowed\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output argument allowed\n");
 						n_errors++;
 					}
 					Ctrl->A.return_image = true;
 				}
 				else if ((n = strlen (opt->arg)) == 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: No output name provided\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output name provided\n");
 					n_errors++;
 				}
 				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						n = strlen (Ctrl->A.file) - 1;
 						while (n && Ctrl->A.file[n] != '.') n--;
 						if (n == 0) {	/* Gave no image extension either... */
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Missing image extension or =<driver> name.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -A: Missing image extension or =<driver> name.\n");
 							n_errors++;
 						}
 						else {	/* Check if we got a recognized extension */
@@ -282,7 +282,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 									found = 1;
 							}
 							if (found == 0) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Missing the required =<driver> name.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -A: Missing the required =<driver> name.\n");
 								n_errors++;
 							}
 							else
@@ -292,7 +292,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				}
 #else
 				else
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A: Your selection requires building GMT with GDAL support.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Your selection requires building GMT with GDAL support.\n");
 #endif
 				break;
 
@@ -377,7 +377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
@@ -410,37 +410,37 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	if (Ctrl->D.active) {	/* Only OK with memory input or GDAL support */
 		if (!gmt_M_file_is_memory (Ctrl->In.file[0])) {
 #ifndef HAVE_GDAL
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D: Requires building GMT with GDAL support.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires building GMT with GDAL support.\n");
 			n_errors++;
 #endif
 		}
 	}
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3),
-		                                   "Syntax error: Must specify one (or three) input file(s)\n");
+		                                   "Must specify one (or three) input file(s)\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                   "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && n_files == 3,
-	                                   "Syntax error -I option: Cannot derive intensities when r,g,b grids are given as data\n");
+	                                   "Option -I: Cannot derive intensities when r,g,b grids are given as data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && Ctrl->D.active,
-	                                   "Syntax error -I option: Cannot derive intensities when an image is given as data\n");
+	                                   "Option -I: Cannot derive intensities when an image is given as data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0,
-	                                   "Syntax error -E option: dpi must be positive\n");
+	                                   "Option -E: dpi must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[GRDIMAGE_FGD][0] < 0 && Ctrl->G.rgb[GRDIMAGE_BGD][0] < 0,
-	                                   "Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
+	                                   "Option -G: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
-	                                   "Syntax error -Q option: Cannot use -M when doing colormasking\n");
+	                                   "SOption -Q: Cannot use -M when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.device_dpi && Ctrl->Q.active,
-	                                   "Syntax error -Q option: Cannot use -Ei when doing colormasking\n");
+	                                   "Option -Q: Cannot use -Ei when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->Q.active,
-	                                   "Syntax error -Q option: Cannot use -D when doing colormasking\n");
+	                                   "Option -Q: Cannot use -D when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
-	                                   "Syntax error -A option: Must provide an output filename for image\n");
+	                                   "Option -A: Must provide an output filename for image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
-								       "Syntax error -A, -> options: Cannot provide two output files\n");
+								       "Option -A, -> options: Cannot provide two output files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active,
-								       "Syntax error -C and -D options are mutually exclusive\n");
+								       "Options -C and -D options are mutually exclusive\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -760,7 +760,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				GMT->common.J.active = true;
 			}
 			else if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Must specify a map projection with the -J option\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Must specify a map projection with the -J option\n");
 				Return (GMT_PARSE_ERROR);
 			}
 		}

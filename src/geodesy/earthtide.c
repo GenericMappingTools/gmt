@@ -1358,7 +1358,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'L':	/* Location for time-series */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Expected -C<lon>/<lat>\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
 					n_errors++;
 				}
 				else {
@@ -1367,7 +1367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->L.y), txt_b);
 					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR,
-					                          "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+					                          "Option -C: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'S':
@@ -1417,12 +1417,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-	                                   "Syntax error -I option: Absent or no positive increment(s)\n");
+	                                   "Option -I: Absent or no positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active && !Ctrl->S.active,
-	                                   "Syntax error: Must specify -S, -G or -L options\n");
+	                                   "Must specify -S, -G or -L options\n");
 	if (!GMT->parent->external)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
-		                                   "Syntax error: -T option requires one of -G, -L, or -S.\n");
+		                                   "Option -T: requires one of -G, -L, or -S.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

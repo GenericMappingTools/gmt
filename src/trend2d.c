@@ -480,7 +480,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 					if (j < TREND2D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Too many output columns selected: Choose from -Fxyzmrw\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Too many output columns selected: Choose from -Fxyzmrw\n");
 						n_errors++;
 					}
 				}
@@ -507,14 +507,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option: Condition number must be larger than unity\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option: Give 0 < confidence level < 1.0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Must request 1-10 parameters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 1.0, "Option -C: Condition number must be larger than unity\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Option -C: Give 0 < confidence level < 1.0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Option -N: Must request 1-10 parameters\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	for (j = Ctrl->n_outputs = 0; j < TREND2D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xyzmrwp", Ctrl->F.col[j])) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -524,10 +524,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 
 		Ctrl->n_outputs++;
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output column\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option: Too many output columns specified (%d)\n", Ctrl->n_outputs);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Option -F: Must specify at least one output column\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Option -F: Too many output columns specified (%d)\n", Ctrl->n_outputs);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->F.report,
-					"Syntax error -Fp option: When selecting model parameters, it must be the only output\n");
+					"Option -Fp: When selecting model parameters, it must be the only output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

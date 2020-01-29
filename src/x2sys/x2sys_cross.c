@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 						Ctrl->S.active[HHI] = true;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error: -S<l|h|u><speed>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Syntax is -S<l|h|u><speed>\n");
 						n_errors++;
 						break;
 				}
@@ -268,12 +268,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "Syntax error: No track files given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.width < 1, "Syntax error: Error -W: window must be at least 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Syntax error: Error -S: lower speed cutoff higher than upper cutoff!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Error -Q: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "No track files given\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.width < 1, "Option -W: window must be at least 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Option -S: lower speed cutoff higher than upper cutoff!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Option -Q: Only one of -Qe -Qi can be specified!\n");
 
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
