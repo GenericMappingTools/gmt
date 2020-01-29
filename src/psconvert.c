@@ -2084,7 +2084,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 							(south >= -90) && (north <= 90) ) {
 						proj4_cmd = strdup ("latlon");
-						GMT_Report (API, GMT_MSG_WARNING, "An unknown psconvert setting was found but since "
+						GMT_Report (API, GMT_MSG_INFORMATION, "An unknown psconvert setting was found but since "
 								"image coordinates seem to be geographical, a linear transformation "
 								"will be used.\n");
 					}
