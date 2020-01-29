@@ -3145,7 +3145,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 #ifdef _OPENMP
 		thread_num = omp_get_thread_num();	/* Which thread are we at now? */
 		OFF = thread_num * D->n_tables;		/* Calculate offset into curr_dist array */
-#else		/* Only allow -Vl message if not threaded */
+#else		/* Only allow -Vi message if not threaded */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Row %d\n", row);
 #endif
 		node = gmt_M_ij (info->G->header, row, 0);	/* Starting node for this row */

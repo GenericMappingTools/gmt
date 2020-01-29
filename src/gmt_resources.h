@@ -288,7 +288,8 @@ enum GMT_enum_time {
 };
 
 /* Verbosity levels */
-enum GMT_enum_verbose {GMT_MSG_QUIET = 0,   /* No messages whatsoever */
+enum GMT_enum_verbose {
+	GMT_MSG_QUIET		= 0,   	/* No messages whatsoever */
 	GMT_MSG_ERROR		= 1,	/* Errors only */
 	GMT_MSG_WARNING		= 2,	/* Adds warnings */
 	GMT_MSG_TICTOC		= 3,	/* Add timings */

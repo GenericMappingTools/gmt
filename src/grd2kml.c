@@ -613,9 +613,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
-		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z -H%d", Ctrl->H.factor);
+		sprintf (ps_cmd, "-TG -E100 -P -Ve -Z -H%d", Ctrl->H.factor);
 	else
-		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z");
+		sprintf (ps_cmd, "-TG -E100 -P -Ve -Z");
 
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
@@ -704,13 +704,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					/* Will pass -W so grdimage will notify us if there was no valid image data imaged */
 					sprintf (psfile, "%s/grd2kml_tile_tmp_%6.6d.ps", API->tmp_dir, uniq);
 					if (Ctrl->I.active)	/* Must pass two grids */
-						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
+						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
 					else
-						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
+						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
 					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
 					error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 					if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
-						sprintf (cmd, "%s -JX%3.2lfid -R%s/%s/%s/%s -O -C%s -Vn ->>%s", z_data, dim, W, E, S, N, cfile, psfile);
+						sprintf (cmd, "%s -JX%3.2lfid -R%s/%s/%s/%s -O -C%s -Ve ->>%s", z_data, dim, W, E, S, N, cfile, psfile);
 						GMT_Init_VirtualFile (API, 0, z_data);	/* Read the same grid again */
 						GMT_Init_VirtualFile (API, 0, cfile);	/* Read the same contours again */
 						if ((error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd))) {
