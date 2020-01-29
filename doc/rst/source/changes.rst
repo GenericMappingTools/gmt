@@ -79,9 +79,9 @@ summary of these changes:
    text since these are different glyphs in various character sets.
 
 *  Modern mode can produce any of several graphics :ref:`formats <tbl-formats>`. While the default
-   is PDF, this can be changed via a new GMT defaults :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>`.
+   is PDF, this can be changed via a new GMT defaults :term:`GMT_GRAPHICS_FORMAT`.
    The conversion from PostScript to the desired format can be modified via another new GMT defaults
-   setting :ref:`PS_CONVERT <PS_CONVERT>`.
+   setting :term:`PS_CONVERT`.
 
 *  We have relaxed the *style* syntax for pens so that the :*phase* part is optional, with a default of 0.
 
@@ -260,7 +260,7 @@ summary of these changes:
 *  All modules can now read data via external URL addresses.  This works
    by using libcurl to access an external file and save it to the users'
    GMT cache directory.  This directory can be specified via a new GMT
-   defaults called :ref:`DIR_CACHE <DIR_CACHE>` (and defaults to
+   defaults called :term:`DIR_CACHE` (and defaults to
    the sub-directory cache under the **$GMT_USERDIR** directory [~/.gmt]).
    Subsequent use of the same URL will be read from the cache (except
    if explicitly removed by the user).  An exception is CGI Get Commands
@@ -319,7 +319,7 @@ summary of these changes:
 
 *  The vector specifications now take one more modifier: **+h**\ *shape*
    allows vectors to quickly set the head shape normally specified via
-   :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>`.  This is particularly useful
+   :term:`MAP_VECTOR_SHAPE`.  This is particularly useful
    when the symbol types are given via the input file.
 
 *  The custom symbol macro language has been strengthened and now allows all
@@ -348,7 +348,7 @@ Several modules have obtained new options to extend their capabilities:
    segments, records, headers, etc.
 
 *  :doc:`gmtmath` will convert all plot dimensions given on the command line
-   to the prevailing length unit set via :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+   to the prevailing length unit set via :term:`PROJ_LENGTH_UNIT`.
    This allows you to combine measurements like 12c, 4i, and 72p. The module
    also has a new **SORT** operator for sorting columns and **RMSW** for weighted
    root-mean-square.
@@ -716,26 +716,26 @@ New default parameters
 There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:
 
-*  **FORMAT_FLOAT_MAP** now allows the use %'g to get comma-separated groupings
+*  :term:`FORMAT_FLOAT_MAP` now allows the use %'g to get comma-separated groupings
    when integer values are plotted.
 
-*  **FORMAT_FLOAT_OUT** can now accept a space-separated list of formats
+*  :term:`FORMAT_FLOAT_OUT` can now accept a space-separated list of formats
    as shorthand for first few columns.  On output it will show the formats
    in effect for multiple columns.
 
-*  **GMT_LANGUAGE** has replaced the old parameter **TIME_LANGUAGE**.
+*  :term:`GMT_LANGUAGE` has replaced the old parameter **TIME_LANGUAGE**.
    Related to this, the files share/time/\*.d have been moved and renamed to
    share/localization/\*.txt and now include a new section
    or cardinal points letter codes.
 
-*  **IO_SEGMENT_BINARY** is a new parameter that controls how binary records
+*  :term:`IO_SEGMENT_BINARY` is a new parameter that controls how binary records
    with just NaNs should or should not be interpreted as segment headers.
 
-*  **PROJ_GEODESIC** was added to control which geodesic calculation should be
+*  :term:`PROJ_GEODESIC` was added to control which geodesic calculation should be
    used.  Choose among Vincenty [Default], Andoyer (fast approximate geodesics),
    and Rudoe (from GMT4).
 
-*  **TIME_REPORT** now has defaults for absolute or elapsed time stamps.
+*  :term:`TIME_REPORT` now has defaults for absolute or elapsed time stamps.
 
 Updated common options
 ----------------------
@@ -1190,38 +1190,38 @@ New capabilities have been implemented by introducing new GMT default settings:
 *  :ref:`DIR_GSHHG <DIR Parameters>` specifies where to look for the required
    Global Self-consistent Hierarchical High-resolution Geography database.
 
-*  :ref:`GMT_COMPATIBILITY <GMT_COMPATIBILITY>` can be set to 4 to allow
+*  :term:`GMT_COMPATIBILITY` can be set to 4 to allow
    backwards compatibility with GMT 4 command-line syntax or 5 to impose
    strict GMT5 syntax checking.
 
-*  :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` is used to set the default
+*  :term:`IO_NC4_CHUNK_SIZE` is used to set the default
    chunk size for the **lat** and **lon** dimension of the **z** variable of
    netCDF version 4 files.
 
-*  :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>` is used to set
+*  :term:`IO_NC4_DEFLATION_LEVEL` is used to set
    the compression level for netCDF4 files upon output.
 
-*  :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can be used to change the
+*  :term:`IO_SEGMENT_MARKER` can be used to change the
    character that GMT uses to identify new segment header records [>].
 
-*  :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>` controls whether axes annotations
+*  :term:`MAP_ANNOT_ORTHO` controls whether axes annotations
    for Cartesian plots are horizontal or orthogonal to the individual axes.
 
-*  :ref:`GMT_FFT <GMT_FFT>` controls which algorithms to use for Fourier
+*  :term:`GMT_FFT` controls which algorithms to use for Fourier
    transforms.
 
-*  :ref:`GMT_TRIANGULATE <GMT_TRIANGULATE>` controls which algorithm to use
+*  :term:`GMT_TRIANGULATE` controls which algorithm to use
    for Delaunay triangulation.
 
 *  Great circle distance approximations can now be fine-tuned via new GMT default parameters
-   :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>` and :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`.
+   :term:`PROJ_MEAN_RADIUS` and :term:`PROJ_AUX_LATITUDE`.
    Geodesics are now even more accurate by using the Vincenty [1975] algorithm instead of
    Rudoe's method.
 
-*  :ref:`GMT_EXTRAPOLATE_VAL <GMT_EXTRAPOLATE_VAL>` controls what splines should do if
+*  :term:`GMT_EXTRAPOLATE_VAL` controls what splines should do if
    requested to extrapolate beyond the given data domain.
 
-*  :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>` allows users to modify how transparency will be
+*  :term:`PS_TRANSPARENCY` allows users to modify how transparency will be
    processed when converted to PDF [Normal].
 
 A few parameters have been introduced in GMT 5 in the past and have been removed again.
@@ -1277,7 +1277,7 @@ ways, such as
 *  All text can now optionally be filled with patterns and/or drawn with
    outline pens. In the past, only :doc:`text` could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
-   the corresponding FONT defaults (e.g., :ref:`FONT_TITLE <FONT_TITLE>`).
+   the corresponding FONT defaults (e.g., :term:`FONT_TITLE`).
 
 *  All color or fill specifications may append @\ *transparency* to
    change the PDF transparency level for that item. See **-t** for

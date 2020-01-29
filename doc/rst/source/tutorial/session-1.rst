@@ -339,7 +339,7 @@ Exercises:
 
 #. Add the **-V** option.
 #. Try **-R**\ 270/290/0/20 instead.  What happens to the annotations?
-#. Edit your gmt.conf file, change :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`
+#. Edit your gmt.conf file, change :term:`FORMAT_GEO_MAP`
    to another setting (see the :doc:`/gmt.conf` documentation), and plot again.
 #. Pick another region and change land color.
 #. Pick a region that includes the north or south poles.
@@ -373,7 +373,7 @@ Your plot should look like :ref:`our example 4 below <gmt_tut_4>`
 
 Exercises:
 
-#. Change the parameter :ref:`MAP_GRID_CROSS_SIZE\_PRIMARY <MAP_GRID_CROSS_SIZE\_PRIMARY>` to make grid crosses instead of gridlines.
+#. Change the parameter :term:`MAP_GRID_CROSS_SIZE_PRIMARY` to make grid crosses instead of gridlines.
 
 #. Change **-R** to a rectangular box specification instead of
    minimum and maximum values.

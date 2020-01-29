@@ -652,7 +652,7 @@ Notes On Operators
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
    set or implied, else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is ellipsoidal then
+   :term:`PROJ_ELLIPSOID` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
@@ -715,7 +715,7 @@ Notes On Operators
    **SAZ**, **SBAZ**, **SDIST**, **YLM**, and **grd_YLMg**.
 
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
-   is selected with :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`.
+   is selected with :term:`PROJ_ELLIPSOID`.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and

@@ -94,7 +94,7 @@ Optional Arguments
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
     (point). Without **-F**, the output (or input, see **-I**) are in
-    the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
+    the units specified by :term:`PROJ_LENGTH_UNIT` (but see **-M**).
 
 .. _-I:
 
@@ -106,7 +106,7 @@ Optional Arguments
 **-Mc**\|\ **i**\|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-F**.
+    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
 .. _-R:
 

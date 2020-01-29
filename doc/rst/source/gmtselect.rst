@@ -79,7 +79,7 @@ Optional Arguments
     **-fg** to indicate spherical distances and append a distance unit
     (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
-    inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
+    inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before
     Cartesian distances are compared to *dist*.
 
 .. _-D:
@@ -154,7 +154,7 @@ Optional Arguments
     **-fg** to indicate spherical distances append a distance unit (see
     `Units`_). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
-    points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
+    points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
@@ -246,7 +246,7 @@ Note On Processing ASCII Input Records
 
 Unless you are using the **-:** option, selected ASCII input records are
 copied verbatim to output. That means that options like **-foT** and
-settings like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` will not
+settings like :term:`FORMAT_FLOAT_OUT` and :term:`FORMAT_GEO_OUT` will not
 have any effect on the output. On the other hand, it allows selecting
 records with diverse content, including character strings, quoted or
 not, comments, and other non-numerical content.
@@ -258,7 +258,7 @@ If options **-C** or **-L** are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
 geographical (lon, lat) coordinates. Alternatively, specify **-R** and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
-or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`).
+or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 
 This program has evolved over the years. Originally, the **-R** and
 **-J** were mandatory in order to handle geographic data, but now there

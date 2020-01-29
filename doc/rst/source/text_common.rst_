@@ -19,7 +19,7 @@ Composite characters (overstrike) may be indicated with the
 each other. To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
 Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` must be set to an extended character set in your
+:term:`PS_CHAR_ENCODING` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
@@ -77,7 +77,7 @@ Optional Arguments
     Adjust the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) or % for a percentage of the font size.
+    :term:`PROJ_LENGTH_UNIT`) or % for a percentage of the font size.
     Optionally, use modifier **+t** to set the shape of the textbox when using **-G** and/or **-W**.
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
@@ -100,7 +100,7 @@ Optional Arguments
 
 **-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\|\ **+z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
-    annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
+    annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use this option to override these defaults by
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line. Use **+f** to set the

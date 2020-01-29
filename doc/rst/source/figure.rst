@@ -29,7 +29,7 @@ different figures but the optional arguments (*formats* and *options*) can only
 be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` *options* that will override the default settings provided via
-:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control the verbosity.
+:term:`PS_CONVERT` [**A**]. The only other available options control the verbosity.
 Each figure maintains its own history and settings, so
 memory of region and projection settings only apply on a per figure basis.
 

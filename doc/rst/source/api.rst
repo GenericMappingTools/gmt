@@ -2628,7 +2628,7 @@ obtain the two coordinates in decimal degrees by calling
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs`` separately. Note: Dimensions given with units of inches, cm, or points
-are converted to the current default unit set via :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`,
+are converted to the current default unit set via :term:`PROJ_LENGTH_UNIT`,
 while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
@@ -2646,7 +2646,7 @@ API or GMT default settings you can do so via
 
     int GMT_Get_Default (void *API, const char *keyword, char *value);
 
-where ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
+where ``keyword`` is one such keyword (e.g., :term:`PROJ_LENGTH_UNIT`) and
 ``value`` must be a character string long enough to hold the answer.  In
 addition to the long list of GMT defaults you can also inquire about the
 API parameters ``API_PAD`` (the current pad setting), ``API_IMAGE_LAYOUT`` (the
@@ -2669,7 +2669,7 @@ GMT default settings programmatically you would use
 
     int GMT_Set_Default (void *API, const char *keyword, const char *value);
 
-where as before ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
+where as before ``keyword`` is one such keyword (e.g., :term:`PROJ_LENGTH_UNIT`) and
 ``value`` must be a character string with the new setting.
 Note that all settings must be passed as text strings even if many are
 inherently integers or floats.

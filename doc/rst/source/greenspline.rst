@@ -120,7 +120,7 @@ Optional Arguments
     interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is spherical, we
+    distances in km. Then, if :term:`PROJ_ELLIPSOID` is spherical, we
     compute great circle arcs, otherwise geodesics. Option *mode* = 4
     applies to spherical surface spline interpolation only: **-D**\ 4
     for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)

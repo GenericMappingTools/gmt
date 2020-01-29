@@ -112,13 +112,13 @@ Optional Arguments
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0]. The unit used for
     the offsets is the plot distance unit in effect (see
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) unless **-F** is used, in which case the
+    :term:`PROJ_LENGTH_UNIT`) unless **-F** is used, in which case the
     offsets are in meters.
 
 .. _-D:
 
 **-Dc**\|\ **i**\|\ **p**
-    Temporarily override :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` and use **c** (cm),
+    Temporarily override :term:`PROJ_LENGTH_UNIT` and use **c** (cm),
     **i** (inch), or **p** (points) instead. Cannot be used with **-F**.
 
 .. _-E:
@@ -137,7 +137,7 @@ Optional Arguments
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
-    are in the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see
+    are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see
     **-D**).
 
 .. _-G:
@@ -180,7 +180,7 @@ Optional Arguments
 
 **-N**\ [**a**\|\ **c**\|\ **g**\|\ **m**]
     Convert from geodetic latitudes (using the current ellipsoid; see
-    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) to one of four different auxiliary latitudes
+    :term:`PROJ_ELLIPSOID`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from **a**\ uthalic,
     **c**\ onformal, **g**\ eocentric, and **m**\ eridional latitudes
     [geocentric]. Use **-I** to convert from auxiliary latitudes to
@@ -211,7 +211,7 @@ Optional Arguments
     be used in conjunction with **-R** **-J** to change the datum before
     coordinate projection (add **-I** to apply the datum conversion
     after the inverse projection). Make sure that the
-    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` setting is correct for your case.
+    :term:`PROJ_ELLIPSOID` setting is correct for your case.
 
 .. _-V:
 
@@ -237,13 +237,13 @@ Optional Arguments
     Append a constant speed unit; if missing we expect to read
     a variable speed from column 3.  The speed is expected to be
     in the distance units set via **-G** per time unit controlled
-    by :ref:`TIME_UNIT <TIME_UNIT>` [m/s].  Append **+i** to output
+    by :term:`TIME_UNIT` [m/s].  Append **+i** to output
     *incremental* travel times between successive points, **+a**
     to obtain *accumulated* travel times, or both to get both kinds
     of time information.  Use **+f** to format the accumulated
     (elapsed) travel time according to the ISO 8601 convention.
     As for the number of decimals used to represent seconds we
-    consult the :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`
+    consult the :term:`FORMAT_CLOCK_OUT`
     setting. Finally, append **+t**\ *epoch* to report absolute
     times (ETA) for successive points. Finally, because of the
     need for incremental distances the **-G** option with the
@@ -346,8 +346,8 @@ assuming a fixed speed of 12 knots.  We do this with
 
     gmt mapproject track.txt -Gn+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
-where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
-measured in nm (set by **-G**) per hour (set by :ref:`TIME_UNIT <TIME_UNIT>`).
+where :term:`TIME_UNIT` is set to hour so that the speed is
+measured in nm (set by **-G**) per hour (set by :term:`TIME_UNIT`).
 Elapsed times will be reported in hours (unless **+f** is added to **-Z**
 for ISO elapsed time).
 
@@ -357,7 +357,7 @@ To determine the geographic coordinates of the mid-point of this transverse Merc
 
     gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
 
-where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
+where :term:`TIME_UNIT` is set to hour so that the speed is
 
 Restrictions
 ------------
@@ -388,7 +388,7 @@ Ellipsoids And Spheroids
 
 GMT will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
-:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`). The user needs to be aware of a
+:term:`PROJ_ELLIPSOID`). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
 Mercator, Albers, and Lambert's conformal conic we use the ellipsoidal
 expressions when the areas mapped are small, and switch to the spherical
@@ -412,7 +412,7 @@ same parameters as Clarke 1866, but with f = 1/294.97861076. Also, be
 aware that older data may be referenced to different datums, and unless
 you know which datum was used and convert all data to a common datum you
 may experience mismatches of tens to hundreds of meters. (3) Finally, be
-aware that :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` have certain default values for some
+aware that :term:`PROJ_SCALE_FACTOR` have certain default values for some
 projections so you may have to override the setting in order to match
 results produced with other settings.
 
