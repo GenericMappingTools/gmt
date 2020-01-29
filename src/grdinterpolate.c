@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 						Ctrl->F.mode = GMT_SPLINE_NN;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 					case 'i': mode = GMT_IN; break;
 					case 'o': mode = GMT_OUT; break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Must be -Zi<levels> or -Zo\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Z option: Must be -Zi<levels> or -Zo\n");
 						n_errors++;
 					break;
 				}
@@ -251,11 +251,11 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.active[GMT_IN]) {
 		/* Create input level array */
 		if (gmt_create_array (GMT, 'Z', &(Ctrl->Z.T), NULL, NULL)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to set up input level array\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to set up input level array\n");
 			Return (API->error);
 		}
 		if (Ctrl->In.n_files != Ctrl->Z.T.n) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Number of input 2-D grids do not match number of levels given via -Zi\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Number of input 2-D grids do not match number of levels given via -Zi\n");
 			Return (API->error);
 		}
 		n_layers = Ctrl->Z.T.n;
@@ -266,21 +266,21 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	if (n_layers == 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Only one layer given - need at least 2 to interpolate\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Only one layer given - need at least 2 to interpolate\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Create output level array */
 	if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to set up output level array\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to set up output level array\n");
 		Return (API->error);
 	}
 
 	if (Ctrl->T.T.n > 1 && !Ctrl->Z.active[GMT_OUT]) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Sorry, writing 3-D output netCDF cube is not implemented yet\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Sorry, writing 3-D output netCDF cube is not implemented yet\n");
 		Return (GMT_MEMORY_ERROR);
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
 
 	/* Determine the range of input layers needed for interpolation */
 
@@ -302,7 +302,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		n_use = 2;
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
@@ -316,7 +316,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		else	/* Get the k'th layer from 3D cube */
 			sprintf (file, "%s?[%" PRIu64 "]", Ctrl->In.file[0], k);
 		if ((G[GMT_IN][k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
 			Return (API->error);
 		}
 	}

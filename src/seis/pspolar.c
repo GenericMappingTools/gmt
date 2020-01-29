@@ -280,13 +280,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					char *q = strstr (p, "+p");
 					if (q) q[0] = '\0';	/* Chop off the +p modifier */
 					if ((Ctrl->C.size = gmt_M_to_inch (GMT, &p[2]))) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
 						n_errors++;
 					}
 					if (q) q[0] = '+';	/* Restore the +p modifier */
 				}
 				else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->C.size)) {	/* Old syntax */
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
 					n_errors++;
 				}
 				break;
@@ -424,7 +424,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
 						break;
 				}
 				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
@@ -483,7 +483,7 @@ int GMT_polar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: polar\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: polar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_pspolar (V_API, mode, args);
@@ -548,7 +548,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {
 		gmt_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
 		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Point given by -D is outside map; no plotting occurs.");
+			GMT_Report (API, GMT_MSG_WARNING, "Point given by -D is outside map; no plotting occurs.");
 			Return (GMT_NOERROR);
 		};
 	}

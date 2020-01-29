@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 					Ctrl->M.mode = HIST_HEADER;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -183,12 +183,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 					if (strchr ("acmt", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|m|t!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -I Bad modifier (%c). Use -Ia|c|m|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 						Ctrl->E.mode = 3;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				Ctrl->E.active = true;
@@ -225,7 +225,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 					case '\0':
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -319,7 +319,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
 
@@ -338,16 +338,16 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Now processing cruise %s\n", list[argno]);
 
 		D = MGD77_Create_Dataset (GMT);
 
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header & data for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading header & data for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 
@@ -517,7 +517,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 		if (gmt_M_is_dnan(tmin) || gmt_M_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
-			GMT_Report (API, GMT_MSG_VERBOSE, "warning: cruise %s no time records.\n", M.NGDC_id);
+			GMT_Report (API, GMT_MSG_WARNING, "warning: cruise %s no time records.\n", M.NGDC_id);
 			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
 			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
 			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);

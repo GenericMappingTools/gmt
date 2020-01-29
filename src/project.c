@@ -409,13 +409,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'C':
 				Ctrl->C.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -C<lon0>/<lat0>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'D':
@@ -430,13 +430,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'E':
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -E<lon1>/<lat1>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->E.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->E.y), txt_b);
-					if (n_errors) GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'F':
@@ -445,13 +445,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 					if (k < PROJECT_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr ("xyzpqrs", opt->arg[j])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -Fxyzpqrs\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Choose from -Fxyzpqrs\n");
 							n_errors++;
 						}
 					}
 					else {
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Too many output columns selected\n");
 					}
 				}
 				break;
@@ -496,13 +496,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'T':
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -T<lonp>/<latp>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -T<lonp>/<latp>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->T.y), txt_b);
-					if (n_errors) GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'W':
@@ -526,7 +526,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	}
 
 	if (!Ctrl->N.active && ((Ctrl->C.active && (Ctrl->C.x < -360 || Ctrl->C.x > 360) && (Ctrl->C.y < -90 || Ctrl->C.y > 90)) || (Ctrl->E.active && (Ctrl->E.x < -360 || Ctrl->E.x > 360) && (Ctrl->E.y < -90 || Ctrl->E.y > 90)))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Your -C or -E options suggest Cartesian coordinates.  Please see -N\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Your -C or -E options suggest Cartesian coordinates.  Please see -N\n");
 		n_errors++;
 	}
 
@@ -757,7 +757,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 			radius = 0.5 * d_acosd (gmt_dot3v (GMT, a, b));
 			if (radius > fabs (Ctrl->G.colat)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
+				GMT_Report (API, GMT_MSG_ERROR, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
 				Ctrl->G.mode = 0;
 			}
 			else if (doubleAlmostEqual (Ctrl->G.colat, 90.0)) {	/* Great circle pole needed */
@@ -785,7 +785,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					if (n_iter > 500) done = true;	/* Safety valve */
 				} while (!done);
 				gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
 				gmt_M_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 				sin_lat_to_pole = s;
 				gmt_cross3v (GMT, P.pole, a, x);
@@ -836,8 +836,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Generate table data\n");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Generate table data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
 		d_along = Ctrl->L.min;
 		while ((Ctrl->L.max - d_along) > (GMT_CONV8_LIMIT*Ctrl->G.inc)) {
 			p_data[P.n_used].a[2] = d_along;
@@ -964,7 +964,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	else {	/* Must read input file */
 		struct GMT_RECORD *In = NULL;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 		/* Specify input and output expected columns */
 		if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
@@ -1027,12 +1027,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 						}
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+						GMT_Report (API, GMT_MSG_ERROR, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
 				else if (n_cols < 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Input file must at least have x,y or lon,lat columns\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Input file must at least have x,y or lon,lat columns\n");
 					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -1111,7 +1111,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
 		gmt_M_str_free (p_data[rec].t);

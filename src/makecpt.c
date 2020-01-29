@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -345,7 +345,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -H\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
 	                                   "Syntax error: No input files expected unless -E or -S are used\n");
@@ -355,7 +355,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without inc, -Z has no effect (ignored)\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning -T option: Without inc, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
@@ -411,7 +411,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Ctrl->C.file = strdup (GMT->init.cpt[0]);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Prepare CPT via the master file %s\n", Ctrl->C.file);
 
 	/* OK, we can now do the resampling */
 
@@ -426,10 +426,10 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			Return (API->error)
 
 	if (Ctrl->Q.active && Pin->has_hinge)
-		GMT_Report (API, GMT_MSG_VERBOSE, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
+		GMT_Report (API, GMT_MSG_WARNING, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
@@ -518,9 +518,9 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		gmt_M_free (GMT, zz);
 		if (Ctrl->T.T.set == 3)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -E|S implies -T%g/%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Input data and -E|S implies -T%g/%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc);
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
 	}
 
 	/* Set up arrays */
@@ -533,7 +533,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		int k;
 		extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 		if (nz != (int)(Pin->n_colors + 1)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Mismatch between number of entries in color and z lists\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Mismatch between number of entries in color and z lists\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) {
@@ -549,11 +549,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Must establish a log10 lattice instead of linear */
 		if (!(Ctrl->T.T.inc == 1.0 || Ctrl->T.T.inc == 2.0 || Ctrl->T.T.inc == 3.0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, inc must be 1, 2, or 3\n");
+			GMT_Report (API, GMT_MSG_ERROR, "For -Qo logarithmic spacing, inc must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.T.min <= 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, min must be > 0\n");
+			GMT_Report (API, GMT_MSG_ERROR, "For -Qo logarithmic spacing, min must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_M_free (GMT, Ctrl->T.T.array);	/* Free and rebuild using log scheme */

@@ -319,7 +319,7 @@ int GMT_velo (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: velo\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: velo\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psvelo (V_API, mode, args);
@@ -385,7 +385,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
+	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_INFORMATION, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	if (Ctrl->S.symbol == CINE || Ctrl->S.symbol == CROSS) {
 		if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
@@ -487,7 +487,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
 					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
 					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
@@ -556,9 +556,9 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of records read: %li\n", n_rec);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Number of records read: %li\n", n_rec);
 
-	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
+	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_INFORMATION, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
 	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 

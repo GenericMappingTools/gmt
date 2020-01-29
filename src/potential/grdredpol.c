@@ -885,7 +885,7 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 
 	if (date < 1900.0 || date > 2020.0) {
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2020)\n", date);
+		GMT_Report (C->parent, GMT_MSG_ERROR, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2020)\n", date);
 		return (true);
 	}
 
@@ -1106,7 +1106,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 								Ctrl->E.dip_dec_grd = true;
 								break;
 							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error using option -E\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Syntax error using option -E\n");
 								n_errors++;
 								break;
 						}
@@ -1118,11 +1118,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Number of filter coefficients must be odd\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
-					GMT_Report (API, GMT_MSG_NORMAL, "That was a ridiculous number of filter coefficients\n");
+					GMT_Report (API, GMT_MSG_ERROR, "That was a ridiculous number of filter coefficients\n");
 					n_errors++;
 				}
 				break;
@@ -1140,7 +1140,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = false;
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error using option -M (option ignored)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = true;
 					}
 				}
@@ -1168,7 +1168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-E option overrides -C\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-E option overrides -C\n");
 		Ctrl->C.const_f = false;
 	}
 
@@ -1252,11 +1252,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) {
 		if (wesn_new[XLO] < Gin->header->wesn[XLO] || wesn_new[XHI] > Gin->header->wesn[XHI]) {
-			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_ERROR, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (GMT_RUNTIME_ERROR);
 		}
 		else if (wesn_new[YLO] < Gin->header->wesn[YLO] || wesn_new[YHI] > Gin->header->wesn[YHI]) {
-			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_ERROR, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -1386,8 +1386,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					nu  = -sin(dip_m);
 				}
 			}
-			if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE))
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r",
+			if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
+				GMT_Report (API, GMT_MSG_INFORMATION, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r",
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
 			/* Compute the filter coefficients in the frequency domain */
@@ -1497,7 +1497,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n");
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n");
 
 	gmt_M_free (GMT, cosphi);      gmt_M_free (GMT, sinphi);
 	gmt_M_free (GMT, cospsi);      gmt_M_free (GMT, sinpsi);

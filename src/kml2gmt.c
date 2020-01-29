@@ -198,7 +198,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input KML data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input KML data\n");
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -222,19 +222,19 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.active) {
 		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing %s\n", Ctrl->In.file);
 		sprintf (buffer, "kml2gmt: KML read from %s", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading from standard input\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from standard input\n");
 		sprintf (buffer, "kml2gmt: KML read from standard input");
 	}
 	if (Ctrl->F.active)
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
 
 	Out = gmt_new_record (GMT, out, buffer);
 
@@ -360,7 +360,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, line);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u features with selected geometry\n", n_features);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Found %u features with selected geometry\n", n_features);
 
 	Return (GMT_NOERROR);
 }

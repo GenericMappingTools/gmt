@@ -222,7 +222,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	gmt_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) {
 		if ((Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {	/* Must keep original if readonly */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid duplication failed - memory error?\n");
 			gmt_M_free (GMT, cell);
 			return (GMT->parent->error);
 		}
@@ -270,7 +270,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 		unsigned int last_cell = n_cells / 2;
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_NOERROR) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to free Orig\n");
 		}
 	}
 
@@ -460,7 +460,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);

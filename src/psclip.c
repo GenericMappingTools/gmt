@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[<n>]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -180,10 +180,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -196,11 +196,11 @@ GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL,
 	switch (n) {
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore ALL clip levels\n");
+			GMT_Report (C->parent, GMT_MSG_INFORMATION, "Restore ALL clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore %d clip levels\n", n);
+			GMT_Report (C->parent, GMT_MSG_INFORMATION, "Restore %d clip levels\n", n);
 			break;
 	}
 }
@@ -212,7 +212,7 @@ int GMT_clip (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: clip\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: clip\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psclip (V_API, mode, args);
@@ -283,7 +283,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 		if (Ctrl->N.active) {	/* Must clip map */
 			eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
 			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
@@ -301,7 +301,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (D->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			DH = gmt_get_DD_hidden (D);

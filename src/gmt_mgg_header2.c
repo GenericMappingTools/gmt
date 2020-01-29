@@ -236,14 +236,14 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized header, expected 0x%04X saw 0x%04X\n",
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized header, expected 0x%04X saw 0x%04X\n",
 		            GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
 	if (mggHeader.length != sizeof (MGG_GRID_HEADER_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Invalid grid header size, expected %d, found %d\n",
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Invalid grid header size, expected %d, found %d\n",
 		            (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_GRD98_BADLENGTH);

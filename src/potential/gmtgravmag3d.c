@@ -218,7 +218,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = true;
@@ -327,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 								j++;
 							}
 							if (j != 2 && j != 3) {
-								GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+								GMT_Report(API, GMT_MSG_ERROR, "Syntax error -T option: Must give names for data points and vertex files\n");
 								n_errors++;
 							}
 							Ctrl->T.triangulate = true;
@@ -445,24 +445,24 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
 			Return (API->error);
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: %s does not have at least 2 columns with coordinates\n",
+			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
 			Return (GMT_PARSE_ERROR);
 		}
 		point   = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata_p = (unsigned int)point->n_records;
 		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-			GMT_Report(API, GMT_MSG_VERBOSE, "Multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
+			GMT_Report(API, GMT_MSG_WARNING, "Multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
 		if ((retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		/* read vertex file */
 		if ((retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.t_file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->T.t_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_t = retval;
@@ -474,7 +474,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
 		if ( (retval = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.stl_file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->T.stl_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_s = retval;
@@ -482,7 +482,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
 		if ( (retval = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.raw_file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->T.raw_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_r = retval;
@@ -490,14 +490,14 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_Report (API, GMT_MSG_VERBOSE, "%d triangles had ccw order\n", n_swap);
+		GMT_Report (API, GMT_MSG_WARNING, "%d triangles had ccw order\n", n_swap);
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
 
 		/* Build observation point vectors */
 		x = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
@@ -556,7 +556,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "It shouldn't pass here\n");
+		GMT_Report (API, GMT_MSG_ERROR, "It shouldn't pass here\n");
 		error = GMT_RUNTIME_ERROR;
 		goto END;
 	}
@@ -646,7 +646,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	error = GMT_NOERROR;
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && i > j*one_100) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && i > j*one_100) {
 			GMT_Message (API, GMT_TIME_NONE, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}
@@ -815,24 +815,24 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 	while (fgets (line, GMT_LEN256, fp)) {
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var1) { /* data file has 4 columns and the last contains magnetization */
 			if(sscanf (line, "%lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3]) !=4)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var2) { /* data file has 5 columns: x,y,z,mag,dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4]) !=5)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var3) { /* data file has 6 columns: x,y,z,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4], &in[5]) !=6)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else {		/* data file has 8 columns: x,y,z,field_dec,field_dip,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg",
 				   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7]) !=8)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		if (ndata_xyz == n_alloc) {
 			n_alloc <<= 1;
@@ -890,13 +890,13 @@ GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 
 	while (fgets (line, GMT_LEN256, fp)) {
 		if (sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_t+1, fname);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
 			vert = gmt_M_memory (GMT, vert, n_alloc, struct VERT);
                	}
 		if (in[0] < 0 || in[1] < 0 || in[2] < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative indices for line %d of %s\n", ndata_t+1, fname);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Negative indices for line %d of %s\n", ndata_t+1, fname);
 
 		}
 		vert[ndata_t].a = in[0];
@@ -926,7 +926,7 @@ GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	while (fgets (line, GMT_LEN256, fp)) {
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg",
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of %s\n", ndata_r+1, fname);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering line %d of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
 			n_alloc <<= 1;
 			raw_mesh = gmt_M_memory (GMT, raw_mesh, n_alloc, struct RAW);
@@ -965,23 +965,23 @@ GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 		sscanf (line, "%s", text);
 		if (strcmp (text, "outer") == 0) {
 			if (fgets (line, GMT_LEN256, fp) == NULL) /* get first vertex */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading outer first vertex of \n", fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading outer first vertex of \n", fname);
 			if (sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
 			if (fgets (line, GMT_LEN256, fp) == NULL) /* get second vertex */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading outer second vertex of \n", fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading outer second vertex of \n", fname);
 			if (sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
 			if (fgets (line, GMT_LEN256, fp) == NULL) /* get third vertex */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading outer third vertex of \n", fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading outer third vertex of \n", fname);
 			if (sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t3[0] = in[0];
 			raw_mesh[ndata_s].t3[1] = -in[1];
 			raw_mesh[ndata_s].t3[2] = in[2] * z_dir;

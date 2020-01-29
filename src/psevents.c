@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				Ctrl->E.active[id] = true;
 				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'C', PSEVENTS_MODS)) n_errors++;
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E: No modifiers given?\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -E: No modifiers given?\n");
 					n_errors++;
 					break;
 				}
@@ -237,7 +237,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E[s]: The +l modifier is only allowed for -Et\n");
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -E[s]: The +l modifier is only allowed for -Et\n");
 								n_errors++;
 							}
 							else
@@ -282,7 +282,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 					case 's':	id = 1;	k = 1;	break;	/* Size settings */
 					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -M: Directive %c not valid\n", opt->arg[1]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
 						break;
 				}
@@ -341,7 +341,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 					}
 				}
 				else {	/* Odd symbols not yet possible in this module */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -371,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: -T<now> is a required option.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: -T<now> is a required option.\n");
 		n_errors++;
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
@@ -393,7 +393,7 @@ int GMT_events (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: events\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: events\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psevents (V_API, mode, args);
@@ -439,7 +439,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psevents main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	/* Now we are ready to take on some input values */
 
@@ -506,7 +506,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				else	/* Temporariy file to be deleted after use */
 					sprintf (tmp_file_symbols, "%s/GMT_psevents_symbols_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_symbols = fopen (tmp_file_symbols, "w")) == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s\n", tmp_file_symbols);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s\n", tmp_file_symbols);
 					if (fp_labels) fclose (fp_labels);
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -582,7 +582,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 				else	/* Temporariy file to be deleted after use */
 					sprintf (tmp_file_labels, "%s/GMT_psevents_labels_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_labels = fopen (tmp_file_labels, "w")) == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s\n", tmp_file_labels);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s\n", tmp_file_labels);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
@@ -639,7 +639,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_symbols)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file_symbols);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_symbols);
 			if (fp_labels) fclose (fp_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -656,7 +656,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_labels)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file_labels);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -666,7 +666,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Events read: %" PRIu64 " Event symbols plotted: %" PRIu64 " Event labels plotted: %" PRIu64 "\n", n_total_read, n_symbols_plotted, n_labels_plotted);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Events read: %" PRIu64 " Event symbols plotted: %" PRIu64 " Event labels plotted: %" PRIu64 "\n", n_total_read, n_symbols_plotted, n_labels_plotted);
 
 	Return (GMT_NOERROR);
 }

@@ -259,7 +259,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
@@ -406,7 +406,7 @@ int GMT_solar (void *V_API, int mode, void *args) {
 		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
 		if (!(print_postion || dump_data)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: solar\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
 	}

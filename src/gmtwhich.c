@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -182,7 +182,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.active && (getcwd (cwd, PATH_MAX) == NULL)) {	/* Get full path, even for current dir */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to determine current working directory!\n");
 	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
 	Out = gmt_new_record (GMT, NULL, path);	//* Place coordinates in data and message in text */
@@ -223,7 +223,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 				strcpy (path, No);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			GMT_Report (API, GMT_MSG_NORMAL, "File %s not found!\n", &file[first]);
+			GMT_Report (API, GMT_MSG_ERROR, "File %s not found!\n", &file[first]);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

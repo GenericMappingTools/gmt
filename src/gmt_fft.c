@@ -189,7 +189,7 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 	given_space += n_columns * n_rows;
 	given_space *= 8;
 	if (do_print)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", n_columns, n_rows, given_time, given_err, given_space);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", n_columns, n_rows, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
 	best_time = s_time = e_time = given_time;
@@ -246,11 +246,11 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 	}
 
 	if (do_print) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -336,7 +336,7 @@ int gmt_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WA
 		case GMT_FFT_K_IS_KY: K->k_ptr = fft_ky; break;
 		case GMT_FFT_K_IS_KR: K->k_ptr = fft_kr; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad mode selected (%u) - exit\n", mode);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad mode selected (%u) - exit\n", mode);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			break;
 	}
@@ -401,9 +401,9 @@ GMT_LOCAL void fft_fftwf_import_wisdom_from_filename (struct GMT_CTRL *GMT) {
 		if (!access (*filename, R_OK)) {
 			status = fftwf_import_wisdom_from_filename (*filename);
 			if (status)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Imported FFTW Wisdom from file: %s\n", *filename);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Imported FFTW Wisdom from file: %s\n", *filename);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Importing FFTW Wisdom from file failed: %s\n", *filename);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Importing FFTW Wisdom from file failed: %s\n", *filename);
 		}
 		++filename; /* advance to next file in array */
 	}
@@ -422,9 +422,9 @@ GMT_LOCAL void fft_fftwf_export_wisdom_to_filename (struct GMT_CTRL *GMT) {
 
 	status = fftwf_export_wisdom_to_filename (filename);
 	if (status)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Exported FFTW Wisdom to file: %s\n", filename);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Exported FFTW Wisdom to file: %s\n", filename);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Exporting FFTW Wisdom to file failed: %s\n", filename);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Exporting FFTW Wisdom to file failed: %s\n", filename);
 }
 
 GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, unsigned n_columns, fftwf_complex *data, int direction) {
@@ -478,7 +478,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 			/* No Wisdom available
 			 * Need extra memory to prevent overwriting data while planning */
 			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (n_rows == 0 ? 1 : n_rows) * n_columns * sizeof(gmt_grdfloat));
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Generating new FFTW Wisdom, be patient...\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Generating new FFTW Wisdom, be patient...\n");
 			if (n_rows == 0) /* 1d DFT */
 				plan = fftwf_plan_dft_1d(n_columns, in_place_tmp, in_place_tmp, sign, GMT->current.setting.fftw_plan);
 			else /* 2d DFT */
@@ -490,10 +490,10 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 			fft_fftwf_export_wisdom_to_filename (GMT);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using preexisting FFTW Wisdom.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using preexisting FFTW Wisdom.\n");
 	} /* GMT->current.setting.fftw_plan != FFTW_ESTIMATE */
 	else
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
 
 	if (plan == NULL) { /* If either FFTW_ESTIMATE or new Wisdom generated */
 		if (n_rows == 0) /* 1d DFT */
@@ -503,7 +503,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 	}
 
 	if (plan == NULL) { /* There was a problem creating a plan */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create FFTW plan.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create FFTW plan.\n");
 		GMT_exit (GMT, GMT_ARG_IS_NULL); return NULL;
 	}
 
@@ -557,7 +557,7 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 	gmt_M_unused(mode);
 
 	if (log2n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
 		return -1;
 	}
 
@@ -569,7 +569,7 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 		GMT->current.fft.dsp_split_complex_1d.realp = calloc (n, sizeof(gmt_grdfloat));
 		GMT->current.fft.dsp_split_complex_1d.imagp = calloc (n, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_1d.realp == NULL || GMT->current.fft.dsp_split_complex_1d.imagp == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocate dsp_split_complex array of length %u\n", n);
 			return -1; /* out of memory */
 		}
 		GMT->current.fft.n_1d = n;
@@ -604,7 +604,7 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 	gmt_M_unused(mode);
 
 	if (log2nx == 0 || log2ny == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [n_columns/n_rows]\n",
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Need Radix-2 input try: %u/%u [n_columns/n_rows]\n",
 				1U<<propose_radix2 (n_columns), 1U<<propose_radix2 (n_rows));
 		return -1;
 	}
@@ -617,7 +617,7 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 		GMT->current.fft.dsp_split_complex_2d.realp = calloc (n_xy, sizeof(gmt_grdfloat));
 		GMT->current.fft.dsp_split_complex_2d.imagp = calloc (n_xy, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_2d.realp == NULL || GMT->current.fft.dsp_split_complex_2d.imagp == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
 			return -1; /* out of memory */
 		}
 		GMT->current.fft.n_2d = n_xy;
@@ -1606,7 +1606,7 @@ GMT_LOCAL int fft_1d_selection (struct GMT_CTRL *GMT, uint64_t n) {
 		/* Specific selection requested */
 		if (GMT->session.fft1d[GMT->current.setting.fft])
 			return GMT->current.setting.fft; /* User defined FFT */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (GMT->session.fft1d[k_fft_accelerate] && radix2 (n))
@@ -1622,7 +1622,7 @@ GMT_LOCAL int fft_2d_selection (struct GMT_CTRL *GMT, unsigned int n_columns, un
 		/* Specific selection requested */
 		if (GMT->session.fft2d[GMT->current.setting.fft])
 			return GMT->current.setting.fft; /* User defined FFT */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (GMT->session.fft2d[k_fft_accelerate] && radix2 (n_columns) && radix2 (n_rows))
@@ -1643,7 +1643,7 @@ int GMT_FFT_1D (void *V_API, gmt_grdfloat *data, uint64_t n, int direction, unsi
 	struct GMT_CTRL *GMT = API->GMT;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = fft_1d_selection (GMT, n);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft1d[use] (GMT, data, (unsigned int)n, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n;
@@ -1664,7 +1664,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = fft_2d_selection (GMT, n_columns, n_rows);
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft2d[use] (GMT, data, n_columns, n_rows, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n_columns * n_rows;

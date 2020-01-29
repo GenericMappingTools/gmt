@@ -326,7 +326,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error -A: Unexpected string %s\n", t);
+						GMT_Report (API, GMT_MSG_ERROR, "Error -A: Unexpected string %s\n", t);
 						n_errors++;
 					}
 				}
@@ -338,14 +338,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_ERROR, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_ERROR, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -368,7 +368,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->F.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error -T: append m, e, or neither\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Error -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -389,7 +389,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->G.value[GAP_N]  = urint (atof (&opt->arg[1]));
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
 						n_errors++;
 						break;
 				}
@@ -401,12 +401,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 					if (strchr ("acmt", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|m|t!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -I Bad modifier (%c). Use -Ia|c|m|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -446,7 +446,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						mrk = MGD77TRACK_MARK_DIST;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized modifier %c given to -T\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized modifier %c given to -T\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -454,19 +454,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
-					GMT_Report (API, GMT_MSG_NORMAL, "-TT|t|d takes 5 arguments\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = gmt_M_to_inch (GMT, ms);
 				if (gmt_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Bad fill specification for -T\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', NULL, " ");
 					n_errors++;
 				}
 				snprintf (tmp, GMT_LEN64, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getfont */
 				gmt_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (gmt_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Bad fill specification for -T\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', NULL, " ");
 					n_errors++;
 				}
@@ -623,7 +623,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
 
@@ -654,10 +654,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Now processing cruise %s\n", list[argno]);
 
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
 			continue;
 		}
 		last_julian = -1;
@@ -672,7 +672,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		/* Start reading data from file */
 
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
 			continue;
 		}
 		MGD77_Close_File (GMT, &M);
@@ -687,7 +687,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) &&
 		     track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
 		last_rec = rec;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
+		GMT_Report (API, GMT_MSG_INFORMATION, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
 		PSL_comment (PSL, "Tracking %s", list[argno]);
 
 		/* First draw the track line, clip segments outside the area */
@@ -880,7 +880,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotted %d cruises\n", n_cruises);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Plotted %d cruises\n", n_cruises);
 
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);

@@ -289,12 +289,16 @@ enum GMT_enum_time {
 
 /* Verbosity levels */
 enum GMT_enum_verbose {GMT_MSG_QUIET = 0,   /* No messages whatsoever */
-	GMT_MSG_NORMAL		= 1,        /* Default output, e.g., warnings and errors only */
-	GMT_MSG_TICTOC		= 2,        /* To print a tic-toc elapsed time message */
-	GMT_MSG_COMPAT		= 3,        /* Compatibility warnings */
-	GMT_MSG_VERBOSE		= 4,        /* Verbose level */
-	GMT_MSG_LONG_VERBOSE	= 5,        /* Longer verbose, -Vl in some programs */
-	GMT_MSG_DEBUG		= 6        /* Debug messages for developers mostly */
+	GMT_MSG_ERROR		= 1,	/* Errors only */
+	GMT_MSG_WARNING		= 2,	/* Adds warnings */
+	GMT_MSG_TICTOC		= 3,	/* Add timings */
+	GMT_MSG_INFORMATION	= 4,	/* Adds informational messages */
+	GMT_MSG_COMPAT		= 5,	/* Compatibility warnings */
+	GMT_MSG_DEBUG		= 6,	/* Debug messages for developers mostly */
+	/* For API backwards compatibility only */
+	GMT_MSG_NORMAL			= 1,	/* Now GMT_MSG_ERROR */
+	GMT_MSG_VERBOSE			= 4,	/* Now GMT_MSG_WARNING  */
+	GMT_MSG_LONG_VERBOSE	= 5		/* Now GMT_MSG_INFORMATION */
 };
 
 /* GMT_RECORD Declaration */

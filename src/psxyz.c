@@ -294,9 +294,9 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
 		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +c for both effects [none].\n");
+		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +c for both effects [none].\n");
 		n_errors++;
 	}
 	return n_errors;
@@ -344,7 +344,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Give x and y [and z] offsets\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: Give x and y [and z] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -408,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXYZ_CLIP_NO_REPEAT;
 				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXYZ_NO_CLIP_NO_REPEAT;
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -426,11 +426,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				Ctrl->W.active = true;
 				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
-						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors++;
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors += parse_old_W (API, Ctrl, opt->arg);
 					}
 				}
@@ -553,7 +553,7 @@ int GMT_plot3d (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: plot3d\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: plot3d\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psxyz (V_API, mode, args);
@@ -625,7 +625,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 
 	/* Do we plot actual symbols, or lines */
@@ -669,7 +669,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
@@ -910,7 +910,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 						}
 						else
-							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
 					}
 				}
 				continue;							/* Go back and read the next record */
@@ -927,7 +927,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.symbol == GMT_SYMBOL_COLUMN) {
 						n_z = get_column_bands (&S);
 						if (n_z > 1 && !Ctrl->C.active) {
-							GMT_Report (API, GMT_MSG_NORMAL, "The -So|O option with multiple layers requires -C - skipping this point\n");
+							GMT_Report (API, GMT_MSG_ERROR, "The -So|O option with multiple layers requires -C - skipping this point\n");
 							continue;
 						}
 					}
@@ -1035,7 +1035,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (S.accumulate == false) {
 					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
 						if (in[col] < in[col-1]) {
-							GMT_Report (API, GMT_MSG_NORMAL, "The -So|O option requires monotonically increasing z-values - not true near line %d\n", n_total_read);
+							GMT_Report (API, GMT_MSG_ERROR, "The -So|O option requires monotonically increasing z-values - not true near line %d\n", n_total_read);
 							skip = true;
 						}
 					}
@@ -1108,18 +1108,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					break;
 				case PSL_RNDRECT:
 					if (gmt_M_is_dnan (in[ex3])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					data[n].dim[2] = in[ex3];	/* radius */
 					/* Now fall through to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (gmt_M_is_dnan (in[ex1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle width = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle height = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle height = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					data[n].dim[0] = in[ex1];	/* x-dim */
@@ -1128,15 +1128,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				case PSL_ELLIPSE:
 				case PSL_ROTRECT:
 					if (gmt_M_is_dnan (p_in[ex1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (p_in[ex2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (p_in[ex3])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
@@ -1186,11 +1186,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[0] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
 					if (gmt_M_is_dnan (data[n].dim[0])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector azimuth = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector azimuth = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Vector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
@@ -1200,7 +1200,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
+							GMT_Report (API, GMT_MSG_ERROR, "Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
@@ -1242,11 +1242,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector azimuth = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					data[n].dim[0] = in[ex1+S.read_size];	/* direction */
@@ -1263,7 +1263,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
 					length = fabs (data[n].dim[2]-data[n].dim[1]);	/* Arc length in degrees */
 					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Math angle arc length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
@@ -1278,11 +1278,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					break;
 				case PSL_WEDGE:
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge start angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge stop angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {
@@ -1563,8 +1563,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		PSL_command (GMT->PSL, "U\n");
-		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
-		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		gmt_M_free (GMT, data);
 		gmt_reset_meminc (GMT);
 	}
@@ -1580,7 +1580,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (D->n_records && D->n_columns < 3) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
@@ -1603,7 +1603,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
 
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
 				n = (int)L->n_rows;				/* Number of points in this segment */
 
@@ -1623,16 +1623,16 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later for these symbols */
 						}
 						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_FRONT)
-							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
+							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
 						else	/* Probably just junk -S in header */
-							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segment header contained -S%s - ignored\n", s_args);
+							GMT_Report (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
 				if (S.fq_parse) { /* Did not supply -Sf or -Sq in the segment header */
 					if (S.symbol == GMT_SYMBOL_QUOTED_LINE) /* Did not supply -Sf in the segment header */
-						GMT_Report (API, GMT_MSG_NORMAL, "Segment header did not supply enough parameters for -Sf; skipping this segment\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Segment header did not supply enough parameters for -Sf; skipping this segment\n");
 					else
-						GMT_Report (API, GMT_MSG_NORMAL, "Segment header did not supply enough parameters for -Sq; skipping this segment\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Segment header did not supply enough parameters for -Sq; skipping this segment\n");
 					continue;
 				}
 

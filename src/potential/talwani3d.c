@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -761,7 +761,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
 		if (D->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
@@ -771,15 +771,15 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);		/* If true then input is in degrees and we must convert to km later on */
 
 	if (flat_earth && Ctrl->M.active[TALWANI3D_HOR]) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Error -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 
 	/* Read polygon information from multiple segment file */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All z-values are assumed to be given in %s\n",   uname[Ctrl->M.active[TALWANI3D_VER]]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "All z-values are assumed to be given in %s\n",   uname[Ctrl->M.active[TALWANI3D_VER]]);
 
 	/* Set up cake slice array and pointers */
 
@@ -837,7 +837,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				/* Process the next segment header */
 				ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
 				if (ns == 1 && !Ctrl->D.active) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Neither segment header nor -D specified density - must quit\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, cake);
 					Return (API->error);
 				}
@@ -855,7 +855,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			assert (false);						/* Should never get here */
 		}
 		if (first_slice) {	/* Did not have the required header record */
-			GMT_Report (API, GMT_MSG_NORMAL, "No segment header with depth [and optional densithy contrast] - must quit\n");
+			GMT_Report (API, GMT_MSG_ERROR, "No segment header with depth [and optional densithy contrast] - must quit\n");
 			gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
@@ -890,8 +890,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 
 	if (ndepths >= GMT_TALWANI3D_N_DEPTHS) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Model cannot have more than %d depth layer\n", GMT_TALWANI3D_N_DEPTHS);
-		GMT_Report (API, GMT_MSG_NORMAL, "You must increase GMT_TALWANI3D_N_DEPTHS and recompile\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Model cannot have more than %d depth layer\n", GMT_TALWANI3D_N_DEPTHS);
+		GMT_Report (API, GMT_MSG_ERROR, "You must increase GMT_TALWANI3D_N_DEPTHS and recompile\n");
 		gmt_M_free (GMT, cake);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -901,19 +901,19 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	cake = gmt_M_memory (GMT, cake, ndepths, struct CAKE);
 	qsort (cake, ndepths, sizeof (struct CAKE), comp_cakes);
 
-	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
+	if (n_duplicate) GMT_Report (API, GMT_MSG_WARNING, "Ignored %u duplicate vertices\n", n_duplicate);
 
 	/* Now we can write (if -V) to the screen the user's polygon model characteristics. */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "# of depths: %d\n", ndepths);
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give a listing of layers found */
+	GMT_Report (API, GMT_MSG_INFORMATION, "# of depths: %d\n", ndepths);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Give a listing of layers found */
 	 	for (k = 0; k < ndepths; k++) {
 	 		for (sl = cake[k].first_slice; sl; sl = sl->next)
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Depth: %lg Rho: %lg N-vertx: %4d\n",
+				GMT_Report (API, GMT_MSG_INFORMATION, "Depth: %lg Rho: %lg N-vertx: %4d\n",
 	 				cake[k].depth, sl->rho, sl->n);
 	 	}
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
 	G0 = (Ctrl->F.lset) ? g_normal (Ctrl->F.lat) : g_normal (lat);
 	/* Set up depths array needed by get_one_output3D */
@@ -997,7 +997,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			y_obs = gmt_M_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs /= METERS_IN_A_KM;	/* Convert to km */
 #ifndef _OPENMP
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished row %5d\n", row);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
 #endif
 			for (col = 0; col < (int)G->header->n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
@@ -1007,7 +1007,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			}
 		}
 		gmt_M_free (GMT, x_obs);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create %s\n", Ctrl->G.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Create %s\n", Ctrl->G.file);
 		sprintf (remark, "Calculated 3-D %s", kind[Ctrl->F.mode]);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, G)) {
 			gmt_M_free (GMT, depths);	gmt_M_free (GMT, cake);

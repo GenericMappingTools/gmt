@@ -329,7 +329,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -405,7 +405,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "-T only needed for 0-360 range data (ignored)");
+		GMT_Report (API, GMT_MSG_WARNING, "-T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && Ctrl->E.mode == GMT_IN && gmt_access (GMT, Ctrl->E.file, R_OK),
@@ -437,7 +437,7 @@ int GMT_rose (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: rose\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: rose\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psrose (V_API, mode, args);
@@ -489,7 +489,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -660,12 +660,12 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			for (i = 0; i < n; i++) length[i] /= max;
 	}
 
-	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		char *kind[2] = {"r", "bin sum"};
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s sign@%%.2f = %%d\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];
@@ -968,7 +968,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (Cin->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)Cin->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)Cin->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			T = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */

@@ -407,7 +407,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	}
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);
@@ -438,7 +438,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (F->n_columns < 3) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 3 are needed\n", file, (int)F->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 3 are needed\n", file, (int)F->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			hotspot[spot].D = F->table[0]->segment[0];	/* Only one table with one segment for histories */
@@ -518,7 +518,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_Report (API, GMT_MSG_WARNING, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -532,10 +532,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_Report (API, GMT_MSG_INFORMATION, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -685,7 +685,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\n", smt);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Working on seamount # %5d\n", smt);
 
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, hotspot);

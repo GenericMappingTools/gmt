@@ -229,7 +229,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -A: Must specify two values\n");
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -A: Must specify two values\n");
 						n_errors++;
 					}
 				}
@@ -586,7 +586,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Error creating text set for file %s\n", Ctrl->M.file);
 			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (GMT_RUNTIME_ERROR);
@@ -636,7 +636,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					out[col++] = height;
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
 			}
 		}
 	}
@@ -662,7 +662,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
 	if (Ctrl->Z.active) {	/* Start with the background depth */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Set the background level to %g\r", Ctrl->Z.value);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to %g\r", Ctrl->Z.value);
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (gmt_grdfloat)Ctrl->Z.value;
 	}
 	data = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* tmp */
@@ -672,7 +672,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
@@ -689,7 +689,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
+					GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d\n", n_smts);
 					/* Ok, we are inside the region - process data */
 
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
@@ -866,7 +866,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
 		if (empty) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "No contribution made for time %g %s\n",
+			GMT_Report (API, GMT_MSG_WARNING, "No contribution made for time %g %s\n",
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 			continue;
 		}
@@ -891,7 +891,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (gmt_grdfloat)n_scl;
 		}
 
@@ -910,7 +910,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error writing list of grid files to %s\n", Ctrl->M.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Error writing list of grid files to %s\n", Ctrl->M.file);
 		gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 		Return (API->error);

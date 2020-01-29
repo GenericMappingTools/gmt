@@ -268,7 +268,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path,
 				return (path);
 			}
 			else
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "1. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "1. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 		}
 		else {
 			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
@@ -288,7 +288,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path,
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: coastline.conf found at %s\n", path);
 		if (access (path, R_OK) == 0) {				/* coastline.conf can be read */
 			if ((fp = fopen (path, "r")) == NULL) {		/* but Coverity still complains if we don't test if it's NULL */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failed to open %s\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Failed to open %s\n", path);
 				return (NULL);
 			}
 			while (fgets (dir, PATH_MAX, fp)) {	/* Loop over all input lines until found or done */
@@ -308,7 +308,7 @@ L1:
 						return (path);
 					}
 					else
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failure, could not access %s\n", path);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Failure, could not access %s\n", path);
 				}
 				else {
 					if (found)
@@ -317,14 +317,14 @@ L1:
 						sprintf(path, "%s/%s%s", dir, stem, ".cdf");
 						if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
 							goto L1;
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Did not find %s nor ithe older *.cdf version\n", path);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Did not find %s nor ithe older *.cdf version\n", path);
 					}
 				}
 			}
 			fclose (fp);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
 	/* 3. Then check for the named file itself */
@@ -345,7 +345,7 @@ L1:
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Failure, could not access %s\n", path);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "3. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "3. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
 	/* 4. No success, just break down and cry */
@@ -353,7 +353,7 @@ L1:
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
 	if (warn_once && reset) {
 		warn_once = false;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
 								GSHHG_SITE ".\n", version.major, version.minor, version.patch);
 	}
@@ -407,18 +407,18 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 				case 's': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP;		break;	/* Skip Antarctica data south of 60S */
 				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Invalid code %c\n", p[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Invalid code %c\n", p[0]);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 			}
 			p++;	/* Go to next code */
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both g and i\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Cannot select both g and i\n");
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A modifier +a: Cannot select both s and S\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Cannot select both s and S\n");
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 	}
@@ -430,7 +430,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A option: No area given\n");
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
@@ -479,11 +479,11 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 					base = 0;	/* full */
 			}
 			else {	/* No basis - select low */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
 				base = 3;	/* low */
 			}
 			*res = choice[base];
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
 			break;
 		case 'f':	/* Full */
 			base = 0;
@@ -501,7 +501,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 			base = 4;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
@@ -518,7 +518,7 @@ char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res) {
 	(void)shore_check (GMT, ok);		/* See which resolutions we have */
 	k = orig = shore_res_to_int (res);	/* Get integer value of requested resolution */
 	while (k >= 0 && !ok[k]) --k;		/* Drop down one level to see if we have a lower resolution available */
-	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Resolution %c not available, substituting resolution %c\n", res, type[k]);
+	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Resolution %c not available, substituting resolution %c\n", res, type[k]);
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
@@ -572,11 +572,11 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 
 	if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
 		int_areas = true;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
 	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT) == NC_NOERR) {	/* New file with two Antarcticas */
 		gmt_M_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));
@@ -609,15 +609,15 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	if ((c->ant_mode & GSHHS_ANTARCTICA_GROUND) == 0)	/* Groundline not set, default to ice front */
 		c->ant_mode |= GSHHS_ANTARCTICA_ICE;
 
-	if (two_Antarcticas && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report information regarding Antarctica */
+	if (two_Antarcticas && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report information regarding Antarctica */
 		if (c->ant_mode & GSHHS_ANTARCTICA_GROUND)
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice grounding line as Antarctica coastline\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected ice grounding line as Antarctica coastline\n");
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected ice front line as Antarctica coastline\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected ice front line as Antarctica coastline\n");
 		if (c->ant_mode & GSHHS_ANTARCTICA_SKIP)
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping Antarctica coastline entirely\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping Antarctica coastline entirely\n");
 		else if (c->ant_mode & GSHHS_ANTARCTICA_SKIP_INV)
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Skipping all coastlines except Antarctica\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping all coastlines except Antarctica\n");
 	}
 
 	c->res = res;
@@ -1362,10 +1362,10 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (gmt_init_shore (GMT, res, &c, wesn, A)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		return (NULL);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
 
@@ -1374,9 +1374,9 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\r", c.bins[ind]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Reading GSHHS segments from bin # %5ld\r", c.bins[ind]);
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			return (NULL);
 		}
 		n_seg = 0;
@@ -1407,7 +1407,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 		}
 		gmt_free_shore (GMT, &c);	/* Done with this GSHHS bin */
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\n", c.bins[c.nb-1]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Reading GSHHS segments from bin # %5ld\n", c.bins[c.nb-1]);
 	if (tbl < n_alloc) D->table = gmt_M_memory (GMT, D->table, tbl, struct GMT_DATATABLE *);
 	D->n_tables = tbl;
 
@@ -1559,7 +1559,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 		else {
 			n_use = (unsigned int)gmt_compact_line (GMT, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Antipodal bin # %d not filled!\n", anti_bin);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Antipodal bin # %d not filled!\n", anti_bin);
 				gmt_M_free (GMT, xtmp);
 				gmt_M_free (GMT, ytmp);
 				continue;
@@ -1641,7 +1641,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 		last_bin = bin;
 		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
 		if ((err = gmt_get_shore_bin (GMT, ind, c))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [gmt_shore_level_at_point]\n", GMT_strerror(err));
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [gmt_shore_level_at_point]\n", GMT_strerror(err));
 			return (GMT_RUNTIME_ERROR);
 		}
 

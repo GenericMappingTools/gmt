@@ -125,7 +125,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 				}
 				else {
 					n_in++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one input file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Specify only one input file\n");
 					n_errors++;
 				}
 				break;
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Specify only one output file\n");
 					n_errors++;
 				}
 				else
@@ -213,17 +213,17 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (type[GMT_OUT] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
-		GMT_Report (API, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
+		GMT_Report (API, GMT_MSG_ERROR, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 		if (Ctrl->In.file[0] == '=') strcpy (fname[GMT_IN], "<stdin>");
 		if (Ctrl->G.file[0] == '=') strcpy (fname[GMT_OUT], "<stdout>");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
+		GMT_Report (API, GMT_MSG_INFORMATION, "Translating file %s (format %s) to file %s (format %s)\n",
 		            fname[GMT_IN], GMT->session.grdformat[type[GMT_IN]], fname[GMT_OUT], GMT->session.grdformat[type[GMT_OUT]]);
 		if (hmode && GMT->session.grdformat[type[GMT_OUT]][0] != 'c' && GMT->session.grdformat[type[GMT_OUT]][0] != 'n')
-			GMT_Report (API, GMT_MSG_VERBOSE, "No grd header will be written\n");
+			GMT_Report (API, GMT_MSG_WARNING, "No grd header will be written\n");
 	}
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
@@ -240,7 +240,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		if (!global && (GMT->common.R.wesn[XLO] < (Grid->header->wesn[XLO]-noise[GMT_X]) || GMT->common.R.wesn[XHI] > (Grid->header->wesn[XHI]+noise[GMT_X]))) error++;
 		if (GMT->common.R.wesn[YLO] < (Grid->header->wesn[YLO]-noise[GMT_Y]) || GMT->common.R.wesn[YHI] > (Grid->header->wesn[YHI]+noise[GMT_Y])) error++;
 		if (error) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
@@ -253,8 +253,8 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
 		if (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && gmt_M_180_range (Grid->header->wesn[YLO], Grid->header->wesn[YHI])) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Use -fg to ensure the output grid will be identified as geographic.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Use -fg to ensure the output grid will be identified as geographic.\n");
 		}
 	}
 	Grid->header->type = type[GMT_OUT];

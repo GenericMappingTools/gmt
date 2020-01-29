@@ -83,7 +83,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
 	gmt_filename_set (opt->arg);
@@ -102,13 +102,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
 			}
 			else {	/* Check if valid psconvert options */
 				if (!strchr ("ACDEHMQS", p[0])) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized psconvert option  -%s\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}
 			}
@@ -143,7 +143,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Not available in classic mode\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Not available in classic mode\n");
 		return (GMT_NOT_MODERN_MODE);
 	}
 

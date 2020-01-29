@@ -165,9 +165,9 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
@@ -237,11 +237,11 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	}
 	if (GMT->common.R.active[ISET])
 		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;
 }
 
-#define Return { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
+#define Return { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Found no history for option -%s\n", str); return (-1); }
 
 /*! . */
 GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -547,7 +547,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if ((new_opt = GMT_Make_Option (API, '=', &args[arg][1])) == NULL)	/* Make option with the listing name flagged as option -= */
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
 			for (f = 0; f < n_files; f++) {	/* Now expand all the listed files into options */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
 				if ((new_opt = GMT_Make_Option (API, GMT_OPT_INFILE, flist[f])) == NULL)
@@ -653,7 +653,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 
 	current = *head;
 	if (current && current->option < 0) {
-		GMT_Report(API, GMT_MSG_NORMAL, "WARNING in GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
+		GMT_Report(API, GMT_MSG_ERROR, "WARNING in GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
 		*head = NULL;
 		return (GMT_OK);	/* Should we return an error state instead? */
 	}

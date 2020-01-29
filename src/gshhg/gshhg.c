@@ -234,11 +234,11 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 
 	if (gmt_access (GMT, Ctrl->In.file, F_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot find file %s\n", Ctrl->In.file);
 		Return (GMT_FILE_NOT_FOUND);
 	}
 	if ((fp = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot read file %s\n", Ctrl->In.file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
@@ -255,7 +255,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		dim[GMT_SEG] = 1;	dim[GMT_COL] = 0;
 		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET|GMT_WITH_STRINGS, GMT_IS_TEXT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG header features.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for GSHHG header features.\n");
 			gmt_fclose (GMT, fp);
 			Return (API->error);
 		}
@@ -264,7 +264,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	else {
 		dim[GMT_SEG] = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for GSHHG features.\n");
 			gmt_fclose (GMT, fp);
 			Return (API->error);
 		}
@@ -288,7 +288,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 
 		level = h.flag & 255;				/* Level is 1-4 [5-6 for Antarctica] */
 		version = (h.flag >> 8) & 255;			/* Version is 1-255 */
-		if (first) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_Report (API, GMT_MSG_INFORMATION, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -367,7 +367,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				SH->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					gmt_fclose (GMT, fp);
 					Return (GMT_DATA_READ_ERROR);
 				}
@@ -407,7 +407,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

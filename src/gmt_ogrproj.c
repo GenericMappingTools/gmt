@@ -37,7 +37,7 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 	/* ------------------ Set the Source projection ----------------------------- */
 	hSrcSRS = OSRNewSpatialReference(NULL);
 	if (OSRSetFromUserInput(hSrcSRS, pSrcSRS) != OGRERR_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating source SRS failed.\n%s\n", pSrcSRS);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "OGRPROJ: Translating source SRS failed.\n%s\n", pSrcSRS);
 		return NULL;
 	}
 #if GDAL_VERSION_MAJOR >= 3
@@ -47,7 +47,7 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 	CPLErrorReset();
 	hDstSRS = OSRNewSpatialReference(NULL);
 	if (OSRSetFromUserInput(hDstSRS, pDstSRS) != OGRERR_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating target SRS failed.\n%s\n", pDstSRS);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "OGRPROJ: Translating target SRS failed.\n%s\n", pDstSRS);
 		OSRDestroySpatialReference(hSrcSRS);	/* It was just created above */
 		return NULL;
 	}
@@ -59,12 +59,12 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 	hCT = OCTNewCoordinateTransformation(hSrcSRS, hDstSRS);
 	if (hCT == NULL) {
 		char *pszSrcWKT = NULL, *pszDstWKT = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create coordinate transformation between the following\n"
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create coordinate transformation between the following\n"
 					"coordinate systems. This may be because they are not transformable,\n"
 					"or because projection services (PROJ.4 DLL/.so) could not be loaded.\n");
 		OSRExportToPrettyWkt(hSrcSRS, &pszSrcWKT, FALSE);
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n\n%s\n\n%s\n\n", pszSrcWKT, pszDstWKT);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Source:\n\n%s\n\n%s\n\n", pszSrcWKT, pszDstWKT);
 		CPLFree(pszSrcWKT);		CPLFree(pszDstWKT);
 	}
 	OSRDestroySpatialReference(hSrcSRS);	OSRDestroySpatialReference(hDstSRS);

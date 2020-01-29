@@ -247,7 +247,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Cannot decode limits\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
@@ -341,14 +341,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				}
 			}
 			else {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values %s\n", T_arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values %s\n", T_arg);
 				n_errors++;
 			}
 		}
 		else {	/* Got correct modern args */
 			if (strchr (T_arg, '/')) {	/* Gave low/high/inc */
 				if (sscanf (T_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values\n");
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
@@ -373,7 +373,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			GMT_Report (API, GMT_MSG_COMPAT, "Option -S<start>/<stop>/<inc> or -S<n> is deprecated; use -T instead.\n");
 			if (strchr (S_arg, '/')) {	/* Gave low/high/inc */
 				if (sscanf (S_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values %s\n", S_arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values %s\n", S_arg);
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
@@ -386,14 +386,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			Ctrl->T.active = true;
 		}
 		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values %s\n", S_arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Cannot decode values %s\n", S_arg);
 			n_errors++;
 		}
 	}
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -H\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
@@ -502,7 +502,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid(s)\n");
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -521,7 +521,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->n_columns == G[k-1]->header->n_columns && G[k]->header->n_rows == G[k-1]->header->n_rows)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not have the same domain!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Grids do not have the same domain!\n");
 			error = free_them_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
@@ -617,10 +617,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	mean /= ngood;
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 		sprintf (format, "Mean and S.D. of data are %s %s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, mean, sd);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, mean, sd);
 	}
 
 	/* Decide how to make steps in z.  */
@@ -684,7 +684,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
 			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Min and Max data values are equal.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Min and Max data values are equal.\n");
 				gmt_M_free (GMT, cdf_cpt);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -698,7 +698,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (j = 0; j < Ctrl->E.levels; j++) {
 		if (cdf_cpt[j].z <= G[0]->header->z_min)
 			cdf_cpt[j].f = 0.0;
@@ -713,7 +713,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			}
 			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen CPT  */

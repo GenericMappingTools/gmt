@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 					if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "No such option -E\n");
+					GMT_Report (API, GMT_MSG_ERROR, "No such option -E\n");
 					n_errors++;
 				}
 				break;
@@ -195,7 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 			case 'F':
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Must specify -F<out>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 							GMT_Report (API, GMT_MSG_COMPAT, "-Ff is deprecated; use -Ft instead.\n");
 							/* Fall through on purpose to 't' */
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Must specify t|s\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Must specify t|s\n");
 							n_errors++;
 							break;
 						}
@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 						Ctrl->F.mode = false;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Must specify t|s\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -372,7 +372,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		else if (gmt_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
-				GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot read file %s\n", opt->arg);
 				gmt_M_free (GMT, a);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -382,11 +382,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
+					GMT_Report (API, GMT_MSG_ERROR, "Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (angle == 0.0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Online rotation has zero opening angle\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Online rotation has zero opening angle\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				online_rot = true;
@@ -440,7 +440,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	}
 
 	if (a == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No rotation resulting from operation\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No rotation resulting from operation\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_out = 3 + ((Ctrl->F.mode) ? 1 - no_time : 2);

@@ -105,7 +105,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 		dim[GMT_COL] = 2;	/* Just 2 columns */
 		dim[GMT_ROW] = 3;	/* All segments has 3 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		if (nodes) {	/* Want Voronoi node and area information via Dout[1] */
@@ -113,12 +113,12 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			dim[GMT_COL] = 3 + get_area;	/* Here we use 3-4 columns */
 			dim[GMT_ROW] = D->n;	/* One row per node */
 			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate nodes\n");
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %d unique triangle polygons\n", D->n);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output %d unique triangle polygons\n", D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -149,7 +149,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			Dout[0]->table[0]->n_records += S[0]->n_rows;
 		}
 		Dout[0]->n_records = Dout[0]->table[0]->n_records;
-		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
 		uint64_t j, ij1, ij2, ij3, n_arcs, kk;
@@ -173,13 +173,13 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			arc[j] = arc[i];
 		}
 		n_arcs = j + 1;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
 
 		dim[GMT_SEG] = n_arcs;	/* Number of output arcs = segments */
 		dim[GMT_COL] = 2;		/* Only use 2 columns */
 		dim[GMT_ROW] = 2;		/* Each arc has 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate arcs\n");
 			gmt_M_free (GMT, arc);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
@@ -236,7 +236,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	dim[GMT_ROW] = (get_arcs) ? 2 : 0;	/* Rows (unknown length if polygons; fixed 2 if arcs) */
 	geometry = (get_arcs) ? GMT_IS_LINE : GMT_IS_POLY;
 	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate\n");
 		gmt_M_free (GMT, plon);		gmt_M_free (GMT, plat);
 		gmt_M_free (GMT, arc);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
@@ -246,7 +246,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		dim[GMT_COL] = 2 + get_area;	/* Need 2 or 3 columns */
 		dim[GMT_ROW] = n;	/* One row per node */
 		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate nodes\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		S[1] = Dout[1]->table[0]->segment[0];	/* Shorthand for this segment */
@@ -346,11 +346,11 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		dim[GMT_COL] = 2;	/* Only 2 columns */
 		dim[GMT_ROW] = 2;	/* Each arc needs 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
 			gmt_M_free (GMT, arc);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output %d unique Voronoi arcs\n", n_arcs);
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
@@ -369,7 +369,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
 	}
 	else {
-		if (get_area) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Total surface area = %g\n", area_sphere * R2);
 	}
 	gmt_M_free (GMT, plon);
 	gmt_M_free (GMT, plat);
@@ -492,7 +492,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, str
 			case 'L':
 				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else
@@ -570,7 +570,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 	do_authalic = (Ctrl->A.active && !Ctrl->T.active && !gmt_M_is_zero (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening));
 	if (do_authalic) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will convert to authalic latitudes for area calculations\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Will convert to authalic latitudes for area calculations\n");
 	}
 	steradians = (Ctrl->L.unit == 'd' && !Ctrl->T.active);	/* Flag so we can do steradians */
 
@@ -646,8 +646,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
-	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %d duplicate points in segments\n", n_dup);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %d points\n", n);
+	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %d duplicate points in segments\n", n_dup);
+	GMT_Report (API, GMT_MSG_WARNING, "Do Voronoi construction using %d points\n", n);
 
 	gmt_M_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;
@@ -707,7 +707,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Triangularization completed\n");
+	GMT_Report (API, GMT_MSG_WARNING, "Triangularization completed\n");
 
 	Return (GMT_NOERROR);
 }

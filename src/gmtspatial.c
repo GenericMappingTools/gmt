@@ -316,7 +316,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	struct GMT_DATASEGMENT *Sp = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine the segments in D closest to our segment\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Determine the segments in D closest to our segment\n");
 	I->distance = I->mean_distance = DBL_MAX;
 	mode3 = 3 + 10 * I->inside;	/* Set gmt_near_lines modes */
 	mode1 = 1 + 10 * I->inside;	/* Set gmt_near_lines modes */
@@ -423,9 +423,9 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	gmt_M_free (GMT, d_mean);
 
 	if (n_close == 0)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No other segment found within dmax [probably due to +p requirement]\n");
 	else
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
 
 	/* Here we have found the shortest distance from a point on S to another segment; S' is segment number seg */
 
@@ -489,7 +489,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			close[0] = (np > 1) ? separation[0] / use_length : DBL_MAX;	/* Closeness as viewed from S */
 			use_sep = (separation[0] == DBL_MAX) ? GMT->session.d_NaN : separation[0];
 			use_close = (close[0] == DBL_MAX) ? GMT->session.d_NaN : close[0];
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 			            "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
 			            length[0], use_sep, use_close, np, S->n_rows);
 			if (I->mode) {
@@ -500,7 +500,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				else med_close[0] = DBL_MAX;
 				use_sep = (np == 0 || med_separation[0] == DBL_MAX) ? GMT->session.d_NaN : med_separation[0];
 				use_close = (np == 0 || med_close[0] == DBL_MAX) ? GMT->session.d_NaN : med_close[0];
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n",
 				            use_sep, use_close);
 			}
 
@@ -529,7 +529,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			close[1] = (np > 1) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
 			use_sep = (separation[1] == DBL_MAX) ? GMT->session.d_NaN : separation[1];
 			use_close = (close[1] == DBL_MAX) ? GMT->session.d_NaN : close[1];
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
 				length[1], use_sep, use_close, np, Sp->n_rows);
 			if (I->mode) {
 				if (np > 1) {
@@ -540,7 +540,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				gmt_M_free (GMT, sep);
 				use_sep = (med_separation[1] == DBL_MAX) ? GMT->session.d_NaN : med_separation[1];
 				use_close = (med_close[1] == DBL_MAX) ? GMT->session.d_NaN : med_close[1];
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n",
 					use_sep, use_close);
 				k = (med_close[0] <= med_close[1]) ? 0 : 1;	/* Pick the setup with the smallest robust closeness */
 				closest = med_close[k];		/* The longer the segment and the closer they are, the smaller the closeness */
@@ -863,7 +863,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					}
 				}
 				else if (opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Bad modifier in %c in -A option\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Bad modifier in %c in -A option\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -876,7 +876,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				while (gmt_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* Gave a new +a<dmax> value */
-							GMT_Report (API, GMT_MSG_NORMAL, "+a not implemented yet\n");
+							GMT_Report (API, GMT_MSG_ERROR, "+a not implemented yet\n");
 							Ctrl->D.I.a_threshold = atof (&p[1]);
 							break;
 						case 'd':	/* Gave a new +d<dmax> value */
@@ -964,7 +964,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					if (gmt_M_compat_check (GMT, 6))
 						GMT_Report (API, GMT_MSG_COMPAT, "Leading -|+ with unit to set flat Earth or ellipsoidal mode is deprecated; use -j<mode> instead\n");
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Signed unit is not allowed - ignored\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Signed unit is not allowed - ignored\n");
 						n_errors++;
 					}
 				}
@@ -1004,31 +1004,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 								case 'a':	case '\0':	Ctrl->Q.dir = +1;	break;	/* Ascending [Default] */
 								case 'd':	Ctrl->Q.dir = -1;	break;	/* Descending */
 								default:
-									GMT_Report (API, GMT_MSG_NORMAL, "Error -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
+									GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
 									n_errors++;
 									break;
 							}
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "Error -Q: Unrecognized modifier +%c\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized modifier +%c\n", p[0]);
 							n_errors++;
 							break;
 					}
 				}
 				if (strstr (s, "++") || (s[0] && s[strlen(s)-1] == '+')) {	/* Deal with the old-style single "+" to mean header */
 					Ctrl->Q.header = true;
-					GMT_Report (API, GMT_MSG_NORMAL, "Warning:-Q+ is interpreted as -Q+h\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Warning:-Q+ is interpreted as -Q+h\n");
 				}
 				break;
 			case 'S':	/* Spatial polygon operations */
 				Ctrl->S.active = true;
 				if (opt->arg[0] == 'u') {
 					Ctrl->S.mode = POL_UNION;
-					GMT_Report (API, GMT_MSG_NORMAL, "Su not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Su not implemented yet\n");
 				}
 				else if (opt->arg[0] == 'i') {
 					Ctrl->S.mode = POL_INTERSECTION;
-					GMT_Report (API, GMT_MSG_NORMAL, "Si not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Si not implemented yet\n");
 				}
 				else if (opt->arg[0] == 's')
 					Ctrl->S.mode = POL_SPLIT;
@@ -1036,7 +1036,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					Ctrl->S.mode = POL_HOLE;
 				else if (opt->arg[0] == 'j') {
 					Ctrl->S.mode = POL_JOIN;
-					GMT_Report (API, GMT_MSG_NORMAL, "Sj not implemented yet\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Sj not implemented yet\n");
 				}
 				else
 					n_errors++;
@@ -1135,19 +1135,19 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_WARNING, "Processing input table data\n");
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (D->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
 	/* Allocate memory and read in all the files; each file can have many lines (-m) */
 
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found.\n");
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -1190,12 +1190,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		Out.data = out;	Out.text = NULL;
 		if (Ctrl->A.mode) {	/* Need to combine close neighbors until minimum distance >= min_dist, then output revised dataset */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NNA using min separation of %g%c\n", Ctrl->A.min_dist, Ctrl->A.unit);
+			GMT_Report (API, GMT_MSG_INFORMATION, "NNA using min separation of %g%c\n", Ctrl->A.min_dist, Ctrl->A.unit);
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Find # of pairs that are too close together */
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
 				if (Ctrl->A.mode == 2) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
 					n = 1;
 				}
 				for (k = n_pairs = 0; k < n; k++) {	/* Loop over pairs that are too close */
@@ -1225,7 +1225,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
 					n_pairs++;
 				}
-				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
+				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
 				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
 				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;
@@ -1276,7 +1276,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write points of NN info to stdout */
 		}
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 			d_bar /= n_points;
 			if (GMT->common.R.active[RSET]) {
 				int geo = gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0;
@@ -1290,10 +1290,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				gmt_free_segment (GMT, &S);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
-				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
+				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
 			}
 			else
-				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
+				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
 
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -1433,7 +1433,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					length_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out);
 				/* Must determine if this segment passes our dimension test */
 				if (Ctrl->Q.area && (out[GMT_Z] < Ctrl->Q.limit[0] || out[GMT_Z] > Ctrl->Q.limit[1])) {
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input segment %s %g is outside the chosen range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
+					GMT_Report (API, GMT_MSG_INFORMATION, "Input segment %s %g is outside the chosen range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
 					continue;
 				}
 				if (Ctrl->Q.header) {	/* Add the information to the segment header */
@@ -1488,7 +1488,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			n_seg = D->n_segments - Dout->n_segments;	/* Lost segments */
-			if (n_seg) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were outside and %" PRIu64 " were inside the chosen %s range of %g to %s\n",
+			if (n_seg) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments were outside and %" PRIu64 " were inside the chosen %s range of %g to %s\n",
 				n_seg, Dout->n_segments, type[poly], Ctrl->Q.limit[0], upper);
 		}
 		if (!new_data && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -1517,7 +1517,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				if (C->n_columns < 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+					GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 					Return (GMT_DIM_TOO_SMALL);
 				}
 				gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
@@ -1679,10 +1679,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						}
 						gmt_M_free (GMT, ylist2);
 						if (Ctrl->S.mode == POL_UNION) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Computing polygon union not implemented yet\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Computing polygon union not implemented yet\n");
 						}
 						if (Ctrl->S.mode == POL_INTERSECTION) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Computing polygon intersection not implemented yet\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Computing polygon intersection not implemented yet\n");
 						}
 					}
 				}
@@ -1720,7 +1720,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (C->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
@@ -1759,7 +1759,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
 
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Check if segment %" PRIu64 " from Table %d has duplicates:\n", seg, tbl);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Check if segment %" PRIu64 " from Table %d has duplicates:\n", seg, tbl);
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->data[col] = S1->data[col];
@@ -1871,7 +1871,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (C->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
@@ -1895,7 +1895,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			S2 = T->segment[seg2];
 			SH = gmt_get_DS_hidden (S2);
 			if (gmt_polygon_is_hole (GMT, S2)) continue;	/* Holes are handled in gmt_inonout */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (SH->ogr)	/* OGR data */
 					ID = irint (gmt_get_aspatial_value (GMT, GMT_IS_Z, S2));
@@ -1904,7 +1904,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				else if (gmt_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
-					GMT_Report (API, GMT_MSG_NORMAL, "No polygon ID found; ID set to NaN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "No polygon ID found; ID set to NaN\n");
 			}
 			else	/* Increment running polygon ID */
 				ID++;
@@ -1919,7 +1919,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					if (count[p]) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Segment %" PRIu64 "-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
+						GMT_Report (API, GMT_MSG_ERROR, "Segment %" PRIu64 "-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
 						continue;
 					}
 					count[p]++;
@@ -1930,11 +1930,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->data[n][row] = (double)ID;
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+						GMT_Report (API, GMT_MSG_WARNING, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (gmt_parse_segment_item (GMT, S->header, "-Z", NULL))
-							GMT_Report (API, GMT_MSG_NORMAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
+							GMT_Report (API, GMT_MSG_ERROR, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_LEN64] = {""};
 							buffer[0] = txt[0] = 0;
@@ -1942,7 +1942,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+							GMT_Report (API, GMT_MSG_WARNING, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 						}
 					}
 				}
@@ -1957,7 +1957,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
+		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -2014,7 +2014,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments split across the Dateline\n", n_split_tot);
+		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments split across the Dateline\n", n_split_tot);
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -2055,7 +2055,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						/* Here we determine if S1 is inside S2 or vice versa */
 						side = gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2);	/* Is S1 inside S2? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl1, seg1, tbl2, seg2, S1->data[GMT_X][0], S1->data[GMT_Y][0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl1, seg1, tbl2, seg2, S1->data[GMT_X][0], S1->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S1 is inside S2 */
@@ -2065,7 +2065,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						}
 						side = gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1);	/* Is S2 inside S1? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl2, seg2, tbl1, seg1, S2->data[GMT_X][0], S2->data[GMT_Y][0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl2, seg2, tbl1, seg1, S2->data[GMT_X][0], S2->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S2 is inside S1 */
@@ -2079,7 +2079,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		for (k1 = 0; k1 < D->n_segments; k1++) {	/* Make sure no polygon is inside more than one other polygon */
 			if (kase[k1] > 1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Polygon # %d is inside more than one polygon or is both inside and contains other polygons\n", k1);
+				GMT_Report (API, GMT_MSG_ERROR, "Polygon # %d is inside more than one polygon or is both inside and contains other polygons\n", k1);
 				gmt_M_free (GMT, kase);
 				Return (API->error);
 			}
@@ -2136,7 +2136,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
+		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
 	}
 
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */

@@ -1074,7 +1074,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
@@ -1175,7 +1175,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		}
 	}
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
 	if (!Ctrl->G.do_north) free(grd_n);
@@ -1226,7 +1226,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
@@ -1257,7 +1257,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	gmt_M_free (GMT, Out);
 
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
@@ -1326,20 +1326,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
 						case 'z': case 'v':		Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;		break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -C.!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
 							n_errors++;
 							break;
 					}
 					Ctrl->C.n_selected++;
 				}
 				if (Ctrl->C.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-C requires comma-separated component arguments.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Output filename */
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G can only be set once!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
@@ -1358,7 +1358,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'L':	/* Location for time-series */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon>/<lat>\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error: Expected -C<lon>/<lat>\n");
 					n_errors++;
 				}
 				else {
@@ -1366,7 +1366,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					                                     false, &Ctrl->L.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->L.y), txt_b);
-					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR,
 					                          "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
@@ -1377,7 +1377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'T':	/* Select time range for time-series tide estimates */
 				Ctrl->T.active = true;
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valid date\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -1392,7 +1392,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
@@ -1411,7 +1411,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 				n_errors += gmt_parse_inc_option (GMT, 'I', "0.5");
 		}
 		else if (!GMT->common.R.inc[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "When setting -R must set -I too!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
 			n_errors++;
 		}
 	}
@@ -1516,7 +1516,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 
 		if (!Ctrl->T.T.count && (strchr("dhms", Ctrl->T.T.unit) == NULL)){
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify valid interval unit (d|h|m|s)\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify valid interval unit (d|h|m|s)\n");
 			return GMT_PARSE_ERROR;
 		}
 

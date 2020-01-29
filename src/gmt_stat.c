@@ -148,7 +148,7 @@ GMT_LOCAL int gmtstat_ln_gamma_r (struct GMT_CTRL *GMT, double x, double *lngam)
 		*lngam = 0.0;
 		return (0);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Ln Gamma:  Bad x (x <= 0).\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Ln Gamma:  Bad x (x <= 0).\n");
 	return (-1);
 }
 
@@ -165,7 +165,7 @@ GMT_LOCAL void gmtstat_gamma_ser (struct GMT_CTRL *GMT, double *gamser, double a
 	}
 
 	if (x < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x < 0 in gmtstat_gamma_ser(x)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x < 0 in gmtstat_gamma_ser(x)\n");
 		*gamser = GMT->session.d_NaN;
 		return;
 	}
@@ -184,7 +184,7 @@ GMT_LOCAL void gmtstat_gamma_ser (struct GMT_CTRL *GMT, double *gamser, double a
 	 		return;
 	 	}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "a too large, ITMAX too small in gmtstat_gamma_ser(x)\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "a too large, ITMAX too small in gmtstat_gamma_ser(x)\n");
 }
 
 GMT_LOCAL void gmtstat_gamma_cf (struct GMT_CTRL *GMT, double *gammcf, double a, double x, double *gln) {
@@ -218,7 +218,7 @@ GMT_LOCAL void gmtstat_gamma_cf (struct GMT_CTRL *GMT, double *gammcf, double a,
 			gold = g;
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "a too large, ITMAX too small in gmtstat_gamma_cf(x)\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "a too large, ITMAX too small in gmtstat_gamma_cf(x)\n");
 }
 
 GMT_LOCAL double gmtstat_gammq (struct GMT_CTRL *GMT, double a, double x) {
@@ -227,7 +227,7 @@ GMT_LOCAL double gmtstat_gammq (struct GMT_CTRL *GMT, double a, double x) {
 	double G = 0.0, gln;
 
 	if (x < 0.0 || a <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Invalid arguments to GMT_gammaq\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Invalid arguments to GMT_gammaq\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -271,7 +271,7 @@ GMT_LOCAL double gmtstat_cf_beta (struct GMT_CTRL *GMT, double a, double b, doub
 		bz = 1.0;
 	} while (((fabs (az-aold) ) >= (BETA_EPS * fabs (az))) && (m < ITMAX));
 
-	if (m == ITMAX) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_cf_beta:  A or B too big, or ITMAX too small.\n");
+	if (m == ITMAX) GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_cf_beta:  A or B too big, or ITMAX too small.\n");
 
 	return (az);
 }
@@ -280,11 +280,11 @@ GMT_LOCAL int gmtstat_inc_beta (struct GMT_CTRL *GMT, double a, double b, double
 	double bt, gama, gamb, gamab;
 
 	if (a <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_inc_beta:  Bad a (a <= 0).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_inc_beta:  Bad a (a <= 0).\n");
 		return(-1);
 	}
 	if (b <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_inc_beta:  Bad b (b <= 0).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_inc_beta:  Bad b (b <= 0).\n");
 		return(-1);
 	}
 	if (x > 0.0 && x < 1.0) {
@@ -318,11 +318,11 @@ GMT_LOCAL int gmtstat_inc_beta (struct GMT_CTRL *GMT, double a, double b, double
 		return (0);
 	}
 	else if (x < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_inc_beta:  Bad x (x < 0).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_inc_beta:  Bad x (x < 0).\n");
 		*ibeta = 0.0;
 	}
 	else if (x > 1.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_inc_beta:  Bad x (x > 1).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_inc_beta:  Bad x (x > 1).\n");
 		*ibeta = 1.0;
 	}
 	return (-1);
@@ -358,7 +358,7 @@ GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, do
 	/* Check range of arguments:  */
 
 	if (nu1 <= 0 || nu2 <= 0 || chisq1 < 0.0 || chisq2 < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_q:  Bad argument(s).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_q:  Bad argument(s).\n");
 		return (-1);
 	}
 
@@ -377,7 +377,7 @@ GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, do
 		the value.  All subsequent code is not used.  */
 
 	if (gmtstat_inc_beta (GMT, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_q:  Trouble in gmtstat_inc_beta call.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_q:  Trouble in gmtstat_inc_beta call.\n");
 		return (-1);
 	}
 	return (0);
@@ -410,7 +410,7 @@ GMT_LOCAL int gmtstat_f_test_new (struct GMT_CTRL *GMT, double chisq1, uint64_t 
 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = GMT->session.d_NaN;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_test_new: Bad argument(s).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test_new: Bad argument(s).\n");
 		return (-1);
 	}
 
@@ -432,7 +432,7 @@ GMT_LOCAL double gmtstat_factln (struct GMT_CTRL *GMT, int n) {
 	/* returns log(n!) */
 	static double a[101];	/* Automatically initialized to zero */
 	if (n < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "n < 0 in gmtstat_factln(n)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "n < 0 in gmtstat_factln(n)\n");
 		return (GMT->session.d_NaN);
 	}
 	if (n <= 1) return 0.0;
@@ -471,11 +471,11 @@ GMT_LOCAL int gmtstat_f_test (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1,
 	double f, df1, df2, p1, p2;
 
 	if (chisq1 <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_test:  Chi-Square One <= 0.0\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Chi-Square One <= 0.0\n");
 		return(-1);
 	}
 	if (chisq2 <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_test:  Chi-Square Two <= 0.0\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Chi-Square Two <= 0.0\n");
 		return(-1);
 	}
 	if (chisq1 > chisq2) {
@@ -489,11 +489,11 @@ GMT_LOCAL int gmtstat_f_test (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1,
 		df2 = (double)nu1;
 	}
 	if (gmtstat_inc_beta(GMT, 0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_test:  Trouble on 1st gmtstat_inc_beta call.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Trouble on 1st gmtstat_inc_beta call.\n");
 		return(-1);
 	}
 	if (gmtstat_inc_beta(GMT, 0.5*df1, 0.5*df2, df1/(df1+df2/f), &p2) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_test:  Trouble on 2nd gmtstat_inc_beta call.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Trouble on 2nd gmtstat_inc_beta call.\n");
 		return(-1);
 	}
 	*prob = p1 + (1.0 - p2);
@@ -537,7 +537,7 @@ GMT_LOCAL int gmtstat_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, d
 	int64_t	k, kstop, kt, kb;
 
 	if (t < 0.0 || n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_student_t_a:  Bad argument(s).\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_student_t_a:  Bad argument(s).\n");
 		*prob = GMT->session.d_NaN;
 		return (-1);
 	}
@@ -745,7 +745,7 @@ double gmt_ker (struct GMT_CTRL *GMT, double x) {
 	double t, rxsq, alpha, beta;
 
 	if (x <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x <= 0 in gmt_ker(x)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x <= 0 in gmt_ker(x)\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -785,7 +785,7 @@ double gmt_kei (struct GMT_CTRL *GMT, double x) {
 		/* Zero is valid.  If near enough to zero, return kei(0)  */
 		if (x > -GMT_CONV8_LIMIT) return (-0.25 * M_PI);
 
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x < 0 in gmt_kei(x)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x < 0 in gmt_kei(x)\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -951,12 +951,12 @@ double gmt_plm (struct GMT_CTRL *GMT, int l, int m, double x) {
 
 	/* x is cosine of colatitude and must be -1 <= x <= +1 */
 	if (fabs(x) > 1.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "|x| > 1.0 in gmt_plm\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "|x| > 1.0 in gmt_plm\n");
 		return (GMT->session.d_NaN);
 	}
 
 	if (m < 0 || m > l) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_plm requires 0 <= m <= l.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_plm requires 0 <= m <= l.\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -1026,7 +1026,7 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
 
 	if (fabs (x) > 1.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "|x| > 1.0 in gmt_plm_bar\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "|x| > 1.0 in gmt_plm_bar\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -1038,7 +1038,7 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	}
 
 	if (m > l) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_plm_bar requires 0 <= m <= l.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_plm_bar requires 0 <= m <= l.\n");
 		return (GMT->session.d_NaN);
 	}
 
@@ -1135,7 +1135,7 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
 
 	if (fabs (x) > 1.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "|x| > 1.0 in gmt_plm_bar_all\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "|x| > 1.0 in gmt_plm_bar_all\n");
 		return;
 	}
 
@@ -1214,7 +1214,7 @@ double gmt_factorial (struct GMT_CTRL *GMT, int n) {
 	int i;
 
 	if (n < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "n < 0 in gmt_factorial(n)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "n < 0 in gmt_factorial(n)\n");
 		return (GMT->session.d_NaN);
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
@@ -1230,7 +1230,7 @@ double gmt_factorial (struct GMT_CTRL *GMT, int n) {
 double gmt_permutation (struct GMT_CTRL *GMT, int n, int r) {
 	/* Compute Permutations n_P_r */
 	if (n < 0 || r < 0 || r > n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "n < 0 or r < 0 or r > n in gmt_permutation(n,r)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "n < 0 or r < 0 or r > n in gmt_permutation(n,r)\n");
 		return (GMT->session.d_NaN);
 	}
 	return (floor (0.5 + exp (gmtstat_factln (GMT, n) - gmtstat_factln (GMT, n-r))));
@@ -1239,7 +1239,7 @@ double gmt_permutation (struct GMT_CTRL *GMT, int n, int r) {
 double gmt_combination (struct GMT_CTRL *GMT, int n, int r) {
 	/* Compute Combinations n_C_r */
 	if (n < 0 || r < 0 || r > n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "n < 0 or r < 0 or r > n in gmt_combination(n,r)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "n < 0 or r < 0 or r > n in gmt_combination(n,r)\n");
 		return (GMT->session.d_NaN);
 	}
 	return (floor (0.5 + exp (gmtstat_factln (GMT, n) - gmtstat_factln (GMT, r) - gmtstat_factln (GMT, n-r))));
@@ -1804,7 +1804,7 @@ int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 			m_guess = (temp < glb) ? temp : glb;	/* Move guess at least to glb  */
 		}
 		else {	/* If we get here, I made a mistake!  */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal goof in gmt_median; please report to developers!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal goof in gmt_median; please report to developers!\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 
@@ -1925,7 +1925,7 @@ int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_mode: Array not sorted in non-decreasing order.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_mode: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */
@@ -1981,7 +1981,7 @@ int gmt_mode_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, uint64_t j, b
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_mode_f: Array not sorted in non-decreasing order.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_mode_f: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */
@@ -2673,7 +2673,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 		else
 			wmode = GMT->session.d_NaN;
 		if (!overwrite) gmt_free_grid (GMT, &Z, true);
-		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d Multiple modes found in the grid\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d Multiple modes found in the grid\n", GMT_n_multiples);
 	}
 	return wmode;
 }
@@ -2732,7 +2732,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 		}
 		gmt_getmad_f (GMT, Z->data, n, wmode, &lmsscl);
 		if (!overwrite) gmt_free_grid (GMT, &Z, true);
-		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d Multiple modes found in the grid\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d Multiple modes found in the grid\n", GMT_n_multiples);
 	}
 	return lmsscl;
 }
@@ -2754,7 +2754,7 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
 	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
 		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[1+GMT->current.setting.proj_aux_latitude/2]);
 	/* May need special treatment of pole points */
 	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */

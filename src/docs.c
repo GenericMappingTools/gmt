@@ -116,7 +116,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		else if (opt->option == 'V') { opt = opt->next; continue; }	/* Skip the optional -V common option */
 
 		if (opt->option != GMT_OPT_INFILE) {	/* This is not good */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown option (-%c)\n", opt->option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown option (-%c)\n", opt->option);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -128,7 +128,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else
 				strcpy (name, opt->arg);
 			if (GMT->hidden.func_level == GMT_TOP_MODULE) {	/* Can only open figs if called indirectly via gmt end show */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument %s is not a known module or documentation short-hand\n",
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument %s is not a known module or documentation short-hand\n",
 					name);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -166,7 +166,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				if (!together) {	/* Must call file_viewer separately on each file */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening local file %s via %s\n", opt->arg, file_viewer);
 					if ((error = system (view))) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening local file %s via %s failed with error %d\n",
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Opening local file %s via %s failed with error %d\n",
 							opt->arg, file_viewer, error);
 						perror ("docs");
 						Return (GMT_RUNTIME_ERROR);
@@ -235,7 +235,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 					else {	/* Insert file:// if we can determine the current directory */
 						char cwd[PATH_MAX] = {""};
 						if (getcwd (cwd, PATH_MAX) == NULL) {
-							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory - pass file name as is.\n");
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to determine current working directory - pass file name as is.\n");
 							snprintf (URL, PATH_MAX, "%s", docname);
 						}
 						else	/* Prepend CWD */
@@ -282,7 +282,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				sprintf (cmd, "%s %s", file_viewer, URL);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s via %s\n", URL, file_viewer);
 				if ((error = system (cmd))) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s via %s failed with error %d\n",
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Opening %s via %s failed with error %d\n",
 						URL, file_viewer, error);
 					perror ("docs");
 					Return (GMT_RUNTIME_ERROR);
@@ -295,7 +295,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	if (together && got_file) {	/* Call file_viewer once with all given files */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening local file(s) via %s\n", view);
 		if ((error = system (view))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening local files via %s failed with error %d\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Opening local files via %s failed with error %d\n",
 				view, error);
 			perror ("docs");
 			Return (GMT_RUNTIME_ERROR);
@@ -304,7 +304,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 
 	if (!called) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No files or documents given\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No files or documents given\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
