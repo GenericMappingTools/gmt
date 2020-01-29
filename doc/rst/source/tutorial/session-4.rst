@@ -34,17 +34,14 @@ Its main argument is the name of the master color table (a list is
 shown if you run the module with no arguments) and the equidistant
 *z*-values to go with it.  The main options are given below.
 
-  +---------+----------------------------------------------+
-  | Option  | Purpose                                      |
-  +=========+==============================================+
-  | **-C**  | Set the name of the master CPT to use        |
-  +---------+----------------------------------------------+
-  | **-I**  | Reverse the sense of the color progression   |
-  +---------+----------------------------------------------+
-  | **-V**  | Run in verbose mode                          |
-  +---------+----------------------------------------------+
-  | **-Z**  | Make a continuous rather than discrete table |
-  +---------+----------------------------------------------+
+======= =============================================
+Option  Purpose
+======= =============================================
+**-C**  Set the name of the master CPT to use
+**-I**  Reverse the sense of the color progression
+**-V**  Run in verbose mode
+**-Z**  Make a continuous rather than discrete table
+======= =============================================
 
 To make discrete and continuous color CPTs for data that ranges
 from -20 to 60, with color changes at every 10, try these two variants:
@@ -68,17 +65,13 @@ modern mode maintains what is known as the current CPT.  However,
 if you must explicitly name an output CPT then you will need to
 add the -H option for modern mode to allow output to stdout.
 
-  +--------------------------------------------------------+------------------------------------------------+
-  | Option                                                 | Purpose                                        |
-  +========================================================+================================================+
-  | **-C**\ *cpt*                                          | The required CPT                               |
-  +--------------------------------------------------------+------------------------------------------------+
-  | **-Dx**\ *xpos/ypos*\ **+w**\ *length/width*\ [**+h**] | Sets the position and dimensions of scale bar. |
-  +--------------------------------------------------------+------------------------------------------------+
-  |                                                        | Append **+h** to get horizontal bar            |
-  +--------------------------------------------------------+------------------------------------------------+
-  | **-I**\ *max\_intensity*                               | Add illumination effects                       |
-  +--------------------------------------------------------+------------------------------------------------+
+======================================================= ==================================================================================
+Option                                                  Purpose
+======================================================= ==================================================================================
+**-C**\ *cpt*                                           The required CPT
+**-Dx**\ *xpos/ypos*\ **+w**\ *length/width*\ [**+h**]  Sets the position and dimensions of scale bar. Append **+h** to get horizontal bar
+**-I**\ *max\_intensity*                                Add illumination effects
+======================================================= ==================================================================================
 
 Here is an example of four different ways of presenting the color bar:
 
@@ -165,15 +158,13 @@ Color images are made with :doc:`/grdimage` which takes the usual
 common command options (by default the **-R** is taken from the data set)
 and a CPT; the main other options are:
 
-  +---------------------+-----------------------------------------------------------------------+
-  | Option              | Purpose                                                               |
-  +=====================+=======================================================================+
-  | **-E**\ *dpi*       | Sets the desired resolution of the image [Default is data resolution] |
-  +---------------------+-----------------------------------------------------------------------+
-  | **-I**\ *intenfile* | Use artificial illumination using intensities from *intensfile*       |
-  +---------------------+-----------------------------------------------------------------------+
-  | **-M**              | Force gray shade using the (television) YIQ conversion                |
-  +---------------------+-----------------------------------------------------------------------+
+==================== ======================================================================
+Option               Purpose
+==================== ======================================================================
+**-E**\ *dpi*        Sets the desired resolution of the image [Default is data resolution]
+**-I**\ *intenfile*  Use artificial illumination using intensities from *intensfile*
+**-M**               Force gray shade using the (television) YIQ conversion
+==================== ======================================================================
 
 We want to make a plain color map with a color bar superimposed above
 the plot.  We try
@@ -199,7 +190,6 @@ required input and output filenames, the available options are
 
   +------------------------------------------------------------------+-------------------------------------------------------------------+
   | Option                                                           | Purpose                                                           |
-  +==================================================================+===================================================================+
   | **-A**\ *azimuth*                                                | Azimuthal direction for gradients                                 |
   +------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-fg**                                                          | Indicates that this is a geographic grid                          |
@@ -337,23 +327,17 @@ Regardless of plot type, some arguments must be specified; these are
 
 In addition, some options may be required:
 
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | Option                  | Purpose                                                                                                     |
-  +=========================+=============================================================================================================+
-  | **-C**\ *cpt*           | The *cpt* is required for color-coded surfaces and for contoured mesh plots                                 |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-G**\ *drape\_file*   | Assign colors using *drape\_file* instead of *relief\_file*                                                 |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-I**\ *intens\_file*  | File with illumination intensities                                                                          |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-Qm**                 | Selects mesh plot                                                                                           |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-Qs**\ [**+m**]       | Surface plot using polygons; append **+m** to show mesh.  This option allows for **-W**                     |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-Qi**\ *dpi*\ [**g**] | Image by scan-line conversion.  Specify *dpi*; append **g** to force gray-shade image.  **-B** is disabled. |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-W**\ *pen*           | Draw contours on top of surface (except with **-Qi**)                                                       |
-  +-------------------------+-------------------------------------------------------------------------------------------------------------+
+========================= =============================================================================================================
+Option                    Purpose
+========================= =============================================================================================================
+**-C**\ *cpt*             The *cpt* is required for color-coded surfaces and for contoured mesh plots
+**-G**\ *drape\_file*     Assign colors using *drape\_file* instead of *relief\_file*
+**-I**\ *intens\_file*    File with illumination intensities
+**-Qm**                   Selects mesh plot
+**-Qs**\ [**+m**]         Surface plot using polygons; append **+m** to show mesh.  This option allows for **-W**
+**-Qi**\ *dpi*\ [**g**]   Image by scan-line conversion.  Specify *dpi*; append **g** to force gray-shade image.  **-B** is disabled.
+**-W**\ *pen*             Draw contours on top of surface (except with **-Qi**)
+========================= =============================================================================================================
 
 Mesh-plot
 ~~~~~~~~~
