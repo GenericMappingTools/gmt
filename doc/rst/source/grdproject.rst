@@ -156,7 +156,7 @@ as the measure unit:
 
    ::
 
-    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
+    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
 
 To inversely transform the file data.nc (which is in Mercator meters with Greenwich
 as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)
