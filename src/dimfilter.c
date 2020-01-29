@@ -207,7 +207,7 @@ static char *dimtemplate =
 	"		gmt grdfilter /tmp/$$.dim.nc -G$orsout/dim.${width}.nc -F${dim_smooth_type}${dim_smooth_width} -D${dim_dist} # smoothing\n"
 	"\n"
 	"		gmt grdmath /tmp/$$.t.nc $orsout/dim.${width}.nc SUB = /tmp/$$.sd.nc # residual from DiM\n"
-	"		gmt grdvolume /tmp/$$.sd.nc -Sk -C$level -Vl | awk \'{print r,$2,$3,$4}\' r=${width} >> $ors  # ORS from DiM\n"
+	"		gmt grdvolume /tmp/$$.sd.nc -Sk -C$level -Vi | awk \'{print r,$2,$3,$4}\' r=${width} >> $ors  # ORS from DiM\n"
 	"	done\n"
 	"\n"
 	"fi\n"

@@ -474,7 +474,7 @@ Other Movie Formats
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool `FFmpeg <https://www.ffmpeg.org/>`_, which has more codecs and processing options than there are children in China.
-If you wish to run ffmpeg with other options, select mp4 and run **movie** with long verbose (**-Vl**).
+If you wish to run ffmpeg with other options, select mp4 and run **movie** with verbose information on (**-Vi**).
 At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.

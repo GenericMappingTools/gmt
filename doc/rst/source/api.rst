@@ -2069,21 +2069,23 @@ progress reports, etc., and are sent to standard error.
 
 .. _tbl-verbosity:
 
-    +----------------------+------------------------------------------------+
-    | constant             | description                                    |
-    +======================+================================================+
-    | GMT_MSG_QUIET        | No messages whatsoever                         |
-    +----------------------+------------------------------------------------+
-    | GMT_MSG_NORMAL       | Default output, e.g., warnings and errors only |
-    +----------------------+------------------------------------------------+
-    | GMT_MSG_COMPAT       | Compatibility warnings                         |
-    +----------------------+------------------------------------------------+
-    | GMT_MSG_VERBOSE      | Verbose level                                  |
-    +----------------------+------------------------------------------------+
-    | GMT_MSG_LONG_VERBOSE | Longer verbose                                 |
-    +----------------------+------------------------------------------------+
-    | GMT_MSG_DEBUG        | Debug messages for developers mostly           |
-    +----------------------+------------------------------------------------+
+    +----------------------+--------------------------------------+
+    | constant             | description                          |
+    +======================+======================================+
+    | GMT_MSG_QUIET        | Quiet; no messages whatsoever        |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_ERROR        | Error messages only                  |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_WARNING      | Warnings                             |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_TIMING       | Time usage for slow algorithms       |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_INFORMATION  | Informational messages               |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_COMPAT       | Compatibility warnings               |
+    +----------------------+--------------------------------------+
+    | GMT_MSG_DEBUG        | Debug messages for developers mostly |
+    +----------------------+--------------------------------------+
 
     The different levels of verbosity that can be selected.
 

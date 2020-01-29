@@ -214,7 +214,7 @@ Optional Arguments
     Larger values overestimate the incremental changes during
     convergence, and will reach a solution more rapidly but may become
     unstable. If you use a large value for this factor, it is a good
-    idea to monitor each iteration with the **-Vl** option. [Default =
+    idea to monitor each iteration with the **-Vi** option. [Default =
     1.4 converges quickly and is almost always stable.]
 
 .. include:: explain_-aspatial.rst_
@@ -262,7 +262,7 @@ hawaii_grd.nc, and monitoring each iteration, try:
 
    ::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
+    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Gridding Geographic Data: Boundary Conditions
 ---------------------------------------------

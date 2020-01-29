@@ -11589,12 +11589,13 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_GMT_VERBOSE:
 			switch (GMT->current.setting.verbose) {
-				case GMT_MSG_QUIET:         strcpy (value, "quiet");	break;
-				case GMT_MSG_ERROR:        strcpy (value, "normal");	break;
-				case GMT_MSG_WARNING:       strcpy (value, "verbose");	break;
-				case GMT_MSG_INFORMATION:  strcpy (value, "long_verbose");	break;
-				case GMT_MSG_DEBUG:         strcpy (value, "debug");	break;
-				default:                    strcpy (value, "compat");	break;
+				case GMT_MSG_QUIET:			strcpy (value, "quiet");		break;
+				case GMT_MSG_ERROR:			strcpy (value, "error");		break;
+				case GMT_MSG_WARNING:		strcpy (value, "warning");		break;
+				case GMT_MSG_TIMING:		strcpy (value, "timing");		break;
+				case GMT_MSG_INFORMATION:	strcpy (value, "information");	break;
+				case GMT_MSG_DEBUG:			strcpy (value, "debug");		break;
+				default:					strcpy (value, "compat");		break;
 			}
 			break;
 
