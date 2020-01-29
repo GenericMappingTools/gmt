@@ -224,8 +224,8 @@ enum PSL_enum_verbose {
 	PSL_MSG_DEBUG,			/* Debug messages */
 	/* For API backwards compatibility only */
 	PSL_MSG_NORMAL = 1,			/* Now PSL_MSG_ERROR */
-	PSL_MSG_VERBOSE = 4			/* Now PSL_MSG_WARNING */
-	PSL_MSG_LONG_VERBOSE = 5,	/* Now PSL_MSG_INFORMATION */
+	PSL_MSG_VERBOSE = 4,		/* Now PSL_MSG_WARNING */
+	PSL_MSG_LONG_VERBOSE = 5	/* Now PSL_MSG_INFORMATION */
 	};
 
 /* Color spaces */

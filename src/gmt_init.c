@@ -11592,7 +11592,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				case GMT_MSG_QUIET:			strcpy (value, "quiet");		break;
 				case GMT_MSG_ERROR:			strcpy (value, "error");		break;
 				case GMT_MSG_WARNING:		strcpy (value, "warning");		break;
-				case GMT_MSG_TIMING:		strcpy (value, "timing");		break;
+				case GMT_MSG_TICTOC:		strcpy (value, "timing");		break;
 				case GMT_MSG_INFORMATION:	strcpy (value, "information");	break;
 				case GMT_MSG_DEBUG:			strcpy (value, "debug");		break;
 				default:					strcpy (value, "compat");		break;
