@@ -206,8 +206,8 @@ total file size of the coastlines, rivers, and borders database is only
    Map using the crude resolution coastline data.
 
 
-Here, we use the :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>` bit flags to achieve horizontal
-annotations and set :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>` to suppress some
+Here, we use the :term:`MAP_ANNOT_OBLIQUE` bit flags to achieve horizontal
+annotations and set :term:`MAP_ANNOT_MIN_SPACING` to suppress some
 longitudinal annotations near the S pole that otherwise would overprint.
 The square box indicates the outline of the next map.
 

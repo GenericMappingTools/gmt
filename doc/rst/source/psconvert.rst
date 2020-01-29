@@ -71,10 +71,10 @@ Optional Arguments
     Append **+u** to first remove any GMT-produced time-stamps.
     Optionally, append **+m** to specify extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
+    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
 
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
-    The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
+    The default is to use what is set by :term:`PROJ_LENGTH_UNIT`
     but you can append a new unit and/or impose different width and height. What happens
     here is that Ghostscript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and

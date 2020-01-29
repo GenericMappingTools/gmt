@@ -171,9 +171,9 @@ Precision And Format
 --------------------
 
 The output format of individual columns are controlled by
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` except for geographic coordinates
-(:ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`) and absolute calendar time
-(:ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>`, :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`).
+:term:`FORMAT_FLOAT_OUT` except for geographic coordinates
+(:term:`FORMAT_GEO_OUT`) and absolute calendar time
+(:term:`FORMAT_DATE_OUT`, :term:`FORMAT_CLOCK_OUT`).
 Make sure these are set to give you enough significant digits to achieve the desired precision.
 
 Examples

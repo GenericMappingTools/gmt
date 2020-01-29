@@ -30,7 +30,7 @@ simultaneously without having destructive interference in updating the history o
 options.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` *options* (without their leading hyphens) that will override the default settings provided via
-:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control the verbosity.
+:term:`PS_CONVERT` [**A**]. The only other available options control the verbosity.
 
 Optional Arguments
 ------------------
@@ -49,7 +49,7 @@ Optional Arguments
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable
     :ref:`graphics formats <tbl-formats>`
-    (default format is configurable via setting :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` [pdf]).
+    (default format is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
 
 .. _begin-options:
 
@@ -103,7 +103,7 @@ are produced then we do not need to give any further arguments::
     gmt begin
 
 Should we give such a command and still produce a plot then it will automatically
-be called gmtsession.pdf (assuming :ref:`GMT_GRAPHICS_FORMAT <GMT_GRAPHICS_FORMAT>` is pdf).
+be called gmtsession.pdf (assuming :term:`GMT_GRAPHICS_FORMAT` is pdf).
 
 To set up proceedings for a jpg figure with 0.5c white margin, we would run::
 

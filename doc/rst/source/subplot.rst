@@ -95,10 +95,10 @@ Optional Arguments
     Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :ref:`FONT_TAG size <FONT_TAG>` dimension].
+    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :term:`FONT_TAG` size dimension].
     Append **+g**\ *fill* to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [4p/4p, i.e., 20% of the :ref:`FONT_TAG size <FONT_TAG>`].
+    by the justification [4p/4p, i.e., 20% of the :term:`FONT_TAG` size].
     Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
@@ -160,7 +160,7 @@ Optional Arguments
 
 **-T**\ *heading*
     While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
-    overarching *heading* [no heading]. Font is determined by setting :ref:`FONT_HEADING <FONT_HEADING>`.
+    overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
 .. _-V:
 

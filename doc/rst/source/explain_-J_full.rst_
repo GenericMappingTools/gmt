@@ -7,7 +7,7 @@ projection. If the character is upper case then the argument(s) supplied
 as scale(s) is interpreted to be the map width (or axis lengths), else
 the scale argument(s) is the map scale (see its definition for each
 projection). UNIT is cm, inch, or point, depending on the
-:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting in **gmt.conf**, but this can be
+:term:`PROJ_LENGTH_UNIT` setting in **gmt.conf**, but this can be
 overridden on the command line by appending **c**, **i**, or **p** to
 the *scale* or *width* values. Append **+dh**, **+du**, or **+dl** to the
 given *width* if you instead want to set map height, the maximum (upper)
@@ -19,9 +19,9 @@ The ellipsoid used in the map projections is user-definable by editing
 the **gmt.conf** file in your home directory. 73 commonly used
 ellipsoids and spheroids are currently supported, and users may also
 specify their own custom ellipsoid parameters [Default is WGS-84].
-Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
-:ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
-:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.
+Several GMT parameters can affect the projection: :term:`PROJ_ELLIPSOID`,
+:term:`GMT_INTERPOLANT`, :term:`PROJ_SCALE_FACTOR`, and
+:term:`PROJ_LENGTH_UNIT`; see the :doc:`gmt.conf` man page for details.
 Choose one of the following projections (The **E** or **C** after
 projection names stands for Equal-Area and Conformal, respectively):
 
@@ -304,7 +304,7 @@ projection names stands for Equal-Area and Conformal, respectively):
         **p**\ *power*
            Raise values to *power* before scaling.
         **t**
-           Input coordinates are time relative to :ref:`TIME_EPOCH <TIME_EPOCH>`.
+           Input coordinates are time relative to :term:`TIME_EPOCH`.
         **T**
            Input coordinates are absolute time.
 

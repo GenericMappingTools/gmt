@@ -129,7 +129,7 @@
         append /*string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append %\ *font*
-        to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
+        to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
     **-Sm**

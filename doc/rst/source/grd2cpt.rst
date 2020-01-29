@@ -59,15 +59,15 @@ standard GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cp
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-:ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-and :ref:`COLOR_NAN <COLOR_NAN>` from
+:term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
-there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
-:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
+there is no :term:`COLOR_MODEL` entry in the master CPT, the
+:term:`COLOR_MODEL` specified in the :doc:`gmt.conf` file or on the command
 line will be used.
 
 Required Arguments
@@ -98,8 +98,8 @@ Optional Arguments
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
-    parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
-    :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
+    parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
+    :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
 
 .. _-E:
@@ -137,8 +137,8 @@ Optional Arguments
 **-I**\ [**c**][**z**]
     Append **c** [Default] to reverse the sense of color progression in the master CPT. Also
     exchanges the foreground and background colors, including those
-    specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
-    :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+    specified by the parameters :term:`COLOR_BACKGROUND` and
+    :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-S** values are used
     so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
@@ -154,10 +154,10 @@ Optional Arguments
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master CPT with the values of the parameters
-    :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-    and :ref:`COLOR_NAN <COLOR_NAN>`
+    :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+    and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
+    combined with **-D**, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 

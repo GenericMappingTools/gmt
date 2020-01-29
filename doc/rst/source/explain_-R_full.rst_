@@ -33,8 +33,8 @@
     values from the last use of **-R** in a previous GMT command
     will be used.
     For calendar time coordinates you may either give (a) relative time
-    (relative to the selected :ref:`TIME_EPOCH <TIME_EPOCH>` and in the selected
-    :ref:`TIME_UNIT <TIME_UNIT>`; append **t** to **-JX**\|\ **x**), or (b) absolute
+    (relative to the selected :term:`TIME_EPOCH` and in the selected
+    :term:`TIME_UNIT`; append **t** to **-JX**\|\ **x**), or (b) absolute
     time of the form [*date*]\ **T**\ [*clock*] (append **T** to
     **-JX**\|\ **x**). At least one of *date* and *clock* must be
     present; the **T** is always required. The *date* string must be of

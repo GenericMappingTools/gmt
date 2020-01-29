@@ -63,7 +63,7 @@ Optional Arguments
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
@@ -99,7 +99,7 @@ Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable's **unit** attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
 are then converted to the internal time system specified by
-:ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` in the
+:term:`TIME_UNIT` and :term:`TIME_EPOCH` in the
 :doc:`gmt.conf` file or on the
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**

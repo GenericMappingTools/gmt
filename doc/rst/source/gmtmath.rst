@@ -125,7 +125,7 @@ Optional Arguments
 **-Q**
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
     In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
 
 .. _-S:
 

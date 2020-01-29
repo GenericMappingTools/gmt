@@ -4,7 +4,7 @@ Note on PostScript
 If the user selects **ps** as one of the formats, then please be aware that
 it is recommended you first set the desired paper size.  With **ps**\ , GMT needs to
 work with a fixed paper size since, unlike the **eps** format, there will be
-no cropping to BoundingBox.  If no paper size is specified via :ref:`PS_MEDIA <PS_MEDIA>`
+no cropping to BoundingBox.  If no paper size is specified via :term:`PS_MEDIA`
 then GMT will default to A4 and issue a warning; GMT is unable to determine if that
 size is adequate for your plot but if the canvas width exceeds A4 paper width we will
 switch page orientation to landscape. For all other formats the final dimension will

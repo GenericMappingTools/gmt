@@ -306,7 +306,7 @@ center of projection. The requirements are
    oblique latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). However,
+(although you may change this with :term:`PROJ_SCALE_FACTOR`). However,
 the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
 of maps.
@@ -632,7 +632,7 @@ specifying:
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
-:ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` parameter. Our example shows a transverse
+:term:`PROJ_SCALE_FACTOR` parameter. Our example shows a transverse
 Mercator map of south-east Europe and the Middle East with 35ºE as the
 central meridian:
 
@@ -706,7 +706,7 @@ When selecting UTM you must specify:
 
 In order to minimize the distortion in any given zone, a scale factor of
 0.9996 has been factored into the formulae. (although a standard, you
-can change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). This makes the UTM
+can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM
 projection a *secant* projection and not a *tangent* projection like the
 transverse Mercator above. The scale only varies by 1 part in 1,000 from
 true scale at equator. The ellipsoidal projection expressions are
@@ -1311,5 +1311,5 @@ Centered on the Dateline, the example below was created by this command:
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
    different maps. GMT uses the
-   interpolant selected by the parameter :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in the
+   interpolant selected by the parameter :term:`GMT_INTERPOLANT` in the
    file.

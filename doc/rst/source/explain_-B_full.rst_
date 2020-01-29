@@ -49,7 +49,7 @@
     If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
-    default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
+    default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
     spaces or special characters you will need to enclose them in quotes.
     Cartesian x-axes also allow for the optional **+a**\ *angle*, which
@@ -58,7 +58,7 @@
     for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
     [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
     specify annotations normal [Default] and parallel to the axis, respectively.  Note that
-    these defaults can be changed via :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`.
+    these defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
 
     The *intervals* specification is a concatenated string made up of substrings
     of the form
@@ -75,27 +75,27 @@
 
     - **Y** (year, plot with 4 digits)
     - **y** (year, plot with 2 digits)
-    - **O** (month, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
+    - **O** (month, plot using :term:`FORMAT_DATE_MAP`)
     - **o** (month, plot with 2 digits)
-    - **U** (ISO week, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
+    - **U** (ISO week, plot using :term:`FORMAT_DATE_MAP`)
     - **u** (ISO week, plot using 2 digits)
-    - **r** (Gregorian week, 7-day stride from start of week :ref:`TIME_WEEK_START <TIME_WEEK_START>`)
+    - **r** (Gregorian week, 7-day stride from start of week :term:`TIME_WEEK_START`)
     - **K** (ISO weekday, plot name of weekdays in selected language)
-    - **k** (weekday, plot number of day in the week (1–7) (see :ref:`TIME_WEEK_START <TIME_WEEK_START>`))
-    - **D** (date, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
-    - **d** (day, plot day of month 0-31 or year 1-366, via :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
-    - **R** (day, same as **d**, aligned with :ref:`TIME_WEEK_START <TIME_WEEK_START>`)
-    - **H** (hour, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
+    - **k** (weekday, plot number of day in the week (1–7) (see :term:`TIME_WEEK_START`))
+    - **D** (date, plot using :term:`FORMAT_DATE_MAP`)
+    - **d** (day, plot day of month 0-31 or year 1-366, via :term:`FORMAT_DATE_MAP`)
+    - **R** (day, same as **d**, aligned with :term:`TIME_WEEK_START`)
+    - **H** (hour, plot using :term:`FORMAT_CLOCK_MAP`)
     - **h** (hour, plot with 2 digits)
-    - **M** (minute, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
+    - **M** (minute, plot using :term:`FORMAT_CLOCK_MAP`)
     - **m** (minute, plot with 2 digits)
-    - **S** (second, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
+    - **S** (second, plot using :term:`FORMAT_CLOCK_MAP`)
     - **s** (second, plot with 2 digits).
 
     For geographic axes **d**, **m** and **s** instead mean arc degrees, minutes and seconds,
     while for Cartesian axes no unit is given.
     All entities that are language-specific are under control
-    of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`. Alternatively, we can omit *stride*, thus setting
+    of :term:`GMT_LANGUAGE`. Alternatively, we can omit *stride*, thus setting
     *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at automatically determined intervals,
 
     - **ag** plots both annotations and grid lines with the same spacing,
@@ -138,18 +138,18 @@
     integer scale *s* and optional integer fraction *f*.
 
     These GMT parameters can affect the appearance of the map boundary:
-    :ref:`MAP_ANNOT_MIN_ANGLE <MAP_ANNOT_MIN_ANGLE>`, :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>`,
-    :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`, :ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>`,
-    :ref:`MAP_ANNOT_OFFSET_PRIMARY <MAP_ANNOT_OFFSET_PRIMARY>`,
-    :ref:`MAP_ANNOT_OFFSET_SECONDARY <MAP_ANNOT_OFFSET_SECONDARY>`,
-    :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`, :ref:`MAP_FRAME_AXES <MAP_FRAME_AXES>`, :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`,
-    :ref:`MAP_FRAME_TYPE <MAP_FRAME_TYPE>`, :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`, :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`,
-    :ref:`MAP_FRAME_WIDTH <MAP_FRAME_WIDTH>`, :ref:`MAP_GRID_CROSS_SIZE_PRIMARY <MAP_GRID_CROSS_SIZE_PRIMARY>`,
-    :ref:`MAP_GRID_PEN_PRIMARY <MAP_GRID_PEN_PRIMARY>`, :ref:`MAP_GRID_CROSS_SIZE_SECONDARY <MAP_GRID_CROSS_SIZE_SECONDARY>`,
-    :ref:`MAP_GRID_PEN_SECONDARY <MAP_GRID_PEN_SECONDARY>`, :ref:`FONT_TITLE <FONT_TITLE>`, :ref:`FONT_LABEL <FONT_LABEL>`,
-    :ref:`MAP_LINE_STEP <MAP_LINE_STEP>`, :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>`,
-    :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
-    :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, :ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>`,
-    :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
-    :ref:`MAP_TICK_LENGTH_PRIMARY <MAP_TICK_LENGTH_PRIMARY>`,
-    and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the :doc:`gmt.conf` man page for details.
+    :term:`MAP_ANNOT_MIN_ANGLE`, :term:`MAP_ANNOT_MIN_SPACING`,
+    :term:`FONT_ANNOT_PRIMARY`, :term:`FONT_ANNOT_SECONDARY`,
+    :term:`MAP_ANNOT_OFFSET_PRIMARY`,
+    :term:`MAP_ANNOT_OFFSET_SECONDARY`,
+    :term:`MAP_ANNOT_ORTHO`, :term:`MAP_FRAME_AXES`, :term:`MAP_DEFAULT_PEN`,
+    :term:`MAP_FRAME_TYPE`, :term:`FORMAT_GEO_MAP`, :term:`MAP_FRAME_PEN`,
+    :term:`MAP_FRAME_WIDTH`, :term:`MAP_GRID_CROSS_SIZE_PRIMARY`,
+    :term:`MAP_GRID_PEN_PRIMARY`, :term:`MAP_GRID_CROSS_SIZE_SECONDARY`,
+    :term:`MAP_GRID_PEN_SECONDARY`, :term:`FONT_TITLE`, :term:`FONT_LABEL`,
+    :term:`MAP_LINE_STEP`, :term:`MAP_ANNOT_OBLIQUE`,
+    :term:`FORMAT_CLOCK_MAP`, :term:`FORMAT_DATE_MAP`,
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`FORMAT_TIME_SECONDARY_MAP`,
+    :term:`GMT_LANGUAGE`, :term:`TIME_WEEK_START`,
+    :term:`MAP_TICK_LENGTH_PRIMARY`,
+    and :term:`MAP_TICK_PEN_PRIMARY`; see the :doc:`gmt.conf` man page for details.

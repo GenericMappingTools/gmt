@@ -12,7 +12,7 @@ Segment header records may contain one of more of the following options:
 **-W**\ *pen*
     Use the new *pen* and turn outline on
 **-W**
-    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    Revert to default pen :term:`MAP_DEFAULT_PEN`
     (if not set on command line)
 **-W-**
     Turn outline off

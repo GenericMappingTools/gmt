@@ -104,10 +104,10 @@ Character encoding
 
 Since PostScript itself does not support Unicode fonts,
 Ghostscript will re-encode the fonts on the fly. You have to make
-sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>`
+sure to set the correct :term:`PS_CHAR_ENCODING`
 with :doc:`/gmtset` and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
 codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
 only a small range of glyphs and you may have to switch the
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
+:term:`PS_CHAR_ENCODING` within your script.

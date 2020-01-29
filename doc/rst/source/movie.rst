@@ -76,7 +76,7 @@ Required Arguments
     and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
     **svga** (800 x 600), and **dvd** (640 x 480).
-    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if **movie** sets
+    Note: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
@@ -192,11 +192,11 @@ Optional Arguments
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (first word is 0).  Note: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
-    :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
+    :term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
-    Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
+    Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
@@ -222,7 +222,7 @@ Optional Arguments
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
     **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
-    for more information on what these are); append **+f** to use a specific *font* [:ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>` scaled as needed].
+    for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
 
@@ -308,13 +308,13 @@ Data Files
 The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
-require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting.
+require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
 Your Canvas
 -----------
 
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
-or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom canvas sizes are just
+or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
 frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
@@ -333,7 +333,7 @@ making a HD movie using the US unit dimensions then a background pink layer woul
 
     gmt basemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 --PS_MEDIA=9.6ix5.4i -ps background
 
-Note the canvas selection via :ref:`PS_MEDIA <PS_MEDIA>`, the matching region and projection, and
+Note the canvas selection via :term:`PS_MEDIA`, the matching region and projection, and
 the zero location of the origin.
 
 Technical Details

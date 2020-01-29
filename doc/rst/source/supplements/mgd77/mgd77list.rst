@@ -70,7 +70,7 @@ Required Arguments
     parameter abbreviations given in the desired output order. Any
     parameters given in UPPER case must not be NaN in a record for
     output to occur. Unless specified separately, the output format (if
-    ASCII) is controlled by the GMT parameter :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
+    ASCII) is controlled by the GMT parameter :term:`FORMAT_FLOAT_OUT`.
     The available column abbreviations for information stored in the
     files (some columns may be NaN) are:
 
@@ -84,18 +84,18 @@ Required Arguments
         The 8-character NGDC (now NCEI) cruise ID string (usually the file prefix).
     **time**
         Choose between Absolute calendar time (**atime**, the default) in
-        the format dictated by the GMT parameters :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and
-        :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`, Relative time (**rtime**) in the format
-        dictated by the GMT parameters :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and
-        :ref:`TIME_SYSTEM <TIME_SYSTEM>` (or :ref:`TIME_EPOCH <TIME_EPOCH>` and :ref:`TIME_UNIT <TIME_UNIT>`)), or
+        the format dictated by the GMT parameters :term:`FORMAT_DATE_OUT` and
+        :term:`FORMAT_CLOCK_OUT`, Relative time (**rtime**) in the format
+        dictated by the GMT parameters :term:`FORMAT_FLOAT_OUT` and
+        :term:`TIME_SYSTEM` (or :term:`TIME_EPOCH` and :term:`TIME_UNIT`)), or
         Fractional year (**ytime**) in the format dictated by
-        :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
+        :term:`FORMAT_FLOAT_OUT`.
     **lon**
         Longitude in the format dictated by the GMT parameter
-        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+        :term:`FORMAT_GEO_OUT`.
     **lat**
         Longitude in the format dictated by the GMT parameter
-        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+        :term:`FORMAT_GEO_OUT`.
     **twt**
         Two-Way Travel time (in s).
     **depth**

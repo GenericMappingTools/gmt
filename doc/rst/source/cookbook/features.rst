@@ -50,7 +50,7 @@ Distance calculations
 
 The calculation of distances on Earth (or other planetary bodies)
 depends on the ellipsoidal parameters of the body (via
-:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) and the method of computation. GMT offers three
+:term:`PROJ_ELLIPSOID`) and the method of computation. GMT offers three
 alternatives that trade off accuracy and computation time.
 
 Flat Earth distances
@@ -99,14 +99,14 @@ Note: There are two additional
 GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
-:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`, which selects one of several possible
-representative radii. The second is :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`, which
+:term:`PROJ_MEAN_RADIUS`, which selects one of several possible
+representative radii. The second is :term:`PROJ_AUX_LATITUDE`, which
 converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
 (*authalic* mean radius and latitudes), expert users can choose from a
 range of options as detailed in the :doc:`/gmt.conf` man page.  Note that
-these last two settings are only used if the :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`
+these last two settings are only used if the :term:`PROJ_ELLIPSOID`
 is not set to "sphere".
 
 Geodesic distances
@@ -119,7 +119,7 @@ select this mode of computation by using the common GMT option **-j**
 and appending the directive **e** (for ellipsoidal).
 For instance, a search radius of 20 km using this mode of
 computation would be set by **-S**\ 20\ **k** **-je**.  You may use the
-setting :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
+setting :term:`PROJ_GEODESIC` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
 that is much faster to compute.
@@ -136,7 +136,7 @@ two ways to ensure that GMT understands which unit you intend to use:
    **-X**\ 4\ **c** means the length being passed to the **-X** switch
    is 4 cm.
 
-#. Set the parameter :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` to the desired unit. Then,
+#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
    all dimensions without explicit unit will be interpreted accordingly.
 
 The latter method is less secure as other users may have a different
@@ -254,7 +254,7 @@ ways in which this can be accomplished.
    via the **-**\ **-**\ *PAR=value* mechanism. For instance, to temporarily
    set the output format for floating points to have lots of decimals,
    say, for map projection coordinate output, append
-   **-**\ **-**\ :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`\ =%.16lg to the command in question.
+   **-**\ **-**\ :term:`FORMAT_FLOAT_OUT`\ =%.16lg to the command in question.
 
 In addition to those parameters that directly affect the plot there are
 numerous parameters than modify units, scales, etc. For a complete
@@ -345,17 +345,17 @@ are simply data records whose fields are all set to NaN; see Chapter
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in other directories pointed to by the
-:ref:`directory parameters <DIR Parameters>` **DIR_DATA** and **DIR_CACHE**
+:ref:`directory parameters <DIR Parameters>` :term:`DIR_DATA` and :term:`DIR_CACHE`
 or by the environmental parameters **$GMT_USERDIR**, **$GMT_CACHEDIR** and
 **$GMT_DATADIR** (if set). They may be set by the user to point to
 directories that contain data sets of general use, thus eliminating the
-need to specify a full path to these files. Usually, the **DIR_DATA**
+need to specify a full path to these files. Usually, the :term:`DIR_DATA`
 directory will hold data sets of a general nature (tables, grids),
 whereas the **$GMT_USERDIR** directory (its default value is $HOME/.gmt)
 may hold miscellaneous data sets more specific to the user; this directory
 also stores GMT defaults, other configuration files and modern session directories as well as the
 directory *server* which olds downloaded data sets from the GMT data server
-The **DIR_CACHE** will typically contain other data files
+The :term:`DIR_CACHE` will typically contain other data files
 downloaded when running tutorial or example scripts.  See :ref:`directory parameters <DIR Parameters>`
 for details. Program output is always written to the current directory
 unless a full path has been specified.
@@ -395,15 +395,15 @@ Three classes of files are given special treatment in GMT.
    of the full URL to *filename* on the GMT Cache Data site.
    Since this address may change over time we use the leading
    @ to simplify access to these files.  Such files will also be downloaded
-   to **DIR_CACHE** and subsequently read from there (until removed by the user).
+   to :term:`DIR_CACHE` and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
    can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
-   the default setting for **GMT_DATA_SERVER**.  Alternatively, configure the CMake
+   the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via **GMT_DATA_SERVER_LIMIT** to be 0.
+   set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
 
-The user cache (**DIR_CACHE**) and all its contents can be cleared any time
+The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
 can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
 we also check if that file has changed at the server and re-download the updated file;
@@ -490,14 +490,14 @@ data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` in your :doc:`/gmt.conf` file; it is by default set to *yyyy-mm-dd*.
+:term:`FORMAT_DATE_IN` in your :doc:`/gmt.conf` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
-:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` to dd/mm/yy. A complete description of possible
+:term:`FORMAT_DATE_IN` to dd/mm/yy. A complete description of possible
 formats is given in the :doc:`/gmt.conf` man
 page. The *clock* string is more standardized but issues like 12- or
 24-hour clocks complicate matters as well as the presence or absence of
 delimiters between fields. Thus, the processing of input clock
-coordinates is guided by the template :ref:`FORMAT_CLOCK_IN <FORMAT_CLOCK_IN>` which
+coordinates is guided by the template :term:`FORMAT_CLOCK_IN` which
 defaults to *hh:mm:ss.xxx*.
 
 GMT programs that require a map projection argument will implicitly
@@ -526,13 +526,13 @@ used) or ASCII [Default]. In the latter case the issue of formatting
 becomes important. GMT provides extensive machinery for allowing just
 about any imaginable format to be used on output. Analogous to the
 processing of input data, several templates guide the formatting
-process. These are :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>` for
-calendar-time coordinates, :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` for geographical
-coordinates, and :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` for generic floating point data.
+process. These are :term:`FORMAT_DATE_OUT` and :term:`FORMAT_CLOCK_OUT` for
+calendar-time coordinates, :term:`FORMAT_GEO_OUT` for geographical
+coordinates, and :term:`FORMAT_FLOAT_OUT` for generic floating point data.
 In addition, the user have control over how columns are separated via
-the :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` parameter. Thus, as an example, it is possible
+the :term:`IO_COL_SEPARATOR` parameter. Thus, as an example, it is possible
 to create limited FORTRAN-style card records by setting
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` to none
+:term:`FORMAT_FLOAT_OUT` to %7.3lf and :term:`IO_COL_SEPARATOR` to none
 [Default is tab].
 
 PostScript features
@@ -663,13 +663,13 @@ suitable for, say, :doc:`/plot`.
 
 In addition to these pen settings there are several
 PostScript settings that can affect the appearance of lines. These are
-controlled via the GMT defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
-:ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
+controlled via the GMT defaults settings :term:`PS_LINE_CAP`,
+:term:`PS_LINE_JOIN`, and :term:`PS_MITER_LIMIT`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
 straight lines of finite thickness should behave when joined at a common
 point. By default, line segments have rectangular ends, but this can
-change to give rounded ends. When :ref:`PS_LINE_CAP <PS_LINE_CAP>` is set to round the
+change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
 a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
@@ -683,14 +683,14 @@ fashion. See the :doc:`/gmt.conf` man page for more information.
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
+   Line appearance can be varied by using :term:`PS_LINE_CAP`
 
 Experience has shown that the rendering of lines that are short relative to the pen thickness
 can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
 Ghostscript.  By default, lines are rendered using a fast algorithm which is susceptible to
 errors for thick lines.  The solution is to select a more accurate algorithm to render the lines
-exactly as intended.  This can be accomplished by using the GMT Defaults :ref:`PS_LINE_CAP <PS_LINE_CAP>`
-and :ref:`PS_LINE_JOIN <PS_LINE_JOIN>` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
+exactly as intended.  This can be accomplished by using the GMT Defaults :term:`PS_LINE_CAP`
+and :term:`PS_LINE_JOIN` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
 displays the difference in results.
 
 .. _Line_badrender:
@@ -878,7 +878,7 @@ layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
 to colors or pattern fills. The transparency *mode* can be changed by
-using the GMT default parameter :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>`; the default is
+using the GMT default parameter :term:`PS_TRANSPARENCY`; the default is
 Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
@@ -1325,7 +1325,7 @@ relevant manual pages.
 
    Examples of different vector heads and attributes.  The default is the standard
    triangular arrow head, which can be modified by adjusting the apex angle [30] or
-   changing its shape via the :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` setting.
+   changing its shape via the :term:`MAP_VECTOR_SHAPE` setting.
    Other vector heads are the circle (**c**), the terminal line (**t**), the
    arrow fin (**i**) and the plain head (**A**) and tail (**I**); the last two
    are line-drawings only and cannot be filled.
@@ -1405,7 +1405,7 @@ PostScript fonts used in GMT may be re-encoded to include several
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` setting described in the
+:term:`PS_CHAR_ENCODING` setting described in the
 :doc:`/gmt.conf` man page. Only the special
 characters belonging to a particular encoding will be available. Many
 characters not directly available by using single octal codes may be
@@ -1555,7 +1555,7 @@ the attributes that are under your control:
    For instance, paint the panel yellow with **+g**\ yellow.
 
 #. Panel frame pen.  Turn on the frame outline with **+p**, using the pen defined via
-   :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`.  You may override this choice with **+p**\ *pen*
+   :term:`MAP_FRAME_PEN`.  You may override this choice with **+p**\ *pen*
    [Default is no outline].  A very bold red outline might look like **+p**\ thick,red.
 
 #. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
@@ -1563,7 +1563,7 @@ the attributes that are under your control:
    **+r**\ 0.5c.
 
 #. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
-   **+i**\ [[*gap*/]\ *pen*].  The default pen is given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`,
+   **+i**\ [[*gap*/]\ *pen*].  The default pen is given by :term:`MAP_DEFAULT_PEN`,
    with a default *gap* between the outer and inner frames of 2 points.  Add arguments to override
    these defaults, such as **+i**\ 0.1c/thin,dashed to get a thin, dashed inner frame offset by
    0.1 cm from the main (outer) frame.
@@ -1666,7 +1666,7 @@ The next two modifiers are optional:
    orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.
 
 #. Add labels.  Do so with **+l**,  which places the current one-letter codes for west, east, south,
-   and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
+   and north at the four cardinal points.  These letters depend on the setting of :term:`GMT_LANGUAGE`
    and for the default English we use W, E, S, N, respectively.  You can replace these labels with four custom
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
@@ -1712,7 +1712,7 @@ The remaining modifiers are optional:
    **+p**\ *pen*.  For instance, adding **+p**\ thin will draw the ring with the selected thin pen.
 
 #. Add labels.  As for directional roses you do so with **+l**, which places the current one-letter codes for west, east, south,
-   and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
+   and north at the four cardinal points.  These letters depend on the setting of :term:`GMT_LANGUAGE`
    and for the default English we use W, E, S, N, respectively.  You can replace these labels with four custom
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
@@ -1796,7 +1796,7 @@ first, then supply suitable required and optional modifiers:
 #. Set line-spacing.  You may optionally specify the line-spacing used for the setting of the legend.  The legend will
    typically consist of several lines that may or may not contain text, but the spacing between
    these lines are controlled by the chosen line-spacing factor times the current primary annotation
-   font setting, i.e., :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.  The default line spacing factor
+   font setting, i.e., :term:`FONT_ANNOT_PRIMARY`.  The default line spacing factor
    is 1.1; change this with **+l**\ *linefactor*.
 
 .. figure:: /_images/GMT_legend.*
@@ -1946,7 +1946,7 @@ reading via GDAL. That is, to append a *=gd* suffix to file name.
 
 By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
-:ref:`IO_GRIDFILE_FORMAT <IO_GRIDFILE_FORMAT>` defaults parameter to any of the other
+:term:`IO_GRIDFILE_FORMAT` defaults parameter to any of the other
 recognized values (or by appending *=ID*).
 
 GMT can also read netCDF grid files produced by other software
@@ -2137,7 +2137,7 @@ a ``gmt.io`` file:
 +-------+-----+-----+---+-------+-------------------------------------------+
 
 These suffices can be anything that makes sense to the user. To activate
-this mechanism, set parameter :ref:`IO_GRIDFILE_SHORTHAND <IO_GRIDFILE_SHORTHAND>` to TRUE in
+this mechanism, set parameter :term:`IO_GRIDFILE_SHORTHAND` to TRUE in
 your :doc:`/gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
 filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
@@ -2479,7 +2479,7 @@ Data records that contain NaN values for the *x* or *y* columns (or the
 *z* column for cases when 3-D Cartesian data are expected) are usually
 skipped during reading. However, the presence of these bad records can
 be interpreted in two different ways, and this behavior is controlled by
-the :ref:`IO_NAN_RECORDS <IO_NAN_RECORDS>` defaults parameter. The default setting (*gap*)
+the :term:`IO_NAN_RECORDS` defaults parameter. The default setting (*gap*)
 considers such records to indicate a gap in an otherwise continuous
 series of points (e.g., a line), and programs can act upon this
 information, e.g., not to draw a line across the gap or to break the
@@ -2574,7 +2574,7 @@ any of these directories.
 
 .. [16]
    To keep PostScript files small, such comments are by default turned
-   off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
+   off; see :term:`PS_COMMENTS` to enable them.
 
 .. [17]
    For an overview of color systems such as HSV, see Chapter :doc:`colorspace`.

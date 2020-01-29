@@ -33,7 +33,7 @@ Description
 **grd2xyz** reads one or more binary 2-D grid files and writes out
 xyz-triplets in ASCII [or binary] format to standard output. Modify the
 precision of the ASCII output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file or use
+:term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **-**\ **-D_FORMAT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
 output z-values without the (x,y) coordinates; see **-Z** below.
@@ -140,7 +140,7 @@ Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable's **unit** attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
 are then converted to the internal time system specified by
-:ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` in the
+:term:`TIME_UNIT` and :term:`TIME_EPOCH` in the
 :doc:`gmt.conf` file or on the
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**

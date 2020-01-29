@@ -99,7 +99,7 @@ Data Space Concerns
 There are several ways you can control the amount of space taken up by your own server directory:
 
 #. You can set an upper file size limit for download via the GMT default setting
-   :ref:`GMT_DATA_SERVER_LIMIT <GMT_DATA_SERVER_LIMIT>`; the default is unlimited.
+   :term:`GMT_DATA_SERVER_LIMIT`; the default is unlimited.
 #. You can remove the entire server directory via gmt :doc:`/clear` data.
 #. You can be clever and set up a crontab job that deletes data files you have not
    touched in, say, 6 months (or some other interval).
