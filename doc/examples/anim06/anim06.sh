@@ -46,7 +46,7 @@ gmt begin
 	# Plot the shifted chirp
 	gmt plot \$R \$J chirp_shifted.txt -W1p,red -X0.2i -Y0.3i
 	# Compute index of most recent sample number
-	last_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV DIV FLOOR RINT =\)
+	last_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV DIV FLOOR RINT =)
 	# Extract all the old samples before the present
 	gmt convert chirp_samples.txt -Z:\$last_sample > tmp.txt
 	if [ -s tmp.txt ]; then
