@@ -392,7 +392,7 @@ GMT_LOCAL bool not_obviously_polar (double *se) {
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
 	int j, err, has_vector, has_range, registration;
 	int old_fill_mode, status;
-	double dummy[2], *xy = NULL, tmp;
+	double dummy[2], *xy = NULL;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[GMT_LEN8];
 	nc_type z_type;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
