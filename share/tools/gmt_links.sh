@@ -30,10 +30,10 @@ elif [ "X$1" = "Xcreate" ]; then
 else
 	mode=0
 fi
-bin=`gmt --show-bindir`
-cwd=`pwd`
+bin=$(gmt --show-bindir)
+cwd=$(pwd)
 
-gmt_modules=`gmt --show-classic`
+gmt_modules=$(gmt --show-classic)
 compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 cd $bin

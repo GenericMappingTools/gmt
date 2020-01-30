@@ -19,7 +19,7 @@ gmt begin ex31
 	LinLibertineOB
 	EOF
 
-	capitals=`gmt which -G @europe-capitals-ru.csv`
+	capitals=$(gmt which -G @europe-capitals-ru.csv)
 	# common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p \
 		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \

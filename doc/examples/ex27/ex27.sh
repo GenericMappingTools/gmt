@@ -16,7 +16,7 @@ gmt begin ex27
 
 	# Then use gmt coast to plot land; get original -R from grid img remark
 	# and use Mercator gmt projection with same scale as above on a spherical Earth
-	R=`gmt grdinfo @tasman_grav.nc -Ii`
+	R=$(gmt grdinfo @tasman_grav.nc -Ii)
 	gmt coast $R -Jm0.6c -B -BWSne -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF
 
 	# Put a color legend in top-left corner of the land mask

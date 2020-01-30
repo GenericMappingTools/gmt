@@ -16,14 +16,14 @@ cat << EOF > box
 EOF
 
 scl=0.008
-x=`gmt math -Q 512 2 DIV $scl MUL =`
-xoff=`gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =`
-yoff=`gmt math -Q 200 $scl MUL 0.5 ADD =`
-yoffe=`gmt math -Q 384 $scl MUL 0.5 ADD =`
+x=$(gmt math -Q 512 2 DIV $scl MUL =)
+xoff=$(gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =)
+yoff=$(gmt math -Q 200 $scl MUL 0.5 ADD =)
+yoffe=$(gmt math -Q 384 $scl MUL 0.5 ADD =)
 gmt makecpt -Cpolar -T-1/1 > t.cpt
 gmt grdimage t.nc -Jx${scl}i -Ct.cpt -P -Ba -BWSne -K > $ps
 gmt grd2xyz t_tmp2.nc | awk '{if ($2 == 100) print $1, $3}' > tmp
-R=`gmt info tmp -I10/3`
+R=$(gmt info tmp -I10/3)
 gmt psxy $R -JX3.5i/1.6i -O -K -W1p,green -Bxaf -Byafg10 -BWSne -X3i tmp >> $ps
 gmt psxy -R -J -O -K -W0.5p,- << EOF >> $ps
 >

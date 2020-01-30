@@ -8,7 +8,7 @@
 
 function check_if_zero {
 	gmt grdmath ${2}=$1 ${3}=$1 SUB = diff.nc
-        N=(`gmt grd2xyz diff.nc -ZTLa | uniq | wc -l`)
+        N=($(gmt grd2xyz diff.nc -ZTLa | uniq | wc -l))
         if [ $N -ne 1 ]; then
                 echo "check_if_zero: $1 : $2 $3 not equal" >> fail
         fi

@@ -5,7 +5,7 @@
 function gridset_check {
 	testapi -I$1 -W$2 -Tg
 	gmt grdmath gtesti.nc gtesto.nc SUB = tmp.nc
-	N=(`gmt grd2xyz tmp.nc -ZTLa | uniq | wc -l`)
+	N=($(gmt grd2xyz tmp.nc -ZTLa | uniq | wc -l))
 	if [ $N -ne 1 ]; then
 		echo "gridset_check $1 $2 failed" >> fail
 	fi

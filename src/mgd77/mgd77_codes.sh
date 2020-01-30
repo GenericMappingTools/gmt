@@ -11,8 +11,8 @@ sed -e 's/ *$//g' < trkdas.cod > $$.dat
 awk '{if (length($1) == 2) {printf "\t{\"%s\", \"%s\"},\n", $1, substr($0, 6)}}' $$.dat > $$.1
 awk 'BEGIN {code = -1; last = "--"}; {if (length($1) > 2) {printf "\t{ %d, \"%s\", \"%s\"},\n", code, $1, substr($0, 6)} else {code++}}' $$.dat > $$.2
 awk '{if (length($1) == 2) {printf "(%s) %s,\n", $1, substr($0, 6)}}' $$.dat > $$.4
-n_agencies=`cat $$.1 | wc -l | awk '{printf "%d\n", $1}'`
-n_vessels=`cat $$.2 | wc -l | awk '{printf "%d\n", $1}'`
+n_agencies=$(cat $$.1 | wc -l | awk '{printf "%d\n", $1}')
+n_vessels=$(cat $$.2 | wc -l | awk '{printf "%d\n", $1}')
 awk -F, '{if (NR == "'${n_agencies}'") {printf "%s.\n", $1} else {printf "%s,\n", $1}}' $$.4 > mgd77_codes.txt
 
 YEAR=$(date +%Y)

@@ -9,8 +9,8 @@ if [ "$1" = "GMT_PROMPT" ]; then
   export BUNDLE_RESOURCES="${PWD}/Resources"
   cd "${OLDPWD}"
   # Getting and setting terminal width so wide enough to not wrap the gmt splash screen
-  dim=(`osascript -e 'tell application "Terminal" to get size of front window' | tr ',' ' '`)
-  w=`echo "${dim[0]} 1.25" | awk '{print int($1*$2)}'`
+  dim=($(osascript -e 'tell application "Terminal" to get size of front window' | tr ',' ' '))
+  w=$(echo "${dim[0]} 1.25" | awk '{print int($1*$2)}')
   osascript << EOF
 tell application "Terminal" to set size of front window to {$w, ${dim[1]}}
 EOF

@@ -11,7 +11,7 @@ gmt begin ex21
 	gmt set FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 	# Pull out a suitable region string in yyy-mm-dd format
-	wesn=(`gmt info -fT -I50 -C @RHAT_price.csv --FORMAT_DATE_IN=dd-o-yy`)
+	wesn=($(gmt info -fT -I50 -C @RHAT_price.csv --FORMAT_DATE_IN=dd-o-yy))
 	R="-R${wesn[0]}/${wesn[1]}/${wesn[2]}/${wesn[3]}"
 
 	# Lay down the basemap:

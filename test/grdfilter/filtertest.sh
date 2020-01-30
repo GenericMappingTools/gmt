@@ -24,11 +24,11 @@ mode=c
 no_U=1
 gmt set PROJ_ELLIPSOID Sphere
 # Set contour limits so we just draw the filter radius
-lo=`gmt math -Q $D 2 DIV 0.5 SUB =`
-hi=`gmt math -Q $D 2 DIV 0.5 ADD =`
+lo=$(gmt math -Q $D 2 DIV 0.5 SUB =)
+hi=$(gmt math -Q $D 2 DIV 0.5 ADD =)
 # Run gmt grdfilter as specified
 gmt grdfilter -A${mode}${lon}/$lat -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}
-n_conv=`cat n_conv.txt`
+n_conv=$(cat n_conv.txt)
 if [ $lat -lt 0 ]; then	# S hemisphere view
 	plat=-90
 	range=-90/0

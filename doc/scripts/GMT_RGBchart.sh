@@ -32,11 +32,11 @@ labels=labels.tmp
 gmt set PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
-W=`gmt math -Q $WIDTH $COL DIV 0.95 MUL =`
-H=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL =`
-textheight=`gmt math -Q 1 $rectheight SUB =`
-fontsize=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
-fontsizeL=`gmt math -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
+W=$(gmt math -Q $WIDTH $COL DIV 0.95 MUL =)
+H=$(gmt math -Q $HEIGHT $ROW DIV $rectheight MUL =)
+textheight=$(gmt math -Q 1 $rectheight SUB =)
+fontsize=$(gmt math -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =)
+fontsizeL=$(gmt math -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =)
 
 # Produce $allinfo from color and name files
 paste ${GMT_SOURCE_DIR}/src/gmt_color_rgb.h ${GMT_SOURCE_DIR}/src/gmt_colornames.h | tr '{,}"\r' ' ' > Colors.txt
@@ -60,7 +60,7 @@ gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
 # Put logo in top left corner
 gmt logo -R -J -O -K -Dg0.5/1+jMC+w$W >> $ps
 
-height=`gmt math -Q $HEIGHT $ROW DIV =`
+height=$(gmt math -Q $HEIGHT $ROW DIV =)
 gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
 L ${fontsizeL}p,Helvetica-Bold R Values are R/G/B. Names are case-insensitive.
 L ${fontsizeL}p,Helvetica-Bold R Optionally, use GREY instead of GRAY.

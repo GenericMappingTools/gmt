@@ -7,11 +7,11 @@
 # gmt psimage itesti.jpg -W6i -F0.25p -P --PS_CHAR_ENCODING=Standard+ > apicheck_I.ps
 
 # Only do this when GDAL is installed
-GDAL=`gmt grdconvert 2>&1 | grep -c gd`
+GDAL=$(gmt grdconvert 2>&1 | grep -c gd)
 if [ $GDAL -eq 0 ]; then exit; fi
 
 # Use another image as test to avoid storing one for the test
-orig=`gmt which -G @needle.jpg`
+orig=$(gmt which -G @needle.jpg)
 cp -f $orig itesti.jpg
 ps=apicheck_I_f.ps
 testapi -If -Wf -Ti > $ps

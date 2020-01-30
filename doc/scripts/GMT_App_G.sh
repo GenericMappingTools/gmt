@@ -40,8 +40,8 @@ do
 	k1=$i
 	k2=$(( i+17 ))
 
-	f1=`sed -n ${k1}p tt.d`
-	f2=`sed -n ${k2}p tt.d`
+	f1=$(sed -n ${k1}p tt.d)
+	f2=$(sed -n ${k2}p tt.d)
 
 	if [ $i1 -eq "12" ]; then
 		f1="Symbol @%0%(Symbol)@%%"

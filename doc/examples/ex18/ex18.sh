@@ -43,8 +43,8 @@ gmt begin ex18
 		gmt grdmath pratt.txt POINT SDIST = mask.nc -fg
 		gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 		gmt grdmath @AK_gulf_grav.nc mask.nc MUL = tmp.nc
-		area=`gmt grdvolume tmp.nc -C50 -Sk -o1`
-		volume=`gmt grdvolume tmp.nc -C50 -Sk -o2`
+		area=$(gmt grdvolume tmp.nc -C50 -Sk -o1)
+		volume=$(gmt grdvolume tmp.nc -C50 -Sk -o2)
 		gmt text -M -Gwhite -Wthin -Dj0.7c -F+f14p,Helvetica-Bold+jLB -C8p <<- END
 		> -149 52.5 14p 6.6c j
 		Volumes: $volume mGal\264km@+2@+

@@ -15,13 +15,13 @@ gmt begin ex25
 	gmt grdmath -Rg -I${D}m -r Y COSD 60 $D DIV 360 MUL DUP MUL PI DIV DIV 100 MUL = scale.nc
 	gmt grdmath key.nc -1 EQ 0 NAN scale.nc MUL = tmp.nc
 	gmt grd2xyz tmp.nc -s -ZTLf > key.b
-	ocean=`gmt math -bi1f -Ca -S key.b SUM UPPER RINT =`
+	ocean=$(gmt math -bi1f -Ca -S key.b SUM UPPER RINT =)
 	gmt grdmath key.nc 1 EQ 0 NAN scale.nc MUL = tmp.nc
 	gmt grd2xyz tmp.nc -s -ZTLf > key.b
-	land=`gmt math -bi1f -Ca -S key.b SUM UPPER RINT =`
+	land=$(gmt math -bi1f -Ca -S key.b SUM UPPER RINT =)
 	gmt grdmath key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
 	gmt grd2xyz tmp.nc -s -ZTLf > key.b
-	mixed=`gmt math -bi1f -Ca -S key.b SUM UPPER RINT =`
+	mixed=$(gmt math -bi1f -Ca -S key.b SUM UPPER RINT =)
 	# Generate corresponding color table
 	gmt makecpt -Cblue,gray,red -T-1.5/1.5/1 -N
 	# Create the final plot and overlay coastlines

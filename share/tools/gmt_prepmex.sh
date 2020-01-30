@@ -18,17 +18,17 @@
 # This will require sudo privileges.
 #
 #-------------------------------------------------------------------------
-Rel=`gmt --version | awk '{print substr($1,1,3)}'`
+Rel=$(gmt --version | awk '{print substr($1,1,3)}')
 printf "\ngmt_prepmex.sh will convert a GMT %s.x bundle so libraries are suitable for building the MATLAB interface.\n" $Rel >&2
 printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
 read answer
 if [ "X$answer" = "Xn" ]; then
 	exit 0
 fi
-here=`pwd`
+here=$(pwd)
 # First get a reliable absolute path to the bundle's top directory
-pushd `dirname $0` > /dev/null
-BUNDLEDIR=`pwd | sed -e sB/Contents/Resources/share/toolsBBg`
+pushd $(dirname $0) > /dev/null
+BUNDLEDIR=$(pwd | sed -e sB/Contents/Resources/share/toolsBBg)
 popd > /dev/null
 # Set path to the new gmt installation
 MEXGMT5DIR=/tmp/$$/gmt
@@ -58,7 +58,7 @@ cd $BUNDLEDIR/Contents/Resources/lib
 ls *.dylib | egrep -v 'libgmt.dylib|libpostscriptlight.dylib' > /tmp/l.lis
 # For each, duplicate into /opt/gmt but add a leading X to each name
 while read lib; do
-	new=`echo $lib | awk '{printf "libX%s\n", substr($1,4)}'`
+	new=$(echo $lib | awk '{printf "libX%s\n", substr($1,4)}')
 	cp $lib $MEXLIBDIR/$new
 done < /tmp/l.lis
 # Copy the supplement shared plugin
@@ -71,9 +71,9 @@ while read lib; do
 	otool -L $lib | grep executable_path | awk '{print $1}' > /tmp/t.lis
 	let k=1
 	while read old; do
-		new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
+		new=$(echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}')
 		if [ $k -eq 1 ]; then # Do the id change
-			was=`echo $lib | awk -F/ '{print substr($1,4)}'`
+			was=$(echo $lib | awk -F/ '{print substr($1,4)}')
 			install_name_tool -id /opt/gmt/lib/$new $lib
 		else
 			install_name_tool -change $old /opt/gmt/lib/$new $lib
@@ -90,7 +90,7 @@ ln -s libXpostscriptlight.6.dylib libXpostscriptlight.dylib
 if [ "$1" == "gs" ]; then
 	# Same stuff for gs which is called by psconvert as a system call.
 	# Here we must determine from where to copy...
-	GSV=`gs --version`
+	GSV=$(gs --version)
 	if [ -d /sw/lib ]; then			# Fink has no shared lib yet...
 		FROM=/sw/lib
 		echo "Sorry, no libgs.dylib under fink yet"
@@ -113,7 +113,7 @@ cd gmt/plugins
 otool -L supplements.so | grep executable_path | awk '{print $1}' > /tmp/t.lis
 let k=1
 while read old; do
-	new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
+	new=$(echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}')
 	install_name_tool -change $old /opt/gmt/lib/$new supplements.so
 	let k=k+1
 done < /tmp/t.lis
@@ -123,7 +123,7 @@ cd $MEXBINDIR
 otool -L gmt | grep executable_path | awk '{print $1}' > /tmp/t.lis
 let k=1
 while read old; do
-	new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
+	new=$(echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}')
 	install_name_tool -change $old /opt/gmt/lib/$new gmt
 	let k=k+1
 done < /tmp/t.lis
@@ -132,7 +132,7 @@ printf "gmt_prepmex.sh: Install /opt/gmt\n" >&2
 sudo cp -fpR $MEXGMT5DIR /opt
 rm -rf /tmp/$$
 cd $here
-version=`/opt/gmt/bin/gmt-config --version`
+version=$(/opt/gmt/bin/gmt-config --version)
 # Report
 cat << EOF >&2
 gmt_prepmex.sh: Made updated GMT $version installation in /opt/gmt

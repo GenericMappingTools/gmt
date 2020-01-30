@@ -53,12 +53,12 @@ fi
 #--------------------------------------------------------------------------------
 # Get the functionality of echo -n
 #--------------------------------------------------------------------------------
-if [ x`echo -n` = x ]; then	# echo -n works
+if [ x$(echo -n) = x ]; then	# echo -n works
   echon()
   {
     echo -n "$*"
   }
-elif [ x`echo -e` = x ]; then	# echo -e works
+elif [ x$(echo -e) = x ]; then	# echo -e works
   echon()
   {
     echo -e "$*"'\c'
@@ -71,7 +71,7 @@ else				# echo with escapes better work
 fi
 
 cd ~
-home=`pwd`
+home=$(pwd)
 if [ ! -f "$home/.gmtversions" ]; then	# No .gmtversions exists yet, first do that part
   cat << EOF >&2
 
@@ -104,7 +104,7 @@ EOF
   fi
   echon "--> Searching..." >&2
   ( find "$top" -type d -name 'GMT[345].*' -print > "$home/.gmtversions" ) 2> /dev/null
-  n=`cat "$home/.gmtversions" | wc -l | awk '{print $1}'`
+  n=$(cat "$home/.gmtversions" | wc -l | awk '{print $1}')
   cat << EOF >&2
 
 There are $n GMT versions currently installed on your system.
@@ -133,13 +133,13 @@ EOF
 fi
 
 if [ "X$1" = "XD" ]; then	# First entry is default
-  line=`head -1 "$home/.gmtversions"`
+  line=$(head -1 "$home/.gmtversions")
   exists "$line"
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
 elif [ $# -eq 1 ]; then
-  line=`grep $1 "$home/.gmtversions"`
-  nl=`grep $1 "$home/.gmtversions" | wc -l`
+  line=$(grep $1 "$home/.gmtversions")
+  nl=$(grep $1 "$home/.gmtversions" | wc -l)
   if [ $nl -eq 0 ]; then
     echo "Version $1 is not listed among recognized GMT versions" >&2
     echo "Run gmtswitch -help for more information" >&2
@@ -154,13 +154,13 @@ elif [ $# -eq 1 ]; then
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
 else
-  n=`cat "$home/.gmtversions" | wc -l | awk '{print $1}'`
+  n=$(cat "$home/.gmtversions" | wc -l | awk '{print $1}')
   i=0
   while [ $i -lt $n ]; do
-    i=`expr $i + 1`
-    line=`sed -n 's/#.*//;'${i}p "$home/.gmtversions"`
-    comment=`sed -n ${i}'s/.*# *\(.*\)/ (\1)/p' "$home/.gmtversions"`
-    version=`basename $line`
+    i=$(expr $i + 1)
+    line=$(sed -n 's/#.*//;'${i}p "$home/.gmtversions")
+    comment=$(sed -n ${i}'s/.*# *\(.*\)/ (\1)/p' "$home/.gmtversions")
+    version=$(basename $line)
     echo "$i. Select ${line}" >&2
   done
   echo "" >&2
@@ -176,7 +176,7 @@ else
       v=-1
     fi
   done
-  line=`sed -n 's/#.*//;'${v}p "$home/.gmtversions"`
+  line=$(sed -n 's/#.*//;'${v}p "$home/.gmtversions")
   exists "$line"
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
