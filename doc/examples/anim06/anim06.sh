@@ -60,7 +60,7 @@ gmt begin
 		gmt plot -W2.5p,blue resampled.txt
 	fi
 	if [ \$take_sample -eq 1 ]; then	# Take and plot sample at zero time
-		y=\$(gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =\)
+		y=\$(gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =)
 		echo 0 \$y | gmt plot -Sc0.5c -Gred
 	fi
 	# Add time counter in upper left corner
