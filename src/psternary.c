@@ -206,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 			n_errors += gmt_M_check_condition (GMT, strchr (GMT->common.J.string, '/'), "Option -J: Must specify -JX<width>[<unit>]\n");
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Option -S: Must specify a symbo\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Option -S: Must specify a symbol\n");
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
