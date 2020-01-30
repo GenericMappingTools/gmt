@@ -745,6 +745,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
 				else {	/* Pixel registration confirmed */
+					if (dummy[0] > dummy[1]) {		/* Check for reverse order of y-coordinate */
+						tmp = dummy[1], dummy[1] = dummy[0], dummy[0] = tmp;
+					}
 					dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
 					registration = GMT_GRID_PIXEL_REG;
 					if (gmt_M_180_range (dummy[0], dummy[1]))
