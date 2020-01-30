@@ -387,7 +387,7 @@ GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 	reverse = (z_dir != orient);
 
 	if (reverse) {	/* Must reverse order of contour */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Change orientation of closed polygon\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Change orientation of closed polygon\n");
 		for (i = 0, j = n-1; i < n/2; i++, j--) {
 			gmt_M_double_swap (x[i], x[j]);
 			gmt_M_double_swap (y[i], y[j]);
@@ -529,7 +529,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 						Ctrl->F.value = +1;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -F[l|r]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Expected -F[l|r]\n");
 						break;
 				}
 				break;
@@ -583,20 +583,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->C.active) {
-		n_errors += gmt_M_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Cannot specify -B option in -C mode\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET], "Syntax error: Must specify -I option\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !gmt_M_is_rect_graticule(GMT), "Syntax error -T option: Only available with Linear, Mercator, or basic cylindrical projections\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), "Syntax error -T option: Must also specify a tile fill with -G\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Syntax error: -L requires an output gridfile name\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET], "Must specify -I option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !gmt_M_is_rect_graticule(GMT), "Option -T: Only available with Linear, Mercator, or basic cylindrical projections\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), "Option -T: Must also specify a tile fill with -G\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increments\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Option -S: Unrecognized unit\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Option -D: Cannot be used with -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Option -L requires an output gridfile name\n");
 		n_errors += gmt_check_binary_io (GMT, 2);
 	}
 
@@ -610,7 +610,7 @@ int GMT_mask (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: mask\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: mask\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psmask (V_API, mode, args);
@@ -699,7 +699,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
 		gmt_map_basemap (GMT);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Clipping off!\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Clipping off!\n");
 	}
 	else {	/* Start new clip_path */
 		gmt_M_memset (inc2, 2, double);
@@ -717,7 +717,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate memory, read and process data file\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory, read and process data file\n");
 
 		/* Enlarge region by 1 row/column */
 
@@ -739,7 +739,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Your search radius is too small to have any effect and is ignored.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Your search radius is too small to have any effect and is ignored.\n");
 		}
 
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -752,7 +752,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 		n_read = 0;
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;
@@ -831,7 +831,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " data points\n", n_read);
 
 		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->size; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
@@ -842,7 +842,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Grid->header->wesn, Grid->header->inc, \
 				Grid->header->registration, 0, NULL)) == NULL) Return (API->error);
 			for (ij = 0; ij < Grid->header->size; ij++) {	/* Copy over the 0/1 grid */
@@ -878,7 +878,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 			if (make_plot) gmt_map_basemap (GMT);
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tracing the clip path\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 
 			section = 0;
 			first = 1;
@@ -927,7 +927,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		else {	/* Just paint tiles */
 			uint64_t start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tiling...\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Tiling...\n");
 
 			for (row = 0; row < Grid->header->n_rows; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
@@ -970,12 +970,12 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		gmt_M_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to free Grid\n");
 		}
 		if (Ctrl->S.active) gmt_M_free (GMT, d_col);
 		gmt_M_free (GMT, grd_x0);
 		gmt_M_free (GMT, grd_y0);
-		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Clipping on!\n");
+		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Clipping on!\n");
 	}
 
 	gmt_set_pad (GMT, API->pad);		/* Reset default pad */

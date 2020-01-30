@@ -56,7 +56,7 @@ int main (int argc, char *argv[]) {
 		if (strncmp (first, "gmt", 3U)) {	/* 3a. Make a system call since not GMT module */
 			status = system (line);
 			if (status) {
-				GMT_Report (API, GMT_MSG_NORMAL, "system call returned error %d\n", status);
+				GMT_Report (API, GMT_MSG_ERROR, "system call returned error %d\n", status);
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 			else
 				status = GMT_Call_Module (API, module, GMT_MODULE_CMD, args);
 			if (status) {
-				GMT_Report (API, GMT_MSG_NORMAL, "%s returned error %d\n", module, status);
+				GMT_Report (API, GMT_MSG_ERROR, "%s returned error %d\n", module, status);
 				exit (EXIT_FAILURE);
 			}
 		}

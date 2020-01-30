@@ -214,13 +214,19 @@ enum PSL_enum_txtmode {PSL_TXTMODE_HYPHEN	= 0,
 
 /* Verbosity levels */
 
-enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
-	PSL_MSG_NORMAL,		/* Default output, e.g., warnings and errors only */
-	PSL_MSG_TICTOC,		/* To print a tic-toc elapsed time message */
-	PSL_MSG_COMPAT,		/* Compatibility warnings */
-	PSL_MSG_VERBOSE,	/* Warnings level -V */
-	PSL_MSG_LONG_VERBOSE,	/* Longer verbose, -Vl in some programs */
-	PSL_MSG_DEBUG};		/* Debug messages for developers mostly */
+enum PSL_enum_verbose {
+	PSL_MSG_QUIET = 0,		/* No messages whatsoever */
+	PSL_MSG_ERROR,			/* Errors only */
+	PSL_MSG_WARNING,		/* Warnings */
+	PSL_MSG_TICTOC,			/* Tic-toc elapsed time message */
+	PSL_MSG_INFORMATION,	/* Informational messages */
+	PSL_MSG_COMPAT,			/* Compatibility warnings */
+	PSL_MSG_DEBUG,			/* Debug messages */
+	/* For API backwards compatibility only */
+	PSL_MSG_NORMAL = 1,			/* Now PSL_MSG_ERROR */
+	PSL_MSG_VERBOSE = 4,		/* Now PSL_MSG_WARNING */
+	PSL_MSG_LONG_VERBOSE = 5	/* Now PSL_MSG_INFORMATION */
+	};
 
 /* Color spaces */
 

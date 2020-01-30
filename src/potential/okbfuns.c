@@ -87,7 +87,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
 		n_vert = bd_desc.n_v[i];	/* Number of vertices of each face */
 		if (n_vert < 3)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Facet with less than 3 vertex\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Facet with less than 3 vertex\n");
 		for (l = 0; l < n_vert; l++) {
 			k = bd_desc.ind[l+cnt_v];
 			loc_or[l].x = body_verts[k].x - x_o;

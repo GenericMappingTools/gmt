@@ -437,18 +437,20 @@ more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
 
-  **n** Fatal errors [Default].
+  **e** Errors messages only.
 
-  **c** Warnings about deprecated usage (if compiled for compatibility).
+  **w** Warnings [Default].
 
-  **v** General Warnings.
+  **t** Timings (for time-intensive algorithms only).
 
-  **l** Detailed progress and informational messages.
+  **i** Informational messages.
+
+  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
 
   **d** Debugging messages (mostly of interest to developers).
 
-The verbosity is cumulative, i.e., mode **l** means all messages of mode
-**n** as well. will be reported.
+The verbosity is cumulative, i.e., mode **w** means all messages of mode
+**e** as well will be reported.
 
 Program output
 --------------

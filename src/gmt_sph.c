@@ -81,14 +81,14 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Call STRIPACK TRMESH subroutine...");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRMESH subroutine...");
 	trmesh_ (&n, x, y, z, list, lptr, lend, &lnew, iwk, &iwk[n], ds, &ierror);
 	gmt_M_free (GMT, ds);
 	gmt_M_free (GMT, iwk);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "OK\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 
 	if (ierror == -2) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
 		gmt_M_free (GMT, lptr);
 		gmt_M_free (GMT, list);
 		gmt_M_free (GMT, lend);
@@ -96,7 +96,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	}
 
 	if (ierror > 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
 		gmt_M_free (GMT, lptr);
 		gmt_M_free (GMT, list);
 		gmt_M_free (GMT, lend);
@@ -114,13 +114,13 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	n_alloc = 2 * (n - 2);
 	T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Call STRIPACK TRLIST subroutine...");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine...");
 	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "OK\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 	T->D.n = n_out;
 
 	if (ierror) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRLIST.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "STRIPACK: Error in TRLIST.\n");
 		gmt_M_free (GMT, list);		gmt_M_free (GMT, lend);		gmt_M_free (GMT, lptr);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
@@ -141,9 +141,9 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
 		lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t);
 
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Call STRIPACK CRLIST subroutine...");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine...");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "OK\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 		T->V.n = n_out;
 		gmt_M_free (GMT, lbtri);
 		gmt_M_free (GMT, rc);
@@ -159,7 +159,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		gmt_M_free (GMT, zc);
 
 		if (0 < ierror) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in CRLIST.  IERROR = %" PRId64 ".\n", ierror);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "STRIPACK: Error in CRLIST.  IERROR = %" PRId64 ".\n", ierror);
 			gmt_M_free (GMT, list);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
@@ -226,14 +226,14 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 				if (ierror < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in INTRC0: I = %d, J = %d, IER = %" PRId64 "\n", row, col, ierror);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in INTRC0: I = %d, J = %d, IER = %" PRId64 "\n", row, col, ierror);
 					gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 					gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "INTRC0: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, nxp);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "INTRC0: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, nxp);
 	}
 	else if (mode == 1) {	/* C-1 interpolation (INTRC1) with local gradients GRADL. */
 	   	/* Accumulate the sum of the numbers of nodes used in the least squares fits in sum. */
@@ -243,7 +243,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			k1 = k + 1;	/* Since gradl expects Fortran indexing */
 			gradl_ (&n, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);
 				gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 				gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
@@ -251,16 +251,16 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			sum += (double)ierror;
 		}
 		sum /= n;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GRADL: Average number of nodes used in the least squares fits = %g\n", sum);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GRADL: Average number of nodes used in the least squares fits = %g\n", sum);
 	        if (vartens) {	/* compute tension factors sigma (getsig). */
 				getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG: IER = %" PRId64 "\n", ierror);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GETSIG: IER = %" PRId64 "\n", ierror);
 					gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 					gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG: %" PRId64 " tension factors altered;  Max change = %g\n", ierror, dsm);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GETSIG: %" PRId64 " tension factors altered;  Max change = %g\n", ierror, dsm);
 	        }
 
 		/* compute interpolated values on the uniform grid (unif). */
@@ -269,12 +269,12 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		if (vartens) iflgs = 1;
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 			gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "UNIF: Number of evaluation points = %" PRId64 ", number of extrapolation points = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 2) {	/* c-1 interpolation (intrc1) with global gradients gradg. */
@@ -294,12 +294,12 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			dgmx = dgmax;
 			gradg_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GRADG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GRADG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 				gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 				gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 			            "GRADG (iteration %" PRId64 "): tolerance = %g max change = %g  maxit = %" PRId64 " no. iterations = %" PRId64 " ier = %" PRId64 "\n",
 				iter, dgmax, dgmx, maxit, nitg, ierror);
 			if (vartens) {
@@ -307,12 +307,12 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 				iflgs = 1;
 				getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): ier = %" PRId64 "\n", iter, ierror);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GETSIG (iteration %" PRId64 "): ier = %" PRId64 "\n", iter, ierror);
 					gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 					gmt_M_free (GMT, sigma);	gmt_M_free (GMT, grad);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				            "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
@@ -320,12 +320,12 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);
 			gmt_M_free (GMT, plon);		gmt_M_free (GMT, sigma);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
@@ -339,32 +339,32 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		/* compute and print smsurf parameters. */
 		smtol = sqrt (2.0 / sm);
 		gstol = 0.05 * e;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "SMSURF parameters:\n\texpected squared error = %g\n\tsmoothing parameter sm = %g\n", e, sm);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "\tgauss-seidel tolerance = %g\n\tsmoothing tolerance = %g\n\tweights = %g\n", gstol, smtol, wtk);
 
 		/* loop on smsurf/getsig iterations. */
 		for (iter = iflgs = 0; iter < itgs; iter++) {
 			smsurf_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 				gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
 				gmt_M_free (GMT, wt);		gmt_M_free (GMT, sigma);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			if (ierror == 1)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				            "Error in SMSURF: inactive constraint in SMSURF (iteration %" PRId64 ").  f is a constant function\n", iter);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
 				iflgs = 1;
 				getsig_ (&n, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GETSIG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 					gmt_M_free (GMT, grad);		gmt_M_free (GMT, wt);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				            "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
@@ -372,10 +372,10 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		gmt_M_free (GMT, wt);
 		if (ierror < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: ier = %" PRId64 "\n", ierror);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in UNIF: ier = %" PRId64 "\n", ierror);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 

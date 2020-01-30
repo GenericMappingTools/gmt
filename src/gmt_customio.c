@@ -83,12 +83,12 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
  *-----------------------------------------------------------*/
 
 int gmt_dummy_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	if (header) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown grid format.\n");
+	if (header) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown grid format.\n");
 	return (GMT_GRDIO_UNKNOWN_FORMAT);
 }
 
 int gmt_dummy_grd_read (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
-	if (header && grid && wesn && pad && complex_mode < 1024) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown grid format.\n");
+	if (header && grid && wesn && pad && complex_mode < 1024) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown grid format.\n");
 	return (GMT_GRDIO_UNKNOWN_FORMAT);
 }
 
@@ -630,8 +630,8 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				}
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine if a native 4-byte grid is float or int without more information.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You must append =bf (float) or =bi (integer) to avoid this situation.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot determine if a native 4-byte grid is float or int without more information.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "You must append =bf (float) or =bi (integer) to avoid this situation.\n");
 				free_and_return (GMT_GRDIO_NONUNIQUE_FORMAT);
 			}
 			break;
@@ -1183,7 +1183,7 @@ void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, gmt_grdfloat z
 			((double *)vptr)[k] = (double)z;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmtlib_encode\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT: Bad call to gmtlib_encode\n");
 			break;
 	}
 }
@@ -1210,7 +1210,7 @@ gmt_grdfloat gmtlib_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsign
 			fval = (gmt_grdfloat)(((double *)vptr)[k]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmtlib_decode\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT: Bad call to gmtlib_decode\n");
 			fval = GMT->session.f_NaN;
 			break;
 	}
@@ -1755,7 +1755,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (!strcmp (HH->name, "=")) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pipes cannot be used within the GDAL interface.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pipes cannot be used within the GDAL interface.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
@@ -1770,7 +1770,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file (metadata) with gdalread.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading file (metadata) with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
 		free_from_gdalread (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
@@ -1933,7 +1933,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	to_gdalread->N.nan_value = header->nan_value;
 
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading file with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
@@ -1976,7 +1976,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			for (j = 0; j < header->size; j++)
 				grid[j] = (gmt_grdfloat)from_gdalread->Int32.data[j+i];
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not supported with gdalread in gmt_customio.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR data type not supported with gdalread in gmt_customio.\n");
 			gmt_M_free (GMT, to_gdalread);
 			free_from_gdalread (GMT, from_gdalread);
 			gmt_M_free (GMT, from_gdalread);
@@ -2054,7 +2054,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	type[0] = '\0';
 
 	if (HH->pocket == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot write with GDAL without knowing which driver to use.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot write with GDAL without knowing which driver to use.\n");
 		return (GMT_NOERROR);
 	}
 
@@ -2157,7 +2157,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		to_GDALW->type = strdup("uint32");
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown or unsupported data type code in gmt_customio for writing file with GDAL.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown or unsupported data type code in gmt_customio for writing file with GDAL.\n");
 		gmt_M_free (GMT, k);			gmt_M_free (GMT, to_GDALW->data);		gmt_M_str_free (to_GDALW->driver);
 		gmt_M_str_free (to_GDALW->type);	gmt_M_free (GMT, to_GDALW);
 		return (GMT_GRDIO_OPEN_FAILED);

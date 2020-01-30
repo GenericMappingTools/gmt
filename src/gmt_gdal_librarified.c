@@ -72,14 +72,14 @@ GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, 
 	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
 
 	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		return (-1);
 	}
 
 	args = breakMe(GMT, opts);
 	psOptions = GDALInfoOptionsNew(args, NULL);
 	info = GDALInfo(hDataset, psOptions);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GDAL Info\n\n%s\n", info);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GDAL Info\n\n%s\n", info);
 
 	GDALInfoOptionsFree(psOptions);
 	GDALClose(hDataset);

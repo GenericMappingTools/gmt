@@ -81,7 +81,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 			if ((k = gmt_get_graphics_id (GMT, p)) == GMT_NOTSET) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 				n_errors++;
 			}
 		}
@@ -110,7 +110,7 @@ char *get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 			n++;
 		}
 		else if (opt->option != 'V') {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized argument -%c%s\n", opt->option, opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument -%c%s\n", opt->option, opt->arg);
 			*error = GMT_PARSE_ERROR;
 		}
 		opt = opt->next;

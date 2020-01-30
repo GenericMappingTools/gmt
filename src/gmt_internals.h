@@ -245,7 +245,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 
 /* Definition for an error trap */
 #ifdef DEBUG
-#define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_NORMAL,"gmt_M_err_trap: %d\n", err);return(err);}
+#define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_ERROR,"gmt_M_err_trap: %d\n", err);return(err);}
 #else
 #define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif

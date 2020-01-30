@@ -435,10 +435,10 @@ fonts can be found in the :doc:`gmt` man page.
 
     **GMT_VERBOSE**
         (**-V**) Determines the level of verbosity used by GMT
-        programs. Choose among 6 levels; each level adds to the verbosity of
-        the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
-        **c**\ ompatibility warnings, **v**\ erbose progress reports, **l**\ ong
-        verbose progress reports, **d**\ ebugging messages [c].
+        programs. Choose among 7 levels; each level adds to the verbosity of
+        the lower levels: **q**\ uiet, **e**\ rrors, **w**\ arnings,
+        **t**\ imings (for slow algorithms only), **i**\ nformation,
+        **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
 
 .. _I/O Parameters:
 

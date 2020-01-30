@@ -256,7 +256,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
@@ -311,7 +311,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active[RSET] = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -346,7 +346,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), yB, MAX(xNE, xSE), yT);
 
-			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active[RSET] = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
@@ -440,8 +440,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transform ");
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " <-- ");
 			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
@@ -517,8 +517,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_ny = Geo->header->n_rows;
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transform ");
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " --> ");
 			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);

@@ -240,7 +240,7 @@ int GMT_basemap (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: basemap\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psbasemap (V_API, mode, args);
@@ -275,7 +275,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Ready to make the plot */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing the basemap\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the basemap\n");
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
@@ -289,7 +289,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 		dim[GMT_ROW] = 2 * (nx + ny) + 1;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
 		/* March around perimeter in a counter-clockwise sense */

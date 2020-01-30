@@ -63,7 +63,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	unsigned int n_errors = 0;
 
 	if (options == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No target specified\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No target specified\n");
 		n_errors++;
 	}
 
@@ -102,11 +102,11 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 	unsigned int n_dirs, k;
 	char **dirlist = NULL, *here = NULL;
 	if (access (API->session_dir, F_OK)) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "No directory named %s\n", API->session_dir);
+		GMT_Report (API, GMT_MSG_WARNING, "No directory named %s\n", API->session_dir);
 		return GMT_FILE_NOT_FOUND;
 	}
 	if ((here = getcwd (NULL, 0)) == NULL) {	/* Get the current directory */
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot determine current directory!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot determine current directory!\n");
 		return GMT_RUNTIME_ERROR;
 	}
 	if (chdir (API->session_dir)) {	/* Cd into sessions directory */
@@ -116,7 +116,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<session_name> directories */
 		for (k = 0; k < n_dirs; k++) {
 			if (gmt_remove_dir (API, dirlist[k], false))
-				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove directory %s [permissions?]\n", dirlist[k]);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", dirlist[k]);
 		}
 		gmtlib_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
 	}
@@ -184,18 +184,18 @@ int GMT_clear (void *V_API, int mode, void *args) {
 		}
 		else if (!strcmp (opt->arg, "settings") || !strcmp (opt->arg, "defaults") || !strcmp (opt->arg, "conf")) {	/* Clear the default settings in modern mode */
 			if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Target \"%s\" is only valid in a modern mode session\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Target \"%s\" is only valid in a modern mode session\n", opt->arg);
 			}
 			else if (clear_defaults (API))
 				error = GMT_RUNTIME_ERROR;
 		}
 		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized target %s - skipped\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized target %s - skipped\n", opt->arg);
 			n_given--;	/* Undo the premature increment */
 		}
 	}
 	if (n_given == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No clear target given\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No clear target given\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 

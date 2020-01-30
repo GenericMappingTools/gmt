@@ -4,7 +4,7 @@
 # higher rms threshold for this test to pass
 # GRAPHICSMAGICK_RMS = 0.0565
 ps=gpsgridder1.ps
-#V=-Vl
+#V=-Vi
 INC=5m
 DEC=2
 gmt select @wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0:5 > data.lluv

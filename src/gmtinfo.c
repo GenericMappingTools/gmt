@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A. Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E. Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -255,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					case 't': Ctrl->F.mode = GMT_INFO_TABLEINFO; break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F. Flags are i|d|t.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F. Flags are i|d|t.\n");
 						break;
 				}
 				break;
@@ -272,13 +272,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1] && strchr ("erR", opt->arg[1]))
 							Ctrl->I.mode = ACTUAL_BOUNDS;
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I%s not recognized\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I%s not recognized\n", opt->arg);
 							n_errors++;
 						}
 						break;
 					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS;
 						if (opt->arg[1]) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");
 							n_errors++;
 						}
 						break;	/* -I- is backwards compatible */
@@ -286,7 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				}
 				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. No increment given.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I. No increment given.\n");
 				}
 				else
 					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
@@ -312,7 +312,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					if (j == 1) Ctrl->T.col = 0;
 				}
 				else if (c || opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error -T: Syntax is -T<inc>[+c<col>].\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Error -T: Syntax is -T<inc>[+c<col>].\n");
 					n_errors++;
 				}
 				else {	/* Modern syntax and parsing */
@@ -336,7 +336,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->I.active && special && Ctrl->I.ncol > 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ip. Only a single increment is expected.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ip. Only a single increment is expected.\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && !special && Ctrl->I.ncol == 1) {		/* Special case of dy = dx if not given */
@@ -349,7 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	}
 	if (Ctrl->I.active && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {	/* SHould have increments */
 		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] <= 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I. Must specify positive increment for column %d.\n", k);
+			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I. Must specify positive increment for column %d.\n", k);
 			n_errors++;
 		}
 	}
@@ -408,10 +408,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
 	if (Ctrl->n_files > 1 && GMT->common.a.active) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Cannot give multiple files when -a is selected!\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Cannot give multiple files when -a is selected!\n");
 		Return (GMT_DIM_TOO_LARGE);
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	if (Ctrl->F.active) {	/* Special case of reporting on record numbers */
 		/* This is best done by reading the whole thing in */
@@ -491,13 +491,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
+			GMT_Report (API, GMT_MSG_WARNING, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
+			GMT_Report (API, GMT_MSG_WARNING, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 	}
@@ -570,18 +570,18 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->I.active) {	/* Must report multiples of dx/dy etc */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n",
+					GMT_Report (API, GMT_MSG_INFORMATION, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n",
 					            phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
 					if (GMT->common.R.active[GSET]) strcpy (buffer, " (-r is ignored).");
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE,
+					GMT_Report (API, GMT_MSG_INFORMATION,
 					            "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				if (Ctrl->I.mode == ACTUAL_BOUNDS) {
-					if (n == 1) GMT_Report (API, GMT_MSG_VERBOSE,
+					if (n == 1) GMT_Report (API, GMT_MSG_WARNING,
 					            "Only one data record processed; bounds will be meaningless\n");
 					wesn[XLO] = xyzmin[GMT_X];	wesn[XHI] = xyzmax[GMT_X];
 					wesn[YLO] = xyzmin[GMT_Y];	wesn[YHI] = xyzmax[GMT_Y];
@@ -626,14 +626,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 						if (wesn[YLO] < -90.0) {
 							wesn[YLO] = -90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
+							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
 						}
 						if (wesn[YHI] > 90.0) {
 							wesn[YHI] = 90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
+							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
 						}
 						if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
-							GMT_Report (API, GMT_MSG_VERBOSE,
+							GMT_Report (API, GMT_MSG_WARNING,
 							            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
 							wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
 							wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
@@ -658,7 +658,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					wesn[XLO]  -= sub * Ctrl->I.inc[GMT_X];		wesn[XHI]  += add * Ctrl->I.inc[GMT_X];
 					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;
 					wesn[YLO] -= sub * Ctrl->I.inc[GMT_Y];		wesn[YHI] += add * Ctrl->I.inc[GMT_Y];
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE,
+					GMT_Report (API, GMT_MSG_INFORMATION,
 					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
 						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], out_dim[GMT_X], out_dim[GMT_Y]);
 				}
@@ -766,7 +766,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 		/* We get here once we have read a data record */
 		if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
-			GMT_Report (API, GMT_MSG_NORMAL, "No data columns to work with - exiting\n");
+			GMT_Report (API, GMT_MSG_ERROR, "No data columns to work with - exiting\n");
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
@@ -784,21 +784,21 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Not enough columns to support the -S option\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Not enough columns to support the -S option\n");
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+  				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
 			if (give_r_string) ncol = 2;	/* Since we only will concern ourselves with lon/lat or x/y */
 			if (ncol == 0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Something went wrong, ncol is still = 0. Maybe a call from an external program? Have to abort here.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Something went wrong, ncol is still = 0. Maybe a call from an external program? Have to abort here.\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 
@@ -890,7 +890,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	}
 	if (GMT->common.a.active) {
 		gmt_list_aspatials (GMT, buffer);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, buffer);
+		GMT_Report (API, GMT_MSG_INFORMATION, buffer);
 	}
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
@@ -899,7 +899,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (!got_stuff) GMT_Report (API, GMT_MSG_NORMAL, "No input data found!\n");
+	if (!got_stuff) GMT_Report (API, GMT_MSG_ERROR, "No input data found!\n");
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */
 	if (Ctrl->C.active) {	/* Restore previous output col types */
