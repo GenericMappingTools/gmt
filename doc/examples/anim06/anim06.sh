@@ -66,7 +66,7 @@ gmt begin
 	# Add time counter in upper left corner
 	printf "%4.1f 2 t = %6.3f s\n" -7.5 \${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL -Dj0.1i/0.1i
 	# Add cycles counter in upper right corner
-	fnow=\$(gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =\)
+	fnow=\$(gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =)
 	printf "2.5 2 f = %6.4f Hz\n" \$fnow | gmt text -F+f16p,Helvetica-Bold+jTR -Dj0.1i/0.1i
 	# Add frame counter in lower right corner
 	printf "2.5 -1.5 %04d\n" \${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR -Dj0.1i/0.1i
