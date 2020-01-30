@@ -54,7 +54,7 @@ gmt begin
 		gmt plot -Sc0.3c -Gblue samples.txt
 	fi
 	# Take a new sample every 12 frames = 0.5 seconds
-	take_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV MOD 0 EQ =\)
+	take_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV MOD 0 EQ =)
 	if [ \${MOVIE_FRAME} -gt 12 ]; then	# Interpolating up to most recent sample
 		gmt sample1d samples.txt -I0.001 > resampled.txt
 		gmt plot -W2.5p,blue resampled.txt
