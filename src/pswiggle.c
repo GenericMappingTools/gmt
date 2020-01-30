@@ -443,7 +443,7 @@ int GMT_wiggle (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: wiggle\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: wiggle\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_pswiggle (V_API, mode, args);
@@ -488,7 +488,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -530,7 +530,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (D->n_columns < 3) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -544,7 +544,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 		T = D->table[tbl];
 		TH = gmt_get_DT_hidden (T);
 
-                GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
+                GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */

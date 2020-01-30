@@ -368,12 +368,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			case 'I':
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
 				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: usage is -I<feature>[/<pen>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: usage is -I<feature>[/<pen>]\n");
 					n_errors++;
 					continue;
 				}
@@ -406,7 +406,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					default:
 						ks = atoi (opt->arg);
 						if (ks < 0 || ks >= GSHHS_N_RLEVELS) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -433,12 +433,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			case 'N':
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
 				if (strchr (opt->arg, '/') == NULL && strchr (opt->arg, ',')) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: usage is -N<feature>[/<pen>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: usage is -N<feature>[/<pen>]\n");
 					n_errors++;
 					continue;
 				}
@@ -456,7 +456,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					default:
 						ks = opt->arg[0] - '1';
 						if (ks < 0 || ks >= GSHHS_N_BLEVELS) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -568,45 +568,45 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Syntax error: Cannot combine -E -M with -W\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Syntax error: Cannot combine -E -M with -G\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Syntax error: Cannot combine -E -M with -I\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->N.active, "Syntax error: Cannot combine -E -M with -N\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Cannot combine -E -M with -W\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Cannot combine -E -M with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Cannot combine -E -M with -I\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->N.active, "Cannot combine -E -M with -N\n");
 		if (Ctrl->E.active) Ctrl->E.info.mode |= GMT_DCW_DUMP;	/* -M -E combo means dump DCW data */
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.pen[k].width < 0.0,
-		                                 "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
+		                                 "Option -W: Pen thickness for feature %d cannot be negative\n", k);
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files allowed\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping,
-	                                 "Syntax error: Cannot combine -C, -G, -S while clipping\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
+	                                 "Cannot combine -C, -G, -S while clipping\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Must choose between clipping land OR water\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active),
-	                                 "Syntax error: Must choose between dumping and clipping/plotting\n");
+	                                 "Must choose between dumping and clipping/plotting\n");
 	n_errors += gmt_M_check_condition (GMT, clipping && GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
 	                                 GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0,
-	                                 "-JE not implemented for global clipping - I quit\n");
+	                                 "Option -JE not implemented for global clipping - I quit\n");
 	n_errors += gmt_M_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active),
 	                                 "Cannot do clipping AND draw coastlines, rivers, or borders\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
 	                                 Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active),
-	                                 "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	                                 "Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
-	                                 "Syntax error -M: Must specify one of -E, -I, -N, and -W\n");
+	                                 "Option -M: Must specify one of -E, -I, -N, and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
-	                                 "Syntax error: -F is only allowed with -L and -T\n");
+	                                 "Option: -F is only allowed with -L and -T\n");
 
 	if (Ctrl->I.active) {	/* Generate list of desired river features in sorted order */
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
 			if (!Ctrl->I.use[k]) continue;
 			n_errors += gmt_M_check_condition (GMT, Ctrl->I.pen[k].width < 0.0,
-			                                 "Syntax error -I option: Pen thickness cannot be negative\n");
+			                                 "Option -I: Pen thickness cannot be negative\n");
 			Ctrl->I.list[Ctrl->I.n_rlevels++] = k;	/* Since goes from 0-10 */
 		}
 	}
@@ -615,7 +615,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		for (k = Ctrl->N.n_blevels = 0; k < GSHHS_N_BLEVELS; k++) {
 			if (!Ctrl->N.use[k]) continue;
 			n_errors += gmt_M_check_condition (GMT, Ctrl->N.pen[k].width < 0.0,
-			                                 "Syntax error -N option: Pen thickness cannot be negative\n");
+			                                 "Option -N: Pen thickness cannot be negative\n");
 			Ctrl->N.list[Ctrl->N.n_blevels++] = k + 1;	/* Add one so we get range 1-3 */
 		}
 	}
@@ -686,7 +686,7 @@ GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, 
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection antipode outside -R region so cannot determine status\n");
 	}
 	gmt_shore_level_at_point (GMT, c, -1, 0.0, 0.0);	/* Free memory */
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determined GSHHG level of projection center at (%g, %g) [%d] and antipode at (%g, %g) [%d].\n",
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Determined GSHHG level of projection center at (%g, %g) [%d] and antipode at (%g, %g) [%d].\n",
 		clon, clat, status[0], alon, -clat, status[1]);
 	/* Back to initial projection */
 	GMT->common.J.active = false;
@@ -709,7 +709,7 @@ int GMT_coast (void *V_API, int mode, void *args) {
 		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
 		if (!list_items && !dump_data) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: coast\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: coast\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
 	}
@@ -808,7 +808,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");
 	else if (GMT->common.J.active && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Gave -J but forgot the "d" */
 		gmt_set_geographic (GMT, GMT_IN);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Switching to -Jx|X...d[/...d] for geographic data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Switching to -Jx|X...d[/...d] for geographic data\n");
 	}
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -821,27 +821,27 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		clip_to_extend_lines = (!(gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) || GMT->common.R.oblique);
 
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_ERROR, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
 	}
 
 	if (Ctrl->N.active && (err = gmt_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) != 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_ERROR, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
 	if (need_coast_base) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n", c.version);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.title);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.source);
+		GMT_Report (API, GMT_MSG_INFORMATION, "GSHHG version %s\n", c.version);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", c.title);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", c.source);
 	}
 
 	if (Ctrl->I.active && (err = gmt_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_ERROR, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
 
 	if (!(need_coast_base || Ctrl->E.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No GSHHG databases available - must abort\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No GSHHG databases available - must abort\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -918,7 +918,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Pattern fill requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Pattern fill requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -928,7 +928,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};
 		if (check_antipode_status (GMT, &c, GMT_INSIDE, GMT->current.proj.central_meridian, GMT->current.proj.pole, status)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "check_antipode_status crashed - not good\n");
+			GMT_Report (API, GMT_MSG_WARNING, "check_antipode_status crashed - not good\n");
 		}
 		possibly_donut_hell = true;
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
@@ -937,14 +937,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Fill/clip continent option (-G) may not work for this projection.\n"
+			GMT_Report (API, GMT_MSG_WARNING, "Fill/clip continent option (-G) may not work for this projection.\n"
 			                                  "If the antipole (%g/%g) is in the ocean then chances are good\n"
 			                                  "Else: avoid projection center coordinates that are exact multiples of %g degrees\n",
 			                                  anti_lon, anti_lat, c.bsize);
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */
-		GMT_Report (API, GMT_MSG_VERBOSE, "-JE requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_WARNING, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 		if (!Ctrl->S.active)	/* Since we are painting wet areas we must now reset them to white */
@@ -953,7 +953,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Painting entire map with ocean color first, then draw land on top later\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Painting entire map with ocean color first, then draw land on top later\n");
 		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 		gmt_setfill (GMT, &Ctrl->S.fill, 0);
 		if (donut) {
@@ -1022,7 +1022,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
 #endif
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_Report (API, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -1173,7 +1173,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Rivers...");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Rivers...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of River segments\n");
 		last_k = -1;
 
@@ -1239,7 +1239,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */

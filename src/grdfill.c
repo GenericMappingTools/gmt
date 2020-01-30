@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 					Ctrl->In.file= strdup (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot find input file %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Cannot find input file %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 						if (opt->arg[1]) Ctrl->A.value =  atof (&opt->arg[1]);
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -161,7 +161,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "ecify only one output file\n");
 					n_errors++;
 				}
 				else
@@ -180,8 +180,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Syntax error: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Must specify output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -263,7 +263,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Calling greenspline with args %s\n", args);
+	GMT_Report (API, GMT_MSG_WARNING, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
 		return (API->error);	/* Some sort of failure */
 	}
@@ -283,17 +283,17 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	/* Close the two virtual files */
 	if (GMT_Close_VirtualFile (API, output)) {
 		return (API->error);
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual output file %s\n", output);
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual output file %s\n", output);
 	}
 	if (GMT_Close_VirtualFile (API, input)) {
 		return (API->error);
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to close virtual input file %s\n", input);
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual input file %s\n", input);
 	}
 
 	/* Free our custom vectors */
 	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 	if (GMT_Destroy_Data (API, &G_hole) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to destroy temporary hold grid\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to destroy temporary hold grid\n");
 		return (API->error);
 	}
 	return (GMT_NOERROR);
@@ -418,9 +418,9 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 		radius = (int64_t)floor (sqrt ((double)(nx*nx + ny*ny)));
 	rad2 = (double)(radius * radius);
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbor...\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Interpolating to nearest neighbor...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
- 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
+ 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Working on row %" PRIi64 "\n", i);
 		rr = 0;
 		gmt_M_col_loop (GMT, In, i, j, ij) {	/* Loop over all columns */
 			if (!gmt_M_is_fnan (m[ij]))	/* Already duplicated in the calling program */
@@ -461,7 +461,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%" PRIi64 " number of searches used\n", cs);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%" PRIi64 " number of searches used\n", cs);
 
 	gmt_M_free (GMT, is);
 	gmt_M_free (GMT, js);
@@ -513,7 +513,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
 		if (error) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
@@ -528,13 +528,13 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		int64_t radius = lrint (Ctrl->A.value);
 		struct GMT_GRID *New = NULL;
 		if ((New = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to duplicate input grid!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate input grid!\n");
 			Return (API->error);
 		}
 		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write output grid!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
@@ -593,7 +593,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, limit[XHI], Grid->header) + 0.5 * Grid->header->inc[GMT_X];
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, limit[YHI], Grid->header) - 0.5 * Grid->header->inc[GMT_Y];
 			wesn[YHI] = gmt_M_grd_row_to_y (GMT, limit[YLO], Grid->header) + 0.5 * Grid->header->inc[GMT_Y];
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
 				if (Ctrl->L.mode) {	/* Write a closed polygon */
 					double tmp[4];
@@ -623,13 +623,13 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 						break;
 				}
 				if (error) {
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Failed to fill hole %u\n", hole_number);
+					GMT_Report (API, GMT_MSG_INFORMATION, "Failed to fill hole %u\n", hole_number);
 					continue;
 				}
 			}
 		}
 	}
-	if (hole_number) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u holes\n", hole_number);
+	if (hole_number) GMT_Report (API, GMT_MSG_INFORMATION, "Found %u holes\n", hole_number);
 	gmt_M_free_aligned (GMT, ID);
 	gmt_M_free (GMT, Out);
 
@@ -645,7 +645,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 	}
 	else {
-		GMT_Report (API, GMT_MSG_VERBOSE, "No holes detected in grid - grid was not updated\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid was not updated\n");
 	}
 
 	if (Ctrl->A.mode == ALG_SPLINE) {

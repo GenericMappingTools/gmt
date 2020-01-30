@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 						Ctrl->F.mode = GMT_SPLINE_NN;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -331,7 +331,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	GMT->current.setting.interpolant = Ctrl->F.mode % 10;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->N.col] = true;				/* ... But disallow NaN in "time" column */
@@ -339,7 +339,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.T.spatial) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Loxodrome mode ignored for Cartesian data.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
@@ -360,11 +360,11 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (Din->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	if (Ctrl->N.active && Ctrl->N.col >= Din->n_columns) {	/*  */
-		GMT_Report (API, GMT_MSG_NORMAL, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (!Ctrl->T.active) {	/* Did not have information for -Tinc during parsing, do now */
@@ -379,7 +379,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.file) {	/* Read file with abscissae */
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " knots from file\n", Ctrl->T.T.n);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " knots from file\n", Ctrl->T.T.n);
 	}
 
 	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
@@ -394,7 +394,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			if (S->n_rows < 2) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
+				GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
 				continue;
 			}
 			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
@@ -418,7 +418,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					t_out[m++] = Ctrl->T.T.array[row];
 				}
 				if (n_outside) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+					GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
 				}
 			}
 			else {	/* Generate evenly spaced output */
@@ -465,7 +465,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				}
 
 				if (result != GMT_NOERROR) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_ERROR, "Error from gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

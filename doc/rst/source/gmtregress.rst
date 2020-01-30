@@ -70,7 +70,7 @@ Optional Arguments
     is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.
     For each segment we report the four columns *angle*, *E*, *slope*, *intercept*, for
     the range of specified angles. The best model parameters within this range
-    are written into the segment header and reported in verbose mode (**-V**).
+    are written into the segment header and reported in verbose information mode (**-Vi**).
 
 .. _-C:
 

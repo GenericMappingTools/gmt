@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Does not take input! */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No input files expected\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error: No input files expected\n");
 				n_errors++;
 				break;
 			case '>':	/* Got named output file */
@@ -276,7 +276,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		include = gmt_M_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -285,7 +285,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Leg %s not in the data base\n", line);
+					GMT_Report (API, GMT_MSG_WARNING, "Leg %s not in the data base\n", line);
 					continue;
 				}
 				include[k] = true;
@@ -404,7 +404,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, matrix);
 		gmt_M_free (GMT, include);
 		gmt_M_free (GMT, ids_in_bin);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
 		char text[GMT_LEN64] = {""};
@@ -413,7 +413,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				++n_tracks_found;
 		}
 		if (n_tracks_found) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d tracks\n", n_tracks_found);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d tracks\n", n_tracks_found);
 
 			if (!Ctrl->D.active) {
 				sprintf (line, "Search command: %s", THIS_MODULE_CLASSIC_NAME);
@@ -444,7 +444,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 			}
 		}
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Search found no tracks\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Search found no tracks\n");
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -459,7 +459,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "completed successfully\n");
 
 	Return (GMT_NOERROR);
 }

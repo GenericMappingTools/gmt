@@ -202,7 +202,7 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	gmt_M_memset (T, 1, struct PSTEXT_INFO);
 	if (C->C.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot have non-rectangular text box if clearance (-C) is zero.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot have non-rectangular text box if clearance (-C) is zero.\n");
 		C->C.mode = 'o';
 	}
 	T->x_space = C->C.dx;
@@ -491,7 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -499,7 +499,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'h':	/* Segment header request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -507,7 +507,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'r':	/* Record number */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else if (p[1])
@@ -516,7 +516,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 't':	/* Use specified text string */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -527,7 +527,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'z':	/* z-column formatted */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -611,14 +611,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 
 			case 'i':	/* Local -i option for pstext to select a specific word in the text */
 				if (opt->arg[0] != 't') {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error -i: Must give -it<word> from 0 (first) to nwords-1.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Error -i: Must give -it<word> from 0 (first) to nwords-1.\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->F.word = true;
 					Ctrl->F.w_col = atoi (&opt->arg[1]);
 					if (Ctrl->F.w_col < 0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error -it<word>: Must select <word> from 0 (first) to nwords-1.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Error -it<word>: Must select <word> from 0 (first) to nwords-1.\n");
 						n_errors++;
 					}
 					else
@@ -679,11 +679,11 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((gmt_scanf (GMT, txt_z, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
 		if ((gmt_scanf (GMT, txt_t, GMT_IS_FLOAT, &GMT->current.io.curr_rec[3]) == GMT_IS_NAN)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad transparency, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %d had bad transparency, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
@@ -700,18 +700,18 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 		if ((gmt_scanf (GMT, txt_t, GMT_IS_FLOAT, &GMT->current.io.curr_rec[2]) == GMT_IS_NAN)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad transparency, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %d had bad transparency, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
 
 	if (!Ctrl->F.R_justify) {
 		if (gmt_scanf (GMT, txt_x, gmt_M_type (GMT, GMT_IN, GMT_X), &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %d had bad x coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
 		if (gmt_scanf (GMT, txt_y, gmt_M_type (GMT, GMT_IN, GMT_Y), &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %d had bad y coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
@@ -732,7 +732,7 @@ int GMT_text (void *V_API, int mode, void *args) {
 		list_fonts = (GMT_Find_Option (API, 'L', options) != NULL);
 		gmt_M_free_options (mode);
 		if (!list_fonts) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: text\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: text\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
 	}
@@ -751,7 +751,7 @@ GMT_LOCAL char *pstext_get_label (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl
 		if (word)	/* Only write word if not NULL */
 			out = strdup (word);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Trailing text did not have %d words (only %d found) - no label selected.\n", Ctrl->F.w_col, col);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %d words (only %d found) - no label selected.\n", Ctrl->F.w_col, col);
 			out = strdup ("");
 		}
 		gmt_M_str_free (orig);
@@ -811,7 +811,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol = 2 + Ctrl->Z.active;
 
@@ -1020,7 +1020,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : gmt_just_decode (GMT, pjust_key, PSL_NONE);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by gmt_getfont */
 					T.font = Ctrl->F.font;
-					if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
+					if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 					in_txt = NULL;
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
@@ -1032,7 +1032,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
-								if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
+								if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 								break;
 							case 'a': case 'A':
 								T.paragraph_angle = atof (text);
@@ -1052,11 +1052,11 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					T.paragraph_width  = gmt_M_to_inch (GMT, txt_b);
 				}
 				if (T.block_justify == -99) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
+					GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
 				if (nscan < (int)n_expected_cols) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
+					GMT_Report (API, GMT_MSG_ERROR, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
@@ -1082,12 +1082,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			else {	/* Text block record */
 				line = In->text;
 				if (line == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
+					GMT_Report (API, GMT_MSG_ERROR, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
 					continue;
 				}
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
+					GMT_Report (API, GMT_MSG_ERROR, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				strncpy (cp_line, line, GMT_BUFSIZ);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
@@ -1128,7 +1128,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			line = In->text;
 			if (!no_in_txt) {
 				if (line == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
+					GMT_Report (API, GMT_MSG_ERROR, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
 					continue;
 				}
 				if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
@@ -1148,7 +1148,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				T.block_justify = gmt_just_decode (GMT, just_key, PSL_NO_DEF);
 				sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by gmt_getfont */
 				T.font = Ctrl->F.font;
-				if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
+				if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 				in_txt = text;
 				n_expected_cols = 7 + Ctrl->Z.active;
 			}
@@ -1174,7 +1174,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 						case 'f':
 							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 							T.font = Ctrl->F.font;
-							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
+							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 							if (gmt_M_compat_check (GMT, 4)) {
 								if (Ctrl->S.active) {
 									T.font.form |= 2;
@@ -1192,13 +1192,13 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->F.get_text == GET_SEG_HEADER) {
 				if (GMT->current.io.segment_header[0] == 0)
-					GMT_Report (API, GMT_MSG_NORMAL, "No active segment header to use; text is blank\n");
+					GMT_Report (API, GMT_MSG_ERROR, "No active segment header to use; text is blank\n");
 				strcpy (label, GMT->current.io.segment_header);
 				in_txt = label;
 			}
 			else if (Ctrl->F.get_text == GET_SEG_LABEL) {
 				if (!gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-L", label))
-					GMT_Report (API, GMT_MSG_NORMAL, "No active segment label to use; text is blank\n");
+					GMT_Report (API, GMT_MSG_ERROR, "No active segment label to use; text is blank\n");
 				in_txt = label;
 			}
 			else if (Ctrl->F.get_text == GET_CMD_TEXT) {
@@ -1217,11 +1217,11 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			nscan += gmt_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
 			if (nscan < (int)n_expected_cols) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Record %d is incomplete (skipped)\n", n_read);
+				GMT_Report (API, GMT_MSG_ERROR, "Record %d is incomplete (skipped)\n", n_read);
 				continue;
 			}
 			if (T.block_justify == -99) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
+				GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad justification info (set to LB)\n", n_read);
 				T.block_justify = 1;
 			}
 
@@ -1383,7 +1383,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
+	GMT_Report (API, GMT_MSG_INFORMATION, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
 	Return (GMT_NOERROR);
 }

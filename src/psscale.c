@@ -1500,7 +1500,7 @@ int GMT_colorbar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: colorbar\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: colorbar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psscale (V_API, mode, args);
@@ -1545,12 +1545,12 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input CPT\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input CPT\n");
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->D.extend && P->is_wrapping) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot use +e for cycling color bar; +e deactivated\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
 		Ctrl->D.extend = false;
 		Ctrl->D.emode &= 4;	/* This removes any 1,2,3 of selected but leaves 4 for nan */
 	}
@@ -1570,15 +1570,15 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is for categorical data.\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "CPT is for categorical data.\n");
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
+	GMT_Report (API, GMT_MSG_INFORMATION, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->data[i].z_low <= 0.0 || P->data[i].z_high <= 0.0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			P->data[i].z_low  = d_log10 (GMT, P->data[i].z_low);
@@ -1668,7 +1668,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 		z_width = D->table[0]->segment[0]->data[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
-			GMT_Report (API, GMT_MSG_NORMAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

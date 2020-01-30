@@ -179,12 +179,12 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 		if ((res = curl_easy_perform (curl)) == CURLE_OK) {
       			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
 			if ((res == CURLE_OK) && (filesize > 0.0)) {	/* Got the size */
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Remote file %s: Size is %0.0f bytes\n", URL, filesize);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Remote file %s: Size is %0.0f bytes\n", URL, filesize);
 				action = (filesize < (double)limit) ? 0 : (size_t)filesize;
 			}
 		}
 		else	/* We failed */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Remote file %s: Curl returned error %d\n", URL, res);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote file %s: Curl returned error %d\n", URL, res);
 
 		/* always cleanup */
 		curl_easy_cleanup (curl);
@@ -207,55 +207,55 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	time_t begin, end;
 
 	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
 		return 1;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to not verify the peer\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
 		return 1;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to follow redirects\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
 		return 1;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
 		return 1;
 	}
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
 		return 1;
 	}
  	if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, GMT_HASH_TIME_OUT)) {	/* Set a max timeout */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to time out after %ld seconds\n", GMT_HASH_TIME_OUT);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to time out after %ld seconds\n", GMT_HASH_TIME_OUT);
 		return 1;
 	}
 	urlfile.filename = file;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
 		return 1;
 	}
 	/* Set a pointer to our struct to pass to the callback */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", file);
 		return 1;
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (file);
 	begin = time (NULL);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
 		time_spent = (long)(end - begin);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to download file %s\n", url);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to download file %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {
 			fclose (urlfile.fp);
 			urlfile.fp = NULL;
 		}
 		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT data server may be down - delay checking hash file for 24 hours\n");
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT data server may be down - delay checking hash file for 24 hours\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
 			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
 #ifdef WIN32
 				_utime (orig, NULL);
@@ -300,8 +300,8 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	}
 	fclose (fp);
 	if (k != *n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s will be deleted.  Please try again\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s will be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
 	return (L);
@@ -334,13 +334,13 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		char serverdir[PATH_MAX] = {""};
 		snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);
 		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT server directory : %s\n", serverdir);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
 			return 1;
 		}
 		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmthash_get_url (GMT, url, hashpath, NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Failed to get remote file %s\n", url);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (hashpath, F_OK)) gmt_remove_file (GMT, hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
 			GMT->current.io.internet_error = true;				/* No point trying again */
@@ -357,7 +357,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	/* Here we have the existing hash file and its path is in hashpath */
 
 	if (stat (hashpath, &buf)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get information about %s - abort\n", hashpath);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to get information about %s - abort\n", hashpath);
 		return 1;
 	}
 	/*  Get its modification (creation) time */
@@ -387,12 +387,12 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			remove (old_hashpath);	/* Remove old hash file if it exists */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", hashpath, old_hashpath);
 		if (gmt_rename_file (GMT, hashpath, old_hashpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", hashpath, old_hashpath);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", hashpath, old_hashpath);
 			return 1;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", new_hashpath, hashpath);
 		if (gmt_rename_file (GMT, new_hashpath, hashpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s.\n", new_hashpath, hashpath);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_hashpath, hashpath);
 			return 1;
 		}
 		if ((N = hash_load (GMT, hashpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
@@ -415,7 +415,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 					else {	/* Do size check */
 						struct stat buf;
 						if (stat (url, &buf)) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not determine size of file %s.\n", url);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of file %s.\n", url);
 							continue;
 						}
 						if (N[n].size != (size_t)buf.st_size) {	/* Downloaded file size differ - need to re-download */
@@ -483,7 +483,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_remotedata (file)) {	/* A remote @earth_relief_xxm|s grid */
 		if (is_not_a_valid_grid (&file[1], all_grid_files, GMT_N_DATASETS)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file %s is not a recognized remote grid\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid file %s is not a recognized remote grid\n", file);
 			gmt_M_free (GMT, file);
 			return 1;
 		}
@@ -516,7 +516,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
 	if (hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Unable to obtain remote file %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote file %s\n", file);
 		gmt_M_free (GMT, file);
 		return 1;
 	}
@@ -547,7 +547,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 	if ((is_data || is_srtm) && access (serverdir, R_OK) && gmt_mkdir (serverdir))
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", serverdir);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", serverdir);
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
@@ -555,11 +555,11 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		snprintf (srtmdir, PATH_MAX, "%s/srtm%d", serverdir, res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK) && gmt_mkdir (srtmdir))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", srtmdir);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", srtmdir);
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 	}
@@ -577,7 +577,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
 		char *S = strdup (gmt_memory_use (fsize, 3));
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
 		gmt_M_free (GMT, file);
 		gmt_M_str_free (S);
 		return 0;
@@ -586,22 +586,22 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	/* Here we will try to download a file */
 
   	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
 		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to not verify the peer\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
 		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to follow redirects\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
 		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
 		gmt_M_free (GMT, file);
 		return 0;
 	}
@@ -617,7 +617,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		else if (is_data) {
 			snprintf (local_path, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
 		}
 		else if (is_url) {	/* Plaec in current dir */
@@ -625,7 +625,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		}
 		else {	/* Goes to cache */
 			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", user_dir[to]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", user_dir[to]);
 			snprintf (local_path, PATH_MAX, "%s/%s", user_dir[to], &file[pos]);
 		}
 	}
@@ -636,7 +636,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
@@ -644,32 +644,32 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	urlfile.filename = local_path;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
 	/* Set a pointer to our struct to pass to the callback */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", local_path);
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
 	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
 	turn_on_ctrl_C_check (local_path);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
 			if (urlfile.fp != NULL) {
 				fclose (urlfile.fp);
 				urlfile.fp = NULL;
 			}
 			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not even remove file %s\n", local_path);
 		}
 		else if (curl_err == CURLE_COULDNT_CONNECT)
 			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
@@ -687,9 +687,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 		char *cmd = gmt_M_memory (GMT, NULL, strlen (local_path) + strlen (srtm_local) + strlen(args) + 2, char);
 		sprintf (cmd, "%s %s%s", local_path, srtm_local, args);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
 		if (GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", local_path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", local_path);
 			gmt_M_free (GMT, file);
 			gmt_M_free (GMT, cmd);
 			if (is_srtm) gmt_M_str_free (srtm_local);
@@ -697,17 +697,17 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		}
 		gmt_M_free (GMT, cmd);
 		if (gmt_remove_file (GMT, local_path))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not even remove file %s\n", local_path);
 		strcpy (local_path, srtm_local);
 		gmt_M_str_free (srtm_local);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Say a few things about the file we got */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not determine size of downloaded file %s\n", &file_name[pos]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of downloaded file %s\n", &file_name[pos]);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
 	gmt_M_free (GMT, file);
 
@@ -769,7 +769,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		snprintf (srtmlist, PATH_MAX, "%s/=srtm%d.000000", API->GMT->parent->gwf_dir, res);
 		file = srtmlist;
 		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to create job file %s\n", file);
 			return NULL;
 		}
 	}
@@ -784,31 +784,31 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		strcat (srtmlist, name);
 #ifdef _WIN32
 		if ((file = mktemp (srtmlist)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
+			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
 		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to create job file %s\n", file);
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
 #else
 		if ((fd = mkstemp (srtmlist)) == -1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
+			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
 		file = srtmlist;
 		if ((fp = fdopen (fd, "w")) == NULL) {
 			API->error = GMT_RUNTIME_ERROR;
-			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not fdopen temporary file %s.\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Could not fdopen temporary file %s.\n", file);
 			return NULL;
 		}
 #endif
 	}
 	if ((SRTM = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "@srtm_tiles.nc", NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to obtain list of available SRTM tiles.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to obtain list of available SRTM tiles.\n");
 		API->error = GMT_RUNTIME_ERROR;
 		fclose (fp);
 		return NULL;
@@ -843,13 +843,13 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			if (res == 1) inc[GMT_X] = inc[GMT_Y] = GMT_SEC2DEG; else inc[GMT_X] = inc[GMT_Y] = 3.0 * GMT_SEC2DEG;
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, inc, \
 				GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to create grid header used for building perimeter input.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to create grid header used for building perimeter input.\n");
 				return NULL;
 			}
 			/* Create dataset to hold the perimeter coordinates. Compute how many there are */
 			dim[GMT_ROW] = 2 * ((uint64_t)G->header->n_rows + (G->header->n_columns - 2));
 			if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to create input dataset used for holding perimeter input.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to create input dataset used for holding perimeter input.\n");
 				return NULL;
 			}
 			S = Din->table[0]->segment[0];	/* Shorthand to only segment */
@@ -869,54 +869,54 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			}
 			/* Done with the grid for now */
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy grid used for perimeter.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to destroy grid used for perimeter.\n");
 				return NULL;
 			}
 			/* Set up virtual files for both input and output perimeter points */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, Din, input) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable opening virtual file for reading.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable opening virtual file for reading.\n");
 				return NULL;
 			}
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, output) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable opening virtual file for writing.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable opening virtual file for writing.\n");
 				return NULL;
 			}
 			/* Call gmt select and return coordinates on land */
 			snprintf (cmd, GMT_LEN128, "-Ns/k -Df %s ->%s", input, output);
 			if (GMT_Call_Module (API, "select", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Failure */
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: gmtselect command for perimeter failed.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: gmtselect command for perimeter failed.\n");
 				return NULL;
 			}
 			if ((Dout = GMT_Read_VirtualFile (API, output)) != NULL) {	/* Access the output data table */
 				if (Din->n_records == Dout->n_records) {	/* All perimeter nodes on land; no need to read the ocean layer */
 					ocean = false;
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter on land - no need to get @earth_relief_15s.\n");
+					GMT_Report (API, GMT_MSG_INFORMATION, "gmtlib_get_srtmlist: Perimeter on land - no need to get @earth_relief_15s.\n");
 				}
 				else
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter partly in ocean - must get @earth_relief_15s.\n");
+					GMT_Report (API, GMT_MSG_INFORMATION, "gmtlib_get_srtmlist: Perimeter partly in ocean - must get @earth_relief_15s.\n");
 				/* Free structures used to hold the perimeter data tables */
 				if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
-					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter input.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter input.\n");
 					return NULL;
 				}
 				if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
-					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter output.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter output.\n");
 					return NULL;
 				}
 			}
 			/* So here, ocean may have changed from true to false if we found no ocean... */
 		}
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Already have @earth_relief_15s.\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "gmtlib_get_srtmlist: Already have @earth_relief_15s.\n");
 		if (ocean)	/* Either some perimiter nodes were in the ocean, so get the file, or we already have the file locally */
 			fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
 	}
 	fclose (fp);
 	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
 	}
 	if (n_tiles == 0)	/* No tiles inside region */
-		GMT_Report (API, GMT_MSG_VERBOSE, "gmtlib_get_srtmlist: No SRTM tiles available for your region.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_srtmlist: No SRTM tiles available for your region.\n");
 	return (strdup (file));
 }
 
@@ -932,16 +932,16 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 
 	tag[1] = res;
 	give_data_attribution (API->GMT, tag);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
 	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0 -Co-", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;
 	}
 	if ((G = GMT_Read_VirtualFile (API, grid)) == NULL) {	/* Load in the resampled grid */
-		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to receive blended grid from grdblend\n");
+		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
 	HH = gmt_get_H_hidden (G->header);

@@ -546,7 +546,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 		HH = gmt_get_H_hidden (G->header);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing grid %s\n", HH->name);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing grid %s\n", HH->name);
 
 		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active)
 			projStr = strdup (G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
@@ -643,7 +643,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_IMG) {
 			if (!(strstr (G->header->command, "img2grd") || strstr (G->header->command, "img2mercgrd") ||
 			      strstr (G->header->remark, "img2mercgrd"))) {
-				GMT_Report (API, GMT_MSG_NORMAL,
+				GMT_Report (API, GMT_MSG_ERROR,
 				            "Could not find a -Rw/e/s/n string produced by img tools - returning regular grid -R\n");
 				i_status = GRDINFO_GIVE_REG_ORIG;
 			}
@@ -964,14 +964,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}
@@ -1049,14 +1049,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}

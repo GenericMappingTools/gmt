@@ -63,39 +63,39 @@ int main (int argc, char *argv[]) {
 		mode = GMT_WRITE_DATA;	/* Normally we treat data as double precision values */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {	/* This check kicks in if the data has bad formatting, text etc */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Error found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "Error found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "E: ");
 				mode = GMT_WRITE_TEXT;	/* Switch to text so we can see the bad record as is */
 			}
 			if (gmt_M_rec_is_file_break (GMT)) {	/* End of a file but not end of all files */
-				GMT_Report (API, GMT_MSG_VERBOSE, "End of intermediate data file after record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "End of intermediate data file after record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "B: --- End of File except last one ---\n");
 				continue;	/* Since no actual data record was returned, just the intermediate "EOF" signal */
 			}
 			if (gmt_M_rec_is_table_header (GMT)) {	/* Found a table header */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Table header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "Table header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "H: ");
 				mode = GMT_WRITE_TABLE_HEADER;	/* Special flag to report the table header */
 			}
 			if (gmt_M_rec_is_segment_header (GMT)) {	/* Found segment header */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Segment header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "Segment header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "S: ");
 				mode = GMT_WRITE_SEGMENT_HEADER;	/* Special flag to report the segment header */
 			}
 			if (gmt_M_rec_is_nan (GMT)) {	/* Found NaN record */
-				GMT_Report (API, GMT_MSG_VERBOSE, "NaN data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "NaN data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "N: ");
 				mode = GMT_WRITE_TEXT;	/* Switch to text so we can see the nan record as is */
 			}
 			if (gmt_M_rec_is_gap (GMT)) {	/* Found a gap */
-				GMT_Report (API, GMT_MSG_VERBOSE, "A gap found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (API, GMT_MSG_WARNING, "A gap found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "G: ");
 			}
 			assert (false);						/* Should never get here */
 		}
 		if (gmt_M_rec_is_data (GMT)) {	/* Found a data record */
 			if ((error = GMT_Set_Columns (API, GMT_OUT, n_fields, gmt_M_colmode (In->text))) != GMT_NOERROR) exit (EXIT_FAILURE);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
+			GMT_Report (API, GMT_MSG_WARNING, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 			API->print_func (stdout, "D: ");
 		}
 		GMT_Put_Record (API, mode, In);

@@ -220,7 +220,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No datafiles given!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_tracks = (uint64_t)error;
@@ -228,7 +228,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	if (Ctrl->E.active && !s->geographic) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-E requires geographic data; your TAG implies Cartesian\n");
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (GMT_RUNTIME_ERROR);
@@ -254,14 +254,14 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		/* Do the equal area map projection so W = 360 and H = 180 */
 		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
+			GMT_Report (API, GMT_MSG_ERROR, "-E requires a global region (-Rg or -Rd)");
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			x2sys_end (GMT, s);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (API, GMT_MSG_INFORMATION,
 		            "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n",
 		            B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
@@ -324,13 +324,13 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading file %s ", trk_name[trk]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading file %s ", trk_name[trk]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%s]\n", s->path);
+		GMT_Report (API, GMT_MSG_INFORMATION, "[%s]\n", s->path);
 
 		if (p.n_rows == 0) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "No data records found - skipping %s\n", trk_name[trk]);
+			GMT_Report (API, GMT_MSG_WARNING, "No data records found - skipping %s\n", trk_name[trk]);
 			x2sys_free_data (GMT, data, s->n_fields, &p);
 			continue;
 		}

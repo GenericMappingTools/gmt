@@ -61,7 +61,7 @@ int main () {
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "mapproject", GMT_MODULE_CMD, buffer);
 	if (status) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_mapproject returned error %d\n", status);
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_mapproject returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
@@ -77,7 +77,7 @@ int main () {
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "xyz2grd", GMT_MODULE_CMD, buffer);
 	if (status) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_xyz2grd returned error %d\n", status);
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_xyz2grd returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((G = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
@@ -94,7 +94,7 @@ int main () {
 	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!gmt_M_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 
 	if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to free G\n");
 	}
 
 	/* 6. Create command options for GMT_gmtselect */
@@ -110,7 +110,7 @@ int main () {
 	GMT_Message (API, GMT_TIME_NONE, "\ngmtselect output\n");
 	status = GMT_Call_Module (API, "gmtselect", GMT_MODULE_CMD, buffer);
 	if (status) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_gmtselect returned error %d\n", status);
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_gmtselect returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);

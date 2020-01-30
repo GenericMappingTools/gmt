@@ -774,15 +774,15 @@ which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
 Verbose feedback: The **-V** option
 -----------------------------------
 
-The **-V** option selects verbose mode, which will send
-progress reports to standard error. Even more verbose levels are **-Vl**
-(long verbose) and **-Vd** (debug). Normal verbosity level produces only
-error and warning messages. This is the default or can be selected by
-using **-Vn**. If compiled with backward-compatibility support, the
-default is **-Vc**, which includes warnings about deprecated usage.
+The **-V** option controls the verbosity mode, which determines which
+messages are sent to standard error [Default **-Vw** reports errors and warnings].
+Even more verbose levels are **-Vi**(or just **-V**; for informational messages)
+and **-Vd** (debug). If compiled with backward-compatibility
+you can select **-Vc**, which includes warnings about deprecated usage.  To study
+the run-time of time-intensive algoriths you can use **-Vt** (where available).
 Finally, **-Vq** can be used to run without any warnings or errors. This
 option can also be set by specifying the default :term:`GMT_VERBOSE`, as
-**quiet**, **normal**, **compat**, **verbose**, **long_verbose**, or
+**quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
 **debug**, in order of increased verbosity.
 
 .. _option_-X:

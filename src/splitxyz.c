@@ -214,22 +214,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 			case 'A':
 				Ctrl->A.active = true;
 				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2,
-				                                       "Syntax error -A option: Can't decipher values\n");
+				                                       "Option -A: Can't decipher values\n");
 				break;
 			case 'C':
 				Ctrl->C.active = true;
 				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1,
-				                                       "Syntax error -C option: Can't decipher value\n");
+				                                       "Option -C: Can't decipher value\n");
 				break;
 			case 'D':
 				Ctrl->D.active = true;
 				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1,
-				                                       "Syntax error -D option: Can't decipher value\n");
+				                                       "Option -D: Can't decipher value\n");
 				break;
 			case 'F':
 				Ctrl->F.active = true;
 				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2,
-				                                       "Syntax error -F option: Can't decipher values\n");
+				                                       "Option -F: Can't decipher values\n");
 				break;
 			case 'G':
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -262,14 +262,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 					if (j < SPLITXYZ_N_OUTPUT_CHOICES) {
 						Ctrl->Q.col[j] = opt->arg[j];
 						if (!strchr ("xyzdh", Ctrl->Q.col[j])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
 							n_errors++;
 						}
 						if (opt->arg[j] == 'z') Ctrl->Q.z_selected = true;
 						n_outputs++;
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Too many output columns selected: Choose from -Qxyzdg\n");
 						n_errors++;
 					}
 				}
@@ -288,15 +288,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value < 0.0, "Option -D: Minimum segment distance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 0.0, "Option -C: Course change tolerance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Option -A: Azimuth tolerance must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name,
-	                                 "Syntax error: Binary output requires a namestem in -N\n");
+	                                 "Binary output requires a namestem in -N\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
-	                                 "Syntax error -N: Output template must contain %%d\n");
+	                                 "Option -N: Output template must contain %%d\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -345,7 +345,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
@@ -357,7 +357,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (D[GMT_IN]->n_columns < n_in) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %u are needed\n", (int)D[GMT_IN]->n_columns, n_in);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %u are needed\n", (int)D[GMT_IN]->n_columns, n_in);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -365,15 +365,15 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	no_z_column = (D[GMT_IN]->n_columns == 2);
 
 	if (no_z_column && Ctrl->S.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: The -S option requires a 3rd data column\n");
+		GMT_Report (API, GMT_MSG_ERROR, "The -S option requires a 3rd data column\n");
 		Return (GMT_PARSE_ERROR);
 	}
 	if (no_z_column && Ctrl->F.z_filter != 0.0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: The -F option requires a 3rd data column\n");
+		GMT_Report (API, GMT_MSG_ERROR, "The -F option requires a 3rd data column\n");
 		Return (GMT_PARSE_ERROR);
 	}
 	if (Ctrl->Q.z_selected && no_z_column) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Cannot request z if unless data have a 3rd column\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot request z if unless data have a 3rd column\n");
 		Return (GMT_PARSE_ERROR);
 	}
 
@@ -387,7 +387,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				break;
 			case 'z':
 				if (no_z_column) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Cannot specify z when there is no z column!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Cannot specify z when there is no z column!\n");
 					Return (-1);
 				}
 				output_choice[k] = 2;
@@ -449,9 +449,9 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			T->min = gmt_M_memory (GMT, T->min, n_columns, double);
 			T->max = gmt_M_memory (GMT, T->max, n_columns, double);
 		}
-		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);
 		}
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -591,7 +591,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, rec);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
+	GMT_Report (API, GMT_MSG_INFORMATION, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;

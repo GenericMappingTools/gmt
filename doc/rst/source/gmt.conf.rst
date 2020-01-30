@@ -21,7 +21,7 @@ the unit used for distances and lengths by appending **c** (cm), **i**
 (inch), or **p** (points). When no unit is indicated the value will be
 assumed to be in the unit set by :term:`PROJ_LENGTH_UNIT`. Several
 parameters take only **true** or **false**. Finally, most of these
-parameters can be changed on-the-fly via the **-**\ **-PARAMETER**\ =\ *VALUE*
+parameters can be changed on-the-fly via the **--PARAMETER**\ =\ *VALUE*
 option to any GMT program. However, a few are static and are only
 read via the **gmt.conf** file; these are labeled (static).
 
@@ -118,17 +118,17 @@ fonts can be found in the :doc:`gmt` man page.
 .. glossary::
 
     **FONT**
-        Sets the default for all fonts, except **FONT_LOGO**. This setting is
+        Sets the default for all fonts, except :term:`FONT_LOGO`. This setting is
         not included in the **gmt.conf** file.
 
     **FONT_ANNOT**
-        Sets both **FONT_ANNOT_PRIMARY** and **FONT_ANNOT_SECONDARY** to the value specified.
+        Sets both :term:`FONT_ANNOT_PRIMARY` and :term:`FONT_ANNOT_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
         Font used for primary annotations, etc. [12p,Helvetica,black]. When
         **+** is prepended, scale fonts, offsets and tick-lengths relative
-        to **FONT_ANNOT_PRIMARY**.
+        to :term:`FONT_ANNOT_PRIMARY`.
 
     **FONT_ANNOT_SECONDARY**
         Font to use for time axis secondary annotations
@@ -165,7 +165,7 @@ fonts can be found in the :doc:`gmt` man page.
     **FORMAT_CLOCK_MAP**
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
-        clock strings in plot annotations. See **FORMAT_CLOCK_OUT** for
+        clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
         details. [hh:mm:ss].
 
     **FORMAT_CLOCK_OUT**
@@ -189,7 +189,7 @@ fonts can be found in the :doc:`gmt` man page.
         strings in data fields. You may specify either Gregorian calendar
         format or ISO week calendar format. Gregorian calendar: Use any
         combination of yyyy (or yy for 2-digit years; if so see
-        **TIME_Y2K_OFFSET_YEAR**), mm (or o for abbreviated month name in
+        :term:`TIME_Y2K_OFFSET_YEAR`), mm (or o for abbreviated month name in
         the current time language), and dd, with or without delimiters. For
         day-of-year data, use jjj instead of mm and/or dd. Examples can be
         ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
@@ -201,11 +201,11 @@ fonts can be found in the :doc:`gmt` man page.
     **FORMAT_DATE_MAP**
         Formatting template that indicates how an output date string is to
         be plotted. This template is then used to guide the plotting of date
-        strings in data fields. See **FORMAT_DATE_OUT** for details. In
+        strings in data fields. See :term:`FORMAT_DATE_OUT` for details. In
         addition, you may use a single o instead of mm (to plot month name)
         and u instead of W[-]ww to plot "Week ##". Both of these text
-        strings will be affected by the **GMT_LANGUAGE**,
-        **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP**
+        strings will be affected by the :term:`GMT_LANGUAGE`,
+        :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
         setting. [yyyy-mm-dd].
 
     **FORMAT_DATE_OUT**
@@ -214,7 +214,7 @@ fonts can be found in the :doc:`gmt` man page.
         date strings in data fields. You may specify either Gregorian
         calendar format or ISO week calendar format. Gregorian calendar: Use
         any combination of yyyy (or yy for 2-digit years; if so see
-        **TIME_Y2K_OFFSET_YEAR**), mm (or o for abbreviated month name in
+        :term:`TIME_Y2K_OFFSET_YEAR`), mm (or o for abbreviated month name in
         the current time language), and dd, with or without delimiters. For
         day-of-year data, use jjj instead of mm and/or dd. As examples, try
         yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
@@ -231,7 +231,7 @@ fonts can be found in the :doc:`gmt` man page.
         Formatting template that indicates how an output geographical
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
-        **FORMAT_GEO_OUT** for details. In addition, you can append A
+        :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
         which plots the absolute value of the coordinate. The default is
         ddd:mm:ss. Not all items may be plotted as this depends on the
         annotation interval.
@@ -248,7 +248,7 @@ fonts can be found in the :doc:`gmt` man page.
 
         -D Output longitude in the range [-360,0]
 
-        D Use **FORMAT_FLOAT_OUT** for floating point degrees.
+        D Use :term:`FORMAT_FLOAT_OUT` for floating point degrees.
 
         ddd Fixed format integer degrees
 
@@ -269,12 +269,12 @@ fonts can be found in the :doc:`gmt` man page.
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
         precision floating point numbers along plot frames and contours.
-        For geographic coordinates, see **FORMAT_GEO_MAP**. [%.12lg].
+        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [%.12lg].
 
     **FORMAT_FLOAT_OUT**
         Format (C language printf syntax) to be used when printing double
         precision floating point numbers to output files. For geographic
-        coordinates, see **FORMAT_GEO_OUT**. [%.12lg]. To give some
+        coordinates, see :term:`FORMAT_GEO_OUT`. [%.12lg]. To give some
         columns a separate format, supply one or more comma-separated
         *cols*:*format* specifications, where *cols* can be specific columns
         (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
@@ -284,7 +284,7 @@ fonts can be found in the :doc:`gmt` man page.
         columns.
 
     **FORMAT_TIME_MAP**
-        Sets both **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP** to the value specified.
+        Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **FORMAT_TIME_PRIMARY_MAP**
@@ -311,7 +311,7 @@ fonts can be found in the :doc:`gmt` man page.
 
     **GMT_AUTO_DOWNLOAD**
         Determines if GMT is allowed to automatically download datasets and
-        files from the remote server selected via **GMT_DATA_SERVER**.  Default
+        files from the remote server selected via :term:`GMT_DATA_SERVER`.  Default
         is *on* but you can turn this off by setting it to *off*.
 
     **GMT_COMPATIBILITY**
@@ -425,7 +425,7 @@ fonts can be found in the :doc:`gmt` man page.
         submit it to the GMT Developers for official inclusion. Custom
         language files can be placed in directories **$GMT_SHAREDIR**/localization
         or ~/.gmt. Note: Some of these languages may require you to also
-        change the **PS_CHAR_ENCODING** setting.
+        change the :term:`PS_CHAR_ENCODING` setting.
 
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
@@ -435,10 +435,10 @@ fonts can be found in the :doc:`gmt` man page.
 
     **GMT_VERBOSE**
         (**-V**) Determines the level of verbosity used by GMT
-        programs. Choose among 6 levels; each level adds to the verbosity of
-        the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
-        **c**\ ompatibility warnings, **v**\ erbose progress reports, **l**\ ong
-        verbose progress reports, **d**\ ebugging messages [c].
+        programs. Choose among 7 levels; each level adds to the verbosity of
+        the lower levels: **q**\ uiet, **e**\ rrors, **w**\ arnings,
+        **t**\ imings (for slow algorithms only), **i**\ nformation,
+        **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
 
 .. _I/O Parameters:
 
@@ -515,7 +515,7 @@ fonts can be found in the :doc:`gmt` man page.
         variable of size 2896x2896 completely fills the chunk cache of
         32 MiB. Specify the chunk size for each dimension separated by a
         comma, or **a**\ uto for optimally chosen chunk sizes in the range
-        [128,256). Setting **IO_NC4_CHUNK_SIZE** will produce netCDF version 4
+        [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
         dimensions are less than 128 or **c**\ lassic is specified for
         classic netCDF. [auto]
@@ -582,7 +582,7 @@ fonts can be found in the :doc:`gmt` man page.
         set a combination of these, add up the values in parentheses. [1].
 
     **MAP_ANNOT_OFFSET**
-        Sets both **MAP_ANNOT_OFFSET_PRIMARY** and **MAP_ANNOT_OFFSET_SECONDARY** to the value specified.
+        Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_ANNOT_OFFSET_PRIMARY**
@@ -602,9 +602,9 @@ fonts can be found in the :doc:`gmt` man page.
     **MAP_DEFAULT_PEN**
         Sets the default of all pens related to **-W** options. Prepend
         **+** to overrule the color of the parameters
-        **MAP_GRID_PEN_PRIMARY**, **MAP_GRID_PEN_SECONDARY**,
-        **MAP_FRAME_PEN**, **MAP_TICK_PEN_PRIMARY**, and
-        **MAP_TICK_PEN_SECONDARY** by the color of **MAP_DEFAULT_PEN**
+        :term:`MAP_GRID_PEN_PRIMARY`, :term:`MAP_GRID_PEN_SECONDARY`,
+        :term:`MAP_FRAME_PEN`, :term:`MAP_TICK_PEN_PRIMARY`, and
+        :term:`MAP_TICK_PEN_SECONDARY` by the color of :term:`MAP_DEFAULT_PEN`
         [default,black].
 
     **MAP_DEGREE_SYMBOL**
@@ -645,11 +645,11 @@ fonts can be found in the :doc:`gmt` man page.
 
     **MAP_FRAME_WIDTH**
         Width (> 0) of map borders for fancy map frame [5p]. Note: For fancy
-        frames, **MAP_FRAME_PEN** is automatically set to 0.1 times the
-        **MAP_FRAME_WIDTH** setting.
+        frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
+        :term:`MAP_FRAME_WIDTH` setting.
 
     **MAP_GRID_CROSS_SIZE**
-        Sets both **MAP_GRID_CROSS_SIZE_PRIMARY** and **MAP_GRID_CROSS_SIZE_SECONDARY** to the value specified.
+        Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
@@ -715,7 +715,7 @@ fonts can be found in the :doc:`gmt` man page.
         various programs [5p].
 
     **MAP_TICK_LENGTH**
-        Sets both **MAP_TICK_LENGTH_PRIMARY** and **MAP_TICK_LENGTH_SECONDARY** to the value specified.
+        Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_LENGTH_PRIMARY**
@@ -727,7 +727,7 @@ fonts can be found in the :doc:`gmt` man page.
         only the first value is set, the second is assumed to be 25% of the first.
 
     **MAP_TICK_PEN**
-        Sets both **MAP_TICK_PEN_PRIMARY** and **MAP_TICK_PEN_SECONDARY** to the value specified.
+        Sets both :term:`MAP_TICK_PEN_PRIMARY` and :term:`MAP_TICK_PEN_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_PEN_PRIMARY**
@@ -759,7 +759,7 @@ fonts can be found in the :doc:`gmt` man page.
         conformal, meridional, parametric, or none [authalic]. When not none
         we convert any latitude used in the great circle calculation to the
         chosen auxiliary latitude before doing the distance calculation. See
-        also **PROJ_MEAN_RADIUS**.
+        also :term:`PROJ_MEAN_RADIUS`.
 
     **PROJ_ELLIPSOID**
         The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
@@ -901,7 +901,7 @@ fonts can be found in the :doc:`gmt` man page.
         Appendix F for details [ISOLatin1+ (or Standard+)].  Note: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
-        you must use --PS_CHAR_ENCODING=\ *encoding* on the command line and
+        you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
         not via gmt set.
 
     **PS_COLOR_MODEL**
@@ -943,7 +943,7 @@ fonts can be found in the :doc:`gmt` man page.
         *miter* join where the outer edges of the strokes for the two
         segments are extended until they meet at an angle (as in a picture
         frame; if the angle is too acute, a bevel join is used instead, with
-        threshold set by **PS_MITER_LIMIT**), *round* join where a
+        threshold set by :term:`PS_MITER_LIMIT`), *round* join where a
         circular arc is used to fill in the cracks at the kinks, and *bevel*
         join which is a miter join that is cut off so kinks are triangular in shape [miter].
 
@@ -952,7 +952,7 @@ fonts can be found in the :doc:`gmt` man page.
         *Modern mode:* If user selects PostScript output then the above applies as well.
         For other graphics formats (PDF and rasters), the media size is determined automatically
         by cropping to fit the plot exactly (but see :term:`PS_CONVERT`).  However,
-        if a specific media size is desired then the **PS_MEDIA** may be specified as well.
+        if a specific media size is desired then the :term:`PS_MEDIA` may be specified as well.
         The following formats (and their widths and heights in points) are recognized:
 
         Media width height
@@ -1034,7 +1034,7 @@ fonts can be found in the :doc:`gmt` man page.
 
     **TIME_EPOCH**
         Specifies the value of the calendar and clock at the origin (zero
-        point) of relative time units (see **TIME_UNIT**). It is a string
+        point) of relative time units (see :term:`TIME_UNIT`). It is a string
         of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
         yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 1970-01-01T00:00:00, the
         origin of the UNIX time epoch.
@@ -1068,7 +1068,7 @@ fonts can be found in the :doc:`gmt` man page.
         [none].
 
     **TIME_SYSTEM**
-        Shorthand for a combination of **TIME_EPOCH** and **TIME_UNIT**,
+        Shorthand for a combination of :term:`TIME_EPOCH` and :term:`TIME_UNIT`,
         specifying which time epoch the relative time refers to and what the
         units are. Choose from one of the preset systems below (epoch and
         units are indicated):
@@ -1088,12 +1088,12 @@ fonts can be found in the :doc:`gmt` man page.
         RATA 0000-12-31T00:00:00 d
 
         This parameter is not stored in the **gmt.conf** file but is
-        translated to the respective values of **TIME_EPOCH** and
-        **TIME_UNIT**.
+        translated to the respective values of :term:`TIME_EPOCH` and
+        :term:`TIME_UNIT`.
 
     **TIME_UNIT**
         Specifies the units of relative time data since epoch (see
-        **TIME_EPOCH**). Choose **y** (year - assumes all years are 365.2425
+        :term:`TIME_EPOCH`). Choose **y** (year - assumes all years are 365.2425
         days), **o** (month - assumes all months are of equal length y/12), **d**
         (day), **h** (hour), **m** (minute), or **s** (second) [**s**].
 
@@ -1104,9 +1104,9 @@ fonts can be found in the :doc:`gmt` man page.
 
     **TIME_Y2K_OFFSET_YEAR**
         When 2-digit years are used to represent 4-digit years (see various
-        **FORMAT_DATE**\ s), **TIME_Y2K_OFFSET_YEAR** gives the first
+        **FORMAT_DATE**\ s), :term:`TIME_Y2K_OFFSET_YEAR` gives the first
         year in a 100-year sequence. For example, if
-        **TIME_Y2K_OFFSET_YEAR** is 1729, then numbers 29 through 99
+        :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
         correspond to 1800 through 1828. [1950].
 

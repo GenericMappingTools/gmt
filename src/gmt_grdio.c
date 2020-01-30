@@ -123,38 +123,38 @@ GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 
 	needed_size = 2ULL * ((size_t)header->mx) * ((size_t)header->my);	/* For the complex array */
 	if (header->size < needed_size) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Complex grid not large enough to hold both components!.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid not large enough to hold both components!.\n");
 		GMT_exit (GMT, GMT_DIM_TOO_SMALL); return GMT_DIM_TOO_SMALL;
 	}
 	if (direction == GMT_IN) {	/* About to read in a complex component; another one might have been read in earlier */
 		if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before reading can take place.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Demultiplexing complex grid before reading can take place.\n");
 			gmt_grd_mux_demux (GMT, header, grid, GMT_GRID_IS_SERIAL);
 		}
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {	/* Already have both component; this will overwrite one of them */
 			unsigned int type = (complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
 			char *kind[2] = {"read", "imaginary"};
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Overwriting previously stored %s component in complex grid.\n", kind[type]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Overwriting previously stored %s component in complex grid.\n", kind[type]);
 		}
 		header->complex_mode |= complex_mode;	/* Update the grids complex mode */
 	}
 	else {	/* About to write out a complex component */
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) {	/* Not a complex grid */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Asking to write out complex components from a non-complex grid.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Asking to write out complex components from a non-complex grid.\n");
 			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Complex grid has no real components that can be written to file.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid has no real components that can be written to file.\n");
 			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Complex grid has no imaginary components that can be written to file.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid has no imaginary components that can be written to file.\n");
 			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {	/* Must first demultiplex the grid */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before writing can take place.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Demultiplexing complex grid before writing can take place.\n");
 			gmt_grd_mux_demux (GMT, header, grid, GMT_GRID_IS_SERIAL);
 		}
 	}
@@ -175,7 +175,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return;
 	}
 	/* Got a valid unit */
@@ -202,9 +202,9 @@ GMT_LOCAL void grdio_grd_xy_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 		for (k = 0; k < 2; k++) h->inc[k]  *= HH->xy_unit_to_meter[GMT_IN];
 		HH->xy_adjust[GMT_IN] = 2;	/* Now the grid is ready for use and in meters */
 		if (HH->xy_mode[direction])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Input grid file x/y unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Input grid file x/y unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
 	}
 	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
 		if (HH->xy_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
@@ -212,18 +212,18 @@ GMT_LOCAL void grdio_grd_xy_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 			for (k = 0; k < 2; k++) h->inc[k]  /= HH->xy_unit_to_meter[GMT_OUT];
 			HH->xy_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
 			if (HH->xy_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_OUT]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid file x/y unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_OUT]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_OUT]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid file x/y unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_OUT]]);
 		}
 		else if (HH->xy_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
 			for (k = 0; k < 4; k++) h->wesn[k] /= HH->xy_unit_to_meter[GMT_IN];
 			for (k = 0; k < 2; k++) h->inc[k]  /= HH->xy_unit_to_meter[GMT_IN];
 			HH->xy_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
 			if (HH->xy_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid file x/y unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid file x/y unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[HH->xy_unit[GMT_IN]]);
 		}
 	}
 }
@@ -545,7 +545,7 @@ GMT_LOCAL void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	if (gmt_M_type (GMT, GMT_OUT, GMT_Z) == GMT_IS_AZIMUTH || gmt_M_type (GMT, GMT_OUT, GMT_Z) == GMT_IS_ANGLE) {	/* Must average azimuths */
 		uint64_t orig = node;
 		double s, c, sum_s = 0.0, sum_c = 0.0;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Average %d angles at the %s pole\n", header->n_columns, name[pole+1]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Average %d angles at the %s pole\n", header->n_columns, name[pole+1]);
 		for (col = 0; col < header->n_columns; col++, node++) {
 			sincosd ((double)grid[node], &s, &c);
 			sum_s += s;	sum_c += c;
@@ -579,7 +579,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 		if (p_conflicts) {
 			gmt_grdfloat f_value = (gmt_grdfloat)(sum / header->n_columns);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			handle_pole_averaging (GMT, header, grid, f_value, -1);
 		}
 	}
@@ -594,7 +594,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 		if (p_conflicts) {
 			gmt_grdfloat f_value = (gmt_grdfloat)(sum / header->n_columns);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			handle_pole_averaging (GMT, header, grid, f_value, +1);
 		}
 	}
@@ -609,7 +609,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 	}
 	if (we_conflicts)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected %u inconsistent values along periodic east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values along periodic east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
 }
 
 GMT_LOCAL void grdio_grd_wipe_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
@@ -619,7 +619,7 @@ GMT_LOCAL void grdio_grd_wipe_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Calling grdio_grd_wipe_pad on interleaved complex grid! Programming error?\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling grdio_grd_wipe_pad on interleaved complex grid! Programming error?\n");
 		return;
 	}
 	if (G->header->pad[YHI]) gmt_M_memset (G->data, G->header->mx * G->header->pad[YHI], gmt_grdfloat);	/* Wipe top pad */
@@ -848,7 +848,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			units = strchr (string[i], '[');
 			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
 
 			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
 			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
@@ -932,7 +932,7 @@ void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (! (desired_mode == GMT_GRID_IS_INTERLEAVED || desired_mode == GMT_GRID_IS_SERIAL)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
 		return;
 	}
 	if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Nuthin' to do */
@@ -1094,8 +1094,8 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			HH->pocket = strdup(++pch);
 			HH->name[i-1] = '\0';			/* Done, rip the driver/outtype info from file name */
 			if (!strncmp (HH->pocket, "GMT", 3U) && header->nm > nc_limit) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your grid contains more than 2^31 - 1 nodes (%" PRIu64 ") and cannot be stored with the deprecated GMT netCDF format via GDAL.\n", header->nm);
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your grid contains more than 2^31 - 1 nodes (%" PRIu64 ") and cannot be stored with the deprecated GMT netCDF format via GDAL.\n", header->nm);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
 				return (GMT_GRDIO_BAD_DIM);	/* Grid is too large */
 			}
 		}
@@ -1190,12 +1190,12 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 	/* Catch some anomalies */
 	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
 
 	}
 	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
 	}
 
@@ -1228,7 +1228,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 				snprintf (string[i], GMT_GRID_UNIT_LEN80, "time [%s since %s %s]", unit, date, clock);
 				/* Warning for non-double grids */
 				if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Use double precision output grid to avoid loss of significance of time coordinate.\n");
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use double precision output grid to avoid loss of significance of time coordinate.\n");
 				break;
 		}
 	}
@@ -1283,17 +1283,17 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cartesian %s grid, yet x spans exactly 360 and -90 <= y <= 90.\n", dir[direction]);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian %s grid, yet x spans exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cartesian %s grid, yet x cells span exactly 360 and -90 <= y <= 90.\n", dir[direction]);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian %s grid, yet x cells span exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Cartesian %s grid\n", dir[direction]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s grid\n", dir[direction]);
 	return (GMT_GRID_CARTESIAN);
 }
 
@@ -1311,7 +1311,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		if (slop > 0 && slop < GMT_CONV4_LIMIT) {
 			inc = header->inc[side];
 			header->inc[side] = round_inc / scale;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
 				type[side], inc, header->inc[side]);
 		}
 	}
@@ -1330,9 +1330,9 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Correct any slop in geographic increments */
 		doctor_geo_increments (GMT, header);
 		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
 		if ((header->wesn[YHI]-90.0) > (GMT_CONV4_LIMIT*header->inc[GMT_Y]))
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
 	}
 
 	/* If boundaries are close to multiple of inc/2 fix them */
@@ -1344,7 +1344,7 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 		if (slop > GMT_CONV12_LIMIT && slop < GMT_CONV4_LIMIT) {	/* Ignore super tiny-slop and larger mismatches */
 			header->wesn[k] = round_v * d;
 			norm_v = header->wesn[k];
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed grid limit for %s from %.16g to %.16g\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed grid limit for %s from %.16g to %.16g\n",
 				type[k], norm_v, header->wesn[k]);
 		}
 	}
@@ -1403,11 +1403,11 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
        		header->n_columns = n_columns;    header->n_rows = n_rows;
  		if (header->registration == GMT_GRID_PIXEL_REG) {
  			header->registration = GMT_GRID_NODE_REG;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid has wrong registration type. Switching from pixel to gridline registration\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Grid has wrong registration type. Switching from pixel to gridline registration\n");
 		}
 		else {
  			header->registration = GMT_GRID_PIXEL_REG;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid has wrong registration type. Switching from gridline to pixel registration\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Grid has wrong registration type. Switching from gridline to pixel registration\n");
 		}
 	}
 
@@ -1539,7 +1539,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			return (sizeof (double));
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown grid data type: %c\n", GMT->session.grdformat[format][1]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown grid data type: %c\n", GMT->session.grdformat[format][1]);
 			return (GMT_GRDIO_UNKNOWN_TYPE);
 	}
 }
@@ -1593,17 +1593,17 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 
 	switch (gmt_minmaxinc_verify (GMT, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_CONV4_LIMIT)) {
 		case 3:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid x increment <= 0.0\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid x increment <= 0.0\n");
 			error++;
 			break;
 		case 2:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid x range <= 0.0\n");
-			if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid x range <= 0.0\n");
+			if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			                         "Make sure west < east for geographic coordinates\n");
 			error++;
 			break;
 		case 1:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "(x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			error++;
 		default:
@@ -1613,15 +1613,15 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 
 	switch (gmt_minmaxinc_verify (GMT, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], GMT_CONV4_LIMIT)) {
 		case 3:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid y increment <= 0.0\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid y increment <= 0.0\n");
 			error++;
 			break;
 		case 2:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid y range <= 0.0\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid y range <= 0.0\n");
 			error++;
 			break;
 		case 1:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "(y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			error++;
 		default:
@@ -1763,7 +1763,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 				case 0:
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
 					if (len >= GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 								"X unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
 					if (copy) strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80-1);
@@ -1771,7 +1771,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 				case 1:
 					gmt_M_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
 					if (len >= GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 								"Y unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
 					if (copy) strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80-1);
@@ -1779,7 +1779,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 				case 2:
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
 					if (len >= GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 								"Z unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
 					if (copy) strncpy (h->z_units, ptr, GMT_GRID_UNIT_LEN80-1);
@@ -1797,7 +1797,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 				case 6:
 					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
 					if (len >= GMT_GRID_TITLE_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 								"Title string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_TITLE_LEN80);
 					if (copy) strncpy (h->title, ptr, GMT_GRID_TITLE_LEN80-1);
@@ -1805,7 +1805,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 				case 7:
 					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
 					if (len >= GMT_GRID_REMARK_LEN160)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 								"Remark string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_REMARK_LEN160);
 					if (copy) strncpy (h->remark, ptr, GMT_GRID_REMARK_LEN160-1);
@@ -1839,7 +1839,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 							"x_unit string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_UNIT_LEN80);
 					if (word[1]) strncpy (h->x_units, &word[1], GMT_GRID_UNIT_LEN80-1);
@@ -1847,7 +1847,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 				case 'y':	/* Revise y-unit name */
 					gmt_M_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 							"y_unit string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_UNIT_LEN80);
 					if (word[1]) strncpy (h->y_units, &word[1], GMT_GRID_UNIT_LEN80-1);
@@ -1855,7 +1855,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 				case 'z':	/* Revise z-unit name */
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 							"z_unit string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_UNIT_LEN80);
 					if (word[1]) strncpy (h->z_units, &word[1], GMT_GRID_UNIT_LEN80-1);
@@ -1873,7 +1873,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 				case 't':	/* Revise the title */
 					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
 					if (strlen(word) > GMT_GRID_TITLE_LEN80)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 							"WTitle string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_TITLE_LEN80);
 					if (word[1]) strncpy (h->title, &word[1], GMT_GRID_TITLE_LEN80-1);
@@ -1881,7 +1881,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 				case 'r':	/* Revise the title */
 					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
 					if (strlen(word) > GMT_GRID_REMARK_LEN160)
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
 							"Remark string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_REMARK_LEN160);
 					if (word[1]) strncpy (h->remark, &word[1], GMT_GRID_REMARK_LEN160-1);
@@ -1981,7 +1981,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		char file[GMT_LEN64] = {""}, *txt = NULL;
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create argc, argv from linked structure options!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create argc, argv from linked structure options!\n");
 			return;
 		}
 		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320-1);
@@ -2028,7 +2028,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	n_shift = irint (shift * HH->r_inc[GMT_X]);
 	width = irint (360.0 * HH->r_inc[GMT_X]);
 	if (width > (int)G->header->n_columns) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot rotate grid, width is too small\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot rotate grid, width is too small\n");
 		return;
 	}
 
@@ -2049,7 +2049,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 
 	gridline = (width < (int)G->header->n_columns);	/* Gridline-registrered grids will have width = n_columns-1, pixel grids have width = n_columns */
 
-	if (gridline) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Repeating column now at %g/%g\n", G->header->wesn[XLO], G->header->wesn[XHI]);
+	if (gridline) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Repeating column now at %g/%g\n", G->header->wesn[XLO], G->header->wesn[XHI]);
 
 
 	for (row = 0; row < G->header->n_rows; row++) {
@@ -2066,7 +2066,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	gmt_M_free (GMT, tmp);
 
 	if (n_warn)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
 			G->header->wesn[XLO], G->header->wesn[XHI], n_warn);
 }
 
@@ -2145,7 +2145,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	wesn[YHI] = MIN (h->wesn[YHI], h->wesn[YLO] + ceil  ((wesn[YHI] - h->wesn[YLO]) * HH->r_inc[GMT_Y] - GMT_CONV4_LIMIT) * h->inc[GMT_Y]);
 
 	if (wesn[YHI] <= wesn[YLO]) {	/* Grid must be outside chosen -R */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your grid y's or latitudes appear to be outside the map region and will be skipped.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your grid y's or latitudes appear to be outside the map region and will be skipped.\n");
 		return (0);
 	}
 
@@ -2188,7 +2188,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	wesn[XHI] = MIN (h->wesn[XHI], h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X]);
 
 	if (wesn[XHI] <= wesn[XLO]) {	/* Grid may is outside chosen -R in longitude */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
 		return (0);
 	}
 	return (2);
@@ -2246,7 +2246,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (header->wesn[YLO] - wesn[YLO] > GMT_CONV4_LIMIT) wesn[YLO] = header->wesn[YLO], error = true;
 	if (wesn[YHI] - header->wesn[YHI] > GMT_CONV4_LIMIT) wesn[YHI] = header->wesn[YHI], error = true;
 	if (error)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Region exceeds grid domain. Region reduced to grid domain.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region exceeds grid domain. Region reduced to grid domain.\n");
 
 	if (!(gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_CONV4_LIMIT * header->inc[GMT_X];
@@ -2255,11 +2255,11 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		dx = fabs (wesn[XLO] - val);
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XLO], val);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XLO], val);
 			wesn[XLO] = val;
 		}
 
@@ -2267,11 +2267,11 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		dx = fabs (wesn[XHI] - val);
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XHI], val);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XHI], val);
 			wesn[XHI] = val;
 		}
 	}
@@ -2281,21 +2281,21 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YLO], val);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YLO], val);
 		wesn[YLO] = val;
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YHI], val);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YHI], val);
 		wesn[YHI] = val;
 	}
 	return (GMT_NOERROR);
@@ -2312,11 +2312,11 @@ void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t le
 
 	/* Sanity checks */
 	if (!isnormal (scale)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Scale must be a non-zero normalized number (%g).\n", scale);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Scale must be a non-zero normalized number (%g).\n", scale);
 		scale_f = 1.0f;
 	}
 	if (!isfinite (offset)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Offset must be a finite number (%g).\n", offset);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Offset must be a finite number (%g).\n", offset);
 		offset_f = 0.0f;
 	}
 
@@ -2378,7 +2378,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		default:
 			if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "img file %s has unusual size - grid increment defaults to %d min\n", file, min);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "img file %s has unusual size - grid increment defaults to %d min\n", file, min);
 			break;
 	}
 
@@ -2392,7 +2392,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 
 	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n",
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n",
 	            &imgfile[first], scale, mode, lat);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
 
@@ -2462,7 +2462,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 				if (step > max_step) max_step = step;
 			}
 			if (max_step > 32768)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s probably needs to byteswapped (max change = %u)\n", file, max_step);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s probably needs to byteswapped (max change = %u)\n", file, max_step);
 		}
 #endif
 		ij = gmt_M_ijp (Grid->header, row, 0);
@@ -2507,7 +2507,7 @@ void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
 		return;
 	}
 	if (!gmt_grd_pad_status (GMT, G->header, NULL)) return;	/* No pad so nothing to do */
@@ -2539,7 +2539,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
 		return;
 	}
 	if (gmt_grd_pad_status (GMT, G->header, pad)) return;	/* Already padded as requested so nothing to do */
@@ -2553,7 +2553,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		gmt_grdfloat *f = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extend grid via copy onto larger memory-aligned grid\n");
 		f = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat);	/* New, larger grid size */
 		gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 		gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
@@ -2581,7 +2581,7 @@ void gmt_grd_pad_zero (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
 		return;
 	}
 	if (!gmt_grd_pad_status (GMT, G->header, NULL)) return;	/* No pad so nothing to do */
@@ -2714,7 +2714,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 
 	if (separate || gmt_M_file_is_memory (file) || GH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
 		if ((*Out = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to duplicate grid! - this is not a good thing and may crash this module\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate grid! - this is not a good thing and may crash this module\n");
 			(*Out) = G;
 		}
 		else {
@@ -2752,7 +2752,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 	else {	/* Must infer dimension etc from wesn, inc, registration */
 		if (wesn == NULL) {	/* Must select -R setting */
 			if (!GMT->common.R.active[RSET]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No w/e/s/n given and no -R in effect.  Cannot initialize new grid\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No w/e/s/n given and no -R in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
@@ -2760,7 +2760,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 			gmt_M_memcpy (wesn_dup, wesn, 4, double);
 		if (inc == NULL) {	/* Must select -I setting */
 			if (!GMT->common.R.active[ISET]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No increment given and no -I in effect.  Cannot initialize new grid\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No increment given and no -I in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
@@ -2886,16 +2886,16 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	gmt_M_memset (coeff, 3, double);
 
 	if (HH->trendmode != GMT_FFT_REMOVE_NOTHING) {	/* Already removed the trend */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid has already been detrending - no action taken\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Grid has already been detrending - no action taken\n");
 		return;
 	}
 	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No detrending selected\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No detrending selected\n");
 		return;
 	}
 	HH->trendmode = mode;	/* Update grid header */
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Demultiplexing complex grid before detrending can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
 
@@ -2924,10 +2924,10 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 			}
 			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
 			if (is_complex)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Mean value removed from %s component: %.8g Variance reduction: %.2f\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Mean value removed from %s component: %.8g Variance reduction: %.2f\n",
 				            comp[component], a[0], var_redux);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
 		}
 		else if (mode == GMT_FFT_REMOVE_MID) {	/* Remove mid value */
 			double zmin = DBL_MAX, zmax = -DBL_MAX;
@@ -2947,10 +2947,10 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 			}
 			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
 			if (is_complex)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Mid value removed from %s component: %.8g Variance reduction: %.2f\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Mid value removed from %s component: %.8g Variance reduction: %.2f\n",
 				            comp[component], a[0], var_redux);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
 		}
 		else {	/* Here we wish to remove a LS plane */
 
@@ -3002,10 +3002,10 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 			a[1] *= (2.0 / (Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
 			a[2] *= (2.0 / (Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
 			if (is_complex)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Plane removed from %s component. Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Plane removed from %s component. Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n",
 				            comp[component], a[0], data_var, a[1], a[2], var_redux);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n",
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n",
 				            a[0], data_var, a[1], a[2], var_redux);
 		}
 		if (component == 0) gmt_M_memcpy (coeff, a, 3, double);	/* Return the real component results */
@@ -3284,7 +3284,7 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	if (strncmp (h->remark, "Spherical Mercator Projected with -Jm1 -R", 41U)) return GMT_NOERROR;	/* Not a Mercator img grid since missing the critical remark format */
 	if (h->registration == GMT_GRID_NODE_REG) return GMT_NOERROR;		/* Cannot be a Mercator img grid since they are pixel registered */
 	if (GMT->current.proj.projection == GMT_LINEAR) return GMT_NOERROR;	/* Only linear projection is allowed with this projected grid */
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use a map projection with an already projected grid (spherical Mercator img grid).  Use -Jx or -JX.\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use a map projection with an already projected grid (spherical Mercator img grid).  Use -Jx or -JX.\n");
 	return GMT_PROJECTION_ERROR;
 }
 
@@ -3324,14 +3324,14 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 	if ((p = strstr (file, "=gd")) != NULL) *p = '\0';	/* Chop off any =<stuff> */
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
 		gdal_free_from (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if (must_be_image && from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Using data type other than byte (unsigned char) is not implemented\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using data type other than byte (unsigned char) is not implemented\n");
 		gmt_M_free (GMT, to_gdalread);
 		gdal_free_from (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
@@ -3419,7 +3419,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	to_gdalread->c_ptr.grd = I->data;
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
 		for (i = 0; i < from_gdalread->RasterCount; i++)
 			gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */

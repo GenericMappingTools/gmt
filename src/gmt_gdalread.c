@@ -38,7 +38,7 @@ GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
 	else if (strchr(gdal_filename, ':'))		/* Assume it is a SUBDATASET */
 		strncpy (path, gdal_filename, PATH_MAX-1);
 	else if ((file = gmt_getdatapath (GMT, gdal_filename, path, R_OK)) == NULL) {	/* Local file not found */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find %s.\n", gdal_filename);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to find %s.\n", gdal_filename);
 		return (NULL);
 	}
 	return (GDALOpen (path, GA_ReadOnly));
@@ -209,7 +209,7 @@ GMT_LOCAL void ComputeRasterMinMax(struct GMT_CTRL *GMT, unsigned char *tmp, GDA
 			}
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: Unsupported data type\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: Unsupported data type\n");
 			break;
 	}
 	adfMinMax[0] = z_min;
@@ -326,7 +326,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open %s.\n", gdal_filename);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
 		GDALDestroyDriverManager();
 		return (-1);
 	}
@@ -387,7 +387,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	}
 	else if (adfGeoTransform[1] != 1 && adfGeoTransform[5] != 1) {	/* Patch a possible GDAL bug. Raised after issue #1030 */
 		adfGeoTransform[1] = adfGeoTransform[5] = 1;
-		GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "GDAL seamed to have returned garbage in adfGeoTransform. Arbitrarily setting inc = 1.\n");
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "GDAL seamed to have returned garbage in adfGeoTransform. Arbitrarily setting inc = 1.\n");
 	}
 
 	/* ------------------------------------------------------------------------- */
@@ -406,11 +406,11 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		int	anSrcWin[4];
 		anSrcWin[0] = anSrcWin[1] = anSrcWin[2] = anSrcWin[3] = 0;
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -projwin option was used, but the geotransform is rotated."
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -projwin option was used, but the geotransform is rotated."
 			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quitting with error\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
 			return(-1);
 		}
 
@@ -422,9 +422,9 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
 		    || anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 		    || anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quitting with error\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
 			return(-1);
 		}
 		Ctrl->RasterXsize = nXSize = anSrcWin[2];
@@ -495,7 +495,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		   Note, however, that first band colormap is captured anyway (if exists, off course) */
 
 		if (bSuccess == 0 && strstr(Ctrl->DriverShortName, "HDF5") != NULL) {	/* several methods for HDF5 driver are not implemented */
-			GMT_Report(GMT->parent, GMT_MSG_LONG_VERBOSE, "An HDF5 file. Trying to get scale_offset from string metadata.\n");
+			GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "An HDF5 file. Trying to get scale_offset from string metadata.\n");
 			dfNoDataValue = GMT->session.d_NaN;
 			get_attrib_from_string(Ctrl, hBand, nBand, &dfNoDataValue);			/* Go get them from the metadata in strings. */
 			if (!isnan(dfNoDataValue)) got_noDataValue = true;
@@ -697,7 +697,7 @@ int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	if (hDataset == NULL)
 		return (GMT_GRDIO_BAD_VAL);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "File %s reads with GDAL driver %s\n",
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s reads with GDAL driver %s\n",
 	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	GDALDestroyDriverManager();
@@ -755,8 +755,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 	first_layer = (nReqBands) ? whichBands[0] : 1;		/* The one used to get data type and header info */
 
-	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_LONG_VERBOSE) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Read band(s):");
+	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_INFORMATION) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Read band(s):");
 		for (k = 0; k < nReqBands; k++)
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "\t%d", whichBands[k]);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "\n");
@@ -824,7 +824,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalread failed to extract a Sub-region\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
 		return (-1);
 	}
 
@@ -852,7 +852,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
 					Ctrl->ProjRefPROJ4);
 		}
 
@@ -885,7 +885,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	hDataset = gdal_open (GMT, gdal_filename);
 
 	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
@@ -912,7 +912,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		GDALGetGeoTransform(hDataset, adfGeoTransform);
 
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
@@ -940,7 +940,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GDALDestroyDriverManager();
 			gmt_M_free (GMT, whichBands);
@@ -1028,7 +1028,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			}
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: Unsupported data type\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: Unsupported data type\n");
 			break;
 	}
 
@@ -1038,7 +1038,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (!(just_copy || copy_flipud)) {
 		if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
 			GDALDestroyDriverManager();
 			gmt_M_free (GMT, whichBands);
 			return(-1);
@@ -1107,7 +1107,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 			if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
 		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
 				continue;
 			}
 

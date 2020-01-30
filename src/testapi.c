@@ -195,7 +195,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 
 	/* Get input and register it */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %s %s with method %s and write to %s with method %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], ofile[Ctrl->T.mode], method[Ctrl->W.mode]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Read %s %s with method %s and write to %s with method %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], ofile[Ctrl->T.mode], method[Ctrl->W.mode]);
 
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_NOERROR) {	/* Registers default input destination, unless already set */
 		Return (API->error);
@@ -217,7 +217,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c, p, m, v!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "GMT_IS_STREAM only allows d, t, c, p, m, v!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -232,7 +232,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c, p, m, v!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "GMT_IS_FDESC only allows d, t, c, p, m, v!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -246,7 +246,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "Bad Input mode\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Bad Input mode\n");
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}
@@ -294,7 +294,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c, p, m, v!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "GMT_IS_STREAM only allows d, t, c, p, m, v!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -314,7 +314,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c, p, m, v!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "GMT_IS_FDESC only allows d, t, c, p, m, v!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -325,7 +325,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "Bad Input mode\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Bad Input mode\n");
 			Return (GMT_NOT_A_VALID_METHOD);
 			break;
 	}

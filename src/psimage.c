@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -D: Basic parsing of reference point in %s failed\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -D: Basic parsing of reference point in %s failed\n", opt->arg);
 					p_fail = true;
 					n_errors++;
 				}
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				else if ((p = strstr (opt->arg, "+t"))) {	/* Transparency color specified */
 					ind = PSIMG_TRA;	k = 0; p[0] = '\0';
 					if (opt->arg[0] == '\0') {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G: Must specify a color when +t is used\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -G: Must specify a color when +t is used\n");
 						n_errors++;
 					}
 				}
@@ -245,7 +245,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-G with color - for transparency is deprecated; give no <color> instead.\n");
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G: - is not a color\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -G: - is not a color\n");
 						n_errors++;
 					}
 				}
@@ -321,11 +321,11 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 	if (strstr (F, "+b"))  return (0);		/* Band request of an image cannot be EPS */
 
 	if ((fp = gmt_fopen (GMT, F, "rb")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", F);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s\n", F);
 		return (GMT_NOTSET);
 	}
 	if (gmt_M_fread (c, 1U, 4U, fp) != 4U) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", F);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not read 4 bytes from file %s\n", F);
 		gmt_fclose (GMT, fp);
 		return (GMT_NOTSET);
 	}
@@ -387,7 +387,7 @@ int GMT_image (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: image\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psimage (V_API, mode, args);
@@ -444,28 +444,28 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 	is_eps = file_is_eps (GMT, &file);	/* Determine if this is an EPS file or other */
 	if (is_eps < 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open/read file %s\n", file);
 		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (is_eps) {	/* Read an EPS file */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input EPS file\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input EPS file\n");
 		if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open file %s.\n", file);
 			gmt_M_str_free (file);
 			Return (GMT_FILE_NOT_FOUND);
 		}
 		if (PSL_loadeps (PSL, path, &header, &picture)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading EPS file %s!\n", path);
+			GMT_Report (API, GMT_MSG_ERROR, "Trouble loading EPS file %s!\n", path);
 			gmt_M_str_free (file);
 			Return (GMT_IMAGE_READ_ERROR);
 		}
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input raster via GDAL\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input raster via GDAL\n");
 		if (is_gdal) {	/* Need full name since there may be band requests */
 			gmt_M_str_free (file);
 			file = strdup (Ctrl->In.file);
@@ -484,7 +484,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			n /= 4;
 			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
 				if (Ctrl->G.rgb[PSIMG_TRA][0] != -2) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
 				}
 				for (unsigned int k = PSIMG_BGD; k <= PSIMG_FGD; k++) {
 					if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
@@ -534,7 +534,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #else
 	else {	/* Without GDAL we can only read EPS files */
-		GMT_Report (API, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Unsupported file format for file %s!\n", file);
 		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -579,7 +579,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		free_GMT = true;
 	}
 	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
 
 	if (Ctrl->D.dpi > 0.0) Ctrl->D.dim[GMT_X] = (double) header.width / Ctrl->D.dpi;
 	if (Ctrl->D.dim[GMT_Y] == 0.0) Ctrl->D.dim[GMT_Y] = header.height * Ctrl->D.dim[GMT_X] / header.width;
@@ -656,7 +656,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Ctrl->D.n_rows; row++) {
 		y = Ctrl->D.refpoint->y + row * Ctrl->D.dim[GMT_Y];
-		if (Ctrl->D.n_rows > 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.n_columns, row);
+		if (Ctrl->D.n_rows > 1) GMT_Report (API, GMT_MSG_INFORMATION, "Replicating image %d times for row %d\n", Ctrl->D.n_columns, row);
 		for (col = 0; col < Ctrl->D.n_columns; col++) {
 			x = Ctrl->D.refpoint->x + col * Ctrl->D.dim[GMT_X];
 			if (header.depth == 0)

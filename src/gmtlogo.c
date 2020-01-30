@@ -344,7 +344,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Ready to make the plot */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing the GMT logo\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the GMT logo\n");
 
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
@@ -407,13 +407,13 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", c_grid, scale * 0.3, c_grid);
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, c_water, c_land, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling pscoast with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling pscoast with args %s\n", cmd);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=false", scale * 1.55, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
@@ -426,12 +426,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Init_VirtualFile (API, 0, file);	/* Reset since we are reading it a 2nd time */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi --GMT_HISTORY=false",
 		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Close_VirtualFile (API, file);
 

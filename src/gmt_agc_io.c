@@ -403,8 +403,8 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_GRID_PIXEL_REG) {
 		gmt_change_grdreg (GMT, header, GMT_GRID_NODE_REG);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "AGC grid region in file %s reset to %g/%g/%g/%g\n", HH->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "AGC grid region in file %s reset to %g/%g/%g/%g\n", HH->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}
 
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */

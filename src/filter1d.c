@@ -302,7 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 							if (opt->arg[1] && !gmt_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;
@@ -311,7 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					                                   "Syntax error -F option: Filterwidth must be positive\n");
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					++n_errors;
 				}
 				break;
@@ -330,7 +330,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 						int sval0;
 						GMT_Report (API, GMT_MSG_COMPAT, "-N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Syntax is -N<tcol>\n");
 							++n_errors;
 						}
 					}
@@ -446,7 +446,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 		for (i = 0, w_sum = 0.0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
 		F->f_operator = (gmt_M_is_zero (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
 		if (w_sum > 1.0) {	/* Must normalize filter weights */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Must normalize custom filter since weight sum > 1 [%g]\n", w_sum);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Must normalize custom filter since weight sum > 1 [%g]\n", w_sum);
 			for (i = 0; i < F->n_f_wts; ++i) F->f_wt[i] /= w_sum;
 		}
 		F->half_n_f_wts = F->n_f_wts / 2;
@@ -515,7 +515,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
 
 	return (0);
 }
@@ -840,7 +840,7 @@ GMT_LOCAL void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code,...) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
+#define Return(code,...) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_ERROR, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_filter1d (void *V_API, int mode, void *args) {
@@ -880,7 +880,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	/* Register all data sources */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
@@ -891,7 +891,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error Reading input\n");
 	}
 	if (D->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL, "Not enough input columns\n");
 	}
 	n_out_cols = (unsigned int)D->n_columns;
@@ -966,7 +966,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			}
 			gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -989,7 +989,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter the data columns\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Filter the data columns\n");
 
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
@@ -1025,7 +1025,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
 
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -1056,7 +1056,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 
