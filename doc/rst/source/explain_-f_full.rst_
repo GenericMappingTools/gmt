@@ -8,7 +8,7 @@
     multiple times (column ranges must be given
     in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
     not specified).  Append **T** (absolute calendar time), **t**
-    (relative time in chosen :ref:`TIME_UNIT <TIME_UNIT>` since :ref:`TIME_EPOCH <TIME_EPOCH>`),
+    (relative time in chosen :term:`TIME_UNIT` since :term:`TIME_EPOCH`),
     **x** (longitude), **y** (latitude), **p**\ [*unit*] (projected
     x,y map coordinates in given unit [meter]) or **f** (floating point)
     to each column or column range item. Shorthands

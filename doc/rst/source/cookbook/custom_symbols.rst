@@ -80,7 +80,7 @@ out parameters for pre-processing. The available types are
   We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
-  per :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) in addition to the given symbol size.
+  per :term:`PROJ_LENGTH_UNIT`) in addition to the given symbol size.
 
   **o** Other, i.e., a numerical quantity to be passed to the custom symbol unchanged.
 
@@ -219,10 +219,10 @@ The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given information from the current record.  You
 can embed the codes %X or %Y to add the current longitude (or x) and latitude (or y) in
 your label string. You may also use $n (*n* is 1, 2, etc.) to embed a numerical symbol variable as text.
-It will be formatted according to :ref:`FORMAT_FLOAT_MAP <FORMAT_FLOAT_MAP>`,
-unless you append the modifiers **+X** (format as longitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`),
-**+Y** (format as latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (format as calendar time via
-:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.
+It will be formatted according to :term:`FORMAT_FLOAT_MAP`,
+unless you append the modifiers **+X** (format as longitude via :term:`FORMAT_GEO_MAP`),
+**+Y** (format as latitude via :term:`FORMAT_GEO_MAP`), or **+T** (format as calendar time via
+:term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.
 
 Text alignment and font attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

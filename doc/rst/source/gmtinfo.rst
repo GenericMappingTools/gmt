@@ -252,7 +252,7 @@ Bugs
 The **-I** option does not yet work properly with time series data
 (e.g., **-f**\ 0T). Thus, such variable intervals as months and years
 are not calculated. Instead, specify your interval in the same units as
-the current setting of :ref:`TIME_UNIT <TIME_UNIT>`.
+the current setting of :term:`TIME_UNIT`.
 
 See Also
 --------

@@ -431,7 +431,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in GMT, including in arguments to the **-B** option.
 A chart of octal codes can be found in Appendix F in the GMT
 Technical Reference.  For accented European characters you must
-set :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to ISOLatin1 in your :doc:`/gmt.conf` file.
+set :term:`PS_CHAR_ENCODING` to ISOLatin1 in your :doc:`/gmt.conf` file.
 
 We will demonstrate :doc:`/text` with the following script:
 

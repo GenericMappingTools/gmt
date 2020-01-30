@@ -166,7 +166,7 @@ attributes:
 use the special names *lon* (or *x* if Cartesian) and *lat* (or *y*) for
 the two required coordinate columns, *time* when optional absolute time data
 are present, and *rtime* when relative time data are given (make sure the
-GMT defaults **TIME_UNIT** and **TIME_EPOCH** are set properly). Regardless
+GMT defaults :term:`TIME_UNIT` and :term:`TIME_EPOCH` are set properly). Regardless
 of input time flavor, we will write absolute time on output.
 
 *type* is always **a** for ASCII representations of numbers, whereas for
@@ -188,9 +188,9 @@ use **d** as netCDF will automatically handle type-conversions during reading.
 *oformat* is a C-style format string used to print values from this column.
 
 If you give - as the *oformat* then GMT's formatting machinery
-will be used instead (i.e., :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`,
-:ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
-:ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`).
+will be used instead (i.e., :term:`FORMAT_FLOAT_OUT`,
+:term:`FORMAT_GEO_MAP`, :term:`FORMAT_DATE_MAP`,
+:term:`FORMAT_CLOCK_MAP`).
 Some file formats already have definition files premade. These include
 mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
 netCDF files), gmt (for old mgg supplement binary files), xy (for plain

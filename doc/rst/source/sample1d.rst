@@ -81,7 +81,7 @@ Optional Arguments
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 

@@ -87,7 +87,7 @@ Optional Arguments
     selects a symbol instead of mechanism. Choose from the following:
     (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
     (**t**) triangle, (**x**) cross. *size* is the symbol size in
-    **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
+    :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended
     to indicate that the size information is in units of cm, inches, meters,
     or points, respectively). If *size* must be read, it must be in column 4
     and the text string will start in column 5.

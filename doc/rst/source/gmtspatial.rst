@@ -154,7 +154,7 @@ Optional Arguments
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see `Units`_). Note that the area will depend on the current
-    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
+    setting of :term:`PROJ_ELLIPSOID`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.

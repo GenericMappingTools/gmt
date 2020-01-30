@@ -312,7 +312,7 @@ node and suggest that you run :doc:`blockmean`, :doc:`blockmedian`, or
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used. You may
 specify more decimal places by editing the parameter
-**FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
+:term:`FORMAT_FLOAT_OUT` in your :doc:`gmt.conf` file prior to running
 the decimators or choose binary input and/or output using single or
 double precision storage.
 

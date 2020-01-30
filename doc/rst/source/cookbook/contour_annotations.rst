@@ -37,7 +37,7 @@ a line to be labeled. The codes are:
     **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
-    [Default is taken from :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Starting at the
+    [Default is taken from :term:`PROJ_LENGTH_UNIT`]. Starting at the
     beginning of a line, place labels every *dist* increment of distance
     along the line. To ensure that closed lines whose total length is
     less than *dist* get annotated, we may append *frac* which will
@@ -65,7 +65,7 @@ a line to be labeled. The codes are:
     lines at which locations the labels should be placed. Labels will
     only be placed if the coordinates match the line coordinates to
     within a distance of *slop* (append unit or we use
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`). The default *slop* is zero, meaning only
+    :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
     exact coordinate matches will do.
 
 **l**:
@@ -181,12 +181,12 @@ universally. These codes are:
 **+f**:
     Specifies the desired label font, including size or color. See
     :doc:`/text` for font names or numbers.
-    The default font is given by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
+    The default font is given by :term:`FONT_ANNOT_PRIMARY`.
 
 **+g**:
     Selects opaque rather than the default transparent text boxes. You
     may optionally append the color you want to fill the label boxes;
-    the default is the same as :ref:`PS_PAGE_COLOR <PS_PAGE_COLOR>`.
+    the default is the same as :term:`PS_PAGE_COLOR`.
 
 **+j**:
     Selects the justification of the label relative to the placement
@@ -260,8 +260,8 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     **+Ld**:
         Take the Cartesian plot distances along the line as the label;
         append **c**\|\ **i**\|\ **p** as the unit [Default is
-        :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. The label will be formatted according
-        to the :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` string, *unless* label placement
+        :term:`PROJ_LENGTH_UNIT`]. The label will be formatted according
+        to the :term:`FORMAT_FLOAT_OUT` string, *unless* label placement
         was determined from map distances along the segment lines, in
         which case we determine the appropriate format from the distance
         value itself.

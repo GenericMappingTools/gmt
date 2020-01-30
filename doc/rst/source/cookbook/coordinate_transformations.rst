@@ -165,7 +165,7 @@ given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
 *yyyy*\ [-**W**\ *ww*\ [-*d*]], and *clock* using the
 *hh*\ [:*mm*\ [:*ss*\ [*.xxx*]]] 24-hour clock format) whereas the
 relative time is simply given as the units of time since the epoch
-followed by **t** (see :ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` for
+followed by **t** (see :term:`TIME_UNIT` and :term:`TIME_EPOCH` for
 information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
 (Figure :ref:`Linear transformation of calendar coordinates <GMT_linear_cal>`).

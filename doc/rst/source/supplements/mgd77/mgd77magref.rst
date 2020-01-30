@@ -86,7 +86,7 @@ Optional Arguments
     records [Default expects *time* to be in the 4th column of all
     records]. Finally, append **+y** to indicate that all times are
     specified as decimal years [Default is ISO *date*\ T\ *colck* format, see
-    :ref:`TIME_EPOCH <TIME_EPOCH>`].
+    :term:`TIME_EPOCH`].
 
 .. _-C:
 
