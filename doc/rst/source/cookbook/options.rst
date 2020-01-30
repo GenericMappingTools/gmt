@@ -778,8 +778,8 @@ Verbose feedback: The **-V** option
 
 The **-V** option controls the verbosity mode, which determines which
 messages are sent to standard error [Default **-Vw** reports errors and warnings].
-Even more verbose levels are **-Vi**
-(informational messages) and **-Vd** (debug). If compiled with backward-compatibility
+Even more verbose levels are **-Vi**(or just **-V**; for informational messages)
+and **-Vd** (debug). If compiled with backward-compatibility
 you can select **-Vc**, which includes warnings about deprecated usage.  To study
 the run-time of time-intensive algoriths you can use **-Vt** (where available).
 Finally, **-Vq** can be used to run without any warnings or errors. This

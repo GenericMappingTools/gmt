@@ -5,8 +5,8 @@
     Choose among 7 levels of verbosity; each level adds more messages:
     **q** - Quiet, not even fatal error messages are produced.
     **e** - Error messages only.
-    **w** - Warnings [Default, same as **-V** only].
+    **w** - Warnings [Default].
     **t** - Timings (report runtimes for time-intensive algorithms).
-    **i** - Informational messages.
+    **i** - Informational messages (same as **-V** only).
     **c** - Compatibility warnings.
     **d** - Debugging messages.

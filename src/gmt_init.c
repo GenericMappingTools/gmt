@@ -5376,9 +5376,9 @@ int gmt_get_V (char arg) {
 	switch (arg) {
 		case 'q': case '0': mode = GMT_MSG_QUIET;	break;	/* -Vq */
 		case 'e': case 'n': mode = GMT_MSG_ERROR;	break;	/* -Ve [was -Vn] */
-		case 'w': case 'v': case '2': case '\0': mode = GMT_MSG_WARNING;	break;	/* -Vw [was -Vv] */
+		case 'w': case 'v': case '2':mode = GMT_MSG_WARNING;	break;	/* -Vw [was -Vv] */
 		case 't': mode = GMT_MSG_TICTOC;  break;	/* -Vt */
-		case 'i': case 'l': case '3': mode = GMT_MSG_INFORMATION;	break;	/* -Vi [was -Vl] */
+		case 'i': case 'l': case '3':  case '\0': mode = GMT_MSG_INFORMATION;	break;	/* -V[i] [was -Vl] */
 		case 'c': case '1': mode = GMT_MSG_COMPAT;	break;	/* -Vc */
 		case 'd': case '4': mode = GMT_MSG_DEBUG;	break;	/* -Vd */
 		default: mode = -1;
@@ -6639,7 +6639,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     e - Error messages only.\n");
 			gmt_message (GMT, "\t     w - Warnings [Default].\n");
 			gmt_message (GMT, "\t     t - Timings (time-intensive operations only).\n");
-			gmt_message (GMT, "\t     i - Informational messages.\n");
+			gmt_message (GMT, "\t     i - Informational messages (or just -V).\n");
 			gmt_message (GMT, "\t     c - Compatibility warnings.\n");
 			gmt_message (GMT, "\t     d - Debugging messages.\n");
 			break;
