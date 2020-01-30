@@ -94,11 +94,12 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 }
 
 
-int gmt_gdal_grid(struct GMT_CTRL *GMT, char *gdal_filename, char *opts, char *outname) {
+int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char **args, ext_opts[GMT_LEN512] = {""};
 	unsigned char *tmp = NULL;
 	int   nXSize, nYSize, nPixelSize;
 	int   bUsageError, gdal_code;
+	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALGridOptions *psOptions;
@@ -108,53 +109,70 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, char *gdal_filename, char *opts, char *o
 
 	GDALAllRegister();
 
-	hSrcDS = GDALOpenEx(gdal_filename, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
+	hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
 
 	if (hSrcDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		return -1;
 	}
-	
+
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
 	                             GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 
-	sprintf(ext_opts, "-of MEM -ot Float32 -txe %lf %lf -tye %lf %lf -outsize %d %d ",
-	        Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI],
-			Grid->header->n_columns, Grid->header->n_rows);
-	strcat(ext_opts, opts); 
+	if (GDLL->G.active && Grid->header->registration == 0) {
+		/* Since GDAL writes only pixel-reg grids, expand limits so that inc is respected */
+		dx = Grid->header->inc[0] / 2;		dy = Grid->header->inc[1] / 2;
+	}
+	sprintf(ext_opts, "-ot Float32 -txe %lf %lf -tye %lf %lf -outsize %d %d ",
+	        Grid->header->wesn[XLO]-dx, Grid->header->wesn[XHI]+dx, Grid->header->wesn[YLO]-dy,
+			Grid->header->wesn[YHI]+dy, Grid->header->n_columns, Grid->header->n_rows);
+	strcat(ext_opts, GDLL->opts); 
+	if (!GDLL->G.active)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
+
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gdal options used: %s\n", ext_opts);
 
 	args = breakMe(GMT, ext_opts);
 	psOptions = GDALGridOptionsNew(args, NULL);
+
+	if (GDLL->G.active)			/* Write grid with the GDAL machinery */
+		hDstDS = GDALGrid(GDLL->fname_out, hSrcDS, psOptions, &bUsageError);
+	else
 #ifdef WIN32
-	hDstDS = GDALGrid("NUL", hSrcDS, psOptions, &bUsageError);
+		hDstDS = GDALGrid("NUL", hSrcDS, psOptions, &bUsageError);
 #else
-	hDstDS = GDALGrid("/dev/null", hSrcDS, psOptions, &bUsageError);
+		hDstDS = GDALGrid("/dev/null", hSrcDS, psOptions, &bUsageError);
 #endif
+
 	if (bUsageError == TRUE) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdal_grid: failure\n");
 		GDALDestroyDriverManager();
+		GDALGridOptionsFree(psOptions);
 		return -1;
 	}
 
-	hBand = GDALGetRasterBand(hDstDS, 1);
-	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
-	nXSize = GDALGetRasterXSize(hDstDS);
-	nYSize = GDALGetRasterYSize(hDstDS);
+	if (!GDLL->G.active) {		/* Write grid with the GMT machinery */
+		hBand = GDALGetRasterBand(hDstDS, 1);
+		nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
+		nXSize = GDALGetRasterXSize(hDstDS);
+		nYSize = GDALGetRasterYSize(hDstDS);
 
-	if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
-		GDALDestroyDriverManager();
-		return -1;
-	}
+		if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
+			GDALDestroyDriverManager();
+			GDALGridOptionsFree(psOptions);
+			return -1;
+		}
 
-	if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
-	                nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
+									nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+		}
+		Grid->data = (float *)tmp;
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
+		                    NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
+			return GMT->parent->error;
 	}
-	Grid->data = (float *)tmp;
-	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, outname, Grid) != GMT_NOERROR)
-		return GMT->parent->error;
 
 	GDALGridOptionsFree(psOptions);
 	GDALClose(hSrcDS);

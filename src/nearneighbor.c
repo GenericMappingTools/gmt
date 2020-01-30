@@ -67,7 +67,7 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 		bool active;
 	} W;
 	struct A {
-		bool active;
+		bool active, gdal_write;
 		char *opts;
 	} A;
 };
@@ -249,6 +249,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 			case 'A':	/* TESTING */
 				Ctrl->A.active = true;
 				Ctrl->A.opts = strdup(opt->arg);
+				if (Ctrl->A.opts && Ctrl->A.opts[strlen(Ctrl->A.opts)-1] == '+') {
+					Ctrl->A.gdal_write = true;
+					Ctrl->A.opts[strlen(Ctrl->A.opts)-1] = '\0';	/* Strip the '+' */
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -278,10 +282,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-//#ifdef TEST_LIBRARIFIED
-//#include <gdal_utils.h>
-//#include "gmt_gdal_librarified.c"
-//#endif
 int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
@@ -360,11 +360,17 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
 	if (Ctrl->A.active) {
 		struct GMT_OPTION *opt = NULL;
+		struct GMT_GDALLIBRARIFIED_CTRL *st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL);;
 		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
-			gmt_gdal_grid(GMT, opt->arg, Ctrl->A.opts, Ctrl->G.file);
+			st->fname_in  = opt->arg;
+			st->fname_out = Ctrl->G.file;
+			st->opts = Ctrl->A.opts;
+			if (Ctrl->A.gdal_write) st->G.active = true;
+			gmt_gdal_grid(GMT, st);
 			break;
 		}
+		gmt_M_free (GMT, st);
 		return 0;
 	}
 #endif
