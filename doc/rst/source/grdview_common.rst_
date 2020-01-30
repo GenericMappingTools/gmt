@@ -8,14 +8,14 @@ drawing a mesh, painting a colored/gray-shaded surface made up of
 polygons, or by scanline conversion of these polygons to a raster image.
 Options include draping a data set on top of a surface, plotting of
 contours on top of the surface, and apply artificial illumination based
-on intensities provided in a separate grid file. 
+on intensities provided in a separate grid file.
 
 Required Arguments
 ------------------
 
 *reliefgrid*
     2-D gridded data set to be imaged (the relief of the surface). (See
-    GRID FILE FORMAT below.) 
+    GRID FILE FORMAT below.)
 
 .. _-J:
 
@@ -51,7 +51,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensgrid*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere; this simply affects the
     ambient light.  If just **+** is given then we derive an intensity
@@ -67,7 +67,7 @@ Optional Arguments
     Draws a plane at this z-level. If the optional *color* is provided
     via the **+g** modifier, and the projection is not oblique,
     the frontal facade between the plane and the data perimeter is
-    colored. See **-Wf** for setting the pen used for the outline. 
+    colored. See **-Wf** for setting the pen used for the outline.
 
 .. _-Q:
 
@@ -81,7 +81,7 @@ Optional Arguments
     #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
     #. Specify **i** for image plot, and optionally append the effective dpi resolution for the rasterization [100].
     #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
-       feature in PostScript Level 3 (the PS device must support PS Level 3). . 
+       feature in PostScript Level 3 (the PS device must support PS Level 3). .
 
 .. _-R:
 
@@ -102,14 +102,14 @@ Optional Arguments
 
 .. _-t:
 
-**-T**\ [\ **+o**\ [*pen*]][**+s**]
+**-T**\ [**+o**\ [*pen*]][**+s**]
     Plot image without any interpolation. This involves converting each
     node-centered bin into a polygon which is then painted separately.
     Append **+s** to skip nodes with z = NaN. This option is useful for
     categorical data where interpolating between values is meaningless.
     Optionally, append **+o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
-    produces a flat surface it cannot be combined with **-JZ** or **-Jz**. 
+    produces a flat surface it cannot be combined with **-JZ** or **-Jz**.
 
 .. _-U:
 
@@ -122,7 +122,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **c**\ \|\ **m**\ \|\ **f**\ *pen*
+**-W**\ **c**\|\ **m**\|\ **f**\ *pen*
 
     **-Wc**
         Draw contour lines on top of surface or mesh (not image). Append pen
@@ -135,7 +135,7 @@ Optional Arguments
     **-Wf**
         Sets the pen attributes used for the facade. [Default: width =
         0.25p, color = black, style = solid]. You must also select **-N**
-        for the facade outline to be drawn. 
+        for the facade outline to be drawn.
 
 .. _-X:
 

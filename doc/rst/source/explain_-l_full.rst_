@@ -1,11 +1,11 @@
 .. _-l_full:
 
-**-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*\ ][**+j**\ *just*][**+l**\ [*code*/]\ *txt*][**+n**\ *cols*][**+s**\ *size*\ ][**+v**\ [*pen*]][**+w**\ *width*][**+x**\ *scale*\ ]
+**-l**\ [*label*]\ [**+d**\ *pen*][**+f**\ *font*][**+g**\ *gap*][**+h**\ *header*][**+j**\ *just*][**+l**\ [*code*/]\ *txt*][**+n**\ *cols*][**+s**\ *size*][**+v**\ [*pen*]][**+w**\ *width*][**+x**\ *scale*]
     Add a map legend entry to the session legend information file for the
     current plot.  Optionally append a text *label* to describe the entry.
     Several modifiers allow further changes to the legend (to be built
     when :doc:`legend` is called): Use **+d** to draw a horizontal line before the
-    legend entry is placed [no line], **+f** to set the font used for the legend header [:ref:`FONT_TITLE <FONT_TITLE>`],
+    legend entry is placed [no line], **+f** to set the font used for the legend header [:term:`FONT_TITLE`],
     **+g** to add some vertical space [0], **+h** to add a legend header [no header],
     **+j** to set placement of the legend [TR], **+l** to set a line text; prepend
     a horizontal justification code **L**, **C**, or **R** [**C**], **+n** to change the number of columns used to
@@ -14,7 +14,7 @@
     **+v** to start and **+v**\ *pen* to stop drawing vertical line from
     previous to current horizontal line [no vertical line], **+w** to set legend width [auto],
     and **+x**\ *scale* to resize all symbol and length sizes in the legend.  Default pen is
-    given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`.  Note that **+h**, **+j**, **+w**, and **+x**
+    given by :term:`MAP_DEFAULT_PEN`.  Note that **+h**, **+j**, **+w**, and **+x**
     will only take effect if appended to the very first **-l** option for a plot.  The **+n** modifier,
     if appended to the first **-l** option, affects the legend width (unless set via **+w**); otherwise it
     just subdivides the available width among the specified columns.

@@ -1,10 +1,10 @@
 .. _-R_full:
 
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**\ ][**+u**\ *unit*\ ]
+**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*]
     *xmin*, *xmax*, *ymin*, and *ymax* specify the region of interest.
     For geographic regions, these limits correspond to *west*, *east*,
     *south*, and *north* and you may specify them in decimal degrees or
-    in [±]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*\ ][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ ]
+    in [±]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*][**W**\|\ **E**\|\ **S**\|\ **N**]
     format. Append **+r** if lower left
     and upper right map coordinates are given instead of *west*/*east*/*south*/*north*. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
@@ -33,15 +33,15 @@
     values from the last use of **-R** in a previous GMT command
     will be used.
     For calendar time coordinates you may either give (a) relative time
-    (relative to the selected :ref:`TIME_EPOCH <TIME_EPOCH>` and in the selected
-    :ref:`TIME_UNIT <TIME_UNIT>`; append **t** to **-JX**\ \|\ **x**), or (b) absolute
-    time of the form [*date*\ ]\ **T**\ [*clock*\ ] (append **T** to
-    **-JX**\ \|\ **x**). At least one of *date* and *clock* must be
+    (relative to the selected :term:`TIME_EPOCH` and in the selected
+    :term:`TIME_UNIT`; append **t** to **-JX**\|\ **x**), or (b) absolute
+    time of the form [*date*]\ **T**\ [*clock*] (append **T** to
+    **-JX**\|\ **x**). At least one of *date* and *clock* must be
     present; the **T** is always required. The *date* string must be of
-    the form [**-**\ ]\ *yyyy*\ [\ **-**\ *mm*\ [\ **-**\ *dd*\ ]]
-    (Gregorian calendar) or *yyyy*\ [\ **-W**\ *ww*\ [\ **-**\ *d*\ ]]
+    the form [**-**]\ *yyyy*\ [**-**\ *mm*\ [**-**\ *dd*]]
+    (Gregorian calendar) or *yyyy*\ [**-W**\ *ww*\ [**-**\ *d*]]
     (ISO week calendar), while the *clock* string must be of the form
-    *hh*\ **:**\ *mm*\ **:**\ *ss*\ [\ *.xxx*]. The use of delimiters and their type and positions
+    *hh*\ **:**\ *mm*\ **:**\ *ss*\ [*.xxx*]. The use of delimiters and their type and positions
     must be exactly as indicated (however, input, output and plot
     formats are customizable; see **gmt.conf**).
     You can also use Cartesian projected coordinates compatible with the
@@ -52,5 +52,5 @@
     coordinates for the lower left and upper right corners. This form is
     convenient when you want to specify a region directly in the
     projected units (e.g., UTM meters).  For Cartesian data in radians you
-    can also use [±][*s*\ ]\ **pi**\ [*f*\ ], for optional integer
+    can also use [±][*s*]\ **pi**\ [*f*], for optional integer
     scales *s* and fractions *f*.

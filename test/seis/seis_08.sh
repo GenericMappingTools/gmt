@@ -20,7 +20,7 @@
 #
 #It is very close  to being pure DC (~95%).  Its best fit DC is:
 #
-#echo  "3 3 0  4.319 37.28 145.8  6" | psmeca -JM8 -R0/6/0/6 -Sa6 -G200 > 
+#echo  "3 3 0  4.319 37.28 145.8  6" | psmeca -JM8 -R0/6/0/6 -Sa6 -G200 >
 #out.ps
 #
 

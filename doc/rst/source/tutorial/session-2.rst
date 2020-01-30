@@ -78,13 +78,13 @@ shows a abbreviated list of the options:
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-C**\ *cpt*                                                              | Let symbol color be determined from *z*-values and the *cpt* file |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
-  | **-E**\ [**x**\ \|\ **X**][**y**\ \|\ **Y**][**+w**\ *cap*][**+p**\ *pen*] | Draw selected error bars with specified attributes                |
+  | **-E**\ [**x**\|\ **X**][**y**\|\ **Y**][**+w**\ *cap*][**+p**\ *pen*]     | Draw selected error bars with specified attributes                |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-G**\ *fill*                                                             | Set color for symbol or fill for polygons                         |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-L**\ [*options*]                                                        | Explicitly close polygons or create polygon (see :doc:`/plot`)    |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
-  | **-N**\ [**c**\ \|\ **r**]                                                 | Do Not clip symbols at map borders                                |
+  | **-N**\ [**c**\|\ **r**]                                                   | Do Not clip symbols at map borders                                |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-S**\ [*symbol*][*size*]                                                 | Select one of several symbols                                     |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -431,7 +431,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in GMT, including in arguments to the **-B** option.
 A chart of octal codes can be found in Appendix F in the GMT
 Technical Reference.  For accented European characters you must
-set :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to ISOLatin1 in your :doc:`/gmt.conf` file.
+set :term:`PS_CHAR_ENCODING` to ISOLatin1 in your :doc:`/gmt.conf` file.
 
 We will demonstrate :doc:`/text` with the following script:
 

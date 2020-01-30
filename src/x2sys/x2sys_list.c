@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'A':
 				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Unknown item %c.\n", Ctrl->F.flags[i]);
-			n_errors++;		
+			n_errors++;
 		}
 		if (Ctrl->F.flags[i] == 'n') Ctrl->F.mixed = true;	/* Output will have trailing text */
 	}
@@ -632,7 +632,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
 		}
-	
+
 		for (k = 0; k < P[p].nx; k++) {	/* For each crossover */
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (gmt_M_is_dnan (P[p].COE[k].data[one][COE_Z]) || gmt_M_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;

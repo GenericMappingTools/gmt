@@ -6649,7 +6649,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
 			sprintf (par, " --FORMAT_DATE_MAP=\"o yyyy\"");
 		}
-	
+
 		interval = (unit == 'Y' || unit == 'O' || unit == 'D');
 	}
 	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */

@@ -15,7 +15,7 @@ Synopsis
 **gmt grdblend** [ *blendfile* \| *grid1* *grid2* ... ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-C|\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u**\ [**+n**\ \|\ **p**\ ] ]
+[ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u**\ [**+n**\|\ **p**] ]
 [ |-N|\ *nodata* ]
 [ |-Q| ] [ |-Z|\ *scale* ]
 [ |SYN_OPT-V| ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u**\ [**+n**\ \|\ **p**\ ]
+**-C**\ **f**\|\ **l**\|\ **o**\|\ **u**\ [**+n**\|\ **p**]
     Clobber mode: Instead of blending, simply pick the value of one of
     the grids that covers a node. Select from the following modes: **f**
     for the first grid to visit a node; **o** for the last grid to visit

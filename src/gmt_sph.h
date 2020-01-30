@@ -39,7 +39,7 @@ struct STRIPACK_VORONOI {	/* Information about Voronoi polygons */
 	double *lon, *lat;		/* Voronoi polygon vertices */
 	uint64_t n;		/* Number of boundary nodes for Voronoi */
 	int64_t *lend, *listc, *lptr;	/* Voronoi vertex lists and pointers */
-	int64_t *list;			/* Additional list from trmesh */	
+	int64_t *list;			/* Additional list from trmesh */
 };
 
 struct STRIPACK_INTERPOLATE {	/* Information about triangles */

@@ -77,7 +77,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.mode = GMT->current.setting.interpolant;
-	
+
 	return (C);
 }
 
@@ -248,7 +248,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
-			
+
 				break;
 			case 'T':
 				if (old_syntax && gmt_M_compat_check (GMT, 5)) {
@@ -440,12 +440,12 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			SH = gmt_get_DS_hidden (Sout);
 			Sout->n_rows = SH->n_alloc = m;
-			
+
 			for (col = 0; m && col < Din->n_columns; col++) {
 
 				if (col == Ctrl->N.col && !Ctrl->T.T.spatial) continue;	/* Skip the time column */
 				if (Ctrl->T.T.spatial && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
-			
+
 				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
 					ttime = gmt_M_memory (GMT, NULL, S->n_rows, double);

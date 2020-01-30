@@ -14,9 +14,9 @@ Synopsis
 
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
-[ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ]
-[ |-N|\ [**e**\ \|\ **t**][*amp*][**+a**\ *ambient*\ ][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
-[ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
+[ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
+[ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
+[ |-Q|\ **c**\|\ **r**\|\ **R**
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ]
+**-E**\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that
     reflects all the light that strikes it and the surface appears
@@ -102,7 +102,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**e**\ \|\ **t**][*amp*][**+a**\ *ambient*\ ][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
+**-N**\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*]
     Normalization. [Default is no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
     maximum output magnitude of *amp*. If *amp* is not given, default
@@ -122,7 +122,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qc**\ \|\ **r**\ \|\ **R**
+**-Qc**\|\ **r**\|\ **R**
     Controls how normalization via **-N** is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
     we must pass these values via **-N**.  However, this is inconvenient if we

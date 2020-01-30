@@ -1,4 +1,4 @@
-**-C**\ [*cpt*\ \|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\ \|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
+**-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
     Name of the CPT. Alternatively, supply the name of a GMT color master
     dynamic CPT [*turbo*, but we use *geo* for @earth_relief and *srtm* for @srtm_relief data] to
     automatically determine a continuous CPT from the grid's *z*-range; you may round the range
@@ -7,7 +7,7 @@
     whereas for hard-hinge CPTs you can adjust the location of the hinge [0].
     For other CPTs, you may convert their *z*-values from meter to another distance unit (append **+U**\ *unit*)
     or from another unit to meter (append **+u**\ *unit*), with *unit* taken from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
+    **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     Yet another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
     to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,

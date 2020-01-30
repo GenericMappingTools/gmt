@@ -2,8 +2,8 @@
 #normal
 #Pablo Valdes - may 2007
 #comment the lines 5 and 72 AND uncomment the lines 6 and 73 if you want gray instead color
-0	16.2	M -G25/19/19 
-#0	16.2	M -G20 
+0	16.2	M -G25/19/19
+#0	16.2	M -G20
 2	17	D
 4	18	D
 6	19	D
@@ -69,7 +69,7 @@
 0	0	0.6	c	-Gblack
 -10.5	16.7	0.3	c	-Wwhite -Gblack
 #baleen plates
--15	17.1	M -W225/236/132 -Gwhite 
+-15	17.1	M -W225/236/132 -Gwhite
 #-15	17.1	M -Wblack -Gblack
 -13	17	D
 -11	16.7	D

@@ -45,5 +45,5 @@ dcw-gmt.nc has been placed.  If you add this file after GMT installation
 was completed then you can always have GMT find it by placing it in your
 user ~/.gmt directory or by setting the DIR_DCW parameter in the
 gmt.conf settings.
-   
+
 DCW-GMT is released under the GNU Lesser General Public License.

@@ -30,6 +30,6 @@ We publish our fonts at http://linuxlibertine.sf.net.
 
 7. THE UNDERLINED VARIANT
 Please note: The underlined variant is recently not being maintained because its concept doesn't seem to be sofware-technically reliable and because of lack of interest.
-The advantage of this font was that g, commas, cedillas... were not overprinted by the line anymore. For technical reasons the space was not underlined but you could use the _ instead. In this font it had the width of the space and the line was at hight of the underline. The underlined variant used an older font outline.
+The advantage of this font was that g, commas, cedillas... were not overprinted by the line anymore. For technical reasons the space was not underlined but you could use the _ instead. In this font it had the width of the space and the line was at the heighth of the underline. The underlined variant used an older font outline.
 
 Philipp Poll -- philthelion at users.sourceforge.net

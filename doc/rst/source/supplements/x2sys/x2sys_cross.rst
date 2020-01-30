@@ -14,10 +14,10 @@ Synopsis
 
 **gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
 [ |-C|\ [*runtimes*] ]
-[ |-D|\ [**S**\ \|\ **N**\ ] ]
-[ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]
-[ |-Q|\ **e**\ \|\ **i** ]
-[ |-S|\ **l**\ \|\ **u**\ \|\ **h**\ *speed* ]
+[ |-D|\ [**S**\|\ **N**] ]
+[ |-I|\ **l**\|\ **a**\|\ **c** ]
+[ |-Q|\ **e**\|\ **i** ]
+[ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *size* ] [ |-Z| ]
 [ |SYN_OPT-bo| ]
@@ -67,7 +67,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**S**\ \|\ **N**\ ]
+**-D**\ [**S**\|\ **N**]
     Control how geographic coordinates are handled (Cartesian data are unaffected).
     By default, we determine if the data are closer to one pole than the other, and
     then we use a cylindrical polar conversion to avoid problems with longitude jumps.
@@ -80,7 +80,7 @@ Optional Arguments
 
 .. _-I:
 
-**-Il**\ \|\ **a**\ \|\ **c**
+**-Il**\|\ **a**\|\ **c**
     Sets the interpolation mode for estimating values at the crossover. Choose among:
 
     **l** Linear interpolation [Default].
@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qe**\ \|\ **i**
+**-Qe**\|\ **i**
     Append **e** for external COEs only, and **i** for internal COEs
     only [Default is all COEs].
 
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-S:
 
-**-Sl**\ \|\ **u**\ \|\ **h**\ *speed*
+**-Sl**\|\ **u**\|\ **h**\ *speed*
     Defines window of track speeds. If speeds are outside this window we do not calculate a COE. Specify
 
     **-Sl** sets lower speed [Default is 0].
@@ -171,9 +171,9 @@ Precision And Format
 --------------------
 
 The output format of individual columns are controlled by
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` except for geographic coordinates
-(:ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`) and absolute calendar time
-(:ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>`, :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`).
+:term:`FORMAT_FLOAT_OUT` except for geographic coordinates
+(:term:`FORMAT_GEO_OUT`) and absolute calendar time
+(:term:`FORMAT_DATE_OUT`, :term:`FORMAT_CLOCK_OUT`).
 Make sure these are set to give you enough significant digits to achieve the desired precision.
 
 Examples

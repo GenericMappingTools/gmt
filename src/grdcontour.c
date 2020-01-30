@@ -1033,7 +1033,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		struct GMT_OPTION *opt = NULL;
 		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
-	
+
 		/* Make sure we don't pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -D with -N\n");
@@ -1053,13 +1053,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			}
 			strncpy (cptfile, optN->arg, PATH_MAX-1);
 		}
-	
+
 		/* Process all the options given.  Some are needed by both grdview and grdcontour while others are grdcontour only.
 		 * We must consider the situations arising form external API calls: The CPT's may be memory objects so we must
 		 * check for that and if found not free the resources.  Also, if a PostScript output file is set via ->file.ps then
 		 * we must make sure we append in the second module. Below cmd1 holds the grdview arguments and cmd2 holds the
 		 * overlay grdcontour arguments. These are built on the fly */
-	
+
 		for (opt = options; opt; opt = opt->next) {
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
@@ -1107,7 +1107,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					sprintf (string, " -%c%c%s", opt->option, opt->option, opt->arg);	/* Must explicitly append */
 					strcat (cmd2, string);
 					break;
-			
+
 				default:	/* These arguments go into both commands (may be -p -n etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
@@ -1132,7 +1132,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
 			bailout (GMT_PARSE_ERROR);
 		}
-	
+
 		/* Required options for grdview to fill the grid */
 		strcat (cmd1, " -Qs");
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");	/* If classic mode then we need to say we will append more PostScript later */
@@ -1412,7 +1412,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				}
 				cont[n_contours].penset = true;
 			}
-		
+
 			n_contours++;
 		} while (true);
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
@@ -1594,7 +1594,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
-	
+
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (cont[c].val < Ctrl->L.low || cont[c].val > Ctrl->L.high)) continue;	/* Outside desired range */
@@ -1633,7 +1633,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
-		
+
 			if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
 				if (Ctrl->Q.unit) {	/* Need length of contour */
 					c_length = gmt_line_length (GMT, x, y, n, Ctrl->Q.project);

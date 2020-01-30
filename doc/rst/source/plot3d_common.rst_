@@ -48,7 +48,7 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically.  
+    to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
@@ -66,7 +66,7 @@ Optional Arguments
 
 **-D**\ *dx*/*dy*\ [/*dz*]
     Offset the plot symbol or line locations by the given amounts
-    *dx/dy*\ [*dz*\ ] [Default is no offset].
+    *dx/dy*\ [*dz*] [Default is no offset].
 
 .. _-G:
 
@@ -85,19 +85,19 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*]
+**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*]
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 4.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 4-5.
     Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 4-5.
-    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
-    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
+    Append **+xl**\|\ **r**\|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
+    append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant *z* value.
 
 .. _-N:
 
-**-N**\ [**c**\ \|\ **r**]
+**-N**\ [**c**\|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
     which are always clipped to the map region. For periodic (360-longitude)
@@ -111,7 +111,7 @@ Optional Arguments
 **-Q**
     Turn off the automatic sorting of items based on their distance from the
     viewer. The default is to sort the items so that items in the foreground
-    are plotted after items in the background. 
+    are plotted after items in the background.
 
 .. _-S:
 
@@ -141,14 +141,14 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**l**\ \|\ **f**]\ *value*
+**-Z**\ [**l**\|\ **f**]\ *value*
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *level* value via **-Z** and a color lookup table via **-C**.  To just set the
     fill or outline, use **-Zf** or **-Zl**, respectively.
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings]. 
+.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -160,7 +160,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set. 
+.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set.
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

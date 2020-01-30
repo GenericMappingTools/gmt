@@ -1,6 +1,6 @@
 .. _-distcalc_full:
 
-**-je**\ \|\ **f**\ \|\ **g**
+**-je**\|\ **f**\|\ **g**
     Determine how spherical distances are calculated in modules that support this.
     By default (**-jg**), we perform great circle distance calculations and parameters such
     as distance increments or radii will be compared against calculated great
@@ -8,7 +8,7 @@
     Earth mode (**-jf**) which gives an approximate but faster result.  Alternatively,
     you can select ellipsoidal (**-je**; or geodesic) mode for the highest precision
     (and slowest calculation time).  All spherical distance calculations depend on
-    the current ellipsoid (:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`), the definition of
-    the mean radius (:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`), and the specification
-    of latitude type (:ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`).  Geodesic distance
-    calculations is also controlled by method (:ref:`PROJ_GEODESIC <PROJ_GEODESIC>`).
+    the current ellipsoid (:term:`PROJ_ELLIPSOID`), the definition of
+    the mean radius (:term:`PROJ_MEAN_RADIUS`), and the specification
+    of latitude type (:term:`PROJ_AUX_LATITUDE`).  Geodesic distance
+    calculations is also controlled by method (:term:`PROJ_GEODESIC`).

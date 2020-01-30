@@ -19,11 +19,11 @@ Synopsis
 [ |-H|\ *args* ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *z_obs* ]
-[ |-Q|\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [*region*] ]
+[ |-Q|\ [**n**\ *n_pad*]\|\ [*pad_dist*]\|\ [*region*] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *radius* ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ *level*\ [\ **b**\ \|\ **t**] ]
+[ |-Z|\ *level*\ [**b**\|\ **t**] ]
 [ |SYN_OPT-f| ]
 [ **-x**\ *+a|n|-n* ]
 [ |SYN_OPT--| ]
@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t** **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** 
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
@@ -84,17 +84,17 @@ Optional Arguments
 
     To compute a component, specify any of:
 
-      **x**\ \|\ **X**\ \|\ **e**\ \|\ **E**  to compute the E-W component.
+      **x**\|\ **X**\|\ **e**\|\ **E**  to compute the E-W component.
 
-      **y**\ \|\ **Y**\ \|\ **n**\ \|\ **N**  to compute the N-S component.
+      **y**\|\ **Y**\|\ **n**\|\ **N**  to compute the N-S component.
 
-      **z**\ \|\ **Z**      to compute the Vertical component.
+      **z**\|\ **Z**      to compute the Vertical component.
 
-      **h**\ \|\ **H**      to compute the Horizontal component.
+      **h**\|\ **H**      to compute the Horizontal component.
 
-      **t**\ \|\ **T**\ \|\ **f**\ \|\ **F**  to compute the total field.
+      **t**\|\ **T**\|\ **f**\|\ **F**  to compute the total field.
 
-      For a variable inclination and declination use IGRF. Set any of **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** to do that
+      For a variable inclination and declination use IGRF. Set any of **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n** to do that
 
 .. _-I:
 
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [*region*]
+**-Q**\ [**n**\ *n_pad*]\|\ [*pad_dist*]\|\ [*region*]
     Extend the domain of computation with respect to output **-R** region.
       **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
@@ -136,7 +136,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *level*\ [\ **b**\ \|\ **t**]
+**-Z**\ *level*\ [**b**\|\ **t**]
     level of reference plane [Default = 0]. Use this option when the
     triangles describe a non-closed surface and the volume is defined
     from each triangle and this reference level. An example will be the

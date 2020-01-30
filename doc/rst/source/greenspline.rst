@@ -13,16 +13,16 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt greenspline** [ *table* ]
-[ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
-[ |-C|\ [**n**\ ]\ *value*\ [**+f**\ *file*] ]
+[ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
+[ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
 [ |-D|\ *mode* ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
-[ |-Q|\ *az*\ \|\ *x/y/z* ]
-[ **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*\ ]] ]
+[ |-Q|\ *az*\|\ *x/y/z* ]
+[ **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**
+**-A**\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
     The solution will partly be constrained by surface gradients **v** =
     *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
     unit vector direction. The gradient direction may be specified
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ ]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**]\ *value*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -120,7 +120,7 @@ Optional Arguments
     interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is spherical, we
+    distances in km. Then, if :term:`PROJ_ELLIPSOID` is spherical, we
     compute great circle arcs, otherwise geodesics. Option *mode* = 4
     applies to spherical surface spline interpolation only: **-D**\ 4
     for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
@@ -152,7 +152,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
+**-I**\ *xinc*\ [/*yinc*\ [/*zinc*]]
     Specify equidistant sampling intervals, on for each dimension, separated by slashes.
 
 .. _-L:
@@ -177,7 +177,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *az*\ \|\ *x/y/z*
+**-Q**\ *az*\|\ *x/y/z*
     Rather than evaluate the surface, take the directional derivative in
     the *az* azimuth and return the magnitude of this derivative
     instead. For 3-D interpolation, specify the three components of the
@@ -185,7 +185,7 @@ Optional Arguments
 
 .. _-R:
 
-**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*\ ]]
+**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
 
@@ -195,7 +195,7 @@ Optional Arguments
     *y* coordinates. These may be Cartesian or geographical. If
     geographical, then *west*, *east*, *south*, and *north* specify the
     Region of interest, and you may specify them in decimal degrees or
-    in [±]dd:mm[:ss.xxx][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    in [±]dd:mm[:ss.xxx][**W**\|\ **E**\|\ **S**\|\ **N**]
     format. The two shorthands **-Rg**
     and **-Rd** stand for global domain (0/360 and -180/+180 in
     longitude respectively, with -90/+90 in latitude).
@@ -254,7 +254,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].
 .. include:: explain_-bi.rst_
-   
+
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
@@ -411,7 +411,7 @@ Considerations
    (such as the natural cubic spline, which sets the curvatures at the ends
    to zero).  In contrast, **greenspline**\ 's 1-D spline, as is explained in
    note 1, does *not* specify boundary conditions at the end of the data domain.
-  
+
 Tension
 -------
 

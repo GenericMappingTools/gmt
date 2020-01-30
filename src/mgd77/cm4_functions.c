@@ -7,7 +7,7 @@
  *
  *  Authors:    J. Luis translated from original Fortran code
  *		P. Wessel further massaged it into this form
- *	
+ *
  *  Version:	1.0
  *  Revised:	1-MAY-2009
  *
@@ -151,8 +151,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double *gpsq = NULL;		/* was [13680][5][2] */
 	double *gssq = NULL;		/* was [13680][5] */
 	double *gpmg = NULL;		/* was [1356][5][2] */
-	double *gsmg = NULL;		/* was [1356][5][2] */ 
-	double *hysq = NULL;		/* was [1356][6] */ 
+	double *gsmg = NULL;		/* was [1356][5][2] */
+	double *hysq = NULL;		/* was [1356][6] */
 	double *epsq = NULL;		/* was [13680] */
 	double *essq = NULL;		/* was [13680] */
 	double *ecto = NULL;		/* was [16416] */

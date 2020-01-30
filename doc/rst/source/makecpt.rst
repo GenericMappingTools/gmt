@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**\ ] ]
+**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**i**\ \|\ **o**] ]
+[ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -24,8 +24,8 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
-[ |-V|\ [*level*\ ] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*] ]
+[ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -56,15 +56,15 @@ wherever values are undefined.
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-:ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-and :ref:`COLOR_NAN <COLOR_NAN>` from
+:term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master CPT. When
-there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
-:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
+there is no :term:`COLOR_MODEL` entry in the master CPT, the
+:term:`COLOR_MODEL` specified in the :doc:`gmt.conf` file or on the command
 line will be used.
 
 Required Arguments
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *transparency*\ [**+a**\ ]
+**-A**\ *transparency*\ [**+a**]
     Sets a constant level of transparency (0-100) for all color slices.
     Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
@@ -88,12 +88,12 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**i**\ \|\ **o**]
+**-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
-    parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
-    :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
+    parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
+    :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
 
 .. _-E:
@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -135,8 +135,8 @@ Optional Arguments
 **-I**\ [**c**][**z**]
     Append **c** [Default] to reverse the sense of color progression in the master CPT. Also
     exchanges the foreground and background colors, including those
-    specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
-    :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+    specified by the parameters :term:`COLOR_BACKGROUND` and
+    :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-T** values are used
     so the latter much be compatible with the changed *z*-range.
@@ -147,10 +147,10 @@ Optional Arguments
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master CPT with the values of the parameters
-    :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-    and :ref:`COLOR_NAN <COLOR_NAN>`
+    :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+    and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
+    combined with **-D**, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -169,7 +169,7 @@ Optional Arguments
 **-S**\ *mode*
     Determine a suitable range for the **-T** option from the input table(s) (or stdin).
     Choose from several types of range determinations:
-    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
+    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
     and ±\ *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
@@ -180,7 +180,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
@@ -290,14 +290,14 @@ hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1
 earthquakes, use
 
    ::
-  
+
     gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
-   
+
     gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval

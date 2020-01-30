@@ -13,12 +13,12 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**] ] [|-D|\ *dfile* ]
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
+[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ] [ |-Z| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -32,7 +32,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
-[ **-:**\ [**i**\ \|\ **o**] ]
+[ **-:**\ [**i**\|\ **o**] ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -85,7 +85,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Af**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**]
+**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**]
+**-C**\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -191,7 +191,7 @@ Optional Arguments
     group for each sampled grid. The leading column holds cross distance,
     while the first four columns in a group hold stacked value, deviation, min
     value, and max value, respectively. If *method* is one of
-    **a**\ \|\ **m**\ \|\ **p** then we also write the lower and upper
+    **a**\|\ **m**\|\ **p** then we also write the lower and upper
     confidence bounds (see **+c**). When one or more of **+a**, **+d**,
     and **+r** are used then we also append the stacking results to the end of each
     row, for all cross-profiles. The order is always stacked value
@@ -201,7 +201,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]
+**-T**\ [*radius*\ [**u**]][**+e**\|\ **p**]
    To be used with normal grid sampling, and limited to a single, non-IMG grid.
    If the nearest node to the input point is NaN, search outwards until we find
    the nearest non-NaN node and report that value instead.  Optionally specify

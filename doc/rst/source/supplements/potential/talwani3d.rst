@@ -14,13 +14,13 @@ Synopsis
 
 **gmt talwani3d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
-[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ]
+[ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ *level*\ \|\ *obsgrid* ]
+[ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **f**\ \|\ **n**\ \|\ **v**
+**-F**\ **f**\|\ **n**\|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid; optionally append average latitude for normal gravity reference value [Default is
     mid-grid (or mid-profile if **-N**)]) or **v** (vertical gravity gradient).
@@ -114,7 +114,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *level*\ \|\ *obsgrid*
+**-Z**\ *level*\|\ *obsgrid*
     Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 

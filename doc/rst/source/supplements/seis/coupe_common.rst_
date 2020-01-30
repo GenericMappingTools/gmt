@@ -50,16 +50,16 @@ Required Arguments
      horizontal plane, along steepest descent direction. Add **+f** to get the
      frame from the cross-section parameters.
 
-  **-Ab**\ *lon1/lat1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**\ ]
+  **-Ab**\ *lon1/lat1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**]
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
      cross-section. *strike* is the azimuth of the direction of the
      cross-section. *p\_length* is the length along which the cross-section
      is made. The other parameters are the same as for **-Aa** option.
 
-  **-Ac**\ *x1/y1/x2/y2/dip/p\_width/dmin/dmax*\ [**+f**\ ]
+  **-Ac**\ *x1/y1/x2/y2/dip/p\_width/dmin/dmax*\ [**+f**]
      The same as **-Aa** option with *x* and *y* cartesian coordinates.
 
-  **-Ad**\ *x1/y1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**\ ]
+  **-Ad**\ *x1/y1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**]
      The same as **-Ab** option with *x* and *y* cartesian coordinates.
 
 .. _-S:
@@ -83,11 +83,11 @@ Optional Arguments
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol*\ [*size*\ ][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Fs**\ *symbol*\ [*size*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     selects a symbol instead of mechanism. Choose from the following:
     (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
     (**t**) triangle, (**x**) cross. *size* is the symbol size in
-    **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
+    :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended
     to indicate that the size information is in units of cm, inches, meters,
     or points, respectively). If *size* must be read, it must be in column 4
     and the text string will start in column 5.
@@ -105,7 +105,7 @@ Optional Arguments
     **4**:
       Text string to appear near the beach ball
 
-**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*\ ]]]
+**-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*]]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
@@ -155,7 +155,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*nplane*\ ][\ **/**\ *pen*]
+**-T**\ [*nplane*][**/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
     If *nplane* is
 

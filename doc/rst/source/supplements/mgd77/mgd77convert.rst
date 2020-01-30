@@ -12,8 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77convert** *GEODAS-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
-|-T|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
+**gmt mgd77convert** *GEODAS-ids* |-F|\ **a**\|\ **c**\|\ **m**\|\ **t**
+|-T|\ **a**\|\ **c**\|\ **m**\|\ **t**\ [**+f**]
 [ |-C| ]
 [ |-D| ]
 [ |-L|\ [**w**][**e**][**+l**] ]
@@ -36,7 +36,7 @@ Required Arguments
 
 .. _-F:
 
-**-Fa**\ \|\ **c**\ \|\ **m**\ \|\ **t**
+**-Fa**\|\ **c**\|\ **m**\|\ **t**
     Specifies the format of the input (From) files. Choose from **a**
     for standard MGD77 ASCII table (with extension .mgd77), **c** for
     the new MGD77+ netCDF format (with extension .nc), **m** for the
@@ -47,7 +47,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
+**-T**\ **a**\|\ **c**\|\ **m**\|\ **t**\ [**+f**]
     Specifies the format of the output (To) files. Choose from **a** for
     standard MGD77 ASCII table (with extension .mgd77), **c** for the
     new MGD77+ netCDF format (with extension .nc), **m** for the
@@ -80,7 +80,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**w**\ ][**e**\ ][**+l**\ ]
+**-L**\ [**w**][**e**][**+l**]
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings and
     **e** for errors, and append **+l** to send such log information to stdout.
@@ -89,7 +89,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. include:: ../../explain_help.rst_
 
 Examples

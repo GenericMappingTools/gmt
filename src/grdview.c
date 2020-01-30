@@ -736,7 +736,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		GMT_Report (API, GMT_MSG_VERBOSE, "Cannot paint facade for oblique projection\n");
 		Ctrl->N.facade = false;
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
 	                                   "Error: Piping of topofile not supported!\n");
@@ -974,7 +974,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-	
+
 		for (k = 0; k < Ctrl->G.n; k++) {	/* Process drape grid, if read */
 			if (do_G_reading) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
@@ -1329,7 +1329,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		 * a little bit.
 		 * PW Feb-24-2018: Commented out for now.  What we had is not that bad but suffers from aliasing when the dpi
 		 * is low.  Perhaps a scheme that sets d_off to tiny when dpi passes some threshold.  */
-	
+
 		d_off = 0.1 * hypot ((max_i - min_i)/((double)Z->header->n_columns), (max_j - min_j)/((double)Z->header->n_rows));
 		GMT_Report (API, GMT_MSG_DEBUG, "Zero-distance 1/(off+r) offset for tile averaging: %g\n", d_off);
 #endif

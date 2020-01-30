@@ -573,7 +573,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
-	
+
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
 			unsigned int col, row;
@@ -610,7 +610,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
 			gmt_get_cellarea (GMT, W);
 		}
-	
+
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and MAD */
 			z_median = gmt_grd_median (GMT, G, W, false);
 			z_scale = gmt_grd_mad (GMT, G, W, &z_median, false);

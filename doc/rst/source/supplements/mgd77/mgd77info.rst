@@ -13,10 +13,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77info** *GEODAS-ids*
-[ |-C|\ [**m**\ \|\ **e**] ]
-[ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
-[ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
-[ |-L|\ [**v**\ ] ]
+[ |-C|\ [**m**\|\ **e**] ]
+[ |-E|\ [**m**\|\ **e**] ] [ **-I**\ *ignore* ]
+[ |-M|\ **f**\ [*item*]\|\ **r**\|\ **e**\|\ **h** ]
+[ |-L|\ [**v**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -47,19 +47,19 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**m**\ \|\ **e**]
+**-C**\ [**m**\|\ **e**]
     List abbreviations for all columns present in the MGD77[+] files.
     Append **m** or **e** to limit the display to the MGD77 standard or
     MGD77+ extended set only.
 
 .. _-E:
 
-**-E**\ [**m**\ \|\ **e**]
+**-E**\ [**m**\|\ **e**]
     Give a one-line summary for each cruise listed.
 
 .. _-M:
 
-**-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h**
+**-Mf**\ [*item*]\|\ **r**\|\ **e**\|\ **h**
     List the meta-data (header) and (if present) the MGD77+ history for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**v**\ ]
+**-L**\ [**v**]
     No cruise information is listed. Instead, we just display a list of
     the GEODAS institution 2-character codes and their names.
     Optionally, append **v** to also display the vessels and their
@@ -107,7 +107,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. include:: ../../explain_help.rst_
 
 Examples

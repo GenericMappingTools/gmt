@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt trend1d** [ *table* ] |-F|\ **xymrw**\ \|\ **p**\ \|\ **P**\ \|\ **c** |-N|\ *params*
+**gmt trend1d** [ *table* ] |-F|\ **xymrw**\|\ **p**\|\ **P**\|\ **c** |-N|\ *params*
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
 [ |SYN_OPT-V| ]
@@ -44,7 +44,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **xymrw**\ \|\ **p**\ \|\ **P**\ \|\ **c**
+**-F**\ **xymrw**\|\ **p**\|\ **P**\|\ **c**
     Specify up to five letters from the set {**x y m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
@@ -55,7 +55,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+**-N**\ [**p**\|\ **P**\|\ **f**\|\ **F**\|\ **c**\|\ **C**\|\ **s**\|\ **S**\|\ **x**]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
     Specify the components of the (possibly mixed) model.  Append
     one or more comma-separated model components.  Each component is
     of the form **T**\ *n*, where **T** indicates the basis function and

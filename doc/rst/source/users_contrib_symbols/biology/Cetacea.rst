@@ -15,7 +15,7 @@ The collection currently comprises symbols for 8 species of Baleen Whales, 16 of
 2 species of seals and 4 more for "unidentified" seals, beaked whales, dolphins or whales.
 Several versions (low/normal/high) of most symbols are also available, and you can
 change easily between color or gray symbols in 57 of the 90 symbols provided, therefore
-you can choose really between more than 150 different symbols. 
+you can choose really between more than 150 different symbols.
 
 Author of the  symbols: Pablo Valdés <marine.biol@arsystel.com> (Spanish preferred, but you can use also
 English or French). In the future I hope to create gradually more symbols for other species.
@@ -49,7 +49,7 @@ A valid input datafile.xy is simply a text file containing several lines like th
 
 plot can deal with several lon/lat formats. All of this are accepted.
 The symbolsize field is optional, but if not provided you must specify a common size
-(used for all observations in this file) in the script with -Sksymbolname/simbolsize 
+(used for all observations in this file) in the script with -Sksymbolname/simbolsize
 
 The symboltype field is also optional, k means custom symbol. Currently I can't pass
 different symbols to :doc:`plot </plot>` in the same file (I need split first the file)
@@ -67,7 +67,7 @@ name as the desired pic to your working directory. This is the list of symbols a
 Cetacea
   Toothed Whales, SubO. Odontoceti
      #. Common dolphin (Delphinus delphis)
-        - ddelphis_low.def 
+        - ddelphis_low.def
         - ddelphis_midlow.def
         - ddelphis.def
         - ddelphis_midhigh.def
@@ -174,7 +174,7 @@ instance, data and symbols:
     gmt plot data/killer_whale.xy -Sksymbols/Cetacea/killerwhale/0.5 -O ...etc >> myfile.ps
 
 In this case, please read also the points 1.2-1.3 of the file FAQ.txt
- 
+
 4: Run the bash script, print/open the output postscript file myfile.ps, or convert to PDF or rasters with gmt psconvert.
 
 
@@ -215,8 +215,8 @@ The symbols are to much big!, What size should I use?
    of sizes between 0.12 and 0.18, (rarely more than 0.2) should be OK. Some symbols
    are a little bigger than others, so play with the size in the script until you
    obtain the right for you. Remember that you can easily modify the size of the
-   symbol directly in your GMT script (-Skoorca/0.8  -Skoorca/0.2) or in your file xy. 
-   I recommend to use different sizes for males, females and calfs. 
+   symbol directly in your GMT script (-Skoorca/0.8  -Skoorca/0.2) or in your file xy.
+   I recommend to use different sizes for males, females and calfs.
 
 I don't want color symbols!
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -230,7 +230,7 @@ How can I change the colour of the symbols?
 
    The colour of each area is specified inside the def file, so you can't
    simply specify a colour directly in your GMT script or you will obtain
-   strange results. You should open and edit the -W and -G in the def file. 
+   strange results. You should open and edit the -W and -G in the def file.
 
 After editing the def file I obtain strange polygonal patches instead the desired symbol but all points
 are the same than in the original .def!

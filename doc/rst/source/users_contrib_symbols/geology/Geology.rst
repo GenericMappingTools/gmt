@@ -30,7 +30,7 @@ are used. The trend is measured clockwise from the north and the plunge is the a
 the line with the horizontal.
 
 In order to use the symbols in GMT you need to use the program :doc:`plot </plot>`, using the custom
-symbol type **-Sk**\ [*symbolname*\ ]/\ *size*\ ; where symbolname is one of the short
+symbol type **-Sk**\ [*symbolname*]/\ *size*\ ; where symbolname is one of the short
 names of the geological symbols shown in the table below. In addition to the location of the
 symbol (x,y) given on the first two columns of the input file, you will need additional
 parameters for some of the symbols. You can also use as variables the size and color of

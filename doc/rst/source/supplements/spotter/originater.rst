@@ -119,7 +119,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*n_hs*\ ]
+**-S**\ [*n_hs*]
     Set the number of closest hotspots to report [Default is 1].
 
 .. _-T:

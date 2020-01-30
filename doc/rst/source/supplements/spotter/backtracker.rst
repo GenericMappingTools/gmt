@@ -14,16 +14,16 @@ Synopsis
 
 **gmt backtracker** [ *table* ] |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 [ |-A|\ [*young*/*old*] ]
-[ |-D|\ **f**\ \|\ **b** ]
+[ |-D|\ **f**\|\ **b** ]
 [ |-F|\ *drift.txt* ]
-[ |-L|\ **f**\ \|\ **b**\ [*step*] ]
+[ |-L|\ **f**\|\ **b**\ [*step*] ]
 [ |-M|\ [*fact*] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *fixed_age* ]
 [ |-S|\ *filestem* ]
 [ |-T|\ *zero_age* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\ \|\ **t**] ]
+[ |-W|\ [**a**\|\ **t**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -62,16 +62,16 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [*young*/*old*]
-    Used in conjunction with **-Lb**\ \|\ **f** to limit the track
+    Used in conjunction with **-Lb**\|\ **f** to limit the track
     output to those sections whose predicted ages lie between the
-    specified *young* and *old* limits. If **-LB**\ \|\ **F** is used
+    specified *young* and *old* limits. If **-LB**\|\ **F** is used
     instead then the limits apply to the stage ids (id 1 is the youngest
     stage). If no limits are specified then individual limits for each
     record are expected in columns 4 and 5 of the input file.
 
 .. _-D:
 
-**-Df**\ \|\ **b**
+**-Df**\|\ **b**
     Set the direction to go: **-Df** will go backward in time (from
     younger to older positions), while **-Db** will go forward in time
     (from older to younger positions) [Default]. Note: For **-Db** you
@@ -93,7 +93,7 @@ Optional Arguments
 
 .. _-L:
 
-**-Lf**\ \|\ **b**\ [*step*]
+**-Lf**\|\ **b**\ [*step*]
     Specify a sampled path between initial and final position: **-Lf**
     will draw particle flowlines, while **-Lb** will draw backtrack
     (hotspot track) paths. Append sampling interval in km. If *step* < 0 or not provided
@@ -141,7 +141,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**a**\ \|\ **t**]
+**-W**\ [**a**\|\ **t**]
     Rotates the given input (lon,lat,t) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
     coordinate that exactly matches a particular total reconstruction

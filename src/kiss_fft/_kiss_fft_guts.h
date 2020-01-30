@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 /*!
  * \file _kiss_fft_guts.h
- * \brief 
+ * \brief
  */
 
 /* kiss_fft.h

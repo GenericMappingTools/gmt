@@ -1,12 +1,12 @@
 .. _-h_full:
 
-**-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *remark*][\ **+t**\ *title*]
+**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
     Primary input file(s) has *n* extra header record(s). If used, the default number of
-    header records is :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` [0]. Use **-hi** if only
+    header records is :term:`IO_N_HEADER_RECS` [0]. Use **-hi** if only
     the primary input data should have header records [Default will write out header
     records if the input data have them]. Blank lines and lines starting
     with # are always skipped; to use another leading character for indicating header records,
-    please see :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>`. Note that with **-h** in effect
+    please see :term:`IO_HEADER_MARKER`. Note that with **-h** in effect
     the first *n* records are taken verbatim as headers and not skipped even if any is starting with #.
     For output you may request additional headers
     to be written via the option modifiers, and use **+d** to remove existing

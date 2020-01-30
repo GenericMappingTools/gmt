@@ -228,7 +228,7 @@ features is flagged by the **@N** prefix.
 +------------+-----------------------------+-----------------------------------------------------------------+
 | **Code**   | **Argument**                | **Description**                                                 |
 +============+=============================+=================================================================+
-| N          | word\ \|\ word\ \|\ word    | A "\|" -separated string of names of the attribute field names  |
+| N          | word\|\ word\|\ word        | A "\|" -separated string of names of the attribute field names  |
 +------------+-----------------------------+-----------------------------------------------------------------+
 
 Any name containing a space must be quoted. The **@N** selection must be
@@ -238,7 +238,7 @@ named fields, using the **@T** prefix.
 +------------+-----------------------------+-------------------------------------------------------------+
 | **Code**   | **Argument**                | **Description**                                             |
 +============+=============================+=============================================================+
-| T          | word\ \|\ word\ \|\ word    | A "\|" -separated string of the attribute field data types  |
+| T          | word\|\ word\|\ word        | A "\|" -separated string of the attribute field data types  |
 +------------+-----------------------------+-------------------------------------------------------------+
 
 Available datatypes should largely follow the shapefile (DB3)
@@ -283,7 +283,7 @@ the **@N** or **@D** specifiers must be enclosed in double quotes.
 (Where double quotes or pipe characters are included in the string, they
 must be escaped using "\\"). Where any data values are
 null, they will be represented as no characters between the field
-separator, (e.g., #@D\ \|\ \|\ \|). A Sample header
+separator, (e.g., #@D\|\|\|). A Sample header
 and corresponding data line for points are
 
    ::

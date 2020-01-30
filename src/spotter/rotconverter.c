@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 				break;
 
 			/* Supplemental parameters */
-		
+
 			case 'A':	/* Angle, not time */
 				Ctrl->A.active = true;
 				break;
@@ -250,7 +250,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6':
 				case '7': case '8': case '9': case '.':
 				break;	/* Probably a rotation lon/lat/angle with negative longitude */
-			
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;

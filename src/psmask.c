@@ -244,13 +244,13 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
 	 * Note: info->offset is added to edge_word when looking at vertical edges.
 	 */
-	
+
 	unsigned int n_edges, edge_bit, i, j;
 	static unsigned int i0, j0, side;
 	uint64_t edge_word, ij, n = 0;
 	bool go_on = true;
-	
-	
+
+
 	n_edges = h->n_rows * (urint (ceil (h->n_columns / 16.0)));
 
 	if (first) {	/* Reset edge-flags to zero, if necessary */
@@ -418,7 +418,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
-	
+
 	return (C);
 }
 
@@ -708,10 +708,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);	/* Specifically only need 1 row/col padding */
-	
+
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
-	
+
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -736,12 +736,12 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
 		/* Add GMT_CONV8_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
-	
+
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Your search radius is too small to have any effect and is ignored.\n");
 		}
-	
+
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -826,7 +826,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 				}
 			}
 		} while (true);
-	
+
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -941,7 +941,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, xx);
 					gmt_M_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
-				
+
 					gmt_setfill (GMT, &Ctrl->G.fill, 0);
 					if ((*GMT->current.map.will_it_wrap) (GMT, xp, yp, plot_n, &start)) {	/* Polygon wraps */
 

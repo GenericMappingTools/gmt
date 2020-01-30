@@ -14,14 +14,14 @@ Synopsis
 
 **gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ |-E|\ **+p**\ \|\ **n** ]
+[ |-D|\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*] ]
+[ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
-[ |-I|\ [**e**\ \|\ **i**] ]
-[ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ |-Q|\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
+[ |-I|\ [**e**\|\ **i**] ]
+[ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **h**\ \|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
+[ |-S|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
+**-D**\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*]
     Check for duplicates among the input lines or polygons, or, if
     *file* is given via **+f**, check if the input features already
     exist among the features in *file*. We consider the cases of exact
@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+p**\ \|\ **n**
+**-E**\ **+p**\|\ **n**
     Reset the handedness of all polygons to match the given **+p**
     (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
@@ -122,7 +122,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**e**\ \|\ **i**]
+**-I**\ [**e**\|\ **i**]
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
@@ -130,7 +130,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**]
+**-N**\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**]
     Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
@@ -147,14 +147,14 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]]
+**-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see `Units`_). Note that the area will depend on the current
-    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
+    setting of :term:`PROJ_ELLIPSOID`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
@@ -178,7 +178,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **h**\ \|\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
+**-S**\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
     Spatial processing of polygons. Choose from **-Sh** which identifies
     perimeter and hole polygons (and flags/reverses them), **-Si** which returns
     the intersection of polygons (closed), **-Su** which returns the

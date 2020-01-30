@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mgd77header** *GEODAS-id.a77*
 [ |-H|\ *headervalues.txt* ]
-[ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **t** ]
+[ |-M|\ **f**\ [*item*]\|\ **r**\|\ **t** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -48,7 +48,7 @@ Optional Arguments
 
 .. _-M:
 
-**-Mf**\ [*item*]\|\ **r**\ \|\ **t**
+**-Mf**\ [*item*]\|\ **r**\|\ **t**
     List the meta-data (header) for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-   
+
 .. include:: ../../explain_help.rst_
 
 Header Item Sample File

@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'G':	/* Output file */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
@@ -349,7 +349,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
 		struct GMT_GRID_HIDDEN *GH = NULL;
-	
+
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
@@ -469,7 +469,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
 		int row, col;
 		bool wrap;
-	
+
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
@@ -699,7 +699,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
 		uint64_t n_nodes = 0;
-	
+
 		for (row = 0; row < G->header->n_rows; row++) {
 			for (col = 0; col < G->header->n_columns; col++) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, G->x[col], G->y[row]);

@@ -268,7 +268,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* Here we need to compute dimensions and save those plus current -R -J to the inset information file,
 		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths and maybe
 		 * draw the panel. */
-	
+
 		char *cmd = NULL;
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
@@ -277,9 +277,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
-	
+
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
-	
+
 		/* First get the -B options in place before inset was called */
 		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 		if ((fp = fopen (ffile, "r")) == NULL)
@@ -287,9 +287,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		fgets (Bopts, PATH_MAX, fp);
 		gmt_chop (Bopts);
 		fclose (fp);
-	
+
 		/* Write out the inset information file */
-	
+
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create inset file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);

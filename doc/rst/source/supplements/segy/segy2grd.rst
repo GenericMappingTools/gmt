@@ -15,10 +15,10 @@ Synopsis
 **gmt segy2grd** *segyfile* |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**n**\ \|\ **z**] ]
+[ |-A|\ [**n**\|\ **z**] ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
-[ |-L|\ [*nsamp*\ ] ]
-[ |-M|\ [*ntraces*\ ] ]
+[ |-L|\ [*nsamp*] ]
+[ |-M|\ [*ntraces*] ]
 [ |-N|\ *nodata* ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ [*header*] ]
@@ -66,7 +66,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**n**\ \|\ **z**]
+**-A**\ [**n**\|\ **z**]
     Add up multiple values that belong to the same node (same as
     **-Az**). Append **n** to simply count the number of data points
     that were assigned to each node. [Default (no **-A** option) will
@@ -83,7 +83,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*ntraces*\ ]
+**-M**\ [*ntraces*]
     Fix number of traces to read in. Default tries to read 10000 traces.
     **-M**\ 0 will read number in binary header, **-M**\ *ntraces* will
     attempt to read only *n* traces.
@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*header*\ ]
+**-S**\ [*header*]
     Set variable spacing; *header* is **c** for cdp, **o** for offset, or **b**\ *number*
     for 4-byte float starting at byte *number*. If **-S** not set, assumes even
     spacing of samples at the *x_inc, y_inc* supplied with **-I**.

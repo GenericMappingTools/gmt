@@ -1,9 +1,9 @@
-**-C**\ [*cpt*\ \|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\ \|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
+**-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
     Name of the CPT. If given a GMT Master soft-hinge CPT (see :ref:`Of Colors and Color Legends`) then
     you can enable the hinge at data value *hinge* [0] via **+h**, whereas for hard-hinge CPTs you
     can adjust the location of the hinge [0].  For other CPTs, you may convert their *z*-values
     from meter to another distance unit (append **+U**\ *unit*) or from another unit to meter (append **+u**\ *unit*),
-    with *unit* taken from **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
+    with *unit* taken from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     Alternatively, give *color1,color2*\ [*,color3*\ ,...]
     to build a linear continuous CPT from those colors automatically,
     where *z* starts at 0 and is incremented by one for each color.

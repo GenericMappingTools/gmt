@@ -15,7 +15,7 @@ Synopsis
 **gmt sph2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-D|\ [**g**\ \|\ **n**] ]
+[ |-D|\ [**g**\|\ **n**] ]
 [ |-E| ]
 [ |-F|\ [**k**]\ *filter* ]
 [ |-N|\ [*norm*] ]
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **n**]
+**-D**\ [**g**\|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
     to compute the geoid [Add **-E** for anomalies on the ellipsoid].

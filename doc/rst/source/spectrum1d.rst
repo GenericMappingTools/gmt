@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt spectrum1d** [ *table* ] [ |-S|\ *segment_size* ]
-[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
-[ |-N|\ [\ *name_stem*] ] [ |-T| ] [ |-W| ]
+[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\|\ **m**] ]
+[ |-N|\ [*name_stem*] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]

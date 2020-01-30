@@ -112,7 +112,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct PSEVENTS_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSEVENTS_CTRL);
-	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */ 
+	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	return (C);
 }
 
@@ -202,7 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'C':	/* Set a cpt for converting z column to color */
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
@@ -238,7 +238,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {
 								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E[s]: The +l modifier is only allowed for -Et\n");
-								n_errors++;						
+								n_errors++;
 							}
 							else
 								Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] = atof (&txt[1]);
@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				Ctrl->F.active = true;
 				Ctrl->F.string = strdup (opt->arg);
 				break;
-			
+
 			case 'G':	/* Set a fixed symbol color */
 				Ctrl->G.active = true;
 				Ctrl->G.color = strdup (opt->arg);
@@ -478,10 +478,10 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
-	
+
 		in = In->data;	/* The numerical part */
 		n_total_read++;	/* Successfully read an input record */
-	
+
 		if (Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Plot event symbols */
 			t_end = DBL_MAX;	/* Infinite duration until overridden below */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
@@ -497,9 +497,9 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_SYMBOL]) t_end -= Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Offset applied to t_end */
 			t_fade = t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];		/* End of the fade phase */
 			if (!do_coda && Ctrl->T.now > t_fade) goto Do_txt;	/* Event is in the past and there is no coda, so skip plotting it */
-	
+
 			/* Here we must plot one phase of this event */
-	
+
 			if (n_symbols_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_symbols, "%s_symbols.txt", Ctrl->Q.file);
@@ -513,7 +513,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	/* Pass out the input coordinates unchanged */
 			if (Ctrl->C.active) out[GMT_Z] = in[GMT_Z];	/* Also pass along the optional z-value */
-	
+
 			t_plateau = t_event + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];	/* End of the plateau phase */
 			t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];	/* End of the decay phase */
 			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size */
@@ -573,9 +573,9 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_TEXT]) t_end -= Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* Offset applied to t_end */
 			t_fade = t_end + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE];	/* End of the fade phase */
 			if (!do_coda && Ctrl->T.now > t_fade) continue;				/* Event is in the past and there is no coda */
-	
+
 			/* Here we must plot a label during one phase of this event */
-	
+
 			if (n_labels_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_labels, "%s_labels.txt", Ctrl->Q.file);
@@ -589,7 +589,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	/* Pass out the input coordinates unchanged */
 
 			/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped oterhwise unless coda */
-		
+
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);		/* Magnification of opacity */

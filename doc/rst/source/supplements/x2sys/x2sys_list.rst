@@ -18,10 +18,10 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
-[ |-N|\ *nx_min*\ [**+p**\ ] ]
-[ |-Q|\ **e**\ \|\ **i** ]
+[ |-N|\ *nx_min*\ [**+p**] ]
+[ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *track*\ [**+b**\ ] ]
+[ |-S|\ *track*\ [**+b**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*list*] ]
 [ |SYN_OPT-bo| ]
@@ -98,20 +98,20 @@ Optional Arguments
     specified track only (except for **n**,\ **N** which then refers to
     the other track). The sign convention for **c**,\ **i** is track one
     minus track two (lexically sorted). Time intervals will be returned
-    according to the **TIME_UNIT** GMT defaults setting.  The output order
+    according to the :term:`TIME_UNIT` GMT defaults setting.  The output order
     of the columns follows the order they were given in *flags* with the
     exception that **n**, if chosen, will always be placed after all
     numeric columns (it becomes part of the trailing text).
 
 .. _-i:
 
-**-I**\ [*list*\ ]
+**-I**\ [*list*]
     Name of ASCII file with a list of track names (one per record) that
     should be excluded from consideration [Default includes all tracks].
 
 .. _-L:
 
-**-L**\ [*corrtable*\ ]
+**-L**\ [*corrtable*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
@@ -120,7 +120,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *nx_min*\ [**+p**\ ]
+**-N**\ *nx_min*\ [**+p**]
     Suppress all crossovers involving tracks that did not generate
     at least a total of *nx_min* crossings with all other tracks.
     Alternatively, append **+p** to instead suppress data from pairs that
@@ -128,7 +128,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qe**\ \|\ **i**
+**-Qe**\|\ **i**
     Append **e** for external crossovers or **i** for internal
     crossovers only [Default is all crossovers].
 
@@ -141,7 +141,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *track*\ [**+b**\ ]
+**-S**\ *track*\ [**+b**]
     Name of a single track. If given we restrict output to those
     crossovers involving this track [Default output is crossovers
     involving any track pair].  Append **+b** to print info relative
@@ -154,7 +154,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*list*\ ]
+**-W**\ [*list*]
     Name of ASCII file with a list of track names and their relative
     weights (one track per record) that should be used to calculate the
     composite crossover weight (output code **w** above). [Default sets

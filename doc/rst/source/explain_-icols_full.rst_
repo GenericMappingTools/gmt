@@ -1,6 +1,6 @@
 .. _-icols_full:
 
-**-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**-i**\ *cols*\ [**+l**][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order. Columns
     not listed will be skipped. Give individual columns (or column ranges
     in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if

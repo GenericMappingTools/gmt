@@ -35,7 +35,7 @@ gmt begin ex22
 	gmt makecpt -Cred,green,blue -T0,100,300,10000 -N
 
 	# Start plotting. First lay down map, then plot quakes with size = magnitude * 0.015":
-	gmt coast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000 -Y2.75i
+	gmt coast -Rg -JK180/22c -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000
 	gmt plot -C -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 $file
 
 	# Create legend input file for NEIS quake plot
@@ -44,20 +44,20 @@ gmt begin ex22
 	D 0 1p
 	N 3
 	V 0 1p
-	S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km)
-	S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km)
-	S 0.1i c 0.1i blue 0.25p 0.2i Very deep (> 300 km)
+	S 0.25c c 0.25c red   0.25p 0.5c Shallow depth (0-100 km)
+	S 0.25c c 0.25c green 0.25p 0.5c Intermediate depth (100-300 km)
+	S 0.25c c 0.25c blue  0.25p 0.5c Very deep (> 300 km)
 	D 0 1p
 	V 0 1p
 	N 7
 	V 0 1p
-	S 0.1i c 0.06i - 0.25p 0.3i M 3
-	S 0.1i c 0.08i - 0.25p 0.3i M 4
-	S 0.1i c 0.10i - 0.25p 0.3i M 5
-	S 0.1i c 0.12i - 0.25p 0.3i M 6
-	S 0.1i c 0.14i - 0.25p 0.3i M 7
-	S 0.1i c 0.16i - 0.25p 0.3i M 8
-	S 0.1i c 0.18i - 0.25p 0.3i M 9
+	S 0.25c c 0.15c - 0.25p 0.75c M 3
+	S 0.25c c 0.20c - 0.25p 0.75c M 4
+	S 0.25c c 0.25c - 0.25p 0.75c M 5
+	S 0.25c c 0.30c - 0.25p 0.75c M 6
+	S 0.25c c 0.35c - 0.25p 0.75c M 7
+	S 0.25c c 0.40c - 0.25p 0.75c M 8
+	S 0.25c c 0.45c - 0.25p 0.75c M 9
 	D 0 1p
 	V 0 1p
 	N 1
@@ -72,16 +72,16 @@ gmt begin ex22
 	T @_https://earthquake.usgs.gov@_.  Interested users may also receive email alerts
 	T from the USGS.
 	T This script could be called monthly to update the latest information.
-	G 0.4i
+	G 0.9c
 	# Add USGS logo
 	I @USGS.png 1i RT
-	G -0.3i
+	G -0.75c
 	L 12p,Times-Italic LB $me
 	END
 
 	# OK, now we can actually run gmt legend.  We center the legend below the map.
 	# Trial and error shows that 1.7i is a good legend height:
-	gmt legend -DJBC+o0/0.4i+w7i/1.7i -F+p+glightyellow neis.legend
+	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend
 
 	rm neis.legend usgs_quakes_22.txt
 gmt end show

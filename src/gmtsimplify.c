@@ -116,7 +116,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 				break;
 
 			/* Processes program-specific parameters */
-		
+
 			case 'T':	/* Set tolerance distance */
 				Ctrl->T.active = true;
 				Ctrl->T.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.tolerance), &(Ctrl->T.unit));
@@ -206,7 +206,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 			y12 = y_source[end] - y_source[start];
 			if (geo) x12 *= cosd (0.5 * (y_source[end] + y_source[start]));
 			d12 = GMT_sqr (x12) + GMT_sqr (y12);
-		
+
 			for (i = start + 1, sig = start, max_dev_sqr = -1.0; i < end; i++) {
 				x13 = x_source[i] - x_source[start];
 				if (geo && fabs (x13) > 180.0) x13 = 360.0 - fabs (x13);

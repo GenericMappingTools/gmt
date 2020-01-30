@@ -700,7 +700,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active[RSET])	/* Apply illumination to an image but no -R provided; use intensity domain */
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
-	
+
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate memory and read image file %s\n", Ctrl->In.file[0]);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
@@ -1331,7 +1331,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		bit = gmt_M_memory (GMT, NULL, imsize, unsigned char);	/* Memory to hold the 1-bit image */
 
 		/* Reprocess the byte image.  Here there are no worries about direction of rows, cols since that was dealt with during color assignment */
-	
+
 		for (row = 0, k = k8 = 0; row < n_rows; row++) {	/* Process each scanline */
 			shift = 0; byte = 0;
 			for (col = 0; col < n_columns; col++, k++) {	/* Visit each byte in the original grayshade image */

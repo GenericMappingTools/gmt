@@ -12,12 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**] ]
+**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**] ]
 [ |-C|\ *cols* ]
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
-[ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
+[ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -73,7 +73,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**]
+**-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
@@ -125,11 +125,11 @@ Optional Arguments
 **-Q**
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
     In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
 
 .. _-S:
 
-**-S**\ [**f**\ \|\ **l**]
+**-S**\ [**f**\|\ **l**]
     Only report the first or last row of the results [Default is all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
@@ -138,7 +138,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
     (i.e., your input has only data columns), give **-T** with

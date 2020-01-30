@@ -12,15 +12,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt info** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
+**gmt info** [ *table* ] [ |-A|\ **a**\|\ **f**\|\ **s** ]
 [ |-C| ]
-[ |-D|\ [*dx*\ [/*dy*\ ]] ]
-[ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ [*col*] ]
-[ |-F|\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
-[ |-I|\ [**b**\ \|\ **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\ \|\ **r**\ \|\ **R**\ ] ]
+[ |-D|\ [*dx*\ [/*dy*]] ]
+[ |-E|\ **L**\|\ **l**\|\ **H**\|\ **h**\ [*col*] ]
+[ |-F|\ [**i**\|\ **d**\|\ **t**] ]
+[ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**] ]
 [ |-L| ]
-[ |-S|\ [**x**\ ][**y**] ]
-[ |-T|\ *dz*\ [\ **+c**\ *col*] ]
+[ |-S|\ [**x**][**y**] ]
+[ |-T|\ *dz*\ [**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **a**\ \|\ **f**\ \|\ **s**
+**-A**\ **a**\|\ **f**\|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
     range of all files combined, **-Af** to report the range for each
     file separately, and **-As** to report the range for each segment
@@ -83,14 +83,14 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*dx*\ [/*dy*\ ]]
+**-D**\ [*dx*\ [/*dy*]]
     Modifies results obtained by **-I** by shifting the region to better
     align with the center of the data.  Optionally, append granularity
     for this shift [Default performs an exact shift].
 
 .. _-E:
 
-**-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ [*col*]
+**-EL**\|\ **l**\|\ **H**\|\ **h**\ [*col*]
     Returns the record whose column *col* contains the minimum
     (**l**) or maximum (**h**) value. Upper case
     (**L\|H**) works on absolute value of the data. In case of multiple
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**i**\ \|\ **d**\ \|\ **t**\ ]
+**-F**\ [**i**\|\ **d**\|\ **t**]
     Returns the counts of various records depending on the appended mode:
     **i** returns a single record with the total number of tables, segments,
     data records, header records, and overall records.  In contrast, **d** returns
@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**b**\ \|\ **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\ \|\ **r**\ \|\ **R**\ ]
+**-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
     Report the min/max of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes),
     and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
@@ -155,7 +155,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *dz*\ [\ **+c**\ *col*]
+**-T**\ *dz*\ [**+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
     string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
 
@@ -252,7 +252,7 @@ Bugs
 The **-I** option does not yet work properly with time series data
 (e.g., **-f**\ 0T). Thus, such variable intervals as months and years
 are not calculated. Instead, specify your interval in the same units as
-the current setting of :ref:`TIME_UNIT <TIME_UNIT>`.
+the current setting of :term:`TIME_UNIT`.
 
 See Also
 --------

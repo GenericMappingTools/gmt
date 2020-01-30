@@ -12,25 +12,24 @@ gmt begin ex42
 	gmt makecpt -Cearth -T-7000/4000
 	gmt grdimage @BEDMAP_elevation.nc -Jx1:60000000 -Q
 	gmt coast -R-180/180/-90/-60 -Js0/-90/-71/1:60000000 -Bafg -Di -W0.25p
-	gmt colorbar -DJRM+w2.5i/0.2i+o0.5i/0+mc -F+p+i -Bxa1000+lELEVATION -By+lm
+	gmt colorbar -DJRM+w6.5c/0.5c+o1.5c/0+mc -F+p+i -Bxa1000+lELEVATION -By+lm
 	REM GSHHG
-	gmt coast -Glightblue -Sroyalblue2 -X2i -Y4.75i
+	gmt coast -Glightblue -Sroyalblue2 -X5c -Y12c
 	gmt coast -Glightbrown -A+ag -Bafg
 
 	echo H 18p,Times-Roman Legend > legend.txt
-	echo D 0.1i 1p >> legend.txt
-	echo S 0.15i s 0.2i blue  0.25p 0.3i Ocean >> legend.txt
-	echo S 0.15i s 0.2i lightblue  0.25p 0.3i Ice front >> legend.txt
-	echo S 0.15i s 0.2i lightbrown  0.25p 0.3i Grounding line >> legend.txt
-	gmt legend legend.txt -DjLM+w1.7i+jRM+o0.5i/0 -F+p+i
+	echo D 0.25c 1p >> legend.txt
+	echo S 0.4c s 0.5c blue       0.25p 0.75c Ocean >> legend.txt
+	echo S 0.4c s 0.5c lightblue  0.25p 0.75c Ice front >> legend.txt
+	echo S 0.4c s 0.5c lightbrown 0.25p 0.75c Grounding line >> legend.txt
+	gmt legend legend.txt -DjLM+w4c+jRM+o1c/0 -F+p+i
 	REM Fancy line
-	echo 0	5.55		> lines.txt
-	echo 2.5	5.55	>> lines.txt
-	echo 5.0	4.55	>> lines.txt
-	echo 7.5	4.55	>> lines.txt
-	gmt plot lines.txt -R0/7.5/0/10 -Jx1i -B0 -W2p -X-2.5i -Y-5.25i
-	echo 0 5.2 BEDMAP > tmp.txt
-	echo 0 9.65 GSHHG >> tmp.txt
-	gmt text tmp.txt -F+f18p+jBL -Dj0.1i/0
+	echo 0	14		> lines.txt
+	echo 6.5 14		>> lines.txt
+	echo 13	11.5	>> lines.txt
+	echo 19	11.5	>> lines.txt
+	gmt plot lines.txt -R0/19/0/25 -Jx1c -B0 -W2p -X-6c -Y-13.5c
+	echo 0 13 BEDMAP > tmp.txt
+	echo 0 24 GSHHG >> tmp.txt
+	gmt text tmp.txt -F+f18p+jBL -Dj8p/0
 gmt end show
-

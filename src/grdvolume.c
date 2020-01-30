@@ -489,7 +489,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Yours grid is recognized as Cartesian.\n");
-	
+
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -557,7 +557,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		take_out = (c == 0) ? cval + small : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
-	
+
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (gmt_grdfloat)take_out;		/* Take out the zero value */
 			if (Work->data[ij] == 0.0) Work->data[ij] = (gmt_grdfloat)small;	/* But we don't want exactly zero, just + or - */

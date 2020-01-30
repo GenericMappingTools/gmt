@@ -62,7 +62,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ \ **+w**\ *length*\ [**+j**\ *justify*]\ [**+a**\ **l**\ \|\ **r**\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+l**\ [*label*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ \ **+w**\ *length*\ [**+j**\ *justify*]\ [**+a**\ **l**\|\ **r**]\ [**+o**\ *dx*\ [/*dy*]]\ [**+l**\ [*label*]]
     Defines the reference point on the map for the vertical scale bar using one of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
@@ -79,7 +79,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the vertical scale bar using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale panel [no fill].
@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\ [**+n**\ ][**+p**\ ] :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\ [**+n**][**+p**] :ref:`(more ...) <-Gfill_attrib>`
     Set fill shade, color or pattern for positive and/or negative
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
@@ -115,7 +115,7 @@ Optional Arguments
 
 **-T**\ *pen*
     Draw track [Default is no track]. Append pen attributes to use
-    [Defaults: width = 0.25p, color = black, style = solid]. 
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. _-U:
 
@@ -131,7 +131,7 @@ Optional Arguments
 **-W**\ *pen*
     Specify outline pen attributes [Default is no outline].
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

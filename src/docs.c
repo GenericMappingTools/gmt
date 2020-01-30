@@ -114,12 +114,12 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		if (opt->option == 'Q') { print_url = true, opt = opt->next; continue; }	/* Process optional -Q option which must be first (or maybe second if -S also) */
 		else if (opt->option == 'S') { remote = true, opt = opt->next; continue; }	/* Process optional -S option which is either first or second (if -Q) */
 		else if (opt->option == 'V') { opt = opt->next; continue; }	/* Skip the optional -V common option */
-	
+
 		if (opt->option != GMT_OPT_INFILE) {	/* This is not good */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown option (-%c)\n", opt->option);
 			Return (GMT_RUNTIME_ERROR);
 		}
-	
+
 		if ((ext = gmt_get_ext (opt->arg)) && (id = gmt_get_graphics_id (GMT, ext)) != GMT_NOTSET) {	/* Got a graphics file */
 			if (strchr (opt->arg, GMT_ASCII_RS)) {	/* Got a file with spaces there are temporarily represented by RS */
 				sprintf (name, "\'%s\'", opt->arg);
@@ -183,7 +183,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				docname = opt->arg;
 			else
 				docname = gmt_get_full_name (API, opt->arg);
-			
+
 
 			t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 			gmt_str_tolower (t);
@@ -224,7 +224,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
 
 			if (opt->next && opt->next->option != GMT_OPT_INFILE) remote = true;	/* Can only use anchors on actual URLs not local files */
-		
+
 			/* Get the local URL (which may not exist) */
 			if (other_file) {	/* A local or Web file */
 				if (!strncmp (docname, "file:", 5U) || !strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))	/* Looks like an URL already */

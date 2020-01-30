@@ -148,7 +148,7 @@ and *correction* consists of one or more white-space-separated *term*\ s
 that will be **subtracted** from the observation before output. Each
 *term* must have this exact syntax:
 
-*factor*\ [\*[*function*\ ]([*scale*\ ](\ *abbrev*\ [-*origin*]))[^\ *power*]]
+*factor*\ [\*[*function*]([*scale*](\ *abbrev*\ [-*origin*]))[^\ *power*]]
 
 where terms in brackets are optional (the brackets themselves are not
 used but regular parentheses must be used exactly as indicated). No

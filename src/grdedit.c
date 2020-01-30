@@ -331,7 +331,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		nan_value = G->header->nan_value;
 		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
 			Return (GMT_PARSE_ERROR);
-	
+
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
@@ -509,7 +509,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->L.active) {	/* Wrap the longitude boundaries */
 		double wesn[4];
-	
+
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}

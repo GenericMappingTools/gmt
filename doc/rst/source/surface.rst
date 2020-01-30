@@ -15,7 +15,7 @@ Synopsis
 **gmt surface** [ *table* ] |-G|\ *outputfile.nc*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ *aspect_ratio*\ \|\ **m** ]
+[ |-A|\ *aspect_ratio*\|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-J|\ *parameters* ]
 [ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
@@ -23,8 +23,8 @@ Synopsis
 [ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
-[ |-S|\ *search_radius*\ [**m**\ \|\ **s**] ]
-[ |-T|\ [**i**\ \|\ **b**]\ *tension_factor* ]
+[ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
+[ |-T|\ [**i**\|\ **b**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
@@ -93,7 +93,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *aspect_ratio*\ \|\ **m**
+**-A**\ *aspect_ratio*\|\ **m**
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect_ratio*, where dy = dx / *aspect_ratio*
     relates the grid dimensions. For geographic data, you may use
@@ -177,7 +177,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*\ [**m**\ \|\ **s**]
+**-S**\ *search_radius*\ [**m**\|\ **s**]
     Search radius. Enter *search\_radius* in same units as x,y data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
@@ -186,7 +186,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**i**\ \|\ **b**]\ *tension_factor*
+**-T**\ [**i**\|\ **b**]\ *tension_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
     spurious oscillations) and in the boundary conditions (where it
@@ -233,7 +233,7 @@ Optional Arguments
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
-   
+
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-qi.rst_
@@ -312,7 +312,7 @@ node and suggest that you run :doc:`blockmean`, :doc:`blockmedian`, or
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used. You may
 specify more decimal places by editing the parameter
-**FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
+:term:`FORMAT_FLOAT_OUT` in your :doc:`gmt.conf` file prior to running
 the decimators or choose binary input and/or output using single or
 double precision storage.
 

@@ -1082,7 +1082,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			eigen[i].order = i;
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), vector_compare_singular_values);
-	
+
 		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */

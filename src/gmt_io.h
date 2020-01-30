@@ -29,7 +29,7 @@
 
 /*!
  * \file gmt_io.h
- * \brief 
+ * \brief
  */
 
 #ifndef GMT_IO_H

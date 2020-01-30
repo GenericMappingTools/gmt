@@ -1,4 +1,4 @@
-**-Td**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]
+**-Td**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]
     Draw a map directional rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
@@ -20,11 +20,11 @@
     comma-separated strings to override the default.  Skip a specific label by leaving it blank.
     See :ref:`Placing-dir-map-roses` and **-F** on how to place a panel behind the directional rose.
 
-**-Tm**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
+**-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
     Draw a map magnetic rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
- 
+
     .. include:: explain_refpoint.rst_
 
     By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this

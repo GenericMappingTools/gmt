@@ -539,7 +539,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 
 		/* Note: The UNIX command line will never see redirections like >, >>, and < pass as arguments, so when we check for these
 		 * below it is because command-strings passed from external APIs may contain things like '-Fap -O -K >> plot.ps' */
-	
+
 		if (args[arg][0] == '=' && args[arg][1] && !gmt_access (API->GMT, &args[arg][1], F_OK)) {	/* Gave a file list which we must expand into options */
 			char **flist = NULL;
 			uint64_t n_files, f;

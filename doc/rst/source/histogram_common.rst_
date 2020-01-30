@@ -6,7 +6,7 @@ Description
 Reads *file* [or standard input] and examines the first
 data column (or one set by **-i**) to calculate histogram parameters based on
 the bin-width provided. Using these parameters, scaling, and optional
-range parameters it will plot the histogram. A cumulative histogram may also be specified. 
+range parameters it will plot the histogram. A cumulative histogram may also be specified.
 
 Required Arguments
 ------------------
@@ -18,7 +18,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\|\ *list*
     Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
     If *min/max* are not given then we default to the range in **-R**.
     For details on array creation, see `Generate 1D Array`_.
@@ -68,15 +68,15 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**o**\ \|\ **O**]
+**-I**\ [**o**\|\ **O**]
     Inquire about min/max x and y after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append **o** to output an
     ASCII table of the resulting x,y data instead. Upper case **O** will
-    output all x,y bin data even when y == 0. 
+    output all x,y bin data even when y == 0.
 
 .. _-L:
 
-**-Ll**\ \|\ **h**\ \|\ **b**
+**-Ll**\|\ **h**\|\ **b**
     The modifiers specify the handling of extreme values that fall outside the range
     set by **-T**.  By default these values are ignored.  Append **b** to let
     these values be included in the first or last bins.  To only include
@@ -89,7 +89,7 @@ Optional Arguments
 **-N**\ [*mode*][**+p**\ *pen*]
     Draw the equivalent normal distribution; append desired pen [0.5p,black].
     The *mode* selects which central location and scale to use:
- 
+
     * 0 = mean and standard deviation [Default];
     * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);
     * 2 = LMS (least median of squares) mode and scale.
@@ -114,7 +114,7 @@ Optional Arguments
 
 **-S**
     Draws a stairs-step diagram which does not include the internal bars
-    of the default histogram. 
+    of the default histogram.
 
 .. _-U:
 
@@ -128,7 +128,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
-    Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline]. 
+    Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline].
 
 .. _-X:
 
@@ -137,19 +137,19 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [*type*][**+w**]
-    Choose between 6 types of histograms: 
+    Choose between 6 types of histograms:
 
-    * 0 = counts [Default] 
-    * 1 = frequency_percent 
-    * 2 = log (1.0 + count) 
-    * 3 = log (1.0 + frequency_percent) 
-    * 4 = log10 (1.0 + count) 
+    * 0 = counts [Default]
+    * 1 = frequency_percent
+    * 2 = log (1.0 + count)
+    * 3 = log (1.0 + frequency_percent)
+    * 4 = log10 (1.0 + count)
     * 5 = log10 (1.0 + frequency_percent).
 
     To use weights provided as a second data column instead of pure counts,
     append **+w**.
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

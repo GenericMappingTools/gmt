@@ -1832,7 +1832,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			D[PAR]->n_records = D[PAR]->table[0]->n_records;
 			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
-		
+
 		/* Create option list, register D[PAR] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, D[PAR], string) != GMT_NOERROR) {
 			Return (API->error);

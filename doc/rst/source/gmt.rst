@@ -151,7 +151,7 @@ The Common GMT Options
 
 |SYN_OPT-B|
 **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters*
+**-Jz**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |SYN_OPT-U|
 |SYN_OPT-V|
@@ -296,7 +296,7 @@ See Also
 Look up the individual man pages for more details and full syntax. Run
 ``gmt --help`` to list all GMT programs and to show all installation
 directories. For an explanation of the various GMT settings in this
-man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
+man page (like :term:`FORMAT_FLOAT_OUT`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
 

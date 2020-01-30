@@ -15,12 +15,12 @@ Synopsis
 **gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
 [ |-G|\ *dist*\ [/*colat*][**+h**] ]
-[ |-L|\ [**w**\ \|\ *l\_min*/*l\_max*] ]
+[ |-L|\ [**w**\|\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *w\_min*/*w\_max* ]
-[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**\ ] ]
+[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -154,12 +154,12 @@ Optional Arguments
     colatitude of 90, i.e., a great circle]. Use **-C** and **-E** to
     generate a circle that goes through the center and end point. Note,
     in this case the center and end point cannot be farther apart than
-    2\*\|\ *colat*\ \|. Finally, if you append **+h** the we will report
+    2\*\|\ *colat*\|. Finally, if you append **+h** the we will report
     the position of the pole as part of the segment header [no header].
 
 .. _-L:
 
-**-L**\ [**w**\ \|\ *l\_min*/*l\_max*]
+**-L**\ [**w**\|\ *l\_min*/*l\_max*]
     Length controls. Project only those points whose *p* coordinate is
     within *l\_min* < *p* < *l\_max*. If **-E** has been set, then you
     may alternatively use **-Lw** to stay within the distance from **C** to **E**.
@@ -201,7 +201,7 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*.
 
-**-Z**\ *major*/*minor*/*azimuth*\ [**+e**\ ]
+**-Z**\ *major*/*minor*/*azimuth*\ [**+e**]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
     with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the

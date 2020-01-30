@@ -548,7 +548,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
 		uint64_t node;
 		double scale;
-	
+
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;

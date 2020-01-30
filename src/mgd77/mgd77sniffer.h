@@ -17,7 +17,7 @@
 
 /*!
  * \file mgd77sniffer.h
- * \brief 
+ * \brief
  */
 
  #include "gmt_dev.h"

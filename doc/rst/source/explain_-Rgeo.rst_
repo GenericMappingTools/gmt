@@ -1,7 +1,7 @@
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
     *west*, *east*, *south*, and *north* specify the region of interest,
     and you may specify them in decimal degrees or in
-    [±]dd:mm[:ss.xxx][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**] format
+    [±]dd:mm[:ss.xxx][**W**\|\ **E**\|\ **S**\|\ **N**] format
     Append **+r** if lower left
     and upper right map coordinates are given instead of w/e/s/n. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360

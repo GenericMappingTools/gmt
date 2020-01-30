@@ -8,7 +8,7 @@ encoded fonts are shown in
 Figure :ref:`Octal codes for Standard and ISO <Octal_codes_stand_iso>`. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`/gmt.conf` file [29]_.
+:term:`PS_CHAR_ENCODING` to Standard+ or ISOLatin1+ in your :doc:`/gmt.conf` file [29]_.
 
 .. _Octal_codes_stand_iso:
 

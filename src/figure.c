@@ -158,7 +158,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	if (options) arg = GMT_Create_Cmd (API, options);
 	if (gmt_add_figure (API, arg))
 		error = GMT_RUNTIME_ERROR;
-	
+
 	if (options) GMT_Destroy_Cmd (API, &arg);
 
 	opt = options;

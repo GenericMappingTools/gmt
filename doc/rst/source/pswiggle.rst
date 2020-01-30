@@ -13,12 +13,12 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units*]
-[ |-A|\ [\ *azimuth*] ]
+[ |-A|\ [*azimuth*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
-[ |-G|\ *fill*\ [**+n**\ ][**+p**\ ] ]
+[ |-G|\ *fill*\ [**+n**][**+p**] ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
 [ |-O| ] [ **-P** ]

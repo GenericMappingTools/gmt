@@ -14,7 +14,7 @@ Synopsis
 
 **gmt sphdistance** [ *table* ] |-G|\ *grdfile*
 [ |-C| ]
-[ |-E|\ **d**\ \|\ **n**\ \|\ **z**\ [*dist*] ]
+[ |-E|\ **d**\|\ **n**\|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *unit* ]
 [ |-N|\ *nodetable* ]
@@ -72,7 +72,7 @@ Optional Arguments
 
 .. _-E:
 
-**-Ed**\ \|\ **n**\ \|\ **z**\ [*dist*]
+**-Ed**\|\ **n**\|\ **z**\ [*dist*]
     Specify the quantity that should be assigned to the grid nodes.  By
     default we compute distances to the nearest data point [**-Ed**].
     Use **-En** to assign the ID numbers of the Voronoi polygons that each

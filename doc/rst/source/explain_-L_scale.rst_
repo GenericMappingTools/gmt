@@ -1,13 +1,13 @@
-**-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [\ **+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
+**-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
- 
+
     .. include:: explain_refpoint.rst_
 
     Scale is calculated for latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
     is central meridian]), *length* is in km, or append unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
+    **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     Change the label alignment with **+a**\ *align* (choose among
     **l**\ (eft), **r**\ (ight), **t**\ (op), and **b**\ (ottom)).
     Append **+f** to get a "fancy" scale [Default is plain].
@@ -24,9 +24,9 @@
     not required, **+f** is not allowed, and no units should be specified in **+w**.
     You must set any Cartesian data units via **+l**.
     For a vertical rather than horizontal Cartesian scale, append **+v**.
-    Note: Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and
-    :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`
+    Note: Use :term:`FONT_LABEL` to change the label font and
+    :term:`FONT_ANNOT_PRIMARY`
     to change the annotation font.  The height of the map scale is controlled
-    by :ref:`MAP_SCALE_HEIGHT <MAP_SCALE_HEIGHT>`, and the pen thickness is
-    set by :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`.
+    by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is
+    set by :term:`MAP_TICK_PEN_PRIMARY`.
     See **-F** on how to place a panel behind the scale.

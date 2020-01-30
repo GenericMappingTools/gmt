@@ -14,7 +14,7 @@ Synopsis
 
 **gmt triangulate** [ *table* ]
 [ |-C|\ *slpfile* ]
-[ |-D|\ **x**\ \|\ **y** ]
+[ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
 [ |-G|\ *grdfile* ]
 [ |SYN_OPT-I| ]
@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-D:
 
-**-Dx**\ \|\ **y**
+**-Dx**\|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
     the planar facets (only used when **-G** is set).
 

@@ -909,7 +909,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	   to calculate the auxiliary values. Also, so limit tests on data records (e.g., distances, region,
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
-	
+
 	if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_CEOT_MINUS_NGRAV || auxlist[MGD77_AUX_ET].requested) {	/* Computing Eotvos requires heading and speed */
 		auxlist[MGD77_AUX_AZ].requested = true;
 		auxlist[MGD77_AUX_SP].requested = true;
@@ -1065,7 +1065,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
-	
+
 		D = MGD77_Create_Dataset (GMT);
 
 		error = MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H);
@@ -1079,8 +1079,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 
 		/* Having the header we can process -F and assign indices that refers to this particular data set */
-	
-	
+
+
 		if (first_cruise) {
 			for (kk = 0, string_output = false; kk < n_cols_to_process; kk++) {	/* Prepare GMT output formatting machinery */
 				if (D->H.info[M.order[kk].set].col[M.order[kk].item].text) string_output = true;
@@ -1098,19 +1098,19 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				Out = gmt_new_record (GMT, out, NULL);
 			}
 		}
-	
+
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);
-	
+
 		/* The 1*, 2*, 3* below is just there to ensure we don't end up with multiple cases all == MGD77_NOT_SET */
 		time_column = ((i = MGD77_Get_Column (GMT, "time", &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 1 * MGD77_NOT_SET;
 		lon_column  = ((i = MGD77_Get_Column (GMT, "lon",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 2 * MGD77_NOT_SET;
 		lat_column  = ((i = MGD77_Get_Column (GMT, "lat",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 3 * MGD77_NOT_SET;
-	
+
 		if (time_column != MGD77_NOT_SET && GMT->common.b.active[GMT_OUT] && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && first_warning) {	/* Warn that binary time output is in Unix secs */
 			GMT_Report (API, GMT_MSG_VERBOSE, "For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
 			first_warning = false;
@@ -1132,7 +1132,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			else 		/* Everything else is float (not true for the 3 strings though but dealt with separately) */
 				gmt_set_column (GMT, GMT_OUT, pos, GMT_IS_FLOAT);
 		}
-	
+
 		if (first_cruise && !GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
 			for (kk = kx = pos = 0, sep_flag = 10; pos < n_out_columns; kk++, pos++) {
 				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
@@ -1202,16 +1202,16 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			v = atof (D->H.mgd77[use]->Bathymetry_Assumed_Sound_Velocity) * 0.1;
 			Ctrl->A.sound_speed = 0.5 * ((v < 1400.0 || v > 1600.0) ? 1500.0 : v);
 		}
-	
+
 		if (Ctrl->A.sound_speed > 0.0) i_sound_speed = 1.0 / Ctrl->A.sound_speed;
-	
+
 		if (Ctrl->L.active) MGD77_Init_Correction (GMT, CORR[argno], dvalue);	/* Initialize origins if needed */
-	
+
 		has_prev_twt = PDR_wrap = false;
 		twt_pdrwrap_corr = 0.0;
-	
+
 		/* Start processing records  */
-	
+
 		prevrec = UINTMAX_MAX;	/* Not determined */
 		for (rec = 0; rec < D->H.n_records; rec++) {
 
@@ -1283,9 +1283,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			}
 			if (auxlist[MGD77_AUX_ET].requested) aux_dvalue[MGD77_AUX_ET] = MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]);
 			if (auxlist[MGD77_AUX_RN].requested) aux_dvalue[MGD77_AUX_RN] = (double)rec;
-		
+
 			/* Check if rec no, time or distance falls outside specified ranges */
-	
+
 			if (Ctrl->G.active && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
 			if (Ctrl->S.active && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
 			if (Ctrl->D.mode && gmt_M_is_dnan (dvalue[t_col][rec])) continue;
@@ -1296,11 +1296,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				while (dvalue[x_col][rec] < GMT->common.R.wesn[XLO]) dvalue[x_col][rec] += 360.0;
 				if (dvalue[x_col][rec] > GMT->common.R.wesn[XHI]) continue;
 			}
-		
+
 			if (Ctrl->Q.active[Q_V]) {	/* Check if we are outside velocity range */
 				if (aux_dvalue[MGD77_AUX_SP] < Ctrl->Q.min[Q_V] || aux_dvalue[MGD77_AUX_SP] > Ctrl->Q.max[Q_V]) continue;
 			}
-		
+
 			if (Ctrl->Q.active[Q_A]) {	/* Check if we are outside azimuth range */
 				while (aux_dvalue[MGD77_AUX_AZ] > Ctrl->Q.min[Q_A]) aux_dvalue[MGD77_AUX_AZ] -= 360.0;	/* Wind down to be sure az < min azimuth */
 				while (aux_dvalue[MGD77_AUX_AZ] < Ctrl->Q.min[Q_A]) aux_dvalue[MGD77_AUX_AZ] += 360.0;	/* Now add 360 until we pass min azimuth */
@@ -1311,11 +1311,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				if (this_cc < Ctrl->Q.min[Q_C] || this_cc > Ctrl->Q.max[Q_C]) continue;
 			}
 			/* Check if it passes any given column data constraints */
-		
+
 			if (!MGD77_Pass_Record (GMT, &M, D, rec)) continue;	/* Failed the test */
 
 			/* This record will now be printed out */
-	
+
 			if (need_time) {	/* Need auxiliary time columns such as year, days etc, hence we get the calendar first, then use MGD77_cal_to_fyear */
 				MGD77_gcal_from_dt (GMT, &M, dvalue[t_col][rec], &cal);	/* No adjust for TZ; this is GMT UTC time */
 				aux_dvalue[MGD77_AUX_YR] = (double)cal.year;
@@ -1332,7 +1332,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			}
 			else
 				need_date = true;
-		
+
 			if (auxlist[MGD77_AUX_MG].requested) {	/* Evaluate IGRF */
 				double date = 0.0;
 				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
@@ -1400,7 +1400,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				}
 				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[z_col][rec])) dvalue[z_col][rec] = z;
 			}
-		
+
 			/* --------------------------------------------------------------------------------------------------- */
 			/*                 See if we have a request to adjust the faa value                                    */
 			/* --------------------------------------------------------------------------------------------------- */
@@ -1416,7 +1416,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					g = dvalue[g_col][rec] + MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]) - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
 				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
 			}
-		
+
 			/* --------------------------------------------------------------------------------------------------- */
 			/*                 See if we have a request to adjust the mag value                                  */
 			/* --------------------------------------------------------------------------------------------------- */
@@ -1502,7 +1502,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 							if (clean && gmt_M_is_dnan (mtf_bak[k_off])) clean = false;
 						}
 
-						/* --------------- Atack the NaNs problem -----------------*/
+						/* --------------- Attack the NaNs problem -----------------*/
 						if (clean)		/* Nice, no NaNs at sight */
 							gmt_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
 						else {
@@ -1545,7 +1545,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 			if (negative_depth) dvalue[z_col][rec] = -dvalue[z_col][rec];
 			if (negative_msd) dvalue[m_col][rec] = -dvalue[m_col][rec];
-		
+
 			if (string_output) {	/* Must do it col by col and deal with the requested string(s) */
 				record[0] = 0;	/* Start with blank record */
 				for (kk = kx = pos = 0, sep_flag = 10; pos < n_out_columns; kk++, pos++) {

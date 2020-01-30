@@ -12,10 +12,10 @@ gmt begin ex49
 	# Image depths with color-coded age contours
 	gmt makecpt -Cabyss -T-7000/0 -H > z.cpt
 	gmt makecpt -Chot -T0/100/10 -H > t.cpt
-	gmt grdimage @depth_pixel.nc -JM6i -Cz.cpt -B -BWSne -X1.5i --FORMAT_GEO_MAP=dddF
+	gmt grdimage @depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF
 	gmt plot -W1p @ridge_49.txt
 	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
-	gmt colorbar -Cz.cpt -DjTR+w2i/0.15i+h+o0.3i/0.15i -Baf+u" km" -W0.001 -F+p1p+gbeige
+	gmt colorbar -Cz.cpt -DjTR+w5c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige
 	# Obtain depth, age pairs by dumping grids and pasting results
 	gmt grd2xyz age_pixel.nc -bof > age.bin
 	gmt grd2xyz @depth_pixel.nc -bof > depth.bin
@@ -23,7 +23,7 @@ gmt begin ex49
 	# Create and map density grid of (age,depth) distribution
 	gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc
 	# WHy do we need the -R below? otherwise it fails to work
-	gmt grdimage density.nc -R0/100/-6500/0 -JX6i/4i -Q -Y4.8i -Ct.cpt
+	gmt grdimage density.nc -R0/100/-6500/0 -JX15c/10c -Q -Y12c -Ct.cpt
 	# Obtain modal depths every ~5 Myr
 	gmt blockmode -R0/100/-10000/0 -I5/10000 -r -E depth-age.bin -bi3f -o0,2,3 > modal.txt
 	# Compute Parsons & Sclater [1977] depth-age curve
@@ -41,16 +41,16 @@ gmt begin ex49
 	gmt plot ss.txt -W1p
 	gmt plot -Ss0.4c -Gblue modal.txt -Ey+p1p,blue
 	gmt plot -Ss0.1c -Gwhite modal.txt
-	gmt basemap -R0/100/0/6.5 -JX6i/-4i -Bxaf+u" Myr" -Byaf+u" km" -BWsNe
-	gmt legend -DjRT+w2.5i+o0.1i -F+p1p+gbeige+s <<- EOF
-	S 0.2i - 0.35i - 4p,green 0.5i Parsons & Sclater (1977)
-	S 0.2i - 0.35i - 4p,white 0.5i Stein & Stein (1992)
-	S 0.2i s 0.15i blue - 0.5i Modal depth estimates
+	gmt basemap -R0/100/0/6.5 -JX15c/-10c -Bxaf+u" Myr" -Byaf+u" km" -BWsNe
+	gmt legend -DjRT+w6.5c+o0.25c -F+p1p+gbeige+s <<- EOF
+	S 0.5c - 0.9c - 4p,green 1c Parsons & Sclater (1977)
+	S 0.5c - 0.9c - 4p,white 1c Stein & Stein (1992)
+	S 0.5c s 0.4c blue - 1c Modal depth estimates
 	EOF
-	gmt legend -DjRT+w2.5i+o0.1i <<- EOF
-	S 0.2i - 0.35i - 1p 0.3i
-	S 0.2i - 0.35i - 1p 0.3i
-	S 0.2i s 0.1c white - 0.3i
+	gmt legend -DjRT+w6.5c+o0.25c <<- EOF
+	S 0.5c - 0.9c - 1p 0.75c
+	S 0.5c - 0.9c - 1p 0.75c
+	S 0.5c s 0.1c white - 0.75c
 	EOF
 	rm -f age_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt z.cpt t.cpt
 gmt end show
