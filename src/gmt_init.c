@@ -14299,7 +14299,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			p->w_type = type;
 		}
-		else {
+		else if (!(symbol_type == 'r' && strstr (text, "+s"))) {	/* Dont want to interpret -Sr+s a dimension */
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (n == 3)
 				p->size_y = p->given_size_y = gmt_M_to_inch (GMT, txt_b);

@@ -1332,11 +1332,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_WARNING, "Data point with x = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (gmt_M_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_WARNING, "Data point with y = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
