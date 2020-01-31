@@ -1126,7 +1126,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		width  += 2.0 * Ctrl->F.clearance[GMT_X];
 		height += 2.0 * Ctrl->F.clearance[GMT_Y];
 
-		if (Ctrl->T.title) {	/* Must call pstext to place a heading */
+		if (Ctrl->T.title) {	/* Must call text to place a heading */
 			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
 			struct GMT_DATASET *T = NULL;
 			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -1144,25 +1144,25 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
 				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0] == ' ') strcat (command, Bopt);	/* The -B was set above, so include it in the command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for pstext: %s\n", command);
-			if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
+			if (GMT_Call_Module (API, "text", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 			if (GMT_Destroy_Data (API, &T) != GMT_OK)
 				Return (API->error);
 		}
-		else {	/* psxy is required, since nothing is plotted (except for possibly the canvas fill/outline) */
+		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
 			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for psxy: %s\n", command);
-			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for : %s\n", command);
+			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 		}
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
 			height -= 2.0 * Ctrl->F.clearance[GMT_Y];
 			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for psxy: %s\n", command);
-			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
+			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 		}
 		if (Ctrl->F.Lpen[0]) {	/* Draw lines between interior tiles */
@@ -1170,8 +1170,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for psxy: %s\n", command);
-			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
+			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 		}
 		if (Ctrl->F.debug) {	/* Write a debug file with subplot polygons for use by "gmt subplot end" */
@@ -1286,8 +1286,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=false", D->table[0]->header[0], vfile);
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for psxy to draw debug lines: %s\n", command);
-			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot to draw debug lines: %s\n", command);
+			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 			if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 				Return (API->error);
