@@ -897,8 +897,8 @@ GMT_LOCAL int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused (GMT);
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand == 0!\n");
 	if (S[last]->constant) a = fabs (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -912,7 +912,7 @@ GMT_LOCAL int table_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| > 1 for ACOS!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOS!\n");
 	if (S[last]->constant) a = d_acos (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -927,7 +927,7 @@ GMT_LOCAL int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) < 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand < 1 for ACOSH!\n");
+	if (S[last]->constant && fabs (S[last]->factor) < 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand < 1 for ACOSH!\n");
 	if (S[last]->constant) a = acosh (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -941,7 +941,7 @@ GMT_LOCAL int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| > 1 for ACOT!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOT!\n");
 	if (S[last]->constant) a = atan (1.0 / S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -955,7 +955,7 @@ GMT_LOCAL int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) <= 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| <= 1 for ACOTH!\n");
+	if (S[last]->constant && fabs (S[last]->factor) <= 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| <= 1 for ACOTH!\n");
 	if (S[last]->constant) a = atanh (1.0/S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -969,7 +969,7 @@ GMT_LOCAL int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| > 1 for ACSC!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSC!\n");
 	if (S[last]->constant) a = d_asin (1.0 / S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -999,8 +999,8 @@ GMT_LOCAL int table_ADD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "ADD: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "ADD: Operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) {
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
@@ -1037,7 +1037,7 @@ GMT_LOCAL int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| > 1 for ASEC!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASEC!\n");
 	if (S[last]->constant) a = d_acos (1.0 / S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -1051,7 +1051,7 @@ GMT_LOCAL int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand > 1 for ASECH!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand > 1 for ASECH!\n");
 	if (S[last]->constant) a = acosh (1.0/S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -1065,7 +1065,7 @@ GMT_LOCAL int table_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| > 1 for ASIN!\n");
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIN!\n");
 	if (S[last]->constant) a = d_asin (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -1110,8 +1110,8 @@ GMT_LOCAL int table_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for ATAN2!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for ATAN2!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2!\n");
 	for (s = 0; s < info->T->n_segments; s++) {
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
@@ -1128,7 +1128,7 @@ GMT_LOCAL int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) >= 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, |operand| >= 1 for ATANH!\n");
+	if (S[last]->constant && fabs (S[last]->factor) >= 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| >= 1 for ATANH!\n");
 	if (S[last]->constant) a = atanh (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
@@ -1492,8 +1492,8 @@ GMT_LOCAL int table_CHI2CRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for CHI2CRIT!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for CHI2CRIT!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2CRIT!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for CHI2CRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -1511,8 +1511,8 @@ GMT_LOCAL int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for CHI2CDF!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for CHI2CDF!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2CDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for CHI2CDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -1531,8 +1531,8 @@ GMT_LOCAL int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for CHI2PDF!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for CHI2PDF!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2PDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for CHI2PDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
 		c  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
@@ -1780,7 +1780,7 @@ GMT_LOCAL int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for PCDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -1798,8 +1798,8 @@ GMT_LOCAL int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	/* Central 1st difference in t, using zero-curvature boundary conditions at the ends */
 
-	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, DDT called on irregularly spaced data (not supported)!\n");
-	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand to DDT is constant!\n");
+	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_WARNING, "DDT called on irregularly spaced data (not supported)!\n");
+	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to DDT is constant!\n");
 
 	c = 0.5 / info->t_inc;
 	for (s = 0; s < info->T->n_segments; s++) {
@@ -1828,8 +1828,8 @@ GMT_LOCAL int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	/* Central 2nd difference in t, using zero curvature boundary conditions */
 
-	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, D2DT2 called on irregularly spaced data (not supported)!\n");
-	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand to D2DT2 is constant!\n");
+	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_WARNING, "D2DT2 called on irregularly spaced data (not supported)!\n");
+	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to D2DT2 is constant!\n");
 
 	c = 1.0 / (info->t_inc * info->t_inc);
 	for (s = 0; s < info->T->n_segments; s++) {
@@ -2101,9 +2101,9 @@ GMT_LOCAL int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double alpha;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev2]->constant && S[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for FCRIT!\n");
-	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for FCRIT!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand three == 0 for FCRIT!\n");
+	if (S[prev2]->constant && S[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for FCRIT!\n");
+	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for FCRIT!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for FCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
 		nu1 = irint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]));
@@ -2121,8 +2121,8 @@ GMT_LOCAL int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double F;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for FCDF!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand three == 0 for FCDF!\n");
+	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for FCDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for FCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
 		nu1 = lrint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]));
@@ -2167,7 +2167,7 @@ GMT_LOCAL int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, using FMOD 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "using FMOD 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -2406,8 +2406,8 @@ GMT_LOCAL int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "HYPOT: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "HYPOT: Operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -2479,8 +2479,8 @@ GMT_LOCAL int table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[last]->constant) {
-		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order < 0 for IN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order not an integer for IN!\n");
+		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order < 0 for IN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order not an integer for IN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = gmt_in (GMT, order, fabs (S[prev]->factor));
@@ -2647,8 +2647,8 @@ GMT_LOCAL int table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[last]->constant) {
-		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order < 0 for JN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order not an integer for JN!\n");
+		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order < 0 for JN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order not an integer for JN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = jn ((int)order, fabs (S[prev]->factor));
@@ -2702,8 +2702,8 @@ GMT_LOCAL int table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[last]->constant) {
-		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order < 0 for KN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order not an integer for KN!\n");
+		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order < 0 for KN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order not an integer for KN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = gmt_kn (GMT, order, fabs (S[prev]->factor));
@@ -3120,7 +3120,7 @@ GMT_LOCAL int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument to log = 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument to log = 0!\n");
 
 	if (S[last]->constant) a = d_log (GMT, fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->data[col][row]));
@@ -3134,7 +3134,7 @@ GMT_LOCAL int table_LOG10 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument to log10 = 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument to log10 = 0!\n");
 
 	if (S[last]->constant) a = d_log10 (GMT, fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log10 (GMT, fabs (T->segment[s]->data[col][row]));
@@ -3148,7 +3148,7 @@ GMT_LOCAL int table_LOG1P (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument to log1p < 0!\n");
+	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument to log1p < 0!\n");
 
 	if (S[last]->constant) a = d_log1p (GMT, fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log1p (GMT, fabs (T->segment[s]->data[col][row]));
@@ -3162,7 +3162,7 @@ GMT_LOCAL int table_LOG2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument to log2 = 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument to log2 = 0!\n");
 
 	if (S[last]->constant) a = d_log (GMT, fabs (S[last]->factor)) * M_LN2_INV;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->data[col][row])) * M_LN2_INV;
@@ -3570,7 +3570,7 @@ GMT_LOCAL int table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, using MOD 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "using MOD 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -3671,8 +3671,8 @@ GMT_LOCAL int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "MUL: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "MUL: Operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -3708,7 +3708,7 @@ GMT_LOCAL int table_NEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NEG: Operand == 0!\n");
 	if (S[last]->constant) a = -S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : -T->segment[s]->data[col][row];
 	return 0;
@@ -3741,7 +3741,7 @@ GMT_LOCAL int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, NORM of a constant gives NaN!\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "NORM of a constant gives NaN!\n");
 		a = GMT->session.d_NaN;
 	}
 	else {
@@ -3765,7 +3765,7 @@ GMT_LOCAL int table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NOT: Operand == 0!\n");
 	if (S[last]->constant) a = (fabs (S[last]->factor) > GMT_CONV8_LIMIT) ? 0.0 : 1.0;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : ((fabs (T->segment[s]->data[col][row]) > GMT_CONV8_LIMIT) ? 0.0 : 1.0);
 	return 0;
@@ -3908,8 +3908,8 @@ GMT_LOCAL int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "POW: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "POW: Operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -4083,7 +4083,7 @@ GMT_LOCAL int table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (!calc) {	/* All constants */
 		nu[0] = S[prev]->factor;
 		nu[1] = S[last]->factor;
-		if ((S[first]->factor < -1.0 || S[first]->factor > 1.0)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument to %s outside domain!\n", name[kind]);
+		if ((S[first]->factor < -1.0 || S[first]->factor > 1.0)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument to %s outside domain!\n", name[kind]);
 		gmt_PvQv (GMT, S[first]->factor, nu, pq, &n);
 		a = pq[2*kind];
 	}
@@ -4128,8 +4128,8 @@ GMT_LOCAL int table_R2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "R2: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "R2: Operand two == 0!\n");
 	if (S[prev]->constant) S[prev]->factor *= S[prev]->factor;
 	if (S[last]->constant) S[last]->factor *= S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
@@ -4578,7 +4578,7 @@ GMT_LOCAL int table_SIGN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "SIGN: Operand == 0!\n");
 	if (S[last]->constant) a = copysign (1.0, S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : copysign (1.0, T->segment[s]->data[col][row]);
 	return 0;
@@ -4780,7 +4780,7 @@ GMT_LOCAL int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one < 0!\n");
+	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one < 0!\n");
 	if (S[last]->constant) a = sqrt (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : sqrt (T->segment[s]->data[col][row]);
 	return 0;
@@ -4910,8 +4910,8 @@ GMT_LOCAL int table_SUB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "SUB: Operand one == 0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "SUB: Operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -5091,8 +5091,8 @@ GMT_LOCAL int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand one == 0 for TCRIT!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two == 0 for TCRIT!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for TCRIT!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for TCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
@@ -5213,8 +5213,8 @@ GMT_LOCAL int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	double x, a, b;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two <=0 for WCDF!\n");
-	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand three <= 0 for WCDF!\n");
+	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two <=0 for WCDF!\n");
+	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three <= 0 for WCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
 		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
@@ -5232,8 +5232,8 @@ GMT_LOCAL int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double alpha, a, b;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand two <=0 for WCRIT!\n");
-	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand three <= 0 for WCRIT!\n");
+	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two <=0 for WCRIT!\n");
+	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three <= 0 for WCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
 		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
@@ -5460,7 +5460,7 @@ GMT_LOCAL int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand = 0 for Y0!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand = 0 for Y0!\n");
 	if (S[last]->constant) a = y0 (fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : y0 (fabs (T->segment[s]->data[col][row]));
 	return 0;
@@ -5473,7 +5473,7 @@ GMT_LOCAL int table_Y1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, operand = 0 for Y1!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand = 0 for Y1!\n");
 	if (S[last]->constant) a = y1 (fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : y1 (fabs (T->segment[s]->data[col][row]));
 	return 0;
@@ -5490,9 +5490,9 @@ GMT_LOCAL int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order < 0 for YN!\n");
-	if (S[last]->constant && fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, order not an integer for YN!\n");
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Warning, argument = 0 for YN!\n");
+	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order < 0 for YN!\n");
+	if (S[last]->constant && fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_WARNING, "order not an integer for YN!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "argument = 0 for YN!\n");
 	if (S[last]->constant) order = urint (fabs (S[last]->factor));
 	if (S[last]->constant && S[prev]->constant) {
 		b = yn ((int)order, fabs (S[prev]->factor));
@@ -6489,14 +6489,14 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			if (op == GMTMATH_ARG_IS_NUMBER) {
 				stack[nstack]->constant = true;
 				stack[nstack]->factor = value;
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "%g ", stack[nstack]->factor);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%g ", stack[nstack]->factor);
 				nstack++;
 				continue;
 			}
 			else if (op <= GMTMATH_ARG_IS_PI && op >= GMTMATH_ARG_IS_N) {
 				stack[nstack]->constant = true;
 				stack[nstack]->factor = special_symbol[GMTMATH_ARG_IS_PI-op];
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "%g ", stack[nstack]->factor);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%g ", stack[nstack]->factor);
 				nstack++;
 				continue;
 			}
@@ -6523,7 +6523,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				recall[k]->stored.constant = stack[last]->constant;
 				recall[k]->stored.factor = stack[last]->factor;
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "[--> %s] ", recall[k]->label);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "[--> %s] ", recall[k]->label);
 				if (new) n_stored++;	/* We added a new item */
 				continue;	/* Just go back and process next item */
 			}
@@ -6546,7 +6546,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					DH = gmt_get_DD_hidden (stack[nstack]->D);
 					gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				}
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
 				nstack++;
 				continue;
 			}
@@ -6575,7 +6575,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "T ");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "T ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
 				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
@@ -6587,7 +6587,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
 				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
@@ -6595,7 +6595,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (op == GMTMATH_ARG_IS_J_MATRIX) {	/* Need to set up matrix of row numbers */
 				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TJ);
 				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
@@ -6607,10 +6607,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
 					T_in = I;
-					if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "<stdin> ");
+					if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "<stdin> ");
 				}
 				else {
-					if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
+					if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
 					if ((F = GMT_Read_Data (API, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
 						GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", opt->arg);
 						Return (API->error);
@@ -6663,7 +6663,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "%s ", operator[op]);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", operator[op]);
 
 		for (i = created - eaten; i > 0; i--) {
 			if (stack[nstack+i-1]->D) continue;
@@ -6708,7 +6708,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (kk = 1; kk <= created; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		(Ctrl->Out.file) ? GMT_Message (API, GMT_TIME_NONE, "= %s", Ctrl->Out.file) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
 	}
 
@@ -6731,7 +6731,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		gmt_set_tbl_minmax (GMT, stack[last]->D->geometry, stack[last]->D->table[0]);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "\n");
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_DATASEGMENT *S = stack[0]->D->table[0]->segment[0];
