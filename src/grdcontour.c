@@ -1166,8 +1166,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if (Ctrl->D.active) {
-		GMT_Report (API, GMT_MSG_WARNING, "With -D, no plotting will take place\n");
-		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_WARNING, "Contours will be written to standard output\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "With -D, no plotting will take place\n");
+		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_INFORMATION, "Contours will be written to standard output\n");
 	}
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */

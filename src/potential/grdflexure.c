@@ -691,9 +691,9 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (this_time)
-		GMT_Report (API, GMT_MSG_WARNING, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, gmt_modeltime_unit (this_time->u));
+		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, gmt_modeltime_unit (this_time->u));
 	else
-		GMT_Report (API, GMT_MSG_WARNING, "Prepare load file %s\n", file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s\n", file);
 
 	if (!gmt_check_filearg (GMT, '<', file, GMT_IN, GMT_IS_DATASET)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Load file %s not found - skipped\n", file);
@@ -728,7 +728,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	G = gmt_M_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	/* Do the forward FFT */
-	GMT_Report (API, GMT_MSG_WARNING, "Forward FFT\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Forward FFT\n");
 	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, G->K)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Error taking the FFT of %s - file skipped\n", file);
 		return NULL;
@@ -915,7 +915,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			R->eval_time_yr = Ctrl->T.time[t_eval].value;		/* In years */
-			GMT_Report (API, GMT_MSG_WARNING, "Evaluating flexural deformation for time %g %s\n", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating flexural deformation for time %g %s\n", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
 		}
 
 		if (retain_original) gmt_M_memset (Out->data, Out->header->size, gmt_grdfloat);	/* Reset output grid to zero; not necessary when we only get here once */
@@ -931,19 +931,19 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				R->relative = false;	/* Absolute times are given */
 				if (This_Load->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
 					double dt = This_Load->Time->value * This_Load->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
-					GMT_Report (API, GMT_MSG_WARNING, "  Accumulating flexural deformation for load emplaced at time %g %s [Loading time = %g %s]\n",
+					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %g %s [Loading time = %g %s]\n",
 						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u),
 						dt, gmt_modeltime_unit (This_Load->Time->u));
 				}
 				else {	/* Just state load time */
-					GMT_Report (API, GMT_MSG_WARNING, "  Accumulating flexural deformation for load emplaced at time %g %s\n",
+					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %g %s\n",
 						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u));
 				}
 			}
 			else {
 				R->load_time_yr = 0.0;	/* Not given, assume R->eval_time_yr is time since loading */
 				R->relative = true;	/* Relative times are given */
-				GMT_Report (API, GMT_MSG_WARNING, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
+				GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
 			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
 			if (retain_original) gmt_M_memcpy (orig_load, This_Load->Grid->data, This_Load->Grid->header->size, gmt_grdfloat);	/* Make a copy of H(kx,ky) before operations */
@@ -955,7 +955,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
-		GMT_Report (API, GMT_MSG_WARNING, "Inverse FFT\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Inverse FFT\n");
 		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
@@ -988,7 +988,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		if (t_eval < (Ctrl->T.n_eval_times-1)) {	/* Must put the total grid back into interleave mode */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Re-multiplexing complex grid before accumulating new increments.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Re-multiplexing complex grid before accumulating new increments.\n");
 			gmt_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
 		}
 

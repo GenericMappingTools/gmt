@@ -3038,7 +3038,7 @@ static int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, i
 		}
 	}
 
-	PSL_message (PSL, PSL_MSG_WARNING, "Image depth reduced to %d bits\n", nbits);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Image depth reduced to %d bits\n", nbits);
 	return (nbits);
 }
 
@@ -3322,7 +3322,7 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 				PSL_free (image->buffer);
 				PSL_free (image);
 				PSL_free (colormap);
-				PSL_message (PSL, PSL_MSG_INFORMATION, "Warning: Too many colors to make colormap - using 24-bit direct color instead.\n");
+				PSL_message (PSL, PSL_MSG_INFORMATION, "Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
 			image->buffer[i] = (unsigned char)j;
@@ -3340,11 +3340,11 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 		PSL_free (image->buffer);
 		PSL_free (image);
 		PSL_free (colormap);
-		PSL_message (PSL, PSL_MSG_WARNING, "Warning: Use of colormap is inefficient - using 24-bit direct color instead.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Use of colormap is inefficient - using 24-bit direct color instead.\n");
 		return (NULL);
 	}
 
-	PSL_message (PSL, PSL_MSG_WARNING, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
 	return (image);
 }
 

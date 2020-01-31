@@ -475,7 +475,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
 				nc_inq_varname (ncid, z_id, HH->varname);
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
 			}
 		}
 		else if (nc_inq_varid (ncid, HH->varname, &z_id) == NC_NOERR) {	/* Gave a named variable that exist, is it 2-4 D? */
@@ -1455,7 +1455,7 @@ int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
 			nc_inq_varname (ncid, z_id, varname);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
 		}
 	}
 

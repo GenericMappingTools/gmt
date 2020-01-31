@@ -647,7 +647,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
 	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %d duplicate points in segments\n", n_dup);
-	GMT_Report (API, GMT_MSG_WARNING, "Do Voronoi construction using %d points\n", n);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %d points\n", n);
 
 	gmt_M_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;
@@ -707,7 +707,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 
-	GMT_Report (API, GMT_MSG_WARNING, "Triangularization completed\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Triangularization completed\n");
 
 	Return (GMT_NOERROR);
 }
