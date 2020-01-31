@@ -69,13 +69,13 @@ Required Arguments
     GDAL library. Append the format *:driver* and optionally the output
     *datatype*. The driver names are those used by GDAL itself (e.g.,
     netCDF, GTiFF, etc.), and the data type is one of
-    *u8*\ \|\ *u16*\ \|\ *i16*\ \|\ *u32*\ \|\ *i32*\ \|\ *float32*,
+    *u8*\|\ *u16*\|\ *i16*\|\ *u32*\|\ *i32*\|\ *float32*,
     where 'i' and 'u' denote signed and unsigned integers respectively.
     The default type is *float32*. Note also that both driver names and
     data types are case insensitive.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-    Consider setting :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>`
+    Consider setting :term:`IO_NC4_DEFLATION_LEVEL`
     to reduce file size and to further increase read/write performance.
     Especially when working with subsets of global grids, masks, and grids with
     repeating grid values, the improvement is usually significant.

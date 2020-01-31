@@ -50,7 +50,7 @@ Distance calculations
 
 The calculation of distances on Earth (or other planetary bodies)
 depends on the ellipsoidal parameters of the body (via
-:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) and the method of computation. GMT offers three
+:term:`PROJ_ELLIPSOID`) and the method of computation. GMT offers three
 alternatives that trade off accuracy and computation time.
 
 Flat Earth distances
@@ -99,14 +99,14 @@ Note: There are two additional
 GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
-:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`, which selects one of several possible
-representative radii. The second is :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`, which
+:term:`PROJ_MEAN_RADIUS`, which selects one of several possible
+representative radii. The second is :term:`PROJ_AUX_LATITUDE`, which
 converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
 (*authalic* mean radius and latitudes), expert users can choose from a
 range of options as detailed in the :doc:`/gmt.conf` man page.  Note that
-these last two settings are only used if the :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`
+these last two settings are only used if the :term:`PROJ_ELLIPSOID`
 is not set to "sphere".
 
 Geodesic distances
@@ -119,7 +119,7 @@ select this mode of computation by using the common GMT option **-j**
 and appending the directive **e** (for ellipsoidal).
 For instance, a search radius of 20 km using this mode of
 computation would be set by **-S**\ 20\ **k** **-je**.  You may use the
-setting :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
+setting :term:`PROJ_GEODESIC` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
 that is much faster to compute.
@@ -136,7 +136,7 @@ two ways to ensure that GMT understands which unit you intend to use:
    **-X**\ 4\ **c** means the length being passed to the **-X** switch
    is 4 cm.
 
-#. Set the parameter :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` to the desired unit. Then,
+#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
    all dimensions without explicit unit will be interpreted accordingly.
 
 The latter method is less secure as other users may have a different
@@ -176,8 +176,8 @@ different journals or simply reflecting font changes necessary to make
 readable overheads and slides.  At the end of such scripts you should then
 delete the (temporary) gmt.conf file.  Note that any arguments given on the
 command line (see below) will take precedent over the default values.
-E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
-**-X**\ 1.5\ **i** option will override the default and set the offset to 1.5 inches.
+E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
+**-X**\ 5\ **c** option will override the default and set the offset to 5 cm.
 
 .. _gmt_defaults_a:
 
@@ -254,7 +254,7 @@ ways in which this can be accomplished.
    via the **-**\ **-**\ *PAR=value* mechanism. For instance, to temporarily
    set the output format for floating points to have lots of decimals,
    say, for map projection coordinate output, append
-   **-**\ **-**\ :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`\ =%.16lg to the command in question.
+   **-**\ **-**\ :term:`FORMAT_FLOAT_OUT`\ =%.16lg to the command in question.
 
 In addition to those parameters that directly affect the plot there are
 numerous parameters than modify units, scales, etc. For a complete
@@ -278,7 +278,7 @@ letter, and number or string. *Do* space between options. Example:
 
    ::
 
-    gmt coast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -pdf map
+    gmt coast -R0/20/0/20 -Ggray -JM15c -Wthin -Baf -V -pdf map
 
 Command line history
 --------------------
@@ -345,17 +345,17 @@ are simply data records whose fields are all set to NaN; see Chapter
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in other directories pointed to by the
-:ref:`directory parameters <DIR Parameters>` **DIR_DATA** and **DIR_CACHE**
+:ref:`directory parameters <DIR Parameters>` :term:`DIR_DATA` and :term:`DIR_CACHE`
 or by the environmental parameters **$GMT_USERDIR**, **$GMT_CACHEDIR** and
 **$GMT_DATADIR** (if set). They may be set by the user to point to
 directories that contain data sets of general use, thus eliminating the
-need to specify a full path to these files. Usually, the **DIR_DATA**
+need to specify a full path to these files. Usually, the :term:`DIR_DATA`
 directory will hold data sets of a general nature (tables, grids),
 whereas the **$GMT_USERDIR** directory (its default value is $HOME/.gmt)
 may hold miscellaneous data sets more specific to the user; this directory
 also stores GMT defaults, other configuration files and modern session directories as well as the
 directory *server* which olds downloaded data sets from the GMT data server
-The **DIR_CACHE** will typically contain other data files
+The :term:`DIR_CACHE` will typically contain other data files
 downloaded when running tutorial or example scripts.  See :ref:`directory parameters <DIR Parameters>`
 for details. Program output is always written to the current directory
 unless a full path has been specified.
@@ -395,15 +395,15 @@ Three classes of files are given special treatment in GMT.
    of the full URL to *filename* on the GMT Cache Data site.
    Since this address may change over time we use the leading
    @ to simplify access to these files.  Such files will also be downloaded
-   to **DIR_CACHE** and subsequently read from there (until removed by the user).
+   to :term:`DIR_CACHE` and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
    can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
-   the default setting for **GMT_DATA_SERVER**.  Alternatively, configure the CMake
+   the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via **GMT_DATA_SERVER_LIMIT** to be 0.
+   set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
 
-The user cache (**DIR_CACHE**) and all its contents can be cleared any time
+The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
 can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
 we also check if that file has changed at the server and re-download the updated file;
@@ -420,7 +420,7 @@ grid via
 
 ::
 
- gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM6i -B @earth_relief_01s -png easter
+ gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM15c -B @earth_relief_01s -png easter
 
 Verbose operation
 -----------------
@@ -437,18 +437,20 @@ more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
 
-  **n** Fatal errors [Default].
+  **e** Errors messages only.
 
-  **c** Warnings about deprecated usage (if compiled for compatibility).
+  **w** Warnings [Default].
 
-  **v** General Warnings.
+  **t** Timings (for time-intensive algorithms only).
 
-  **l** Detailed progress and informational messages.
+  **i** Informational messages.
+
+  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
 
   **d** Debugging messages (mostly of interest to developers).
 
-The verbosity is cumulative, i.e., mode **l** means all messages of mode
-**n** as well. will be reported.
+The verbosity is cumulative, i.e., mode **w** means all messages of mode
+**e** as well will be reported.
 
 Program output
 --------------
@@ -484,20 +486,20 @@ the same form as the arguments to the **-R** option (see
 Section :ref:`option_-R`), with additional flexibility for calendar data.
 Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
-[±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+[±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
 format (e.g., 123:27:15W). With **-fp** you may even supply projected
 data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` in your :doc:`/gmt.conf` file; it is by default set to *yyyy-mm-dd*.
+:term:`FORMAT_DATE_IN` in your :doc:`/gmt.conf` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
-:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` to dd/mm/yy. A complete description of possible
+:term:`FORMAT_DATE_IN` to dd/mm/yy. A complete description of possible
 formats is given in the :doc:`/gmt.conf` man
 page. The *clock* string is more standardized but issues like 12- or
 24-hour clocks complicate matters as well as the presence or absence of
 delimiters between fields. Thus, the processing of input clock
-coordinates is guided by the template :ref:`FORMAT_CLOCK_IN <FORMAT_CLOCK_IN>` which
+coordinates is guided by the template :term:`FORMAT_CLOCK_IN` which
 defaults to *hh:mm:ss.xxx*.
 
 GMT programs that require a map projection argument will implicitly
@@ -526,13 +528,13 @@ used) or ASCII [Default]. In the latter case the issue of formatting
 becomes important. GMT provides extensive machinery for allowing just
 about any imaginable format to be used on output. Analogous to the
 processing of input data, several templates guide the formatting
-process. These are :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>` for
-calendar-time coordinates, :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` for geographical
-coordinates, and :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` for generic floating point data.
+process. These are :term:`FORMAT_DATE_OUT` and :term:`FORMAT_CLOCK_OUT` for
+calendar-time coordinates, :term:`FORMAT_GEO_OUT` for geographical
+coordinates, and :term:`FORMAT_FLOAT_OUT` for generic floating point data.
 In addition, the user have control over how columns are separated via
-the :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` parameter. Thus, as an example, it is possible
+the :term:`IO_COL_SEPARATOR` parameter. Thus, as an example, it is possible
 to create limited FORTRAN-style card records by setting
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` to none
+:term:`FORMAT_FLOAT_OUT` to %7.3lf and :term:`IO_COL_SEPARATOR` to none
 [Default is tab].
 
 PostScript features
@@ -568,7 +570,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c**\ \|\ **i**\ \|\ **p**]],[*color*],[\ *style*\ [**c**\ \|\ **i**\ \|\ **p**]]
+**-W**\ [*width*\ [**c**\|\ **i**\|\ **p**]],[*color*],[*style*\ [**c**\|\ **i**\|\ **p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
@@ -577,7 +579,7 @@ option argument, with commas separating the given attributes, e.g.,
     you zoom in on the feature in a display, the line thickness stays
     at the minimum. Finally, a few predefined
     pen names can be used: default, faint, and {thin, thick,
-    fat}[er\ \|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
+    fat}[er\|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
     list and the corresponding pen widths.
 
 .. _tbl-pennames:
@@ -616,8 +618,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. Name. Specify one of 663 valid color names. See :doc:`/gmtcolors` for
        a list of all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
-       [light\ \|\ dark]{*red, orange, yellow, green, cyan, blue,
-       magenta, gray\ \|\ grey, brown*\ }. The color names are
+       [light\|\ dark]{*red, orange, yellow, green, cyan, blue,
+       magenta, gray\|\ grey, brown*\ }. The color names are
        case-insensitive, so mixed upper and lower case can be used (like
        *DarkGreen*).
 
@@ -629,7 +631,7 @@ option argument, with commas separating the given attributes, e.g.,
     relative to the pen width (dots has a length that equals the pen
     width while dashes are 8 times as long; gaps between segments are 4
     times the pen width). For more detailed attributes including exact
-    dimensions you may specify *string*\ [:*offset*\ ], where *string* is a
+    dimensions you may specify *string*\ [:*offset*], where *string* is a
     series of numbers separated by underscores. These numbers represent
     a pattern by indicating the length of line segments and the gap
     between segments. The optional *offset* phase-shifts the pattern from the
@@ -663,13 +665,13 @@ suitable for, say, :doc:`/plot`.
 
 In addition to these pen settings there are several
 PostScript settings that can affect the appearance of lines. These are
-controlled via the GMT defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
-:ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
+controlled via the GMT defaults settings :term:`PS_LINE_CAP`,
+:term:`PS_LINE_JOIN`, and :term:`PS_MITER_LIMIT`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
 straight lines of finite thickness should behave when joined at a common
 point. By default, line segments have rectangular ends, but this can
-change to give rounded ends. When :ref:`PS_LINE_CAP <PS_LINE_CAP>` is set to round the
+change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
 a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
@@ -683,14 +685,14 @@ fashion. See the :doc:`/gmt.conf` man page for more information.
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
+   Line appearance can be varied by using :term:`PS_LINE_CAP`
 
 Experience has shown that the rendering of lines that are short relative to the pen thickness
 can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
 Ghostscript.  By default, lines are rendered using a fast algorithm which is susceptible to
 errors for thick lines.  The solution is to select a more accurate algorithm to render the lines
-exactly as intended.  This can be accomplished by using the GMT Defaults :ref:`PS_LINE_CAP <PS_LINE_CAP>`
-and :ref:`PS_LINE_JOIN <PS_LINE_JOIN>` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
+exactly as intended.  This can be accomplished by using the GMT Defaults :term:`PS_LINE_CAP`
+and :term:`PS_LINE_JOIN` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
 displays the difference in results.
 
 .. _Line_badrender:
@@ -747,7 +749,7 @@ specification. The line attribute modifiers are:
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
    the points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
 
-* **+v**\ [**b**\ \|\ **e**]\ *vspecs*
+* **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can
     place arrow-heads pointing outward at one (or both) ends of the line.  Use **+v** if you
     want the same vector attributes for both ends, or use **+vb** and **+ve** to specify a vector
@@ -784,7 +786,7 @@ use **-G** for this task and some have several options specifying different fill
     specifying the pen color settings (see pen color discussion under
     Section `Specifying pen attributes`_).
 
-**-GP**\ \|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
+**-GP**\|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1–90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
@@ -878,7 +880,7 @@ layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
 to colors or pattern fills. The transparency *mode* can be changed by
-using the GMT default parameter :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>`; the default is
+using the GMT default parameter :term:`PS_TRANSPARENCY`; the default is
 Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
@@ -968,7 +970,7 @@ work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
 Section `Specifying area fill attributes`_. The z-values in CPTs can
-be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
+be scaled by using the **+u**\|\ **U**\ *unit* mechanism.  Append these
 modifiers to your CPT names when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
@@ -1128,17 +1130,31 @@ Master (dynamic) CPTs
 
 The CPTs distributed with GMT are *dynamic*.  This means they have several
 special properties that modify the behavior of programs that use them.
-All dynamic CPTs are normalized in one of two ways: If a CPT was designed
+Dynamic CPTs comes in a few different flavors: Some CPTs were designed
 to behave differently across a *hinge* value (e.g., a CPT designed specifically
 for topographic relief may include a discontinuity in color across the
-coastline at *z = 0*), then the CPT's *z*-values will range from -1, via 0
-at the hinge, to +1 at the other end.  The hinge value is specified via the special
-comment
+coastline at *z = 0*), and when users select these CPTs they will be stretched
+to fit the user's desired data range separately for each side of this *hard* hinge.
+Basically, a *hard* hinge CPT is the juxtaposition of two different CPTs joined
+at the hinge and these sections are stretched independently. Such CPT files
+are identified as such via the special comment
 
-| ``# HINGE = <hinge-value>``
+| ``# HARD_HINGE``
 
-CPTs without a hinge are instead normalized with *z*-values from 0 to 1.
-Dynamic CPTs will need to be stretched to the user's preferred range, and there
+and all hard hinges occur at data value *z = 0* (but you can change this value by
+adding **+h**\ *value* to the name of the CPT).
+Other CPTs may instead have a *soft* hinge which indicates a natural hinge or transition
+point in the CPT itself, unrelated to any natural data set *per se*. These CPTs
+are flagged by the special comment
+
+| ``# SOFT_HINGE``
+
+CPTs with soft hinges behave as regular (non-hinge) CPTs *unless* the user activates then by
+appending **+h**\ [*hinge*] to the CPT name.  This modifier will convert the soft
+hinge into a hard hinge at the user-specified data value *hinge* [which defaults to 0].
+Note that if your specified data range *excludes* an activated soft or hard hinge then we
+only perform color sampling from the *half* of the CPT that pertains to the data range.
+All dynamic CPTs will need to be stretched to the user's preferred range, and there
 are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*
 specified in the master table via the special comment
@@ -1146,26 +1162,58 @@ specified in the master table via the special comment
 
 | ``# RANGE = <zmin/zmax>``
 
-and when used by applications the normalized *z*-values will be stretched to reflect
-this natural range.  In contrast, CPTs without a natural range are instead
+and when used by applications the CPT may be automatically stretched to reflect
+this natural range.  In contrast, dynamic CPTs *without* a natural range are instead
 stretched to fit the range of the data in question (e.g., a grid's range).
-Exceptions to these rules are implemented in the two CPT-producing modules
+Exceptions to these rules are implemented in the two *CPT-producing* modules
 :doc:`/makecpt` and :doc:`/grd2cpt`, both of which can read dynamic CPTs
 and produce *static* CPTs satisfying a user's specific range needs.  These
-tools can also read static CPTs where the new range must be specified (or computed
+tools can also read static CPTs for which a new range must be specified (or computed
 from data), reversing the order of colors, and even isolating a section
-of an incoming CPT.  Here, :doc:`/makecpt` can be told the range of compute it from data tables
-while :doc:`/grd2cpt` can derive the range from one or more grids.
+of an incoming CPT.  Here, :doc:`/makecpt` can be told the data range or compute
+it from data tables while :doc:`/grd2cpt` can derive the range from one or more grids.
 
 .. figure:: /_images/GMT_hinge.*
    :width: 500 px
    :align: center
 
-   The top color bar is a dynamic master CPT (here, globe) with a hinge at sea level and
+   The top color bar is a dynamic master CPT (here, globe) with a hard hinge at sea level and
    a natural range from -10,000 to +10,000 meters. However, our data range
    is asymmetrical, going from -8,000 meter depths up to +3,000 meter elevations.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range while utilizing the full color range.
+
+All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
+where those with hard or soft hinges are identified by triangles at their hinges.
+
+CPTs from color lists
+~~~~~~~~~~~~~~~~~~~~~
+
+GMT can build color tables "on the fly" from a comma-separated list of colors
+and a range of *z*-values to go with them.  As illustrated below, there are
+four different ways to create such CPTs. In this example, we will operate with
+a list of three colors: red,yellow and purple, given to modules with the option **-C**\ red,yellow,purple,
+and utilize a fixed data range of *z = 0-6*.
+Four different CPTs result because we either select a *continuous* or *discrete table*, and because the *z*-intervals are
+either *equidistant* or *arbitrary*.  The top continuous color table with equidistant spacing (a) is selected
+with the range **-T**\ 0/6, meaning the colors will continuously change from red (at *z = 0*) via
+yellow (at *z = 3*) to purple (at *z = 6*). Next, a discrete table with the same range (b)
+is obtained with **-T**\ 0/6/2, yielding colors that are either constant red (*z = 0-2*), yellow (*z = 2-4*)
+or purple (*z = 4-6*). The next discrete table (c) illustrates how to specify arbitrary
+node points in the CPT by providing a comma-separated list of values (**-T**\ 0,4,5.5,6). Now, the constant
+color intervals have unequal ranges, illustrated by red (*z = 0-4*), yellow (*z = 4-5.5*) and purple (*z = 5.5-6*).  Finally, we
+create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,2,6 and adding **-Z**;
+the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
+continuously change from red (at *z = 0*) via yellow (at *z = 2*) to purple (at *z = 6*).
+Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use the exact data range
+to set the quivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
+color list to have the *min* and *max* values rounded down and up to nearest multiple of *dz*, respectively.
+
+.. figure:: /_images/GMT_colorlist.*
+   :width: 500 px
+   :align: center
+
+   Lists of colors (here red,yellow,purple) can be turned into discrete or continuous CPT tables on the fly.
 
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1227,7 +1275,10 @@ A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
 "turbo" color table, but this is overridden if the user uses the @eart_relief
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
-these CPTs are read and scaled to match the range of the grid values.
+these CPTs are read and scaled to match the range of the grid values. You may append
+**+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
+THis is helpful if you plan to place a colorbar and prefer start and stop *z*-values
+that are multiples of *dz*.
 
 The Drawing of Vectors
 ----------------------
@@ -1276,7 +1327,7 @@ relevant manual pages.
 
    Examples of different vector heads and attributes.  The default is the standard
    triangular arrow head, which can be modified by adjusting the apex angle [30] or
-   changing its shape via the :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` setting.
+   changing its shape via the :term:`MAP_VECTOR_SHAPE` setting.
    Other vector heads are the circle (**c**), the terminal line (**t**), the
    arrow fin (**i**) and the plain head (**A**) and tail (**I**); the last two
    are line-drawings only and cannot be filled.
@@ -1328,6 +1379,8 @@ Shorthand notation for a few special European characters has also been added (fo
 you must use the full octal code):
 
 
+.. _tbl-shorthand:
+
 +----------+------------+----------+------------+
 | *Code*   | *Effect*   | *Code*   | *Effect*   |
 +==========+============+==========+============+
@@ -1354,7 +1407,7 @@ PostScript fonts used in GMT may be re-encoded to include several
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` setting described in the
+:term:`PS_CHAR_ENCODING` setting described in the
 :doc:`/gmt.conf` man page. Only the special
 characters belonging to a particular encoding will be available. Many
 characters not directly available by using single octal codes may be
@@ -1430,8 +1483,8 @@ It may be helpful to consider the analog of a boat dropping an anchor: The boat 
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
 There are four different ways to specify the reference point on a map, allowing for complete freedom
-to select any location inside or outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
-the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the five ways:
+to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
+the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
@@ -1443,11 +1496,11 @@ the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the fi
    is the preferred mechanism when you just want to place the feature **inside** the basemap at
    one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
    are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
-   An example of such a reference point might be **j**\ TL. When used, the anchor point on the map feature
-   will default to the same justification, i.e., TL in this example.
+   An example of such a reference point might be **jTL**\ . When used, the anchor point on the map feature
+   will default to the same justification, i.e., **TL** in this example.
 
 #. [**J**] This is the same as **j** except it implies that the default anchor point is the mirror opposite of the
-   justification code. Thus, when using **J**\ TL, the anchor point on the map feature will default to BR.
+   justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
@@ -1469,24 +1522,24 @@ discussed for the **j** reference point code above.  Add **+j**\ *anchor* to ind
 point of the map feature should be co-registered with the chosen reference point.  If an anchor point is not
 specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
 used to set it), or to the mirror opposite of the reference point (if **J**\ *code* was used); with all other
-specifications of the reference point, the anchor point takes on the default value of MC (for map rose and
-map scale) or BL (all other map features). Adding **+j**\ *anchor* overrules those defaults.
-For instance, **+j**\ TR would select the top right point on the map feature as the anchor.
+specifications of the reference point, the anchor point takes on the default value of **MC** (for map rose and
+map scale) or **BL** (all other map features). Adding **+j**\ *anchor* overrules those defaults.
+For instance, **+jTR**\  would select the top right point on the map feature as the anchor.
 
 It is likely that you will wish to offset the anchor point away from
-your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ \|\ **J**\ *code*.
+your selection by some arbitrary amount, particularly if the reference point is specified with **j**\|\ **J**\ *code*.
 Do so with  **+o**\ *dx*\ [/*dy*], where *dy* equals *dx* if it is not provided.
 These increments are added to the projected plot coordinates of the anchor point, with
 positive values moving the reference point in the same direction as the 2-character code of the anchor point implies.
 Finally, the adjusted anchor point is matched with the reference point.
 
-Take for example an anchor point on the top left of the map feature, either by using a reference point **j**\ TL, or **J**\ BR,
+Take for example an anchor point on the top left of the map feature, either by using a reference point **jTL**\ , or **JBR**\ ,
 or explicitly setting **+j**\ TL.
 Then **+o**\ 2c/1c will move the anchor point 2 cm left and 1 cm above the top left corner of the map feature.
 In other words, the top left corner of the map feature will end up 2 cm to the right and 1 cm below the selected reference point.
 
-Similarly **+j**\ BR will align the bottom right corner of the map feature, and **+o**\ 2c/1c will offset it 2 cm to the left
-and 1 cm up. When using middle (M) or center (C) justifications, to offset works the same way as bottom (B) or left (L),
+Similarly, **+jBR** will align the bottom right corner of the map feature, and **+o**\ 2c/1c will offset it 2 cm to the left
+and 1 cm up. When using middle (**M**) or center (**C**) justifications, to offset works the same way as bottom (**B**) or left (**L**),
 respectively, i.e., moving the map feature up or to the right.
 
 
@@ -1504,15 +1557,15 @@ the attributes that are under your control:
    For instance, paint the panel yellow with **+g**\ yellow.
 
 #. Panel frame pen.  Turn on the frame outline with **+p**, using the pen defined via
-   :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`.  You may override this choice with **+p**\ *pen*
+   :term:`MAP_FRAME_PEN`.  You may override this choice with **+p**\ *pen*
    [Default is no outline].  A very bold red outline might look like **+p**\ thick,red.
 
 #. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
-   you can round the corners [Default is no rounding]. Here is a 0.2-inch radius rounding:
-   **+r**\ 0.2i.
+   you can round the corners [Default is no rounding]. Here is a 0.5-cm radius rounding:
+   **+r**\ 0.5c.
 
 #. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
-   **+i**\ [[*gap*/]\ *pen*].  The default pen is given by :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`,
+   **+i**\ [[*gap*/]\ *pen*].  The default pen is given by :term:`MAP_DEFAULT_PEN`,
    with a default *gap* between the outer and inner frames of 2 points.  Add arguments to override
    these defaults, such as **+i**\ 0.1c/thin,dashed to get a thin, dashed inner frame offset by
    0.1 cm from the main (outer) frame.
@@ -1615,7 +1668,7 @@ The next two modifiers are optional:
    orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.
 
 #. Add labels.  Do so with **+l**,  which places the current one-letter codes for west, east, south,
-   and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
+   and north at the four cardinal points.  These letters depend on the setting of :term:`GMT_LANGUAGE`
    and for the default English we use W, E, S, N, respectively.  You can replace these labels with four custom
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
@@ -1651,7 +1704,7 @@ should be pinned.  There is one required and several optional modifiers.  First 
 
 The remaining modifiers are optional:
 
-#. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*\ ], where
+#. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*], where
    *dec* is the declination value in decimal or ddd:mm:ss format, and *dlabel* is an optional string
    that replaces the default label (which is "d = *dec*", with d being a Greek delta and we format
    the specified declination).  Append **d**\ *dec*/- to indicate you do not want any declination label.
@@ -1661,7 +1714,7 @@ The remaining modifiers are optional:
    **+p**\ *pen*.  For instance, adding **+p**\ thin will draw the ring with the selected thin pen.
 
 #. Add labels.  As for directional roses you do so with **+l**, which places the current one-letter codes for west, east, south,
-   and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
+   and north at the four cardinal points.  These letters depend on the setting of :term:`GMT_LANGUAGE`
    and for the default English we use W, E, S, N, respectively.  You can replace these labels with four custom
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
@@ -1745,7 +1798,7 @@ first, then supply suitable required and optional modifiers:
 #. Set line-spacing.  You may optionally specify the line-spacing used for the setting of the legend.  The legend will
    typically consist of several lines that may or may not contain text, but the spacing between
    these lines are controlled by the chosen line-spacing factor times the current primary annotation
-   font setting, i.e., :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.  The default line spacing factor
+   font setting, i.e., :term:`FONT_ANNOT_PRIMARY`.  The default line spacing factor
    is 1.1; change this with **+l**\ *linefactor*.
 
 .. figure:: /_images/GMT_legend.*
@@ -1755,7 +1808,7 @@ first, then supply suitable required and optional modifiers:
    Example of a map legend placed with :doc:`/legend`.  Apart from the placement and dimensions discussed
    here, :doc:`/legend` reads macro commands that specifies each item of the legend, including colors,
    widths of columns, the number of columns, and presents a broad selection of items.  Here, we
-   simply used **-Dx**\ 0/0\ **+w**\ 5.6i\ **+j**\ *BL*.
+   simply used **-Dx**\ 0/0\ **+w**\ 14c\ **+j**\ *BL*.
 
 Placing raster and EPS images on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1819,8 +1872,8 @@ the other map features there are two ways to specify the placement of the map in
 The first is the standard way of specifying the reference and anchor points and the inset dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
 map inset area.  Depending on the map projection this may or may not be a rectangular area.
-Map insets are produced by the module :doc:`/basemap` via the **-D** option. Unless you
-use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
+Map insets are produced by the module :doc:`/inset` and located via the **-D** option. Unless you
+use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*],
 where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
 distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
 map coordinates (e.g., geographic *west*, *east*, *south*, and *north*).  For oblique
@@ -1836,14 +1889,9 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
 
 #. Save the location and dimensions.  For all but the simplest of map insets you will need to
    know the exact location of the resulting inset and its dimensions.  For instance, if you
-   specified the inset using the TR anchor point and a width and height of 100 km you will need to
+   specified the inset using the **TR** anchor point and a width and height of 100 km you will need to
    know what this means in terms of positions on the map in plot units.  In terms of the modifiers
-   this would be **j**\ TR\ **+w**\ 100k.  Running :doc:`/basemap`
-   in verbose mode will provide this information and you can use it accordingly.  However, for
-   users who wish to script this automatically you can use **+s**\ *file* to save this information
-   in a file that your script can ingest and act upon.  The file contains a single record with the
-   four tab-separated values *x0 y0 width height* in the current plot units [cm], where *x0 y0* refers
-   to the lower-left point on the inset.  See the figure caption for an example.
+   this would be **jTR**\ **+w**\ 100k.  See the figure caption for an example.
 
 .. figure:: /_images/GMT_inset.*
    :width: 500 px
@@ -1851,10 +1899,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
 
    Demonstration of how a map inset may be used to place a global overview map as an inset in a
    regional map.  Main map shows the regional area of Australia.  We place an inset in the upper
-   right area with **-Dj**\ TR\ **+w**\ 1.5i\ **+o**\ 0.15i\ **+s**\ tmp and then read in the coordinates
-   of the lower-right corner of the inset and its dimension with UNIX ("read x0 y0 w h < tmp").
-   Knowing the placement (we know the size of the circular global map) we can correctly position it
-   in the inset with **-X$x0** and **-Y$y0**.
+   right area with **-Dj**\ TR\ **+w**\ 3.8c\ **+o**\ 0.4c/0.25c.
    See Example :ref:`example_44` for more details.
 
 Placing a vertical scale on maps
@@ -1903,7 +1948,7 @@ reading via GDAL. That is, to append a *=gd* suffix to file name.
 
 By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
-:ref:`IO_GRIDFILE_FORMAT <IO_GRIDFILE_FORMAT>` defaults parameter to any of the other
+:term:`IO_GRIDFILE_FORMAT` defaults parameter to any of the other
 recognized values (or by appending *=ID*).
 
 GMT can also read netCDF grid files produced by other software
@@ -1995,7 +2040,7 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*\ ][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
+name[=\ *ID*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
 
 where anything in brackets is optional. If you are reading a grid then
 no options are needed: just continue to pass the name of the grid file.
@@ -2048,6 +2093,12 @@ Everything looks clearer after a few examples:
 *  To read a short integer *.bil* grid file stored in binary and and force
    the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
 
+*  To write a lossless, deflate compressed, and tiled GeoTIFF grid (or image) use,
+   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``
+   See also :ref:`Writing grids and images <Write-grids-images>` as well as available options
+   for each output format from the GDAL driver documentation,
+   `for example <https://gdal.org/drivers/raster/gtiff.html>`_
+
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
 restriction with the embedded grid specification mechanism is that no
@@ -2088,7 +2139,7 @@ a ``gmt.io`` file:
 +-------+-----+-----+---+-------+-------------------------------------------+
 
 These suffices can be anything that makes sense to the user. To activate
-this mechanism, set parameter :ref:`IO_GRIDFILE_SHORTHAND <IO_GRIDFILE_SHORTHAND>` to TRUE in
+this mechanism, set parameter :term:`IO_GRIDFILE_SHORTHAND` to TRUE in
 your :doc:`/gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
 filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
@@ -2430,7 +2481,7 @@ Data records that contain NaN values for the *x* or *y* columns (or the
 *z* column for cases when 3-D Cartesian data are expected) are usually
 skipped during reading. However, the presence of these bad records can
 be interpreted in two different ways, and this behavior is controlled by
-the :ref:`IO_NAN_RECORDS <IO_NAN_RECORDS>` defaults parameter. The default setting (*gap*)
+the :term:`IO_NAN_RECORDS` defaults parameter. The default setting (*gap*)
 considers such records to indicate a gap in an otherwise continuous
 series of points (e.g., a line), and programs can act upon this
 information, e.g., not to draw a line across the gap or to break the
@@ -2525,7 +2576,7 @@ any of these directories.
 
 .. [16]
    To keep PostScript files small, such comments are by default turned
-   off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
+   off; see :term:`PS_COMMENTS` to enable them.
 
 .. [17]
    For an overview of color systems such as HSV, see Chapter :doc:`colorspace`.
@@ -2536,4 +2587,3 @@ any of these directories.
 
 .. [19]
    Requires building GMT with GDAL.
-

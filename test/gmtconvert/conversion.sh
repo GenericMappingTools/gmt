@@ -3,8 +3,8 @@
 echo 1 2 3 4 5 > t.txt
 gmt convert t.txt -o0,1,4 -bo3d > d.b
 gmt convert t.txt -o0,1,4 -bo3f > s.b
-D=`ls -l d.b | awk '{print $5}'`
-S=`ls -l d.b | awk '{print $5}'`
+D=$(ls -l d.b | awk '{print $5}')
+S=$(ls -l d.b | awk '{print $5}')
 touch fail
 if [ $D -ne $S ]; then
 	echo "db and sb differ in size" >> fail

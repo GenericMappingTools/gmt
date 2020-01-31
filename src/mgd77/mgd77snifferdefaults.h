@@ -10,9 +10,9 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	23-Feb-2004
- * 
+ *
  * ------------------------------------------------------------------
  * Abbrev,     min,     max,  binwidth,  maxdt,  maxds,  maxdz,  binmin, binmax, maxArea*/
 {   "drt",   false,   false,     false,  false,  false,  false,   false,  false,  false},

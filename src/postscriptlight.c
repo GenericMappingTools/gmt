@@ -588,7 +588,7 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
 			             mem, m_unit[k], nelem, size);
 			return (NULL);
 		}
@@ -599,7 +599,7 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
 			             mem, m_unit[k], nelem, size);
 			return (NULL);
 		}
@@ -640,7 +640,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 				in_string[k] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
 		}
 	}
-	
+
 	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
 	for (k = 0; in_string[k]; k++) {
@@ -656,7 +656,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	if (utf8_codes == 0) return;	/* Nothing to do */
 
 	out_string = PSL_memory (PSL, NULL, strlen(in_string) + 1, char);	/* Get a new string of same length (extra byte for '\0') */
-	
+
 	for (k = kout = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
 			k++;	/* Skip the control code */
@@ -868,7 +868,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 
 static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
 	if (linewidth < 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
 		return (PSL_BAD_WIDTH);
 	}
 	PSL_command (PSL, "%d W\n", psl_ip (PSL, linewidth));
@@ -965,7 +965,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "] def\n");
 	PSL_comment (PSL, "Set array with number of points per line segments:\n");
 	psl_set_int_array (PSL, "path_n", new_n, npath);
-	if (k > 100000) PSL_message (PSL, PSL_MSG_VERBOSE, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting\n", k);
+	if (k > 100000) PSL_message (PSL, PSL_MSG_WARNING, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting\n", k);
 
 	/* Free up temp arrays */
 	PSL_free (use);
@@ -1121,7 +1121,7 @@ static void psl_prepare_buffer (struct PSL_CTRL *C, size_t len) {
 	while (new_len > C->internal.n_alloc)       /* Wind past what is needed, growing by 1.75 */
 		C->internal.n_alloc = (size_t)(C->internal.n_alloc * 1.75);
 	if ((C->internal.buffer = PSL_memory (C, C->internal.buffer, C->internal.n_alloc, char)) == NULL) {
-		PSL_message (C, PSL_MSG_NORMAL, "Error: Could not allocate %d additional buffer space - this will not end well\n", len);
+		PSL_message (C, PSL_MSG_ERROR, "Error: Could not allocate %d additional buffer space - this will not end well\n", len);
 	}
 }
 
@@ -1240,13 +1240,13 @@ static unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsi
 
 	/* Drop the compression when end result is bigger than original */
 	if (out > in) {
-		PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "RLE inflated %d to %d bytes. No compression done.\n", in, out);
+		PSL_message (PSL, PSL_MSG_INFORMATION, "RLE inflated %d to %d bytes. No compression done.\n", in, out);
 		PSL_free (output);
 		return (NULL);
 	}
 
 	/* Return number of output bytes and output buffer */
-	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "RLE compressed %d to %d bytes (%.1f%% savings)\n", in, out, 100.0f*(1.0f-(float)out/in));
+	PSL_message (PSL, PSL_MSG_INFORMATION, "RLE compressed %d to %d bytes (%.1f%% savings)\n", in, out, 100.0f*(1.0f-(float)out/in));
 	*nbytes = out;
 	return (output);
 }
@@ -1328,7 +1328,7 @@ static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsi
 
 	/* Drop the compression when end result is bigger than original */
 	if (output->nbytes > in) {
-		PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "LZW inflated %d to %d bytes. No compression done.\n", in, output->nbytes);
+		PSL_message (PSL, PSL_MSG_INFORMATION, "LZW inflated %d to %d bytes. No compression done.\n", in, output->nbytes);
 		PSL_free (code);
 		PSL_free (output->buffer);
 		PSL_free (output);
@@ -1336,7 +1336,7 @@ static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsi
 	}
 
 	/* Return number of output bytes and output buffer; release code table */
-	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "LZW compressed %d to %d bytes (%.1f%% savings)\n", in, output->nbytes, 100.0f*(1.0f-(float)output->nbytes/in));
+	PSL_message (PSL, PSL_MSG_INFORMATION, "LZW compressed %d to %d bytes (%.1f%% savings)\n", in, output->nbytes, 100.0f*(1.0f-(float)output->nbytes/in));
 	*nbytes = output->nbytes;
 	buffer = output->buffer;
 	PSL_free (code);
@@ -1359,7 +1359,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 	strm.zfree = Z_NULL;
 	strm.opaque = Z_NULL;
 	if (deflateInit (&strm, level) != Z_OK) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot initialize ZLIB stream: %s", strm.msg);
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot initialize ZLIB stream: %s", strm.msg);
 		return NULL;
 	}
 
@@ -1375,14 +1375,14 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	if (zstatus != Z_STREAM_END) {
 		/* "compressed" size is larger or other failure */
-		PSL_message (PSL, PSL_MSG_VERBOSE, "Warning: no deflate compression done.\n");
+		PSL_message (PSL, PSL_MSG_WARNING, "Warning: no deflate compression done.\n");
 		PSL_free (output);
 		return NULL;
 	}
 
 	/* Return number of output bytes and output buffer */
 	olen = olen - strm.avail_out; /* initial size - size left */
-	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "DEFLATE compressed %" PRIuS " to %" PRIuS " bytes (%.1f%% savings at compression level %d)\n",
+	PSL_message (PSL, PSL_MSG_INFORMATION, "DEFLATE compressed %" PRIuS " to %" PRIuS " bytes (%.1f%% savings at compression level %d)\n",
 		ilen, olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
 	*nbytes = olen;
 	return output;
@@ -1391,7 +1391,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 	/* ZLIB not available */
 	PSL_M_unused(nbytes);
 	PSL_M_unused(input);
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Cannot DEFLATE because ZLIB is not available.\n");
+	PSL_message (PSL, PSL_MSG_WARNING, "Cannot DEFLATE because ZLIB is not available.\n");
 	return NULL;
 #endif /* HAVE_ZLIB */
 }
@@ -1480,6 +1480,42 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	(PSL->internal.comments) ? PSL_command (PSL, "\t%% Set this font\n") : PSL_command (PSL, "\n");
 	PSL->internal.font[font_no].encoded = 1;
 	return (PSL_NO_ERROR);
+}
+
+/*! . */
+static int psl_getfont (struct PSL_CTRL *PSL, char *name) {
+	int ret = 0;	/* Return Helvetica if we cannot figure it out */
+	char *c = NULL;
+	/* Return font number from strings like 33% or Helvetica-Bold% */
+	if (!name || !name[0] || name[0] == '%') return (-1);
+	if ((c = strchr (name, '%'))) c[0] = '\0';	/* Chop off trailing % */
+	if (isdigit ((unsigned char) name[0])) {	/* Starts with number */
+		if (!isdigit ((unsigned char) name[strlen(name)-1]))
+			ret = -1;	/* Starts with digit, ends with something else: cannot be */
+		else
+			ret = atoi (name);
+		if (ret < 0 || ret >= PSL->internal.N_FONTS) {
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: font number %s outside the valid range - reset to 0\n", name);
+			ret = 0;
+		}
+	}
+	else {	/* Does not start with number. Try known font name */
+		int i;
+		char q, *m = NULL;
+		if ((m = strchr (name, 0255)))
+			q = m[0];
+		if (m) m[0] = '-';	/* Temporarily replace hyphen with minus */
+		for (i = 0; i < PSL->internal.N_FONTS && strcmp (name, PSL->internal.font[i].name); i++);
+		if (i < PSL->internal.N_FONTS)
+			ret = i;
+		else {
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: font %s not recognized - reset to %s\n", name, PSL->internal.font[0].name);
+			ret = 0;
+		}
+		if (m) m[0] = q;	/* Restore hyphen */
+	}
+	if (c) c[0] = '%';	/* Restore trailing % */
+	return (ret);
 }
 
 char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
@@ -1593,10 +1629,8 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					j += (int)strlen(psl_scandcodes[15][he]); i++;
 					break;
 				case '%':	/* Font switcher */
-					if (isdigit ((int)text[i+1])) {	/* Got a font */
-						font = atoi (&text[i+1]);
+					if ((font = psl_getfont (PSL, &text[i+1])) >= 0)
 						psl_encodefont (PSL, font);
-					}
 					string[j++] = '@';
 					string[j++] = text[i++];	/* Just copy over the rest */
 					while (text[i] != '%') string[j++] = text[i++];
@@ -1633,9 +1667,9 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 			}
 		}
 	}
-	
+
 	psl_fix_utf8 (PSL, string);
-	
+
 	return (string);
 }
 
@@ -1735,7 +1769,7 @@ static int psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	if (match == 0)
 		PSL_command (PSL, "%s", PSL_ISO_encoding[k]);
 	else {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Could not find ISO encoding %s\n", encoding);
+		PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: Could not find ISO encoding %s\n", encoding);
 		PSL_exit (EXIT_FAILURE);
 	}
 	return 0;
@@ -1757,7 +1791,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
 		string = strdup (PSL_prologue_str);
 	else if (!strcmp (text, "PSL_text"))
 		string = strdup (PSL_text_str);
-		
+
 	while ((buf = strsep (&string, "\n")) != NULL) {
 		if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
@@ -1968,7 +2002,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 						}
 						else {
 							old_font = font;
-							font = atoi (&clean[i1]);
+							font = psl_getfont (PSL, &clean[i1]);
 							while (clean[i1] != '%') i1++;
 							i1++;
 						}
@@ -2076,13 +2110,13 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 	} /* End of word loop */
 
-	if (sub_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Sub-scripting not terminated [%s]\n", paragraph);
-	if (super_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Super-scripting not terminated [%s]\n", paragraph);
-	if (scaps_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Small-caps not terminated [%s]\n", paragraph);
-	if (symbol_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Symbol font change not terminated [%s]\n", paragraph);
-	if (size_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-size change not terminated [%s]\n", paragraph);
-	if (color_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-color change not terminated [%s]\n", paragraph);
-	if (under_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Text underline not terminated [%s]\n", paragraph);
+	if (sub_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Sub-scripting not terminated [%s]\n", paragraph);
+	if (super_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Super-scripting not terminated [%s]\n", paragraph);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Small-caps not terminated [%s]\n", paragraph);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Symbol font change not terminated [%s]\n", paragraph);
+	if (size_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-size change not terminated [%s]\n", paragraph);
+	if (color_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-color change not terminated [%s]\n", paragraph);
+	if (under_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Text underline not terminated [%s]\n", paragraph);
 
 	PSL_free (text);	/* Reclaim this memory */
 	n_alloc_txt = k;	/* Number of items in word array that might have text allocations */
@@ -2338,7 +2372,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 		tangle[PSL_BEGIN] = angle[PSL_BEGIN] + off[PSL_BEGIN];
 	}
 	if (heads) {	/* Will draw at least one head */
-		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
+		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], 1);	/* Set fill for head(s) */
 		PSL_command (PSL, "PSL_vecheadpen\n");	/* Switch to vector head pen */
 		psl_forcelinewidth (PSL, 2.0 * h_penwidth);	/* Force pen width update; double width due to clipping below */
 	}
@@ -2418,6 +2452,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 
 static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
 	int i = 0;
+	if (imagefile == NULL) return -1;
 	while (i < PSL->internal.n_userimages) {
 		if (!strcmp (PSL->internal.user_image[i], imagefile))	/* Yes, found it */
 			return (i);
@@ -2440,7 +2475,7 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
 			PSL_exit (EXIT_FAILURE);
 		}
 		/* Must initialize a previously unused image */
@@ -2852,14 +2887,14 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	int status = lrint (param[3]), flags = lrint (param[7]);
 	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
 	bool fill = flags & 1, outline = flags & 2;
-	
+
 	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
 		PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 		return (PSL_NO_ERROR);
 	}
 	/* Somewhat more involved */
 	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
-		if (windshield) 
+		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
@@ -2910,7 +2945,7 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	}
 	if (status) PSL_command (PSL, "U\n");	/* Restore graphics state after messing with spiders */
 	if (outline) {	/* Draw wedge outline on top */
-		if (windshield) 
+		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
@@ -3004,7 +3039,7 @@ static int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, i
 		}
 	}
 
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Image depth reduced to %d bits\n", nbits);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Image depth reduced to %d bits\n", nbits);
 	return (nbits);
 }
 
@@ -3109,7 +3144,7 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 		}
 	}
 
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Warning: No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
+	PSL_message (PSL, PSL_MSG_WARNING, "Warning: No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
 	return 1;
 }
 
@@ -3133,7 +3168,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 
 	if (psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname)) {
 		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
-			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
+			PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: ");
 			perror (fullname);
 			PSL_exit (EXIT_FAILURE);
 		}
@@ -3141,11 +3176,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		while (fgets (buf, PSL_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (sscanf (buf, "%s %lf %d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
 				continue;
 			}
 			if (strlen (fullname) >= PSL_NAME_LEN) {
-				PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
 				fullname[PSL_NAME_LEN-1] = '\0';
 			}
 			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
@@ -3159,9 +3194,9 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		PSL->internal.N_FONTS = i;
 	}
 	else {
-		PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "No PSL_custom_fonts.txt found\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "No PSL_custom_fonts.txt found\n");
 	}
-	
+
 	/* Final allocation of font array */
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 	return PSL_NO_ERROR;
@@ -3288,7 +3323,7 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 				PSL_free (image->buffer);
 				PSL_free (image);
 				PSL_free (colormap);
-				PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "Warning: Too many colors to make colormap - using 24-bit direct color instead.\n");
+				PSL_message (PSL, PSL_MSG_INFORMATION, "Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
 			image->buffer[i] = (unsigned char)j;
@@ -3306,11 +3341,11 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 		PSL_free (image->buffer);
 		PSL_free (image);
 		PSL_free (colormap);
-		PSL_message (PSL, PSL_MSG_VERBOSE, "Warning: Use of colormap is inefficient - using 24-bit direct color instead.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Use of colormap is inefficient - using 24-bit direct color instead.\n");
 		return (NULL);
 	}
 
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
 	return (image);
 }
 
@@ -3403,7 +3438,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 
 	if (PSL->init.err == NULL) PSL->init.err = stderr;		/* Possible redirect of error messages */
 	if (PSL->init.unit < 0 || PSL->init.unit > 3) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Measure unit %d is not in valid range (0-3)! Using 0 (cm)\n", PSL->init.unit);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Measure unit %d is not in valid range (0-3)! Using 0 (cm)\n", PSL->init.unit);
 		PSL->init.unit = PSL_CM;
 	}
 	if (PSL->init.copies == 0) PSL->init.copies = 1;		/* Once copy of each plot */
@@ -3419,12 +3454,12 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 		PSL->internal.SHAREDIR = strdup (this_c);
 		psl_dos_path_fix (PSL->internal.SHAREDIR);
 		if (access(PSL->internal.SHAREDIR, R_OK)) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
 	else {	/* No sharedir found */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not locate PSL_SHAREDIR.\n");
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not locate PSL_SHAREDIR.\n");
 		PSL_exit (EXIT_FAILURE);
 	}
 
@@ -3435,7 +3470,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 		PSL->internal.USERDIR = strdup (this_c);
 		psl_dos_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
+			PSL_message (PSL, PSL_MSG_ERROR, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
 			PSL_free (PSL->internal.USERDIR);
 		}
 	}
@@ -3476,8 +3511,8 @@ int PSL_copy (struct PSL_CTRL *PSL, const char *txt) {
 	/* Just copies the given text as is to the PSL output stream or buffer */
 	if (PSL->internal.memory) {
 		size_t len = strlen (txt);
-		psl_prepare_buffer (PSL, len); /* Make sure we have enough memory to hold the text */ 
-		strncat (&(PSL->internal.buffer[PSL->internal.n]), txt, len); 
+		psl_prepare_buffer (PSL, len); /* Make sure we have enough memory to hold the text */
+		strncat (&(PSL->internal.buffer[PSL->internal.n]), txt, len);
 		PSL->internal.n += len;
 	}
 	else	/* Just write to the PS file */
@@ -3516,7 +3551,7 @@ int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, doub
 	val0 = MIN(PSL->internal.axis_limit[k], PSL->internal.axis_limit[k+1]);
 	val1 = MAX(PSL->internal.axis_limit[k], PSL->internal.axis_limit[k+1]);
 	if ((val1 - val0) == 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Axis val0 == val1!\n");
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Axis val0 == val1!\n");
 		return (PSL_BAD_RANGE);
 	}
 	reverse = (PSL->internal.axis_limit[k] > PSL->internal.axis_limit[k+1]);
@@ -3835,7 +3870,7 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 			break;
 		default:
 			status = PSL_BAD_SYMBOL;
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unknown symbol code %c\n", (int)symbol);
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Unknown symbol code %c\n", (int)symbol);
 			break;
 	}
 	return (status);
@@ -3864,11 +3899,11 @@ int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
 	/* Updates the current PDF transparency only */
 	if (transparency < 0.0 || transparency > 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Bad transparency value [%g] - ignored\n", transparency);
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad transparency value [%g] - ignored\n", transparency);
 		return (PSL_BAD_RANGE);
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
-	
+
 	PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
 	return (PSL_NO_ERROR);
@@ -3880,7 +3915,7 @@ int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode) {
 	if (!mode || !mode[0]) return (PSL_NO_ERROR);	/* Quietly returned if not given an argument */
 	for (k = ok = 0; !ok && k < N_PDF_TRANSPARENCY_MODES; k++)
 		if (!strcmp (PDF_transparency_modes[k], mode)) ok = 1;
-	if (!ok) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Unknown PDF transparency mode %s - ignored\n", mode);
+	if (!ok) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Unknown PDF transparency mode %s - ignored\n", mode);
 
 	strncpy (PSL->current.transparency_mode, mode, 15U);	/* Keep one character for null terminator */
 	return (PSL_NO_ERROR);
@@ -3936,15 +3971,15 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 * Returns image number
 	 * DEPRECATED
 	 */
-	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb); 
-	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
+	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb);
+	PSL_message (PSL, PSL_MSG_ERROR, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
 	return (PSL_NO_ERROR);
 }
 
 int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image) {
 	/* DEPRECATED */
 	(void)(file); (void)(header); (void)(image);
-	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_loadimage has been deprecated - see PSL_loadeps instead\n");
+	PSL_message (PSL, PSL_MSG_ERROR, "Warning: PSL_loadimage has been deprecated - see PSL_loadeps instead\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -4234,8 +4269,10 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
-		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
-		PSL_command (PSL, "PSL_movie_completion /PSL_movie_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie label completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_label_completion /PSL_movie_label_completion {} def\n");	/* Run then make it a null function */
+		PSL_comment (PSL, "Run PSL movie progress indicator completion function, if defined\n");
+		PSL_command (PSL, "PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def\n");	/* Run then make it a null function */
 		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");
 		if (PSL->init.runmode) {
@@ -4272,11 +4309,11 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 char * PSL_getplot (struct PSL_CTRL *PSL) {
 	/* Simply pass the plot back to caller  */
 	if (!PSL->internal.memory) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot get a plot since memory output was not activated!\n");
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot get a plot since memory output was not activated!\n");
 		return (NULL);
 	}
 	if (!PSL->internal.buffer) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: No plot in memory available!\n");
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: No plot in memory available!\n");
 		return (NULL);
 	}
 	return (PSL->internal.buffer);
@@ -4452,9 +4489,10 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		/* Save page size */
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
-		
+
 		PSL_command (PSL, "/PSL_plot_completion {} def\n");	/* Initialize custom procedure as a null function */
-		PSL_command (PSL, "/PSL_movie_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_label_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_prog_indicator_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);
@@ -4466,10 +4504,10 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* Set default line color and no-rgb */
 	PSL_setcolor (PSL, black, PSL_IS_STROKE);
-	PSL_setfill (PSL, no_rgb, false);
+	PSL_setfill (PSL, no_rgb, 0);
 
 	/* Set origin of the plot */
-	
+
 	if (PSL->internal.comments)  PSL_command (PSL, "%% Set plot origin:\n");
 	for (i = 0; i < 2; i++) {
 		switch (PSL->internal.origin[i]) {
@@ -4569,7 +4607,7 @@ int PSL_setdash (struct PSL_CTRL *PSL, char *style, double offset) {
 int PSL_setfont (struct PSL_CTRL *PSL, int font_no) {
 	if (font_no == PSL->current.font_no) return (PSL_NO_ERROR);	/* Already set */
 	if (font_no < 0 || font_no >= PSL->internal.N_FONTS) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected font (%d) out of range (0-%d); reset to 0\n", font_no, PSL->internal.N_FONTS-1);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Selected font (%d) out of range (0-%d); reset to 0\n", font_no, PSL->internal.N_FONTS-1);
 		font_no = 0;
 	}
 	PSL->current.font_no = font_no;
@@ -4583,25 +4621,25 @@ int PSL_setfont (struct PSL_CTRL *PSL, int font_no) {
 int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double sup_lc, double sup_uc, double sdown) {
 	/* Adjust settings of sub/super/small caps attributes */
 	if (supsub <= 0.0 || supsub >= 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Size of sub/super-script (%g) exceed allowable range, reset to %^g\n", supsub, PSL_SUBSUP_SIZE);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Size of sub/super-script (%g) exceed allowable range, reset to %^g\n", supsub, PSL_SUBSUP_SIZE);
 		supsub = PSL_SUBSUP_SIZE;
 	}
 	if (scaps <= 0.0 || scaps >= 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Size of small caps text (%g) exceed allowable range, reset to %^g\n", scaps, PSL_SCAPS_SIZE);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Size of small caps text (%g) exceed allowable range, reset to %^g\n", scaps, PSL_SCAPS_SIZE);
 		scaps = PSL_SUBSUP_SIZE;
 	}
 	if (sup_lc <= 0.0 || sup_lc >= 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Amount of baseline shift for lower-case super-scripts (%g) exceed allowable range, reset to %^g\n",
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Amount of baseline shift for lower-case super-scripts (%g) exceed allowable range, reset to %^g\n",
 		             sup_lc, PSL_SUP_UP_LC);
 		sup_lc = PSL_SUBSUP_SIZE;
 	}
 	if (sup_uc <= 0.0 || sup_uc >= 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Amount of baseline shift for upper-case super-scripts (%g) exceed allowable range, reset to %^g\n",
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Amount of baseline shift for upper-case super-scripts (%g) exceed allowable range, reset to %^g\n",
 		             sup_uc, PSL_SUP_UP_UC);
 		sup_uc = PSL_SUBSUP_SIZE;
 	}
 	if (sdown <= 0.0 || sdown >= 1.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Amount of baseline shift for sub-scripts (%g) exceed allowable range, reset to %^g\n",
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Amount of baseline shift for sub-scripts (%g) exceed allowable range, reset to %^g\n",
 		             sdown, PSL_SUB_DOWN);
 		sdown = PSL_SUBSUP_SIZE;
 	}
@@ -4617,7 +4655,7 @@ int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double s
 int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals) {
 	/* Sets number of decimals used for rgb/gray specifications [3] */
 	if (n_decimals < 1 || n_decimals > 3)
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected decimals for color out of range (%d), ignored\n", n_decimals);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Selected decimals for color out of range (%d), ignored\n", n_decimals);
 	else {
 		sprintf (PSL->current.bw_format, "%%.%df A", n_decimals);
 		sprintf (PSL->current.rgb_format, "%%.%df %%.%df %%.%df C", n_decimals, n_decimals, n_decimals);
@@ -4629,7 +4667,7 @@ int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals) {
 
 int PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth) {
 	if (linewidth < 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
 		return (PSL_BAD_WIDTH);
 	}
 	if (linewidth == PSL->current.linewidth) return (PSL_NO_ERROR);
@@ -4703,8 +4741,8 @@ int PSL_settextmode (struct PSL_CTRL *PSL, int mode) {
 		case PSL_TXTMODE_MINUS:
 			PSL->current.use_minus = PSL_TXTMODE_MINUS;
 			break;
-		default:	
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: bad argument passed to PSL_settextmode (%d)!\n", mode);
+		default:
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: bad argument passed to PSL_settextmode (%d)!\n", mode);
 			return (PSL_BAD_FLAG);
 			break;
 	}
@@ -4761,7 +4799,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 	fontsize = fabs (fontsize);
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: text_item > %d long!\n", PSL_BUFSIZ);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: text_item > %d long!\n", PSL_BUFSIZ);
 		return (PSL_BAD_TEXT);
 	}
 
@@ -4830,7 +4868,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: text_item > %d long!\n", PSL_BUFSIZ);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: text_item > %d long!\n", PSL_BUFSIZ);
 		return (PSL_BAD_TEXT);
 	}
 
@@ -4902,9 +4940,9 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			ptr++;
 			if (ptr[0] == '%')
 				font = old_font;
-			else {
+			else if (ptr[0]) {
 				old_font = font;
-				font = atoi (ptr);
+				font = psl_getfont (PSL, ptr);
 			}
 			while (*ptr != '%') ptr++;
 			ptr++;
@@ -5012,13 +5050,13 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	PSL_free (piece2);
 	PSL_free (string);
 
-	if (sub_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Sub-scripting not terminated [%s]\n", text);
-	if (super_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Super-scripting not terminated [%s]\n", text);
-	if (scaps_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Small-caps not terminated [%s]\n", text);
-	if (symbol_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Symbol font change not terminated [%s]\n", text);
-	if (size_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-size change not terminated [%s]\n", text);
-	if (color_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-color change not terminated [%s]\n", text);
-	if (under_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Text underline not terminated [%s]\n", text);
+	if (sub_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Sub-scripting not terminated [%s]\n", text);
+	if (super_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Super-scripting not terminated [%s]\n", text);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Small-caps not terminated [%s]\n", text);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Symbol font change not terminated [%s]\n", text);
+	if (size_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-size change not terminated [%s]\n", text);
+	if (color_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-color change not terminated [%s]\n", text);
+	if (under_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Text underline not terminated [%s]\n", text);
 
 	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
@@ -5080,7 +5118,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 
 	if (text) {
 		if (strlen (text) >= (PSL_BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
-			PSL_message (PSL, PSL_MSG_NORMAL, "Warning: text_item > %d long - text not plotted!\n", PSL_BUFSIZ);
+			PSL_message (PSL, PSL_MSG_ERROR, "Warning: text_item > %d long - text not plotted!\n", PSL_BUFSIZ);
 			return (PSL_BAD_TEXT);
 		}
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
@@ -5199,9 +5237,9 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			ptr++;
 			if (*ptr == '%')
 				font = old_font;
-			else {
+			else if (*ptr) {
 				old_font = font;
-				font = atoi (ptr);
+				font = psl_getfont (PSL, ptr);
 				psl_encodefont (PSL, font);
 			}
 			while (*ptr != '%') ptr++;
@@ -5299,7 +5337,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 					}
 				}
 				else {	/* Got crap */
-					PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad color change (%s) - ignored\n", ptr);
+					PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad color change (%s) - ignored\n", ptr);
 					error++;
 				}
 
@@ -5351,13 +5389,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	PSL_free (piece2);
 	PSL_free (string);
 
-	if (sub_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Sub-scripting not terminated [%s]\n", text);
-	if (super_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Super-scripting not terminated [%s]\n", text);
-	if (scaps_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Small-caps not terminated [%s]\n", text);
-	if (symbol_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Symbol font change not terminated [%s]\n", text);
-	if (size_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-size change not terminated [%s]\n", text);
-	if (color_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font-color change not terminated [%s]\n", text);
-	if (under_on) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Text underline not terminated [%s]\n", text);
+	if (sub_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Sub-scripting not terminated [%s]\n", text);
+	if (super_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Super-scripting not terminated [%s]\n", text);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Small-caps not terminated [%s]\n", text);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Symbol font change not terminated [%s]\n", text);
+	if (size_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-size change not terminated [%s]\n", text);
+	if (color_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font-color change not terminated [%s]\n", text);
+	if (under_on) PSL_message (PSL, PSL_MSG_ERROR, "Warning: Text underline not terminated [%s]\n", text);
 
 	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
@@ -5469,15 +5507,15 @@ int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width,
 	/* Initializes PSL parameters used to typeset paragraphs with PSL_plotparagraph */
 
 	if (par_just < PSL_BL || par_just > PSL_JUST) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad paragraph justification (%d)\n", par_just);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad paragraph justification (%d)\n", par_just);
 		return (PSL_BAD_JUST);
 	}
 	if (line_space <= 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad line spacing (%g)\n", line_space);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad line spacing (%g)\n", line_space);
 		return (PSL_BAD_VALUE);
 	}
 	if (par_width <= 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad paragraph width (%g)\n", par_width);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad paragraph width (%g)\n", par_width);
 		return (PSL_BAD_VALUE);
 	}
 
@@ -5494,11 +5532,11 @@ int PSL_plotparagraphbox (struct PSL_CTRL *PSL, double x, double y, double fonts
 	 */
 	int error = 0;
 	if (offset[0] < 0.0 || offset[1] < 0.0) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad paragraphbox text offset (%g/%g)\n", offset[0], offset[1]);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad paragraphbox text offset (%g/%g)\n", offset[0], offset[1]);
 		return (PSL_BAD_VALUE);
 	}
 	if (mode < PSL_RECT_STRAIGHT || mode > PSL_RECT_CONCAVE) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Bad paragraphbox mode (%d)\n", mode);
+		PSL_message (PSL, PSL_MSG_ERROR, "Warning: Bad paragraphbox mode (%d)\n", mode);
 		return (PSL_BAD_VALUE);
 	}
 
@@ -5670,14 +5708,14 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	/* Open PostScript file */
 
 	if ((fp = fopen (file, "rb")) == NULL) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", file);
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot open image file %s!\n", file);
 		return (PSL_READ_FAILURE);
 	}
 
 	/* Check magic key */
-	
+
 	if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Failure reading EPS magic key from %s\n", file);
 		fclose (fp);
 		return (-1);
 	}
@@ -5685,12 +5723,12 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	value = bswap32 (value);
 #endif
 	if (value != EPS_MAGIC) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not find EPS magic key in %s\n", file);
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not find EPS magic key in %s\n", file);
 		fclose (fp);
 		return (-1);
 	}
 	h->magic = (int)value;
-	
+
 	/* Scan for BoundingBox */
 
 	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
@@ -5706,12 +5744,12 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	h->maplength = 0;
 	h->xorigin = llx;
 	h->yorigin = lly;
-	
+
 	if (picture == NULL) {
 		fclose (fp);
 		return (0);	/* Just wanted dimensions */
 	}
-	
+
 	/* Rewind and load into buffer */
 
 	n=0;
@@ -5803,7 +5841,7 @@ int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...) {
 FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode) {
 	if (C->internal.fp == NULL) {	/* Open the plot file unless fp already set */
 		if ((C->internal.fp = fopen (file, mode)) == NULL) {
-			PSL_message (C, PSL_MSG_NORMAL, "PSL_fopen error: Unable to open file %s with mode %s!\n", file, mode);
+			PSL_message (C, PSL_MSG_ERROR, "PSL_fopen error: Unable to open file %s with mode %s!\n", file, mode);
 		}
 	}
 	return (C->internal.fp);

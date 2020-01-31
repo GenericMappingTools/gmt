@@ -44,7 +44,7 @@ else if (NR % 24 == 1) printf("DST%02d%02dQ%02d       000%4.3d", substr($1,3,2),
 else printf("%4.3d", $2, som+=$2) }' > Dst_pli.dat
 
 # Count number of definitive values
-nl=`wc -l Dst_lis.dat | awk '{print $1 + 1}'`
+nl=$(wc -l Dst_lis.dat | awk '{print $1 + 1}')
 
 cat Dst_lis.dat > Dst_all.wdc
 # Complement the file with the still preliminary DSTs

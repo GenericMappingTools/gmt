@@ -15,7 +15,7 @@ Synopsis
 **gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [*unit*] ] [ |-T|\ [**c**\ \|\ **h**] ]
+[ |-S|\ [*unit*] ] [ |-T|\ [**c**\|\ **h**] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
@@ -33,7 +33,7 @@ by the given contour (or zero if not given) and reports the area, volume, and ma
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
-in designing an Optimal Robust Separator [*Wessel*, 1998]. 
+in designing an Optimal Robust Separator [*Wessel*, 1998].
 
 Required Arguments
 ------------------
@@ -64,16 +64,16 @@ Optional Arguments
 
 **-S**\ [*unit*]
     For geographical grids, append a unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
+    **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**
     [Default is meter (**e**)].
 
 .. _-T:
 
-**-T**\ [**c**\ \|\ **h**]
+**-T**\ [**c**\|\ **h**]
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height
-    to pick the best contour value (requires **-C**). 
+    to pick the best contour value (requires **-C**).
 
 .. _-R:
 
@@ -90,7 +90,7 @@ Optional Arguments
 **-Z**\ *fact*\ [/*shift*]
     Optionally subtract *shift* before scaling data by *fact*. [Default
     is no scaling]. (Numbers in **-C**, **-L** refer to values after
-    this scaling has occurred). 
+    this scaling has occurred).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

@@ -1,7 +1,7 @@
 #Kogia breviceps - Pigmy Sperm Whale
 #high
 #Pablo Valdes mar-2007
-#comment the lines 5, 58 and 84 AND uncomment the lines 6, 59 and 85 if you want gray instead blue 
+#comment the lines 5, 58 and 84 AND uncomment the lines 6, 59 and 85 if you want gray instead blue
 0	0	M -G154/159/201
 #0	0	M -G150
 0	28.5	D
@@ -37,7 +37,7 @@
 -13.5	28.5	D
 -12.8	28	D
 -12.5	27.8	D
--11.7	27.6	D	
+-11.7	27.6	D
 -11.5	27.5	D
 -9.5	27.5	D
 -7.5	28	D
@@ -83,7 +83,7 @@
 #fin
 6	33.4	M -G17/26/71 -W0.25pt/17/26/71
 #6	33.4	M -G30 -W0.25pt/0
-4	33.9	D 
+4	33.9	D
 4	34.4	D
 4.2	34.9	D
 3.8	34.9	D

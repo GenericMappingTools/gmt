@@ -45,8 +45,8 @@ set (GMT_VERSION_CITATION "Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wob
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
-set (GMT_PACKAGE_VERSION_MINOR 0)
-set (GMT_PACKAGE_VERSION_PATCH 1)
+set (GMT_PACKAGE_VERSION_MINOR 1)
+set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
 # set (GMT_PACKAGE_VERSION_SUFFIX "")
 
@@ -67,7 +67,7 @@ set (GMT_LIB_SOVERSION 6)
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 # The GMT documentation URL
-set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}")
+set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/dev")
 
 # Use SI units per default
 if (NOT UNITS)

@@ -14,7 +14,7 @@ Author of the symbols: José A. Álvarez-Gómez (jaag@ucm.es). I greatly appreci
 suggestions and feedback.
 These symbols are freely available under a GNU Library General Public License (version 3, or later).
 
- 
+
 How to use the symbols?
 -----------------------
 
@@ -30,7 +30,7 @@ are used. The trend is measured clockwise from the north and the plunge is the a
 the line with the horizontal.
 
 In order to use the symbols in GMT you need to use the program :doc:`plot </plot>`, using the custom
-symbol type **-Sk**\ [*symbolname*\ ]/\ *size*\ ; where symbolname is one of the short
+symbol type **-Sk**\ [*symbolname*]/\ *size*\ ; where symbolname is one of the short
 names of the geological symbols shown in the table below. In addition to the location of the
 symbol (x,y) given on the first two columns of the input file, you will need additional
 parameters for some of the symbols. You can also use as variables the size and color of
@@ -93,6 +93,6 @@ each symbol; see the gallery for visual representation.
     | Trend and plunge of lineation 3                               | geo-lineation-3    | Trend, Plunge     |
     +---------------------------------------------------------------+--------------------+-------------------+
 
-    Symbols of the GMT geological symbols collection. The symbol short name is the name that should 
+    Symbols of the GMT geological symbols collection. The symbol short name is the name that should
     be used in :doc:`plot </plot>` **-Sk**\ *symbolname*\ /*size*. The extra parameters needed for each symbol are
     shown on the order that is expected for the symbol definition.

@@ -20,7 +20,7 @@ Synopsis
 [ **-Da**\ *startdate* ]
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
-[ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
+[ |-G|\ **d**\|\ **t**\|\ **n**\ *gap* ]
 [ |-I|\ *ignore* ]
 [ |-K| ]
 [ |-L|\ *trackticks* ]
@@ -28,7 +28,7 @@ Synopsis
 [ |SYN_OPT-P| ]
 [ |-S|\ **a**\ *startdist*\ [**u**] ]
 [ |-S|\ **b**\ *stopdist*\ [**u**] ]
-[ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
+[ |-T|\ **T**\|\ **t**\|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*] ]
@@ -40,7 +40,7 @@ Synopsis
 
 .. include:: mgd77track_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 Examples
 --------

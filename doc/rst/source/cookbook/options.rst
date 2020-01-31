@@ -31,6 +31,8 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-b**   | Select binary input and/or output                                  |
 +----------+--------------------------------------------------------------------+
+| **-c**   | Advance plot focus to selected (or next) subplot panel             |
++----------+--------------------------------------------------------------------+
 | **-d**   | Replace user *nodata* values with IEEE NaNs                        |
 +----------+--------------------------------------------------------------------+
 | **-e**   | Only process data records that match a *pattern*                   |
@@ -52,6 +54,8 @@ importance (some are used a lot more than others).
 | **-o**   | Specify which output columns to write                              |
 +----------+--------------------------------------------------------------------+
 | **-p**   | Control perspective views for plots                                |
++----------+--------------------------------------------------------------------+
+| **-q**   | Specify which input rows to read or output rows to write           |
 +----------+--------------------------------------------------------------------+
 | **-r**   | Set grid registration [Default is gridline]                        |
 +----------+--------------------------------------------------------------------+
@@ -128,7 +132,7 @@ data), the boundary coordinates may take on several different formats:
 Geographic coordinates:
     These are longitudes and latitudes and may be given in decimal
     degrees (e.g., -123.45417) or in the
-    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
     format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
     shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
     **-R**\ *-180*/*180*/*-90*/*90*, respectively.
@@ -187,8 +191,8 @@ Calendar time coordinates:
 Relative time coordinates:
     These are coordinates which count seconds, hours, days or years
     relative to a given epoch. A combination of the parameters
-    :ref:`TIME_EPOCH <TIME_EPOCH>` and :ref:`TIME_UNIT <TIME_UNIT>` define the epoch and time unit.
-    The parameter :ref:`TIME_SYSTEM <TIME_SYSTEM>` provides a few shorthands for common
+    :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit.
+    The parameter :term:`TIME_SYSTEM` provides a few shorthands for common
     combinations of epoch and unit, like **j2000** for days since noon
     of 1 Jan 2000. The default relative time coordinate is that of UNIX
     computers: seconds since 1 Jan 1970. Denote relative time
@@ -199,7 +203,7 @@ Relative time coordinates:
 Radians:
     For angular regions (and increments) specified in radians you may use a set of
     forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
-    [±][\ *s*\ ]pi[*f*\ ], where *s* and *f* are any integer or floating point numbers,
+    [±][*s*]pi[*f*], where *s* and *f* are any integer or floating point numbers,
     e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
     of these forms we alert the labeling machinery to look for certain combinations of pi,
     limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
@@ -210,7 +214,7 @@ Other coordinates:
     These are simply any coordinates that are not related to geographic
     or calendar time or relative time and are expected to be simple
     floating point values such as
-    [±]\ *xxx.xxx*\ [**E**\ \|\ **e**\ \|\ **D**\ \|\ **d**\ [±]\ *xx*\ ],
+    [±]\ *xxx.xxx*\ [**E**\|\ **e**\|\ **D**\|\ **d**\ [±]\ *xx*],
     i.e., regular or exponential notations, with the enhancement to understand
     FORTRAN double precision output which may use **D** instead of **E** for
     exponents. These values are simply converted as they are to internal
@@ -309,11 +313,11 @@ will appear centered above the plot frame.
 
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][**+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+s**\ \|\ **S**\ *seclabel*][**+u**\ *unit*]
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
@@ -330,7 +334,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
     If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
-    default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
+    default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
     spaces or special characters you will need to enclose them in quotes.
     Cartesian x-axes also allow for the optional **+a**\ *angle*, which
@@ -339,7 +343,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
     for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
     [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
     specify annotations normal [Default] and parallel to the axis, respectively.  Note that
-    these defaults can be changed via :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`.
+    these defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
@@ -364,9 +368,9 @@ negative number.
 +------------+-------------------------------------+
 
 Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`,
-:ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, and
-:ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>` settings.
+day-names) may be affected by the :term:`GMT_LANGUAGE`,
+:term:`FORMAT_TIME_PRIMARY_MAP`, and
+:term:`FORMAT_TIME_SECONDARY_MAP` settings.
 
 For automated plots the region may not always be the same and thus it
 can be difficult to determine the appropriate *stride* in advance. Here
@@ -391,47 +395,45 @@ and arc seconds, respectively, when a map projection is in effect.
 
 .. _tbl-units:
 
-+------------+------------------+--------------------------------------------------------------------------+
-| **Flag**   | **Unit**         | **Description**                                                          |
-+============+==================+==========================================================================+
-| **Y**      | year             | Plot using all 4 digits                                                  |
-+------------+------------------+--------------------------------------------------------------------------+
-| **y**      | year             | Plot using last 2 digits                                                 |
-+------------+------------------+--------------------------------------------------------------------------+
-| **O**      | month            | Format annotation using **FORMAT_DATE_MAP**                              |
-+------------+------------------+--------------------------------------------------------------------------+
-| **o**      | month            | Plot as 2-digit integer (1–12)                                           |
-+------------+------------------+--------------------------------------------------------------------------+
-| **U**      | ISO week         | Format annotation using **FORMAT_DATE_MAP**                              |
-+------------+------------------+--------------------------------------------------------------------------+
-| **u**      | ISO week         | Plot as 2-digit integer (1–53)                                           |
-+------------+------------------+--------------------------------------------------------------------------+
-| **r**      | Gregorian week   | 7-day stride from start of week (see **TIME_WEEK_START**)                |
-+------------+------------------+--------------------------------------------------------------------------+
-| **K**      | ISO weekday      | Plot name of weekday in selected language                                |
-+------------+------------------+--------------------------------------------------------------------------+
-| **k**      | weekday          | Plot number of day in the week (1–7) (see **TIME_WEEK_START**)           |
-+------------+------------------+--------------------------------------------------------------------------+
-| **D**      | date             | Format annotation using **FORMAT_DATE_MAP**                              |
-+------------+------------------+--------------------------------------------------------------------------+
-| **d**      | day              | Plot day of month (1–31) or day of year (1–366)                          |
-+------------+------------------+--------------------------------------------------------------------------+
-|            |                  | (see **FORMAT_DATE_MAP**                                                 |
-+------------+------------------+--------------------------------------------------------------------------+
-| **R**      | day              | Same as **d**; annotations aligned with week (see **TIME_WEEK_START**)   |
-+------------+------------------+--------------------------------------------------------------------------+
-| **H**      | hour             | Format annotation using **FORMAT_CLOCK_MAP**                             |
-+------------+------------------+--------------------------------------------------------------------------+
-| **h**      | hour             | Plot as 2-digit integer (0–24)                                           |
-+------------+------------------+--------------------------------------------------------------------------+
-| **M**      | minute           | Format annotation using **FORMAT_CLOCK_MAP**                             |
-+------------+------------------+--------------------------------------------------------------------------+
-| **m**      | minute           | Plot as 2-digit integer (0–60)                                           |
-+------------+------------------+--------------------------------------------------------------------------+
-| **S**      | seconds          | Format annotation using **FORMAT_CLOCK_MAP**                             |
-+------------+------------------+--------------------------------------------------------------------------+
-| **s**      | seconds          | Plot as 2-digit integer (0–60)                                           |
-+------------+------------------+--------------------------------------------------------------------------+
++------------+------------------+----------------------------------------------------------------------------------+
+| **Flag**   | **Unit**         | **Description**                                                                  |
++============+==================+==================================================================================+
+| **Y**      | year             | Plot using all 4 digits                                                          |
++------------+------------------+----------------------------------------------------------------------------------+
+| **y**      | year             | Plot using last 2 digits                                                         |
++------------+------------------+----------------------------------------------------------------------------------+
+| **O**      | month            | Format annotation using :term:`FORMAT_DATE_MAP`                                  |
++------------+------------------+----------------------------------------------------------------------------------+
+| **o**      | month            | Plot as 2-digit integer (1–12)                                                   |
++------------+------------------+----------------------------------------------------------------------------------+
+| **U**      | ISO week         | Format annotation using :term:`FORMAT_DATE_MAP`                                  |
++------------+------------------+----------------------------------------------------------------------------------+
+| **u**      | ISO week         | Plot as 2-digit integer (1–53)                                                   |
++------------+------------------+----------------------------------------------------------------------------------+
+| **r**      | Gregorian week   | 7-day stride from start of week (see :term:`TIME_WEEK_START`)                    |
++------------+------------------+----------------------------------------------------------------------------------+
+| **K**      | ISO weekday      | Plot name of weekday in selected language                                        |
++------------+------------------+----------------------------------------------------------------------------------+
+| **k**      | weekday          | Plot number of day in the week (1–7) (see :term:`TIME_WEEK_START`)               |
++------------+------------------+----------------------------------------------------------------------------------+
+| **D**      | date             | Format annotation using :term:`FORMAT_DATE_MAP`                                  |
++------------+------------------+----------------------------------------------------------------------------------+
+| **d**      | day              | Plot day of month (1–31) or day of year (1–366) (see :term:`FORMAT_DATE_MAP`)    |
++------------+------------------+----------------------------------------------------------------------------------+
+| **R**      | day              | Same as **d**; annotations aligned with week (see :term:`TIME_WEEK_START`)       |
++------------+------------------+----------------------------------------------------------------------------------+
+| **H**      | hour             | Format annotation using :term:`FORMAT_CLOCK_MAP`                                 |
++------------+------------------+----------------------------------------------------------------------------------+
+| **h**      | hour             | Plot as 2-digit integer (0–24)                                                   |
++------------+------------------+----------------------------------------------------------------------------------+
+| **M**      | minute           | Format annotation using :term:`FORMAT_CLOCK_MAP`                                 |
++------------+------------------+----------------------------------------------------------------------------------+
+| **m**      | minute           | Plot as 2-digit integer (0–60)                                                   |
++------------+------------------+----------------------------------------------------------------------------------+
+| **S**      | seconds          | Format annotation using :term:`FORMAT_CLOCK_MAP`                                 |
++------------+------------------+----------------------------------------------------------------------------------+
+| **s**      | seconds          | Plot as 2-digit integer (0–60)                                                   |
++------------+------------------+----------------------------------------------------------------------------------+
 
 As mentioned, there may be two levels of annotations. Here, "primary" refers to the
 annotation that is closest to the axis (this is the primary annotation),
@@ -447,9 +449,9 @@ Geographic basemaps
 
 Geographic basemaps may differ from regular plot axis in that some
 projections support a "fancy" form of axis and is selected by the
-:ref:`MAP_FRAME_TYPE <MAP_FRAME_TYPE>` setting. The annotations will be formatted
-according to the :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` template and
-:ref:`MAP_DEGREE_SYMBOL <MAP_DEGREE_SYMBOL>` setting. A simple example of part of a basemap
+:term:`MAP_FRAME_TYPE` setting. The annotations will be formatted
+according to the :term:`FORMAT_GEO_MAP` template and
+:term:`MAP_DEGREE_SYMBOL` setting. A simple example of part of a basemap
 is shown in Figure :ref:`Geographic map border <basemap_border>`.
 
 .. _basemap_border:
@@ -460,7 +462,7 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
 
    Geographic map border using separate selections for annotation,
    frame, and grid intervals.  Formatting of the annotation is controlled by
-   the parameter :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` in your :doc:`/gmt.conf`.
+   the parameter :term:`FORMAT_GEO_MAP` in your :doc:`/gmt.conf`.
 
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
@@ -481,14 +483,14 @@ attributes for grid lines and grid crosses, see Figure :ref:`Complex basemap
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
 
-For non-geographic axes, the :ref:`MAP_FRAME_TYPE <MAP_FRAME_TYPE>` setting is implicitly
+For non-geographic axes, the :term:`MAP_FRAME_TYPE` setting is implicitly
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter. By default, it is set to "%g", which
+:term:`FORMAT_FLOAT_OUT` parameter. By default, it is set to "%g", which
 is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
-settings. If :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` is set to another format it will be
+settings. If :term:`FORMAT_FLOAT_OUT` is set to another format it will be
 used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
@@ -501,7 +503,7 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
    Linear Cartesian projection axis.  Long tick-marks accompany
    annotations, shorter ticks indicate frame interval. The axis label is
-   optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``
+   optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
@@ -550,7 +552,7 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
    values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
    powers of 10, and 3 means every 0.1 times powers of 10.  We used
-   -R1/1000/0/1 -JX3il/0.25i -Ba1f2g3. (middle) Here, we have chosen to
+   -R1/1000/0/1 -JX7.5cl/0.6c -Ba1f2g3. (middle) Here, we have chosen to
    annotate :math:`\log_{10}` of the actual values, with -Ba1f2g3l.
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
@@ -600,7 +602,7 @@ Our first example shows a time period of almost two months in Spring
 .. literalinclude:: /_verbatim/GMT_-B_time1.txt
 
 These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
-Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
+Note the leading hyphen in the :term:`FORMAT_DATE_MAP`
 removes leading zeros from calendar items (e.g., 02 becomes 2).
 
 .. _cartesian_axis1:
@@ -636,10 +638,10 @@ both the years and every 3rd month.
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
-*not* the 3-month interval. The :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` selects month name
-only and :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>` selects the 1-character, upper
+*not* the 3-month interval. The :term:`FORMAT_DATE_MAP` selects month name
+only and :term:`FORMAT_TIME_PRIMARY_MAP` selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
-:ref:`GMT_LANGUAGE <GMT_LANGUAGE>`).
+:term:`GMT_LANGUAGE`).
 
 .. _cartesian_axis3:
 
@@ -651,7 +653,7 @@ case abbreviation of month names using the current language (selected by
 
 The fourth example (Figure :ref:`cartesian_axis4`) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
-:ref:`TIME_UNIT <TIME_UNIT>` is **d** (for days). We select both primary and secondary
+:term:`TIME_UNIT` is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:
 
 .. literalinclude:: /_verbatim/GMT_-B_time4.txt
@@ -667,7 +669,7 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
 The fifth example shows a few weeks of time (Figure :ref:`cartesian_axis5`). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
-:ref:`TIME_WEEK_START <TIME_WEEK_START>`); they do not have numbers.
+:term:`TIME_WEEK_START`); they do not have numbers.
 
 .. literalinclude:: /_verbatim/GMT_-B_time5.txt
 
@@ -695,7 +697,7 @@ Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
 
 Our seventh and final example (Figure :ref:`cartesian_axis7`) illustrates
 annotation of year-days. Unless we specify the formatting with a leading hyphen
-in :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` we get 3-digit integer days. Note that
+in :term:`FORMAT_DATE_MAP` we get 3-digit integer days. Note that
 in order to have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
@@ -772,15 +774,15 @@ which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
 Verbose feedback: The **-V** option
 -----------------------------------
 
-The **-V** option selects verbose mode, which will send
-progress reports to standard error. Even more verbose levels are **-Vl**
-(long verbose) and **-Vd** (debug). Normal verbosity level produces only
-error and warning messages. This is the default or can be selected by
-using **-Vn**. If compiled with backward-compatibility support, the
-default is **-Vc**, which includes warnings about deprecated usage.
+The **-V** option controls the verbosity mode, which determines which
+messages are sent to standard error [Default **-Vw** reports errors and warnings].
+Even more verbose levels are **-Vi**(or just **-V**; for informational messages)
+and **-Vd** (debug). If compiled with backward-compatibility
+you can select **-Vc**, which includes warnings about deprecated usage.  To study
+the run-time of time-intensive algoriths you can use **-Vt** (where available).
 Finally, **-Vq** can be used to run without any warnings or errors. This
-option can also be set by specifying the default :ref:`GMT_VERBOSE <GMT_VERBOSE>`, as
-**quiet**, **normal**, **compat**, **verbose**, **long_verbose**, or
+option can also be set by specifying the default :term:`GMT_VERBOSE`, as
+**quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
 **debug**, in order of increased verbosity.
 
 .. _option_-X:
@@ -789,17 +791,23 @@ option can also be set by specifying the default :ref:`GMT_VERBOSE <GMT_VERBOSE>
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
-inches (Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`, :ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new
-plots [15]_ and (0,0) for overlays. By default, all
-translations are relative to the previous origin (see Figure
-:ref:`Plot positioning <XY_options>`). Supply
-offset as **c** to center the plot in that direction relative to the
-page margin. Absolute translations (i.e., relative to a fixed point
-(0,0) at the lower left corner of the paper) can be achieve by
-prepending "a" to the offsets. Subsequent overlays will be co-registered
-with the previous plot unless the origin is shifted using these options.
-The offsets are measured in the current coordinates system.
+The **-X** and **-Y** options shift plot origin relative to the current origin by
+(*xshift*,\ *yshift*); optionally append the length unit
+(**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`,
+:term:`MAP_ORIGIN_Y`) for new plots [15]_. Subsequent overlays will
+be co-registered with the previous plot unless the origin is shifted using
+these options.  You can prepend **a** to shift the origin
+back to the original position after the plot module completes, prepend **c** to
+center the plot on the center of the paper (optionally add a shift),
+prepend **f** to shift the origin relative to the fixed lower left
+corner of the page, or prepend **r** [Default] to move the origin
+relative to its current location.  When **-X**
+or **-Y** are used without any further arguments, the values from
+the last use of that option in a previous GMT command will be used.
+Note that **-X** and **-Y** can also access the previous plot bounding box dimensions
+*w* and *h* and construct offsets that involves them.  For instance, to move the origin
+up 2 cm beyond the height of the previous plot, use **-Y**\ *h*\ +2c.
+To move the origin half the width to the right, use **-X**\ *w*\ /2.
 
 .. _XY_options:
 
@@ -855,7 +863,7 @@ entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
 stored as options in segment headers be used as the source for the name
 aspatial field. Finally, for output you must append
 +\ **g**\ *geometry*, where *geometry* can be any of
-[**M**]\ **POINT**\ \|\ **LINE**\ \|\ **POLY**; the
+[**M**]\ **POINT**\|\ **LINE**\|\ **POLY**; the
 **M** represent the multi-versions of these three geometries. Use
 upper-case +\ **G** to signal that you want to split any line or polygon
 features that straddle the Dateline.
@@ -885,7 +893,7 @@ double-precision float). In addition, use **x** to skip *n* bytes
 anywhere in the record. For a mixed-type data record you can concatenate
 several [*n*]\ **t** combinations, separated by commas. You may append
 **w** to any of the items to force byte-swapping. Alternatively, append
-**+L**\ \|\ **B** to indicate that the entire data file should be
+**+l**\|\ **b** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
 number of each item in your binary file. Note that *n* may be larger
 than *m*, the number of columns that the GMT program requires to do
@@ -910,6 +918,20 @@ processed. No **-bi** option is needed in this case.
 Currently, netCDF tables can only be input, not output. For more
 information, see Chapter :doc:`file_formats`.
 
+.. _option_-c:
+
+Selecting subplot panels: The **-c** option
+-------------------------------------------
+
+When using :doc:`/subplot` to assemble multiple individual panels in a
+matrix layout, we use **-c** to either advance the focus of plotting to
+the next panel in the sequence (either by row or by column as set by
+subplot's **-A** option) or to specify directly the *row*,\ *col* or
+1-D *index* of the desired panel.  The **-c** option is only allowed
+when in subplot mode.  If no **-c** option is given for the first plot
+then we default to *row* = *col* = *index* = 0, i.e., the upper left
+panel.  Note: *row*, *col*, and *index* all start at 0.
+
 .. _option_-d:
 
 Missing data conversion: The **-d** option
@@ -931,9 +953,17 @@ Data record pattern matching: The **-e** option
 
 Modules that read ASCII tables will normally process all the data records
 that are read.  The **-e** option offers a built-in pattern scanner that
-will only pass records that match the given patterns or regular expressions.
+will only pass records that match the given *pattern* or regular expressions.
 The test can also be inverted to only pass data records that *do not* match
 the pattern.  The test is *not* applied to header or segment headers.
+To reverse the search, i.e., to only accept data records that do *not*
+contain the specified pattern, use **-e~**. Should your pattern happen
+to start with ~ you will need to escape this character with a backslash
+[Default accepts all data records]. For matching data records
+against extended `Regular Expressions <https://en.wikipedia.org/wiki/Regular_expression>`_,
+please enclose the expression in slashes. Append **i** for case-insensitive matching.
+To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
+To give a single pattern starting with **+f**, escape it with a backslash.
 
 .. _option_-f:
 
@@ -948,14 +978,15 @@ column (or range of columns) separated by commas. Each string starts
 with the column number (0 is first column) followed by either **x**
 (longitude), **y** (latitude), **T** (absolute calendar time) or **t**
 (relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column, i.e., 0–4
-for the first 5 columns. For example, if our input file has geographic
+may specify a range of columns rather than a single column. Column ranges
+must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults
+to 1 if not specified).  For example, if our input file has geographic
 coordinates (latitude, longitude) with absolute calendar coordinates in
-the columns 3 and 4, we would specify
-**fi**\ 0\ **y**,1\ **x**,3–4\ **T**. All other columns are assumed to
+the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**.
+All other columns are assumed to
 have the default, floating point format and need not be set
-individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
-means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
+individually. The shorthand **-f**\ [**i**\|\ **o**]\ **g**
+means **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic
 coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
 which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
@@ -973,7 +1004,7 @@ segmentation. Typically, data segments are separated by multiple segment
 header records (see Chapter :doc:`file_formats`). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
-**IO_NAN_RECORDS** which by default is set to *skip*, meaning such
+:term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
 records are considered bad and simply skipped. If you wish such records
 to indicate a segment boundary then set this parameter to *pass*.
 Finally, you may wish to indicate gaps based on the data values
@@ -990,8 +1021,8 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by **PROJ_LENGTH_UNIT**]. Note: For **-gx** or **-gy** with time data
-the unit is instead controlled by :ref:`TIME_UNIT <TIME_UNIT>`.
+by :term:`PROJ_LENGTH_UNIT`]. Note: For **-gx** or **-gy** with time data
+the unit is instead controlled by :term:`TIME_UNIT`.
 Normally, a gap is computed as the absolute value of the
 specified distance measure (see above).  Append **+n** to compute the gap
 as previous minus current column value and **+p** for current minus previous
@@ -1002,21 +1033,25 @@ column value.
 Header data records: The **-h** option
 --------------------------------------
 
-The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
+The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
 lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
-that start with the character # are automatically considered header
-records and skipped. Thus, *n_recs* refers to general text lines that
+that start with the character # are *automatically* considered header
+records and skipped, hence **-h** is not needed to skip such records.
+Thus, *n_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
 records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
-(**IO_N_HEADER_RECS**, by default 0), but can be overridden by
+(:term:`IO_N_HEADER_RECS`, by default 0), but can be overridden by
 **-h**\ *n_header_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
 **-hi** to suppress the writing of header records. You can use the
-**-h** options modifiers to to tell programs to output extra header
-records for titles, remarks or column names identifying each data column.
+**-h** options modifiers to tell programs to output extra header
+records for titles (**+t**), remarks (**+r**), or column names (**+c**)
+identifying each data column, or delete (**+d**) the original headers.
+You can even add a single segment header (**+m**) after the initial header
+section.
 
 When **-b** is used to indicate binary data the **-h** takes on a
 slightly different meaning. Now, the *n_recs* argument is taken to mean
@@ -1036,18 +1071,18 @@ on columns from the physical record. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
 :doc:`/blockmean` you would specify
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
-will be used as is. Optionally, you can specify that input columns
+will be used as given. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][\ **+s**\ *scale*][\ **+o**\ *offset*] to
+Do so by appending [**+l**][**+s**\ *scale*][**+o**\ *offset*] to
 each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
-part of your subset logical record then also select the special column
+part of your subset logical record then you must also select the special column
 by requesting column **t**, otherwise we ignore trailing text.  If you only
 want to select one word from the trailing text, then append the word number
 (0 is the first word).  Finally, to use the entire numerical record and
-ignore trailing text, use **-in**.
+ignore all trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1072,22 +1107,22 @@ ignore trailing text, use **-in**.
    these column numbers now refer to the logical record, not the physical, since
    after reading the data there is no physical record, only the logical record in memory.
 
-. _option_-j:
+.. _option_-j_distcalc:
 
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
-    GMT has different ways to compute distances on planetary bodies.
-    By default (**-jg**) we perform great circle distance calculations, and parameters such
-    as distance increments or radii will be compared against calculated great
-    circle distances. To simplify and speed up calculations you can select Flat
-    Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
-    you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
-    (and slowest calculation time).  All spherical distance calculations depend on
-    the current ellipsoid (:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`), the definition of
-    the mean radius (:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`), and the specification
-    of latitude type (:ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`).  Geodesic distance
-    calculations is also controlled by method (:ref:`PROJ_GEODESIC <PROJ_GEODESIC>`).
+GMT has different ways to compute distances on planetary bodies.
+By default (**-jg**) we perform great circle distance calculations, and parameters such
+as distance increments or radii will be compared against calculated great
+circle distances. To simplify and speed up calculations you can select Flat
+Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
+you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
+(and slowest calculation time).  All spherical distance calculations depend on
+the current ellipsoid (:term:`PROJ_ELLIPSOID`), the definition of
+the mean radius (:term:`PROJ_MEAN_RADIUS`), and the specification
+of latitude type (:term:`PROJ_AUX_LATITUDE`).  Geodesic distance
+calculations is also controlled by method (:term:`PROJ_GEODESIC`).
 
 .. _option_-l:
 
@@ -1180,16 +1215,33 @@ select perspective view with the **-p** option by setting the azimuth
 and elevation of the viewpoint [Default is 180/90]. When **-p** is used
 in consort with **-Jz** or **-JZ**, a third value can be appended which
 indicates at which *z*-level all 2-D material, like the plot frame, is
-plotted (in perspective) [Default is at the bottom of the z-axis]. For
-frames used for animation, you may want to append **+** to fix the
-center of your data domain (or specify a particular world coordinate
-point with **+w**\ *lon0/lat*\ [*z*\ ]) which will project to the center
-of your page size (or you may specify the coordinates of the *projected*
-view point with **+v**\ *x0/y0*. When **-p** is used without any further
+plotted (in perspective) [Default is at the bottom of the z-axis].
+For frames used for animation, we fix the center of your data domain.
+Specify another center using a particular world coordinate point with **+w**\ *lon0*/\ *lat0*\ [/*z0*],
+which will project to the center of your page size, or specify the coordinates of
+the projected 2-D view point with **+v**\ *x0/y0*. When **-p** is used without any further
 arguments, the values from the last use of **-p** in a previous
 GMT command will be used.  Alternatively, you can perform a simple rotation
 about the z-axis by just giving the rotation angle.  Optionally, use **+v**
 or **+w** to select another axis location than the plot origin.
+
+.. _option_-q:
+
+Data row selection: The **-q** option
+-------------------------------------
+
+Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
+and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
+can specify specific rows, a range of rows, or several sets of row ranges. You can also
+invert your selections with a leading ~ and then we select all the rows *not* specified by
+your ranges.  Normally, the row counter starts at 0 and increases until the end of the
+data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
+table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1\ **+s**
+will only read the 2nd data record from each of the segments found.  Note that header records do not
+increase the row counters; only data records do.  Instead of rows you may specify data
+*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
+data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
+note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
 
 .. _option_nodereg:
 
@@ -1286,6 +1338,19 @@ section :ref:`-Gfill_attrib`).  Finally, the modules
 :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
 on a record-by-record basis if **-t** is given without argument and the
 input file supplies variable transparencies as the last numerical column value.
+
+.. _option_-x_core:
+
+Selecting number of CPU cores: The **-x** option
+------------------------------------------------
+
+Specify the number of active cores to be used in any OpenMP-enabled
+multi-threaded algorithms. By default, we try to use all available cores.
+You may append *n* to only use *n* cores (if *n* is too large it will be truncated
+to the maximum number of cores available).  Finally, give a negative *n* to select
+all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
+option is only available to GMT modules compiled with OpenMP support, with
+the exception of :doc:`/movie` which handles its own parallel execution.
 
 .. _option_colon:
 

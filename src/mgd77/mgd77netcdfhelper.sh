@@ -81,10 +81,10 @@ while read name rec item size check; do
 	cast=""
 	n_item=1
 	fmt="%s"
-	R=`echo $rec  | awk '{printf "%d\n", $1}'`
-	I=`echo $item | awk '{printf "%d\n", $1}'`
+	R=$(echo $rec  | awk '{printf "%d\n", $1}')
+	I=$(echo $item | awk '{printf "%d\n", $1}')
 	REV="L[MGD77_Param_Key(C,$R,$I)].revised"
-	n=`echo $size | awk -F'*' '{print NF}'`
+	n=$(echo $size | awk -F'*' '{print NF}')
 	if [ $n -eq 1 ]; then   # Single item
 		if [ $size -eq 1 ]; then
 			echo "	char $name;" >> mgd77_functions.h
@@ -94,8 +94,8 @@ while read name rec item size check; do
 		L=$size
 		M=0
 	else                    # 2-D array
-		L=`echo $size | awk -F'*' '{print $1}'`
-		M=`echo $size | awk -F'*' '{print $2}'`
+		L=$(echo $size | awk -F'*' '{print $1}')
+		M=$(echo $size | awk -F'*' '{print $2}')
 		echo "	char $name[$L][$M];" >> mgd77_functions.h
 	fi
 	if [ $L -eq 1 ]; then   # Single character
@@ -108,7 +108,7 @@ while read name rec item size check; do
 		length2="strlen (${pre}P[1]->$name)"
 	else                    # 2-D text array, dim and length given, calc total size
 		n_item=$L
-		length1=`echo $M $L | awk '{print $1*$2}'`
+		length1=$(echo $M $L | awk '{print $1*$2}')
 		length2=$length1
 		cast="(char *)"
 	fi
@@ -135,11 +135,11 @@ while read name rec item size check; do
 	else
 		echo "	\"$name\" $L $rec $item FALSE FALSE NULL" >> $$.6
 	fi
-	key=`expr $key + 1`
+	key=$(expr $key + 1)
 	last=$rec
 done < $$.1
 
-n_names=`cat $$.6 | wc -l | awk '{printf "%d\n", $1}'`
+n_names=$(cat $$.6 | wc -l | awk '{printf "%d\n", $1}')
 cat << EOF >> mgd77_functions.c
 
 	for (i = 0, F->revised = FALSE; !F->revised && i < MGD77_N_HEADER_PARAMS; i++) if (L[i].revised) F->revised = TRUE;

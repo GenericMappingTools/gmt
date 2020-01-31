@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 519 346
 %%HiResBoundingBox: 0 0 518.4000 345.6000
-%%Title: GMT v6.0.1_3015954_2019.11.23 [64-bit] Document from grdimage
+%%Title: GMT v6.1.0_c9ecc62_2020.01.18 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Nov 23 22:46:39 2019
+%%CreationDate: Sat Jan 18 14:23:11 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -652,7 +652,8 @@ V 0.06 0.06 scale
 /PSL_page_xsize 8640 def
 /PSL_page_ysize 5760 def
 /PSL_plot_completion {} def
-/PSL_movie_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -661,15 +662,15 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt grdimage -JG-73.8333/40.75/160/210/55/0/36/34/7.2i+ -Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
-%@PROJ: nsper 270.89529737 289.71612645 27.94141414 41.08950841 -88530.167 88530.167 -83761.464 83761.464 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: nsper 270.89529737 289.71612645 27.94141414 41.08950841 -88530.167 88530.167 -83761.464 83761.464 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-/PSL_movie_completion {
+/PSL_movie_label_completion {
 V
-120 5640 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-333 F0
+PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+120 5640 M 233 F1
 (000) tl Z
 U
 }!
@@ -4635,7 +4636,7 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt psxy -W1p flight_path.txt -Rg -JG-73.8333/40.75/160/210/55/0/36/34/7.2i+
-%@PROJ: nsper 270.89529737 289.71612645 27.94141414 41.08950841 -88530.167 88530.167 -83761.464 83761.464 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: nsper 270.89529737 289.71612645 27.94141414 41.08950841 -88530.167 88530.167 -83761.464 83761.464 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -4786,7 +4787,8 @@ S
 PSL_cliprestore
 %%EndObject
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

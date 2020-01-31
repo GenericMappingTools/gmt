@@ -29,7 +29,7 @@ gmt mapproject pt.txt -J+proj=laea+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 
 # The test is failing, because GDAL1 gives 828919.243654 12511653.4997, while GDAL2 & GDAL3 gives 414459.6218269 6255826.7498713
 #gmt mapproject pt.txt -J+proj=stere+ellps=WGS84+units=m+lat_ts=30n | gmt math -o1 STDIN -C0 414459.6218269 SUB -C1 6255826.7498713 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=sterea+lat_0=52.15616055555555+lon_0=5.38763888888889+k=0.9999079+x_0=155000+y_0=463000+ellps=bessel+units=m | gmt math -o1 STDIN -C0 121590.388077 SUB -C1 487013.903377 SUB 0 COL HYPOT 0.01 GT = >> results.txt
-errors=`gmt math -T -Sl results.txt SUM =`
+errors=$(gmt math -T -Sl results.txt SUM =)
 if [ $errors -ne 0 ]; then
 	cp -f results.txt fail
 fi

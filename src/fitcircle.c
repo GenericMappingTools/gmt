@@ -79,7 +79,7 @@
 #define THIS_MODULE_PURPOSE	"Find mean position and great [or small] circle fit to points on sphere"
 #define THIS_MODULE_KEYS	"<D{,>D},>DF"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghio" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghioq" GMT_OPT("H")
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -121,8 +121,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -L[<norm>] [-F[<flags>]] [-S[<lat>]] [%s] [%s]\n", name, GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -140,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -L3 is used we repeat the output for m|n|s|c (if selected).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Attempt to fit a small circle rather than a great circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the oblique latitude <lat> of the small circle you want to fit.\n");
-	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,:,.");
+	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,q,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	size_t k, s_length; 
+	size_t k, s_length;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 			case 'F':	/* Select outputs for data */
 				Ctrl->F.active = true;
-				s_length = strlen (opt->arg); 
+				s_length = strlen (opt->arg);
 				for (k = 0; k < s_length; k++) {
 					switch (opt->arg[k]) {
 						case 'f': Ctrl->F.mode |=  1;	break;
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F option: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -F option: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
 							n_errors++;
 							break;
 					}
@@ -301,7 +301,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 	} while (j < 90 && fit > bfit && fit > afit);
 
 	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot find small circle fitting better than great circle.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot find small circle fitting better than great circle.\n");
 		gmt_M_cpy3v (scpole, gcpole);
 		return (-1.0);
 	}
@@ -381,14 +381,14 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the fitcircle main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -414,7 +414,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		}
 		in = In->data;	/* Only need to process numerical part here */
 		if (in == NULL) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "No data columns found; no output can be produced");
+			GMT_Report (API, GMT_MSG_WARNING, "No data columns found; no output can be produced");
 			gmt_M_free (GMT, data);
 			Return (GMT_NOERROR);
 		}
@@ -431,7 +431,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	}
 
  	if (n_data == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced");
 		gmt_M_free (GMT, data);
 		Return (GMT_NOERROR);
 	}
@@ -464,7 +464,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	if (n_data < n_alloc) data = gmt_M_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
 	if (Ctrl->S.active && Ctrl->L.norm%2) work = gmt_M_memory (GMT, NULL, n_data, double);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
 
 	lonsum /= n_data;	latsum /= n_data;
 
@@ -564,10 +564,10 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);
 
 		if (gmt_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
-			GMT_Report (API, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Eigenvalue routine failed to converge in 50 sweeps.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "The reported L2 positions might be garbage.\n");
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
 		if (d_acos (gmt_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];

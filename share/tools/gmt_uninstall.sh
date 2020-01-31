@@ -21,20 +21,20 @@ if ! [ -x "$(command -v gmt)" ]; then
   exit 1
 fi
 
-inc=`gmt-config --includedir`
-share=`gmt --show-sharedir`
-bin=`gmt --show-bindir`
-lib=`gmt --show-plugindir`
+inc=$(gmt-config --includedir)
+share=$(gmt --show-sharedir)
+bin=$(gmt --show-bindir)
+lib=$(gmt --show-plugindir)
 
-cwd=`pwd`
+cwd=$(pwd)
 
-gmt_modules=`gmt --show-classic`
+gmt_modules=$(gmt --show-classic)
 compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 # 2. Remove include directory
 cd $inc
 cd ..
-here=`pwd`
+here=$(pwd)
 printf "Remove: %s\n" $inc
 rm -rf $inc
 if find "$here" -mindepth 1 -print -quit | grep -q .; then
@@ -84,7 +84,7 @@ fi
 # 5. Lastly remove libs and plugin directory
 cd $lib
 cd ../..
-here=`pwd`
+here=$(pwd)
 if [ -d gmt ]; then	# plugin directory inside a gmt directory; delete gmt instead
 	printf "Remove: %s\n" $here
 	rm -rf gmt

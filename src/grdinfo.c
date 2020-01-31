@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note: +a is limited to a single grid.  Give <alpha> in percent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to force a symmetrical range about zero.\n");
 	GMT_Option (API, "V,f,h,o,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -306,10 +306,10 @@ GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w,
 	double wesn[4], out[4], box[4];
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
-	
+
 	num_report = (Ctrl->C.active);
 	Out = gmt_new_record (GMT, num_report ? out : NULL, (num_report && Ctrl->C.mode != GRDINFO_TRAILING) ? NULL : record);
-	
+
 	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);
 	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], 1);
 	for (j = 0; j < ny; j++) {
@@ -336,7 +336,7 @@ GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w,
 					}
 				}
 				use = false;	/* Could not find a single valid node */
-L_use_it:			row = 0;	/* Get here by goto and use is still true */	
+L_use_it:			row = 0;	/* Get here by goto and use is still true */
 			}
 			if (use) {
 				gmt_M_memcpy (out, box, 4, double);
@@ -475,7 +475,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -483,7 +483,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdinfo main code ----------------------------*/
 
 	/* OK, done parsing, now process all input grids in a loop */
-	
+
 	sep = GMT->current.setting.io_col_separator;
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]) {
@@ -497,7 +497,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
 	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
-	
+
 	if (Ctrl->C.active) {
 		n_cols = 6;	/* w e s n z0 z1 */
 		if (!Ctrl->I.active) {
@@ -522,7 +522,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		geometry = GMT_IS_POLY;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Will write output record(s) with %d leading numerical columns and with%s trailing text\n", n_cols, answer[cmode>0]);
-	
+
 	GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
@@ -531,10 +531,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	
+
 	Out = gmt_new_record (GMT, (n_cols) ? out : NULL, (cmode) == GMT_COL_FIX ? record : NULL);	/* the two items */
-	
-	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
+
+	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
@@ -551,11 +551,11 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 		HH = gmt_get_H_hidden (G->header);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing grid %s\n", HH->name);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing grid %s\n", HH->name);
 
 		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active)
 			projStr = strdup (G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
-		else if (G->header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active) 
+		else if (G->header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active)
 			projStr = strdup (G->header->ProjRefWKT);
 
 		for (n = 0; n < GMT_Z; n++)
@@ -578,7 +578,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
-		
+
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
 			unsigned int col, row;
@@ -615,7 +615,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
 			gmt_get_cellarea (GMT, W);
 		}
-		
+
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and MAD */
 			z_median = gmt_grd_median (GMT, G, W, false);
 			z_scale = gmt_grd_mad (GMT, G, W, &z_median, false);
@@ -648,7 +648,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_IMG) {
 			if (!(strstr (G->header->command, "img2grd") || strstr (G->header->command, "img2mercgrd") ||
 			      strstr (G->header->remark, "img2mercgrd"))) {
-				GMT_Report (API, GMT_MSG_NORMAL,
+				GMT_Report (API, GMT_MSG_ERROR,
 				            "Could not find a -Rw/e/s/n string produced by img tools - returning regular grid -R\n");
 				i_status = GRDINFO_GIVE_REG_ORIG;
 			}
@@ -969,14 +969,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}
@@ -1054,14 +1054,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}

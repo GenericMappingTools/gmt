@@ -13,7 +13,7 @@ else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th fr
 	opt="-Fmp4 -A+l+s5"
 fi
 rate=6			# Frames per seconds
-frames=`gmt math -Q 60 $rate MUL =`
+frames=$(gmt math -Q 60 $rate MUL =)
 # 0. Initial parameters
 cat << EOF > init.sh
 R=-R-7.5/2.5/-1.5/2	# Fixed plot domain window
@@ -46,7 +46,7 @@ gmt begin
 	# Plot the shifted chirp
 	gmt plot \$R \$J chirp_shifted.txt -W1p,red -X0.2i -Y0.3i
 	# Compute index of most recent sample number
-	last_sample=\`gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV DIV FLOOR RINT =\`
+	last_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV DIV FLOOR RINT =)
 	# Extract all the old samples before the present
 	gmt convert chirp_samples.txt -Z:\$last_sample > tmp.txt
 	if [ -s tmp.txt ]; then
@@ -54,19 +54,19 @@ gmt begin
 		gmt plot -Sc0.3c -Gblue samples.txt
 	fi
 	# Take a new sample every 12 frames = 0.5 seconds
-	take_sample=\`gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV MOD 0 EQ =\`
+	take_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV MOD 0 EQ =)
 	if [ \${MOVIE_FRAME} -gt 12 ]; then	# Interpolating up to most recent sample
 		gmt sample1d samples.txt -I0.001 > resampled.txt
 		gmt plot -W2.5p,blue resampled.txt
 	fi
 	if [ \$take_sample -eq 1 ]; then	# Take and plot sample at zero time
-		y=\`gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =\`
+		y=\$(gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =)
 		echo 0 \$y | gmt plot -Sc0.5c -Gred
 	fi
 	# Add time counter in upper left corner
 	printf "%4.1f 2 t = %6.3f s\n" -7.5 \${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL -Dj0.1i/0.1i
 	# Add cycles counter in upper right corner
-	fnow=\`gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =\`
+	fnow=\$(gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =)
 	printf "2.5 2 f = %6.4f Hz\n" \$fnow | gmt text -F+f16p,Helvetica-Bold+jTR -Dj0.1i/0.1i
 	# Add frame counter in lower right corner
 	printf "2.5 -1.5 %04d\n" \${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR -Dj0.1i/0.1i

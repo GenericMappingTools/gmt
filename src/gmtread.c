@@ -79,7 +79,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "R,V,f,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -122,7 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T from GMT5 */
 							Ctrl->T.mode = GMT_IS_DATASET;
 						else {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;
@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
 	                                 "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->IO.active[GMT_IN] && Ctrl->IO.active[GMT_OUT]),
@@ -154,7 +154,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 	                                 "Syntax error: Must specify output filename\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify only two filenames (input and output)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify a valid datatype\n");
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -180,7 +180,7 @@ int GMT_gmtread (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

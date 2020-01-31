@@ -28,13 +28,13 @@ gmt begin ex25
 	gmt makecpt -Cblue,gray,red -T-1.5/1.5/1 -N
 	REM Create the final plot and overlay coastlines
 	gmt set FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
-	gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -Y1.2i -nn
+	gmt grdimage key.nc -JKs180/22c -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -nn
 	gmt coast -Wthinnest -Dc -A500
 	REM Place an explanatory legend below
 	echo N 3 > legend.txt
-	echo S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [%land% %%] >> legend.txt
-	echo S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [%ocean% %%]	>> legend.txt
-	echo S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [%mixed% %%]	>> legend.txt
-	gmt legend legend.txt -DJBC+w6i -Y-0.2i -F+pthick
+	echo S 0.4c s 0.5c red  0.25p 0.75c Terrestrial Antipodes [%land% %%] >> legend.txt
+	echo S 0.4c s 0.5c blue 0.25p 0.75c Oceanic Antipodes [%ocean% %%]	>> legend.txt
+	echo S 0.4c s 0.5c gray 0.25p 0.75c Mixed Antipodes [%mixed% %%]	>> legend.txt
+	gmt legend legend.txt -DJBC+w15c -Y-0.5c -F+pthick
 	del *.nc key.*
 gmt end show

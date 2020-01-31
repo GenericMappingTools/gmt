@@ -57,15 +57,15 @@ useful options:
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
   | **-S**\ *smooth*                                                     | Resample contours *smooth* times per grid cell increment             |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
-  | **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] | Draw tick-marks in downhill                                          |
+  | **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]]   | Draw tick-marks in downhill                                          |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
   |                                                                      | direction for innermost closed contours.  Add tick spacing           |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
   |                                                                      | and length, and characters to plot at the center of closed contours  |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
-  | **-W**\ [**a**\ \|\ **c**\ ]\ *pen*                                  | Set contour and annotation pens                                      |
+  | **-W**\ [**a**\|\ **c**]\ *pen*                                      | Set contour and annotation pens                                      |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
-  | **-Z**\ [**+s**\ *factor*\ ][**+o**\ *offset*]                       | Subtract *offset* and multiply data by *factor* prior to processing  |
+  | **-Z**\ [**+s**\ *factor*][**+o**\ *offset*]                         | Subtract *offset* and multiply data by *factor* prior to processing  |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
 
 We will first make a plain contour map using 1 km as annotation
@@ -251,7 +251,7 @@ all take the same options shown below:
   +============================+====================================================================+
   | **-r**                     | Choose pixel node registration [Default is gridline]               |
   +----------------------------+--------------------------------------------------------------------+
-  | **-W**\ [**i**\ \|\ **o**] | Append **i**\  or **o** to read or write weights in the 4th column |
+  | **-W**\ [**i**\|\ **o**]   | Append **i**\  or **o** to read or write weights in the 4th column |
   +----------------------------+--------------------------------------------------------------------+
 
 With respect to our ship data we preprocess it using the median method:

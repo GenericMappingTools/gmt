@@ -100,7 +100,7 @@ gmt text -D0/0.025i -F+f8p,Times-Italic+jCB << EOF
 27	72	35X
 37.5	72	37X
 EOF
-$AWK '{if ($1 < 0) printf "-180 %s %s\\232S\n", $1, -$1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM 
+$AWK '{if ($1 < 0) printf "-180 %s %s\\232S\n", $1, -$1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM
 $AWK '{if ($1 > 0) printf "-180 %s %s\\232N\n", $1,  $1}' tt.L.d | gmt text -N -D-0.05i/0 -F+f10p+jRM
 echo "-180 0 0\\232" | gmt text -N -D-0.05i/0 -F+f10p+jRM
 gmt end show

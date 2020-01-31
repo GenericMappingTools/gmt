@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
 #define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqstxy" GMT_OPT("c")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -160,8 +160,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I]\n", name, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width[u]>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -208,7 +208,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting; use -Zu to set input radii to 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (API, "bi2,c,di,e,h,i,p,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,h,i,p,qi,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -329,7 +329,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -405,7 +405,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "-T only needed for 0-360 range data (ignored)");
+		GMT_Report (API, GMT_MSG_WARNING, "-T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && Ctrl->E.mode == GMT_IN && gmt_access (GMT, Ctrl->E.file, R_OK),
@@ -437,7 +437,7 @@ int GMT_rose (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: rose\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: rose\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psrose (V_API, mode, args);
@@ -482,14 +482,14 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -543,18 +543,18 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	/* Allocate arrays */
-	
+
 	sum = gmt_M_memory (GMT, NULL, n_bins, double);
 	xx = gmt_M_memory (GMT, NULL, n_bins+2, double);
 	yy = gmt_M_memory (GMT, NULL, n_bins+2, double);
 	azimuth = gmt_M_memory (GMT, NULL, n_alloc, double);
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
-	
+
 	/* Because of -JX being parsed already, any -: will have no effect.  For backwards compatibility we
 	 * check if -: was given and turn that on again here before reading */
 	if (GMT->common.colon.active)
 		GMT->current.setting.io_lonlat_toggle[GMT_IN] = true;
-	
+
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
@@ -660,12 +660,12 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			for (i = 0; i < n; i++) length[i] /= max;
 	}
 
-	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		char *kind[2] = {"r", "bin sum"};
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s sign@%%.2f = %%d\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];
@@ -776,7 +776,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = Ctrl->S.scale;
 			PSL_beginclipping (PSL, xc, yc, 4, GMT->session.no_rgb, 3);
 		}
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
 		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, PSL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
@@ -792,7 +792,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		dim[2] = (half_only) ? 180.0 : 360.0;
 		dim[7] = 2;	/* Do draw line */
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
-		gmt_setfill (GMT, &no_fill, true);
+		gmt_setfill (GMT, &no_fill, 1);
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 	}
 
@@ -813,7 +813,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			dim[6] = (double)Ctrl->M.S.v.status;
 			dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
 			if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
-			if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+			if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, 1);       /* Use fill structure */
 		}
 		for (i = 0; i < n; i++) {
 			sincosd (start_angle - azimuth[i], &s, &c);
@@ -868,7 +868,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (sector_plot && !Ctrl->A.rose && (Ctrl->C.active || Ctrl->G.active)) {	/* Draw pie slices for sector plot if fill is requested */
 
 		if (Ctrl->G.active)
-			gmt_setfill (GMT, &(Ctrl->G.fill), false);
+			gmt_setfill (GMT, &(Ctrl->G.fill), 0);
 		dim[7] = 0;
 		if (Ctrl->G.active) dim[7] = 1;
 		if (Ctrl->W.active[0]) dim[7] += 2;
@@ -877,9 +877,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				index = gmt_get_rgb_from_z (GMT, P, sum[bin] * Ctrl->S.scale, rgb);
 				F = gmt_M_get_cptslice_pattern (P, index);
 				if (F)	/* Pattern */
-					gmt_setfill (GMT, F, false);
+					gmt_setfill (GMT, F, 0);
 				else
-					PSL_setfill (PSL, rgb, false);
+					PSL_setfill (PSL, rgb, 0);
 			}
 			az = bin * Ctrl->A.inc - az_offset + half_bin_width;
 			dim[1] = (start_angle - az - Ctrl->A.inc);
@@ -968,7 +968,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (Cin->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)Cin->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)Cin->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			T = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
@@ -991,7 +991,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		dim[6] = (double)Ctrl->M.S.v.status;
 		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
 		if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
-		if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+		if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, 1);       /* Use fill structure */
 		if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
 			dim[5] = GMT->current.setting.map_vector_shape;
 			if (Ctrl->M.S.v.status & PSL_VEC_FILL2)

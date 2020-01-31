@@ -28,27 +28,27 @@
  *       that this is not historical.
  *
  *       W H F Smith, April 2000
- *       
+ *
  * Public functions (18):
  *
- * gmt_dt2rdc           : 
- * gmt_format_calendar  : 
- * gmtlib_g_ymd_is_bad     : 
- * gmt_gcal_from_dt     : 
- * gmt_gcal_from_rd     : 
- * gmtlib_get_time_label   : 
- * gmtlib_gmonth_length    : 
- * gmtlib_is_gleap         : 
- * gmtlib_iso_ywd_is_bad   : 
- * gmtlib_moment_interval  : 
- * gmt_rd_from_gymd     : 
- * gmtlib_rd_from_iywd     : 
- * gmt_rdc2dt           : 
- * gmtlib_splitinteger     : 
- * gmtlib_verify_time_step : 
- * gmtlib_y2_to_y4_yearfix : 
- * gmt_cal_imod         : 
- * gmt_gyear_from_rd    : 
+ * gmt_dt2rdc           :
+ * gmt_format_calendar  :
+ * gmtlib_g_ymd_is_bad     :
+ * gmt_gcal_from_dt     :
+ * gmt_gcal_from_rd     :
+ * gmtlib_get_time_label   :
+ * gmtlib_gmonth_length    :
+ * gmtlib_is_gleap         :
+ * gmtlib_iso_ywd_is_bad   :
+ * gmtlib_moment_interval  :
+ * gmt_rd_from_gymd     :
+ * gmtlib_rd_from_iywd     :
+ * gmt_rdc2dt           :
+ * gmtlib_splitinteger     :
+ * gmtlib_verify_time_step :
+ * gmtlib_y2_to_y4_yearfix :
+ * gmt_cal_imod         :
+ * gmt_gyear_from_rd    :
 */
 
 #include "gmt_dev.h"
@@ -275,7 +275,7 @@ int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 	int day_offset, yearm1;
 
 	if (gm < 1 || gm > 12 || gd < 1 || gd > 31) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: gmt_rd_from_gymd given bad month (%d) or day (%d).\n", gm, gd);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_rd_from_gymd given bad month (%d) or day (%d).\n", gm, gd);
 		return 0;
 	}
 
@@ -442,7 +442,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 	int retval = 0;
 
 	if (step < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps must be positive.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps must be positive.\n");
 		return (-1);
 	}
 
@@ -452,33 +452,33 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				if (step > 60) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in seconds must be <= 60\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
 					retval = -1;
 				}
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized time axis unit.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
 				retval = -1;
 			}
 			break;
 		case 's':
 		case 'S':
 			if (step > 60) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in seconds must be <= 60\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'm':
 		case 'M':
 			if (step > 60) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in minutes must be <= 60\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in minutes must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'h':
 		case 'H':
 			if (step > 24) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in hours must be <= 24\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in hours must be <= 24\n");
 				retval = -1;
 			}
 			break;
@@ -489,14 +489,14 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			/* The letter d is used for both days of the month and days of the (Gregorian) year */
 			if (GMT->current.plot.calclock.date.day_of_year) {
 				if (step > 365) {	/* This is probably an error.  */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in year days must be <= 365\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in year days must be <= 365\n");
 					retval = -1;
 				}
 			}
 			else {
 				/* If step is longer than 31 it is probably an error. */
 				if (step > 31) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in days of the month must be <= 31\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in days of the month must be <= 31\n");
 					retval = -1;
 				}
 			}
@@ -504,28 +504,28 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'k':
 		case 'K':
 			if (step > 7) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in weekdays must be <= 7\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weekdays must be <= 7\n");
 				retval = -1;
 			}
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
 			if (step != 1) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time step must be 1 for Gregorian weeks\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time step must be 1 for Gregorian weeks\n");
 				retval = -1;
 			}
 			break;
 		case 'u':	/* ISO week */
 		case 'U':
 			if (step > 52) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in weeks must be <= 52\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weeks must be <= 52\n");
 				retval = -1;
 			}
 			break;
 		case 'o':
 		case 'O':
 			if (step > 12) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in months must be <= 12\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in months must be <= 12\n");
 				retval = -1;
 			}
 			break;
@@ -536,7 +536,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'p':
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized time axis unit.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
 			retval = -1;
 			break;
 	}
@@ -606,7 +606,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				calclock_small_moment_interval (GMT, p, k, init);
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
 			}
 			break;
 		case 's':
@@ -765,7 +765,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				gmt_M_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				p->dt[0] = gmt_rdc2dt (GMT, p->rd[0], p->sd[0]);
 				if (gmtlib_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
 			}
@@ -799,7 +799,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				k = (p->cc[0].month-1)/p->step;
 				p->cc[0].month = k * p->step + 1;
 				if (gmtlib_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
 				p->rd[0] = gmt_rd_from_gymd (GMT, p->cc[0].year, p->cc[0].month, p->cc[0].day_m);
@@ -852,7 +852,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 			break;
 		default:
 			/* Should never get here because unit should already have been verified.  */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
 			break;
 	}
 }
@@ -1000,7 +1000,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 				gmt_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1013,7 +1013,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 				(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1021,7 +1021,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
 			sprintf (string, "NaN");
 			break;
 	}

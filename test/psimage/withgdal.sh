@@ -3,7 +3,7 @@
 
 GDAL=`gmt grdconvert 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
-	
+
 ps=withgdal.ps
 
 # RGB image. The +b2,1,0 also tests the bands request option

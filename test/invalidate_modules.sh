@@ -9,7 +9,7 @@
 # executable from the build dir.
 #
 
-gmt_modules=`gmt --show-classic`
+gmt_modules=$(gmt --show-classic)
 
 for module in ${gmt_modules}; do
   eval "function ${module} () { false; }"

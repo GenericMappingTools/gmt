@@ -151,7 +151,7 @@ The Common GMT Options
 
 |SYN_OPT-B|
 **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters*
+**-Jz**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |SYN_OPT-U|
 |SYN_OPT-V|
@@ -171,6 +171,7 @@ The Common GMT Options
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
+|SYN_OPT-q|
 |SYN_OPT-r|
 |SYN_OPT-s|
 |SYN_OPT-t|
@@ -245,6 +246,15 @@ modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_perspective_full.rst_
 
+.. |Add_-q| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-q_full.rst_
+
+.. |Add_-qi| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-qi_full.rst_
+
+.. |Add_-qo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-qo_full.rst_
+
 .. include:: explain_nodereg_full.rst_
 
 .. include:: explain_-s_full.rst_
@@ -286,7 +296,7 @@ See Also
 Look up the individual man pages for more details and full syntax. Run
 ``gmt --help`` to list all GMT programs and to show all installation
 directories. For an explanation of the various GMT settings in this
-man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
+man page (like :term:`FORMAT_FLOAT_OUT`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
 

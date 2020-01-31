@@ -17,7 +17,7 @@
 /* x2sys_merge will read two crossovers data base and output the contents
  * of the main one updated with the COEs in the second one. The second
  * file should only contain updated COEs relatively to the first one.
- * That is, it MUST NOT contain any new two tracks intersections. 
+ * That is, it MUST NOT contain any new two tracks intersections.
  *
  * Author:	Joaquim Luis
  * Date:	09-Jun-2009
@@ -78,7 +78,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Result is printed to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -124,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
-			
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -151,7 +151,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -159,12 +159,12 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to open crossover file %s\n", Ctrl->M.file);
 		fclose (fp_base);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
@@ -259,7 +259,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 			if (!strcmp(pairs_base[i], pairs_merge[j])) {		 /* Update these COEs */
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_merge)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Read error in merge file line\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Read error in merge file line\n");
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
@@ -269,7 +269,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
@@ -283,7 +283,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 			else if (j == (n_merge - 1)) {	/* Not equal. So do not to update, just recopy */
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);

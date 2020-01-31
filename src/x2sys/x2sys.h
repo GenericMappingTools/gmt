@@ -188,7 +188,7 @@ struct X2SYS_BIX_TRACK {
 	uint32_t track_flag;
 	struct X2SYS_BIX_TRACK *next_track;
 };
-	
+
 struct X2SYS_BIX_TRACK_INFO {
 	char *trackname;
 	uint32_t track_id;

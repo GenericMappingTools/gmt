@@ -100,19 +100,19 @@ if [ ! -f $TOPO ]; then
 fi
 
 # Compute dimension of plot in inches and use that as our papersize
-w=`echo $R | awk -F/ '{print substr($1,3)}'`
-e=`echo $R | awk -F/ '{print $2}'`
-s=`echo $R | awk -F/ '{print $3}'`
-n=`echo $R | awk -F/ '{print $4}'`
+w=$(echo $R | awk -F/ '{print substr($1,3)}')
+e=$(echo $R | awk -F/ '{print $2}')
+s=$(echo $R | awk -F/ '{print $3}')
+n=$(echo $R | awk -F/ '{print $4}')
 
 # Extend by two boundary rows/cols
 
-w2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $w $INC 60 DIV 2 MUL SUB =`
-e2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $e $INC 60 DIV 2 MUL ADD =`
-s2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $s $INC 60 DIV 2 MUL SUB =`
-n2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $n $INC 60 DIV 2 MUL ADD =`
-W=`gmt math -Q -fg $e2 $w2 SUB =`
-H=`gmt math -Q -fg $n2 $s2 SUB =`
+w2=$(gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $w $INC 60 DIV 2 MUL SUB =)
+e2=$(gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $e $INC 60 DIV 2 MUL ADD =)
+s2=$(gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $s $INC 60 DIV 2 MUL SUB =)
+n2=$(gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $n $INC 60 DIV 2 MUL ADD =)
+W=$(gmt math -Q -fg $e2 $w2 SUB =)
+H=$(gmt math -Q -fg $n2 $s2 SUB =)
 R2=-R$w2/$e2/$s2/$n2
 
 # 2. Extract the (x,y,z) of constrained nodes by extracting a grid with
@@ -153,7 +153,7 @@ gmt grdgradient $$.tile.nc $V -A340 -G$$.nc
 gmt grdmath $$.nc 12000 DIV = $$.tile_grad.nc
 gmt psclip $R -Jx1id -Y0 -X0 -P -K -N -T $V --PROJ_ELLIPSOID=WGS-84 --PS_MEDIA=${W}ix${H}i > $$.ps
 #Set up (0,0) to match the even LL corner
-off=`gmt math -Q $INC 2 MUL 60 DIV NEG =`
+off=$(gmt math -Q $INC 2 MUL 60 DIV NEG =)
 if [ X"$C" = "X" ]; then	# No clipping, just lay down image
 	gmt grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y$off -X$off -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 else	# Use GSHHS high clip path to only show ocean areas
@@ -173,35 +173,35 @@ gmt psclip -C -O >> $$.ps
 #  5. make the geotiff file
 #
 if [ X"$G" = "X" ]; then
-	xtag=`echo $w | awk '{if ($1 < 0.0) {printf "W%g\n", -$1} else if ($1 > 180.0) {printf ("W%g\n", 360-$1)} else {printf "E%g\n", $1}}'`
-	ytag=`echo $n | awk '{if ($1 < 0.0) {printf "S%g\n", -$1} else {printf "N%g\n", $1}}'`
+	xtag=$(echo $w | awk '{if ($1 < 0.0) {printf "W%g\n", -$1} else if ($1 > 180.0) {printf ("W%g\n", 360-$1)} else {printf "E%g\n", $1}}')
+	ytag=$(echo $n | awk '{if ($1 < 0.0) {printf "S%g\n", -$1} else {printf "N%g\n", $1}}')
 	name="topo${ytag}${xtag}"
 else
-	name=`echo $G | awk '{print substr($1,3)}'`
+	name=$(echo $G | awk '{print substr($1,3)}')
 fi
 if [ X"$A" = "X" ]; then
 	A=+aS
 else
-	A=+a`echo $A | awk '{print substr($1,3)}'`
+	A=+a$(echo $A | awk '{print substr($1,3)}')
 fi
 if [ ! X"$F" = "X" ]; then
-	F=+f`echo $F | awk '{print substr($1,3)}'`
+	F=+f$(echo $F | awk '{print substr($1,3)}')
 fi
 if [ ! X"$L" = "X" ]; then
-	L=+l`echo $L | awk '{print substr($1,3)}'`
+	L=+l$(echo $L | awk '{print substr($1,3)}')
 fi
 if [ ! X"$U" = "X" ]; then
-	U=+u`echo $U | awk '{print substr($1,3)}'`
+	U=+u$(echo $U | awk '{print substr($1,3)}')
 fi
 if [ X"$N" = "X" ]; then
 	N="+n$name"
 else
-	N=+n`echo $N | awk '{print substr($0,3)}'`
+	N=+n$(echo $N | awk '{print substr($0,3)}')
 fi
 if [ X"$T" = "X" ]; then
 	T="+tPredicted bathymetry"
 else
-	T=+t`echo $T | awk '{print substr($0,3)}'`
+	T=+t$(echo $T | awk '{print substr($0,3)}')
 fi
 mv -f $$.ps $name.ps
 gmt psconvert $name.ps -E${DPI} -A- -TG -W+k${A}${F}${L}"${N}${T}"${U} $V

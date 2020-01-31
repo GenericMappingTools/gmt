@@ -15,7 +15,7 @@ abort_build() {	# Called when we abort this script via Crtl-C
 	exit -1
 }
 
-TOPDIR=`pwd`
+TOPDIR=$(pwd)
 
 if [ $# -gt 0 ]; then
 	echo "Usage: build-release.sh"
@@ -59,12 +59,12 @@ cmake -G Ninja ..
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
 # 4. get the version string
-Version=`src/gmt --version`
+Version=$(src/gmt --version)
 # 5. Remove the uncompressed tarball
 rm -f gmt-${Version}-src.tar
 # 6. Install executables before building macOS Bundle
 cmake --build . --target install
-if [ `uname` = "Darwin" ]; then
+if [ $(uname) = "Darwin" ]; then
 	echo "build-release.sh: Build macOS bundle"
 	# 7. Build the macOS Bundle
 	cpack -G Bundle

@@ -12,19 +12,19 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**\ ] ]
+**gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
 [ |-L|\ *minlimit/maxlimit* ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [**i**\ \|\ **o**] ]
+[ |-Q|\ [**i**\|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u** ]
+[ |-S|\ **h**\|\ **l**\|\ **m**\|\ **u** ]
 [ |-T|\ *start/stop/inc* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
@@ -59,16 +59,16 @@ standard GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cp
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-:ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-and :ref:`COLOR_NAN <COLOR_NAN>` from
+:term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
-there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
-:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
-line will be used. 
+there is no :term:`COLOR_MODEL` entry in the master CPT, the
+:term:`COLOR_MODEL` specified in the :doc:`gmt.conf` file or on the command
+line will be used.
 
 Required Arguments
 ------------------
@@ -83,22 +83,14 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *transparency*\ [**+a**\ ]
+**-A**\ *transparency*\ [**+a**]
     Sets a constant level of transparency (0-100) for all color slices.
     Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
 .. _-C:
 
-
-**-C**\ *cpt*
-    Selects the master color table to use in the interpolation. Choose
-    among the built-in tables (type **grd2cpt** to see the list) or give
-    the name of an existing CPT [Default gives the turbo CPT].
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous CPT from those colors automatically.  
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: create_cpt.rst_
 
 .. _-D:
 
@@ -106,8 +98,8 @@ Optional Arguments
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
-    parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
-    :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
+    parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
+    :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
 
 .. _-E:
@@ -119,7 +111,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -145,8 +137,8 @@ Optional Arguments
 **-I**\ [**c**][**z**]
     Append **c** [Default] to reverse the sense of color progression in the master CPT. Also
     exchanges the foreground and background colors, including those
-    specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
-    :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+    specified by the parameters :term:`COLOR_BACKGROUND` and
+    :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-S** values are used
     so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
@@ -162,10 +154,10 @@ Optional Arguments
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master CPT with the values of the parameters
-    :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-    and :ref:`COLOR_NAN <COLOR_NAN>`
+    :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+    and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
+    combined with **-D**, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -175,11 +167,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**i**\ \|\ **o**]
+**-Q**\ [**i**\|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
-    colors, and writes out z. 
+    colors, and writes out z.
 
 .. _-R:
 
@@ -188,7 +180,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u**
+**-S**\ **h**\|\ **l**\|\ **m**\|\ **u**
     Force the color table to be symmetric about zero (from -*R* to +\ *R*).
     Append flag to set the range *R*: **l** for *R* =\|zmin\|, **u** for *R* =
     \|zmax\|, **m** for *R* = min(\|zmin\|, \|zmax\|), or **h** for *R* =
@@ -213,15 +205,13 @@ Optional Arguments
 **-W**\ [**w**]
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
-    combination with a categorical color table. Cannot be used in
-    combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    combination with a categorical color table. Alternatively, use **-Ww**
+    to produce a wrapped (cyclic) color table that endlessly repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Will create a continuous color palette. [Default is discontinuous,
-    i.e., constant color intervals] 
+    Force a continuous CPT [Default is discontinuous].
 
 .. include:: explain_help.rst_
 
@@ -229,14 +219,28 @@ Optional Arguments
 
 .. include:: explain_transparency.rst_
 
-Color Aliasing
---------------
+Color Hinges
+------------
 
-For best result when **-E** is used we recommend you do no append
-a specific *nlevels*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the grid limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a *hinge*.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
+
+Discrete versus Continuous CPT
+------------------------------
+
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------
@@ -265,7 +269,7 @@ file relief, run
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 See Also
 --------

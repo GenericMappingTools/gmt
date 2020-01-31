@@ -21,7 +21,7 @@
 #
 GMT_EXEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Use the executable dir to figure out the lib and include dirs
-GMT_TOP=`dirname $GMT_EXEDIR`
+GMT_TOP=$(dirname $GMT_EXEDIR)
 CONFIG_INCLUDEDIR="$GMT_TOP/@GMT_INCLUDEDIR@"
 # Check if the configure include directory exist.  If so then we craft
 # the cflags and lib settings off its parent, else stick with config.

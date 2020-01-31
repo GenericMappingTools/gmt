@@ -18,7 +18,7 @@ Synopsis
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [*unit*]\ [**+n**] ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [*min/max*]\ [\ **+n**\ \|\ **N**\ \|\ **r**] ]
+[ |-Z|\ [*min/max*]\ [**+n**\|\ **N**\|\ **r**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -83,7 +83,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [*min/max*]\ [\ **+n**\ \|\ **N**\ \|\ **r**]
+**-Z**\ [*min/max*]\ [**+n**\|\ **N**\|\ **r**]
     Determine a new rectangular region so that all nodes *outside* this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max only, specify a hyphen (-). Normally, any NaNs

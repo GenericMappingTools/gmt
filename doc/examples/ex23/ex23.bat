@@ -19,7 +19,7 @@ gmt begin ex23
 	echo 178.42	-18.13	LM	SUVA		>> cities.txt
 	echo 237.67	47.58	RM	SEATTLE		>> cities.txt
 	echo 28.20	-25.75	LM	PRETORIA	>> cities.txt
-	gmt coast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 -B+t"Distances from %name% to the World" -Wthinnest
+	gmt coast -Rg -JH90/22c -Glightgreen -Sblue -A1000 -Bg30 -B+t"Distances from %name% to the World" -Wthinnest
 
 	gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -Wathin,white -Wcthinnest,white,-
 
@@ -27,13 +27,13 @@ gmt begin ex23
 	gmt plot -Wthickest,red -Fr%lon%/%lat% cities.txt
 
 	REM Plot red squares at cities and plot names:
-	gmt plot -Ss0.2 -Gred -Wthinnest cities.txt
-	gmt text -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt
+	gmt plot -Ss0.5c -Gred -Wthinnest cities.txt
+	gmt text -Dj10p/0 -F+f12p,Courier-Bold,red+j -N cities.txt
 	REM Place a yellow star at Rome
-	echo %lon% %lat% | gmt plot -Sa0.2i -Gyellow -Wthin
+	echo %lon% %lat% | gmt plot -Sa0.5c -Gyellow -Wthin
 
 	REM Sample the distance grid at the cities and use the distance in integer km for labels
-	gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT=0:%%g,1:%%g,2:%%.0f | gmt text -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT
+	gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT=0:%%g,1:%%g,2:%%.0f | gmt text -D0/-12p -N -Gwhite -W -C2p -F+f12p,Helvetica-Bold+jCT
 
 	REM Clean up after ourselves:
 	del cities.txt dist.nc

@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Does not take input! */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No input files expected\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error: No input files expected\n");
 				n_errors++;
 				break;
 			case '>':	/* Got named output file */
@@ -189,7 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 	/* Return track id # for this leg */
 	unsigned int i;
-	
+
 	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
 }
@@ -199,12 +199,12 @@ GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 
 int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
-	
+
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	uint64_t row, col;
-	
+
 	double out[2];
 
 	struct X2SYS_INFO *s = NULL;
@@ -234,22 +234,22 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
-	
+
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
-		
+
 	if (s->geographic) {	/* Meaning longitude, latitude */
 		gmt_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else	/* Cartesian data */
 		gmt_set_cartesian (GMT, GMT_OUT);
-		
+
 	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
 	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
@@ -260,7 +260,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		for (ii = missing = 0; ii < s->n_out_columns; ++ii)
 			missing |= X2SYS_bit (s->out_order[ii]);
 	}
-	
+
 	x2sys_bix_init (GMT, &B, false);
 
 	/* Read existing track-information from <ID>_tracks.d file */
@@ -276,7 +276,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		include = gmt_M_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -285,7 +285,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Leg %s not in the data base\n", line);
+					GMT_Report (API, GMT_MSG_WARNING, "Leg %s not in the data base\n", line);
 					continue;
 				}
 				include[k] = true;
@@ -303,7 +303,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		n_match = gmt_M_memory (GMT, NULL, n_tracks, char);
 	}
 	in_bin_flag = gmt_M_memory (GMT, NULL, n_tracks, uint32_t);
-	
+
 	wmode = (Ctrl->C.active) ? GMT_IS_POINT : GMT_IS_TEXT;
 	ncols = (Ctrl->C.active) ? 2 : 0;
 	cmode = (Ctrl->C.active) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX;
@@ -331,7 +331,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		Out = gmt_new_record (GMT, out, NULL);	/* Only data output */
 	else
 		Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
-	
+
 	/* Ok, now we can start finding the tracks requested */
 
 	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
@@ -381,7 +381,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-				
+
 		}
 	}
 
@@ -404,7 +404,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, matrix);
 		gmt_M_free (GMT, include);
 		gmt_M_free (GMT, ids_in_bin);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
 		char text[GMT_LEN64] = {""};
@@ -413,7 +413,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				++n_tracks_found;
 		}
 		if (n_tracks_found) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d tracks\n", n_tracks_found);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d tracks\n", n_tracks_found);
 
 			if (!Ctrl->D.active) {
 				sprintf (line, "Search command: %s", THIS_MODULE_CLASSIC_NAME);
@@ -444,13 +444,13 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 			}
 		}
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Search found no tracks\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Search found no tracks\n");
 	}
-	
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	
+
 	x2sys_bix_free (GMT, &B);
 
 	gmt_M_free (GMT, Out);
@@ -459,7 +459,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "completed successfully\n");
 
 	Return (GMT_NOERROR);
 }

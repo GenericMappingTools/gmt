@@ -7,7 +7,7 @@ projection. If the character is upper case then the argument(s) supplied
 as scale(s) is interpreted to be the map width (or axis lengths), else
 the scale argument(s) is the map scale (see its definition for each
 projection). UNIT is cm, inch, or point, depending on the
-:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting in **gmt.conf**, but this can be
+:term:`PROJ_LENGTH_UNIT` setting in **gmt.conf**, but this can be
 overridden on the command line by appending **c**, **i**, or **p** to
 the *scale* or *width* values. Append **+dh**, **+du**, or **+dl** to the
 given *width* if you instead want to set map height, the maximum (upper)
@@ -19,9 +19,9 @@ The ellipsoid used in the map projections is user-definable by editing
 the **gmt.conf** file in your home directory. 73 commonly used
 ellipsoids and spheroids are currently supported, and users may also
 specify their own custom ellipsoid parameters [Default is WGS-84].
-Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
-:ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
-:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.
+Several GMT parameters can affect the projection: :term:`PROJ_ELLIPSOID`,
+:term:`GMT_INTERPOLANT`, :term:`PROJ_SCALE_FACTOR`, and
+:term:`PROJ_LENGTH_UNIT`; see the :doc:`gmt.conf` man page for details.
 Choose one of the following projections (The **E** or **C** after
 projection names stands for Equal-Area and Conformal, respectively):
 
@@ -35,8 +35,8 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jcyl_stere_full:
 
-    **-Jcyl_stere**/[*lon0/*\ [*lat0/*\ ]]\ *scale* or
-    **-JCyl_stere**/[*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Stereographic).
+    **-Jcyl_stere**/[*lon0/*\ [*lat0/*]]\ *scale* or
+    **-JCyl_stere**/[*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Stereographic).
 
         Give central meridian *lon0* (optional), standard parallel *lat0*
         (optional), and *scale* along parallel (**1:**\ *xxxx* or
@@ -51,14 +51,14 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jj_full:
 
-    **-Jj**\ [*lon0/*\ ]\ *scale* or **-JJ**\ [*lon0/*\ ]\ *width* (Miller Cylindrical Projection).
+    **-Jj**\ [*lon0/*]\ *scale* or **-JJ**\ [*lon0/*]\ *width* (Miller Cylindrical Projection).
 
         Give the central meridian *lon0* (optional) and *scale*
         (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jm_full:
 
-    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Mercator **[C]**)
+    **-Jm**\ [*lon0/*\ [*lat0/*]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*]]\ *width* (Mercator **[C]**)
 
         Give central meridian *lon0* (optional), standard parallel *lat0*
         (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
@@ -69,21 +69,21 @@ projection names stands for Equal-Area and Conformal, respectively):
 
         Typically used with **-R**\ *LLx/LLy/URx/URy*\ **r** or with projected coordinates.  Specify one of:
 
-        **-Jo**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/width*
+        **-Jo**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/width*
             Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
-        **-Jo**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/width*
+        **-Jo**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/width*
             Set projection center *lon0/lat0*, another point on the oblique
             equator *lon1/lat1*, and *scale*.
-        **-Joc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ \|\ **C**\ *lon0/lat0/lonp/latp/width*
+        **-Joc**\|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\|\ **C**\ *lon0/lat0/lonp/latp/width*
             Set projection center *lon0/lat0*, pole of oblique projection
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
-	    Use upper-case **A**\ \|\ **B**\ \|\ **C** to remove enforcement of a northern hemisphere pole.
+	    Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern hemisphere pole.
 
 .. _-Jq_full:
 
-    **-Jq**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
-    **-JQ**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equidistant).
+    **-Jq**\ [*lon0/*\ [*lat0/*]]\ *scale* or
+    **-JQ**\ [*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Equidistant).
 
         Give the central meridian *lon0* (optional), standard parallel
         *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
@@ -98,8 +98,8 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jt_full:
 
-    **-Jt**\ *lon0/*\ [*lat0/*\ ]\ *scale* or
-    **-JT**\ *lon0/*\ [*lat0/*\ ]\ *width* (Transverse Mercator **[C]**)
+    **-Jt**\ *lon0/*\ [*lat0/*]\ *scale* or
+    **-JT**\ *lon0/*\ [*lat0/*]\ *width* (Transverse Mercator **[C]**)
 
         Give the central meridian *lon0*, central parallel *lat0*
         (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
@@ -114,7 +114,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jy_full:
 
-    **-Jy**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JY**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equal-Area **[E]**).
+    **-Jy**\ [*lon0/*\ [*lat0/*]]\ *scale* or **-JY**\ [*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Equal-Area **[E]**).
 
         Give the central meridian *lon0* (optional), standard parallel
         *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
@@ -150,7 +150,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jpoly_full:
 
-    **-Jpoly**/[*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JPoly**/[*lon0/*\ [*lat0/*\ ]]\ *width* ((American) Polyconic).
+    **-Jpoly**/[*lon0/*\ [*lat0/*]]\ *scale* or **-JPoly**/[*lon0/*\ [*lat0/*]]\ *width* ((American) Polyconic).
         Give the central meridian *lon0* (optional), reference parallel
         *lat0* (optional, default = equator), and *scale* along central
         meridian (**1:**\ *xxxx* or UNIT/degree).
@@ -163,7 +163,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Ja_full:
 
-    **-Ja**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JA**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Lambert **[E]**).
+    **-Ja**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JA**\ *lon0/lat0*\ [*/horizon*]\ */width* (Lambert **[E]**).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 180,
         default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -172,7 +172,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Je_full:
 
-    **-Je**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JE**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Azimuthal Equidistant).
+    **-Je**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JE**\ *lon0/lat0*\ [*/horizon*]\ */width* (Azimuthal Equidistant).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 180,
         default 180). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -181,7 +181,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jf_full:
 
-    **-Jf**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JF**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Gnomonic).
+    **-Jf**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JF**\ *lon0/lat0*\ [*/horizon*]\ */width* (Gnomonic).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, < 90,
         default 60). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -190,7 +190,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jg_full:
 
-    **-Jg**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JG**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Orthographic).
+    **-Jg**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JG**\ *lon0/lat0*\ [*/horizon*]\ */width* (Orthographic).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 90,
         default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -212,7 +212,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Js_full:
 
-    **-Js**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JS**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (General Stereographic **[C]**).
+    **-Js**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JS**\ *lon0/lat0*\ [*/horizon*]\ */width* (General Stereographic **[C]**).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, < 180,
         default 90). Give *scale* as **1:**\ *xxxx* (true at pole) or
@@ -226,46 +226,46 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jh_full:
 
-    **-Jh**\ [*lon0/*\ ]\ *scale* or **-JH**\ [*lon0/*\ ]\ *width* (Hammer **[E]**).
+    **-Jh**\ [*lon0/*]\ *scale* or **-JH**\ [*lon0/*]\ *width* (Hammer **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Ji_full:
 
-    **-Ji**\ [*lon0/*\ ]\ *scale* or **-JI**\ [*lon0/*\ ]\ *width* (Sinusoidal **[E]**).
+    **-Ji**\ [*lon0/*]\ *scale* or **-JI**\ [*lon0/*]\ *width* (Sinusoidal **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jk_full:
 
-    **-Jkf**\ [*lon0/*\ ]\ *scale* or **-JKf**\ [*lon0/*\ ]\ *width* (Eckert IV) **[E]**).
+    **-Jkf**\ [*lon0/*]\ *scale* or **-JKf**\ [*lon0/*]\ *width* (Eckert IV) **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
-    **-Jk**\ [**s**\ ][*lon0/*\ ]\ *scale* or **-JK**\ [**s**\ ][*lon0/*\ ]\ *width* (Eckert VI) **[E]**).
+    **-Jk**\ [**s**][*lon0/*]\ *scale* or **-JK**\ [**s**][*lon0/*]\ *width* (Eckert VI) **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jn_full:
 
-    **-Jn**\ [*lon0/*\ ]\ *scale* or **-JN**\ [*lon0/*\ ]\ *width* (Robinson).
+    **-Jn**\ [*lon0/*]\ *scale* or **-JN**\ [*lon0/*]\ *width* (Robinson).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jr_full:
 
-    **-Jr**\ [*lon0/*\ ]\ *scale* **-JR**\ [*lon0/*\ ]\ *width* (Winkel Tripel).
+    **-Jr**\ [*lon0/*]\ *scale* **-JR**\ [*lon0/*]\ *width* (Winkel Tripel).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jv_full:
 
-    **-Jv**\ [*lon0/*\ ]\ *scale* or **-JV**\ [*lon0/*\ ]\ *width* (Van der Grinten).
+    **-Jv**\ [*lon0/*]\ *scale* or **-JV**\ [*lon0/*]\ *width* (Van der Grinten).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jw_full:
 
-    **-Jw**\ [*lon0/*\ ]\ *scale* or **-JW**\ [*lon0/*\ ]\ *width* (Mollweide **[E]**).
+    **-Jw**\ [*lon0/*]\ *scale* or **-JW**\ [*lon0/*]\ *width* (Mollweide **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
@@ -273,7 +273,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ [**a**\ ]\ *scale*\ [*/origin*\ ][\ **r**\ \|\ **z**] or **-JP**\ [**a**\ ]\ *width*\ [*/origin*\ ][\ **r**\ \|\ **z**]
+    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**r**\|\ **z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**r**\|\ **z**]
     (Polar coordinates (theta,r))
 
     Optionally insert **a** after **-Jp** [ or **-JP**] for azimuths CW
@@ -285,7 +285,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jx_full:
 
-    **-Jx**\ *x-scale*\ [*/y-scale*\ ] or **-JX**\ *width*\ [*/height*\ ] (Linear, log, and power scaling)
+    **-Jx**\ *x-scale*\ [*/y-scale*] or **-JX**\ *width*\ [*/height*] (Linear, log, and power scaling)
 
     Give *x-scale* (**1:**\ *xxxx* or UNIT/x-unit) and/or *y-scale*
     (**1:**\ *xxxx* or UNIT/y-unit); or specify *width* and/or *height*
@@ -304,7 +304,7 @@ projection names stands for Equal-Area and Conformal, respectively):
         **p**\ *power*
            Raise values to *power* before scaling.
         **t**
-           Input coordinates are time relative to :ref:`TIME_EPOCH <TIME_EPOCH>`.
+           Input coordinates are time relative to :term:`TIME_EPOCH`.
         **T**
            Input coordinates are absolute time.
 

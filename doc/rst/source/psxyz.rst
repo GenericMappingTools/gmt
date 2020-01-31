@@ -13,25 +13,25 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psxyz** [ *table* ] |-J|\ *parameters*
-|-J|\ **z**\ \|\ **Z**\ *parameters*
+|-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
 [ |-G|\ *fill* ]
-[ |-I|\ [*intens*] ] 
+[ |-I|\ [*intens*] ]
 [ |-K| ]
-[ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
-[ |-N| ] [ |-O| ] [ |-P| ] [ |-Q| ] 
-[ |-S|\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ]
+[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
+[ |-N| ] [ |-O| ] [ |-P| ] [ |-Q| ]
+[ |-S|\ [*symbol*][*size*\ [**unit**]][/*size_y*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\ \|\ **f**]\ *value* ]
-[ |SYN_OPT-a| ] 
+[ |-Z|\ [**l**\|\ **f**]\ *value* ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -40,6 +40,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]

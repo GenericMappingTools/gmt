@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **h**\ \|\ **s**\ \|\ **y**\ \|\ **z**
+**gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **y**\|\ **z**
 [ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **[u]** ]
@@ -39,7 +39,7 @@ Required Arguments
     Name of file with the required crossover columns as produced by
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
-    IDs; otherwise we expect those columns to hold the text string names
+    IDs; otherwise we expect the trailing text to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.
 
 .. include:: explain_tag.rst_
@@ -53,7 +53,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **h**\ \|\ **s**\ \|\ **y**\ \|\ **z**
+**-E**\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **y**\|\ **z**
     The correction type you wish to model. Choose among the following
     functions f(**p**) , where **p** are the *m*
     parameters per track that we will fit simultaneously using a least

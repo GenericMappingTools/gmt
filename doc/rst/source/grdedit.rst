@@ -14,10 +14,10 @@ Synopsis
 
 **gmt grdedit** *grid* [ |-A| ] [ |-C| ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
-[ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
+[ |-E|\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
 [ |-J|\ *parameters* ]
-[ |-L|\ [**+n**\ \|\ **p**\ ] ]
+[ |-L|\ [**+n**\|\ **p**] ]
 [ |-N|\ *table* ]
 [ |SYN_OPT-R| ]
 [ |-S| ] [ |-T| ]
@@ -43,7 +43,7 @@ longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
 values. **grdedit** only operates on files containing a grid header. Note:
 If it is important to retain the original data you should use **-G**
-to save the modified grid to a new file. 
+to save the modified grid to a new file.
 
 Required Arguments
 ------------------
@@ -74,8 +74,8 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**]
-    Transform the grid in one of six ways and (for **l**\ \|\ **r**\ \|\ **t**)
+**-E**\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**]
+    Transform the grid in one of six ways and (for **l**\|\ **r**\|\ **t**)
     interchange the *x* and *y* information:
     **-Ea** will rotate the grid around 180 degrees,
     **-Eh** will flip the grid horizontally (left-to-right),
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+n**\ \|\ **p**\ ]
+**-L**\ [**+n**\|\ **p**]
     Adjust the longitude values in the grid (only applies to geographic grids).  By default we will
     try to adjust *west* and *east* so that *west* >= -180 or *east* <= +180, but this depends on
     the range of the longitudes. Append **+n** to force negative longitude values and **+p** to
@@ -110,7 +110,7 @@ Optional Arguments
 **-N**\ *table*
     Read the ASCII (or binary; see **-bi**) file
     *table* and replace the corresponding nodal values in the grid with
-    these *x*,\ *y*,\ *z* values. 
+    these *x*,\ *y*,\ *z* values.
 
 .. _-R:
 
@@ -132,14 +132,14 @@ Optional Arguments
     gridline-registered grid to a pixel-registered grid, or vice-versa.
     Basically, gridline-registered grids will have their domain extended
     by half the x- and y-increments whereas pixel-registered grids will
-    have their domain shrunk by the same amount. 
+    have their domain shrunk by the same amount.
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

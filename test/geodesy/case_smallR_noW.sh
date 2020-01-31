@@ -6,7 +6,7 @@
 # GRAPHICSMAGICK_RMS = 0.0655
 ps=case_smallR_noW.ps
 # Use real GPS data with uncertainties
-data=`gmt which -G @wus_gps_final_crowell.txt`
+data=$(gmt which -G @wus_gps_final_crowell.txt)
 #  Small region
 R=118.5W/115.2W/33.0N/34.5N
 # blockmean interval

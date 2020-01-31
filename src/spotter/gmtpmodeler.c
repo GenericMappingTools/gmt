@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Evaluate a plate motion model at given locations"
 #define THIS_MODULE_KEYS	"<D{,FD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghios"
+#define THIS_MODULE_OPTIONS "-:>Vbdefghioqs"
 
 #define N_PM_ITEMS	9
 #define PM_AZIM		0
@@ -76,26 +76,26 @@ struct GMTPMODELER_CTRL {	/* All control options for this program (except common
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTPMODELER_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTPMODELER_CTRL);
-		
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->E.rot.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->E.rot.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s [-F<polygontable>]\n", name, SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -118,8 +118,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes lon,lat,age,<adrswxyXY> to standard output\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override any input ages.\n");
-	GMT_Option (API, "bi3,bo,d,e,h,i,o,s,:,.");
-	
+	GMT_Option (API, "bi3,bo,d,e,h,i,o,q,s,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 				break;
 
 			/* Supplemental parameters */
-			
+
 			case 'E':	/* File with stage poles */
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
@@ -192,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;
-				
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -225,13 +225,13 @@ GMT_LOCAL int signum (double x) {
 int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	unsigned int inside, stage, n_stages, k;
 	int retval, error = 0, n_fields;
-	
+
 	bool spotted;
-	
+
 	uint64_t seg, n_old = 0, n_outside = 0, n_NaN = 0, n_read = 0;
-	
+
 	double lon = 0, lat = 0, lat_c, d, value = 0.0, age, *in = NULL, *out = NULL;
-	
+
 	char *tag[N_PM_ITEMS] = { "az", "dist", "stage", "vel", "omega", "dlon", "dlat", "lon", "lat" };
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *pol = NULL;
@@ -253,12 +253,12 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the gmtpmodeler main code ----------------------------*/
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
@@ -267,12 +267,12 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (D->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 	}
 
@@ -298,7 +298,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Requested a fixed reconstruction time outside range of rotation table\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	/* Set up input */
@@ -324,7 +324,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-	
+
 	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
@@ -338,8 +338,8 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		}
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 	}
-	
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 
 	/* Read the location data from file or stdin */
 
@@ -389,7 +389,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Point %" PRIu64 " has no age (%g) (skipped)\n", n_read);
+			GMT_Report (API, GMT_MSG_WARNING, "Point %" PRIu64 " has no age (%g) (skipped)\n", n_read);
 			continue;
 		}
 
@@ -469,13 +469,13 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	
-	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
-	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
-	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
+
+	if (n_outside) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
+	if (n_old) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
+	if (n_NaN) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 
 	gmt_M_free (GMT, out);
 	gmt_M_free (GMT, Out);
-	
+
 	Return (GMT_NOERROR);
 }

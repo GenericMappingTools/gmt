@@ -24,7 +24,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**-**]\ \|\ [*contours*][*labelinfo*]
+**-A**\ [**-**]\|\ [*contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
     contour levels are given in a file via **-C**. [Default is no annotations]. Prepend
     **-** to disable all annotations implied by **-C**. To just select a few specific
@@ -56,7 +56,8 @@ Optional Arguments
         col 2. The levels marked C (or c) are contoured, the levels marked A
         (or a) are contoured and annotated. Optionally, a third column may
         be present and contain the fixed annotation angle for this contour
-        level.
+        level. If so, an optional fourth column may be present and hold a
+	contour-specific pen.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
@@ -91,20 +92,20 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**l**\ \|\ **r**]
+**-F**\ [**l**\|\ **r**]
     Force dumped contours to be oriented so that higher z-values are to the
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
     [Default is arbitrary orientation]. Requires **-D**.
 
 .. _-G:
 
-**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
+**-G**\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params*
 
 .. include:: explain_contlabel.rst_
 
 .. _-L:
 
-**-L**\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p**
+**-L**\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p**
     Limit range: Do not draw contours for data values below *low* or
     above *high*.  Alternatively, limit contours to negative (**n**)
     or positive (**p**) contours.  Use upper case **N** or **P** to
@@ -120,7 +121,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ [*unit*]][\ **+z**]
+**-Q**\ [*cut*\ [*unit*]][**+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
     (see `Units`_ for available units and how distances are computed),
@@ -144,7 +145,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
+**-T**\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]]
     Will draw tick marks pointing in the downward direction every *gap*
     along the innermost closed contours only; append **+a** to tick all closed
     contours. Append **+d**\ *gap* and optionally tick
@@ -173,7 +174,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*type*]\ *pen*\ [**+c**\ [**l**\ \|\ **f**]] :ref:`(more ...) <set-pens>`
+**-W**\ [*type*]\ *pen*\ [**+c**\ [**l**\|\ **f**]] :ref:`(more ...) <set-pens>`
     *type*, if present, can be **a** for annotated contours or **c** for
     regular contours [Default]. The *pen* sets the attributes for the
     particular line. Default pen for annotated contours: 0.75p,black.
@@ -209,6 +210,9 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
+
+.. |Add_-l| replace:: Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the *label* to be of the format [*annotcontlabel*][/*contlabel*].  If either label contains a slash (/) character then use | as the separator for the two labels instead.
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

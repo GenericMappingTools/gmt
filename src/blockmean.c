@@ -36,13 +36,13 @@
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mean estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghioqr" GMT_OPT("FH")
 
 #include "block_subs.h"
 
 enum Block_Modes {
-	BLK_MODE_NOTSET   = 0,	/* No -E+p|P (or -Ep) set */
-	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^ */
+	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
+	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^2 */
 	BLK_MODE_WEIGHTED = 2,	/* -E+p computes weighted z means and error propagation on weighted z mean, using input s and w = 1/s^2 */
 	BLK_MODE_SIMPLE   = 3	/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */
 };
@@ -66,8 +66,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[+p|P]] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[+p|P]] [-G<grdfile>] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -101,7 +101,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +s to read standard deviations s instead and compute w = 1/s^2.\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W[+s] is set), or 2 for -Sn.\n");
-	GMT_Option (API, "bo,d,e,f,h,i,o,r,:,.");
+	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -137,7 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 						case 'h':	Ctrl->A.selected[3] = true;	break;
 						case 'w':	Ctrl->A.selected[4] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -A.!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A.!\n", p);
 							n_errors++;
 							break;
 					}
@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Write output grid(s) */
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G can only be set once!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 						Ctrl->W.weighted[GMT_OUT] = true;
 						break;
 					default:
-						n_errors++; 
+						n_errors++;
 						break;
 				}
 				break;
@@ -228,7 +228,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	}
 
 	if ((Ctrl->E.mode == BLK_MODE_WEIGHTED || Ctrl->E.mode == BLK_MODE_SIMPLE) && !(Ctrl->W.active && Ctrl->W.sigma[GMT_IN])) {	/* For -E+p|P and no -W we implicitly set -Wi+s */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E+p|P given without -W or -W+s sets -Wi+s.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "-E+p|P given without -W or -W+s sets -Wi+s.\n");
 		Ctrl->W.active = Ctrl->W.weighted[GMT_IN] = Ctrl->W.sigma[GMT_IN] = true;
 	}
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
@@ -248,19 +248,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	                                   "Syntax error: -G requires -A\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
-			n_errors++; 
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			n_errors++;
 		}
 		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
-				Ctrl->E.active = true; 
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "-E is required if -A specifies s, l, or h.  -E was added.\n");
+				Ctrl->E.active = true;
 			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
-				n_errors++; 
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-W or -Wo is required if -A specifies w.\n");
+				n_errors++;
 			}
 		}
 	}
@@ -298,7 +298,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
-	
+
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
@@ -307,7 +307,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -315,8 +315,8 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the blockmean main code ----------------------------*/
 
 	gmt_M_memset (GridOut, BLK_N_FIELDS, struct GMT_GRID *);	/* Initialize all pointers to NULL */
-	
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -347,14 +347,14 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		snprintf (format, GMT_LEN512, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 				  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI],
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI],
 		            Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
-	
+
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Memory reporting */
 		size_t n_bytes, n_bytes_per_record = sizeof (struct BLK_PAIR);
 		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
@@ -373,8 +373,8 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	weight = weight_pos = 1.0;		/* Set the default point weight for position and z value */
 	use_weight = (Ctrl->W.weighted[GMT_IN] && Ctrl->S.mode != BLK_OUT_COUNT);	/* Do not use weights if -Sn was set */
 
-	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
-	
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */
+
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
@@ -416,7 +416,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 				weight = weight_s2 = in[3];
 				if (Ctrl->E.mode != BLK_MODE_OBSOLETE) weight_pos = weight;
 			}
-			
+
 		}
 		weighted_z = in[GMT_Z] * weight;			/* Weighted value */
 		node = gmt_M_ijp (Grid->header, row, col);		/* Bin node */
@@ -442,26 +442,26 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	} while (true);
 
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
 
 	/* Done with reading (files are automatically closed by i/o-machinery) */
-	
+
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
 		Return (GMT_NOERROR);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
 		Return (GMT_NOERROR);
 	}
 
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
 	fcol[4] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin",
@@ -476,7 +476,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
-			for (node = 0; node < G->header->size; node++) 
+			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
 			NF++;	/* Number of actual field grids */
 		}
@@ -494,7 +494,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			}
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL)) Return (API->error);
 		}
-	
+
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
@@ -502,9 +502,9 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-	
+
 	for (node = 0; node < Grid->header->size; node++) {	/* Visit all possible blocks to see if they were visited */
 
 		if (zw[node].a[BLK_W] == 0.0) continue;	/* No values in this block; skip */
@@ -576,9 +576,9 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_Report (API, GMT_MSG_INFORMATION, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) gmt_M_free (GMT, np);
-	
+
 	Return (GMT_NOERROR);
 }

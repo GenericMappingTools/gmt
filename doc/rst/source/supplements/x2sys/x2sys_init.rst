@@ -15,13 +15,13 @@ Synopsis
 **gmt x2sys_init** *TAG* |-D|\ *fmtfile*
 [ |-E|\ *suffix* ]
 [ |-F| ]
-[ |-G|\ **d**\ \|\ **g** ]
+[ |-G|\ **d**\|\ **g** ]
 [ |-I|\ *dx*\ [/*dy*] ]
-[ |-N|\ **d**\ \|\ **s**\ *unit* ]
+[ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **t**\ \|\ **d**\ *gap* ]
-[ |SYN_OPT-j| ] 
+[ |-W|\ **t**\|\ **d**\ *gap* ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-G:
 
-**-Gd**\ \|\ **g**
+**-Gd**\|\ **g**
     Selects geographical coordinates. Append **d** for discontinuity at
     the Dateline (makes longitude go from -180 to + 180) or **g** for
     discontinuity at Greenwich (makes longitude go from 0 to 360
@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-N:
 
-**-Nd**\ \|\ **s**\ *unit*
+**-Nd**\|\ **s**\ *unit*
     Sets the units used for distance and speed when requested by other
     programs. Append **d** for distance or **s** for speed, then give
     the desired *unit* as **c** (Cartesian userdist or
@@ -119,7 +119,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-Wt**\ \|\ **d**\ *gap*
+**-Wt**\|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap
     (in user units; this is typically seconds [Infinity]), or distance
     (for units, see |-N|) gap [Infinity]) allowed between the two data
@@ -154,8 +154,7 @@ reading native binary files). Not used with netCDF files.
 periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
 
 **MULTISEG** means each track consists of multiple segments separated by
-a GMT segment header (alternatively, use **-m** when defining the
-system TAG). Not used with netCDF files.
+a GMT segment header. Not used with netCDF files.
 
 The column information consists of one line per column in the order the
 columns appear in the data file. For each column you must provide seven
@@ -167,7 +166,7 @@ attributes:
 use the special names *lon* (or *x* if Cartesian) and *lat* (or *y*) for
 the two required coordinate columns, *time* when optional absolute time data
 are present, and *rtime* when relative time data are given (make sure the
-GMT defaults **TIME_UNIT** and **TIME_EPOCH** are set properly). Regardless
+GMT defaults :term:`TIME_UNIT` and :term:`TIME_EPOCH` are set properly). Regardless
 of input time flavor, we will write absolute time on output.
 
 *type* is always **a** for ASCII representations of numbers, whereas for
@@ -178,7 +177,7 @@ integers (-32768,+32767), **i** for signed 4-byte integers
 **d** for 8-byte double precision floating points. For netCDF, simply
 use **d** as netCDF will automatically handle type-conversions during reading.
 
-*NaN* is Y if certain values (e.g, -9999) are to be replaced by NAN, and N otherwise.
+*NaN* is Y if certain values (e.g, -9999) are to be replaced by NaN, and N otherwise.
 
 *NaN-proxy* is that special value (e.g., -9999).
 
@@ -189,9 +188,9 @@ use **d** as netCDF will automatically handle type-conversions during reading.
 *oformat* is a C-style format string used to print values from this column.
 
 If you give - as the *oformat* then GMT's formatting machinery
-will be used instead (i.e., :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`,
-:ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
-:ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`).
+will be used instead (i.e., :term:`FORMAT_FLOAT_OUT`,
+:term:`FORMAT_GEO_MAP`, :term:`FORMAT_DATE_MAP`,
+:term:`FORMAT_CLOCK_MAP`).
 Some file formats already have definition files premade. These include
 mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
 netCDF files), gmt (for old mgg supplement binary files), xy (for plain
@@ -352,7 +351,7 @@ to find it.
     obs3     d     N   0          1      0       %6.1f
     ======  ====  ===  =========  =====  ======  ========
 
-    Note we use no scaling or NAN proxies since those issues are usually
+    Note we use no scaling or NaN proxies since those issues are usually
     handled internally in the netCDF format description.
 
 Deprecated behavior

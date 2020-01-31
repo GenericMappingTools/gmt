@@ -10,16 +10,16 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	8-June-2007
- * 
+ *
  * ------------------------------------------------------------------*/
 
 /*!
  * \file mgd77_e.h
  * \brief Include file for mgd77 programs.
  */
- 
+
  /* E77 Error classes */
 #define E77_NAV                0
 #define E77_VALUE              1

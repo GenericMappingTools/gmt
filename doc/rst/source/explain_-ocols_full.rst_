@@ -1,6 +1,6 @@
 .. _-ocols_full:
 
-**-o**\ *cols*\ [,...][*t*\ [*word*]]
+**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
     Select specific data columns for primary output, in arbitrary order. Columns
     not listed will be skipped. Give columns (or column ranges
     in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
@@ -8,7 +8,7 @@
     To write from a given column until the end the columns, leave off *stop*.
     [Default writes all columns in order].
     Normally, any trailing text in the internal records will be written but
-    when **-o** is used you must explicitly add the column *t*. To only output a single word from the
+    when **-o** is used you must explicitly add the column **t**. To only output a single word from the
     trailing text, append the word number (first word is 0).  Finally, **-on** will
     simply write the numerical output only and skip any trailing text, while **-ot**
     will only output the trailing text (or selected word).  Note: If **-i** is

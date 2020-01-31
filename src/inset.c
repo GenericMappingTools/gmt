@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -114,7 +114,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 
 	opt = options;	/* The first argument is the inset command */
 	if (opt->option != GMT_OPT_INFILE) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inset command given\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No inset command given\n");
 		return GMT_PARSE_ERROR;
 	}
 	if (!strncmp (opt->arg, "begin", 5U)) {	/* Initiate new inset */
@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	else if (!strncmp (opt->arg, "end", 3U))
 		Ctrl->In.mode = INSET_END;
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not an inset command: %s\n", opt->arg);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not an inset command: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 	opt = opt->next;	/* Position to the next argument */
@@ -144,11 +144,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				break;
-	
+
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: No margins given.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: Bad number of margins given.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 		}
 		opt = opt->next;
 	}
-	
+
 	if (Ctrl->In.mode == INSET_BEGIN) {
 		/* Was -R -J given */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
@@ -188,23 +188,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	}
 	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -D: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -D: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->F.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -F: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -F: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->M.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->N.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -N: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -N: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -230,13 +230,13 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (API, GMT_MSG_NORMAL, "module inset is not available in classic mode\n");
+		GMT_Report (API, GMT_MSG_ERROR, "module inset is not available in classic mode\n");
 		bailout (GMT_NOT_MODERN_MODE);
 	}
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -246,7 +246,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No active plot file to append to\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No active plot file to append to\n");
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
@@ -254,11 +254,11 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	exist = !access (file, F_OK);	/* Determine if inset information file exists */
 	if (Ctrl->In.mode == INSET_BEGIN && exist) {	/* Inset information file already exists which is a failure */
-		GMT_Report (API, GMT_MSG_NORMAL, "In begin mode but inset information file already exists: %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "In begin mode but inset information file already exists: %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->In.mode == INSET_END && !exist) {	/* Inset information file does not exist which is a failure */
-		GMT_Report (API, GMT_MSG_NORMAL, "In end mode and information file does not exist: %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "In end mode and information file does not exist: %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -268,7 +268,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* Here we need to compute dimensions and save those plus current -R -J to the inset information file,
 		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths and maybe
 		 * draw the panel. */
-		
+
 		char *cmd = NULL;
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
@@ -277,21 +277,21 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
-		
+
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
-		
+
 		/* First get the -B options in place before inset was called */
 		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 		if ((fp = fopen (ffile, "r")) == NULL)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", ffile);
-		fgets (Bopts, PATH_MAX, fp);
+			GMT_Report (API, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", ffile);
+		fgets (Bopts, GMT_LEN256, fp);
 		gmt_chop (Bopts);
 		fclose (fp);
-		
+
 		/* Write out the inset information file */
-		
+
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create inset file %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot create inset file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		fprintf (fp, "# Figure inset information file\n");
@@ -320,7 +320,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to place legend on current inset figure\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current inset figure\n");
 				Return (error);
 			}
 		}
@@ -334,13 +334,13 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_remove_file (GMT, ffile);
 		/* Restore the old frame B setting to what it was before inset begin was called, if any */
 		if ((fp = fopen (file, "r"))) {	/* There is a gmt.frame file */
-			while (fgets (Bopts, PATH_MAX, fp) && strncmp (Bopts, "# FRAME: ", 9U));	/* Wind to reading the frame setting */
+			while (fgets (Bopts, GMT_LEN256, fp) && strncmp (Bopts, "# FRAME: ", 9U));	/* Wind to reading the frame setting */
 			gmt_chop (Bopts);
 			fclose (fp);	/* Done reading the gmt.frame file */
 			if (!strncmp (Bopts, "# FRAME: ", 9U) && strlen (Bopts) > 9 && Bopts[9]) {	/* Got a previously saved -B frame setting */
 				sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 				if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
-					GMT_Report (API, GMT_MSG_NORMAL, "Cannot create frame file %s\n", ffile);
+					GMT_Report (API, GMT_MSG_ERROR, "Cannot create frame file %s\n", ffile);
 					Return (GMT_ERROR_ON_FOPEN);
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "inset: Restore previous frame in %s\n", ffile);
@@ -354,7 +354,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
 		gmt_reload_history (API->GMT);
 	}
-	
+
 	gmt_plotend (GMT);
 
 	Return (error);

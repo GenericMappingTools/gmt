@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt logo** [ |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
-[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ |-J|\ *parameters* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+**gmt logo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+[ |-F|\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]] ]
+[ |-J|\ *parameters* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |SYN_OPT-Rz| ]
-[ |-S|\ [\ **l**\ \|\ **n**\ \|\ **u**\ ] ]
+[ |-S|\ [**l**\|\ **n**\|\ **u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -31,16 +31,16 @@ Examples
 
 .. include:: oneliner_info.rst_
 
-To plot the GMT logo of a 2 inch width as a stand-alone pdf plot, use::
+To plot the GMT logo of a 144-point width as a stand-alone pdf plot, use::
 
     gmt logo -pdf logo
 
 To append a GMT logo overlay in the upper right corner of the current map, but
-scaled up to be 3 inches wide and offset by 0.1 inches from the border, try::
+scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 
     gmt begin map
-    gmt ...
-    gmt logo -DjTR+o0.1i/0.1i+w3i
+    gmt ...<plot the map using -R -J>
+    gmt logo -DjTR+o0.25c+w6c
     gmt end show
 
 Notes

@@ -288,7 +288,7 @@ GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 	unsigned char *iu = C->iu;
 	double delta_x, delta_y, a0, a1, a2, a3, old_size, a0_plus_a1_dx, a2_plus_a3_dx;
 	gmt_grdfloat *u = C->Grid->data;
-	
+
 	old_size = 1.0 / (double)C->old_grid;
 
 	/* First do from southwest corner */
@@ -364,7 +364,7 @@ GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v) {
 	uint64_t block_i, block_j, index_1, index_2;
 	double x0, y0, dist_1, dist_2;
 	const struct SURFACE_DATA *point_1 = point_1v, *point_2 = point_2v;
-	
+
 	index_1 = point_1->index;
 	index_2 = point_2->index;
 	if (index_1 < index_2) return (-1);
@@ -448,7 +448,7 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 			 * possibly clip the range if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (grid * x|y_inc) so to recover the
 	 			 * dx,dy in final grid fractions we must scale by grid */
-	 			 
+
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_scale * C->grid * (C->plane_c1 * dx + C->plane_c2 * dy));
 	 			if (C->constrained) {	/* Must use ij_v2 since constrained grids are in standard scanline format */
 					ij_v2 = gmt_M_ijp (C->Grid->header, C->n_rows - block_j * C->grid - 1, block_i * C->grid);
@@ -557,7 +557,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 		}
 	 		if (sum_w == 0.0) {
 	 			sprintf (C->format, "No data inside search radius at: %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, C->format, x0, y0);
+	 			GMT_Report (GMT->parent, GMT_MSG_ERROR, C->format, x0, y0);
 	 			u[C->ij_sw_corner + (i * C->my + j) * C->grid] = (gmt_grdfloat)C->z_mean;
 	 		}
 	 		else {
@@ -575,11 +575,11 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_RECORD *In = NULL;
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Processing input table data\n");
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
-	
+
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		return (error);
 	}
@@ -608,7 +608,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
-	
+
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
@@ -658,7 +658,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		}
 	} while (true);
 
-	
+
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		return (GMT->parent->error);
 	}
@@ -666,18 +666,18 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	C->npoints = k;
 
 	if (C->npoints == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " No datapoints inside region, aborts\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, " No datapoints inside region, aborts\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 
 	C->z_mean /= k;
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (C->format, "%s %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Minimum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
-		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Minimum value of your dataset x,y,z at: ");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Maximum value of your dataset x,y,z at: ");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
+		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
 	C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
@@ -685,13 +685,13 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		C->low_limit = C->data[kmin].z;
 	else if (C->set_low == 2 && C->low_limit > C->data[kmin].z) {
 	/*	C->low_limit = data[kmin].z;	*/
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your lower value is > than min data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your lower value is > than min data value.\n");
 	}
 	if (C->set_high == 1)
 		C->high_limit = C->data[kmax].z;
 	else if (C->set_high == 2 && C->high_limit < C->data[kmax].z) {
 	/*	C->high_limit = data[kmax].z;	*/
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your upper value is < than max data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your upper value is < than max data value.\n");
 	}
 	return (0);
 }
@@ -713,7 +713,7 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 		else {
 			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Low->header->n_columns != C->Grid->header->n_columns || C->Low->header->n_rows != C->Grid->header->n_rows) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Lower limit file not of proper dimension!\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Lower limit file not of proper dimension!\n");
 				return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->low_file, C->Low) == NULL) return (API->error);
@@ -739,7 +739,7 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 		else {
 			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->High->header->n_columns != C->Grid->header->n_columns || C->High->header->n_rows != C->Grid->header->n_rows) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Upper limit file not of proper dimension!\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Upper limit file not of proper dimension!\n");
 				return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->high_file, C->High) == NULL) return (API->error);
@@ -768,7 +768,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	gmt_grdfloat *u = C->Grid->data, *v2 = NULL;
 
 	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
-		
+
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
 	v2 = gmt_M_memory_aligned (GMT, NULL, C->Grid->header->size, gmt_grdfloat);
@@ -801,10 +801,10 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		return (GMT->parent->error);
 	}
 	if ((C->set_low  > 0 && C->set_low  < 3) && GMT_Destroy_Data (GMT->parent, &C->Low) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free C->Low\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to free C->Low\n");
 	}
 	if ((C->set_high > 0 && C->set_high < 3) && GMT_Destroy_Data (GMT->parent, &C->High) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free C->High\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to free C->High\n");
 	}
 	return (0);
 }
@@ -902,7 +902,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			/* South side */
 			kase = x_case * 5;
 			ij = C->ij_sw_corner + i * C->my;
-			u[ij + C->offset[kase][11]] = 
+			u[ij + C->offset[kase][11]] =
 				(gmt_grdfloat)(u[ij + C->offset[kase][0]] + C->eps_m2*(u[ij + C->offset[kase][1]] + u[ij + C->offset[kase][3]]
 					- u[ij + C->offset[kase][8]] - u[ij + C->offset[kase][10]])
 					+ C->two_plus_em2 * (u[ij + C->offset[kase][9]] - u[ij + C->offset[kase][2]]) );
@@ -910,7 +910,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			/* North side */
 			kase = x_case * 5 + 4;
 			ij = C->ij_nw_corner + i * C->my;
-			u[ij + C->offset[kase][0]] = 
+			u[ij + C->offset[kase][0]] =
 				-(gmt_grdfloat)(-u[ij + C->offset[kase][11]] + C->eps_m2 * (u[ij + C->offset[kase][1]] + u[ij + C->offset[kase][3]]
 					- u[ij + C->offset[kase][8]] - u[ij + C->offset[kase][10]])
 					+ C->two_plus_em2 * (u[ij + C->offset[kase][9]] - u[ij + C->offset[kase][2]]) );
@@ -942,7 +942,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				/* West side */
 				kase = y_case;
 				ij = C->ij_sw_corner + j;
-				u[ij+C->offset[kase][4]] = 
+				u[ij+C->offset[kase][4]] =
 					u[ij + C->offset[kase][7]] + (gmt_grdfloat)(C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
 					-u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
 					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]));
@@ -950,7 +950,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				/* East side */
 				kase = 20 + y_case;
 				ij = C->ij_se_corner + j;
-				u[ij + C->offset[kase][7]] = 
+				u[ij + C->offset[kase][7]] =
 					- (gmt_grdfloat)(-u[ij + C->offset[kase][4]] + C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
 					- u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
 					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]) );
@@ -1025,12 +1025,12 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		iteration_count++;
 		C->total_iterations++;
 		max_change *= C->z_scale;	/* Put max_change into z units  */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format,
 			C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
 	} while (max_change > current_limit && iteration_count < current_max_iterations);
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format,
 		C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
 	return (iteration_count);
@@ -1054,7 +1054,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	gmt_grdfloat *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	
+
 	move_over[0] = 2;
 	move_over[1] = 1 - C->my;
 	move_over[2] = 1;
@@ -1098,13 +1098,13 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	for (i = 0; i < C->n_columns; i ++) {
 
 		ij = C->ij_sw_corner + i * C->my;
-		u[ij + move_over[11]] = 
+		u[ij + move_over[11]] =
 			(gmt_grdfloat)(u[ij + move_over[0]] + C->eps_m2*(u[ij + move_over[1]] + u[ij + move_over[3]]
 				- u[ij + move_over[8]] - u[ij + move_over[10]])
 				+ C->two_plus_em2 * (u[ij + move_over[9]] - u[ij + move_over[2]]) );
 
 		ij = C->ij_nw_corner + i * C->my;
-		u[ij + move_over[0]] = 
+		u[ij + move_over[0]] =
 			-(gmt_grdfloat)(-u[ij + move_over[11]] + C->eps_m2 * (u[ij + move_over[1]] + u[ij + move_over[3]]
 				- u[ij + move_over[8]] - u[ij + move_over[10]])
 				+ C->two_plus_em2 * (u[ij + move_over[9]] - u[ij + move_over[2]]) );
@@ -1113,19 +1113,19 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	for (j = 0; j < C->n_rows; j ++) {
 
 		ij = C->ij_sw_corner + j;
-		u[ij+move_over[4]] = 
+		u[ij+move_over[4]] =
 			u[ij + move_over[7]] + (gmt_grdfloat)(C->eps_p2 * (u[ij + move_over[3]] + u[ij + move_over[10]]
 			-u[ij + move_over[1]] - u[ij + move_over[8]])
 			+ C->two_plus_ep2 * (u[ij + move_over[5]] - u[ij + move_over[6]]));
 
 		ij = C->ij_se_corner + j;
-		u[ij + move_over[7]] = 
+		u[ij + move_over[7]] =
 			- (gmt_grdfloat)(-u[ij + move_over[4]] + C->eps_p2 * (u[ij + move_over[3]] + u[ij + move_over[10]]
 			- u[ij + move_over[1]] - u[ij + move_over[8]])
 			+ C->two_plus_ep2 * (u[ij + move_over[5]] - u[ij + move_over[6]]) );
 	}
 
-	/* That resets the boundary values.  Now we can test all data.  
+	/* That resets the boundary values.  Now we can test all data.
 		Note that this loop checks all values, even though only nearest were used.  */
 
 	for (k = 0; k < C->npoints; k++) {
@@ -1137,7 +1137,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 	y0 = h->wesn[YLO] + j*h->inc[GMT_Y];
 	 	dx = (C->data[k].x - x0)*HH->r_inc[GMT_X];
 	 	dy = (C->data[k].y - y0)*HH->r_inc[GMT_Y];
- 
+
 	 	du_dx = 0.5 * (u[ij + move_over[6]] - u[ij + move_over[5]]);
 	 	du_dy = 0.5 * (u[ij + move_over[2]] - u[ij + move_over[9]]);
 	 	d2u_dx2 = u[ij + move_over[6]] + u[ij + move_over[5]] - 2 * u[ij];
@@ -1154,20 +1154,20 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 				- ( u[ij + move_over[1]] + u[ij + move_over[8]] - 2 * u[ij + move_over[5]] ) );
 
 	 	/* 3rd order Taylor approx */
-	 
+
 	 	z_est = u[ij] + dx * (du_dx +  dx * ( (0.5 * d2u_dx2) + dx * (d3u_dx3 / 6.0) ) )
 				+ dy * (du_dy +  dy * ( (0.5 * d2u_dy2) + dy * (d3u_dy3 / 6.0) ) )
 	 			+ dx * dy * (d2u_dxdy) + (0.5 * dx * d3u_dx2dy) + (0.5 * dy * d3u_dxdy2);
-	 
+
 	 	z_err = z_est - C->data[k].z;
 	 	mean_error += z_err;
 	 	mean_squared_error += (z_err * z_err);
 	 }
 	 mean_error /= C->npoints;
 	 mean_squared_error = sqrt (mean_squared_error / C->npoints);
-	 
+
 	/* Compute the total curvature of the grid */
-	
+
 	 curvature = 0.0;
 	 for (i = 0; i < C->n_columns; i++) {
 	 	for (j = 0; j < C->n_rows; j++) {
@@ -1178,9 +1178,9 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		}
 	}
 
-	 GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
+	 GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
 	 sprintf (C->format,"\t%%8ld\t%%8ld\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	 GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
+	 GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
 GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -1230,8 +1230,8 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		yy = (C->data[i].y - h->wesn[YLO]) * HH->r_inc[GMT_Y];
 		C->data[i].z -= (gmt_grdfloat)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
-	
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
 GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
@@ -1275,21 +1275,21 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		if (C->data[k].index == last_index) {
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
 #endif
 			n_outside++;
 		}
 		else
 			last_index = C->data[k].index;
 	}
-	
+
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Check that previous processing steps write results with enough decimals.\n");
 	}
 }
 
@@ -1305,7 +1305,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->z_scale = sqrt (ssz / C->npoints);
 
 	if (C->z_scale < GMT_CONV8_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Input data lie exactly on a plane.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Input data lie exactly on a plane.\n");
 		C->r_z_scale = C->z_scale = 1.0;
 		return (1);	/* Flag to tell the main to just write out the plane */
 	}
@@ -1319,7 +1319,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		double limit = (C->converge_limit_mode == 1) ? C->converge_limit : SURFACE_CONV_LIMIT;
 		ppm = urint (limit / 1.0e-6);
 		C->converge_limit = limit * C->z_scale; /* i.e., 100 ppm of L2 scale */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Select default convergence limit of %g (%u ppm of L2 scale)\n", C->converge_limit, ppm);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Select default convergence limit of %g (%u ppm of L2 scale)\n", C->converge_limit, ppm);
 	}
 	return (0);
 }
@@ -1363,15 +1363,15 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			strcat (region, buffer);	strcat (region, "/");
 			gmt_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
 			strcat (region, buffer);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
 				region, sug[i].n_columns, sug[i].n_rows, sug[i].factor);
 		}
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: After completion you can recover the desired region via gmt grdcut\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Hint: After completion you can recover the desired region via gmt grdcut\n");
 		gmt_M_free (GMT, sug);
 		GMT->current.io.geo.range = save_range;
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot suggest any n_columns,n_rows better than your -R -I define.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot suggest any n_columns,n_rows better than your -R -I define.\n");
 	return;
 }
 
@@ -1416,8 +1416,8 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	y = gmt_M_memory (GMT, NULL, n_alloc, double);
 	z = gmt_M_memory (GMT, NULL, n_alloc, double);
 
-	r_dx = 1.0 / C->grid_xinc; 
-	r_dy = 1.0 / C->grid_yinc; 
+	r_dx = 1.0 / C->grid_xinc;
+	r_dy = 1.0 / C->grid_yinc;
 	for (seg = 0; seg < xyzline->n_segments; seg++) {
 		for (row = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
 			dx = xyzline->segment[seg]->data[GMT_X][row+1] - xyzline->segment[seg]->data[GMT_X][row];
@@ -1501,24 +1501,24 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct SURFACE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;
 	C->Z.value = SURFACE_OVERRELAXATION;
-		
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->L.low);	
-	gmt_M_str_free (C->L.high);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->L.low);
+	gmt_M_str_free (C->L.high);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1533,7 +1533,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1574,7 +1574,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi3,di,e,f,h,i,r,s,:,.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -1677,7 +1677,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					Ctrl->S.unit = 's';
 				}
 				if (!strchr ("sm ", Ctrl->S.unit)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
 					n_errors++;
 				}
 				break;
@@ -1705,7 +1705,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
 					n_errors++;
 				}
 				break;
@@ -1737,7 +1737,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 int GMT_surface_old (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1;
 	double wesn[4];
-	
+
 	struct GMT_DATATABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct SURFACE_INFO C;
@@ -1756,11 +1756,11 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the surface main code ----------------------------*/
 
 	gmt_M_memset (&C, 1, struct SURFACE_INFO);
@@ -1775,11 +1775,11 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	C.periodic = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
 	if (C.periodic && gmt_M_180_range (wesn[YLO], wesn[YHI])) {
 		/* Trying to grid global geographic data - this is not something surface can do */
-		GMT_Report (API, GMT_MSG_NORMAL, "You are attempting to grid a global geographic data set, but surface cannot handle poles.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "It will do its best but it remains a Cartesian calculation which affects nodes near the poles.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "Because the grid is flaggged as geographic, the (repeated) pole values will be averaged upon writing to file.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "This may introduce a jump at either pole which will distort the grid near the poles.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "Consider spherical gridding instead with greenspline or sphinterpolate.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "You are attempting to grid a global geographic data set, but surface cannot handle poles.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "It will do its best but it remains a Cartesian calculation which affects nodes near the poles.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Because the grid is flaggged as geographic, the (repeated) pole values will be averaged upon writing to file.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "This may introduce a jump at either pole which will distort the grid near the poles.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Consider spherical gridding instead with greenspline or sphinterpolate.\n");
 	}
 	if (GMT->common.R.active[GSET]) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		/* Note that the grid remains node-registered and only gets tagged as pixel-registered upon writing the final grid to file */
@@ -1788,12 +1788,12 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
-	
+
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_ERROR, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -1814,13 +1814,13 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	/* New stuff here for v4.3: Check out the grid dimensions */
 	C.grid = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) || Ctrl->Q.active) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
-		GMT_Report (API, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
+		GMT_Report (API, GMT_MSG_ERROR, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
-	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
+	if (C.grid == 1) GMT_Report (API, GMT_MSG_WARNING, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
+	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
 	if (Ctrl->Q.active) Return (GMT_NOERROR);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
@@ -1834,7 +1834,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
 		if (Lin->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->D.file, (int)Lin->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->D.file, (int)Lin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
@@ -1844,7 +1844,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	throw_away_unusables (GMT, &C);
 	remove_planar_trend (GMT, &C);
 	key = rescale_z_values (GMT, &C);
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		gmt_M_free (GMT, C.data);
@@ -1855,7 +1855,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 		Return (GMT_NOERROR);
 	}
-	
+
 	load_constraints (GMT, &C, true);
 
 	/* Set up factors and reset grid to first value  */
@@ -1880,14 +1880,14 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
 
 	set_coefficients (&C);
 
 	C.old_grid = C.grid;
 	find_nearest_point (&C);
 	iterate (GMT, &C, 1);
-	 
+
 	while (C.grid > 1) {
 		smart_divide (&C);
 		set_grid_parameters (&C);
@@ -1900,7 +1900,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		iterate (GMT, &C, 1);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) check_errors (GMT, &C);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) check_errors (GMT, &C);
 
 	replace_planar_trend (&C);
 
@@ -1908,10 +1908,10 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, C.briggs);
 	gmt_M_free (GMT, C.iu);
 	if ((C.set_low  > 0 && C.set_low < 3) && GMT_Destroy_Data (API, &C.Low) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.Low\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to free C.Low\n");
 	}
 	if ((C.set_high > 0 && C.set_high < 3) && GMT_Destroy_Data (API, &C.High) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.High\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to free C.High\n");
 	}
 
 	if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);

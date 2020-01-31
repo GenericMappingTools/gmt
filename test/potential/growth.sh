@@ -21,7 +21,7 @@ gmt makecpt -Cjet -T1/10/0.25 -N -I > t2.cpt
 gmt psbasemap -R0/200/0/5100 -JX6i/3i -O -K -Y6i -Bafg >> $ps
 let k=1
 while read file; do
-	rgb=`sed -n ${k}p t.cpt | awk '{print $2}'`
+	rgb=$(sed -n ${k}p t.cpt | awk '{print $2}')
 	if [ $k -eq 18 ]; then
 		rgb=black
 	fi

@@ -68,7 +68,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 	double *rv1 = NULL;
 
 	if (m < n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in gmt_svdcmp: m < n augment A with additional rows\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in gmt_svdcmp: m < n augment A with additional rows\n");
 		return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -217,7 +217,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 				break;
 			}
 			if (its == 30) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
 #ifndef _OPENMP
 				return (GMT_RUNTIME_ERROR);
 #endif
@@ -430,11 +430,11 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_spherical given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_spherical given negative step-size\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_spherical given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_spherical given bad mode %d\n", mode);
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -536,11 +536,11 @@ GMT_LOCAL uint64_t vector_resample_path_cartesian (struct GMT_CTRL *GMT, double 
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_cartesian given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_cartesian given negative step-size\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_cartesian given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_cartesian given bad mode %d\n", mode);
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -829,7 +829,7 @@ int gmt_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_jacobi failed to converge in %d sweeps\n", nsweeps);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_jacobi failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
@@ -969,7 +969,7 @@ int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b
 			if ((d = fabs(a[i*n+j])) > c) k = i, c = d;
 		}
 		if (c < DBL_EPSILON) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gaussjordan given a singular matrix\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gaussjordan given a singular matrix\n");
 			bad++;
 		}
 		vector_switchrows (a, b, j, k, n);	/* Pivot rows */
@@ -1005,7 +1005,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	double wkopt, *work = NULL;
 	gmt_M_unused(n_in);	/* Since we are actually only doing square matrices... */
 	gmt_M_unused(v);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
 	lwork = -1;
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
@@ -1015,7 +1015,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
 	/* Check for convergence */
 	if (info > 0 ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
 		return (GMT_RUNTIME_ERROR);
 	}
 	/* Free workspace */
@@ -1024,7 +1024,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	v = a;
 	return (GMT_NOERROR);
 #else
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_svdcmp: Using GMT's NR-based SVD\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_svdcmp: Using GMT's NR-based SVD\n");
 	return vector_svdcmp_nr (GMT, a, m_in, n_in, w, v);
 #endif
 }
@@ -1051,7 +1051,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #ifdef HAVE_LAPACK
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Evaluate solution\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Evaluate solution\n");
 	/* find maximum singular value.  Assumes w[] may have negative eigenvalues */
 
 	sing_max = fabs (w[0]);
@@ -1063,7 +1063,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	if (cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
 		double was = cutoff;
 		cutoff = rint (n*cutoff);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
 	}
 
 	if (mode) {
@@ -1082,7 +1082,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			eigen[i].order = i;
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), vector_compare_singular_values);
-		
+
 		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
@@ -1106,10 +1106,10 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		}
 	}
 	if (mode == 0)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "gmt_solve_svd: Ratio limit %g ratained %d singular values\n", cutoff, n_use);
 	if (mode == 2)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "gmt_solve_svd: Selected first %d singular values\n", n_use);
 
 	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
@@ -1402,10 +1402,10 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
 	if (gmt_M_is_dnan (lon[0]) || gmt_M_is_dnan (lat[0])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row 0 contains NaNs - no resampling taken place!\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your data array row 0 contains NaNs - no resampling taken place!\n");
 		return n;
 	}
-	
+
 	gmt_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
 	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
 	GMT->hidden.mem_coord[GMT_X][0] = lon[0];
@@ -1427,7 +1427,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	f_lat_a = fabs (lat[0]);
 	for (i = 1; i < n; i++) {
 		if (gmt_M_is_dnan (lon[i]) || gmt_M_is_dnan (lat[i])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row %" PRIu64 " contains NaNs - no resampling taken place!\n", i);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your data array row %" PRIu64 " contains NaNs - no resampling taken place!\n", i);
 			return n;
 		}
 		f_lat_b = fabs (lat[i]);
@@ -1495,12 +1495,12 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		/* Follow great circle */
 		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Two points in input list are antipodal - great circle resampling is not unique!\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Two points in input list are antipodal - great circle resampling is not unique!\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
 			}
 			return 0;
 		}

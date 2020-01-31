@@ -72,6 +72,7 @@ EXTERN_MSC int GMT_grdgradient (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdhisteq (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdimage (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdinfo (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdinterpolate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdlandmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdmath (void *API, int mode, void *args);

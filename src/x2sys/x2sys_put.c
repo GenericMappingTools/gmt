@@ -91,7 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Force updates to earlier entries for a track with new information.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   [Default refuses to process tracks already in the database].\n");
 	GMT_Option (API, "V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 			case 'S':
 				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
-				
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -141,7 +141,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Syntax error: Only specify one of -D and -F\n");
-	
+
 	if (Ctrl->F.active) Ctrl->D.active = true;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -160,7 +160,7 @@ GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, s
 		for (track = B->base[bin].first_track; track->next_track && track->next_track->track_id != track_id; track = track->next_track);	/* Finds the track or end-of-list */
 
 		if (!track->next_track) continue;	/* Got end-of-list so not found in this bin; move on */
-		
+
 		/* Ok, found it. Remove it from this bin's list by moving pointer and freeing the memory */
 		skip_track = track->next_track;			/* Get pointer to item to be removed */
 		track->next_track = skip_track->next_track;	/* Bypass this item in the link */
@@ -176,7 +176,7 @@ GMT_LOCAL struct X2SYS_BIX_TRACK_INFO *x2sys_bix_find_track (char *track, bool *
 	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to true.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to false and return pointer where
 	 * this track should be inserted */
-	
+
 	struct X2SYS_BIX_TRACK_INFO *this_info;
 	for (this_info = B->head; this_info->next_info && strcmp (this_info->next_info->trackname, track) < 0; this_info = this_info->next_info);
 	*found_it = (this_info->next_info != NULL && !strcmp (this_info->next_info->trackname, track));
@@ -203,7 +203,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
 
 	uint32_t last_id, index, id, free_id, max_flag, flag, i, bit, total_flag; /* These must remain uint32_t */
-	
+
 	struct X2SYS_PUT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -219,7 +219,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -227,19 +227,19 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
 	if (Ctrl->In.active && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Could not open file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Could not open file %s\n", Ctrl->In.file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
-		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track binindex file\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Read error in 1st line of track binindex file\n");
 		gmt_fclose (GMT, fp);
 		Return (GMT_DATA_READ_ERROR);
 	}
 	k = (line[1] == ' ') ? 2 : 1;	/* Since line may be "#TAG" or "# TAG" */
 	if (strncmp (&line[k], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
-		GMT_Report (API, GMT_MSG_NORMAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[k]);
+		GMT_Report (API, GMT_MSG_ERROR, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[k]);
 		gmt_fclose (GMT, fp);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -264,7 +264,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	/* Ok, now we can start reading new info */
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 2nd line of track binindex file\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Read error in 2nd line of track binindex file\n");
 		Return (GMT_DATA_READ_ERROR);
 	}
 	while (line[0] == '>') {	/* Next segment */
@@ -280,19 +280,19 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		free_id = 0;	/* Default is to add a new track entry */
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing existing information for track: %s\n", track);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Removing existing information for track: %s\n", track);
 				free_id = x2sys_bix_remove_track (GMT, this_info->next_info->track_id, &B);
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "track %s removed\n", track);
+				GMT_Report (API, GMT_MSG_INFORMATION, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */
 			}
 			else {	/* Refuse to process tracks already in the database without the delete[and replace] options set */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Track already in database (skipped): %s\n", track);
+				GMT_Report (API, GMT_MSG_WARNING, "Track already in database (skipped): %s\n", track);
 				skip = true;
 			}
 		}
 		else if (Ctrl->D.active) {	/* Here we did not found the track: Give message and go back and read next track information */
-			if (!Ctrl->F.active) GMT_Report (API, GMT_MSG_VERBOSE, "track %s was not found in the database!\n", track);
+			if (!Ctrl->F.active) GMT_Report (API, GMT_MSG_WARNING, "track %s was not found in the database!\n", track);
 			skip = !Ctrl->F.active;	/* If not found but -F is active then we just add this track as normal */
 		}
 		else	/* Get here when we wish to add a new track not in the database */
@@ -300,14 +300,14 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 		if (skip) {	/* Just wind past this segment */
 			if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Read error in a segment line of track binindex file\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Read error in a segment line of track binindex file\n");
 				Return (GMT_DATA_READ_ERROR);
 			}
 			while (line[0] != '>' && (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));	/* Keep reading until EOF of next segment header */
 		}
 		else {	/* Read the tbf information for this track */
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding track: %s\n", track);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Adding track: %s\n", track);
 
 			/* If a track is replaced, then use the same id_no recover above, else increment to get a new one */
 
@@ -325,11 +325,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
-					GMT_Report (API, GMT_MSG_NORMAL, "Error processing record for track %s [%s]\n", track, line);
+					GMT_Report (API, GMT_MSG_ERROR, "Error processing record for track %s [%s]\n", track, line);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				else if (flag > max_flag) {
-					GMT_Report (API, GMT_MSG_NORMAL, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
+					GMT_Report (API, GMT_MSG_ERROR, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
@@ -359,7 +359,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, old_index_file, old_index_path);
 
 	/* First deal with the possible existence of a current track/index pair and possibly an old track/index pair of fails */
-	
+
 	if (!access (old_track_path, F_OK)) {	/* First delete old file */
 		GMT_Report (API, GMT_MSG_DEBUG, "Found old track file %s.  Try to remove it.\n", old_track_path);
 		if (gmt_remove_file (GMT, old_track_path)) {	/* First delete old track file */
@@ -371,7 +371,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	if (!access (track_path, F_OK)) {	/* Next rename current file (if it exists) to the old file */
 		GMT_Report (API, GMT_MSG_DEBUG, "Found current track file %s.  Try to rename it.\n", track_path);
 		if (gmt_rename_file (GMT, track_path, old_track_path, GMT_RENAME_FILE)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s -> %s. Aborting!\n", track_path, old_track_path);
+			GMT_Report (API, GMT_MSG_ERROR, "Rename failed for %s -> %s. Aborting!\n", track_path, old_track_path);
 			x2sys_end (GMT, s);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -386,55 +386,55 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	if (!access (index_path, F_OK)) {	/* Next rename current file (if it exists) to the old file */
 		GMT_Report (API, GMT_MSG_DEBUG, "Found current index file %s.  Try to rename it\n", index_path);
 		if (gmt_rename_file (GMT, index_path, old_index_path, GMT_RENAME_FILE)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
+			GMT_Report (API, GMT_MSG_ERROR, "Rename failed for %s. Aborts!\n", index_path);
 			x2sys_end (GMT, s);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
 	/* Now we can create new files since any existing files have been removed or renamed */
-	
+
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create track data base %s. Aborts!\n", track_path);
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to create track data base %s. Aborts!\n", track_path);
 		x2sys_end (GMT, s);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if ((fbin = fopen (index_path, "wb")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create index data base %s. Aborts!\n", index_path);
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to create index data base %s. Aborts!\n", index_path);
 		fclose (ftrack);
 		x2sys_end (GMT, s);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	
+
 	fprintf (ftrack,"# %s\n", Ctrl->T.TAG);
 	for (this_info = B.head->next_info; this_info; this_info = this_info->next_info)
 		fprintf (ftrack,"%s %d %d\n",this_info->trackname, this_info->track_id, this_info->flag);
 
 	fclose (ftrack);
 	if (chmod (track_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_VERBOSE, "Failed to change track file %s to read-only!\n", track_file);
+		GMT_Report (API, GMT_MSG_WARNING, "Failed to change track file %s to read-only!\n", track_file);
 
 	for (index = 0; index < B.nm_bin; index++) {
 		if (B.base[index].n_tracks == 0) continue;
 
 		if (fwrite (&index, sizeof (uint32_t), 1U, fbin) != 1U) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to write to binary file. Aborts!\n");
 			fclose (fbin);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		if (fwrite (&B.base[index].n_tracks, sizeof (uint32_t), 1U, fbin) != 1U) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to write to binary file. Aborts!\n");
 			fclose (fbin);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		for (this_track = B.base[index].first_track->next_track; this_track; this_track = this_track->next_track) {
 			if (fwrite (&this_track->track_id, sizeof (uint32_t), 1U, fbin) != 1U) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to write to binary file. Aborts!\n");
 				fclose (fbin);
 				Return (GMT_DATA_WRITE_ERROR);
 			}
 			if (fwrite (&this_track->track_flag, sizeof (uint32_t), 1U, fbin) != 1U) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to write to binary file. Aborts!\n");
 				fclose (fbin);
 				Return (GMT_DATA_WRITE_ERROR);
 			}
@@ -442,9 +442,9 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	}
 	fclose (fbin);
 	if (chmod (index_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_VERBOSE, "Failed to change index file %s to read-only!\n", index_file);
+		GMT_Report (API, GMT_MSG_WARNING, "Failed to change index file %s to read-only!\n", index_file);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "completed successfully\n");
 
 	x2sys_bix_free (GMT, &B);
 

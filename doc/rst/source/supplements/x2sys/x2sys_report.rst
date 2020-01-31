@@ -14,10 +14,10 @@ Synopsis
 
 **gmt x2sys_report** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
 [ |-A| ]
-[ |-I|\ [*list*\ ] ]
+[ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ *nx_min* ]
-[ |-Q|\ **e**\ \|\ **i** ]
+[ |-Q|\ **e**\|\ **i** ]
 [ [ |SYN_OPT-R| ]
 [ |-S|\ *track* ]
 [ |SYN_OPT-V| ]
@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qe**\ \|\ **i**
+**-Qe**\|\ **i**
     Append **e** for external crossovers or **i** for internal
     crossovers only [Default is external].
 

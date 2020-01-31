@@ -27,6 +27,7 @@ install (PROGRAMS
 	gmt_prepmex.sh
 	gmt_make_custom_code.sh
 	gmt_uninstall.sh
+	gmt_getremote.sh
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools

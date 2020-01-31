@@ -5,7 +5,7 @@ gmt grdmath -R0.5/6.5/0.5/9.5 -I1.5 XCOL 36 MUL 72 SUB = lat.nc
 gmt grdmath -R0.5/6.5/0.5/9.5 -I1.5 YROW 50 MUL 5 ADD  = lon.nc
 gmt grd2xyz lat.nc > lat.txt
 gmt grd2xyz lon.nc > lon.txt
-gmt convert -A lon.txt lat.txt -o0-2,5 > tmp.txt
+gmt convert -A lon.txt lat.txt -o0:2,5 > tmp.txt
 gmt pstext -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K -F+f10+j -N << EOF > $ps
 1.25    0.45	CT	72S
 2.75	0.45	CT	36S

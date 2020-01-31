@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 288 180
-%%HiResBoundingBox: 0 0 288.0000 180.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdview
+%%HiResBoundingBox: 0 0 288.0000 180.0000
+%%Title: GMT v6.1.0_c5d9649-dirty_2020.01.18 [64-bit] Document from grdview
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:53:11 2018
+%%CreationDate: Sat Jan 18 19:21:13 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -336,9 +335,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +591,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +634,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -648,39 +642,45 @@ end
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [288 180] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 4800 def
 /PSL_page_ysize 3000 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
 FQ
 O0
 600 600 TM
-
 % PostScript produced by:
 %@GMT: gmt grdview above.nc -R-26/-12/63/67 -JM2.5i -Ciceland.cpt -Qi100 -Bafg -X0.5i -Y0.5i -p135/35
-%@PROJ: merc -26.00000000 -12.00000000 63.00000000 67.00000000 -779236.436 779236.436 9062139.390 10116680.739 +proj=merc +lon_0=-19 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 36 36 180 121.797
+%@PROJ: merc -26.00000000 -12.00000000 63.00000000 67.00000000 -779236.436 779236.436 9062139.390 10116680.739 +proj=merc +lon_0=-19 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+/PSL_movie_prog_indicator_completion {
+V
+FQ % Force turn off any prior fill
+37 W
+0.678 0.847 0.902 C
+O1
+120 4595 2795 Sc
+0 0 1 C
+N 4595 2795 120 -50 90 arc S
+U
+}!
 /PSL_GPP matrix currentmatrix def [0.707107 -0.40558 0.707107 0.40558 200.127 1025.27] concat
 25 W
+0.000 A
 4 W
 214 0 M
 0 2030 D
@@ -1588,15 +1588,15 @@ clipsave
 -12 0 D
 PSL_clip N
 V N 200 -191 T 3557 2040 scale [/Indexed /DeviceRGB 143 <
-FFFFFFF8FFFD9A863F4A76326A6A32527332B8BF9B626D32B39F49927E3C7D6934796532816D36726632C4B04F9E8A41
-C0AC4E96823ECCB852C2AE4EA793448893658E7A3ABCA84C5A7032E1CD5AE5D15CDDC959B7A34AC8B451FAE768AB9746
-E9D55EEEDA5F8A7639AF9B47D0BC54F2DE61B8A44B867237A38F42B19D48D5C156D9C557A49244968940CDDDCAFAE975
-9C8840F6E262FAE86EBBA74D727636FAE664FAE8706C78369D9142FAE76CFAE76AFAE8736F78377368327C9665897538
-B2BB9AFAE66698863F7E7C39FAE977FAE979D9C55AFAEB83FBEB87FAEA81FAEA7DFBEB85FAEA7FFBEC89FCED92FBEC8E
-FBEC8CFBED90FCF0A0FAEA7BFCED94FCEE98FCEE9A8692654E7532FCF4B9FCF0A28D793A7A9765FCEF9CFCEE96FCEF9E
-E7D35DD2C061587132836F36A99545AE9A47FCF5BCFCF5BFFCF6C2FCF0A4FCF3B0FCF1A6FCF2AEFDF7C8FDF7CCFDF8D2
-FCF2ACCDB953FCF3B3FDF6C5FCF2AAB09C48FCF1A8AD9946A69244BFAB4DBDA94CA3BA98746833C5B150C7B350FCF4B6
-DBC758A49043567232FEFBE8FEFCEEFFFEFAFEFDF4FDF9D5FDF8CFFDFADEFEFBE4FEFCEBFDF9DBFDF9D8F7E363FDFAE1
+FFFFFFF8FFFD9A863F4678326A6A32527332B8BF9B626D32B39F49927E3C7D6934796532816D36726632C4B04F9E8A41
+C0AC4E96823ECCB852C2AE4EA793448793658E7A3ABCA84C5A7032E1CD5AE5D15CDDC959B7A34AC8B451FAE768AB9746
+E9D55EEEDA5F8A7639AF9B47D0BC54F2DE61B8A44B867237A38F42B19D48D5C156D9C557A49244968940CCDDCAFAE975
+9C8840F6E262FAE86EBBA74D717636FAE664FAE8706A79369D9142FAE76CFAE76AFAE8736E79377368327A9765897538
+B1BC9AFAE66698863F7E7C39FAE977FAE979D9C55AFAEB83FBEB87FAEA81FAEA7DFBEB85FAEA7FFBEC89FCED92FBEC8E
+FBEC8CFBED90FCF0A0FAEA7BFCED94FCEE98FCEE9A8592654C7632FCF4B9FCF0A28D793A799765FCEF9CFCEE96FCEF9E
+E7D35DD2C061567232836F36A99545AE9A47FCF5BCFCF5BFFCF6C2FCF0A4FCF3B0FCF1A6FCF2AEFDF7C8FDF7CCFDF8D2
+FCF2ACCDB953FCF3B3FDF6C5FCF2AAB09C48FCF1A8AD9946A69244BFAB4DBDA94CA2BA98746833C5B150C7B350FCF4B6
+DBC758A49043547232FEFBE8FEFCEEFFFEFAFEFDF4FDF9D5FDF8CFFDFADEFEFBE4FEFCEBFDF9DBFDF9D8F7E363FDFAE1
 >] setcolorspace
 << /ImageType 1 /Decode [0 255] /Width 296 /Height 170 /BitsPerComponent 8
    /ImageMatrix [296 0 0 -170 0 170] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
@@ -1716,15 +1716,13 @@ U
 PSL_cliprestore
 PSL_cliprestore
 %%EndObject
-
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

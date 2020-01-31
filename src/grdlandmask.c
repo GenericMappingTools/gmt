@@ -24,7 +24,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdlandmask"
@@ -84,24 +84,24 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
 	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, gmt_grdfloat);		/* Default "wet" value = 0 */
 	C->N.mask[2] = C->N.mask[6] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -135,7 +135,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,x.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -172,7 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 			case 'E':	/* On-boundary setting */
 				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Trace lines through grid */
-					GMT_Report (API, GMT_MSG_VERBOSE, "-E<values> is presently being tested and is considered experimental\n");
+					GMT_Report (API, GMT_MSG_WARNING, "-E<values> is presently being tested and is considered experimental\n");
 					Ctrl->E.linetrace = true;
 					j = pos = 0;
 					strncpy (line, opt->arg,  GMT_LEN256-1);
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 						j++;
 					}
 					if (!(j == 1 || j == 4)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Specify 1 or 4 border values\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Specify 1 or 4 border values\n");
 						n_errors++;
 					}
 					if (j == 1) Ctrl->N.mask[3] = Ctrl->N.mask[5] = Ctrl->N.mask[7] = Ctrl->N.mask[1];	/* Duplicate border values */
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 mask values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Specify 2 or 5 mask values\n");
 					n_errors++;
 				}
 				Ctrl->N.wetdry = (j == 2);
@@ -262,10 +262,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
-	
+
 	int64_t ij;
 	uint64_t count[GRDLANDMASK_N_CLASSES];
-	
+
 	size_t nx_alloc = GMT_SMALL_CHUNK;
 
 	char line[GMT_LEN256] = {""};
@@ -273,7 +273,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch, inc_inch[2];
 	double dummy, *x = NULL, *y = NULL;
-	
+
 	gmt_grdfloat f_level = 0.0f;
 
 	struct GMT_SHORE c;
@@ -297,7 +297,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
     if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -311,64 +311,64 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	if (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] < 0.0) {	/* Shift longitudes */
 		temp_shift = true;
 		Grid->header->wesn[XLO] += 360.0;
 		Grid->header->wesn[XHI] += 360.0;
 	}
 	HH = gmt_get_H_hidden (Grid->header);
-	
+
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
-	
+
 	if (Ctrl->N.wetdry) {	/* Must duplicate wet/dry settings */
 		Ctrl->N.mask[6] = Ctrl->N.mask[2];
 		Ctrl->N.mask[4] = Ctrl->N.mask[8] = Ctrl->N.mask[0];
 	}
 
 	if ((err = gmt_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_ERROR, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n", c.version);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.title);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.source);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "GSHHG version %s\n", c.version);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", c.title);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.wetdry) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes in water will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes in water will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes on land will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes on land will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
 		}
 		else {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes in the oceans will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes in the oceans will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes on land will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes on land will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes in lakes will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes in lakes will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[4])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[4]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes in islands will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes in islands will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[6])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[6]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes in ponds will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes in ponds will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[8])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[8]);
 		}
 		if (Ctrl->E.linetrace) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes near shoreline will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes near shoreline will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes near lakeline will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes near lakeline will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes near islandline will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes near islandline will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[5])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[5]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes near pondline will be set to ");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes near pondline will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[7])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[7]);
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Apply linear scale to avoid wrap-around: -Jx100id; this temporarily changes the domain\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Apply linear scale to avoid wrap-around: -Jx100id; this temporarily changes the domain\n");
 	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work. Used bo be -Jx1id but had trouble with roundoff */
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
@@ -396,17 +396,17 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	if ((Cart = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, GMT->current.proj.rect, inc_inch, \
 		Grid->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	C = Cart->header;
-	
+
 	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
-	
+
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
 		GMT_Report (API, GMT_MSG_DEBUG, "Working on block # %5ld\n", bin);
 
 		if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_Report (API, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -479,7 +479,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				int last_col, last_row, start_col, end_col, brow, bcol;
 				double dx, del_x, del_y, xc, yc, xb, yb;
 				bool last_not_set;
-				
+
 				if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {	/* Just get segments */
 					gmt_free_shore (GMT, &c);
 					continue;
@@ -497,7 +497,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 					/* To handle lines that exit the grid we pursue the entire line even if outside.
 					 * We only check if (row,col) is inside when filling in between points and assigning nodes */
-					
+
 					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {
 						/* Get (row,col) and index to nearest node for this point */
 						row = gmt_M_grd_y_to_row (GMT, p[k].lat[pt], C);
@@ -525,9 +525,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
 								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
 							}
-							
+
 							/* Now add all crossings between this line segment and the gridlines outlining the cells centered on the nodes */
-							
+
 							for (brow = MIN (last_row, row) + 1; brow <= MAX (last_row, row); brow++) {	/* If we go in here we know dy is non-zero */
 								if (brow < 0 || brow > (int)C->n_rows) continue;	/* Outside grid */
 								/* Determine intersections between the line segment and parallels */
@@ -645,7 +645,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
 #endif
-	
+
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
@@ -657,7 +657,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		unsigned int row_l;
 		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
-	
+
 	if (temp_shift) {
 		Grid->header->wesn[XLO] -= 360.0;
 		Grid->header->wesn[XHI] -= 360.0;
@@ -670,13 +670,13 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 		for (k = 0; k < GRDLANDMASK_N_CLASSES; k++) {
 			if (count[k] == 0) continue;
 			if (k%2 == 0)
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level %d set for %" PRIu64 " nodes\n", k/2, count[k]);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Level %d set for %" PRIu64 " nodes\n", k/2, count[k]);
 			else
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Border between Levels %d-%d set for %" PRIu64 " nodes\n", (k-1)/2, (k+1)/2, count[k]);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Border between Levels %d-%d set for %" PRIu64 " nodes\n", (k-1)/2, (k+1)/2, count[k]);
 		}
 	}
 

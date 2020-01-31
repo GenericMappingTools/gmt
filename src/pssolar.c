@@ -239,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				else 		/* Then the default */
 					{Ctrl->T.night = true;		Ctrl->T.radius[0] = 90.833;}
 				if (pch) pch[0] = '+';	/* Restore it */
-					
+
 				break;
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
@@ -256,10 +256,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 	}
 
 	for (j = 0; j < 4; j++)	/* Count requested terminators */
-		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
+		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
@@ -406,7 +406,7 @@ int GMT_solar (void *V_API, int mode, void *args) {
 		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
 		if (!(print_postion || dump_data)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: solar\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
 	}
@@ -437,7 +437,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -471,7 +471,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			gmt_M_free (GMT, Out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -562,7 +562,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	else {	/* Plotting the terminator as line, polygon, or clip path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
-		
+
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);

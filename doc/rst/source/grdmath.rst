@@ -304,6 +304,12 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **GT**        | 2 1   | 1 if A > B, else 0                                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (both in 0-1)            |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **HSV2XYZ**   | 3 3   | Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)                    |
++-----------------+--------+-----------------------------------------------------------------------------------------------------+
 | **HYPOT**     | 2 1   | hypot (A, B) = sqrt (A\*A + B\*B)                                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **I0**        | 1 1   | Modified Bessel function of A (1st kind, order 0)                                                      |
@@ -343,6 +349,12 @@ and output arguments.
 | **KN**        | 2 1   | Modified Bessel function of A (2nd kind, order B)                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **KURT**      | 1 1   | Kurtosis of A                                                                                          |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LAB2HSV**   | 3 3   | Convert l,a,b triplets to h,s,v triplets                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LAB2RGB**   | 3 3   | Convert l,a,b triplets to r,g,b triplets                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LAB2XYZ**   | 3 3   | Convert l,a,b triplets to x,y,z triplets                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LCDF**      | 1 1   | Laplace cumulative distribution function for z = A                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -452,6 +464,12 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RCRIT**     | 1 1   | Rayleigh distribution critical value for alpha = A                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RGB2HSV**   | 3 3   | Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (all in 0-255 range)            |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RGB2LAB**   | 3 3   | Convert r,g,b triplets to l,a,b triplets, with r = A, g = B, and b = C (in 0-255 range)                |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RGB2XYZ**   | 3 3   | Convert r,g,b triplets to x,y,x triplets, with r = A, g = B, and b = C (in 0-255 range)                |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RINT**      | 1 1   | rint (A) (round to integral value nearest to A)                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RMS**       | 1 1   | Root-mean-square of A                                                                                  |
@@ -542,6 +560,12 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **XOR**       | 2 1   | 0 if A == NaN and B == NaN, NaN if B == NaN, else A                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **XYZ2HSV**   | 3 3   | Convert x,y,x triplets to h,s,v triplets                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **XYZ2LAB**   | 3 3   | Convert x,y,x triplets to l,a,b triplets                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **XYZ2RGB**   | 3 3   | Convert x,y,x triplets to r,g,b triplets                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **Y0**        | 1 1   | Bessel function of A (2nd kind, order 0)                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **Y1**        | 1 1   | Bessel function of A (2nd kind, order 1)                                                               |
@@ -628,7 +652,7 @@ Notes On Operators
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
    set or implied, else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is ellipsoidal then
+   :term:`PROJ_ELLIPSOID` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
@@ -691,7 +715,11 @@ Notes On Operators
    **SAZ**, **SBAZ**, **SDIST**, **YLM**, and **grd_YLMg**.
 
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
-   is selected with :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`.
+   is selected with :term:`PROJ_ELLIPSOID`.
+
+#. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
+   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
+   sRGB (x, y, z) conversions between all four color spaces.
 
 .. include:: explain_float.rst_
 

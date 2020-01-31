@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Convert GMT data table to Google Earth KML file"
 #define THIS_MODULE_KEYS	"<D{,>D},CC("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>KOVabdefghi" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>KOVabdefghiq" GMT_OPT("HMm")
 
 EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -268,7 +268,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +v turns off visibility [feature is visible].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o open document or folder when loaded [closed].\n");
-	GMT_Option (API, "a,bi2,di,e,f,g,h,i,:,.");
+	GMT_Option (API, "a,bi2,di,e,f,g,h,i,qi,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -408,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					else if (opt->arg[0] == 'n')	/* Label color */
 						ind = N_ID, k = 1;
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Old syntax is -Gf or -Gn (use -G[<fill>][+f|n] instead).\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Old syntax is -Gf or -Gn (use -G[<fill>][+f|n] instead).\n");
 						n_errors++;
 					}
 				}
@@ -509,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						n_errors++;
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors += parse_old_W (API, Ctrl, opt->arg);
 					}
 				}
@@ -565,7 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	
+
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
@@ -859,14 +859,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	gmt_set_geographic (GMT, GMT_IN);
@@ -878,7 +878,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
 	if (get_z && Ctrl->F.mode < LINE) n_coord++;
 	if (Ctrl->F.mode < LINE) Ctrl->E.tessellate = false;	/* No tessellation for symbols */
-	
+
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
@@ -887,22 +887,22 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (D->n_columns < n_coord) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed\n", (int)D->n_columns, n_coord);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %d are needed\n", (int)D->n_columns, n_coord);
 		Return (GMT_DIM_TOO_SMALL);
 	}
  //       if (Ctrl->L.active && Ctrl->L.n_cols >= (D->n_columns-2)) {
- //       	GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed because of -L\n", (int)D->n_columns, n_coord+Ctrl->L.n_cols);
+ //       	GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %d are needed because of -L\n", (int)D->n_columns, n_coord+Ctrl->L.n_cols);
  //       	Return (GMT_DIM_TOO_SMALL);
  //       }
-	
+
 	n_tables = D->n_tables;
 
 	if (Ctrl->N.mode == GET_LABEL && D->type != GMT_READ_MIXED) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Data file has no trailing text but -Nt was selected\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Data file has no trailing text but -Nt was selected\n");
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	if (Ctrl->N.mode == GET_COL_LABEL && Ctrl->N.col >= D->n_columns ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Data file has fewer columns than implied by -N<col>");
+		GMT_Report (API, GMT_MSG_ERROR, "Data file has fewer columns than implied by -N<col>");
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -922,7 +922,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	
+
 	Out = gmt_new_record (GMT, NULL, record);	/* Since we only need to worry about text in this module */
 
 	/* Now we are ready to take on some input values */
@@ -938,13 +938,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->F.mode == WIGGLE) {	/* Adjust wiggle scale for units and then take inverse */
 		char unit_name[GMT_LEN16] = {""};
 		gmt_check_scalingopt (GMT, 'Q', Ctrl->Q.unit, unit_name);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wiggle scale given as %g z-data units per %s.\n", Ctrl->Q.scale, unit_name);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale given as %g z-data units per %s.\n", Ctrl->Q.scale, unit_name);
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Initialize distance machinery */
 		Ctrl->Q.scale = 1.0 / Ctrl->Q.scale;	/* Now in map-distance units (i.e, unit they appended) per users data units */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wiggle scale inverted as %g %s per z-data units.\n", Ctrl->Q.scale, unit_name);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale inverted as %g %s per z-data units.\n", Ctrl->Q.scale, unit_name);
 		/* Convert to degrees per user data unit - this is our scale that converts z-data to degree distance latitude */
 		Ctrl->Q.scale = R2D * (Ctrl->Q.scale / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wiggle scale inverted to yield %g degrees per z-data unit\n", Ctrl->Q.scale);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale inverted to yield %g degrees per z-data unit\n", Ctrl->Q.scale);
 	}
 	if (!GMT->common.O.active) {
 		/* Create KML header */
@@ -1178,7 +1178,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					gmt_M_memcpy (kml->z, z, S->n_rows, double);
 					kml->n_in = S->n_rows;
 					kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, false, true, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
-				} 
+				}
 			}
 			else {
 				unsigned int col;
@@ -1279,11 +1279,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						ascii_output_three (API, Out, out, N);
 						if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
 							/* GE cannot handle polygons crossing the dateline; warn for now */
-							GMT_Report (API, GMT_MSG_VERBOSE,
+							GMT_Report (API, GMT_MSG_WARNING,
 							            "At least on polygon is straddling the Dateline. Google Earth will wrap these the wrong way\n");
-							GMT_Report (API, GMT_MSG_VERBOSE,
+							GMT_Report (API, GMT_MSG_WARNING,
 							            "Split such polygons into East and West parts and plot them as separate polygons.\n");
-							GMT_Report (API, GMT_MSG_VERBOSE, "Use gmtconvert to help in this conversion.\n");
+							GMT_Report (API, GMT_MSG_WARNING, "Use gmtconvert to help in this conversion.\n");
 							no_dateline = true;
 						}
 						last_x = out[GMT_X];

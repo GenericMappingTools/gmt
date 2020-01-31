@@ -24,7 +24,7 @@ cat << EOF > tt.awk
 }
 EOF
 # Need access to PS source files for this plot
-GMT_SHAREDIR=`gmt --show-sharedir`
+GMT_SHAREDIR=$(gmt --show-sharedir)
 egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/postscriptlight/$1.ps | $AWK -f tt.awk > tt.chart
 cat << EOF > tt.awk
 # This awk script creates a file for gmt plot to plot a rectangle for undefined entries

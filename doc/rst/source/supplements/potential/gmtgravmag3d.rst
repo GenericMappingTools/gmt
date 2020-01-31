@@ -23,7 +23,7 @@ Synopsis
 [ |-S|\ *radius* ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
-[ **-fg**\ ]
+[ **-fg**]
 [ |SYN_OPT--| ]
 
 |No-spaces|

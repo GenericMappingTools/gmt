@@ -74,6 +74,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdhisteq
    grdimage
    grdinfo
+   grdinterpolate
    grdlandmask
    grdmask
    grdmath
@@ -232,6 +233,7 @@ Core Modules
     - :doc:`grdhisteq`
     - :doc:`grdimage`
     - :doc:`grdinfo`
+    - :doc:`grdinterpolate`
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
@@ -448,6 +450,8 @@ Gridding
 | :doc:`surface`        | |surface_purpose|         |
 +-----------------------+---------------------------+
 | :doc:`triangulate`    | |triangulate_purpose|     |
++-----------------------+---------------------------+
+| :doc:`grdinterpolate` | |grdinterpolate_purpose|  |
 +-----------------------+---------------------------+
 
 Sampling of 1-D and 2-D data

@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt spectrum1d** [ *table* ] [ |-S|\ *segment_size* ]
-[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
-[ |-N|\ [\ *name_stem*] ] [ |-T| ] [ |-W| ]
+[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\|\ **m**] ]
+[ |-N|\ [*name_stem*] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -63,7 +64,7 @@ ASCII unless **-bo** is set) are as follows:
 *name_stem*.coh
     (Squared) coherency spectrum, or linear correlation coefficient as a
     function of frequency. Dimensionless number in [0, 1]. The
-    Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5. 
+    Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5.
 
 In addition, a single file with all of the above as individual columns will
 be written to *stdout* (unless disabled via **-T**).
@@ -138,12 +139,12 @@ Optional Arguments
 
 **-W**
     Write Wavelength rather than frequency in column 1 of the output
-    file[s] [Default = frequency, (cycles / *dt*)]. 
+    file[s] [Default = frequency, (cycles / *dt*)].
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 2 output columns]. 
+.. |Add_-bo| replace:: [Default is 2 output columns].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -162,6 +163,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_help.rst_
 
@@ -230,7 +233,7 @@ the spectrum of that model. This last approach is what is done in what is called
 
 Welch's method is a tried-and-true method. In his method, you choose a segment length,
 **-S**\ *N*, so that estimates will be made from segments of length *N*. The frequency samples
-(in cycles per delta_t unit) of your P_useful will then be at *k* /(*N* \* *delta_t*), 
+(in cycles per delta_t unit) of your P_useful will then be at *k* /(*N* \* *delta_t*),
 where *k* is an integer, and you will get *N* samples (since the spectrum is an even
 function of *f*, only *N*/2 of them are really useful). If the length of your entire
 data set, x(t), is *M* samples long, then the variance in your P_useful will decrease

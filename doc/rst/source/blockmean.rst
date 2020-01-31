@@ -17,11 +17,11 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**+p**\ \|\ **P**] ]
+[ |-E|\ [**+p**\|\ **P**] ]
 [ |-G|\ [*grdfile*] ]
-[ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+[ |-S|\ [**m**\|\ **n**\|\ **s**\|\ **w**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -30,6 +30,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -49,7 +50,7 @@ Either **blockmean**, :doc:`blockmedian`, or
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file, or you may
+:term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 Required Arguments
@@ -68,7 +69,7 @@ Optional Arguments
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
     **-bi**] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
-    data values. [\ *w*] is an optional weight for the data. If no file
+    data values. [*w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 
 .. _-A:
@@ -78,7 +79,7 @@ Optional Arguments
     Append comma-separated codes for available fields: **z** (the mean
     data z, but see **-S**), **s** (standard deviation), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
-    Note **s**\ \|\ **l**\ \|\ **h** requires **-E** [Default is just **z**].
+    Note **s**\|\ **l**\|\ **h** requires **-E** [Default is just **z**].
 
 .. _-C:
 
@@ -87,13 +88,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**+p**\ \|\ **P**]
+**-E**\ [**+p**\|\ **P**]
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-    If **-E+p**\ \|\ **P** are used then input data uncertainties are expected and *s*
+    If **-E+p**\|\ **P** are used then input data uncertainties are expected and *s*
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
@@ -106,7 +107,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
+**-S**\ [**m**\|\ **n**\|\ **s**\|\ **w**]
     Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
     to report the sum of weights [Default (or **-Sm** reports mean value].
@@ -118,7 +119,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\ \|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted mean values for
@@ -153,6 +154,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with

@@ -6,7 +6,7 @@ int main (int argc, char **argv)
 {
 	int y, mode = 1;
 	double IGRF[7];
-	
+
 	if (argc > 1) mode = 2;
 	for (y = 1960; y <= 2005; y++) {
 		MGD77_igrf10syn (0, (double)y, mode, 0.0, 0.0, 45.0, IGRF);

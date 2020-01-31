@@ -90,11 +90,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->E.rot.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->E.rot.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -283,7 +283,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -317,7 +317,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		pol = D->table[0];	/* Since it is a single file */
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
@@ -341,7 +341,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Requested a fixed reconstruction time outside range of rotation table\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -378,7 +378,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		/* Just need on common set of x/y arrays; select G_mod[0] as our template */
 		G = G_mod[0];
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
@@ -394,7 +394,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
@@ -509,15 +509,15 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
-	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
-	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
-	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
+	if (n_outside) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
+	if (n_old) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
+	if (n_NaN) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		/* Now write model prediction grid(s) */
 		char file[PATH_MAX] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			sprintf (file, Ctrl->G.file, tag[Ctrl->S.mode[k]]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
 			strcpy (G_mod[k]->header->x_units, "degrees_east");
 			strcpy (G_mod[k]->header->y_units, "degrees_north");
 			snprintf (G_mod[k]->header->remark, GMT_GRID_REMARK_LEN160, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode[k]], Ctrl->E.rot.file);

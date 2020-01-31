@@ -59,7 +59,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*minlat/maxlat*\ ]
+**-D**\ [*minlat/maxlat*]
     Use the extended latitude range -80.738/+80.738. Alternatively,
     append *minlat/maxlat* as the latitude extent of the input img file.
     [Default is -72.006/72.006]. Not usually required since we can
@@ -123,7 +123,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*scale*\ ]
+**-S**\ [*scale*]
     Multiply the img file values by *scale* before storing in grid file.
     [Default is 1.0]. For recent img files: img topo files are stored in
     (corrected) meters [**-S**\ 1]; free-air gravity files in mGal\*10
@@ -242,7 +242,7 @@ it may be always better to use)
         gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value
-for :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` is inch. Then since the above merc_grav.nc
+for :term:`PROJ_LENGTH_UNIT` is inch. Then since the above merc_grav.nc
 file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., :doc:`grdcontour </grdcontour>`,

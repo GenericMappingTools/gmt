@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_datalist** *track(s)* **-T**\ *TAG* 
+**gmt x2sys_datalist** *track(s)* **-T**\ *TAG*
 [ |-A| ]
 [ |-E| ]
 [ |-F|\ *name1*,\ *name2*,... ]
@@ -55,7 +55,7 @@ Optional Arguments
     files for each track and data column are called *track.column*.adj
     and are expected to be in the **$X2SYS_HOME**/*TAG* directory. The
     adjustments are only applied if the corresponding adjust file can be
-    found [No residual adjustments]
+    found [No residual adjustments].
 
 .. _-E:
 
@@ -148,7 +148,7 @@ and *correction* consists of one or more white-space-separated *term*\ s
 that will be **subtracted** from the observation before output. Each
 *term* must have this exact syntax:
 
-*factor*\ [\*[*function*\ ]([*scale*\ ](\ *abbrev*\ [-*origin*]))[^\ *power*]]
+*factor*\ [\*[*function*]([*scale*](\ *abbrev*\ [-*origin*]))[^\ *power*]]
 
 where terms in brackets are optional (the brackets themselves are not
 used but regular parentheses must be used exactly as indicated). No

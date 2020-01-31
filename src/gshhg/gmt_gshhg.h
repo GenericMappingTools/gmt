@@ -20,7 +20,7 @@
 
 /*!
  * \file gmt_gshhg.h
- * \brief Include file defining macros, functions and structures used in gshhg.c 
+ * \brief Include file defining macros, functions and structures used in gshhg.c
  */
 
 #ifndef _GMT_GSHHG

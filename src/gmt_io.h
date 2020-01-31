@@ -29,7 +29,7 @@
 
 /*!
  * \file gmt_io.h
- * \brief  
+ * \brief
  */
 
 #ifndef GMT_IO_H
@@ -212,13 +212,23 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 	unsigned int order;	/* The initial order (0,1,...) but this will be sorted on col */
 	unsigned int convert;	/* 2 if we must convert the data by log10, 1 if scale, offset */
 	double scale;		/* Multiplier for raw in value */
-	double offset;		/* Offset applied after multiplier */ 
+	double offset;		/* Offset applied after multiplier */
 };
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	unsigned int type;	/* Data type e.g., GMT_FLOAT */
 	off_t skip;		/* Rather than read/write an item, jump |skip| bytes before (-ve) or after (+ve) read/write */
 	int (*io) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to the correct read or write function given type/swab */
+};
+
+/*! For selecting row ranges via -q */
+struct GMT_ROW_RANGE {
+	int64_t first, last, inc;
+};
+
+/*! For selecting data ranges via -q */
+struct GMT_DATA_RANGE {
+	double first, last;
 };
 
 struct GMT_IO {				/* Used to process input data records */
@@ -241,6 +251,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
 	bool variable_in_columns;	/* true if we are reading ASCII records with variable numbers of columns */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
+	bool has_previous_rec;		/* true if we have the previous record for this segment */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 	bool first_rec;			/* true when reading very first data record in a dataset */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
@@ -255,6 +266,7 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int record_type[2];	/* Either GMT_READ|WRITE_DATA (0), GMT_READ|WRITE_TEXT (1), or GMT_READ|WRITE_MIXED (2) (for input and output) */
 	unsigned int n_numerical_cols;	/* As it says */
 	unsigned int max_cols_to_read;	/* For ascii input [all] */
+	unsigned int n_row_ranges[2];	/* How many row ranges given in -q */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -263,7 +275,9 @@ struct GMT_IO {				/* Used to process input data records */
 					   8	NaNs encountered in first 2/3 cols */
 	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	uint64_t rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
-	uint64_t pt_no;			/* Number of current valid points in a row  */
+	uint64_t data_record_number_in_set[2];	/* Number of current valid data record number in the whole dataset, for input and output. Headers not counted.  */
+	uint64_t data_record_number_in_tbl[2];	/* Number of current valid data record number in the current table, for input and output. Headers not counted.  */
+	uint64_t data_record_number_in_seg[2];	/* Number of current valid data record number in the current segment, for input and output. Headers not counted.  */
 	int64_t curr_pos[2][4];		/* Keep track of current input/output table, segment, row, and table headers (for rec-by-rec action) */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
@@ -295,6 +309,8 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir true */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
+	struct GMT_ROW_RANGE row_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output rows */
+	struct GMT_DATA_RANGE data_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output times */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	/* The remainder are just pointers to memory allocated elsewhere */

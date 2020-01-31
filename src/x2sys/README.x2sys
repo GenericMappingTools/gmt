@@ -84,7 +84,7 @@ card format.  In that format, all the columns are given back to back
 with no intervening spaces (Such files were usually written
 back in the dark ages when nobody put much emphasis on human
 readability).  One example of such a format is the MGD-77 format for
-marine underway geophysical data from NGDC.  For BINARY files, 
+marine underway geophysical data from NGDC.  For BINARY files,
 each column can be of stored as any of the standard data types
 (e.g., int, char, short int, double, float).  Regardless of format,
 the structure of the input spatial time-series track data files

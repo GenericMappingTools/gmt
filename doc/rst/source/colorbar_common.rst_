@@ -11,8 +11,8 @@ Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
-units is specified by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
-If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
+units is specified by :term:`FONT_ANNOT_PRIMARY`.
+If a label is requested, it is plotted with :term:`FONT_LABEL`.
 
 Required Arguments
 ------------------
@@ -24,7 +24,7 @@ Optional Arguments
 
 .. _-B:
 
-**-B**\ [**p**\ \|\ **s**]\ *parameters*
+**-B**\ [**p**\|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
     the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
@@ -48,8 +48,7 @@ Optional Arguments
     is given then we read stdin.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). If not given, the module
-    will read stdin. Like :doc:`grdview`, we can understand
+    color segment boundaries (but see **-B**). Like :doc:`grdview`, we can understand
     pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
@@ -60,12 +59,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [\ **+w**\ *length*\ [/\ *width*\ ]]\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**\ \|\ **v**\ ][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+w**\ *length*\ [/\ *width*]]\ [**+e**\ [**b**\|\ **f**][*length*]][**+h**\|\ **v**][**+j**\ *justify*]\ [**+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+
+    .. include:: explain_refpoint.rst_
+
     For **-Dj** or **-DJ** with codes TC, BC, ML, MR (i.e., centered on one of the map sides) we
     pre-calculate all further settings.  Specifically, the *length* is set to 80% of the map side,
     horizontal or vertical depends on the side, the offset is MAP_LABEL_OFFSET for **Dj** with an
@@ -81,13 +79,10 @@ Optional Arguments
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
-    Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Add sidebar triangles for back- and/or foreground
     colors with **+e**. Append **f** (foreground) or **b** (background) for only one sidebar triangle [Default
-    gives both]. Optionally, append triangle height [Default is half the
-    barwidth].
-    Move text to opposite side with **+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**].
+    gives both]. Optionally, append triangle height [Default is half the barwidth].
+    Move text to opposite side with **+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**].
     Horizontal scale bars: Move annotations and labels above the scale bar [Default is below];
     the unit remains on the left.
     Vertical scale bars: Move annotations and labels to the left of the scale bar [Default is to the right];
@@ -101,7 +96,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the scale using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale panel [no fill].
@@ -127,7 +122,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*max_intens*\ \|\ *low\_i*/*high_i*]
+**-I**\ [*max_intens*\|\ *low\_i*/*high_i*]
     Add illumination effects. Optionally, set the range of intensities
     from - to + *max\_intens*. If not specified, 1 is used.
     Alternatively, append *low/high* intensities to specify an
@@ -157,7 +152,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**p**\ \|\ *dpi*]
+**-N**\ [**p**\|\ *dpi*]
     Controls how the color scale should be encoded graphically.
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).

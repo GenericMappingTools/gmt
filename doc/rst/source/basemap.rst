@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ [*file*] ]
 [ |SYN_OPT-B| ]
 [ |-F|\ *box* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-T|\ *rose* ]
 [ |-T|\ *mag_rose* ]

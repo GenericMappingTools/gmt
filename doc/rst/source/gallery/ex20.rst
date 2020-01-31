@@ -16,7 +16,7 @@ The following recipe is used when designing a new symbol.
    *x* and *y*. Use ruler and compass to draw your new symbol using
    straight lines, arcs of circles, and stand-alone geometrical objects
    (see :doc:`plot </plot>` man page for a full
-   description of symbol design). In this Section we will create two new
+   description of symbol design). Here we will create two new
    symbols: a volcano and a bulls eye.
 
 .. figure:: /_images/GMT_volcano.*

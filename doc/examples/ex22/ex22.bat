@@ -37,7 +37,7 @@ gmt begin ex22
 	gmt makecpt -Cred,green,blue -T0,100,300,10000 -N
 
 	REM Start plotting. First lay down map, then plot quakes with size = magnitude * 0.015":
-	gmt coast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000 -Y2.75i
+	gmt coast -Rg -JK180/22c -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000
 	gmt plot -C -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 %file%
 
 	REM Create legend input file for NEIS quake plot
@@ -45,20 +45,20 @@ gmt begin ex22
 	echo D 0 1p >> neis.legend
 	echo N 3 >> neis.legend
 	echo V 0 1p >> neis.legend
-	echo S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km) >> neis.legend
-	echo S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km) >> neis.legend
-	echo S 0.1i c 0.1i blue 0.25p 0.2i Very deep (> 300 km) >> neis.legend
+	echo S 0.25c c 0.25c red   0.25p 0.5c Shallow depth (0-100 km) >> neis.legend
+	echo S 0.25c c 0.25c green 0.25p 0.5c Intermediate depth (100-300 km) >> neis.legend
+	echo S 0.25c c 0.25c blue  0.25p 0.5c Very deep (> 300 km) >> neis.legend
 	echo D 0 1p >> neis.legend
 	echo V 0 1p >> neis.legend
 	echo N 7 >> neis.legend
 	echo V 0 1p >> neis.legend
-	echo S 0.1i c 0.06i - 0.25p 0.3i M 3 >> neis.legend
-	echo S 0.1i c 0.08i - 0.25p 0.3i M 4 >> neis.legend
-	echo S 0.1i c 0.10i - 0.25p 0.3i M 5 >> neis.legend
-	echo S 0.1i c 0.12i - 0.25p 0.3i M 6 >> neis.legend
-	echo S 0.1i c 0.14i - 0.25p 0.3i M 7 >> neis.legend
-	echo S 0.1i c 0.16i - 0.25p 0.3i M 8 >> neis.legend
-	echo S 0.1i c 0.18i - 0.25p 0.3i M 9 >> neis.legend
+	echo S 0.25c c 0.15c - 0.25p 0.75c M 3 >> neis.legend
+	echo S 0.25c c 0.20c - 0.25p 0.75c M 4 >> neis.legend
+	echo S 0.25c c 0.25c - 0.25p 0.75c M 5 >> neis.legend
+	echo S 0.25c c 0.30c - 0.25p 0.75c M 6 >> neis.legend
+	echo S 0.25c c 0.35c - 0.25p 0.75c M 7 >> neis.legend
+	echo S 0.25c c 0.40c - 0.25p 0.75c M 8 >> neis.legend
+	echo S 0.25c c 0.45c - 0.25p 0.75c M 9 >> neis.legend
 	echo D 0 1p >> neis.legend
 	echo V 0 1p >> neis.legend
 	echo N 1 >> neis.legend
@@ -71,15 +71,15 @@ gmt begin ex22
 	echo T @_https://earthquake.usgs.gov@_.  Interested users may also receive email alerts >> neis.legend
 	echo T from the USGS. >> neis.legend
 	echo T This script could be called monthly to update the latest information. >> neis.legend
-	echo G 0.4i >> neis.legend
+	echo G 0.9c >> neis.legend
 	echo # Add USGS logo >> neis.legend
 	echo I @USGS.png 1i RT >> neis.legend
-	echo G -0.3i >> neis.legend
+	echo G -0.75c >> neis.legend
 	echo L 12p,Times-Italic LB %me% >> neis.legend
 
 	REM OK, now we can actually run gmt legend.  We center the legend below the map.
 	REM Trial and error shows that 1.7i is a good legend height:
-	gmt legend -DJBC+o0/0.4i+w7i/1.7i -F+p+glightyellow neis.legend
+	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend
 
 	del neis.legend usgs_quakes_22.txt
 gmt end show

@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][\ *size*\ [**u**]][/*size_y*]
+**-S**\ [*symbol*][*size*\ [**u**]][/*size_y*]
     Plot symbols. If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
@@ -37,7 +37,7 @@
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.  Use **+B**\ [*base*\ ] if the bar height is measured relative
+        data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin].
 
     **-SB**
@@ -45,7 +45,7 @@
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.  Use **+B**\ [*base*\ ] if the bar length is measured relative
+        data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin].
 
     **-Sc**
@@ -70,7 +70,7 @@
 	the desired diameter to **-SE-** and this fixed diameter is used instead.
 	For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront.  Supply distance gap between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
         front instead. If *size* is missing it is set to 30% of the *gap*, except
@@ -107,7 +107,7 @@
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
         unchanged.) Furthermore, the dimensions must be given in geographical instead of
-        plot-distance units. 
+        plot-distance units.
 	For a degenerate rectangle (square) with one dimension given, use **-SJ-**.
 	The dimension is excepted to be given in column 4.  Alternatively, append
 	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
@@ -129,7 +129,7 @@
         append /*string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append %\ *font*
-        to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
+        to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
     **-Sm**
@@ -153,7 +153,7 @@
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
         **+b**\ *base* to change this value.  If *base* is not appended then we read it
-        from the last input data column.  Use **+B**\ [*base*\ ] if the column height
+        from the last input data column.  Use **+B**\ [*base*] if the column height
         is measured relative to *base* [Relative to origin].
         The facet colors will be modified to
         simulate shading.  Use **-SO** to disable such 3-D illumination.
@@ -171,11 +171,11 @@
         **q**\ uoted line, i.e., lines with annotations such as contours.
         It is assumed that each individual line has a constant *z* level
         (i.e., each line must lie in the *x-y* plane).  Append
-        [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*labelinfo*].
+        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
         The required argument controls the placement of labels along the quoted
         lines. Choose among five controlling algorithms:
 
-            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between labels on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -192,7 +192,7 @@
                 file that matches locations along the quoted lines. Inexact matches
                 and points outside the region are skipped.
 
-            **l**\ \|\ **L**\ *line1*\ [,\ *line2*,...]
+            **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give *start* and *stop* coordinates for one or more comma-separated
                 straight line segments. Labels will be placed where these lines
                 intersect the quoted lines. The format of each *line* specification
@@ -208,7 +208,7 @@
                 line [Default centers them along the line]. **N**-1 places one
                 justified label at start, while **N**\ +1 places one justified label
                 at the end of quoted lines. Optionally, append
-                /*min\_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+                /*min\_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
                 minimum distance separation between successive labels is enforced.
 
             **x\|X**\ *xfile.d*
@@ -216,7 +216,7 @@
                 intersections between the quoted lines and the lines in *xfile.d*.
                 **X** will resample the lines first along great-circle arcs.
                 In addition, you may optionally append
-                **+r**\ *radius*\ [**c**\ \|\ **i**\ \|\ **p**] to set a minimum
+                **+r**\ *radius*\ [**c**\|\ **i**\|\ **p**] to set a minimum
                 label separation in the x-y plane [no limitation].
 
             The optional *labelinfo* controls the specifics of the label
@@ -229,7 +229,7 @@
 
             **+c**\ *dx*\ [/*dy*]
                 Sets the clearance between label and optional text box. Append
-                **c**\ \|\ **i**\ \|\ **p** to specify the unit or % to indicate a
+                **c**\|\ **i**\|\ **p** to specify the unit or % to indicate a
                 percentage of the label font size [15%].
 
             **+d**
@@ -252,7 +252,7 @@
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
-                **-SqN**\ \|\ **n**\ +\|-1 is used.
+                **-SqN**\|\ **n**\ +\|-1 is used.
 
             **+l**\ *label*
                 Sets the constant label text.
@@ -267,7 +267,7 @@
                 entire label in double quotes.
                 **+Ld**
                 Take the Cartesian plot distances along the line as the label;
-                append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
+                append **c**\|\ **i**\|\ **p** as the unit [Default is
                 **PROJ\_LENGTH\_UNIT**].
                 **+LD**
                 Calculate actual map distances; append
@@ -285,7 +285,7 @@
 
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of labels by the specified amount (append
-                **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
+                **c**\|\ **i**\|\ **p** to specify the units). Increments
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
                 plot x/y coordinates system [no nudging]. Not allowed with **+v**.
@@ -304,7 +304,7 @@
                 Will not place labels where the line's radius of curvature is
                 less than *min\_rad* [Default is 0].
 
-            **+t**\ [*file*\ ]
+            **+t**\ [*file*]
                 Saves line label x, y, and text to *file* [Line\_labels.txt].
                 Use **+T** to save x, y, angle, text instead.
 
@@ -404,11 +404,11 @@
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
-        [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **N**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*symbolinfo*].
+        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
         The required argument controls the placement of symbols along the decorated
         lines. Choose among six controlling algorithms:
 
-            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between symbols on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -425,7 +425,7 @@
                 file that matches locations along the decorated lines. Inexact matches
                 and points outside the region are skipped.
 
-            **l**\ \|\ **L**\ *line1*\ [,\ *line2*,...]
+            **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give the coordinates of the end points for one or more comma-separated straight line segments.
                 Symbols will be placed where these lines intersect the decorated lines.
                 The format of each *line* specification is *start_lon*/*start_lat*/*stop_lon*/*stop_lat*.
@@ -434,20 +434,20 @@
                 center of the map, given as [LCR][BMT].
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 
-            **n**\ \|\ **N**\ *n_symbol*
+            **n**\|\ **N**\ *n_symbol*
                 Specifies the number of equidistant symbols for decorated lines
                 [1]. Upper case **N** starts placing symbols exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one symbol
                 at start, while **N**\ +1 places one symbol
                 at the end of decorated lines. Optionally, append
-                /*min_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
                 minimum distance separation between successive symbols is enforced.
 
-            **s**\ \|\ **S**\ *n_symbol*
-                Same as **n**\ \|\ **N**\ *n_symbol* but implies that the input data are
+            **s**\|\ **S**\ *n_symbol*
+                Same as **n**\|\ **N**\ *n_symbol* but implies that the input data are
 		        first to be converted into a series of 2-point line segments before plotting.
 
-            **x**\ \|\ **X**\ *xfile.d*
+            **x**\|\ **X**\ *xfile.d*
                 Reads the multisegment file *xfile.d* and places symbols at the
                 intersections between the decorated lines and the lines in *xfile.d*.
                 **X** will resample the lines first along great-circle arcs.
@@ -464,17 +464,17 @@
                 Turns on debug which will draw helper points and lines to illustrate
                 the workings of the decorated line setup.
 
-            **+g**\ [*fill*\ ]
+            **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
 
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append
-                **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
+                **c**\|\ **i**\|\ **p** to specify the units). Increments
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
                 plot x/y coordinates system [no nudging].
 
-            **+p**\ [*pen*\ ]
+            **+p**\ [*pen*]
                 Draws the outline of symbols [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].

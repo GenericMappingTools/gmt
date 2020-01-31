@@ -40,7 +40,7 @@ _gmt()
     opts=( --help --show-datadir --show-bindir --version )
 
     # strip off any leading "gmt" in module names:
-    progs=(`gmt --show-modules | sed -e 's/^gmt//g'`)
+    progs=($(gmt --show-modules | sed -e 's/^gmt//g'))
 
     # complete first arg
     if [[ ${COMP_CWORD} -eq 1 ]]; then

@@ -60,7 +60,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -81,12 +81,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 			if ((k = gmt_get_graphics_id (GMT, p)) == GMT_NOTSET) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 				n_errors++;
 			}
 		}
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -110,7 +110,7 @@ char *get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 			n++;
 		}
 		else if (opt->option != 'V') {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized argument -%c%s\n", opt->option, opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument -%c%s\n", opt->option, opt->arg);
 			*error = GMT_PARSE_ERROR;
 		}
 		opt = opt->next;
@@ -141,7 +141,7 @@ int GMT_begin (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) return (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) return (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((error = parse (GMT, options)) != 0) Return (error);
 

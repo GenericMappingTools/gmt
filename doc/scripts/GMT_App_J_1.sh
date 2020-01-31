@@ -37,7 +37,7 @@
 #
 # Impulse response:
 #   Let r be measured in units relative to the filter width.
-#   The filter width defines a diameter, so the impulse 
+#   The filter width defines a diameter, so the impulse
 #   response is non-zero only for r < 0.5, as for x above.
 #   So the graph of the impulse response h(r) for 0 < r < 0.5
 #   is identical to the graph for h(x) for 0 < x < 0.5 above.

@@ -1,7 +1,7 @@
     The required argument controls the placement of labels along the quoted
     lines. Choose among five controlling algorithms:
 
-    **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+    **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
         For lower case **d**, give distances between labels on the plot
         in your preferred measurement unit **c** (cm), **i** (inch), or
         **p** (points), while for upper case **D**, specify distances in
@@ -23,7 +23,7 @@
         *line* specification is *start/stop*, where *start* and *stop*
         are either a specified point *lon/lat* or a 2-character **XY**
         key that uses the justification format employed in :doc:`text` to
-        indicate a point on the map, given as [LCR][BMT]. 
+        indicate a point on the map, given as [LCR][BMT].
         In addition, you can use Z-, Z+ to mean the global minimum and
         maximum locations in the grid. **L** will interpret the point pairs
         as defining great circles [Default is straight line].
@@ -33,7 +33,7 @@
         the line [Default centers them along the line]. **N**-1 places
         one justified label at start, while **N**\ +1 places one
         justified label at the end of quoted lines. Optionally, append
-        /*min\_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+        /*min\_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
         minimum distance separation between successive labels is
         enforced.
     **x\|X**\ *xfile.d*
@@ -43,5 +43,5 @@
         great-circle arcs.
 
     In addition, you may optionally append
-    **+r**\ *radius*\ [**c**\ \|\ **i**\ \|\ **p**] to set a minimum
+    **+r**\ *radius*\ [**c**\|\ **i**\|\ **p**] to set a minimum
     label separation in the x-y plane [no limitation].

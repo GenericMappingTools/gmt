@@ -32,5 +32,4 @@ label Kilauea crater to complete the figure.
    :width: 500 px
    :align: center
 
-   Mixing UTM and geographic data sets requires knowledge of the map region domain in
-   both UTM and lon/lat coordinates and consistent use of the same map scale.
+   Mixing UTM and geographic data sets requires consistent use of the same map scale.
