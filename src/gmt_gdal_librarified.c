@@ -169,6 +169,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
 		}
 		Grid->data = (float *)tmp;
+		gmt_grd_flip_vertical (Ctrl->data, (unsigned)nXSize, (unsigned)nYSize, 0, 1);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 		                    NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
 			return GMT->parent->error;
