@@ -315,10 +315,11 @@ fonts can be found in the :doc:`gmt` man page.
         is *on* but you can turn this off by setting it to *off*.
 
     **GMT_COMPATIBILITY**
-        Determines if this GMT version should be able to parse command-line
-        options for a prior major release.  Specify either 4 or 5. If 4 is
-        set we will parse obsolete GMT 4 options and issue warnings; if 5
-        is set then parsing GMT 4 only syntax will result in errors [4].
+        Determines if the current GMT version should be able to parse command-line
+        options for a prior major release.  Specify the major release version number,
+        e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings; if 5
+        is set then parsing GMT 4 only syntax will result in errors [4]; likewise
+        for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
         Address of the data directory on the remote server [The SOEST server].
