@@ -2452,6 +2452,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 
 static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
 	int i = 0;
+	if (imagefile == NULL) return -1;
 	while (i < PSL->internal.n_userimages) {
 		if (!strcmp (PSL->internal.user_image[i], imagefile))	/* Yes, found it */
 			return (i);

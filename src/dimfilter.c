@@ -789,7 +789,10 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				gmt_M_memset (value, Ctrl->N.n_sectors, double);
 				gmt_M_memset (wt_sum, Ctrl->N.n_sectors, double);
 #ifdef OBSOLETE
-				if (Ctrl->E.active) S = 0, Sx = Sy = Sz = Sxx = Syy = Sxy = Sxz = Syz = Sxx = Sw = 0.0;
+				if (Ctrl->E.active) {
+					S = 0;
+					Sx = Sy = Sz = Sxx = Syy = Sxy = Sxz = Syz = Sxx = Sw = 0.0;
+				}
 				n = 0;
 #endif
 
@@ -1151,9 +1154,9 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-		err_workarray = gmt_M_memory (GMT, NULL, S->n_columns, double);
 
 		S = D->table[0]->segment[0];	/* A Single-segment data file */
+		err_workarray = gmt_M_memory (GMT, NULL, S->n_columns, double);
 		for (row = 0; row < S->n_rows; row++) {
 			/* Store data into array and find sum/min/max, starting with col 0 */
 			err_sum = err_workarray[0] = err_min = err_max = S->data[0][row];
