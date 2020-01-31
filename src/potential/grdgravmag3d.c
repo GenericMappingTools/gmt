@@ -1228,7 +1228,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	for (row = r_start; row < r_stop; row++) {                     /* Loop over input grid rows */
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING))
-			GMT_Message(GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
+			GMT_Message (GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
 
 		if (Ctrl->H.do_igrf) {                                     /* Compute a row of IGRF dec & dip */
 			for (col = 0; col < Grid->header->n_columns - 1 + MIN(indf,1); col++) {

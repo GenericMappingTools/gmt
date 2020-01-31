@@ -283,7 +283,7 @@ static inline bool fwrite_check (struct GMT_CTRL *GMT, const void *ptr,
 	if (fwrite (ptr, size, nitems, stream) != nitems) {
 		char message[GMT_LEN256] = {""};
 		snprintf (message, GMT_LEN256, "%s: error writing %" PRIuS " bytes to stream.\n", __func__, size * nitems);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 		return true;
 	}
 	return false;
@@ -5904,7 +5904,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 	/* length must be a multiple SwapWidth */
 	if ( length%swapwidth != 0 ) {
 		snprintf (message, GMT_LEN256, "%s: error: length must be a multiple of %u bytes.\n", __func__, swapwidth);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 		return false;
 	}
 
@@ -5912,7 +5912,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 	buffer = malloc (chunksize);
 	if (buffer == NULL) {
 		snprintf (message, GMT_LEN256, "%s: error: cannot malloc %" PRIuS " bytes.\n", __func__, chunksize);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 		return false;
 	}
 
@@ -5926,14 +5926,14 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 #ifdef DEBUG_BYTESWAP
 				snprintf (message, GMT_LEN256, "%s: EOF encountered at %" PRIu64
 						" (before offset at %" PRIu64 ")\n", __func__, bytes_read, offset);
-				GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 #endif
 				GMT->current.io.status = GMT_IO_EOF;
 				gmt_M_str_free (buffer);
 				return true;
 			}
 			snprintf (message, GMT_LEN256, "%s: error reading stream while skipping.\n", __func__);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 			gmt_M_str_free (buffer);
 			return false;
 		}
@@ -5947,7 +5947,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 #ifdef DEBUG_BYTESWAP
 	if (bytes_read) {
 		snprintf (message, GMT_LEN256, "%s: %" PRIu64 " bytes skipped at beginning.\n", __func__, bytes_read);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, message);
 	}
 #endif
 
@@ -5961,19 +5961,19 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 				/* EOF */
 #ifdef DEBUG_BYTESWAP
 				snprintf (message, GMT_LEN256, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset - extrabytes);
-				GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, message);
 #endif
 				if (extrabytes != 0) {
 					snprintf (message, GMT_LEN256, "%s: warning: the last %" PRIuS " bytes were ignored during swapping.\n",
 							__func__, extrabytes);
-					GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, message);
 				}
 				GMT->current.io.status = GMT_IO_EOF;
 				gmt_M_str_free (buffer);
 				return true;
 			}
 			snprintf (message, GMT_LEN256, "%s: error reading stream while swapping.\n", __func__);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 			gmt_M_str_free (buffer);
 			return false;
 		}
@@ -5981,7 +5981,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 #ifdef DEBUG_BYTESWAP
 		snprintf (message, GMT_LEN256, "%s: read %" PRIuS " bytes into buffer of size %" PRIuS ".\n",
 				__func__, nbytes, chunksize);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, message);
 #endif
 
 		/* nbytes must be a multiple of SwapWidth */
@@ -5991,7 +5991,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 			snprintf (message, GMT_LEN256, "%s: warning: read buffer contains %" PRIuS " bytes which are "
 					"not aligned with the swapwidth of %" PRIuS " bytes.\n",
 					__func__, nbytes, extrabytes);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, message);
 			nbytes -= extrabytes;
 		}
 
@@ -6020,7 +6020,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 	}
 #ifdef DEBUG_BYTESWAP
 	snprintf (message, GMT_LEN256, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, message);
 #endif
 
 	/* skip to EOF */
@@ -6032,12 +6032,12 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 #ifdef DEBUG_BYTESWAP
 				snprintf (message, GMT_LEN256, "%s: %" PRIu64 " bytes nbytes until EOF.\n",
 						__func__, bytes_read - offset - length);
-				GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, message);
 #endif
 				break;
 			}
 			snprintf (message, GMT_LEN256, "%s: error reading stream while skipping to EOF.\n", __func__);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, message);
 			gmt_M_str_free (buffer);
 			return false;
 		}

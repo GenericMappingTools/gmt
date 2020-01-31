@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	}
 
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s cruise(s) %s %s\n\t[-A[c][<size>]][+i<inc><unit>] [%s] ", name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\n", API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);

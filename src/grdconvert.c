@@ -89,10 +89,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 			GMT_Message (API, GMT_TIME_NONE, "\t%s\n", grdformats[i]);
 	}
 #ifdef HAVE_GDAL
-	GMT_Message (API, GMT_TIME_NONE, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
-	GMT_Message (API, GMT_TIME_NONE, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
-	GMT_Message (API, GMT_TIME_NONE, "	Both driver names and data types are case insensitive.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tWhen <id>=gd on output, the grid will be saved using the GDAL library.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tSpecify <driver> and optionally <dataType>. Driver names are as in GDAL\n\t(e.g., netCDF, GTiFF, etc.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n\tinteger.  Default type is float32.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tBoth driver names and data types are case insensitive.\n");
 #endif
 	return (GMT_MODULE_USAGE);
 }

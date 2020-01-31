@@ -15747,33 +15747,33 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdin. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdin.\n");
 			return NULL;
 		}
 	}
 	if ( _setmode(_fileno(stdout), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdout. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdout.\n");
 			return NULL;
 		}
 	}
 	if ( _setmode(_fileno(stderr), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stderr. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stderr.\n");
 			return NULL;
 		}
 	}
 	if ( _set_fmode(_O_BINARY) != 0 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O.\n");
 			return NULL;
 		}
 	}
@@ -15813,14 +15813,14 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  New_PSL_Ctrl\n");
 	if (!GMT->PSL) {
-		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize PSL - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Error: Could not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
 	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
-		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
