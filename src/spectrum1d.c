@@ -257,12 +257,12 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 			x_varp *= (C->dt/C->n_spec);
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
-			GMT_Message (GMT->parent, GMT_TIME_NONE, "Window %d from %d to %d\n", w, t_start, t_stop);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Window %d from %d to %d\n", w, t_start, t_stop);
 			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",
 				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, format, C->x_variance, x_varp, (C->x_variance/x_varp), C->y_variance, y_varp, C->y_pow);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, format, C->x_variance, x_varp, (C->x_variance/x_varp), C->y_variance, y_varp, C->y_pow);
 		}
 	}
 	/* Now we can divide by n_windows for the ensemble average.
