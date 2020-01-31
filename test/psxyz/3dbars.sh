@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Show placements of columns on a variable surface
 ps=3dbars.ps
-gmt grdmath -R0/10E/0/10E -I1 X Y MUL = t.nc
+gmt grdmath -R0/10E/0/10N -I1 X Y MUL = t.nc
 gmt makecpt -Cjet -T0/100 > t.cpt
 # Create a few x,y,z
 cat << EOF > t.txt

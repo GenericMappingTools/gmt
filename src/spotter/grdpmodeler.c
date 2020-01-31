@@ -509,9 +509,9 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
-	if (n_outside) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
-	if (n_old) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
-	if (n_NaN) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
+	if (n_outside) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
+	if (n_old) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
+	if (n_NaN) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		/* Now write model prediction grid(s) */
 		char file[PATH_MAX] = {""};

@@ -5690,7 +5690,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 
 	if (n == 0) return -99;	/* Nothing given */
 	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* No repeat last = first point so reuse first */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Calling gmtlib_determine_pole on an open polygon\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling gmtlib_determine_pole on an open polygon\n");
 		n_unique = n;	/* Need to loop over all input points and then go to point 0 for last leg */
 		open = true;
 		last_point = n - 1;

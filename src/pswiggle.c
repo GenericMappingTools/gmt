@@ -325,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* -G<fill>[+n][+p] */
 				j = 0;	neg = pos = false;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "np"))) {	/* Gave +n and/or +p */
+				if ((c = strstr (opt->arg, "+n+p")) || (c = strstr (opt->arg, "+p+n")) || (c = strstr (opt->arg, "+n")) || (c = strstr (opt->arg, "+p"))) {	/* Gave +n and/or +p */
 					pp = 0;	txt_a[0] = 0;
 					while (gmt_getmodopt (GMT, 'G', c, "np", &pp, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {

@@ -348,7 +348,7 @@ GMT_LOCAL void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl
 	}
 	if (Ctrl->D.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
 		char way = (Ctrl->D.rhoi < Ctrl->D.rhol) ? '<' : '>';
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->D.rhoi, way, Ctrl->D.rhol);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->D.rhoi, way, Ctrl->D.rhol);
 		rho_load = Ctrl->D.rhoi;
 		A = sqrt ((Ctrl->D.rhom - Ctrl->D.rhoi)/(Ctrl->D.rhom - Ctrl->D.rhol));
 	}
