@@ -908,7 +908,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
 	}
-	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
+	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P && P->n_colors > 1);
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0])) {

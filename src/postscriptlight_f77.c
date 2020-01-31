@@ -178,7 +178,7 @@ int PSL_comment_ (char *text, int len)
 
 int PSL_free_ (void *ptr)
 {
-	return (PSL_free_nonmacro (ptr);
+	return (PSL_free_nonmacro (ptr));
 }
 
 int PSL_beginaxes_ (double *llx, double *lly, double *width, double *height, double *x0, double *y0, double *x1, double *y1)
