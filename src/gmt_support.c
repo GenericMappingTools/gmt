@@ -7944,11 +7944,11 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 	if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
 		gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
 		P->n_colors -= ks;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
 	}
 	else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
 		P->n_colors = ks;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ignored.\n", *z_high);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ignored.\n", *z_high);
 	}
 	/* Behave as a single CPT range with no hinge from now on */
 	P->has_hinge = 0;
@@ -10327,7 +10327,7 @@ GMT_LOCAL void make_fraction (struct GMT_CTRL *GMT, double x0, int maxden, int *
 	*n = m[0][0];	*d = m[1][0];
  	e = x0 - ((double) *n / (double) *d);
 	if (e > GMT_CONV4_LIMIT)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bad fraftion, error = %g\n", e);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bad fraction, error = %g\n", e);
 }
 
 /*! . */

@@ -910,7 +910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
-	else GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
 		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */

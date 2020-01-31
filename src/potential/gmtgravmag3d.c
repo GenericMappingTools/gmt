@@ -490,7 +490,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_Report (API, GMT_MSG_INFORMATION "%d triangles had ccw order\n", n_swap);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%d triangles had ccw order\n", n_swap);
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {

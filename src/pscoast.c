@@ -918,7 +918,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_Report (API, GMT_MSG_WARNING, "Pattern fill requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Pattern fill requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -944,7 +944,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */
-		GMT_Report (API, GMT_MSG_WARNING, "-JE requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 		if (!Ctrl->S.active)	/* Since we are painting wet areas we must now reset them to white */
