@@ -490,7 +490,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_Report (API, GMT_MSG_WARNING, "%d triangles had ccw order\n", n_swap);
+		GMT_Report (API, GMT_MSG_INFORMATION "%d triangles had ccw order\n", n_swap);
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
@@ -646,7 +646,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	error = GMT_NOERROR;
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && i > j*one_100) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) && i > j*one_100) {
 			GMT_Message (API, GMT_TIME_NONE, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}

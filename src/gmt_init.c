@@ -7973,7 +7973,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	else if ((c = gmt_first_modifier (GMT, item, "u"))) {	/* Got +u<unit> */
+	else if ((c = strstr (item, "+u"))) {	/* Got +u<unit> */
 		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 		strncpy (string, item, GMT_BUFSIZ-1);
 		r_unit = c[2];	/* The data unit */
@@ -8012,7 +8012,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	length = strlen (string) - 1;
 	col_type[0] = col_type[1] = 0;
-	if ((c = gmt_first_modifier (GMT, string, "r"))) {	/* Got +r */
+	if ((c = strstr (string, "+r"))) {	/* Got +r */
 		GMT->common.R.oblique = true;
 		c[0] = '\0';	/* Remove the trailing +r so gmt_scanf will work */
 	}

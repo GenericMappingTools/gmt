@@ -579,7 +579,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 		if (p_conflicts) {
 			gmt_grdfloat f_value = (gmt_grdfloat)(sum / header->n_columns);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			handle_pole_averaging (GMT, header, grid, f_value, -1);
 		}
 	}
@@ -594,7 +594,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 		if (p_conflicts) {
 			gmt_grdfloat f_value = (gmt_grdfloat)(sum / header->n_columns);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			handle_pole_averaging (GMT, header, grid, f_value, +1);
 		}
 	}
@@ -609,7 +609,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		}
 	}
 	if (we_conflicts)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected %u inconsistent values along periodic east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected %u inconsistent values along periodic east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
 }
 
 GMT_LOCAL void grdio_grd_wipe_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
@@ -1283,13 +1283,13 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian %s grid, yet x spans exactly 360 and -90 <= y <= 90.\n", dir[direction]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s grid, yet x spans exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian %s grid, yet x cells span exactly 360 and -90 <= y <= 90.\n", dir[direction]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s grid, yet x cells span exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 	}
@@ -2066,7 +2066,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	gmt_M_free (GMT, tmp);
 
 	if (n_warn)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
 			G->header->wesn[XLO], G->header->wesn[XHI], n_warn);
 }
 
