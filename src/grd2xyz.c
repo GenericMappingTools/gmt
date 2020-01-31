@@ -483,9 +483,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
-			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " finite values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64" NaN values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_NOERROR);

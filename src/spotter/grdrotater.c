@@ -516,7 +516,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->T.active && !Ctrl->E.rot.single) {	/* Gave no time to go with the rotations, use rotation times */
-		GMT_Report (API, GMT_MSG_WARNING, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
+		GMT_Report (API, GMT_MSG_INFORMATION, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
 		Ctrl->T.n_times = n_stages;
 		Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 		for (t = 0; t < Ctrl->T.n_times; t++) Ctrl->T.value[t] = p[t].t_start;

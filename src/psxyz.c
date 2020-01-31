@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype;
+	unsigned int n_errors = 0, ztype, n_files = 0;
 	int n, j;
 	bool three_D = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
@@ -333,6 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			case '<':	/* Skip input files */
 				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -463,6 +464,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	}
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Syntax error -Z option: No CPT given via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Syntax error -Z option: Not compatible with -G\n");
@@ -625,7 +628,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 
 	/* Do we plot actual symbols, or lines */
@@ -669,7 +672,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
@@ -1563,8 +1565,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		PSL_command (GMT->PSL, "U\n");
-		if (n_warn[1]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
-		if (n_warn[2]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		gmt_M_free (GMT, data);
 		gmt_reset_meminc (GMT);
 	}

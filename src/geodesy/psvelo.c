@@ -487,7 +487,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
 					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
 					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+						GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;

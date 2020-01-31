@@ -7975,7 +7975,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	else if ((c = gmt_first_modifier (GMT, item, "u"))) {	/* Got +u<unit> */
+	else if ((c = strstr (item, "+u"))) {	/* Got +u<unit> */
 		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 		strncpy (string, item, GMT_BUFSIZ-1);
 		r_unit = c[2];	/* The data unit */
@@ -8014,7 +8014,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	length = strlen (string) - 1;
 	col_type[0] = col_type[1] = 0;
-	if ((c = gmt_first_modifier (GMT, string, "r"))) {	/* Got +r */
+	if ((c = strstr (string, "+r"))) {	/* Got +r */
 		GMT->common.R.oblique = true;
 		c[0] = '\0';	/* Remove the trailing +r so gmt_scanf will work */
 	}
@@ -8103,16 +8103,16 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */
 			double shift = (p[0] <= -360.0) ? 360.0 : -360.0;
 			p[0] += shift;	p[1] += shift;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-				"Warning -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+				"Option -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
 		}
 		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/nr for non mapping */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
 		}
 		else if (p[0] > p[1] && strchr (string, 'W') && strchr (string, 'E')) {	/* Used -R<lon>E/<lon>W so we must add 360 to east */
 			p[1] += 360.0;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-				"Warning -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+				"Option -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
 		}
 #if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */

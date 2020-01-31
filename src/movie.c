@@ -537,7 +537,7 @@ GMT_LOCAL void set_default_width (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl,
 	if (I->width > 0.0) return;
 	/* Assign default widths */
 	I->width = (strchr ("abcABC", I->kind)) ? 0.05 * def_width : 0.6 * def_width;
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "No width given for progress indicator %c. Setting width to %g%c.\n", I->kind, I->width, Ctrl->C.unit);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No width given for progress indicator %c. Setting width to %g%c.\n", I->kind, I->width, Ctrl->C.unit);
 	if (Ctrl->C.unit == 'c') I->width /= 2.54; else if (Ctrl->C.unit == 'p') I->width /= 72.0;	/* Now in inches */
 }
 
@@ -1361,7 +1361,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to determine current working directory - exiting.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
 		close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -1382,7 +1382,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	/* Get full path to this working directory */
 	if (getcwd (cwd, PATH_MAX) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to determine current working directory.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory.\n");
 		close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -1523,7 +1523,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=false T = %s", Ctrl->T.file, GMT->common.f.string, output);
 			else
 				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=false T = %s", Ctrl->T.file, output);
-			GMT_Report (API, GMT_MSG_WARNING, "Calling gmtmath with args %s\n", cmd);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Calling gmtmath with args %s\n", cmd);
 			GMT->current.setting.verbose = GMT_MSG_ERROR;	/* So we don't get unwanted verbosity from gmtmath */
   			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
 				Return (API->error);	/* Some sort of failure */

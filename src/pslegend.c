@@ -800,7 +800,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Cannot use -B if no -R -J */
 			GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = false;
-			GMT_Report (API, GMT_MSG_WARNING, "Disabling your -B option since -R -J was not set\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Disabling your -B option since -R -J were not set\n");
 		}
 	}
 	else if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
