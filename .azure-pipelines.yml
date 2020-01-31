@@ -21,6 +21,7 @@ jobs:
 # Lint Checker
 - job:
   displayName: 'Lint Checker'
+  timeoutInMinutes: 180
 
   pool:
     vmImage: 'ubuntu-18.04'

@@ -6,7 +6,7 @@
 # For PRs, check changed files only.
 #
 
-CPPCHECK="cppcheck --error-exitcode=1 --force"
+CPPCHECK="cppcheck --error-exitcode=1 --std=c99 --force --quiet"
 
 if [ "$BUILD_REASON" == "Schedule" ]; then
     # Check all C codes for scheduled jobs
