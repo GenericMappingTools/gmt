@@ -22,7 +22,7 @@ gmt grdgradient piramide.nc -D -Gaspect.nc
 gmt makecpt -Cred,green,blue,yellow -T-45/315/90 -N > pal.cpt
 
 gmt grdimage aspect.nc -JX10c -Cpal.cpt -P -K -B2 -BWSne -Xc > $ps
-gmt psscale -D11c/5c+w6c/0.6c+jML+e+n -Cpal.cpt -B90+u@. -O -K >> $ps
+gmt psscale -Dx11c/5c+w6c/0.6c+jML+e+n -Cpal.cpt -B90+u@. -O -K >> $ps
 gmt makecpt -Cjet -T0/1/0.1 > t.cpt
 gmt grdimage piramide.nc -J -O -K -Ct.cpt -B2 -BWSne -Y13c >> $ps
-gmt psscale -D11c/5c+w8c/0.6c+jML -Ct.cpt -O >> $ps
+gmt psscale -Dx11c/5c+w8c/0.6c+jML -Ct.cpt -O >> $ps

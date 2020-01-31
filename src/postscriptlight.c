@@ -1375,7 +1375,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	if (zstatus != Z_STREAM_END) {
 		/* "compressed" size is larger or other failure */
-		PSL_message (PSL, PSL_MSG_WARNING, "Warning: no deflate compression done.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Warning: no deflate compression done.\n");
 		PSL_free (output);
 		return NULL;
 	}

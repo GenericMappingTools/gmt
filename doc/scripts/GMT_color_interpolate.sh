@@ -4,13 +4,13 @@ gmt begin GMT_color_interpolate
 
 # Plot polar color map in the left; right (top) and wrong (bottom)
 	gmt makecpt -Cpolar -T-1/1
-	gmt colorbar -D1.7/1.6+w3i/0.3i+h+jTC -C -B0.5f0.1
-	gmt colorbar -D1.7/0.7+w3i/0.3i+h+jTC -C -B0.5f0.1 --COLOR_MODEL=hsv
+	gmt colorbar -Dx1.7/1.6+w3i/0.3i+h+jTC -C -B0.5f0.1
+	gmt colorbar -Dx1.7/0.7+w3i/0.3i+h+jTC -C -B0.5f0.1 --COLOR_MODEL=hsv
 
 # Plot rainbow color map in the left; right (top) and wrong (bottom)
 	gmt makecpt -Crainbow -T-1/1
-	gmt colorbar -D5.1/1.6+w3i/0.3i+h+jTC -C -B0.5f0.1
-	gmt colorbar -D5.1/0.7+w3i/0.3i+h+jTC -C -B0.5f0.1 --COLOR_MODEL=rgb
+	gmt colorbar -Dx5.1/1.6+w3i/0.3i+h+jTC -C -B0.5f0.1
+	gmt colorbar -Dx5.1/0.7+w3i/0.3i+h+jTC -C -B0.5f0.1 --COLOR_MODEL=rgb
 
 	gmt plot -Sd0.1i -Wblack -Gwhite << END
 0.2 1.6

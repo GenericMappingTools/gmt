@@ -872,7 +872,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (Ctrl->D.active) {
-		GMT_Report (API, GMT_MSG_WARNING, "With -D, no plotting will take place\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "With -D, no plotting will take place\n");
 		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_INFORMATION, "Contours will be written to standard output\n");
 	}
 	if ((error = GMT_Set_Columns (API, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
