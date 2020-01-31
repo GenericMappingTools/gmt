@@ -374,7 +374,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, lon);
 
 	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
 			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
 	}
 
