@@ -854,7 +854,7 @@ GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	rho_load = Ctrl->T.rhol;
 	if (Ctrl->T.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
 		char way = (Ctrl->T.rhoi < Ctrl->T.rhol) ? '<' : '>';
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->T.rhoi, way, Ctrl->T.rhol);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->T.rhoi, way, Ctrl->T.rhol);
 		rho_load = Ctrl->T.rhoi;
 		A = sqrt ((Ctrl->T.rhom - Ctrl->T.rhoi)/(Ctrl->T.rhom - Ctrl->T.rhol));
 	}
