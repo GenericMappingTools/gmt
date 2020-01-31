@@ -18,6 +18,22 @@ variables:
 
 jobs:
 
+# Lint Checker
+- job:
+  displayName: 'Lint Checker'
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  steps:
+  - bash: |
+      set -x -e
+      sudo apt-get install -y cppcheck
+    displayName: Install cppcheck
+
+  - bash: bash ci/run-cppcheck.sh
+    displayName: Run cppcheck
+
 # Linux - Compile only
 ########################################################################################
 - job:
