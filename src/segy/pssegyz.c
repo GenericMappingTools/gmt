@@ -166,8 +166,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qu<redvel> to apply reduction velocity (-ve removes reduction already present).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<mult> to multiply trace locations by <mult>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<dy> to override sample interval.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-S Specify <x/y> to set variable spacing.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   x,y are (number) for fixed location, c for cdp, o for offset, b<n> for long int at byte n.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify <x/y> to set variable spacing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x,y are (number) for fixed location, c for cdp, o for offset, b<n> for long int at byte n.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Plot wiggle trace (must specify either -W or -F).\n");
 	GMT_Option (API, "X");

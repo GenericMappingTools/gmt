@@ -337,7 +337,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						Ctrl->A.mode = (Ctrl->A.altitude != 0.0 || Ctrl->A.get_alt) ? KML_SEAFLOOR_REL : KML_SEAFLOOR;
 						break;
 					default:
-						GMT_Message (API, GMT_TIME_NONE, "Bad altitude mode. Use a, g or s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad altitude mode. Use a, g or s.\n");
 						n_errors++;
 						break;
 				}
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						Ctrl->F.geometry = GMT_IS_LINE;	/* And poly, but need LINE first so read works as line */
 						break;
 					default:
-						GMT_Message (API, GMT_TIME_NONE, "Bad feature type. Use s, e, t, l, p or w.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad feature type. Use s, e, t, l, p or w.\n");
 						n_errors++;
 						break;
 				}
@@ -487,7 +487,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0] == 'n')
 					Ctrl->S.scale[N_ID] = atof (&opt->arg[1]);
 				else {
-					GMT_Message (API, GMT_TIME_NONE, "-S requires c or n, then nondimensional scale\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-S requires c or n, then nondimensional scale\n");
 					n_errors++;
 				}
 				break;
@@ -527,21 +527,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					switch (p[0]) {
 						case 'a':	/* Altitude range */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+a requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+a requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[ALT] = atof (T[0]);	Ctrl->Z.max[ALT] = atof (T[1]);
 							break;
 						case 'l':	/* LOD */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+l requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+l requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[LOD] = atof (T[0]);	Ctrl->Z.max[LOD] = atof (T[1]);
 							break;
 						case 'f':	/* Fading */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+f requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+f requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[FADE] = atof (T[0]);	Ctrl->Z.max[FADE] = atof (T[1]);
@@ -553,7 +553,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 							Ctrl->Z.open = true;
 							break;
 						default:
-							GMT_Message (API, GMT_TIME_NONE, "-Z unrecognized modifier +%c\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "-Z unrecognized modifier +%c\n", p[0]);
 							n_errors++;
 							break;
 					}
@@ -911,7 +911,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (P->is_continuous) {
-			GMT_Message (API, GMT_TIME_NONE, "Cannot use continuous color palette\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot use continuous color palette\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -1031,7 +1031,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
-			GMT_Message (API, GMT_TIME_NONE, "Could not open description file %s\n", Ctrl->D.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Could not open description file %s\n", Ctrl->D.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		kml_print (API, Out, N++, "<description>");

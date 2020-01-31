@@ -137,7 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
-						GMT_Message (GMT->parent, GMT_TIME_NONE, "Bad feature type. Use s, l or p.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
 						n_errors++;
 						break;
 				}

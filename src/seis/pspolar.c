@@ -187,7 +187,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +j<justify> or +o<dx>/<dy> to change the text justification or offset relative to the symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is above the symbol, with font size of 12p].\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,e,h,i,qi,t,.");
 
 	return (GMT_MODULE_USAGE);

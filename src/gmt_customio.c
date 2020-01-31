@@ -1624,10 +1624,10 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 
 	if (GMT->session.grdformat[header->type][1] == 'd') {
 #ifdef HAVE_GDAL
-		GMT_Message(GMT->parent, GMT_TIME_NONE,
+		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
 			"Surfer 7 format in GMT is read-only but you can do it via GDAL by appending '=gd:GS7BG' to the file name\n");
 #else
-		GMT_Message(GMT->parent, GMT_TIME_NONE,
+		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
 			"As mentioned in the manual, Surfer 7 format in GMT is read-only\n");
 #endif
 		return (GMT_NOERROR);

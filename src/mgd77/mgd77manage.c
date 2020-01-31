@@ -1256,10 +1256,10 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 					switch (key) {
 						case MGD77_BAD_HEADER_RECNO:
-							GMT_Message (API, GMT_TIME_NONE, "Warning: Sequence number %d is outside range - skipped\n", number);
+							GMT_Report (API, GMT_MSG_WARNING, "Sequence number %d is outside range - skipped\n", number);
 							break;
 						case MGD77_BAD_HEADER_ITEM:
-							GMT_Message (API, GMT_TIME_NONE, "Warning: Sequence number %d, Item %d is not supported - skipped\n", number, item);
+							GMT_Report (API, GMT_MSG_WARNING, "Sequence number %d, Item %d is not supported - skipped\n", number, item);
 							break;
 						default:	/* Update internal structure as well as netCDF file attributes */
 							length = (MGD77_Header_Lookup[key].length == 1) ? 1 : strlen (answer);
@@ -1272,7 +1272,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 				else {			/* Systematic fixes */
 					if ((id = MGD77_Get_Column (GMT, field, &In)) == MGD77_NOT_SET) {
-						GMT_Message (API, GMT_TIME_NONE, "Warning: Correction found for %s which is not in this cruise?\n", field);
+						GMT_Report (API, GMT_MSG_WARNING, "Correction found for %s which is not in this cruise?\n", field);
 					}
 					else {
 						(void) MGD77_Info_from_Abbrev (GMT, field, &(D->H), &set, &item);
@@ -1284,7 +1284,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								if ((id = MGD77_Get_Column (GMT, "depth", &In)) == MGD77_NOT_SET) {
-									GMT_Message (API, GMT_TIME_NONE, "Warning: Correction implied for %s which is not in this cruise?\n", field);
+									GMT_Report (API, GMT_MSG_WARNING, "Correction implied for %s which is not in this cruise?\n", field);
 									break;
 								}
 								/* No break! - we want to fall through and also set depth adjustment */
@@ -1475,9 +1475,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			else if (old_flags) {	/* Had flags from before which we cannot delete */
 				MGD77_nc_status (GMT, nc_enddef (In.nc_id));	/* End define mode. */
-				GMT_Message (API, GMT_TIME_NONE, "File %s contains flags from an earlier E77 but this E77 do not contain any flags.\n", list[argno]);
-				GMT_Message (API, GMT_TIME_NONE, "The flags in the file %s will all be set to zero but cannot be removed.\n", list[argno]);
-				GMT_Message (API, GMT_TIME_NONE, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "File %s contains flags from an earlier E77 but this E77 do not contain any flags.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "The flags in the file %s will all be set to zero but cannot be removed.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
 				start[0] = 0;
 				count[0] = D->H.n_records;
 				gmt_M_memset (D->flags[0], D->H.n_records, int);	/* Reset all flags to 0 (GOOD) */

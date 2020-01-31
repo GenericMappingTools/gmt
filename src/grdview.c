@@ -1487,13 +1487,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "[B/W image]\n");
+			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Report (API, GMT_MSG_WARNING, "[B/W image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			gmt_M_free (GMT, bitimage_8);
 		}
 		else {
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "[color image]\n");
+			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Report (API, GMT_MSG_WARNING, "[color image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			gmt_M_free (GMT, bitimage_24);
