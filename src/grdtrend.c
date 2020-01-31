@@ -416,7 +416,7 @@ GMT_LOCAL void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsign
 	sprintf (pbasis[9], "P3(y)");
 
 	sprintf(format, "Coefficient fit to %%s: %s\n", GMT->current.setting.format_float_out);
-	for (i = 0; i < n_model; i++) GMT_Message (GMT->parent, GMT_TIME_NONE, format, pbasis[i], gtd[i]);
+	for (i = 0; i < n_model; i++) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, format, pbasis[i], gtd[i]);
 
 	return;
 }
