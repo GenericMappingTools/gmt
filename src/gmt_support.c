@@ -306,8 +306,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 		fill->pattern[i-1] = '\0';
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
-	len = (int)strlen (fill->pattern);
-	for (i = 0, pos = -1; i < ((int)strlen (fill->pattern)-1) && fill->pattern[i] && pos == -1; i++)
+	len = (int)strlen (fill->pattern) - 1;
+	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
 		if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 	if (pos > -1) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);

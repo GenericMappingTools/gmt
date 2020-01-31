@@ -609,6 +609,8 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
 	bool modified = false, got_directive = false, got_modifier = false;
 
+	if (options == NULL) return;	/* Nothing to process */
+	
 	#if !defined(USE_MODULE_LONG_OPTIONS)
 	this_module_kw = NULL;	/* Debugging: Not testing the module long-options */
 	#endif
@@ -3747,7 +3749,7 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 	gmt_M_unused(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter> */
-		size_t n = strlen (mods);
+		size_t n = (mods) ? strlen (mods) : 0;	/* Since mods may be NULL */
 		char *c = in, *p = NULL;
 		unsigned int *used = gmt_M_memory (GMT, NULL, n, unsigned int);
 		for ( ;; ) { /* Replace super-script escape sequence @+ with @1 */

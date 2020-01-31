@@ -68,4 +68,4 @@
 "vik         : Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]",
 "viridis     : New colormap Option D from matplotlib [C=RGB]",
 "world       : Colors for global bathymetry/topography relief [R=-7000/7000, H, C=RGB]",
-"wysiwyg     : 20 well-separated RGB colors [C=RGB]",
+"wysiwyg     : 20 well-separated RGB colors [C=RGB]"
