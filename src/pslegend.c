@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					Ctrl->D.refpoint->mode = GMT_REFPOINT_PLOT;
 					Ctrl->D.justify = PSL_TC;	/* Backwards compatible default justification */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", xx, yy, txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += gmt_M_check_condition (GMT, n < 3, "Error: Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
+					n_errors += gmt_M_check_condition (GMT, n < 3, "Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					if (n_errors) break;
 					if (xx[0] == 'x') {
 						Ctrl->D.refpoint->x = gmt_M_to_inch (GMT, &xx[1]);

@@ -908,13 +908,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	                                   "Cannot handle both a file list and multiple ps files in input\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
-	                                   "Error: Cannot read list file %s\n", Ctrl->L.file);
+	                                   "Option -L: Cannot read list file %s\n", Ctrl->L.file);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
 	                                   "Creation of Multipage PDF requires setting -F option\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (GMT->current.setting.run_mode == GMT_MODERN),
-	                                   "Error: Cannot use -L for list file under modern GMT mode\n");
+	                                   "Option -L Cannot use -L for list file under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_MODERN && !(Ctrl->In.n_files == 0 || (Ctrl->In.n_files == 1 && halfbaked)),
 	                                   "No listed input files allowed under modern GMT mode\n");

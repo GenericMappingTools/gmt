@@ -8176,7 +8176,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record does not know the number of output columns - set to equal input at %d\n", (int)GMT->common.b.ncol[GMT_IN]);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Error: GMT_Put_Record does not know the number of columns - must abort!\n");
+						GMT_Report (API, GMT_MSG_DEBUG, "GMT_Put_Record does not know the number of columns - must abort!\n");
 						return_error (API, GMT_N_COLS_NOT_SET);
 					}
 				}
