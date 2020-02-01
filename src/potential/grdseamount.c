@@ -229,7 +229,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -A: Must specify two values\n");
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -A: Must specify two values\n");
 						n_errors++;
 					}
 				}

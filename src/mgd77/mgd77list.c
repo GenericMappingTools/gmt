@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
 					if (!strchr ("cefg", (int)opt->arg[0])) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Flag must be c, f, g, or e\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Flag must be c, f, g, or e\n");
 						n_errors++;
 					}
 					else
@@ -608,7 +608,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N: Syntax is -Nd|s<unit>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Syntax is -Nd|s<unit>\n");
 						n_errors++;
 						break;
 				}
@@ -644,7 +644,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q: Syntax is -Qa|c|v<min>/<max>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Syntax is -Qa|c|v<min>/<max>\n");
 						n_errors++;
 						break;
 				}
@@ -677,7 +677,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->T.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T: append m, e, or neither\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -693,7 +693,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case '-':	case 'n':	Ctrl->Z.mode = true;	break;
 					case '+':	case 'p':	Ctrl->Z.mode = false;	break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Z: append n or p\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: append n or p\n");
 						n_errors++;
 						break;
 				}
@@ -707,11 +707,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Syntax error: Cannot specify both start time AND start distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Syntax error: Cannot specify both stop time AND stop distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.value <= 0.0, "Syntax error: -W weight must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Syntax error -S: Start distance exceeds stop distance!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Option -S: Start distance exceeds stop distance!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "Syntax error -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Syntax error -Qc: Minimum course change equals or exceeds maximum course change!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Syntax error -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error -D: Start time exceeds stop time!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Option -D: Start time exceeds stop time!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

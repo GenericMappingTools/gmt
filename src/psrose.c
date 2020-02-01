@@ -409,7 +409,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && Ctrl->E.mode == GMT_IN && gmt_access (GMT, Ctrl->E.file, R_OK),
-	                                 "Syntax error -E: Cannot read file %s!\n", Ctrl->E.file);
+	                                 "Option -E: Cannot read file %s!\n", Ctrl->E.file);
 	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Option -Z: factor must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Option -A: sector width must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Option -Q: confidence level must be in 0-1 range\n");

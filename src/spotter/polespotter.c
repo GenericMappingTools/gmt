@@ -225,7 +225,7 @@ int n;
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.file == NULL, "Syntax error option -G: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.length <= 0.0, "Syntax error -D: Must specify a positive length step.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.length <= 0.0, "Option -D: Must specify a positive length step.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == SPOTTER_SCAN_SPOTS && !Ctrl->S.dump_lines && !Ctrl->G.active, "Syntax error -Ss: Must specify at least one of -G, -L.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.dump_crossings && !Ctrl->S.file, "Syntax error -Ss: Must specify a file name if +c is used.\n");
 

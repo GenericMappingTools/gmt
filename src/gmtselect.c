@@ -507,18 +507,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active[RSET])) Ctrl->Z.max_col = 2;
 	if (Ctrl->Z.n_tests) Ctrl->Z.limit = gmt_M_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Option -C: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Option -C: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Option -C: Distance is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK),
-	                                   "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	                                   "Option -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK),
-	                                   "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	                                   "Option -F: Cannot read file %s!\n", Ctrl->F.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK),
-	                                   "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
+	                                   "Option -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Option -L: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Option -L: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Option -L: Distance is negative\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit),
 	                                   "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");

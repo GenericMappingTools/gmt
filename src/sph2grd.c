@@ -171,7 +171,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT
 					Ctrl->F.mode = SPH2GRD_GAUSSIAN;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F: Cannot find 2 or 4 tokens separated by slashes.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Cannot find 2 or 4 tokens separated by slashes.\n");
 					n_errors++;
 				}
 				break;

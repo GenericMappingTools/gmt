@@ -568,7 +568,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;

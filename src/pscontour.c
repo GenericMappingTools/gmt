@@ -590,12 +590,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				else if (opt->arg[0] != '-') {
 					Ctrl->C.interval = atof (opt->arg);
 					if (gmt_M_is_zero (Ctrl->C.interval)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be zero\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be zero\n");
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be negative (%s)\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be negative (%s)\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -998,7 +998,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
 			if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 				Return (API->error);
 			}

@@ -492,9 +492,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX,
 	                                 "Syntax error: Cannot specify both stop time AND stop distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop,
-	                                 "Syntax error -S: Start distance exceeds stop distance!\n");
+	                                 "Option -S: Start distance exceeds stop distance!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
-	                                 "Syntax error -D: Start time exceeds stop time!\n");
+	                                 "Option -D: Start time exceeds stop time!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
 	                                 "Syntax error -Gd: Must specify a positive gap distance in km!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,

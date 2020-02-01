@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;

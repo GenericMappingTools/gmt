@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -D: Basic parsing of reference point in %s failed\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
 					p_fail = true;
 					n_errors++;
 				}
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				else if ((p = strstr (opt->arg, "+t"))) {	/* Transparency color specified */
 					ind = PSIMG_TRA;	k = 0; p[0] = '\0';
 					if (opt->arg[0] == '\0') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -G: Must specify a color when +t is used\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Must specify a color when +t is used\n");
 						n_errors++;
 					}
 				}
@@ -245,7 +245,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-G with color - for transparency is deprecated; give no <color> instead.\n");
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -G: - is not a color\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: - is not a color\n");
 						n_errors++;
 					}
 				}

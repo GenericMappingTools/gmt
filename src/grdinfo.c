@@ -270,20 +270,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
 	                                   "Syntax error: Must specify one or more input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1,
-	                                   "Syntax error -D: The +n modifier requires a single grid file\n");
+	                                   "Option -D: The +n modifier requires a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0,
-	                                   "Syntax error -T: The optional increment must be positive\n");
+	                                   "Option -T: The optional increment must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1,
-	                                   "Syntax error -T: The optional alpha-trim value can only work with a single grid file\n");
+	                                   "Option -T: The optional alpha-trim value can only work with a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0),
-	                                   "Syntax error -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
+	                                   "Option -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED &&
 	                                   (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
-									   "Syntax error -I: Must specify a positive increment(s)\n");
+									   "Option -I: Must specify a positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active,
-	                                   "Syntax error -M: Not compatible with -I or -T\n");
+	                                   "Option -M: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active,
-	                                   "Syntax error -L: Not compatible with -I or -T\n");
+	                                   "Option -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active,
 	                                   "Syntax error: Only one of -I -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.active,
