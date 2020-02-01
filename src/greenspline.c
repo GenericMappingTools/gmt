@@ -374,7 +374,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3], txt[4], txt[5]);
 				if (!(n_items == 2 || n_items == 4 || n_items == 6)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -R: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
 				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->R3.range[0]), txt[0]);
@@ -403,21 +403,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						Ctrl->A.file = strdup (&opt->arg[2]);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expect -A>gradientfile>+f<format>\n");
 						n_errors++;
 					}
 					break;
 				}
 				/* New syntax */
 				if ((c = strstr (opt->arg, "+f")) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expect -A>gradientfile>+f<format>\n");
 						n_errors++;
 				}
 				else {
 					Ctrl->A.mode = (int)(c[2] - '0');
 					c[0] = '\0';	/* Temporarily chop off the modifier */
 					if (opt->arg[0] == 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: No file given\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: No file given\n");
 						n_errors++;
 					}
 					else
@@ -441,7 +441,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Expected -C[n]<cut>[+<file>]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[n]<cut>[+<file>]\n");
 						n_errors++;
 					}
 				}
@@ -491,7 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
 					gmt_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
@@ -499,7 +499,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				else if (opt->arg[0])	/* 2-D azimuth */
 					Ctrl->Q.az = atof(opt->arg);
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
 					n_errors++;
 				}
 				break;
@@ -545,7 +545,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 								Ctrl->S.value[0] = atof (&opt->arg[1]);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Append c|l|t|g|p|q\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -S: Append c|l|t|g|p|q\n");
 							n_errors++;
 						}
 						break;
@@ -570,7 +570,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Append c|l|t|g|p|q[<params>]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Append c|l|t|g|p|q[<params>]\n");
 						n_errors++;
 					break;
 				}
@@ -667,15 +667,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
 #endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Syntax error -S option: Tension must be in range 0 <= t < 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Option -S: Tension must be in range 0 <= t < 1\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Syntax error -Sc|t|r option: Cannot select -D3\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Syntax error -Sl option: Cannot select -D4 or higher\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Option -G: Must specify output grid file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Option -C: Must specify file name for eigenvalues if cut < 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T: Must specify mask grid file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Option -T: Only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Option -N: Must specify node file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 

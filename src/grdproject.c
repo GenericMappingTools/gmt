@@ -151,7 +151,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -E: Must specify positive dpi\n");
 				Ctrl->E.dpi = sval;
 				break;
 			case 'A':	/* Old Force specific unit option */
@@ -179,7 +179,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
 				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,
-							"Syntax error -M option: projected measure unit must be one of 'c', i', or 'p'\n");
+							"Option -M: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -203,7 +203,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 		Ctrl->C.active = Ctrl->F.active = true;
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
 	                                   "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2,
@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 	                                   "Syntax error: Must specify only one of -D or -E\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] < 0.0),
-	                                   "Syntax error -D option: Must specify positive increment(s)\n");
+	                                   "Option -D: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

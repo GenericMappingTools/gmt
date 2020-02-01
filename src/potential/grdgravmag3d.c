@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				if (Ctrl->H.pirtt) i = 1;
 				if (opt->arg[i] && (sscanf(&opt->arg[i], "%lf/%lf/%lf/%lf/%lf",
 				            &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report(API, GMT_MSG_ERROR, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report(API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
 					n_errors++;
 				}
 				break;
@@ -429,7 +429,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
 	                                "Syntax error Cannot specify both -C and -H options\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                "Syntax error -G option: Must specify output file\n");
+	                                "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
 	                                "Syntax error -H+m option: Must specify source file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
@@ -501,7 +501,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
 			Return (API->error);
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
 			Return (GMT_PARSE_ERROR);
 		}

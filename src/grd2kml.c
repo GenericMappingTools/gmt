@@ -335,7 +335,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Syntax error -H: Must specify an integer factor > 1.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Syntax error -E: Must specify an URL.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                 "Option -I: Must specify intensity file, value, or modifiers\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

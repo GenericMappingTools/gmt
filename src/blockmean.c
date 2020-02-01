@@ -270,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == BLK_MODE_OBSOLETE && Ctrl->W.sigma[GMT_IN],
 	                                   "Syntax error: The deprecated -Ep option requires plain -W (not -W+s) with precomputed weights (= 1/sigma^2) on input\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-	                                   "Syntax error -I option: Must specify positive increment(s)\n");
+	                                   "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

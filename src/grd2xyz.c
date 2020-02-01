@@ -180,7 +180,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 						}
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Must specify value or NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
 						n_errors++;
 					}
 				}

@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Must specify value or NaN\n");
 				}
 				break;
 			case 'G':	/* Output file */
@@ -250,14 +250,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	if (Ctrl->N.active && Ctrl->N.mode) {	/* For Natural NN gridding we cannot have stray options */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Syntax error -Nn: Cannot specify -E option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Syntax error -Nn: Cannot specify -S option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error -Nn: Cannot specify -W option\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.sectors <= 0, "Option -N: Must specify a positive number of sectors\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");

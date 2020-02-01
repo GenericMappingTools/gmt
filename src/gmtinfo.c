@@ -359,7 +359,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->T.active,
 	                                   "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 ,
-	                                   "Syntax error -T option: Must specify a positive increment\n");
+	                                   "Option -T: Must specify a positive increment\n");
 	n_errors += gmt_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -788,11 +788,11 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+  				GMT_Report (API, GMT_MSG_ERROR, "Option -E: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -T: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;

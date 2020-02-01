@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 					if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
 						inc = (max - min) / (inc - 1.0);
 					if (inc <= 0.0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Age increment must be positive\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 						n_errors++;
 					}
 					else {

@@ -265,7 +265,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.n_columns, &Ctrl->D.n_rows);
 				if (n == 1) Ctrl->D.n_rows = Ctrl->D.n_columns;
-				n_errors += gmt_M_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
+				n_errors += gmt_M_check_condition (GMT, n < 1, "Option -N: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-W option is deprecated; use -D modifier +w instead.\n");
@@ -294,11 +294,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
-	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+r)\n");
+	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
-			"Syntax error -D option: Must specify positive values for replication with +n\n");
+			"Option -D: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMG_FGD][0] == -1 && Ctrl->G.rgb[PSIMG_BGD][0] == -1,
-			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
+			"Option -G: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

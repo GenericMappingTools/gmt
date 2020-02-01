@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_ERROR, "Option -A: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 						Ctrl->F.mode = GMT_SPLINE_NN;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad spline selector %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -230,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				}
 				else if (opt->arg[0]) {
 					col = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -N option: Column number cannot be negative\n");
+					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -N: Column number cannot be negative\n");
 					Ctrl->N.col = col;
 					Ctrl->N.active = true;
 				}
@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				if (old_syntax && gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-T<col> option is deprecated; use -N<col> instead.\n");
 					col = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
+					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -T: Column number cannot be negative\n");
 					Ctrl->N.col = col;
 				}
 				else {	/* Set output knots */
@@ -286,7 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Syntax error: Specify only one of -N and -S\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

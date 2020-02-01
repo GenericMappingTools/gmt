@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -F option: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
 							n_errors++;
 							break;
 					}
@@ -201,9 +201,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 	}
 	if (Ctrl->F.active && Ctrl->F.mode == 0) Ctrl->F.mode = (Ctrl->S.active) ? 31 : 15;	/* Select all */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Syntax error -F option: Cannot select c without setting -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == 1 && fabs (Ctrl->S.lat) > 90.0, "Syntax error -S option: Fixed latitude cannot exceed +|- 90\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Option -F: Cannot select c without setting -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Option -L: Choose between 1, 2, or 3\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == 1 && fabs (Ctrl->S.lat) > 90.0, "Option -S: Fixed latitude cannot exceed +|- 90\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

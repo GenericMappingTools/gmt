@@ -736,9 +736,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 	}
 
 #if 0
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error -R option: Must specify region\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -R: Must specify region\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-	                                   "Syntax error -I option: Must specify positive dx, dy\n");
+	                                   "Option -I: Must specify positive dx, dy\n");
 #endif
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

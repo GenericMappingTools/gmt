@@ -430,7 +430,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A option: No area given\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: No area given\n");
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;

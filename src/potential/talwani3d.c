@@ -215,16 +215,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 	}
 	if (GMT->common.R.active[RSET]) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET],
-		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
+		                                 "Option -R: Must specify both -R and -I (and optionally -r)\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) && Ctrl->Z.mode == 1,
-	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
+	                                 "Option -Z: Cannot also specify -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
-	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
-	                                 "Syntax error -N option: Must specify output gridfile name.\n");
+	                                 "Option -N: Must specify output gridfile name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

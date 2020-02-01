@@ -407,7 +407,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	}
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Give value between 1 and %d\n", n_hotspots);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);

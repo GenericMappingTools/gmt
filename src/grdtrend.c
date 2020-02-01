@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify an input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Specify 1-10 model parameters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Option -N: Specify 1-10 model parameters\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

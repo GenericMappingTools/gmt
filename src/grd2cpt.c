@@ -247,7 +247,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -268,11 +268,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
 				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-								"Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+								"Option -G: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				Ctrl->H.active = true;
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: Cannot decode limits\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
@@ -341,14 +341,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				}
 			}
 			else {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values %s\n", T_arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -T: Cannot decode values %s\n", T_arg);
 				n_errors++;
 			}
 		}
 		else {	/* Got correct modern args */
 			if (strchr (T_arg, '/')) {	/* Gave low/high/inc */
 				if (sscanf (T_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Cannot decode values\n");
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
@@ -373,7 +373,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			GMT_Report (API, GMT_MSG_COMPAT, "Option -S<start>/<stop>/<inc> or -S<n> is deprecated; use -T instead.\n");
 			if (strchr (S_arg, '/')) {	/* Gave low/high/inc */
 				if (sscanf (S_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Cannot decode values %s\n", S_arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Cannot decode values %s\n", S_arg);
 					n_errors++;
 				}
 				Ctrl->T.mode = 0;
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			Ctrl->T.active = true;
 		}
 		else {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Cannot decode values %s\n", S_arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -S: Cannot decode values %s\n", S_arg);
 			n_errors++;
 		}
 	}
@@ -401,13 +401,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
 	                                "Syntax error: -F+c and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
-					"Syntax error -L option: min_limit must be less than max_limit.\n");
+					"Option -L: min_limit must be less than max_limit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 0 && (Ctrl->T.high <= Ctrl->T.low || Ctrl->T.inc <= 0.0),
-					"Syntax error -S option: Bad arguments\n");
+					"Option -S: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 1  && Ctrl->T.n_levels == 0,
-					"Syntax error -S option: Bad arguments\n");
+					"Option -S: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
-					"Syntax error -T option: Cannot be combined with -E nor -S option.\n");
+					"Option -T: Cannot be combined with -E nor -S option.\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");

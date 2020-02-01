@@ -280,13 +280,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					char *q = strstr (p, "+p");
 					if (q) q[0] = '\0';	/* Chop off the +p modifier */
 					if ((Ctrl->C.size = gmt_M_to_inch (GMT, &p[2]))) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode pointsize %s\n", &p[1]);
 						n_errors++;
 					}
 					if (q) q[0] = '+';	/* Restore the +p modifier */
 				}
 				else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->C.size)) {	/* Old syntax */
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode pointsize %s\n", &p[1]);
 					n_errors++;
 				}
 				break;
@@ -424,7 +424,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized symbol type %c\n", opt->arg[0]);
 						break;
 				}
 				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);

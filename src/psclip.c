@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Correct syntax is -C[<n>]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;

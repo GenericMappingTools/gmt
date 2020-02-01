@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3]);
 				if (n_items != 4) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Give g, d, <grdfile>, or <west/east/south/north>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give g, d, <grdfile>, or <west/east/south/north>\n");
 					n_errors++;
 				}
 				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->A.wesn[0]), txt[0]);
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						if (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
 							inc = (max - min) / (inc - 1.0);
 						if (inc <= 0.0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Age increment must be positive\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 							n_errors++;
 						}
 						else {

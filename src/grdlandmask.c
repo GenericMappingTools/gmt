@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 						j++;
 					}
 					if (!(j == 1 || j == 4)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Specify 1 or 4 border values\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Specify 1 or 4 border values\n");
 						n_errors++;
 					}
 					if (j == 1) Ctrl->N.mask[3] = Ctrl->N.mask[5] = Ctrl->N.mask[7] = Ctrl->N.mask[1];	/* Duplicate border values */
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Specify 2 or 5 mask values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Specify 2 or 5 mask values\n");
 					n_errors++;
 				}
 				Ctrl->N.wetdry = (j == 2);
@@ -225,7 +225,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify an output file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files, "Syntax error: No input files allowed.\n");
 
