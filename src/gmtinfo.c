@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A. Flags are a|f|s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E. Flags are L|l|H|h.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -255,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					case 't': Ctrl->F.mode = GMT_INFO_TABLEINFO; break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F. Flags are i|d|t.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Flags are i|d|t.\n");
 						break;
 				}
 				break;
@@ -272,13 +272,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1] && strchr ("erR", opt->arg[1]))
 							Ctrl->I.mode = ACTUAL_BOUNDS;
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I%s not recognized\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I%s not recognized.\n", opt->arg);
 							n_errors++;
 						}
 						break;
 					case 'e': case '-': Ctrl->I.mode = ACTUAL_BOUNDS;
 						if (opt->arg[1]) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ie (or obsolete -I-). No argument allowed.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ie (or obsolete -I-): No argument allowed.\n");
 							n_errors++;
 						}
 						break;	/* -I- is backwards compatible */
@@ -286,7 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				}
 				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I. No increment given.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -I: No increment given.\n");
 				}
 				else
 					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
@@ -336,7 +336,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->I.active && special && Ctrl->I.ncol > 1) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ip. Only a single increment is expected.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -Ip: Only a single increment is expected.\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && !special && Ctrl->I.ncol == 1) {		/* Special case of dy = dx if not given */
@@ -349,7 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	}
 	if (Ctrl->I.active && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {	/* SHould have increments */
 		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] <= 0.0) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I. Must specify positive increment for column %d.\n", k);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -I: Must specify positive increment for column %d.\n", k);
 			n_errors++;
 		}
 	}
@@ -359,7 +359,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->T.active,
 	                                   "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 ,
-	                                   "Option -T: Must specify a positive increment\n");
+	                                   "Option -T: Must specify a positive increment.\n");
 	n_errors += gmt_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -788,11 +788,11 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_Report (API, GMT_MSG_ERROR, "Option -E: Chosen column exceeds column range (0-%d)\n", ncol-1);
+  				GMT_Report (API, GMT_MSG_ERROR, "Option -E: Chosen column exceeds column range (0-%d).\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_Report (API, GMT_MSG_ERROR, "Option -T: Chosen column exceeds column range (0-%d)\n", ncol-1);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -T: Chosen column exceeds column range (0-%d).\n", ncol-1);
 				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;

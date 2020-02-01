@@ -192,9 +192,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F <dataflags> is a comma-separated string made up of one or more of these abbreviations\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (for standard MGD77 files - use mgd77list to probe for other columns in MGD77+ files):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   >Track information:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     time:    Choose between Absolute time [default], Relative time, or fractional year:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (for standard MGD77 files - use mgd77list to probe for other columns in MGD77+ files).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Track information.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     time:    Choose between Absolute time [default], Relative time, or fractional year.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       atime: Absolute time (formatted according to FORMAT_DATE_OUT, FORMAT_CLOCK_OUT).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       rtime: Relative time (formatted according to FORMAT_FLOAT_OUT and TIME_SYSTEM (or TIME_EPOCH, TIME_UNIT)).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       ytime: Absolute time as decimal year (formatted according to FORMAT_FLOAT_OUT).\n");
@@ -213,12 +213,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     id:      Survey leg ID [string_output].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     recno:   Record number.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   >Derived navigational information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Derived navigational information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dist:    Along-track distances (see -j for method and -N for units).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     azim:    Track azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     vel:     Ship velocity (m/s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   >Geophysical Observations:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Geophysical Observations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way travel-time (s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     depth:   Corrected bathymetry (m) [Also see -Z].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).\n");
@@ -226,7 +226,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     mag:     Magnetic residual anomaly (gamma, nTesla).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     gobs:    Observed gravity (mGal).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     faa:     Free-air gravity anomaly (mGal).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   >Codes, Corrections, and Information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Codes, Corrections, and Information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     drt:     Data record type [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ptc:     Position type code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     bcc:     Bathymetric correction code.\n");
@@ -238,14 +238,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     sspn:    Seismic shot point number string [TEXTSTRING].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     nqc:     Navigation quality code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   >Computed Information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Computed Information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     carter:  Carter correction from twt (m).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     weight:  Report weight as specified in -W [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  The data are written in the order specified in <dataflags>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  Shortcut flags are:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Shortcut flags are.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mgd77:   The full set of all 27 fields in the MGD77 specification.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mgd77t:  The full set of all 26 columns in the MGD77T specification.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
@@ -269,8 +269,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  By default, MGD77+ files with error bit flags will use the flags to suppress bad data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Turn this behavior off by append : with no arguments.  For controlling systematic\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  corrections encoded in MGD77+ files, see -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<code>[,<v>] Adjust field carter. <v>, the sound velocity in water, is taken from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     the MGD77 header (or 1500 if invalid); optionally append your <v> (in m/s)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Here, C(twt) is Carter correction, U(twt,v) is uncorrected depth (given <v>).\n");
@@ -284,14 +284,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       d2 return calculated uncorrected depth U(twt,v).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       d4 return calculated corrected depth Carter (twt,v).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f<code>[,<field>] Adjust field faa. <field>, the IGF reference field, is taken\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     from the MGD77 header (or 4 if invalid); optionally append your <field> from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1 = Heiskanen 1924 formula:\n\t       ");
+	GMT_Message (API, GMT_TIME_NONE, "\t     from the MGD77 header (or 4 if invalid); optionally append your <field> from.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1 = Heiskanen 1924 formula.\n\t       ");
 	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t     2 = International 1930 formula:\n\t       ");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2 = International 1930 formula.\n\t       ");
 	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 2);
-	GMT_Message (API, GMT_TIME_NONE, "\t     3 = International 1967 formula:\n\t       ");
+	GMT_Message (API, GMT_TIME_NONE, "\t     3 = International 1967 formula.\n\t       ");
 	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t     4 = International 1980 formula:\n\t       ");
+	GMT_Message (API, GMT_TIME_NONE, "\t     4 = International 1980 formula.\n\t       ");
 	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 4);
 	GMT_Message (API, GMT_TIME_NONE, "\t       f1 return faa as stored in file [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       f2 return difference gobs - ngrav.\n");
@@ -317,7 +317,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the default file mgd77_corrections.txt in $MGD77_HOME is assumed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for <unit>. Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for <unit>. Choose among.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US units I (feet, feet/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
@@ -325,7 +325,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n Nautical units (nautical miles, knots).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u Old US units (survey feet, sfeets).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -Ndk -Nse].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc<min_cc>/<max_cc>, where <min_cc> < <max_cc> [all course changes, i.e., -360/360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use -QC to use abs value |cc| in the test [0/360].\n");
@@ -386,13 +386,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'c':	/* Carter correction adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 11) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ac<code>: <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Ac<code>,<speed>: <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -401,13 +401,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'd':	/* depth adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 7) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ad<code>: <code> must be 1,2,4 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Ad<code>,<speed>: <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -416,13 +416,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'f':	/* faa adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 15) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Af<code>: <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.GF_version = atoi (&opt->arg[k+3]);
 							if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Af<code>,<field>.  Select <field> is 1-4 range.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Af<code>,<field>: Select <field> is 1-4 range.\n");
 								n_errors++;
 							}
 						}
@@ -441,7 +441,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						else {
 							code = atoi (&opt->arg[k+1]);
 							if (code < 1 || code > 33) {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Am<code>.  <code> must be 1,2,4,8,16 or binary combination.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Am<code>: <code> must be 1,2,4,8,16 or binary combination.\n");
 								n_errors++;
 							}
 							Ctrl->A.code[ADJ_MG] |= code;
@@ -451,7 +451,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->A.fake_times = true;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A<flag>.  <flag> must be c, d, g, m, or t.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A<flag>: <flag> must be c, d, g, m, or t.\n");
 						n_errors++;
 						break;
 				}
@@ -493,7 +493,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Db: Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -570,7 +570,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					if (strchr ("acmt", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -I Bad modifier (%c). Use -Ia|c|m|t!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -I Bad modifier (%c): Use -Ia|c|m|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}

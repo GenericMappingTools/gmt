@@ -391,7 +391,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					else if (n == 3)
 						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
-						GMT_Report(API, GMT_MSG_ERROR, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_Report(API, GMT_MSG_ERROR, "Option -Q: Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
