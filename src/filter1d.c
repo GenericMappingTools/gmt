@@ -394,7 +394,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	/* Check arguments */
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F is required\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Option -D: must give positive increment\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.T.set == 3 && (Ctrl->T.T.max - Ctrl->T.T.min) < Ctrl->F.width, "Option -T: Output interval < filterwidth\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Option -L: Unreasonable lack-of-data interval\n");
@@ -912,7 +912,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"Syntax error: Binary input data must have at least %d fields\n", F.n_cols);
+		"Binary input data must have at least %d fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = true;

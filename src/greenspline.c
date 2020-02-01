@@ -659,12 +659,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Option -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Option -A: format must be in 0-5 range\n");
-	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 #ifdef DEBUG
-	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -D options disagree on the dimension\n");
 #else
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -D options disagree on the dimension\n");
 #endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Option -S: Tension must be in range 0 <= t < 1\n");
@@ -677,7 +677,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Option -T: Only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Option -N: Must specify node file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Option -N: Cannot read file %s!\n", Ctrl->N.file);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Must specify -R, -I, [-r], -G for gridding\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

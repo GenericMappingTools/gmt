@@ -314,7 +314,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
 	                                 "Option -I: Must specify positive increments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Option -S: Scale must be nonzero\n");
@@ -322,8 +322,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
 	                                 "Option -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
-	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
+	                                 "Must specify at least one of -G, -W, -C\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Must specify two input grid files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cpt_effect && !Ctrl->C.active, "Option -W: modifier +c only makes sense if -C is given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

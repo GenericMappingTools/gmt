@@ -672,8 +672,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Option -S: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

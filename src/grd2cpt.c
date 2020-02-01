@@ -395,11 +395,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 		n_errors++;
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
-					"Syntax error: -W and -Z cannot be used simultaneously\n");
+					"Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
-	                                "Syntax error: -F+c and -Z cannot be used simultaneously\n");
+	                                "Options -F+c and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
 					"Option -L: min_limit must be less than max_limit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 0 && (Ctrl->T.high <= Ctrl->T.low || Ctrl->T.inc <= 0.0),
@@ -408,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 					"Option -S: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
 					"Option -T: Cannot be combined with -E nor -S option.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Option -A: Transparency must be n 0-100 range [0 or opaque]\n");
 

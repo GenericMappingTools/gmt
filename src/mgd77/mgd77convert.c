@@ -205,8 +205,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active || Ctrl->F.active || Ctrl->L.active || Ctrl->T.active, "Option -C: No other options allowed\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error: Must specify format of input files\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error: Must specify format of output files\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Option -F: Must specify format of input files\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Option -f: Must specify format of output files\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

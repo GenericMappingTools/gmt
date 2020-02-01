@@ -356,23 +356,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 	}
 
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan (Ctrl->S.radius)),
-	                                  "Syntax error: Radius is NaN or negative\n");
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
+	                                  "Option -S: Radius is NaN or negative\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->T.active, "Option -T is mandatory\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->T.xyz_file != NULL && Ctrl->T.t_file == NULL,
-	                                  "Syntax error: with -Tp must provide also vertex (-Tv) file.\n");
+	                                  "with -Tp must provide also vertex (-Tv) file.\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->T.t_file != NULL && Ctrl->T.xyz_file == NULL,
-	                                  "Syntax error: vertex file provided (-Tv) but not xyz file (-Tp).\n");
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Error: Must specify -R option\n");
+	                                  "Option -T: vertex file provided (-Tv) but not xyz file (-Tp).\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Must specify either -G or -F options\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Must specify -I option\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-	                                  "Error: Must specify either -Cdensity or -H<stuff>\n");
+	                                  "Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must specify output file\n");
 	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 
-	/*n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
+	/*n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");*/
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

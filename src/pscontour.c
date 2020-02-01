@@ -777,16 +777,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
-	                                 "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
+	                                 "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->D.active, "Must specify a region with the -R option\n");
 #if 0
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
 	                                 "Option -C: Must specify contour interval, file name with levels, or CPT\n");
 #endif
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
-	                                 "Syntax error: Must specify one of -W or -I\n");
+	                                 "Must specify one of -W or -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
-	                                 "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
+	                                 "Cannot use -G, -I, -L, -N, -W with -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Option -I: Must specify a color palette table via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Option -E: Must specify an index file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),

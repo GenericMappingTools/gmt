@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 	n_input = (Ctrl->Q.active) ? 3 : 5;
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_input);
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Binary input data (-bi) must have at least %d columns\n", n_input);
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Option -F: Must specify hotspot file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Option -F: Must specify Euler pole file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Option -D: Must specify a positive interval\n");

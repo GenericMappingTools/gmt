@@ -268,7 +268,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
 	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
-	                                   "Syntax error: Must specify one or more input files\n");
+	                                   "Must specify one or more input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1,
 	                                   "Option -D: The +n modifier requires a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0,
@@ -285,11 +285,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active,
 	                                   "Option -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active,
-	                                   "Syntax error: Only one of -I -T can be specified\n");
+	                                   "Only one of -I -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.active,
-	                                   "Syntax error: Only one of -C, -F can be specified\n");
+	                                   "Only one of -C, -F can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
-	                                   "Syntax error: The -o option requires -Cn\n");
+	                                   "The -o option requires -Cn\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

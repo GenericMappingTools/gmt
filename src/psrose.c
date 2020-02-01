@@ -417,9 +417,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Option -C: Cannot be used with -A+r\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Option -C: Requires -A\n");
 	if (!Ctrl->I.active) {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify -JX option\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->current.proj.projection != GMT_LINEAR, "Syntax error: Must specify -JX option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify -JX option\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->current.proj.projection != GMT_LINEAR, "Must specify -JX option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),

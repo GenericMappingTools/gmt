@@ -200,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				         "Option -Z: The ymin >= ymax for 2.5-D body\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
 				         "Option -Z: 2.5-D solution only available for FAA\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

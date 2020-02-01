@@ -289,13 +289,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_
 				break;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error: Option -T requires a file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T requires a file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK),
-	                                 "Syntax error: Cannot file file %s\n", Ctrl->T.file);
+	                                 "Cannot find file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.value < 0.0, "Option -E: Slop cannot be negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error: Must specify -F with -I\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error: Must specify -F or -W\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error: Must specify a positive deviation\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Must specify -F with -I\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Must specify -F or -W\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Option -D: Must specify a positive deviation\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

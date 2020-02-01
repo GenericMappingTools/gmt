@@ -323,8 +323,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Option -Fp: Cannot simultaneously specify -T.\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
-	                                   "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	                                   "Binary input data (-bi) must have at least 2 columns.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

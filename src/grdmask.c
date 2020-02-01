@@ -252,7 +252,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 	if (Ctrl->S.mode && Ctrl->S.mode != GRDMASK_N_CART_MASK && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
 	                                        "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");

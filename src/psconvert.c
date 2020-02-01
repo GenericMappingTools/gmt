@@ -896,31 +896,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
-	                                   "Syntax error: Creating GeoPDF format requires -Tf\n");
+	                                   "Creating GeoPDF format requires -Tf\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
-	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
+	                                   "Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_TEXT] && (Ctrl->Q.bits[PSC_TEXT] < 1 || Ctrl->Q.bits[PSC_TEXT] > 4),
-	                                   "Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
+	                                   "Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
-	                                   "Syntax error: Cannot handle both a file list and multiple ps files in input\n");
+	                                   "Cannot handle both a file list and multiple ps files in input\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
 	                                   "Error: Cannot read list file %s\n", Ctrl->L.file);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
-	                                   "Syntax error: Creation of Multipage PDF requires setting -F option\n");
+	                                   "Creation of Multipage PDF requires setting -F option\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (GMT->current.setting.run_mode == GMT_MODERN),
 	                                   "Error: Cannot use -L for list file under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_MODERN && !(Ctrl->In.n_files == 0 || (Ctrl->In.n_files == 1 && halfbaked)),
-	                                   "Syntax error: No listed input files allowed under modern GMT mode\n");
+	                                   "No listed input files allowed under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && GMT->current.setting.run_mode == GMT_MODERN,
-	                                   "Syntax error: Modern GMT mode requires the -F option\n");
+	                                   "Modern GMT mode requires the -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

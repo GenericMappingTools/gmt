@@ -249,7 +249,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	if (Ctrl->N.active && Ctrl->N.mode) {	/* For Natural NN gridding we cannot have stray options */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Option -Nn: Cannot specify -E option\n");

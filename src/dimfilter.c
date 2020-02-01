@@ -445,9 +445,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	}
 
 	if (Ctrl->L.active)
-		n_errors += gmt_M_check_condition (GMT, set, "Syntax error: -L can only be used by itself.\n");
+		n_errors += gmt_M_check_condition (GMT, set, "Option -L can only be used by itself.\n");
 	else if (!Ctrl->Q.active) {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Option -F: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
@@ -458,8 +458,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 #endif
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Must use -Q to specify total # of columns in the input file.\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

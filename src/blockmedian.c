@@ -257,12 +257,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Option -A requires -G\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active,
-	                                   "Syntax error: -G requires -A\n");
+	                                   "Option -G requires -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO ||
 	                                   Ctrl->E.mode == BLK_DO_INDEX_HI),
-	                                   "Syntax error: -Es|r are incompatible with -G\n");
+	                                   "Option -Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
@@ -277,9 +277,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 			}
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.quantile <= 0.0 || Ctrl->T.quantile >= 1.0,
-	                                   "Syntax error: 0 < q < 1 for quantile in -T [0.5]\n");
+	                                   "Option -T: Select 0 < q < 1 for quantile [0.5]\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
 	                                   "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);

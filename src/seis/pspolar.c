@@ -469,9 +469,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error: -M must specify a size\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error: -D, -M, -S must be set together\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.ech <= 0.0, "Option -M: must specify a size\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "-D, -M, -S must be set together\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

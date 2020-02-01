@@ -488,17 +488,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* true if our new column contains strings */
 
-	n_errors += gmt_M_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
-	n_errors += gmt_M_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, (got_table + got_grid) > 1, "You must select one, and only one, of the -A options\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Cannot interpolate column if data are strings\n");
+	n_errors += gmt_M_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Only one -A option can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Option -n: Requires -Ag|i\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN,
-		                                 "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
+		                                 "Option -I: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN,
-		                                 "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
+		                                 "Option -I: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN,
-		                                 "Syntax error: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
+		                                 "Option -I: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
 	}
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

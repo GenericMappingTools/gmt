@@ -272,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1] && strchr ("erR", opt->arg[1]))
 							Ctrl->I.mode = ACTUAL_BOUNDS;
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I%s not recognized.\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I%s not recognized.\n", opt->arg);
 							n_errors++;
 						}
 						break;
@@ -353,11 +353,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 			n_errors++;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Syntax error: -D requires -I\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Option-D requires -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2,
-	                                   "Syntax error: -Ip requires -C\n");
+	                                   "Option -Ip requires -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->T.active,
-	                                   "Syntax error: Only one of -I and -T can be specified\n");
+	                                   "Only one of -I and -T can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 ,
 	                                   "Option -T: Must specify a positive increment.\n");
 	n_errors += gmt_check_binary_io (GMT, 1);

@@ -737,11 +737,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		Ctrl->N.facade = false;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
 	                                   "Error: Piping of topofile not supported!\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-		                               "Syntax error: Must specify a map projection with the -J option\n");
+		                               "Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
 	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
@@ -758,7 +758,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Syntax error: Must specify color palette table\n");
+	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
 	                                 "Option -Qi: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,

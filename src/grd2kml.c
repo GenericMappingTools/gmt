@@ -329,8 +329,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Option -N: Must specify a prefix for naming usage.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Option -H: Must specify an integer factor > 1.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Option -E: Must specify an URL.\n");

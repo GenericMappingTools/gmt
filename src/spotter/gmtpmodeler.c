@@ -205,9 +205,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 		for (k = 0; k < Ctrl->S.n_items; k++) Ctrl->S.mode[k] = k;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Must specify -E\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Must specify -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Must specify one or more fields with -S\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0.0, "Option -T: Must specify positive age.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

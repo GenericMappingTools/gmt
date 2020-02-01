@@ -257,9 +257,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Syntax error: Specify only one of -N, -S, and -W!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.mode, "Syntax error: -M requires stage rotations on output.  Please add -Fs\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Specify only one of -N, -S, and -W!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.mode, "Option -M requires stage rotations on output.  Please add -Fs\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Option -G requires total reconstruction rotations on output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

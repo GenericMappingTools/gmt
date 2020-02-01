@@ -649,7 +649,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Option -A: Cannot select Roman numerals AND letters!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Syntax error: Number of RowsxCols is required!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Number of RowsxCols is required!\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F: Must specify figure and subplot dimensions!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* Move focus to a particular subplot, so flag other options */

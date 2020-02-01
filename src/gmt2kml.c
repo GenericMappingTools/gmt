@@ -571,15 +571,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Option -C: Need to supply color palette name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Option -D: Cannot open HTML description file %s\n", Ctrl->D.file);
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Syntax error: Cannot produce binary KML output\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -Nt not valid for lines and polygons\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == WIGGLE && Ctrl->Q.scale <= 0.0, "Syntax error: -Fw requires -Qs\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->N.mode == GET_LABEL, "Syntax error: Cannot use -Nt when -b is used.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Cannot produce binary KML output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Option -Ra without arguments only accepted for single table\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Option -S takes scales > 0.0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Option -Q takes transparencies in range 0-1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Option -Nt not valid for lines and polygons\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == WIGGLE && Ctrl->Q.scale <= 0.0, "Option -Fw requires -Qs\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Option -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W+|-<pen> requires the -C option.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->N.mode == GET_LABEL, "Cannot use -Nt when -b is used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

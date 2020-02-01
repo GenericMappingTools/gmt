@@ -417,9 +417,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Option -S: Must specify input file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan(Ctrl->S.radius)),
-	                                "Syntax error: -S Radius is NaN or negative\n");
+	                                "Option -S: Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active,
 	                                "Error: Must specify either -G or -F options\n");
 	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active[RSET] && Ctrl->Q.active && !Ctrl->Q.n_pad,

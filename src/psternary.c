@@ -197,11 +197,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.string));
 
 	if (!Ctrl->M.active) {	/* Need -R -J for anything but dumping */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-		n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->Q.active), "Syntax error: Must specify either -S or -Q\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->Q.active), "Must specify either -S or -Q\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Syntax error: Must specify a symbol when using -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Option -S: Must specify a symbo\n");
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 

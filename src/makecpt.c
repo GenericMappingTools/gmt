@@ -348,18 +348,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
-	                                   "Syntax error: No input files expected unless -E or -S are used\n");
+	                                   "No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
-	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
+	                                   "Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
-	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
+	                                   "Options -F+c and -Z cannot be used simultaneously\n");
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Transparency in -A must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Cannot combine -E with -T\n");

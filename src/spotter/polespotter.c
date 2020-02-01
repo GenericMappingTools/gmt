@@ -219,8 +219,8 @@ int n;
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active && !Ctrl->F.active, "Syntax error: At least one of -A or -F is required.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active && !Ctrl->F.active, "At least one of -A or -F is required.\n");
 	if (Ctrl->G.active) {
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.file == NULL, "Syntax error option -G: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");

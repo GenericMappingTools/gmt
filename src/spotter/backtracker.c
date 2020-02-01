@@ -348,14 +348,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must give -E\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->L.active, "Syntax error: -W cannot be set if -Lf or -Lb are set\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Must give -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->L.active, "Option -W cannot be set if -Lf or -Lb are set\n");
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3 + ((Ctrl->A.mode == 2) ? 2 : 0);
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->L.active, "Syntax error: -A requires -L.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->M.active, "Syntax error: -M cannot be used with -F.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->L.active, "Option -A requires -L.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->M.active, "Option -M cannot be used with -F.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->L.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE,
-		"Syntax error: -Lb -Db with -F not possible.  Backtrack end point first with -Db, then draw -Lb -Df from that point forward instead.\n");
+		"Options -Lb -Db with -F not possible.  Backtrack end point first with -Db, then draw -Lb -Df from that point forward instead.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

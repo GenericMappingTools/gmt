@@ -487,7 +487,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 						n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, zb, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 					}
 				}
-				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
+				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Option -Z: must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
 				if (col > Ctrl->Z.max_col) Ctrl->Z.max_col = col;
 				Ctrl->Z.n_tests++;
@@ -519,12 +519,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Option -L: Unrecognized distance unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Option -L: Unable to decode distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Option -L: Distance is negative\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Options -A and -D requires -N!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit),
-	                                   "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
+	                                   "If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[GMT_SELECT_Z],
-	                                   "Syntax error: -Iz can only be used with one -Z range\n");
+	                                   "Option -Iz can only be used with one -Z range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

@@ -207,11 +207,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input data specified.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Syntax error: Must specify one input 3D grid cube file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Must specify one input 3D grid cube file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -R: Must specify output knot(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify only one output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify only one output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

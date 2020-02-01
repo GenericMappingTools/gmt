@@ -418,7 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
 	                                   "Option -C: Must specify 1 or 3 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.reverse && n != 2,

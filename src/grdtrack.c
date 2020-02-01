@@ -471,10 +471,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	                                   "Option -S: Must specify at least one modifier.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Option -S: +c<factor> must be positive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Option -D: Must specify file name.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Must specify -G at least once\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0),
 	                                   "Option -C: Arguments must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0),
 	                                   "Option -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);

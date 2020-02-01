@@ -283,9 +283,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX, Ctrl->N.col);
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Syntax error: Specify only one of -N and -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Specify only one of -N and -S\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

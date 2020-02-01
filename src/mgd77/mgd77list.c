@@ -704,9 +704,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Syntax error: Cannot specify both start time AND start distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Syntax error: Cannot specify both stop time AND stop distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.value <= 0.0, "Syntax error: -W weight must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Options -D and S: Cannot specify both start time AND start distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Options D and S: Cannot specify both stop time AND stop distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.value <= 0.0, "Option -W: weight must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Option -S: Start distance exceeds stop distance!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "Option -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Option -Qc: Minimum course change equals or exceeds maximum course change!\n");

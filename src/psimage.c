@@ -290,10 +290,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "-D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "-D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single input raster or EPS file\n");
 	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Option -D: Must specify positive values for replication with +n\n");

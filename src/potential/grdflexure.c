@@ -620,7 +620,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -E: Must set elastic plate thickness regardless of rheology\n");
@@ -632,7 +632,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Option -M: Cannot mix with -F\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
 	                                 "Option -G: Filename template must contain format specified\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Syntax error: Load template given but -T not specified\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Load template given but -T not specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

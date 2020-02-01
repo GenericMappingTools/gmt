@@ -295,15 +295,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "No output grid file allowed with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Cannot use -N with -S\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Option -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "-N and -S cannot both be given\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
-	                                 "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
+	                                 "Binary input data (-bi) must have at least 2 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "-N and -D cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E is required\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

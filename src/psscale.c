@@ -538,11 +538,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 		}
 		if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 			static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");

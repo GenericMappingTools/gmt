@@ -1056,14 +1056,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
  	if (Ctrl->E.active) Ctrl->Q.active = true;
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least %d columns\n", 2);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Syntax error: -T without a polygon requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Syntax error: -C requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: -L requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least %d columns\n", 2);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Option -T without a polygon requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Option -C requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Option -L requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

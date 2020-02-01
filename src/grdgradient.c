@@ -381,16 +381,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error: Must specify -A, -D, or -E\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Must specify -A, -D, or -E\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Option -S: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->N.active && Ctrl->Q.mode == 2) && !Ctrl->G.file && !Ctrl->S.active, "Option -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[0] && Ctrl->N.norm <= 0.0), "Option -N: Normalization amplitude must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[2] == 1 && Ctrl->N.sigma <= 0.0) , "Option -N: Sigma must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Option -E: Use 0-90 degree range for elevation\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !Ctrl->N.active, "Option -Q: Requires -N\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[1] == 2 && !(Ctrl->Q.mode & 1), "Syntax error: Must specify -Q if -N+o is given no value\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[2] == 2 && !(Ctrl->Q.mode & 1), "Syntax error: Must specify -Q if -N+s is given no value\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[1] == 2 && !(Ctrl->Q.mode & 1), "Must specify -Q if -N+o is given no value\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[2] == 2 && !(Ctrl->Q.mode & 1), "Must specify -Q if -N+s is given no value\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_Report (API, GMT_MSG_WARNING, "-E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;

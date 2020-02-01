@@ -229,8 +229,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 	if (!Ctrl->A.active) n_in++;	/* Got time in input column 3 */
 	if (Ctrl->W.active) n_in++;		/* Got weights as extra column */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %u columns\n", n_in);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Syntax error: Only one of -N, -S, -Z can be set.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %u columns\n", n_in);
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Only one of -N, -S, -Z can be set.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
