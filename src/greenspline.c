@@ -629,11 +629,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 		double fn = rint (Ctrl->S.value[3]);
 		int64_t n = lrint (fn);
 		if (!doubleAlmostEqual (Ctrl->S.value[3], fn) || ((n%2) == 0)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option +n<N> modifier: <N> must be an odd integer\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Sq option +n<N> modifier: <N> must be an odd integer\n");
 			n_errors++;
 		}
 		if (Ctrl->S.value[2] < 0.0 || Ctrl->S.value[2] > 1.0e-4) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option +e<err> modifier: <err> must be positive and < 1.0e-4\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Sq option +e<err> modifier: <err> must be positive and < 1.0e-4\n");
 			n_errors++;
 		}
 	}

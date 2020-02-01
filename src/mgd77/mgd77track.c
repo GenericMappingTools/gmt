@@ -496,9 +496,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
 	                                 "Option -D: Start time exceeds stop time!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
-	                                 "Syntax error -Gd: Must specify a positive gap distance in km!\n");
+	                                 "Option -Gd: Must specify a positive gap distance in km!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,
-	                                 "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
+	                                 "Option -Gt: Must specify a positive gap distance in minutes!\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Region is not set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

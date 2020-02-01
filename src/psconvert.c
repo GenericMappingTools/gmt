@@ -392,7 +392,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 						Ctrl->A.new_size[1] = gmt_M_to_points (GMT, txt_b);
 						break;
 					default:
-						GMT_Report (Ctrl, GMT_MSG_ERROR, "Syntax error -A+s[m]<width[/height]>: Wrong size parameters\n");
+						GMT_Report (Ctrl, GMT_MSG_ERROR, "Option -A+s[m]<width[/height]>: Wrong size parameters\n");
 						error++;
 						break;
 					}
@@ -404,7 +404,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	}
 
 	if (Ctrl->A.rescale && Ctrl->A.resize) {
-		GMT_Report (Ctrl, GMT_MSG_ERROR, "Syntax error -A+s|S: Cannot set both -A+s and -A+S\n");
+		GMT_Report (Ctrl, GMT_MSG_ERROR, "Option -A+s|S: Cannot set both -A+s and -A+S\n");
 		error++;
 	}
 	else if (Ctrl->A.rescale)    /* But we can. This makes the coding simpler later on */
@@ -444,7 +444,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 						C->W.mode = KML_SEAFLOOR_ABS;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_ERROR, "Syntax error -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
+						GMT_Report (C, GMT_MSG_ERROR, "Option -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
 						error++;
 						break;
 				}
@@ -479,7 +479,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 				C->W.URL = gmt_assign_text (GMT, p);
 				break;
 			default:
-				GMT_Report (C, GMT_MSG_ERROR, "Syntax error -W+<opt>: Unrecognized option selection %c\n", p[1]);
+				GMT_Report (C, GMT_MSG_ERROR, "Option -W+<opt>: Unrecognized option selection %c\n", p[1]);
 				error++;
 				break;
 		}

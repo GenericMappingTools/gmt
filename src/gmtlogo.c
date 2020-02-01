@@ -298,7 +298,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Option -D option, +w modifier: Width cannot be zero or negative!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

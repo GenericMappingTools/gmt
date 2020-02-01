@@ -307,20 +307,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "Option -S: Cannot simultaneously specify -T.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_XY && Ctrl->W.n_weights == 1, "Syntax error -Eo: Needs errors in both x,y or neither.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_RMA && Ctrl->W.n_weights == 1, "Syntax error -Er: Needs errors in both x,y or neither.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Y] > 0, "Syntax error -Ex: Cannot specify errors in y.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Z] > 0, "Syntax error -Ex: Cannot specify x-y correlations\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_X] > 0, "Syntax error -Ey: Cannot specify errors in x.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_Z] > 0, "Syntax error -Ey: Cannot specify x-y correlations\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_XY && Ctrl->W.n_weights == 1, "Option -Eo: Needs errors in both x,y or neither.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_RMA && Ctrl->W.n_weights == 1, "Option -Er: Needs errors in both x,y or neither.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Y] > 0, "Option -Ex: Cannot specify errors in y.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Z] > 0, "Option -Ex: Cannot specify x-y correlations\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_X] > 0, "Option -Ey: Cannot specify errors in x.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_Z] > 0, "Option -Ey: Cannot specify x-y correlations\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->E.mode == GMTREGRESS_Y || Ctrl->E.mode == GMTREGRESS_X) && Ctrl->W.n_weights == 2,
-	                                   "Syntax error -Ex|y: Cannot specify errors in both x and y.\n");
+	                                   "Option -Ex|y: Cannot specify errors in both x and y.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value < 0.0 || Ctrl->C.value >= 1.0, "Option -C: Level must be in 0-100%% range.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->A.active, "Option -A: Cannot simultaneously specify -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->F.active, "Option -A: Cannot simultaneously specify -F.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->C.active, "Option -A: Cannot simultaneously specify -C.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -C.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -T.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.param, "Option -Fp: Cannot simultaneously specify -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Option -Fp: Cannot simultaneously specify -T.\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
 	                                   "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");

@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == GRDMASK_N_CART_MASK && (Ctrl->S.limit[GMT_X] <= 0.0 ||
 	                                        Ctrl->S.limit[GMT_Y] <= 0.0), "Option -S: x-limit or y-limit is negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Syntax error -S, -N: Cannot specify -Nz|Z|p|P for points\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Option -S, -N: Cannot specify -Nz|Z|p|P for points\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
