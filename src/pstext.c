@@ -635,20 +635,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	/* Check that the options selected are mutually consistent */
 
 	if (API->external && Ctrl->F.active && Ctrl->F.nread) {	/* Impose order on external interfaces */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 2 && tolower (Ctrl->F.read[1]) == 'a', "Syntax error -F: Must list +a before +c, +f, +j for external API\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 3 && (tolower (Ctrl->F.read[1]) == 'a' || tolower (Ctrl->F.read[2]) == 'a'), "Syntax error -F: Must list +a before +c, +f, +jfor external API\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 4 && (tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[3]) == 'a'), "Syntax error -F: Must list +a before +c, +f, +j for external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 2 && tolower (Ctrl->F.read[1]) == 'a', "Option -F: Must list +a before +c, +f, +j for external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 3 && (tolower (Ctrl->F.read[1]) == 'a' || tolower (Ctrl->F.read[2]) == 'a'), "Option -F: Must list +a before +c, +f, +jfor external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 4 && (tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[3]) == 'a'), "Option -F: Must list +a before +c, +f, +j for external API\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->C.mode && Ctrl->C.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Syntax error -Gc option: Cannot be used with -W.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Syntax error -Gc option: Cannot be used with -D...v<pen>.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Syntax error -M option: Cannot be used with -F...+l|h.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Option -C: clearances cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->C.mode && Ctrl->C.mode != 'o', "Non-rectangular text boxes require a non-zero -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "-D<x/y>v requires one nonzero <x/y>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Option -Q: Use l or u for lower/upper-case.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Option -Gc: Cannot be used with -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Option -Gc: Cannot be used with -W.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Option -Gc: Cannot be used with -D...v<pen>.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Option -M: Cannot be used with -F...+l|h.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

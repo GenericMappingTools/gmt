@@ -624,7 +624,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
 	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font for labeling */
 		if (!string[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -%c: +f not given any font\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: +f not given any font\n", option);
 			n_errors++;
 		}
 		else
@@ -648,7 +648,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 		if (gmt_getpen (GMT, I->pen, &pen)) n_errors++;
 	}
 	if (gmt_get_modifier (arg, 't', I->format) && !I->format[0]) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -%c: +t not given any format\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: +t not given any format\n", option);
 		n_errors++;
 	}
 
@@ -669,7 +669,7 @@ GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char 
 			case 's':	I->mode = MOVIE_LABEL_IS_STRING;	strncpy (I->format, &t[1], GMT_LEN128); break;
 			case 'f': case '\0': I->mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
 			default:	/* Not recognized argument */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -%c: Select label flag e|f|p|s, c<col> or t<col>\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Select label flag e|f|p|s, c<col> or t<col>\n", option);
 				n_errors++;
 				break;
 		}
@@ -746,7 +746,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 								mag = urint (pow (10.0, floor (log10 ((double)Ctrl->A.stride))));
 								k = Ctrl->A.stride / mag;
 								if (!(k == 1 || k == 2 || k == 5)) {
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
+									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
 									n_errors++;
 								}
 								break;
@@ -804,7 +804,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				else {	/* Custom canvas dimensions */
 					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -C: Requires name of a known format or give width x height x dpu string\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
 						n_errors++;
 					}
 					else {	/* Got three items; let's check */
@@ -873,12 +873,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				else if (!strcmp (opt->arg, "webm"))	/* Make a WebM movie */
 					k = MOVIE_WEBM;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -F: Unrecognized format %s\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
 					break;
 				}
 				if (Ctrl->F.active[k]) {	/* Can only select a format once */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -F: Format %s already selected\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -943,7 +943,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			case 'L':	/* Label frame and get attributes */
 				Ctrl->L.active = Ctrl->item_active[MOVIE_ITEM_IS_LABEL] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_LABEL]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -L: Cannot handle more than %d tags\n", GMT_LEN32);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -979,7 +979,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			case 'P':	/* Movie progress bar(s) */
 				Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -1022,14 +1022,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					k = MOVIE_POSTFLIGHT;	/* foreground */
 				else {	/* Bad option */
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -S: Select -Sb or -Sf\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
 					break;
 				}
 				/* Got a valid f or b */
 				Ctrl->S[k].active = true;
 				Ctrl->S[k].file = strdup (&opt->arg[1]);
 				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
 				break;
@@ -1109,9 +1109,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.frame < Ctrl->T.start_frame,
 					"Syntax error -M: Cannot specify a frame before the first frame number set via -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && !strcmp (Ctrl->W.dir, "/tmp"),
-					"Syntax error option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
+					"Option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->E.fade[GMT_IN] + Ctrl->E.fade[GMT_OUT]) > Ctrl->E.duration,
-					"Syntax error option -E: Combined fading duration cannot exceed title duration\n");
+					"Option -E: Combined fading duration cannot exceed title duration\n");
 
 	if (n_errors) return (GMT_PARSE_ERROR);	/* No point going further */
 
@@ -1548,7 +1548,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
 		if (!Ctrl->K.preserve && n_fade_frames > n_data_frames) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -K: Combined fading duration cannot exceed animation duration\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -K: Combined fading duration cannot exceed animation duration\n");
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}

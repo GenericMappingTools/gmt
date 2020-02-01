@@ -756,7 +756,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					case 'b':	j = 0;	break;	/* background */
 					case 'f':	j = 1;	break;	/* foreground */
 					default:	/* Bad argument */
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -M: Select -Mb or -Sf\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Select -Mb or -Sf\n");
 						n_errors++;
 						break;
 				}
@@ -766,7 +766,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						Ctrl->M[j].file = strdup (&opt->arg[1]);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error option -M%c: Cannot read file %s\n", opt->arg[0], &opt->arg[1]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M%c: Cannot read file %s\n", opt->arg[0], &opt->arg[1]);
 						n_errors++;
 					}
 				}
