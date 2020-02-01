@@ -309,7 +309,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (Ctrl->T.mode > 1) {
-		GMT_Report (API, GMT_MSG_WARNING, "gmtsimplify only implemented using Flat-Earth calculations.\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmtsimplify only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 
