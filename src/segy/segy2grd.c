@@ -375,10 +375,10 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_Report (API, GMT_MSG_WARNING, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_Report (API, GMT_MSG_INFORMATION, "nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_Report (API, GMT_MSG_ERROR, "Error, number of samples per trace unknown\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
 		Return (GMT_RUNTIME_ERROR);
@@ -394,21 +394,21 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_Report (API, GMT_MSG_WARNING, "Warning s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
+		GMT_Report (API, GMT_MSG_INFORMATION, "s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_Report (API, GMT_MSG_ERROR, "Error, no sample interval in reel header\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
-		GMT_Report (API, GMT_MSG_WARNING, "Warning, grid spacing != sample interval, setting sample interval to grid spacing\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Grid spacing != sample interval, setting sample interval to grid spacing\n");
 		Ctrl->Q.value[Y_ID] = Grid->header->inc[GMT_Y];
 	}
 
 	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID])
-		GMT_Report (API, GMT_MSG_WARNING, "Warning, grid spacing < sample interval, expect gaps in output....\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Grid spacing < sample interval, expect gaps in output....\n");
 
 	/* starts reading actual data here....... */
 
@@ -416,7 +416,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		ix = 0;
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
 		if (Grid->header->n_columns < Ctrl->M.value) {
-			GMT_Report (API, GMT_MSG_WARNING, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Nmber of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->n_columns;
 		}
 		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {

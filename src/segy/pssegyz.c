@@ -691,10 +691,10 @@ use a few of these*/
 		GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_Report (API, GMT_MSG_WARNING, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
+		GMT_Report (API, GMT_MSG_INFORMATION, "nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_Report (API, GMT_MSG_ERROR, "Error, number of samples per trace unknown\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
 	}
 
@@ -708,10 +708,10 @@ use a few of these*/
 		GMT_Report (API, GMT_MSG_INFORMATION, "Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_Report (API, GMT_MSG_WARNING, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
+		GMT_Report (API, GMT_MSG_INFORMATION, "dz input %f, dz in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_Report (API, GMT_MSG_ERROR, "Error, no sample interval in reel header\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
 	}
