@@ -32,7 +32,7 @@ cat << EOF > draper.txt
 28.6	11.08
 EOF
 # First plot data and basic LS fit with equation
-txt=`gmt regress -Ey -N2 -Fxm -T25/80/2+n draper.txt -T0 | awk '{printf "85 13 @!y\\\\303 = %.4f %.4f x\n", $17, $15}'`
+txt=$(gmt regress -Ey -N2 -Fxm -T25/80/2+n draper.txt -T0 | awk '{printf "85 13 @!y\\303 = %.4f %.4f x\n", $17, $15}')
 gmt psbasemap -R20/85/6/13 -JX6.5i/4i -P -Xc -K -Baf -BWSne > $ps
 gmt regress -Ey -N2 -Fxym draper.txt | awk '{printf "> error\n%s %s\n%s %s\n", $1, $2, $1, $3}' | gmt psxy -R -J -O -K -W0.25p,red,- >> $ps
 gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue >> $ps

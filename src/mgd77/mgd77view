@@ -17,7 +17,7 @@ size=0.015i
 gmt mgd77list $1 -Flon,lat,time,faa,gobs,ngrav,eot,mag,mtf1,mtf2,diur,igrf,depth,twt -G4 -bod -Z- > $$.1
 
 # Get region to nearest degree
-Rxy=`gmt gmtinfo -I1 -bi14d $$.1 -fg`
+Rxy=$(gmt gmtinfo -I1 -bi14d $$.1 -fg)
 
 #gmt pscoast $Rxy -JM6 -P -B10f5 -Gbrown -K > t.ps
 #gmt psxy -R -J -O -W0.25p $$.1 -bi14d >> t.ps
@@ -32,19 +32,19 @@ gmt grdtrack -G$RELIEF  $$.2 -bi15d -bod $Rxy -fg > $$.b
 
 gmt mgd77info $1 -E > $$.info
 
-do_twt=`awk '{if (NR == 2) printf "%d\n", $14}' $$.info`
-do_mf=`awk '{if (NR == 2) printf "%d\n", $18+$19}' $$.info`
-do_ma=`awk '{if (NR == 2) printf "%d\n", $20}' $$.info`
-do_gf=`awk '{if (NR == 2) printf "%d\n", $24}' $$.info`
-do_ga=`awk '{if (NR == 2) printf "%d\n", $26}' $$.info`
+do_twt=$(awk '{if (NR == 2) printf "%d\n", $14}' $$.info)
+do_mf=$(awk '{if (NR == 2) printf "%d\n", $18+$19}' $$.info)
+do_ma=$(awk '{if (NR == 2) printf "%d\n", $20}' $$.info)
+do_gf=$(awk '{if (NR == 2) printf "%d\n", $24}' $$.info)
+do_ga=$(awk '{if (NR == 2) printf "%d\n", $26}' $$.info)
 
 # Lay down relief pane:
 
 gmt gmtconvert -F2,12 -bi16d -bod $$.b > $$.depth
 gmt gmtconvert -F2,13 -bi16d -bod $$.b > $$.twt
 gmt gmtconvert -F2,15 -bi16d -bod $$.b > $$.s2004
-Rz=`gmt gmtinfo -I3600/500 $$.depth $$.s2004 -bi2d -f0T --TIME_SYSTEM=unix`
-Rt=`gmt gmtinfo -I3600/1 $$.twt -bi2d -f0T --TIME_SYSTEM=unix`
+Rz=$(gmt gmtinfo -I3600/500 $$.depth $$.s2004 -bi2d -f0T --TIME_SYSTEM=unix)
+Rt=$(gmt gmtinfo -I3600/1 $$.twt -bi2d -f0T --TIME_SYSTEM=unix)
 
 B=
 if [ $do_twt -eq 0 ]; then
@@ -67,8 +67,8 @@ gmt gmtconvert -F2,8 -bi16d -bod $$.b > $$.mtf1
 gmt gmtconvert -F2,9 -bi16d -bod $$.b > $$.mtf2
 gmt gmtconvert -F2,10 -bi16d -bod $$.b > $$.diur
 gmt gmtconvert -F2,11 -bi16d -bod $$.b > $$.igrf
-Rr=`gmt gmtinfo -I3600/500 $$.mtf? $$.igrf -bi2d -f0T --TIME_SYSTEM=unix`
-Ra=`gmt gmtinfo -I3600/500 $$.mag $$.diur -bi2d -f0T --TIME_SYSTEM=unix`
+Rr=$(gmt gmtinfo -I3600/500 $$.mtf? $$.igrf -bi2d -f0T --TIME_SYSTEM=unix)
+Ra=$(gmt gmtinfo -I3600/500 $$.mag $$.diur -bi2d -f0T --TIME_SYSTEM=unix)
 
 B=
 if [ $do_ma -eq 0 ]; then
@@ -93,8 +93,8 @@ gmt gmtconvert -F2,4 -bi16d -bod $$.b > $$.gobs
 gmt gmtconvert -F2,5 -bi16d -bod $$.b > $$.ngrav
 gmt gmtconvert -F2,6 -bi16d -bod $$.b > $$.eot
 gmt gmtconvert -F2,14 -bi16d -bod $$.b > $$.ss
-Rr=`gmt gmtinfo -I3600/500 $$.gobs $$.ngrav -bi2d -f0T --TIME_SYSTEM=unix`
-Ra=`gmt gmtinfo -I3600/50 $$.ss $$.faa $$.eot -bi2d -f0T --TIME_SYSTEM=unix`
+Rr=$(gmt gmtinfo -I3600/500 $$.gobs $$.ngrav -bi2d -f0T --TIME_SYSTEM=unix)
+Ra=$(gmt gmtinfo -I3600/50 $$.ss $$.faa $$.eot -bi2d -f0T --TIME_SYSTEM=unix)
 
 B=
 if [ $do_ga -eq 0 ]; then

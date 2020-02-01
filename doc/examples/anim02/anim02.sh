@@ -22,7 +22,7 @@ EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
-	width=\`gmt math -Q \${MOVIE_WIDTH} 0.5i SUB =\`
+	width=\$(gmt math -Q \${MOVIE_WIDTH} 0.5i SUB =)
 	gmt grdimage @tut_relief.nc -I+a\${MOVIE_COL0}+nt2 -JM\${width} -Cmain.cpt \
 		-BWSne -B1 -X0.35i -Y0.3i --FONT_ANNOT_PRIMARY=9p
 	gmt plot -Sc0.8i -Gwhite -Wthin <<< "256.25 35.6"

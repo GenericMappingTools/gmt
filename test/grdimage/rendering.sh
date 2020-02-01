@@ -32,7 +32,7 @@ gmt pstext -R -J -F+f16p,Helvetica-Bold+jBL -O -K -N <<< "180 35 $1"
 
 gmt makecpt -Cpolar -T-1/1 -D > t.cpt
 
-gmt psscale -D3i/-0.4i+w6i/0.4i+h+jTC -Ct.cpt -Ba0.5 -P -K -Y2i > $ps
+gmt psscale -Dx3i/-0.4i+w6i/0.4i+h+jTC -Ct.cpt -Ba0.5 -P -K -Y2i > $ps
 render -nn >> $ps
 render -nl -Y2i >> $ps
 render -nb -Y2i >> $ps

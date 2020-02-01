@@ -235,12 +235,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
 						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);	/* Getting inches directly here */
-						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
+						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Option -Qn: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
 						if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Could not decode arrowwidth/headlength/headwidth\n");
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
@@ -279,7 +279,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS, (int)opt->arg[len]))	/* Recognized plot length or map distance unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
@@ -314,17 +314,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
-	                                 "Syntax error -I option: Must specify positive increments\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
+	                                 "Option -I: Must specify positive increments\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Option -S: Scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Option -Sl: Length must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
-	                                 "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
+	                                 "Option -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
-	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cpt_effect && !Ctrl->C.active, "Syntax error -W: modifier +c only makes sense if -C is given\n");
+	                                 "Must specify at least one of -G, -W, -C\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Must specify two input grid files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cpt_effect && !Ctrl->C.active, "Option -W: modifier +c only makes sense if -C is given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -738,8 +738,8 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "%d vectors plotted successfully\n", n_warn[0]);
-	if (n_warn[1]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -Q\n", n_warn[1]);
-	if (n_warn[2]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -Q\n", n_warn[2]);
+	if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -Q\n", n_warn[1]);
+	if (n_warn[2]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -Q\n", n_warn[2]);
 
 
 	Return (GMT_NOERROR);

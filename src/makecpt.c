@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]%s\n", name, H_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -260,11 +260,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
 				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-				                                   "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				                                   "Option -G: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				Ctrl->H.active = true;
@@ -348,18 +348,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
-	                                   "Syntax error: No input files expected unless -E or -S are used\n");
+	                                   "No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
-	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
+	                                   "Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
-	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
+	                                   "Options -F+c and -Z cannot be used simultaneously\n");
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Transparency in -A must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Cannot combine -E with -T\n");

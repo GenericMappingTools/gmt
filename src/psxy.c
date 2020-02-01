@@ -606,7 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype;
+	unsigned int n_errors = 0, ztype, n_files = 0;
 	int j;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -618,6 +618,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 
 			case '<':	/* Skip input files */
 				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -640,7 +641,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: Give x [and y] offsets\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Give x [and y] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -663,7 +664,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 							case 'X':	Ctrl->E.xbar = EBAR_WHISKER; break;	/* Box-whisker for x */
 							case 'Y':	Ctrl->E.ybar = EBAR_WHISKER; break;	/* Box-whisker for y */
 							default:
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Unrecognized error bar selection %c\n", opt->arg[j]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized error bar selection %c\n", opt->arg[j]);
 								n_errors++;	break;
 						}
 						j++;
@@ -760,7 +761,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXY_CLIP_NO_REPEAT;
 				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXY_NO_CLIP_NO_REPEAT;
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -813,21 +814,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Syntax error -Z option: No CPT given via -C\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Syntax error -Z option: Not compatible with -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Syntax error -C option: No CPT given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Syntax error -S option\n");
+	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Option -Z: Not compatible with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Option -S: Parsing failure\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == PSL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == PSL_MARC \
 		|| S->symbol == PSL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_DECORATED_LINE || S->symbol == PSL_ROTRECT),
-		"Syntax error -E option: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Syntax error: -E option +|-<pen> requires the -C option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode == 1 && !Ctrl->S.active, "Syntax error: -I with no argument is only applicable for symbols\n");
+		"Option -E: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "SMust specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Binary input data cannot have symbol information\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Option -E: +|-<pen> requires the -C option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W modifier +c requires the -C option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Conflicting -E and -W options regarding -C option application\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Option -L<modifiers> must include +p<pen> if -G not given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode == 1 && !Ctrl->S.active, "Option -I with no argument is only applicable for symbols\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -908,8 +910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
-	else GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
 		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */
@@ -1331,11 +1332,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_WARNING, "Data point with x = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (gmt_M_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_WARNING, "Data point with y = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
@@ -1619,7 +1620,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else
 							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 						if (length < S.v.h_length && S.v.v_norm < 0.0)	/* No shrink requested but head length exceeds total vector length */
-							GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
+							GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 						dim[0] = x_2, dim[1] = y_2;
 						dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
@@ -1750,8 +1751,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT->common.t.variable)	/* Reset the transparency */
 			PSL_settransparency (PSL, 0.0);
 		PSL_command (GMT->PSL, "U\n");
-		if (n_warn[1]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
-		if (n_warn[2]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);

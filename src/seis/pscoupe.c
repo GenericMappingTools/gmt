@@ -821,11 +821,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active, "Syntax error: Must specify -A option\n");
-	//n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->S.active, "Syntax error: Cannot specify both -F and -S\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale < 0.0, "Syntax error: -S must specify scale\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active, "Must specify -A option\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->S.active, "Cannot specify both -F and -S\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Must specify -S option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale < 0.0, "Option -S: must specify scale\n");
 
 	/* Set to default pen where needed */
 

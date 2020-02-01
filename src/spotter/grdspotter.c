@@ -381,12 +381,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "Syntax error -Z: Must give name of topo gridfile\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Syntax error: Must specify both -L and -Q if one is present\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Syntax error: Cannot use -M with -W or -Z (slicing)\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "Option -Z: Must give name of topo gridfile\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Must specify both -L and -Q if one is present\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Cannot use -M with -W or -Z (slicing)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -707,8 +707,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		n_alloc = inc_alloc;
 		flowline = gmt_M_memory (GMT, NULL, n_alloc, struct FLOWLINE);
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-			GMT_Message (API, GMT_TIME_NONE, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
-			GMT_Message (API, GMT_TIME_NONE, "the program might crash.  If so consider using the -M option\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
+			GMT_Report (API, GMT_MSG_WARNING, "the program might crash.  If so consider using the -M option\n");
 		}
 	}
 
@@ -977,10 +977,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-			GMT_Message (API, GMT_TIME_NONE, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
-			GMT_Message (API, GMT_TIME_NONE, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
-			GMT_Message (API, GMT_TIME_NONE, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
-			GMT_Message (API, GMT_TIME_NONE, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
+			GMT_Report (API, GMT_MSG_WARNING, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
+			GMT_Report (API, GMT_MSG_WARNING, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
+			GMT_Report (API, GMT_MSG_WARNING, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {

@@ -630,7 +630,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
-			GMT_Report (API, GMT_MSG_WARNING, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
 		}
 		return;	/* Done, since we know it is a modern mode session */
 	}
@@ -8176,7 +8176,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record does not know the number of output columns - set to equal input at %d\n", (int)GMT->common.b.ncol[GMT_IN]);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Error: GMT_Put_Record does not know the number of columns - must abort!\n");
+						GMT_Report (API, GMT_MSG_DEBUG, "GMT_Put_Record does not know the number of columns - must abort!\n");
 						return_error (API, GMT_N_COLS_NOT_SET);
 					}
 				}
@@ -9495,14 +9495,14 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	width_percent = irint (F->taper_width);
 
 	if ((Grid->header->n_columns == F->n_columns && Grid->header->n_rows == F->n_rows) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Data and FFT dimensions are equal - no data extension will take place\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
 		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Data and FFT dimensions are equal - no tapering will be performed\n");
 			return;
 		}
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No interior tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No interior tapering will be performed\n");
 			return;
 		}
 	}
@@ -9861,7 +9861,7 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	char *file = NULL;
 
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Demultiplexing complex grid before saving can take place.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Demultiplexing complex grid before saving can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
 	gmt_copy_gridheader (GMT, save, Grid->header);

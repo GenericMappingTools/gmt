@@ -231,8 +231,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify an input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Specify 1-10 model parameters\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify an input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Option -N: Specify 1-10 model parameters\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -416,7 +416,7 @@ GMT_LOCAL void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsign
 	sprintf (pbasis[9], "P3(y)");
 
 	sprintf(format, "Coefficient fit to %%s: %s\n", GMT->current.setting.format_float_out);
-	for (i = 0; i < n_model; i++) GMT_Message (GMT->parent, GMT_TIME_NONE, format, pbasis[i], gtd[i]);
+	for (i = 0; i < n_model; i++) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, format, pbasis[i], gtd[i]);
 
 	return;
 }

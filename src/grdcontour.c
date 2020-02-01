@@ -638,7 +638,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 #if 0
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
 			gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
-	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
+	                     "Option -C: Must specify contour interval, file name with levels, or CPT\n");
 #endif
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Option -L: lower limit > upper!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Option -F: Must also specify -D\n");
@@ -1166,8 +1166,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if (Ctrl->D.active) {
-		GMT_Report (API, GMT_MSG_WARNING, "With -D, no plotting will take place\n");
-		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_WARNING, "Contours will be written to standard output\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "With -D, no plotting will take place\n");
+		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_INFORMATION, "Contours will be written to standard output\n");
 	}
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
@@ -1717,7 +1717,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (n_cont_attempts == 0) GMT_Report (API, GMT_MSG_WARNING, "No contours drawn, check your -A, -C, -L settings?\n");
+	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_WARNING, "No contours drawn, check your -A, -C, -L settings?\n");
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */

@@ -325,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			case 'S':
 				Ctrl->S.active = true;
 				k = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
+				n_errors += gmt_M_check_condition (GMT, k < 1, "Option -S: Must specify a positive number of hotspots\n");
 				Ctrl->S.n = k;
 				break;
 			case 'T':
@@ -347,11 +347,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 	n_input = (Ctrl->Q.active) ? 3 : 5;
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_input);
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D: Must specify a positive interval\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W: Must specify a positive distance in km\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Binary input data (-bi) must have at least %d columns\n", n_input);
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Option -F: Must specify hotspot file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Option -F: Must specify Euler pole file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Option -D: Must specify a positive interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dist <= 0.0, "Option -W: Must specify a positive distance in km\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -407,7 +407,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	}
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Give value between 1 and %d\n", n_hotspots);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);

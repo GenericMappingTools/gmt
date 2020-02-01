@@ -609,6 +609,8 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
 	bool modified = false, got_directive = false, got_modifier = false;
 
+	if (options == NULL) return;	/* Nothing to process */
+	
 	#if !defined(USE_MODULE_LONG_OPTIONS)
 	this_module_kw = NULL;	/* Debugging: Not testing the module long-options */
 	#endif
@@ -2984,7 +2986,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error: Could not locate share directory for GMT.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not locate share directory for GMT.\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 	}
@@ -3747,7 +3749,7 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 	gmt_M_unused(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter> */
-		size_t n = strlen (mods);
+		size_t n = (mods) ? strlen (mods) : 0;	/* Since mods may be NULL */
 		char *c = in, *p = NULL;
 		unsigned int *used = gmt_M_memory (GMT, NULL, n, unsigned int);
 		for ( ;; ) { /* Replace super-script escape sequence @+ with @1 */
@@ -7973,7 +7975,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	else if ((c = gmt_first_modifier (GMT, item, "u"))) {	/* Got +u<unit> */
+	else if ((c = strstr (item, "+u"))) {	/* Got +u<unit> */
 		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 		strncpy (string, item, GMT_BUFSIZ-1);
 		r_unit = c[2];	/* The data unit */
@@ -8012,7 +8014,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	length = strlen (string) - 1;
 	col_type[0] = col_type[1] = 0;
-	if ((c = gmt_first_modifier (GMT, string, "r"))) {	/* Got +r */
+	if ((c = strstr (string, "+r"))) {	/* Got +r */
 		GMT->common.R.oblique = true;
 		c[0] = '\0';	/* Remove the trailing +r so gmt_scanf will work */
 	}
@@ -8101,16 +8103,16 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */
 			double shift = (p[0] <= -360.0) ? 360.0 : -360.0;
 			p[0] += shift;	p[1] += shift;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-				"Warning -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+				"Option -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
 		}
 		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/nr for non mapping */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
 		}
 		else if (p[0] > p[1] && strchr (string, 'W') && strchr (string, 'E')) {	/* Used -R<lon>E/<lon>W so we must add 360 to east */
 			p[1] += 360.0;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-				"Warning -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+				"Option -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
 		}
 #if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
@@ -14297,7 +14299,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			p->w_type = type;
 		}
-		else {
+		else if (!(symbol_type == 'r' && strstr (text, "+s"))) {	/* Dont want to interpret -Sr+s a dimension */
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (n == 3)
 				p->size_y = p->given_size_y = gmt_M_to_inch (GMT, txt_b);
@@ -15745,33 +15747,33 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdin. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdin.\n");
 			return NULL;
 		}
 	}
 	if ( _setmode(_fileno(stdout), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdout. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stdout.\n");
 			return NULL;
 		}
 	}
 	if ( _setmode(_fileno(stderr), _O_BINARY) == -1 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stderr. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for stderr.\n");
 			return NULL;
 		}
 	}
 	if ( _set_fmode(_O_BINARY) != 0 ) {
 		if (API->external)
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
 		else {
-			GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O.\n");
 			return NULL;
 		}
 	}
@@ -15811,14 +15813,14 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  New_PSL_Ctrl\n");
 	if (!GMT->PSL) {
-		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize PSL - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "ould not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
 	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
-		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}

@@ -1015,11 +1015,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -F: For -Ff or -Fo the input and output grids must be coregistered.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_Report (API, GMT_MSG_WARNING, "Your output grid spacing is such that filter-weights must\n");
-		GMT_Report (API, GMT_MSG_WARNING, "be recomputed for every output node, so expect this run to be slow. Calculations\n");
-		GMT_Report (API, GMT_MSG_WARNING, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
-		GMT_Report (API, GMT_MSG_WARNING, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
-		GMT_Report (API, GMT_MSG_WARNING, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Your output grid spacing is such that filter-weights must\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "be recomputed for every output node, so expect this run to be slow. Calculations\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 	}
 	if (Ctrl->N.mode == NAN_REPLACE && !same_grid) {
 		GMT_Report (API, GMT_MSG_ERROR, "-Nr requires co-registered input/output grids, option is ignored\n");

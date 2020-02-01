@@ -117,13 +117,13 @@ GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure 
 	if (GMT->current.map.is_world && lon0 != *clon) {
 		GMT->common.R.wesn[XLO] = *clon - 180.0;
 		GMT->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 	else if (!GMT->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Central meridian outside region\n");
+		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian outside region\n");
 	}
 }
 

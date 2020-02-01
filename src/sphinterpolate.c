@@ -91,7 +91,7 @@ GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -195,10 +195,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode > 3, "Syntax error -T: Must specify a mode in the 0-3 range\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode > 3, "Option -T: Must specify a mode in the 0-3 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

@@ -1056,14 +1056,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
  	if (Ctrl->E.active) Ctrl->Q.active = true;
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least %d columns\n", 2);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Syntax error: -T without a polygon requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Syntax error: -C requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: -L requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least %d columns\n", 2);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Option -T without a polygon requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Option -C requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Option -L requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1195,7 +1195,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Find # of pairs that are too close together */
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
 				if (Ctrl->A.mode == 2) {
-					GMT_Report (API, GMT_MSG_WARNING, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
+					GMT_Report (API, GMT_MSG_INFORMATION, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
 					n = 1;
 				}
 				for (k = n_pairs = 0; k < n; k++) {	/* Loop over pairs that are too close */
@@ -1225,7 +1225,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
 					n_pairs++;
 				}
-				GMT_Report (API, GMT_MSG_WARNING, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
+				GMT_Report (API, GMT_MSG_INFORMATION, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
 				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
 				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;
@@ -1488,7 +1488,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			n_seg = D->n_segments - Dout->n_segments;	/* Lost segments */
-			if (n_seg) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments were outside and %" PRIu64 " were inside the chosen %s range of %g to %s\n",
+			if (n_seg) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were outside and %" PRIu64 " were inside the chosen %s range of %g to %s\n",
 				n_seg, Dout->n_segments, type[poly], Ctrl->Q.limit[0], upper);
 		}
 		if (!new_data && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -1930,7 +1930,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->data[n][row] = (double)ID;
-						GMT_Report (API, GMT_MSG_WARNING, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+						GMT_Report (API, GMT_MSG_INFORMATION, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (gmt_parse_segment_item (GMT, S->header, "-Z", NULL))
@@ -1942,7 +1942,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_Report (API, GMT_MSG_WARNING, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+							GMT_Report (API, GMT_MSG_INFORMATION, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 						}
 					}
 				}
@@ -2014,7 +2014,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments split across the Dateline\n", n_split_tot);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments split across the Dateline\n", n_split_tot);
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -2136,7 +2136,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
+		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
 	}
 
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */

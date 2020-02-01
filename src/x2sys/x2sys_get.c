@@ -180,8 +180,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

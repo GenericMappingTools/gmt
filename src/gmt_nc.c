@@ -475,7 +475,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
 				nc_inq_varname (ncid, z_id, HH->varname);
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
 			}
 		}
 		else if (nc_inq_varid (ncid, HH->varname, &z_id) == NC_NOERR) {	/* Gave a named variable that exist, is it 2-4 D? */
@@ -747,6 +747,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				else {	/* Pixel registration confirmed */
 					if (dummy[0] > dummy[1]) {		/* Check for reverse order of y-coordinate */
 						gmt_M_double_swap (dummy[0], dummy[1]);
+						HH->row_order = k_nc_start_north;
 					}
 					dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
 					registration = GMT_GRID_PIXEL_REG;
@@ -767,7 +768,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else if (has_vector && (xy[0] > xy[header->n_rows-1]) && (dummy[0] > dummy[1])) 	/* Here the lat vector is top-down but range is bottum-up */
 			HH->row_order = k_nc_start_north;
-		else
+		else if (HH->row_order != k_nc_start_north)		/* If not already set to north in an above test */
 			HH->row_order = k_nc_start_south;
 
 		/* Determine grid step */
@@ -1454,7 +1455,7 @@ int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
 			nc_inq_varname (ncid, z_id, varname);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
 		}
 	}
 

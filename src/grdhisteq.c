@@ -138,7 +138,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 			case 'C':	/* Get # of cells */
 				Ctrl->C.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -C option: n_cells must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -C: n_cells must be positive\n");
 				Ctrl->C.value = sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
@@ -165,13 +165,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Must also specify output grid file with -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Syntax error -N option: Cannot be combined with -Q\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Must also specify output grid file with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Option -N: Cannot be combined with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Option -C: n_cells must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Either -D or -G is required for output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

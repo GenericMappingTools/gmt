@@ -714,7 +714,7 @@ GMT_LOCAL int fft_brenner_fourt_f (gmt_grdfloat *data, int *nn, int *ndim, int *
 ---------------------------------------------------------------------------*/
 
    /* Parameter adjustments */
-    --work;
+    if (work) --work;
     --nn;
     --data;
 

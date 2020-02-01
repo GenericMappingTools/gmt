@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype;
+	unsigned int n_errors = 0, ztype, n_files = 0;
 	int n, j;
 	bool three_D = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
@@ -333,6 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			case '<':	/* Skip input files */
 				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -344,7 +345,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: Give x and y [and z] offsets\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Give x and y [and z] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -408,7 +409,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXYZ_CLIP_NO_REPEAT;
 				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXYZ_NO_CLIP_NO_REPEAT;
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -464,18 +465,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Syntax error -Z option: No CPT given via -C\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Syntax error -Z option: Not compatible with -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Syntax error -C option: No CPT given\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, true), "Syntax error -S option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Option -Z: Not compatible with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, true), "Option -S: Parsing failure\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Binary input data cannot have symbol information\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W modifier +c requires the -C option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Option -L<modifiers> must include +p<pen> if -G not given\n");
 	if (Ctrl->S.active && S->symbol == GMT_SYMBOL_COLUMN) {
 		n = get_column_bands (S);
-		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Syntax error: -So|O with multiple layers requires -C\n");
+		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Option -So|O with multiple layers requires -C\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -625,7 +628,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 
 	/* Do we plot actual symbols, or lines */
@@ -669,7 +672,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
@@ -1563,8 +1565,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		PSL_command (GMT->PSL, "U\n");
-		if (n_warn[1]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
-		if (n_warn[2]) GMT_Report (API, GMT_MSG_WARNING, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		gmt_M_free (GMT, data);
 		gmt_reset_meminc (GMT);
 	}

@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	}
 
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s cruise(s) %s %s\n\t[-A[c][<size>]][+i<inc><unit>] [%s] ", name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\n", API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -488,18 +488,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0,
-	                                 "Syntax error: Cannot specify both start time AND start distance\n");
+	                                 "Options -D and -S: Cannot specify both start time AND start distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX,
-	                                 "Syntax error: Cannot specify both stop time AND stop distance\n");
+	                                 "Options -D and -S: Cannot specify both stop time AND stop distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop,
-	                                 "Syntax error -S: Start distance exceeds stop distance!\n");
+	                                 "Option -S: Start distance exceeds stop distance!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
-	                                 "Syntax error -D: Start time exceeds stop time!\n");
+	                                 "Option -D: Start time exceeds stop time!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
-	                                 "Syntax error -Gd: Must specify a positive gap distance in km!\n");
+	                                 "Option -Gd: Must specify a positive gap distance in km!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,
-	                                 "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Region is not set\n");
+	                                 "Option -Gt: Must specify a positive gap distance in minutes!\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Region is not set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

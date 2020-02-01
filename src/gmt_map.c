@@ -321,7 +321,7 @@ GMT_LOCAL bool map_quickconic (struct GMT_CTRL *GMT) {
 	}
 
 	if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Using spherical projection with conformal latitudes\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes\n");
 		return (true);
 	}
 	else /* Use full ellipsoidal terms */
@@ -343,7 +343,7 @@ GMT_LOCAL bool map_quicktm (struct GMT_CTRL *GMT, double lon0, double limit) {
 	while (d_left  < -180.0) d_left  += 360.0;
 	while (d_right < -180.0) d_right += 360.0;
 	if (fabs (d_left) > limit || fabs (d_right) > limit) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Using spherical projection with authalic latitudes\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with authalic latitudes\n");
 		return (true);
 	}
 	else /* Use full ellipsoidal terms */
@@ -383,20 +383,20 @@ GMT_LOCAL void map_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 		/* Reset central meridian since cannot be 360 away from one of the boundaries since that gives xmin == xmax below */
 		if (mode == 1) {	/* Change -R to fit central meridian */
 			double w = GMT->current.proj.pars[0] - 180.0, e = GMT->current.proj.pars[0] + 180.0;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Region for global cylindrical projection had to be reset from %g/%g to %g/%g\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region for global cylindrical projection had to be reset from %g/%g to %g/%g\n",
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], w, e);
 			GMT->common.R.wesn[XLO] = w;	GMT->common.R.wesn[XHI] = e;
 		}
 		else {	/* Change central meridian to fit -R */
 			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
 			GMT->current.proj.pars[0] = new_lon;
 		}
 	}
 	else if (!GMT->current.map.is_world) {	/* For reginal areas we cannot have clon > 180 away from either boundary */
 		if (fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 180.0 || fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]) > 180.0) {
 			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Central meridian for cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian for cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
 			GMT->current.proj.pars[0] = new_lon;
 		}
 	}
@@ -2342,7 +2342,7 @@ GMT_LOCAL void map_set_spherical (struct GMT_CTRL *GMT, bool notify) {
 		map_mean_radius (GMT, GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius, GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening);
 	GMT->current.setting.proj_ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Custom ellipsoid */
 	GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening = 0.0;
-	if (notify) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Spherical approximation used!\n");
+	if (notify) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Spherical approximation used\n");
 	GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_NONE;	/* No lat swapping for spherical */
 
 	gmtlib_init_ellipsoid (GMT);
@@ -3303,7 +3303,7 @@ GMT_LOCAL void map_get_origin (struct GMT_CTRL *GMT, double lon1, double lat1, d
 		if (c < 90.0) az += 180.0;
 		*lat2 = d_asind (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
 		*lon2 = lon1 + d_atan2d (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Correct projection origin = %g/%g\n", *lon2, *lat2);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Correct projection origin = %g/%g\n", *lon2, *lat2);
 	}
 	else {
 		*lon2 = lon1;
@@ -8017,10 +8017,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrema */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g] due to resampling\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g] due to resampling\n",
 			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
 		if (GMT->common.n.truncate) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_grd_project: Output grid clipped to input grid extrema\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Output grid clipped to input grid extrema\n");
 			gmt_M_grd_loop (GMT, O, row_out, col_out, ij_out) {
 				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = (gmt_grdfloat)I->header->z_min;
 				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = (gmt_grdfloat)I->header->z_max;
@@ -8028,7 +8028,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_grd_project: See option -n+c to clip resampled output range to given input range\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: See option -n+c to clip resampled output range to given input range\n");
 	}
 
 	/* Time to clean up our mess */

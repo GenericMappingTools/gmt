@@ -226,22 +226,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
 	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !GMT->common.R.active[ISET], "Syntax error: Must specify input file or -R -I [-r]\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T if no age grid is given.\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !GMT->common.R.active[ISET], "Must specify input file or -R -I [-r]\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Must specify -T if no age grid is given.\n");
 	}
 	else {	/* Must not have -I -r */
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] || GMT->common.R.active[GSET], "Syntax error: Cannot specify input file AND -R -r\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] || GMT->common.R.active[GSET], "Cannot specify input file AND -R -r\n");
 	}
 	if (Ctrl->G.active) {	/* Specified output grid(s) */
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items > 1 && !strstr (Ctrl->G.file, "%s"), "Syntax error -G: File name must be a template containing \"%s\"\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items > 1 && !strstr (Ctrl->G.file, "%s"), "Option -G: File name must be a template containing \"%s\"\n");
 	}
 	else
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file when no output grids are created\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T: Must specify positive age.\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file when no output grids are created\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Must specify -E\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Must specify -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Must specify one or more fields with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0.0, "Option -T: Must specify positive age.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -509,9 +509,9 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
-	if (n_outside) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
-	if (n_old) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
-	if (n_NaN) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
+	if (n_outside) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
+	if (n_old) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
+	if (n_NaN) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		/* Now write model prediction grid(s) */
 		char file[PATH_MAX] = {""};

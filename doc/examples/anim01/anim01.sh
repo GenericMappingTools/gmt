@@ -25,7 +25,7 @@ EOF
 cat << EOF > main.sh
 gmt begin
 #	Plot smooth blue curve and dark red dots at all angle steps so far
-	last=\`gmt math -Q \${MOVIE_FRAME} 10 MUL =\`
+	last=\$(gmt math -Q \${MOVIE_FRAME} 10 MUL =)
 	gmt convert sin_curve.txt -Z0:\${last} | gmt plot -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i
 	gmt convert sin_point.txt -Z0:\${MOVIE_FRAME} | gmt plot -Sc0.1i -Gdarkred
 #	Plot bright red dot at current angle and annotate

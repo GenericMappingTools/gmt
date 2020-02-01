@@ -7205,7 +7205,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (GMT->common.t.active) {
 		if (GMT->common.t.value == 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "A transparency of 0 is the same as opaque. Skipped\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A transparency of 0 is the same as opaque. Skipped\n");
 			GMT->common.t.active = false;
 		}
 		else

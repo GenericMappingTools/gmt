@@ -7,7 +7,7 @@ cat << EOF > header.txt
 # This is another line of junky stuff........................
 EOF
 # Compute the size of the header in bytes
-h=`ls -l header.txt | awk '{print $5}'`
+h=$(ls -l header.txt | awk '{print $5}')
 # Make binary file with leading junk header
 cat header.txt > junk.b
 cat t.b >> junk.b

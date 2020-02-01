@@ -48,8 +48,8 @@ set -e
 LIB=$1
 echo "gmt_make_custom_code.sh: Scanning for modules" >&2
 # Make sure we get both upper- and lower-case versions of the tag
-U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
-L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
+U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
+L_TAG=$(echo $LIB | tr '[A-Z]' '[a-z]')
 
 # Look in current dir
 grep "#define THIS_MODULE_LIB" *.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
@@ -68,7 +68,7 @@ rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tm
 
 # Extract the extension purpose string from CMakeLists.txt
 if [ -f CMakeLists.txt ]; then
-	LIB_STRING=`grep LIB_STRING CMakeLists.txt | awk -F= '{print $NF}'`
+	LIB_STRING=$(grep LIB_STRING CMakeLists.txt | awk -F= '{print $NF}')
 else
 	LIB_STRING="R${L_TAG} modules accessible via gmt"
 fi

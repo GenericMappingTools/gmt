@@ -205,9 +205,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active || !Ctrl->C.col, "Syntax error: Must use -C to specify observation of interest\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active || !Ctrl->C.col, "Must use -C to specify observation of interest\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Only one of -Qe -Qi can be specified!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

@@ -488,17 +488,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* true if our new column contains strings */
 
-	n_errors += gmt_M_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
-	n_errors += gmt_M_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Syntax error -n: Requires -Ag|i\n");
+	n_errors += gmt_M_check_condition (GMT, (got_table + got_grid) > 1, "You must select one, and only one, of the -A options\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Cannot interpolate column if data are strings\n");
+	n_errors += gmt_M_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Only one -A option can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Option -n: Requires -Ag|i\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN,
-		                                 "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
+		                                 "Option -I: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN,
-		                                 "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
+		                                 "Option -I: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN,
-		                                 "Syntax error: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
+		                                 "Option -I: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
 	}
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1256,10 +1256,10 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 					switch (key) {
 						case MGD77_BAD_HEADER_RECNO:
-							GMT_Message (API, GMT_TIME_NONE, "Warning: Sequence number %d is outside range - skipped\n", number);
+							GMT_Report (API, GMT_MSG_WARNING, "Sequence number %d is outside range - skipped\n", number);
 							break;
 						case MGD77_BAD_HEADER_ITEM:
-							GMT_Message (API, GMT_TIME_NONE, "Warning: Sequence number %d, Item %d is not supported - skipped\n", number, item);
+							GMT_Report (API, GMT_MSG_WARNING, "Sequence number %d, Item %d is not supported - skipped\n", number, item);
 							break;
 						default:	/* Update internal structure as well as netCDF file attributes */
 							length = (MGD77_Header_Lookup[key].length == 1) ? 1 : strlen (answer);
@@ -1272,7 +1272,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 				else {			/* Systematic fixes */
 					if ((id = MGD77_Get_Column (GMT, field, &In)) == MGD77_NOT_SET) {
-						GMT_Message (API, GMT_TIME_NONE, "Warning: Correction found for %s which is not in this cruise?\n", field);
+						GMT_Report (API, GMT_MSG_WARNING, "Correction found for %s which is not in this cruise?\n", field);
 					}
 					else {
 						(void) MGD77_Info_from_Abbrev (GMT, field, &(D->H), &set, &item);
@@ -1284,7 +1284,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								if ((id = MGD77_Get_Column (GMT, "depth", &In)) == MGD77_NOT_SET) {
-									GMT_Message (API, GMT_TIME_NONE, "Warning: Correction implied for %s which is not in this cruise?\n", field);
+									GMT_Report (API, GMT_MSG_WARNING, "Correction implied for %s which is not in this cruise?\n", field);
 									break;
 								}
 								/* No break! - we want to fall through and also set depth adjustment */
@@ -1475,9 +1475,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			else if (old_flags) {	/* Had flags from before which we cannot delete */
 				MGD77_nc_status (GMT, nc_enddef (In.nc_id));	/* End define mode. */
-				GMT_Message (API, GMT_TIME_NONE, "File %s contains flags from an earlier E77 but this E77 do not contain any flags.\n", list[argno]);
-				GMT_Message (API, GMT_TIME_NONE, "The flags in the file %s will all be set to zero but cannot be removed.\n", list[argno]);
-				GMT_Message (API, GMT_TIME_NONE, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "File %s contains flags from an earlier E77 but this E77 do not contain any flags.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "The flags in the file %s will all be set to zero but cannot be removed.\n", list[argno]);
+				GMT_Report (API, GMT_MSG_WARNING, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
 				start[0] = 0;
 				count[0] = D->H.n_records;
 				gmt_M_memset (D->flags[0], D->H.n_records, int);	/* Reset all flags to 0 (GOOD) */

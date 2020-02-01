@@ -180,7 +180,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 						}
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Must specify value or NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
 						n_errors++;
 					}
 				}
@@ -207,9 +207,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->Z.active) gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
-	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Must specify at least one input file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Option -E can only handle one input file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Option -E is not compatible with -Z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -483,9 +483,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
-			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " finite values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64" NaN values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_NOERROR);

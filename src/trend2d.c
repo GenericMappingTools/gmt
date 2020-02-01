@@ -727,10 +727,10 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_WARNING, format, n_model, rank, c_chisq);
-		GMT_Report (API, GMT_MSG_WARNING, "Model Coefficients: ");
+		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Model Coefficients: ");
 		sprintf (format, "%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 		for (i = 0; i < n_model; i++) {
 			GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);

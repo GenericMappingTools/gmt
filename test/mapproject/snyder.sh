@@ -9,8 +9,8 @@
 #	Slop is 0.11 m for gmt projected values
 
 blabber () {
-	gf=(`echo "${sf[*]}" | gmt mapproject $* -F -C`)
-	gi=(`echo "${gf[*]}" | gmt mapproject $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
+	gf=($(echo "${sf[*]}" | gmt mapproject $* -F -C))
+	gi=($(echo "${gf[*]}" | gmt mapproject $* -F -C -I --FORMAT_FLOAT_OUT=%lg))
 	echo "${sf[*]} ${gi[*]} ${si[*]} ${gf[*]} $p" | $AWK -f test.awk
 }
 

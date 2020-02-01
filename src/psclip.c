@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Correct syntax is -C[<n>]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -173,11 +173,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->C.active) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error: Cannot use -W with -C\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Cannot use -W with -C\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");

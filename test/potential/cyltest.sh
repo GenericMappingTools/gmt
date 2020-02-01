@@ -7,8 +7,8 @@ ps=cyltest.ps
 #cylinder 25 10 10 1333 5084
 # Make a 1st order correction for the fact that the cubes extend 12.5 meter outside given limits.
 # This works out to a factor of 0.992386602589:
-data=`gmt which -G @cylinder25.txt`
-corr=`gmt math -Q 25000 2 POW 5084 1333 SUB MUL 25000 25 2 DIV ADD 2 POW 5084 1333 SUB 25 ADD MUL DIV =`
+data=$(gmt which -G @cylinder25.txt)
+corr=$(gmt math -Q 25000 2 POW 5084 1333 SUB MUL 25000 25 2 DIV ADD 2 POW 5084 1333 SUB 25 ADD MUL DIV =)
 gmt math -T-100/100/1 0 = trk
 gmt talwani3d @cylinder_mod.txt -D1670 -Mh -Ntrk -o0,3 > faa.txt
 gmt talwani3d @cylinder_mod.txt -D1670 -Mh -Ntrk -o0,3 -Fv > vgg.txt

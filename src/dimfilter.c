@@ -342,7 +342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				k = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Syntax error -D option: Choose from the range 0-4\n");
+				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Option -D: Choose from the range 0-4\n");
 				Ctrl->D.mode = k;
 				set++;
 				break;
@@ -418,7 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						break;
 				}
 				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
-				n_errors += gmt_M_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
+				n_errors += gmt_M_check_condition (GMT, k <= 0, "Option -N: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
 				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
 				set++;
 				break;
@@ -445,21 +445,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	}
 
 	if (Ctrl->L.active)
-		n_errors += gmt_M_check_condition (GMT, set, "Syntax error: -L can only be used by itself.\n");
+		n_errors += gmt_M_check_condition (GMT, set, "Option -L can only be used by itself.\n");
 	else if (!Ctrl->Q.active) {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Option -F: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Option -N: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 #ifdef OBSOLETE
 		slow = (Ctrl->F.filter == DIMFILTER_MEDIAN || Ctrl->F.filter == DIMFILTER_MODE);		/* Will require sorting etc */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Option -E: Only valid for robust filters -Fm|p.\n");
 #endif
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Must use -Q to specify total # of columns in the input file.\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -789,7 +789,10 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				gmt_M_memset (value, Ctrl->N.n_sectors, double);
 				gmt_M_memset (wt_sum, Ctrl->N.n_sectors, double);
 #ifdef OBSOLETE
-				if (Ctrl->E.active) S = 0, Sx = Sy = Sz = Sxx = Syy = Sxy = Sxz = Syz = Sxx = Sw = 0.0;
+				if (Ctrl->E.active) {
+					S = 0;
+					Sx = Sy = Sz = Sxx = Syy = Sxy = Sxz = Syz = Sxx = Sw = 0.0;
+				}
 				n = 0;
 #endif
 
@@ -1151,9 +1154,9 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-		err_workarray = gmt_M_memory (GMT, NULL, S->n_columns, double);
 
 		S = D->table[0]->segment[0];	/* A Single-segment data file */
+		err_workarray = gmt_M_memory (GMT, NULL, S->n_columns, double);
 		for (row = 0; row < S->n_rows; row++) {
 			/* Store data into array and find sum/min/max, starting with col 0 */
 			err_sum = err_workarray[0] = err_min = err_max = S->data[0][row];

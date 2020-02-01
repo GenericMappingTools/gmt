@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == '\0')
 					Ctrl->C.active[GMT_IN] = Ctrl->C.active[GMT_OUT] = true;
 				else {
-					GMT_Message (API, GMT_TIME_NONE, "Bad modifier given to -C (%s)\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Bad modifier given to -C (%s)\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -262,10 +262,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 
 	n_in = (Ctrl->C.active[GMT_IN] && gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %d columns\n", n_in);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Option -S: Secondary vector cannot be a file!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Cannot give input files and -A<vec> at the same time\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -384,7 +384,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	for (k = 0; k < n_components; k++) gmt_M_free (GMT, P[k]);
 
 	if (gmt_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat, &lon, X, true);

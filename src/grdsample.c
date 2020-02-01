@@ -213,12 +213,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active && !GMT->common.R.active[FSET],
-	                                   "Syntax error: Only one of -r, -T may be specified\n");
+	                                   "Only one of -r, -T may be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
-	                                   "Syntax error -I: Must specify positive increments\n");
+	                                   "Option -I: Must specify positive increments\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -374,7 +374,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, lon);
 
 	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
 			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
 	}
 

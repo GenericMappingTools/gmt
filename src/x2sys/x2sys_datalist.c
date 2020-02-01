@@ -175,11 +175,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "Syntax error: No track files given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "No track files given\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Option -F must be given a comma-separated list of columns.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Option -I must be given a filename.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

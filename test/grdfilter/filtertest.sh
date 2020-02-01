@@ -24,11 +24,11 @@ mode=c
 no_U=1
 gmt set PROJ_ELLIPSOID Sphere
 # Set contour limits so we just draw the filter radius
-lo=`gmt math -Q $D 2 DIV 0.5 SUB =`
-hi=`gmt math -Q $D 2 DIV 0.5 ADD =`
+lo=$(gmt math -Q $D 2 DIV 0.5 SUB =)
+hi=$(gmt math -Q $D 2 DIV 0.5 ADD =)
 # Run gmt grdfilter as specified
 gmt grdfilter -A${mode}${lon}/$lat -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}
-n_conv=`cat n_conv.txt`
+n_conv=$(cat n_conv.txt)
 if [ $lat -lt 0 ]; then	# S hemisphere view
 	plat=-90
 	range=-90/0
@@ -62,5 +62,5 @@ gmt grdcontour r.nc -J -O -K -C1 -L$lo/$hi -W1p -R0/360/$range >> $ps
 gmt grdimage t.nc -JQ0/7i -B30g10 -BWsNe+t"$D km Gaussian at ($lon, $lat)" -Ct.cpt -O -K -Y7.8i -R-180/180/$range --FONT_TITLE=18p >> $ps
 echo ${lon} $lat | gmt psxy -R -J -O -K -Sx0.1 -W1p >> $ps
 gmt grdcontour -R r.nc -J -O -K -C1 -L$lo/$hi -W1p >> $ps
-gmt psscale -Ct.cpt -D3.5i/-0.15i+w6i/0.05i+h+jTC -O -K -Bx$t -By+l"${mode} [$n_conv]" >> $ps
+gmt psscale -Ct.cpt -Dx3.5i/-0.15i+w6i/0.05i+h+jTC -O -K -Bx$t -By+l"${mode} [$n_conv]" >> $ps
 gmt psxy -R -J -O -T >> $ps

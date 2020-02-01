@@ -107,7 +107,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files, "Syntax error: No input files are expected\n");
+	n_errors += gmt_M_check_condition (GMT, n_files, "No input files are expected\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

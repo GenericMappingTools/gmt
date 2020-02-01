@@ -381,7 +381,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if ( strspn (p, "diu") == 0 ) {
 					/* No valid conversion specifier */
 					GMT_Report (API, GMT_MSG_ERROR,
-						"Syntax error: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
+						"Option -D: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
 						p - Ctrl->D.name + 1, Ctrl->D.name);
 					n_errors++;
 				}
@@ -389,7 +389,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			}
 			if ( n_formats == 0 || n_formats > 2 ) {	/* Incorrect number of format specifiers */
 				GMT_Report (API, GMT_MSG_ERROR,
-					"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
+					"Option -D: Incorrect number of format specifiers in format string '%s'.\n",
 					Ctrl->D.name);
 				n_errors++;
 			}
@@ -398,18 +398,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
-	                                 "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+	                                 "Must specify number of columns in binary input data (-bi)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active),
-	                                 "Syntax error: -L or -S requires ASCII input data\n");
+	                                 "Options -L or -S requires ASCII input data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max),
-	                                 "Syntax error: -C minimum records cannot exceed maximum records\n");
+	                                 "Option -C: minimum records cannot exceed maximum records\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"),
-	                                 "Syntax error: -D Output template must contain %%d\n");
+	                                 "Option -D: Output template must contain %%d\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
-	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
+	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
-	                                 "Syntax error: The -N option cannot be used with -F\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

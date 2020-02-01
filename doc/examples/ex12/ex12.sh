@@ -8,7 +8,7 @@
 gmt begin ex12
 	# Contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a
 	# color palette (.cpt) file
-	T=`gmt info -T25+c2 @Table_5_11.txt`
+	T=$(gmt info -T25+c2 @Table_5_11.txt)
 	gmt makecpt -Cjet $T
 	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -SCb -SRl -R0/6.5/-0.2/6.5 -JX8c -BWSne -T"Delaunay Triangulation"
 	# First draw network and label the nodes

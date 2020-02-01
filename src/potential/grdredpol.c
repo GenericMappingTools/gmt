@@ -1164,8 +1164,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {
 		GMT_Report (API, GMT_MSG_ERROR, "-E option overrides -C\n");

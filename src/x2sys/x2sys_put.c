@@ -87,9 +87,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-D Remove the listed tracks  [Default will add to database].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-F Force updates to earlier entries for a track with new information.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   [Default refuses to process tracks already in the database].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Remove the listed tracks  [Default will add to database].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force updates to earlier entries for a track with new information.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default refuses to process tracks already in the database].\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -139,8 +139,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Syntax error: Only specify one of -D and -F\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Only specify one of -D and -F\n");
 
 	if (Ctrl->F.active) Ctrl->D.active = true;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 

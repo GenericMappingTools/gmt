@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -193,14 +193,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->F.lat) > 90.0,
-	                                 "Syntax error -Fn option: Latitude out of range\n");
+	                                 "Option -Fn: Latitude out of range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->N.active,
-	                                 "Syntax error -N option: Cannot also specify -T\n");
+	                                 "Option -N: Cannot also specify -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->Z.ymin >= Ctrl->Z.ymax,
-				         "Syntax error -Z option: The ymin >= ymax for 2.5-D body\n");
+				         "Option -Z: The ymin >= ymax for 2.5-D body\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
-				         "Syntax error -Z option: 2.5-D solution only available for FAA\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+				         "Option -Z: 2.5-D solution only available for FAA\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -210,7 +210,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+n]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[%s] [%s] [%s]\n\t[%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

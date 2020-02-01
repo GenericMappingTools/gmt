@@ -302,16 +302,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 							if (opt->arg[1] && !gmt_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F[Ff]: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;
 					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0,
-					                                   "Syntax error -F option: Filterwidth must be positive\n");
+					                                   "Option -F: Filterwidth must be positive\n");
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					++n_errors;
 				}
 				break;
@@ -330,7 +330,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 						int sval0;
 						GMT_Report (API, GMT_MSG_COMPAT, "-N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Syntax is -N<tcol>\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Syntax is -N<tcol>\n");
 							++n_errors;
 						}
 					}
@@ -360,7 +360,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					}
 				}
 				else {
-					n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
+					n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Time column cannot be negative.\n");
 					Ctrl->N.col = sval;
 				}
 				break;
@@ -394,12 +394,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	/* Check arguments */
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D: must give positive increment\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.T.set == 3 && (Ctrl->T.T.max - Ctrl->T.T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F is required\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Option -D: must give positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.T.set == 3 && (Ctrl->T.T.max - Ctrl->T.T.min) < Ctrl->F.width, "Option -T: Output interval < filterwidth\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Option -L: Unreasonable lack-of-data interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Option -S: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Option -Q: Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -912,7 +912,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"Syntax error: Binary input data must have at least %d fields\n", F.n_cols);
+		"Binary input data must have at least %d fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = true;

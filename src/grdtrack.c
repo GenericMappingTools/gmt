@@ -236,7 +236,7 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 	Ctrl->G.scale[ng] = 1.0;
 	if (strchr (record, ',') && !strchr (record, '?')) {	/* IMG grid file with required parameters */
 		if ((j = sscanf (record, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
 		else if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
@@ -244,8 +244,8 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 		else
 			return (0);
 		Ctrl->G.type[ng] = 1;
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Option -G: mode must be in 0-3 range\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Option -G: max latitude should be positive\n");
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_ERROR, "Option -G: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -329,11 +329,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				if (gmt_M_is_geographic (API->GMT, GMT_IN) && n_units && Ctrl->C.unit != 'e' && !strchr (opt->arg, 'e'))
 					n_units = 0;	/* Weird case where user did -fg but did not specify units on all three items and got default e unintentionally */
 				if (n_units) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
 					n_errors++;
 				}
 				if (n_modes) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Cannot imply different distance modes for <length> and <ds> [and/or <spacing>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Cannot imply different distance modes for <length> and <ds> [and/or <spacing>]\n");
 					n_errors++;
 				}
 				break;
@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 					break;
 				}
@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						else
 							ng++;
 						if (ng > MAX_GRIDS) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 							n_errors++;
 						}
 					}
@@ -379,7 +379,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					else
 						ng++;
 					if (ng > MAX_GRIDS) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 						n_errors++;
 					}
 				}
@@ -464,19 +464,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 		}
 	}
 	Ctrl->G.n_grids = ng;
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Syntax error -C: Cannot chose both +l and +r modifiers.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
-	                                   "Syntax error -S: Must specify at least one modifier.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
+	                                   "Option -S: Must specify at least one modifier.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Option -S: +c<factor> must be positive.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Option -D: Must specify file name.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Must specify -G at least once\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0),
-	                                   "Syntax error -C: Arguments must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	                                   "Option -C: Arguments must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0),
-	                                   "Syntax error -T: Only one non-img input grid can be specified\n");
+	                                   "Option -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -566,7 +566,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
-	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -E:  All lines must have the same distance units\n");
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E:  All lines must have the same distance units\n");
 	/* Process args so any i|l|r+<dist> becomes i|l|r <dist> as the + will cause trouble otherwise.  This + for geodesics have already been processed */
 	while ((c = strstr (args, "+i+"))) c[2] = ' ';
 	while ((c = strstr (args, "+l+"))) c[2] = ' ';

@@ -36,4 +36,4 @@
 { "Ryumin-Light-EUC-H",		  0.700,	1,	1 },
 { "Ryumin-Light-EUC-V",		  0.700,	1,	1 },
 { "GothicBBB-Medium-EUC-H",	  0.700,	1,	1 },
-{ "GothicBBB-Medium-EUC-V",	  0.700,	1,	1 },
+{ "GothicBBB-Medium-EUC-V",	  0.700,	1,	1 }

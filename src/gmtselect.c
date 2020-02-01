@@ -252,7 +252,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	bool fix = false;
 	/* Parse older versions of the -C syntax */
 	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expects -C<file>+d%s\n", GMT_DIST_OPT);
 		return 1;
 	}
 	if (arg[0] == 'f') {
@@ -262,7 +262,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 			fix = true;
 		}
 		else {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expects -C<file>+d%s\n", GMT_DIST_OPT);
 			return 1;
 		}
 	}
@@ -274,7 +274,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 		arg[j] = '/';	/* Restore the /filename part */
 	}
 	else {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expects -C<file>+d%s\n", GMT_DIST_OPT);
 		return 1;
 	}
 	if (fix) arg[0] = 'f';	/* Just to leave the original args unaltered */
@@ -284,7 +284,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
 	int j, k = 0;
 	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -L: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 		return 1;
 	}
 	if (arg[k] == 'p') {	/* Disallow points beyond endpoints */
@@ -293,14 +293,14 @@ GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	}
 	for (j = k; arg[j] && arg[j] != '/'; j++);	/* Find the first slash */
 	if (!arg[j]) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -L: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 		return 1;
 	}
 	else {
 		if (gmt_check_filearg (API->GMT, 'L', &arg[j+1], GMT_IN, GMT_IS_DATASET))
 			Ctrl->L.file = strdup (&arg[j+1]);
 		else {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: No file given\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 			return 1;
 		}
 		arg[j] = '\0';	/* Chop off the /filename part */
@@ -345,7 +345,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				}
 				/* Here we perform new syntax parsing */
 				if (opt->arg[0] == 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: No file given\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No file given\n");
 					n_errors++;
 				}
 				else
@@ -364,7 +364,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 						case 'f': Ctrl->E.inside[F_ITEM] = GMT_INSIDE; break;
 						case 'n': Ctrl->E.inside[N_ITEM] = GMT_INSIDE; break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -E: Expects -Ef, -En, or -Efn\n");
 							n_errors++;
 							break;
 					}
@@ -394,7 +394,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 						case 'z': Ctrl->I.pass[GMT_SELECT_Z] = false; break;
 						case 'g': Ctrl->I.pass[GMT_SELECT_G] = false; break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I option: Expects -Icflrszg\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects -Icflrszg\n");
 							n_errors++;
 							break;
 					}
@@ -409,7 +409,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				/* Here we perform new syntax parsing */
 				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp")) n_errors++;
 				if (opt->arg[0] == 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: No file given\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 					n_errors++;
 				}
 				else
@@ -439,13 +439,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 							Ctrl->N.mask[j] = true;
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Bad modifier (use s or k)\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Bad modifier (use s or k)\n");
 							n_errors++;
 					}
 					j++;
 				}
 				if (!(j == 2 || j == GMTSELECT_N_CLASSES)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -468,7 +468,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				}
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j < 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Z option: Specify z_min [and z_max]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Specify z_min [and z_max]\n");
 					n_errors++;
 				}
 				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = gmt_M_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
@@ -487,7 +487,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 						n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, zb, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 					}
 				}
-				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
+				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Option -Z: must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
 				if (col > Ctrl->Z.max_col) Ctrl->Z.max_col = col;
 				Ctrl->Z.n_tests++;
@@ -507,24 +507,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active[RSET])) Ctrl->Z.max_col = 2;
 	if (Ctrl->Z.n_tests) Ctrl->Z.limit = gmt_M_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Option -C: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Option -C: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Option -C: Distance is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK),
-	                                   "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	                                   "Option -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK),
-	                                   "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	                                   "Option -F: Cannot read file %s!\n", Ctrl->F.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK),
-	                                   "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
+	                                   "Option -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Option -L: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Option -L: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Option -L: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Options -A and -D requires -N!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit),
-	                                   "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
+	                                   "If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[GMT_SELECT_Z],
-	                                   "Syntax error: -Iz can only be used with one -Z range\n");
+	                                   "Option -Iz can only be used with one -Z range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -647,11 +647,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
@@ -701,7 +701,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -L: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
@@ -725,7 +725,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */

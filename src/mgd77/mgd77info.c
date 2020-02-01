@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 	if (Ctrl->E.active) n_opts++;
 	if (Ctrl->C.active) n_opts++;
 	if (Ctrl->L.active) n_opts++;
-	n_errors += gmt_M_check_condition (GMT, n_opts != 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
+	n_errors += gmt_M_check_condition (GMT, n_opts != 1, "Specify one of -C, -E, -L, or -M\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

@@ -14,10 +14,10 @@ cat << EOF > box
 EOF
 
 scl=0.01
-x=`gmt math -Q 512 2 DIV $scl MUL =`
-xoff=`gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =`
-yoff=`gmt math -Q 200 $scl MUL 0.5 ADD =`
-yoffe=`gmt math -Q 384 $scl MUL 0.5 ADD =`
+x=$(gmt math -Q 512 2 DIV $scl MUL =)
+xoff=$(gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =)
+yoff=$(gmt math -Q 200 $scl MUL 0.5 ADD =)
+yoffe=$(gmt math -Q 384 $scl MUL 0.5 ADD =)
 gmt makecpt -Cpolar -T-1/1 > t.cpt
 gmt grdimage t.nc -Jx${scl}i -Ct.cpt -P -Ba -BWSne -K -X1.75i > $ps
 echo "350 100 Original Data" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
@@ -33,5 +33,5 @@ gmt grdfft t.nc -N300/200+n+t25+wtmp+l -E > /dev/null
 gmt grdimage t_tmp.nc -J -Ct.cpt -Ba -BWSne -O -K -Y${yoffe}i >> $ps
 echo "400 192 No extension" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 25% inward taper" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
-gmt psscale -Ct.cpt -D${x}i/${yoff}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
+gmt psscale -Ct.cpt -Dx${x}i/${yoff}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps

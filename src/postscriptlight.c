@@ -1375,7 +1375,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	if (zstatus != Z_STREAM_END) {
 		/* "compressed" size is larger or other failure */
-		PSL_message (PSL, PSL_MSG_WARNING, "Warning: no deflate compression done.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Warning: no deflate compression done.\n");
 		PSL_free (output);
 		return NULL;
 	}
@@ -2452,6 +2452,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 
 static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
 	int i = 0;
+	if (imagefile == NULL) return -1;
 	while (i < PSL->internal.n_userimages) {
 		if (!strcmp (PSL->internal.user_image[i], imagefile))	/* Yes, found it */
 			return (i);
@@ -3038,7 +3039,7 @@ static int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, i
 		}
 	}
 
-	PSL_message (PSL, PSL_MSG_WARNING, "Image depth reduced to %d bits\n", nbits);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Image depth reduced to %d bits\n", nbits);
 	return (nbits);
 }
 
@@ -3322,7 +3323,7 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 				PSL_free (image->buffer);
 				PSL_free (image);
 				PSL_free (colormap);
-				PSL_message (PSL, PSL_MSG_INFORMATION, "Warning: Too many colors to make colormap - using 24-bit direct color instead.\n");
+				PSL_message (PSL, PSL_MSG_INFORMATION, "Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
 			image->buffer[i] = (unsigned char)j;
@@ -3340,11 +3341,11 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 		PSL_free (image->buffer);
 		PSL_free (image);
 		PSL_free (colormap);
-		PSL_message (PSL, PSL_MSG_WARNING, "Warning: Use of colormap is inefficient - using 24-bit direct color instead.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Use of colormap is inefficient - using 24-bit direct color instead.\n");
 		return (NULL);
 	}
 
-	PSL_message (PSL, PSL_MSG_WARNING, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
+	PSL_message (PSL, PSL_MSG_INFORMATION, "Colormap of %" PRIuS " colors created\n", colormap->ncolors);
 	return (image);
 }
 

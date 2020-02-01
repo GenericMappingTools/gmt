@@ -263,7 +263,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
-	GMT_Report (API, GMT_MSG_WARNING, "Calling greenspline with args %s\n", args);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
 		return (API->error);	/* Some sort of failure */
 	}

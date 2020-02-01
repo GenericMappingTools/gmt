@@ -17,7 +17,7 @@ function plot_one { # First 3-4 args are: -E -N -c [-Barg]
 }
 
 gmt begin ex47
-	file=`gmt which -G @hertzsprung-russell.txt`
+	file=$(gmt which -G @hertzsprung-russell.txt)
 	# Allow outliers (commented out by #) to be included in the analysis:
 	sed -e s/#//g $file > data.txt
 	# Identify the red giants (outliers)

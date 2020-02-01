@@ -306,8 +306,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 		fill->pattern[i-1] = '\0';
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
-	len = (int)strlen (fill->pattern);
-	for (i = 0, pos = -1; i < ((int)strlen (fill->pattern)-1) && fill->pattern[i] && pos == -1; i++)
+	len = (int)strlen (fill->pattern) - 1;
+	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
 		if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 	if (pos > -1) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
@@ -7944,11 +7944,11 @@ int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double
 	if (*z_low >= P->hinge) {	/* Must exclude the below-hinge CPT colors entirely */
 		gmt_M_memcpy (P->data, &P->data[ks], P->n_colors-ks, struct GMT_LUT);
 		P->n_colors -= ks;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to start at hinge %g and below-hinge CPT ignored.\n", *z_low);
 	}
 	else if (*z_high <= P->hinge) {	/* Must exclude the above-hinge CPT colors entirely */
 		P->n_colors = ks;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ignored.\n", *z_high);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_validate_cpt: CPT hard hinge is outside actual data range - range adjusted to end at hinge %g and above-hinge CPT ignored.\n", *z_high);
 	}
 	/* Behave as a single CPT range with no hinge from now on */
 	P->has_hinge = 0;
@@ -10327,7 +10327,7 @@ GMT_LOCAL void make_fraction (struct GMT_CTRL *GMT, double x0, int maxden, int *
 	*n = m[0][0];	*d = m[1][0];
  	e = x0 - ((double) *n / (double) *d);
 	if (e > GMT_CONV4_LIMIT)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bad fraftion, error = %g\n", e);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bad fraction, error = %g\n", e);
 }
 
 /*! . */
@@ -11291,7 +11291,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
-		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
+		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
 
 		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
@@ -11306,7 +11306,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
@@ -14229,7 +14229,7 @@ unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 		for (row = 0; row < G->header->n_rows; row++) d_col[row] = max_d_col;
 	}
 	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
 
@@ -15934,13 +15934,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 		/* Set output column type as time unless -fo has been set */
 		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
-		if (has_inc) {
-			if (strchr (GMT_TIME_UNITS, T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
-				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
+		if (has_inc) {	/* Gave a time increment */
+			if (strchr (GMT_TIME_UNITS, T->unit))	/* Gave a valid time unit */
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
-			}
-			else	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
-				T->vartime = (strchr (GMT_TIME_VAR_UNITS, GMT->current.setting.time_system.unit) != NULL);
+			else	/* User relied on the setting of TIME_UNIT */
+				T->unit = GMT->current.setting.time_system.unit;	/* Set assumed time unit */
+			/* Check if unit is a variable increment */
+			T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
 		}
 	}
 	/* 4. Consider spatial distances */
@@ -16027,6 +16027,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
 				return GMT_PARSE_ERROR;
 			}
+			T->unit = GMT->current.setting.time_system.unit;	/* Set currently selected time unit so we don't run into issues later despite only having one time knot */
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min value from %s\n", option, txt[GMT_X]);

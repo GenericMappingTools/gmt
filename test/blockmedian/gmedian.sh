@@ -11,22 +11,22 @@ gmt blockmedian @ship_15.txt -I1 -R-115/-105/20/30 -fg -Eb -Gfield_%s.grd -Aq25,
 
 # Median z:
 gmt grd2xyz field_z.grd -s -o2 > tmp
-z=`gmt convert -A dump.txt tmp -o0,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+z=$(gmt convert -A dump.txt tmp -o0,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 # L1 s:
 gmt grd2xyz field_s.grd -s -o2 > tmp
-s=`gmt convert -A dump.txt tmp -o1,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+s=$(gmt convert -A dump.txt tmp -o1,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 # l:
 gmt grd2xyz field_l.grd -s -o2 > tmp
-l=`gmt convert -A dump.txt tmp -o2,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+l=$(gmt convert -A dump.txt tmp -o2,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 # h:
 gmt grd2xyz field_h.grd -s -o2 > tmp
-h=`gmt convert -A dump.txt tmp -o3,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+h=$(gmt convert -A dump.txt tmp -o3,4 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 # 25% quartile:
 gmt grd2xyz field_q25.grd -s -o2 > tmp
-q25=`gmt convert -A qdump.txt tmp -o0,2 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+q25=$(gmt convert -A qdump.txt tmp -o0,2 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 # 75% quartile:
 gmt grd2xyz field_q75.grd -s -o2 > tmp
-q75=`gmt convert -A qdump.txt tmp -o1,2 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
+q75=$(gmt convert -A qdump.txt tmp -o1,2 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =)
 echo $z $s $l $q25 $q75 $h
 if [ ! "$z $s $l $q25 $q75 $h" = "1 1 1 1 1 1" ] ; then
  	echo "$z $s $l $q25 $q75 $h" > fail

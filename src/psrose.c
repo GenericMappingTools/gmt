@@ -313,9 +313,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 					unsigned int n_comma = 0;
 					for (k = 0; k < strlen (opt->arg); k++) if (opt->arg[k] == ',') n_comma++;
 					if (n_comma == 3)	/* New, comma-separated labels */
-						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^,],%[^,],%[^,],%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>,<eastlabel>,<southlabel>,<northlabel>\n");
+						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^,],%[^,],%[^,],%s", txt_a, txt_b, txt_c, txt_d) != 4, "Option -L: Expected\n\t-L<westlabel>,<eastlabel>,<southlabel>,<northlabel>\n");
 					else	/* Old slash-separated labels */
-						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
+						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Option -L: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
 					Ctrl->L.w = strdup (txt_a);	Ctrl->L.e = strdup (txt_b);
 					Ctrl->L.s = strdup (txt_c);	Ctrl->L.n = strdup (txt_d);
 				}
@@ -329,7 +329,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -409,21 +409,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && Ctrl->E.mode == GMT_IN && gmt_access (GMT, Ctrl->E.file, R_OK),
-	                                 "Syntax error -E: Cannot read file %s!\n", Ctrl->E.file);
-	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error -C option: Cannot give both -C and -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Syntax error -C option: Cannot be used with -A+r\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Syntax error -C option: Requires -A\n");
+	                                 "Option -E: Cannot read file %s!\n", Ctrl->E.file);
+	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Option -Z: factor must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Option -A: sector width must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Option -Q: confidence level must be in 0-1 range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Option -C: Cannot give both -C and -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Option -C: Cannot be used with -A+r\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Option -C: Requires -A\n");
 	if (!Ctrl->I.active) {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify -JX option\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->current.proj.projection != GMT_LINEAR, "Syntax error: Must specify -JX option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify -JX option\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->current.proj.projection != GMT_LINEAR, "Must specify -JX option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
-				"Syntax error -R option: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
+				"Option -R: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
 	}
 	n_errors += gmt_check_binary_io (GMT, 2);
 
