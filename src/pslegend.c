@@ -716,7 +716,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						text[0] = '\0';
 						n_scan = sscanf (line, "%*s %*s %*s %s %*s %*s %s %[^\n]", size, txt_b, text);
 						/* Find the largest symbol size specified */
-						x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
+						if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
+							x = gmt_M_to_inch (GMT, &c[1]);
+						else
+							x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
 						if (x > def_size) def_size = x;
 						if (n_scan > 1 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
