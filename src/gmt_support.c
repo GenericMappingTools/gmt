@@ -15934,15 +15934,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 		/* Set output column type as time unless -fo has been set */
 		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
-		if (has_inc) {
-			if (strchr (GMT_TIME_UNITS, T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
-				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
+		if (has_inc) {	/* Gave a time increment */
+			if (strchr (GMT_TIME_UNITS, T->unit))	/* Gave a valid time unit */
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
-			}
-			else {	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
-				T->vartime = (strchr (GMT_TIME_VAR_UNITS, GMT->current.setting.time_system.unit) != NULL);
+			else	/* User relied on the setting of TIME_UNIT */
 				T->unit = GMT->current.setting.time_system.unit;	/* Set assumed time unit */
-			}
+			/* Check if unit is a variable increment */
+			T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
 		}
 	}
 	/* 4. Consider spatial distances */
