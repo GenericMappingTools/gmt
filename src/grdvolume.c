@@ -409,7 +409,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 			case 'Z':
 				Ctrl->Z.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1,
-						"Syntax error option -Z: Must specify <fact> and optionally <shift>\n");
+						"Option -Z: Must specify <fact> and optionally <shift>\n");
 				break;
 
 			default:	/* Report bad options */
@@ -420,17 +420,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
-	                                   "Syntax error option -C: Must specify 1 or 3 arguments\n");
+	                                   "Option -C: Must specify 1 or 3 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.reverse && n != 2,
-	                                   "Syntax error option -C: Must specify 2 arguments\n");
+	                                   "Option -C: Must specify 2 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)),
-	                                   "Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
+	                                   "Option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_dnan (Ctrl->L.value),
-	                                   "Syntax error option -L: Must specify base\n");
+	                                   "Option -L: Must specify base\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
-	                                   "Syntax error option -T: Must also specify -Clow/high/delta\n");
+	                                   "Option -T: Must also specify -Clow/high/delta\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
-	                                   "Syntax error option -T: Must specify -Clow/high/delta\n");
+	                                   "Option -T: Must specify -Clow/high/delta\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

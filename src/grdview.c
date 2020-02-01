@@ -540,7 +540,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						n_errors++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -590,7 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &c[2], &Ctrl->N.fill),
-						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						                                 "Option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
 					else if (gmt_M_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
@@ -599,7 +599,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						c[0] = ' ';	/* Take out the slash for now */
 						sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
-						                                   "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						                                   "Option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
 					}
@@ -607,7 +607,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->N.level = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Usage is -N<level>[+g<fill>]\n");
 					n_errors++;
 				}
 				break;
@@ -657,7 +657,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == 'm') Ctrl->Q.outline = 1;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
