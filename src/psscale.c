@@ -308,10 +308,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, j < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, j < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Option -G: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -533,21 +533,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->D.refpoint) {
 		if (!(Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP || Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)) {	/* Only -DJ|j takes auto-width */
-			n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
-			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
+			n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Option -D: scale length must be nonzero\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Option -D: scale width must be positive\n");
 		}
 		if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 			static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Option -W: Scale cannot be zero\n");
 
 	if (!Ctrl->C.active && (c = gmt_get_current_cpt (API->GMT))) {
 		Ctrl->C.active = true;	/* Select current CPT */
@@ -1578,7 +1578,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->data[i].z_low <= 0.0 || P->data[i].z_high <= 0.0) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Q: All z-values must be positive for logarithmic scale\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			P->data[i].z_low  = d_log10 (GMT, P->data[i].z_low);

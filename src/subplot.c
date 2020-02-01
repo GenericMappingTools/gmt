@@ -596,8 +596,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Setting up a subplot system */
 		unsigned int px = 0, py = 0;
 		/* Was both -R -J given? */
-		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Syntax error -J: Requires -Fs to determine subplot height!\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
@@ -648,14 +648,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Syntax error -A: Cannot select Roman numerals AND letters!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Syntax error: Number of RowsxCols is required!\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error -F: Must specify figure and subplot dimensions!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Option -A: Cannot select Roman numerals AND letters!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Number of RowsxCols is required!\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F: Must specify figure and subplot dimensions!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* Move focus to a particular subplot, so flag other options */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Syntax error -F: Only available for gmt subset begin!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S[GMT_X].active || Ctrl->S[GMT_Y].active, "Syntax error -S: Only available for gmt subset begin!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Syntax error -T: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Option -F: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S[GMT_X].active || Ctrl->S[GMT_Y].active, "Option -S: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Option -T: Only available for gmt subset begin!\n");
 
 	}
 

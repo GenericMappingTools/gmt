@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				Ctrl->A.active = true;
 				Ctrl->A.size = atoi (opt->arg);
 				if (Ctrl->A.size <= 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A: Must be positive!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Must be positive!\n");
 					n_errors++;
 				}
 				break;
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				if (strchr ("bcgm", opt->arg[0]))
 					Ctrl->F.filter = opt->arg[0];
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -F: Choose among b, c, g, m!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
 				break;
@@ -276,7 +276,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -I: Requires a valid grid file or a constant\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
@@ -284,7 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				Ctrl->L.active = true;
 				Ctrl->L.size = atoi (opt->arg);
 				if (Ctrl->L.size <= 0 || ((log2 ((double)Ctrl->L.size) - irint (log2 ((double)Ctrl->L.size))) > GMT_CONV8_LIMIT)) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -L: Must be radix 2!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -L: Must be radix 2!\n");
 					n_errors++;
 				}
 				break;
@@ -297,7 +297,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				if (opt->arg[0]) {
 					Ctrl->M.magnify = atoi (opt->arg);
 					if (Ctrl->M.magnify <= 0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -M: Must be positive!\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Must be positive!\n");
 						n_errors++;
 					}
 				}
@@ -329,13 +329,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Syntax error -N: Must specify a prefix for naming usage.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Syntax error -H: Must specify an integer factor > 1.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Syntax error -E: Must specify an URL.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Option -N: Must specify a prefix for naming usage.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Option -H: Must specify an integer factor > 1.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Option -E: Must specify an URL.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                 "Option -I: Must specify intensity file, value, or modifiers\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

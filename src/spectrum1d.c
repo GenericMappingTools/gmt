@@ -607,12 +607,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 					if (j < SPECTRUM1D_N_OUTPUT_CHOICES) {
 						Ctrl->C.col[j] = opt->arg[j];
 						if (!strchr ("xycnpago", Ctrl->C.col[j])) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Unrecognized output choice %c\n", Ctrl->C.col[j]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized output choice %c\n", Ctrl->C.col[j]);
 							n_errors++;
 						}
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Too many output columns selected: Choose from -Cxycnpago\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Too many output columns selected: Choose from -Cxycnpago\n");
 						n_errors++;
 					}
 				}
@@ -635,7 +635,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Unrecognized modifier +%c\n", opt->arg[1]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized modifier +%c\n", opt->arg[1]);
 							n_errors++;
 						}
 					}
@@ -650,7 +650,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 			case 'S':
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: segment size must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: segment size must be positive\n");
 				Ctrl->S.size = sval;
 				while (window_test < Ctrl->S.size) {
 					window_test += window_test;
@@ -669,11 +669,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Option -S: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

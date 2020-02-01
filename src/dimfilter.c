@@ -342,7 +342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				k = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Syntax error -D option: Choose from the range 0-4\n");
+				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Option -D: Choose from the range 0-4\n");
 				Ctrl->D.mode = k;
 				set++;
 				break;
@@ -418,7 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						break;
 				}
 				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
-				n_errors += gmt_M_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
+				n_errors += gmt_M_check_condition (GMT, k <= 0, "Option -N: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
 				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
 				set++;
 				break;
@@ -445,21 +445,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	}
 
 	if (Ctrl->L.active)
-		n_errors += gmt_M_check_condition (GMT, set, "Syntax error: -L can only be used by itself.\n");
+		n_errors += gmt_M_check_condition (GMT, set, "Option -L can only be used by itself.\n");
 	else if (!Ctrl->Q.active) {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Option -F: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Option -N: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 #ifdef OBSOLETE
 		slow = (Ctrl->F.filter == DIMFILTER_MEDIAN || Ctrl->F.filter == DIMFILTER_MODE);		/* Will require sorting etc */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Option -E: Only valid for robust filters -Fm|p.\n");
 #endif
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Must use -Q to specify total # of columns in the input file.\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

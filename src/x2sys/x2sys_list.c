@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				else if (opt->arg[0])
 					Ctrl->S.file = strdup (opt->arg);
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S: Must supply a track name.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Must supply a track name.\n");
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifier */
@@ -275,16 +275,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Syntax error: Only one COEdatabase can be given (or stdin)\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Only one of -Qe -Qi can be specified!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -E with binary output.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Must use -F to specify output items.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && GMT->common.b.active[GMT_OUT], "Cannot use -E with binary output.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.flags, "Must use -F to specify output items.\n");
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;
 		}
 		if (Ctrl->F.flags[i] == 'n') Ctrl->F.mixed = true;	/* Output will have trailing text */

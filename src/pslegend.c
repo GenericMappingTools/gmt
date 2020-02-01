@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					Ctrl->D.refpoint->mode = GMT_REFPOINT_PLOT;
 					Ctrl->D.justify = PSL_TC;	/* Backwards compatible default justification */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", xx, yy, txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += gmt_M_check_condition (GMT, n < 3, "Error: Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
+					n_errors += gmt_M_check_condition (GMT, n < 3, "Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					if (n_errors) break;
 					if (xx[0] == 'x') {
 						Ctrl->D.refpoint->x = gmt_M_to_inch (GMT, &xx[1]);
@@ -297,17 +297,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error: The -S option cannot set a zero scale!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Option -C: clearances cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "The -D option is required!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "The -S option cannot set a zero scale!\n");
 
 	if (!Ctrl->D.refpoint) return (GMT_PARSE_ERROR);	/* Need to exit because next ones to not apply */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Option -D: legend box height cannot be negative!\n");
 	if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

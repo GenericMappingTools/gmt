@@ -218,21 +218,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify an output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must specify an output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
-	                                 "Syntax error -S option: Incompatible with -A\n");
+	                                 "Option -S: Incompatible with -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active &&
 	                                 (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || Ctrl->T.active),
-	                                 "Syntax error -E option: Incompatible with -A, -D, -N, -S, and -T\n");
+	                                 "Option -E: Incompatible with -A, -D, -N, -S, and -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active,
-	                                 "Syntax error -S option: Incompatible with -T\n");
+	                                 "Option -S: Incompatible with -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active,
-	                                 "Syntax error -S option: Incompatible with -N\n");
+	                                 "Option -S: Incompatible with -N\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active[RSET],
-	                                 "Syntax error -S option: Must also specify -R\n");
+	                                 "Option -S: Must also specify -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
-	                                 "Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
+	                                 "Option -S: -R longitudes must span exactly 360 degrees\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
 	if (Ctrl->N.active) {
 		n_errors += gmt_check_binary_io (GMT, 3);
 	}

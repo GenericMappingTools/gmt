@@ -382,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 						units++;
 						Ctrl->S.label = strdup (units);
 					}
-					n_errors += gmt_M_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
+					n_errors += gmt_M_check_condition (GMT, k != 3, "Option -S: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -420,10 +420,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 		Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Syntax error: Must specify at least one of -G, -W\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Must specify at least one of -G, -W\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Option -Z: scale must be nonzero\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

@@ -132,10 +132,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "Syntax error: No track files given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->D.active, "Syntax error: -E requires -D\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "No track files given\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->D.active, "Option -E requires -D\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

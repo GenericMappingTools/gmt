@@ -638,7 +638,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 #if 0
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
 			gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
-	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
+	                     "Option -C: Must specify contour interval, file name with levels, or CPT\n");
 #endif
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Option -L: lower limit > upper!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Option -F: Must also specify -D\n");

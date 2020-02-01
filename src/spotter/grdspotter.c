@@ -381,12 +381,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "Syntax error -Z: Must give name of topo gridfile\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Syntax error: Must specify both -L and -Q if one is present\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Syntax error: Cannot use -M with -W or -Z (slicing)\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "Option -Z: Must give name of topo gridfile\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Must specify both -L and -Q if one is present\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Cannot use -M with -W or -Z (slicing)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

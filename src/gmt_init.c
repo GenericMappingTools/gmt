@@ -2986,7 +2986,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error: Could not locate share directory for GMT.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not locate share directory for GMT.\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 	}
@@ -15813,14 +15813,14 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  New_PSL_Ctrl\n");
 	if (!GMT->PSL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error: Could not initialize PSL - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "ould not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
 	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error: Could not initialize the GMT workflow - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}

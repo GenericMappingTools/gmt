@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				c = strstr (opt->arg, "+t");
 				if ((c = strstr (opt->arg, "+t"))) {
 					Ctrl->C.mode = c[2];
-					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Syntax error -C option: Modifier +t must add o, O, c, or C\n");
+					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -C: Modifier +t must add o, O, c, or C\n");
 					c[0] = '\0';	/* Hide modifier */
 				}
 				if (opt->arg[0]) {	/* Replace default settings with user settings */
@@ -423,7 +423,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
 				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
-					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after +v\n");
+					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
 					if (opt->arg[j-1] == '+')	/* New-style syntax */
 						opt->arg[j-1] = 0;
 					else
@@ -586,7 +586,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-T option is deprecated; use modifier +t in -C instead.\n");
 					Ctrl->C.mode = opt->arg[0];
-					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Syntax error -T option: must add o, O, c, or C\n");
+					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -T: must add o, O, c, or C\n");
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);

@@ -486,10 +486,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 	gmt_consider_current_cpt (GMT->parent, &Ctrl->Z.active, &(Ctrl->Z.file));
 
 	/* Check that the options selected are mutually consistent */
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Syntax error: -S must specify scale\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -Fo\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->S.active, "Must specify -S option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Option -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
 

@@ -238,7 +238,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		double e_time, i_time, e_scale, i_scale;
 		int n = sscanf (arg, "%[^/]/%[^/]/%s", A, B, C);
 		if (!(n == 3 || n == 1)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Must give -T<tfile>, -T<t0> or -T<t0>[u]/<t1>[u]/<dt>[u][+l]\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Must give -T<tfile>, -T<t0> or -T<t0>[u]/<t1>[u]/<dt>[u][+l]\n");
 			return 0;
 		}
 		s_time = gmt_get_modeltime (A, &s_unit, &s_scale);
@@ -525,7 +525,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->A.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->A.Nx, &Ctrl->A.Ny, &Ctrl->A.Nxy);
 				if (n != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: must give Nx/Ny/Nxy in-plane forces\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: must give Nx/Ny/Nxy in-plane forces\n");
 					n_errors++;
 				}
 				break;
@@ -534,7 +534,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 					case 'p': Ctrl->C.nu = atof (&opt->arg[1]); break;
 					case 'y': Ctrl->C.E = atof (&opt->arg[1]); break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Unrecognized modifier %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized modifier %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -543,7 +543,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->D.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->D.rhom, &Ctrl->D.rhol, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -D option: must give 3-4 density values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
 					n_errors++;
 				}
 				if (n == 3) {	/* Assume no rhoi given, shuffle args */
@@ -564,7 +564,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->F.active = true;
 				n = sscanf (opt->arg, "%lf/%[^/]/%lf", &Ctrl->F.nu_a, A, &Ctrl->F.nu_m);
 				if (!(n == 3 || n == 1)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: must select -F<nu> or -F<nu_a>/<h_a>/<nu_m>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: must select -F<nu> or -F<nu_a>/<h_a>/<nu_m>\n");
 					n_errors++;
 				}
 				if (n == 3) {	/* 2-layer model selected */
@@ -620,19 +620,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Syntax error -G option: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error -E option: Must set elastic plate thickness regardless of rheology\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -E: Must set elastic plate thickness regardless of rheology\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
-	                                 "Syntax error -S option: beta value must be in 0-1 range\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Syntax error -F option: Requires time information via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Syntax error -L option: Requires time information via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Syntax error -M option: Cannot mix with -F\n");
+	                                 "Option -S: beta value must be in 0-1 range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Option -F: Requires time information via -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Option -L: Requires time information via -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Option -M: Cannot mix with -F\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
-	                                 "Syntax error -G option: Filename template must contain format specified\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Syntax error: Load template given but -T not specified\n");
+	                                 "Option -G: Filename template must contain format specified\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Load template given but -T not specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

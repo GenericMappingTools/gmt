@@ -132,8 +132,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: No files specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Syntax error: Cannot use -D if -C is set\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No files specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Cannot use -D if -C is set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

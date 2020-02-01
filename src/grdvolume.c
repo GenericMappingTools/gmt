@@ -365,7 +365,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 						n = 2;			/* To cheat the sanity test on -Cr option below */
 					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high,
-					                                   "Syntax error -C option: high must exceed low\n");
+					                                   "Option -C: high must exceed low\n");
 					/* Now apply the trick that makes this option work. Swap and change signs of low/high */
 					Ctrl->C.inc   = Ctrl->C.low;	/* Use inc as the buble sort tmp variable */
 					Ctrl->C.low   = -Ctrl->C.high;
@@ -377,7 +377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->C.low, &Ctrl->C.high, &Ctrl->C.inc);
 					if (n == 3) {
 						n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0,
-								"Syntax error -C option: high must exceed low and delta must be positive\n");
+								"Option -C: high must exceed low and delta must be positive\n");
 					}
 					else
 						Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
@@ -403,7 +403,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Append c or h [Default].\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
@@ -418,7 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
 	                                   "Option -C: Must specify 1 or 3 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.reverse && n != 2,
@@ -509,7 +509,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Ctrl->C.high = -Grid->header->z_min;
 		Ctrl->C.inc  = Ctrl->C.high - Ctrl->C.low;
 		if (Ctrl->C.high <= Ctrl->C.low) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Cr<cval> option: <cval> must exceed grid's minimum.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Cr<cval>: <cval> must exceed grid's minimum.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

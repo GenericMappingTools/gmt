@@ -1079,12 +1079,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Syntax error: Must specify a main script file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Syntax error -C: Must specify a canvas dimension\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Syntax error -F: Cannot use none with other selections\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select at least one output product (-A, -F, -M)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Syntax error: Cannot use -Z if -Q is also set\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Syntax error -H: factor must be and integer > 1\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a main script file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a canvas dimension\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Option -F: Cannot use none with other selections\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Must select at least one output product (-A, -F, -M)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
 		unsigned int n_used = 0;
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++)
@@ -1093,21 +1093,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
-					"Syntax error -C: Bad unit given for cancas dimensions\n");
+					"Option -C: Bad unit given for cancas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
-					"Syntax error -C: Zero or negative canvas dimensions given\n");
+					"Option -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
-					"Syntax error -C: Zero or negative canvas dots-per-unit given\n");
+					"Option -C: Zero or negative canvas dots-per-unit given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active || (Ctrl->N.prefix == NULL || strlen (Ctrl->N.prefix) == 0),
-					"Syntax error -N: Must specify a movie prefix\n");
+					"Option -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
-					"Syntax error -T: Must specify number of frames or a time file\n");
+					"Option -T: Must specify number of frames or a time file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
-					"Syntax error -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
+					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
-					"Syntax error -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
+					"Option -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.frame < Ctrl->T.start_frame,
-					"Syntax error -M: Cannot specify a frame before the first frame number set via -T\n");
+					"Option -M: Cannot specify a frame before the first frame number set via -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && !strcmp (Ctrl->W.dir, "/tmp"),
 					"Option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->E.fade[GMT_IN] + Ctrl->E.fade[GMT_OUT]) > Ctrl->E.duration,
@@ -1282,12 +1282,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			I->x += sx * I->off[GMT_X];
 			I->y += sy * I->off[GMT_Y];
 			if (I->mode == MOVIE_LABEL_IS_COL_T && !strchr (I->format, 's')) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
 			}
 			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
 				close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
 			}

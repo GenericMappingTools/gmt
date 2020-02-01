@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -193,14 +193,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->F.lat) > 90.0,
-	                                 "Syntax error -Fn option: Latitude out of range\n");
+	                                 "Option -Fn: Latitude out of range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->N.active,
-	                                 "Syntax error -N option: Cannot also specify -T\n");
+	                                 "Option -N: Cannot also specify -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->Z.ymin >= Ctrl->Z.ymax,
-				         "Syntax error -Z option: The ymin >= ymax for 2.5-D body\n");
+				         "Option -Z: The ymin >= ymax for 2.5-D body\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
-				         "Syntax error -Z option: 2.5-D solution only available for FAA\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+				         "Option -Z: 2.5-D solution only available for FAA\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

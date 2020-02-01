@@ -503,7 +503,7 @@ GMT_LOCAL unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, 
 			(void)sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
 			Ctrl->T.label = false;
 			n_errors++;
 		}
@@ -543,7 +543,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
 				if (gmt_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				c = NULL;
@@ -590,12 +590,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				else if (opt->arg[0] != '-') {
 					Ctrl->C.interval = atof (opt->arg);
 					if (gmt_M_is_zero (Ctrl->C.interval)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be zero\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be zero\n");
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C: Contour interval cannot be negative (%s)\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be negative (%s)\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -651,7 +651,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					}
 					else {	/* Just a point count cutoff */
 						n = atoi (opt->arg);
-						n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Point count must be >= 0\n");
+						n_errors += gmt_M_check_condition (GMT, n < 0, "Option -Q: Point count must be >= 0\n");
 						Ctrl->Q.min = n;
 					}
 				}
@@ -696,7 +696,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 								Ctrl->T.txt[1] = strdup (txt_b);
 							}
 							else {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
 								n_errors++;
 							}
 						}
@@ -708,12 +708,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 							n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_COMPAT, "Syntax error -T option: Your format for -T is deprecated; use -T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+							GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
 								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 							n_errors++;
 						}
 					}
-					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Option -T: Expected\n\t-T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Sets pen attributes */
@@ -777,21 +777,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
-	                                 "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
+	                                 "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->D.active, "Must specify a region with the -R option\n");
 #if 0
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
-	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
+	                                 "Option -C: Must specify contour interval, file name with levels, or CPT\n");
 #endif
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
-	                                 "Syntax error: Must specify one of -W or -I\n");
+	                                 "Must specify one of -W or -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
-	                                 "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
+	                                 "Cannot use -G, -I, -L, -N, -W with -D\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Option -I: Must specify a color palette table via -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Option -E: Must specify an index file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),
-	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cptmode && !Ctrl->C.cpt, "Syntax error -W option: Modifier +c only valid if -C sets a CPT\n");
+	                                 "Option -E: Cannot find file %s\n", Ctrl->E.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cptmode && !Ctrl->C.cpt, "Option -W: Modifier +c only valid if -C sets a CPT\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -998,7 +998,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
 			if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 				Return (API->error);
 			}

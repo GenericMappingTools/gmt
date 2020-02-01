@@ -168,14 +168,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.high, txt);
 #endif
 					if (n != n_to_expect) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Sa: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
 					}
 					else
 						Ctrl->S.above = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 
 					if (!isnan(Ctrl->S.above) && Ctrl->S.above < Ctrl->S.high) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sb option: <above> cannot be lesser then <high>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb: <above> cannot be lesser then <high>\n");
 						n_errors++;
 					}
 					break;
@@ -187,14 +187,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.low, txt);
 #endif
 					if (n != n_to_expect) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
 						n_errors++;
 					}
 					else
 						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 
 					if (!isnan(Ctrl->S.below) && Ctrl->S.below > Ctrl->S.low) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sb option: <below> cannot be greater then <low>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb: <below> cannot be greater then <low>\n");
 						n_errors++;
 					}
 					break;
@@ -214,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
 #endif
 						if (n != n_to_expect) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
 							n_errors++;
 						}
 						else
@@ -223,7 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						if (!isnan(Ctrl->S.class[n_class].between) &&
 						    !(Ctrl->S.class[n_class].low <= Ctrl->S.class[n_class].between &&
 							  Ctrl->S.class[n_class].high >= Ctrl->S.class[n_class].between)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: <between> is not between <low> and <high>\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Si: <between> is not between <low> and <high>\n");
 							n_errors++;
 						}
 					}
@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.class[n_class].low, txt);
 #endif
 						if (n != n_to_expect) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sr option: Expected -Sr<old>/<new>, <new> may be set to NaN\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Sr: Expected -Sr<old>/<new>, <new> may be set to NaN\n");
 							n_errors++;
 						}
 						else
@@ -243,13 +243,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						Ctrl->S.class[n_class].replace = true;
 					}
 					if (Ctrl->S.class[n_class].low > Ctrl->S.class[n_class].high) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: <low> cannot exceed <high>!\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Si: <low> cannot exceed <high>!\n");
 						n_errors++;
 					}
 					n_class++;
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Expected -Sa<high>/<above>, -Sb<low>/<below>, -Si<low>/<high>/<between> or -Si<old>/<new>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Expected -Sa<high>/<above>, -Sb<low>/<below>, -Si<low>/<high>/<between> or -Si<old>/<new>\n");
 					n_errors++;
 				}
 				break;
@@ -266,31 +266,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {
 			if (Ctrl->S.class[k].low < Ctrl->S.class[k-1].high) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: Reclassification case %d overlaps with case %d\n", k, k-1);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Reclassification case %d overlaps with case %d\n", k, k-1);
 				n_errors++;
 			}
 			if (!Ctrl->S.class[k].replace && (gmt_M_is_fnan (Ctrl->S.class[k].low) || gmt_M_is_fnan (Ctrl->S.class[k-1].high))) {
-				GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: Reclassification case %d contains NaN as high or low value\n", k);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Reclassification case %d contains NaN as high or low value\n", k);
 				n_errors++;
 			}
 		}
 		if (Ctrl->S.mode & GRDCLIP_ABOVE && Ctrl->S.high < Ctrl->S.class[Ctrl->S.n_class-1].high) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: Your highest reclassification case overlaps with your -Sa selection\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Your highest reclassification case overlaps with your -Sa selection\n");
 			n_errors++;
 		}
 		if (Ctrl->S.mode & GRDCLIP_BELOW && Ctrl->S.low > Ctrl->S.class[0].low) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Si option: Your lowest reclassification case overlaps with your -Sb selection\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Your lowest reclassification case overlaps with your -Sb selection\n");
 			n_errors++;
 		}
 	}
 	if ((Ctrl->S.mode & GRDCLIP_ABOVE) && (Ctrl->S.mode & GRDCLIP_BELOW) && (Ctrl->S.high < Ctrl->S.low)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Your -Sa selection overlaps with your -Sb selection\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Your -Sa selection overlaps with your -Sb selection\n");
 		n_errors++;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option is mandatory\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.mode, "Syntax error -S option: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -G is mandatory\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.mode, "Option -S: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

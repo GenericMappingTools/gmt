@@ -568,7 +568,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
@@ -649,7 +649,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
 							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
 							n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
+							                                 "Option -Qm: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
@@ -671,7 +671,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: smooth value must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
@@ -737,32 +737,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		Ctrl->N.facade = false;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
-	                                   "Error: Piping of topofile not supported!\n");
+	                                   "Piping of topofile not supported!\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-		                               "Syntax error: Must specify a map projection with the -J option\n");
+		                               "Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
-	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
+	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
 	/* Gave both -Q and -T */
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Error: -Q and -T are mutually exclusive options\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Error: -G requires either 1 or 3 grids\n");
+	                                   "Option -G: Requires either 1 or 3 grids\n");
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
-			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Syntax error -G option: Must specify drape file\n");
+			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
 		                                   "The draping option requires -Qi option\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                   "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Syntax error: Must specify color palette table\n");
+	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
-	                                 "Syntax error -Qi option: Must specify positive dpi\n");
+	                                 "Option -Qi: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
-	                                 "Syntax error -T option: Cannot specify -JZ|z\n");
+	                                 "Option -T: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

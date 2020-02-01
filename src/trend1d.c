@@ -593,7 +593,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Too many output columns selected: Choose from -Fxymrw|p\n");
 						n_errors++;
 					}
 				}
@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 			case 'N':
 				Ctrl->N.active = true;
 				if (gmt_parse_model (API->GMT, opt->option, opt->arg, 1U, &(Ctrl->N.M)) == -1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: See usage for details.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: See usage for details.\n");
 					n_errors++;
 				}
 				break;
@@ -621,13 +621,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option: Condition number must be larger than unity\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option: Give 0 < confidence level < 1.0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.M.n_terms <= 0, "Syntax error -N option: A positive number of terms must be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 1.0, "Option -C: Condition number must be larger than unity\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Option -C: Give 0 < confidence level < 1.0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.M.n_terms <= 0, "Option -N: A positive number of terms must be specified\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xymrwpPc", Ctrl->F.col[j])) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -640,9 +640,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 			Ctrl->model_parameters = TREND1D_CHEB_MODEL_NORM;
 		Ctrl->n_outputs++;
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Option -F: Must specify at least one output columns \n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->model_parameters,
-					"Syntax error -F option: When selecting model parameters, it must be the only output\n");
+					"Option -F: When selecting model parameters, it must be the only output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

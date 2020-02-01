@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3]);
 				if (n_items != 4) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Give g, d, <grdfile>, or <west/east/south/north>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give g, d, <grdfile>, or <west/east/south/north>\n");
 					n_errors++;
 				}
 				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->A.wesn[0]), txt[0]);
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						if (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
 							inc = (max - min) / (inc - 1.0);
 						if (inc <= 0.0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Age increment must be positive\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 							n_errors++;
 						}
 						else {
@@ -295,15 +295,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "No output grid file allowed with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Cannot use -N with -S\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "-N and -S cannot both be given\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
-	                                 "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
+	                                 "Binary input data (-bi) must have at least 2 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "-N and -D cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E is required\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

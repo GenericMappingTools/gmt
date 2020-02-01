@@ -116,11 +116,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No command-line input files allowed\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active || !Ctrl->A.file, "Syntax error: Missing Base COEs database file. -A is mandatory\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->M.active || !Ctrl->M.file, "Syntax error: Missing Updating COEs database file. -M is mandatory\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !access (Ctrl->A.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->A.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !access (Ctrl->M.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->M.file);
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No command-line input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active || !Ctrl->A.file, "Missing Base COEs database file. -A is mandatory\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->M.active || !Ctrl->M.file, "Missing Updating COEs database file. -M is mandatory\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !access (Ctrl->A.file, F_OK), "Unable to find crossover file %s\n", Ctrl->A.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !access (Ctrl->M.file, F_OK), "Unable to find crossover file %s\n", Ctrl->M.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
