@@ -649,7 +649,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
 							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
 							n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
+							                                 "Option -Qm: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
@@ -760,7 +760,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
 	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Syntax error: Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
-	                                 "Syntax error -Qi option: Must specify positive dpi\n");
+	                                 "Option -Qi: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
 	                                 "Option -T: Cannot specify -JZ|z\n");
 

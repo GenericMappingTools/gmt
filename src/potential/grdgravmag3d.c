@@ -431,7 +431,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
 	                                "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
-	                                "Syntax error -H+m option: Must specify source file\n");
+	                                "Option -H+m: Must specify source file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
 	                                "Option -F: Cannot read file %s!\n", Ctrl->F.file);
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");

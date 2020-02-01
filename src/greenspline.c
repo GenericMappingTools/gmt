@@ -334,7 +334,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.range[0] = 0.0;	Ctrl->R3.range[1] = 360.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
 					if (n_items != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Rg/z0/z1 option: Append the z-range\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Rg/z0/z1: Append the z-range\n");
 						n_errors++;
 					}
 					Ctrl->R3.dimension = 3;
@@ -349,7 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.range[0] = -180.0;	Ctrl->R3.range[1] = 180.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
 					if (n_items != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Rd/z0/z1 option: Append the z-range\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Rd/z0/z1: Append the z-range\n");
 						n_errors++;
 					}
 					Ctrl->R3.dimension = 3;
@@ -562,7 +562,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 									case 'l':	Ctrl->S.rval[0]  = atof (&p[1]);	break;	/* Min value for spline, undocumented for testing only */
 									case 'u':	Ctrl->S.rval[1]  = atof (&p[1]);	break;	/* Max value for spline, undocumented for testing only */
 									default:
-										GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option: Unknown modifier %s\n", p);
+										GMT_Report (API, GMT_MSG_ERROR, "Option -Sq: Unknown modifier %s\n", p);
 										n_errors++;
 										break;
 								}
@@ -668,8 +668,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 #endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Option -S: Tension must be in range 0 <= t < 1\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Syntax error -Sc|t|r option: Cannot select -D3\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Syntax error -Sl option: Cannot select -D4 or higher\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Option -Sc|t|r: Cannot select -D3\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Option -Sl: Cannot select -D4 or higher\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Option -G: Must specify output grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Option -C: Must specify file name for eigenvalues if cut < 0\n");

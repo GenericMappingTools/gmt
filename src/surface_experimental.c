@@ -2085,7 +2085,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'l': case 'u':	/* Lower or upper limits  */
 						end = (opt->arg[0] == 'l') ? LO : HI;	/* Which one it is */
-						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Syntax error -L%c option: No argument given\n", opt->arg[0]);
+						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -L%c: No argument given\n", opt->arg[0]);
 						Ctrl->L.file[end] = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.file[end], F_OK))	/* File exists */
 							Ctrl->L.mode[end] = SURFACE;

@@ -1633,7 +1633,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower limit  */
-						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Ll option: No argument given\n");
+						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -Ll: No argument given\n");
 						Ctrl->L.low = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.low, F_OK))	/* file exists */
 							Ctrl->L.lmode = 3;
@@ -1645,7 +1645,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 						}
 						break;
 					case 'u':	/* Upper limit  */
-						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Lu option: No argument given\n");
+						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -Lu: No argument given\n");
 						Ctrl->L.high = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.high, F_OK))	/* file exists */
 							Ctrl->L.hmode = 3;

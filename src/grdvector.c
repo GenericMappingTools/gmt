@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
 						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);	/* Getting inches directly here */
-						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
+						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Option -Qn: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
 	                                 "Option -I: Must specify positive increments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Option -S: Scale must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Option -Sl: Length must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
 	                                 "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),

@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						break;
 					case 's':	/* "simple" Lambertian case */
 						Ctrl->E.mode = 2;
-						n_errors += gmt_M_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
+						n_errors += gmt_M_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Option -Es: Must append azimuth/elevation\n");
 						break;
 					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */
 						Ctrl->E.mode = 4;

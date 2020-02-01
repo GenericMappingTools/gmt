@@ -509,7 +509,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Ctrl->C.high = -Grid->header->z_min;
 		Ctrl->C.inc  = Ctrl->C.high - Ctrl->C.low;
 		if (Ctrl->C.high <= Ctrl->C.low) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Cr<cval> option: <cval> must exceed grid's minimum.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Cr<cval>: <cval> must exceed grid's minimum.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

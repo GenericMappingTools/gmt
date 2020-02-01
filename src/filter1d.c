@@ -302,7 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 							if (opt->arg[1] && !gmt_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F[Ff]: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;

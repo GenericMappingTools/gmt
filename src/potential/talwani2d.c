@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->F.lat) > 90.0,
-	                                 "Syntax error -Fn option: Latitude out of range\n");
+	                                 "Option -Fn: Latitude out of range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->N.active,
 	                                 "Option -N: Cannot also specify -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->Z.ymin >= Ctrl->Z.ymax,

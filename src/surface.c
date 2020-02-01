@@ -1756,7 +1756,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'l': case 'u':	/* Lower or upper limits  */
 						end = (opt->arg[0] == 'l') ? LO : HI;	/* Which one it is */
-						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Syntax error -L%c option: No argument given\n", opt->arg[0]);
+						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -L%c: No argument given\n", opt->arg[0]);
 						Ctrl->L.file[end] = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.file[end], F_OK))	/* File exists */
 							Ctrl->L.mode[end] = SURFACE;
@@ -1847,7 +1847,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 	                                   "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Option -N: Max iterations must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0,
-	                                   "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
+	                                   "Option -Z: Relaxation value must be 1 <= z <= 2\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->Q.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN),
 	                                   "Option -Am: Requires geographic input data\n");

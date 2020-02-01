@@ -501,7 +501,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 			base = 4;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
