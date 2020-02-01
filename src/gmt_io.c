@@ -6833,7 +6833,9 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_ARGTIME;
 			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
-			else if (nt > 1) {	/* No number has 2 or more letters at the end so return as NaN */
+			else if (c == 't')		/* Found trailing t - assume Relative time */
+				expectation = GMT_IS_ARGTIME;
+			else if (nt > 1 || gmt_not_numeric (GMT, s)) {	/* No number has 2 or more letters at the end, or other junk, so return as NaN */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;
 			}
@@ -6841,8 +6843,6 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
 			}
-			else if (c == 't')		/* Found trailing t - assume Relative time */
-				expectation = GMT_IS_ARGTIME;
 			else if (strchr ("WE", c))		/* Found trailing W or E - assume Geographic longitudes */
 				expectation = GMT_IS_LON;
 			else if (strchr ("SN", c))		/* Found trailing S or N - assume Geographic latitudes */
