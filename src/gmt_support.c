@@ -16027,6 +16027,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min temporal value from %s (ISO datetime format required)\n", option, txt[GMT_X]);
 				return GMT_PARSE_ERROR;
 			}
+			T->unit = GMT->current.setting.time_system.unit;	/* Set currently selected time unit so we don't run into issues later despite only having one time knot */
 		}
 		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Unable to parse min value from %s\n", option, txt[GMT_X]);
