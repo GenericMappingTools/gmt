@@ -15939,8 +15939,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
 			}
-			else	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
+			else {	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
 				T->vartime = (strchr (GMT_TIME_VAR_UNITS, GMT->current.setting.time_system.unit) != NULL);
+				T->unit = GMT->current.setting.time_system.unit;	/* Set assumed time unit */
+			}
 		}
 	}
 	/* 4. Consider spatial distances */
