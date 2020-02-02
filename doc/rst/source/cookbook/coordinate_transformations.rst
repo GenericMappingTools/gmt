@@ -48,7 +48,7 @@ nature of *f* itself.
 
 Two subsets of linear will be discussed separately; these are a polar
 (cylindrical) projection and a linear projection applied to geographic
-coordinates (with a 360º periodicity in the *x*-coordinate). We
+coordinates (with a 360° periodicity in the *x*-coordinate). We
 will show examples of all of these projections using dummy data sets
 created with :doc:`/gmtmath`, a "Reverse
 Polish Notation" (RPN) calculator that operates on or creates table data:
@@ -127,13 +127,13 @@ Geographic coordinates
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
 geographical data in a linear projection. This poses a problem since
-longitudes have a 360º periodicity. GMT therefore needs to be informed
+longitudes have a 360° periodicity. GMT therefore needs to be informed
 that it has been given geographical coordinates even though a linear
 transformation has been chosen. We do so by adding a **g** (for
 geographical) or **d** (for degrees) directly after **-R** or by
 appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
-125ºE. Our command will be
+125°E. Our command will be
 
 .. literalinclude:: /_verbatim/GMT_linear_d.txt
 
@@ -244,7 +244,7 @@ This transformation converts polar coordinates (angle :math:`\theta` and
 radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
 and :math:`y' = g(\theta,r)`, hence it is similar to a regular map
 projection because *x* and *y* are coupled and *x*
-(i.e., :math:`\theta`) has a 360º periodicity. With input and output
+(i.e., :math:`\theta`) has a 360° periodicity. With input and output
 points both in the plane it is a **two-dimensional** projection. The
 transformation comes in two flavors:
 
