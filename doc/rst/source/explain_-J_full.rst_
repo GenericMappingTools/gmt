@@ -158,7 +158,7 @@ projection names stands for Equal-Area and Conformal, respectively):
     **AZIMUTHAL PROJECTIONS:**
 
     Except for polar aspects, **-R**\ w/e/s/n will be reset to **-Rg**.
-    Use **-R**\ <...>\ **r** for smaller regions.
+    Use **-R**\ <...>\ **+r** for smaller regions.
 
 
 .. _-Ja_full:
@@ -273,14 +273,14 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**r**\|\ **z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**r**\|\ **z**]
-    (Polar coordinates (theta,r))
+    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**+r**\|\ **+z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**r**\|\ **z**]
+    (Polar coordinates (*theta*, *r*))
 
-    Optionally insert **a** after **-Jp** [ or **-JP**] for azimuths CW
+    Optionally insert **a** after **-Jp** [or **-JP**] if *theta* is azimuths CW
     from North instead of directions CCW from East [Default]. Optionally
-    append /*origin* in degrees to indicate an angular offset [0]).
-    Finally, append **r** if r is elevations in degrees (requires s >= 0
-    and n <= 90) or **z** if you want to annotate depth rather than
+    append /*origin* in degrees to indicate an angular offset [0].
+    Finally, append **+r** if *r* represents elevations in degrees (requires *south* >= 0
+    and *north* <= 90), or append **+z** if you want to annotate depth rather than
     radius [Default]. Give *scale* in UNIT/r-unit.
 
 .. _-Jx_full:
