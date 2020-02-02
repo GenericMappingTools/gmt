@@ -4366,7 +4366,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL, *c = NULL;
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL;
 	char txt_arr[11][GMT_LEN256];
 
 	if (args == NULL) {
@@ -4439,6 +4439,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 	GMT->current.proj.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */
 	n = 0;	/* Initialize with no fields found */
+	d = NULL;
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */
 			gmt_set_cartesian (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
@@ -4614,13 +4615,13 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				i = 0;
 			}
 			j = (int)strlen (args) - 1;	/* Last character */
-			if ((c = strstr (args, "+r")) || args[j] == 'r') {	/* Gave optional +r for reverse (elevations, presumably) (r is deprecated) */
+			if ((d = strstr (args, "+r")) || args[j] == 'r') {	/* Gave optional +r for reverse (elevations, presumably) (r is deprecated) */
 				GMT->current.proj.got_elevations = true;
-				if (c) c[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]r */
+				if (d) d[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]r */
 			}
-			else if ((c = strstr (args, "+z")) || aargs[j] == 'z') {	/* Gave optional +z for annotating depths rather than radius (z is deprecated) */
+			else if ((d = strstr (args, "+z")) || args[j] == 'z') {	/* Gave optional +z for annotating depths rather than radius (z is deprecated) */
 				GMT->current.proj.z_down = true;
-				if (c) c[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]z */
+				if (d) d[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]z */
 			}
 			else
 				GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
@@ -4637,10 +4638,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			else
 				error++;
 			if (GMT->current.proj.got_elevations) {
-				if (c) c[0] = '+'; else args[j] = 'r';	/* Put the r back in the argument */
+				if (d) d[0] = '+'; else args[j] = 'r';	/* Put the r back in the argument */
 			}
 			if (GMT->current.proj.z_down) {
-				if (c) c[0] = '+'; else args[j] = 'z';	/* Put the z back in the argument */
+				if (d) d[0] = '+'; else args[j] = 'z';	/* Put the z back in the argument */
 			}
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
 			break;
