@@ -779,7 +779,7 @@ messages are sent to standard error [Default **-Vw** reports errors and warnings
 Even more verbose levels are **-Vi**(or just **-V**; for informational messages)
 and **-Vd** (debug). If compiled with backward-compatibility
 you can select **-Vc**, which includes warnings about deprecated usage.  To study
-the run-time of time-intensive algoriths you can use **-Vt** (where available).
+the run-time of time-intensive algorithms you can use **-Vt** (where available).
 Finally, **-Vq** can be used to run without any warnings or errors. This
 option can also be set by specifying the default :term:`GMT_VERBOSE`, as
 **quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
