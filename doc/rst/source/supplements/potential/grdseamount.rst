@@ -147,7 +147,7 @@ Optional Arguments
 **-T**\ *t0*\ [*unit*]\ [/*t1*\ [*unit*]/*dt*\ [*unit*]\|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
-    give start time *t0*. The unit is years; append **k** for kyr and **M** for Myr.
+    give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).  Note that the grid
