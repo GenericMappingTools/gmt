@@ -84,7 +84,7 @@ struct PSSAC_CTRL {
 	struct PSSAC_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSAC_S {	/* -S[i]<scale>[<unit>] */
+	struct PSSAC_S {	/* -S[i]<scale> */
 		bool active;
 		double factor;
 		char unit;
@@ -137,8 +137,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<saclist>|<SACfiles>] %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<t0>/<t1>]] [-D<dx>[/<dy>]] [-Ea|b|k|d|n[<n>]|u[<n>]] [-F[i][q][r]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] %s[-M<size>[<unit>]/<alpha>] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] %s[-M<size>/<alpha>] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t%s[%s]\n\t[%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -183,7 +183,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +z<zero>: define zero line. From <zero> to top is positive portion, from <zero> to bottom is negative portion.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Vertical scaling\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <size>: each trace will scaled to <size>[<unit>]. The default unit is PROJ_LENGTH_UNIT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <size>: each trace will scaled to <size>. The default unit is PROJ_LENGTH_UNIT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      The scale factor is defined as yscale = size*(north-south)/(depmax-depmin)/map_height \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <size>/<alpha>: \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> < 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to <size>[<u>].\n");
@@ -191,9 +191,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> > 0, multiply all traces by size*r^alpha, r is the distance range in km.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot traces vertically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets time scale in seconds per <unit> while plotting on geographic plots. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch or points as the unit. Use PROJ_LENGTH_UNIT if <unit> is omitted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale><unit> to give the reciprocal scale, i.e. cm per second or inch per second.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets time scale in seconds per unit while plotting on geographic plots. \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch or points as the unit. Use PROJ_LENGTH_UNIT if unit is omitted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e. cm per second or inch per second.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Time alignment. \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<reduce_vel> reduce velocity in km/s.\n");

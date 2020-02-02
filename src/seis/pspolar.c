@@ -276,7 +276,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
 					n_errors++;
 				}
-				if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size>[<unit>] */
+				if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size> */
 					char *q = strstr (p, "+p");
 					if (q) q[0] = '\0';	/* Chop off the +p modifier */
 					if ((Ctrl->C.size = gmt_M_to_inch (GMT, &p[2]))) {

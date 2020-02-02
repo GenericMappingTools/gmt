@@ -1111,7 +1111,7 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	int n;
 
 	/* Returns true if we are sure the word is a style string - else false.
-	 * style syntax is a|o|<pattern>[:<phase>]|<string made up of -|. only>[<unit>]
+	 * style syntax is a|o|<pattern>[:<phase>]|<string made up of -|. only>
 	 * Also recognized "dashed" for -, "dotted" for . as well as "solid" */
 
 	n = (int)strlen (word);
@@ -6608,7 +6608,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		}
 	}
 
-	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
+	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
@@ -12014,7 +12014,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
 	 *
 	 * For backwards compatibility we also check the deprecated form of (1):
-	 *    [<unit>]<xmin/xmax/ymin/ymax>
+	 *    <xmin/xmax/ymin/ymax>
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -12034,7 +12034,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Determine if we got an reference point or a region */
 
 	if (strchr ("gjJnx", text[0])) {	/* Did the reference point thing. */
-		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
+		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
@@ -12046,7 +12046,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw")) return (1);
 
-		/* Reference point args are +w<width>[<unit>][/<height>[<unit>]][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
+		/* Reference point args are +w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
 		/* Required modifier +w */
 		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
 			if (string[0] == '\0') {	/* Got nutin' */
@@ -12056,7 +12056,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			else {	/* Gave some arguments */
 				n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
 				/* First deal with inset dimensions and horizontal vs vertical */
-				/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
+				/* Handle either <unit><width>/<height> or <width>/<height> */
 				q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
 				last = (n == 1) ? GMT_X : GMT_Y;
 				for (k = GMT_X; k <= last; k++) {
@@ -12103,10 +12103,10 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 				B->translate = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map inset attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
-	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
+	else {	/* Did the <xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
 		char *c = NULL, p[GMT_LEN128] = {""};
 		unsigned int pos;
-		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+t][+u<unit>] or old -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>][+t] */
+		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+t][+u<unit>] or old -D<xmin/xmax/ymin/ymax>[+s<file>][+t] */
 		if ((c = gmt_first_modifier (GMT, text, "rsu"))) {
 			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+t][+u<unit>] */
 			pos = 0;	/* Reset to start of new word */
@@ -12268,7 +12268,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 		}
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale length modifier +w<length>[<unit>] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale length modifier +w<length> is required\n", option);
 		error++;
 	}
 	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
@@ -12401,7 +12401,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			ms->size = gmt_M_to_inch (GMT, string);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length>[<unit>] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length> is required\n", option);
 		error++;
 	}
 	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */
@@ -15880,13 +15880,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		m[0] = '\0';	/* Chop off the modifiers */
 	}
 	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[<unit>][+a|n] instead.\n", option, option);
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[+a|n] instead.\n", option, option);
 		m = strrchr (argument, '+');	/* Position of last + */
 		m[0] = '\0';	/* Chop off the plus */
 		T->count = true;
 	}
 
-	/* 2. Dealt with the file option, now parse [<min/max/]<inc>[<unit>] */
+	/* 2. Dealt with the file option, now parse [<min/max/]<inc> */
 	if ((ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z])) < 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min[/max[/inc[<unit>|+n]]] option\n", option);
 		return GMT_PARSE_ERROR;

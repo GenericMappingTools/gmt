@@ -185,8 +185,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_j_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p]]] [-Qa|v<min>/<max>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>] [-Sb<stopdist>]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_j_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -303,7 +303,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       m4  return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m8  return difference mtfx + diur - igrf, where x = msens (or 1 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m16 return difference mtfx + diur - igrf, where x != msens (or 2 if undefined).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[<unit>] Apply cable tow distance correction to mtf1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset> Apply cable tow distance correction to mtf1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to force selected anomalies to be recalculated even when the original\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
@@ -317,7 +317,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the default file mgd77_corrections.txt in $MGD77_HOME is assumed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for <unit>. Choose among.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US units I (feet, feet/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
@@ -332,8 +332,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Velocities are given in m/s unless changed by -Ns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Return data inside the specified region only [0/360/-90/90].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Begin list from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   End list at b<stopdist>[<unit>] [End of cruise].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Begin list from a<startdist>; append unit from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   End list at b<stopdist> [End of cruise].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m or e to indicate the MGD77 data set or the extended columns set [Default is both].\n");

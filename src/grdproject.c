@@ -155,7 +155,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->E.dpi = sval;
 				break;
 			case 'A':	/* Old Force specific unit option */
-				if (gmt_M_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
+				if (gmt_M_compat_check (GMT, 5))	/* Honor old -A option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -F instead.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
