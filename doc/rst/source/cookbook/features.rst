@@ -17,6 +17,26 @@ indicate the units of your arguments by appending the unit character, as
 discussed below. This will aid you in debugging, let others understand your
 scripts, and remove any uncertainty as to what unit you thought you wanted.
 
+Dimension units
+~~~~~~~~~~~~~~~
+
+GMT programs accept plot dimensional quantities (widths, offsets, etc.) in
+**c**\ m, **i**\ nch, or **p**\ oint (1/72 of an inch) [8]_. There are
+two ways to ensure that GMT understands which unit you intend to use:
+
+#. Append the desired unit to the dimension you supply. This way is
+   explicit and clearly communicates what you intend, e.g.,
+   **-JM**\ 10\ **c** means the map width being passed to the **-JM** switch
+   is 10 cm, and modifier **+o**\ 24p means we are offsetting a feature
+   by 24 points from its initial location.
+
+#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
+   all dimensions without explicit units will be interpreted accordingly.
+
+The latter method is less robust as other users may have a different
+default unit set and then your script may not work as intended. For portability,
+we therefore recommend you always append the desired unit explicitly.
+
 Distance units
 ~~~~~~~~~~~~~~
 
@@ -35,7 +55,7 @@ Distance units
 | **m**   | Minute of arc     |         |                  |
 +---------+-------------------+---------+------------------+
 
-For Cartesian data and scaling the data units do not normally matter
+For Cartesian data the data units do not normally matter
 (they could be kg or Lumens for all we know) and are never entered.
 Geographic data are different, as distances can be specified in a variety
 of ways. GMT programs that accept actual Earth length scales like
@@ -123,25 +143,6 @@ setting :term:`PROJ_GEODESIC` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
 that is much faster to compute.
-
-Length units
-~~~~~~~~~~~~
-
-GMT programs can accept dimensional quantities and plot lengths in
-**c**\ m, **i**\ nch, or **p**\ oint (1/72 of an inch) [8]_. There are
-two ways to ensure that GMT understands which unit you intend to use:
-
-#. Append the desired unit to the dimension you supply. This way is
-   explicit and clearly communicates what you intend, e.g.,
-   **-X**\ 4\ **c** means the length being passed to the **-X** switch
-   is 4 cm.
-
-#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
-   all dimensions without explicit unit will be interpreted accordingly.
-
-The latter method is less secure as other users may have a different
-unit set and your script may not work as intended. We therefore
-recommend you always supply the desired unit explicitly.
 
 GMT defaults
 ------------
