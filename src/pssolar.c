@@ -288,7 +288,7 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
-	   as well as several other solar parameters such sunrise, senset, Sun position, etc... */
+	   as well as several other solar parameters such sunrise, sunset, Sun position, etc... */
 	int    TZ, year, month, day, hour, min;
 	struct tm *UTC;
 	time_t right_now = time (NULL);
