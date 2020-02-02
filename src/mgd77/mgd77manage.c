@@ -1244,7 +1244,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
 					if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?')))
 						GMT_Message (API, GMT_TIME_NONE, "%s: %s\n", list[argno], line);
-					continue
+					continue;
 				}
 				if (!got_default_answer (line, answer)) continue;
 
