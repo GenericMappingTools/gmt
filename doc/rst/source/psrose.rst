@@ -18,7 +18,7 @@ Synopsis
 [ |-D| ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ]
-[ |-J|\ **X**\ *diameter*\ [*unit*] ]
+[ |-J|\ **X**\ *diameter* ]
 [ |-K| ]
 [ |-L|\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] ]
 [ |-M|\ *parameters* ]

@@ -905,7 +905,7 @@ changes to existing syntax will be backwards compatible:
 
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
-   scaling the output plots via **-A+s**\ [**m**]\ *width*\ [*unit*][/\ *height*\ [*unit*]],
+   scaling the output plots via **-A+s**\ [**m**]\ *width*[/\ *height*],
    paint and outline the bounding box via **-A** modifiers **g**\ *fill* and **+p**\ *pen*,
    and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
@@ -1169,7 +1169,7 @@ improvements; these include:
    specified map projection. For linear projections such units imply a
    simple unit conversion for the given coordinates (e.g., km to meter).
 
-*  Introduced **-fp**\ [*unit*] which allows data input to be in
+*  Introduced **-fp** which allows data input to be in
    projected values, e.g., UTM coordinates while **-Ju** is given.
 
 While just giving - (the hyphen) as argument presents just the synopsis of the command

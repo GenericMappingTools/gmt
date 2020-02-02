@@ -1,6 +1,6 @@
 .. _-U_full:
 
-**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*\ [*unit*]/*dy*\ [*unit*]]
+**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
     Draw the GMT Unix System time stamp on the plot.
     By appending **+j**\ *just* [BL] and/or **+o**\ *dx/dy* [-54p], the
     user may specify the justification of the stamp and where the stamp

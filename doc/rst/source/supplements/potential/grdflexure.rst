@@ -12,15 +12,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te*\ [*unit*] |-G|\ *outgrid*
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
-[ |-M|\ **\ *tm*\ [*unit*]
+[ |-M|\ **\ *tm*
 [ |-N|\ [**f**\|\ **q**\|\ **s**\|\ *nx*/*ny*][**+a**\|\ **d**\|\ **h**\|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][**+z**\ [**p**]]
 [ |-S|\ *beta* ]
-[ |-T|\ **\ *t0*\ [*unit*]\ [/*t1*\ [*unit*]/*dt*\ [*unit*]\|\ *file*]\  \|\ *n*]\ [**+l**] ]
+[ |-T|\ **\ *t0*\ [/*t1*/*dt*\|\ *file*]\  \|\ *n*]\ [**+l**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
@@ -120,7 +120,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ *tm*\ [*unit*]
+**-M**\ *tm*
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
@@ -134,7 +134,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [*unit*]\ [/*t1*\ [*unit*]/*dt*\ [*unit*]\|\ *file*]\|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*\|\ *file*]\|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.

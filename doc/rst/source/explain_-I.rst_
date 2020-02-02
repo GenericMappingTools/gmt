@@ -1,4 +1,4 @@
-**-I**\ *xinc*\ [*unit*][**+e**\|\ **n**][/\ *yinc*\ [*unit*][**+e**\|\ **n**]]
+**-I**\ *xinc*[**+e**\|\ **n**][/\ *yinc*[**+e**\|\ **n**]]
     *x_inc* [and optionally *y_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**: Append
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one

@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
-[ |-E|\ [*datum*] ] [ |-F|\ [*unit*] ]
+[ |-E|\ [*datum*] ] [ |-F| ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
 [ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [*unit*]
+**-F**
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)

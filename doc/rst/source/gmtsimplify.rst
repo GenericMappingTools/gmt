@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt simplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
+**gmt simplify** [ *table* ] |-T|\ *tolerance*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -44,7 +44,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *tolerance*\ [*unit*]
+**-T**\ *tolerance*
     Specifies the maximum mismatch tolerance in the user units. If the
     data are not Cartesian then append a suitable distance unit (see `Units`_).
 

@@ -20,7 +20,7 @@ unit is still controlled independently by :term:`TIME_UNIT`.  Some modules allow
 which will paste the coordinate array to the output table.
 
 Likewise, if the module allows you to set up a spatial distance series (with distance computed
-from the first two data columns), specify the increment as *inc*\ [*unit*] with a
+from the first two data columns), specify the increment as *inc* with a
 geospatial distance unit from the list
 **d**\ egree (arc), **m**\ inute (arc), **s**\ econd (arc), m\ **e**\ ter, **f**\ oot, **k**\ ilometer,
 **M**\ iles (statute), **n**\ autical miles, or s\ **u**\ rvey foot; see **-j** for calculation mode.

@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
-[ |-S|\ *lon/lat/radius*\ [*unit*]\ [**+n**] ]
+[ |-S|\ *lon/lat/radius*\ [**+n**] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ [*min/max*]\ [**+n**\|\ **N**\|\ **r**] ]
 [ |SYN_OPT-f| ]
@@ -70,7 +70,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *lon/lat/radius*\ [*unit*]\ [**+n**]
+**-S**\ *lon/lat/radius*\ [**+n**]
     Specify an origin and radius; append a distance unit (see `Units`_) and
     we determine the corresponding rectangular region so that all grid
     nodes on or inside the circle are contained in the subset. If

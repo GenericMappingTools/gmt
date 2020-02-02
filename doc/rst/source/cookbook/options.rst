@@ -987,7 +987,7 @@ All other columns are assumed to
 have the default, floating point format and need not be set
 individually. The shorthand **-f**\ [**i**\|\ **o**]\ **g**
 means **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic
-coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
+coordinates). A special use of **-f** is to select **-fp**,
 which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
 inverted to longitude, latitude during the data import. Optionally,

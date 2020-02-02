@@ -1,8 +1,8 @@
 .. _-XY_full:
 
-**-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*\ [*unit*]]
+**-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
 
-**-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*\ [*unit*]]
+**-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
     Shift plot origin relative to the current origin by
     (*xshift*,\ *yshift*) and optionally append the length unit
     (**c**, **i**, or **p**). You can prepend **a** to shift the origin

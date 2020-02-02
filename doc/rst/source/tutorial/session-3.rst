@@ -155,7 +155,7 @@ The most important switches are listed below.
   +----------------------------+-----------------------------------------------------------------------------------+
   | Option                     | Purpose                                                                           |
   +============================+===================================================================================+
-  | **-S**\ *radius*\ [*unit*] | Sets search radius.  Append *unit* for radius in that unit [Default is *x*-units] |
+  | **-S**\ *radius* | Sets search radius.  Append *unit* for radius in that unit [Default is *x*-units] |
   +----------------------------+-----------------------------------------------------------------------------------+
   | **-E**\ *empty*            | Assign this value to unconstrained nodes [Default is NaN]                         |
   +----------------------------+-----------------------------------------------------------------------------------+

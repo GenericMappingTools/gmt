@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ *nodegrid*\ [**+i**\|\ **o**] ]
 [ |-N| ]
 [ |-Q|\ *cut* ]
-[ |-S|\ *search\_radius*\ [*unit*] ]
+[ |-S|\ *search\_radius* ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

@@ -83,7 +83,7 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *diameter*\ [*unit*]
+**-JX**\ *diameter*
     Sets the diameter of the rose diagram.  Only this form of the projection machinery
     is supported for this module.  If not given, then we default to a diameter of 7.5 cm.
 

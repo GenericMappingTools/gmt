@@ -636,7 +636,7 @@ fonts can be found in the :doc:`gmt` man page.
         also choose **graph**\ , which adds a vector to the end of each axis.
         This works best when you reduce the number of axes plotted to one
         per dimension.  By default, the vector tip extends the length of each
-        axis by 7.5%. Alternatively, append ,\ *length*\ [*unit*], where *unit*
+        axis by 7.5%. Alternatively, append ,\ *length*, where *unit*
         can be % (then *length* is the alternate extension in percent) or one
         of **c**, **i**, or **p** (then *length* is the absolute extension
         of the axis to the start of the vector base instead).  The vector stem
