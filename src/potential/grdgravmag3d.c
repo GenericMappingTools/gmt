@@ -218,7 +218,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|+g|+r|+f|+n to do that.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|g|r|f|n to do that.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
@@ -321,7 +321,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					break;
 				}
 				else if (opt->arg[0] == '+' && (opt->arg[1] == 'g' || opt->arg[1] == 'r' || opt->arg[1] == 'f' || opt->arg[1] == 'n')) {
-					Ctrl->H.do_igrf = true;                         /* Any of -H+i|+g|+r|+f|+n is allowed to mean use IGRF */
+					Ctrl->H.do_igrf = true;                         /* Any of -H+i|g|r|f|n is allowed to mean use IGRF */
 					if (gmt_M_is_cartesian(GMT, GMT_IN))
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					break;
