@@ -112,7 +112,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALAllRegister();
 
 	//hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
-	hSrcDS = gdal_vector (GMT, " ");
+	hSrcDS = gdal_vector (GMT, GDLL->fname_in);
 
 	if (hSrcDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
@@ -171,8 +171,8 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 									nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
 		}
+		gmt_grd_flip_vertical (tmp, (unsigned)nXSize, (unsigned)nYSize, 0, 1);
 		Grid->data = (float *)tmp;
-		gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, 1);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 							NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
 			return GMT->parent->error;
@@ -184,14 +184,23 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	return 0;
 }
 
-GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename) {
+GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	/* Write data into a GDAL Vector memory dataset */
+	unsigned int nt, ns, nr;
+	double x, y, z;
 	GDALDriverH hDriver;
 	GDALDatasetH hDS;
 	OGRLayerH hLayer;
 	OGRFieldDefnH hFieldDefn;
 	OGRFeatureH hFeature;
 	OGRGeometryH hPt;
+	struct GMT_DATASET *D = NULL;
+
+	D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL);
+	if (D->n_columns != 3) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "This dataset doesn't have 3 columns as required.\n");
+		return NULL;
+	}
 
 	GDALAllRegister();
 
@@ -223,27 +232,31 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename) {
 
 	OGR_Fld_Destroy(hFieldDefn);
 
-	//while (!feof(stdin) && fscanf( stdin, "%lf,%lf,%32s", &x, &y, szName) == 3) {
+	for (nt = 0; nt < D->n_tables; nt++) {
+		for (ns = 0; ns < D->table[nt]->n_segments; ns++) {
+			for (nr = 0; nr < D->table[nt]->segment[ns]->n_rows; nr++) {
+				x = D->table[nt]->segment[ns]->data[0][nr];
+				y = D->table[nt]->segment[ns]->data[1][nr];
+				z = D->table[nt]->segment[ns]->data[2][nr];
+				hFeature = OGR_F_Create(OGR_L_GetLayerDefn(hLayer));
+				OGR_F_SetFieldString(hFeature, OGR_F_GetFieldIndex(hFeature, "Name"), "0");
 
-		hFeature = OGR_F_Create(OGR_L_GetLayerDefn(hLayer));
-		OGR_F_SetFieldString(hFeature, OGR_F_GetFieldIndex(hFeature, "Name"), "0");
+				hPt = OGR_G_CreateGeometry(wkbPoint);
+				OGR_G_SetPoint(hPt, 0, x, y, z);
 
-		hPt = OGR_G_CreateGeometry(wkbPoint);
-		//OGR_G_SetPoint(hPt, 0, x, y, z);
-		OGR_G_SetPoint(hPt, 0, 4.1, 7.2, 3.0);
+				OGR_F_SetGeometry(hFeature, hPt);
+				OGR_G_DestroyGeometry(hPt);
 
-		OGR_F_SetGeometry(hFeature, hPt);
-		OGR_G_DestroyGeometry(hPt);
-
-		if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
-			GDALDestroyDriverManager();
-			return NULL;
+				if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
+					GDALDestroyDriverManager();
+					return NULL;
+				}
+				OGR_F_Destroy(hFeature);
+			}
 		}
-		OGR_F_Destroy(hFeature);
-	//}
+	}
 
-	//GDALClose(hDS);
 	return hDS;
 }
 
