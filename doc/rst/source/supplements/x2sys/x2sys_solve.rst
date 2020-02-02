@@ -15,7 +15,7 @@ Synopsis
 **gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **y**\|\ **z**
 [ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **[u]** ]
+[ |-W|\ [**+u**] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-x| ]
@@ -94,10 +94,10 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [**+u**]
     Means that each input records has an extra column just before the ID columns
     with the composite weight for each crossover record. These are used to obtain a
-    weighted least squares solution [no weights]. Append **u** to report
+    weighted least squares solution [no weights]. Append **+u** to report
     unweighted mean/std [Default, report weighted stats].
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code

@@ -121,7 +121,7 @@ struct PS2RASTER_CTRL {
 	struct PS2R_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PS2R_A {             /* -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u] */
+	struct PS2R_A {             /* -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[<unit>][/<height>[<unit>]]][+u] */
 		bool active;
 		bool max;          /* Only scale if dim exceeds the given size */
 		bool round;        /* Round HiRes BB instead of ceil (+r) */
@@ -269,8 +269,8 @@ void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
 	/* Syntax:
-	 * New : -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u]
-	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]]
+	 * New : -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[<unit>][/<height>[<unit>]]][+u]
+	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[<unit>][/<height>[<unit>]]]
 	 */
 
 	unsigned int pos = 0, error = 0;
@@ -379,7 +379,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				Ctrl->A.rescale = true;
 				Ctrl->A.scale = atof(&p[1]);
 				break;
-			case 's':	/* New size +s[m]<width>[u][/<height>[u]] */
+			case 's':	/* New size +s[m]<width>[<unit>][/<height>[<unit>]] */
 				Ctrl->A.resize = true;
 				if (p[1] == 'm') { Ctrl->A.max = true, k = 2;} else k = 1;
 				j = sscanf (&p[k], "%[^/]/%s", txt_a, txt_b);
@@ -535,7 +535,7 @@ GMT_LOCAL double smart_ceil (double x) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[<unit>]>[/<height>[<unit>]]][+u]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
@@ -556,14 +556,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[u] for uniform margin for all 4 sides,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>[u]/<yoff>[u] for separate x- and y-margins, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] for separate w-,e-,s-,n-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[<unit>] for uniform margin for all 4 sides,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>[<unit>]/<yoff>[<unit>] for separate x- and y-margins, or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>[<unit>]/<eoff>[<unit>]/<soff>[<unit>]/<noff>[<unit>] for separate w-,e-,s-,n-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to leave the BoundingBox as is.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to outline the BoundingBox [%s].\n",
 	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width[<unit>]>[/<height>[<unit>]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (Ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append measurement unit u (%s) [%c].\n",
@@ -702,7 +702,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][+n][+r][+s<width>[u][/<height>[u]]] */
+			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][+n][+r][+s<width>[<unit>][/<height>[<unit>]]] */
 				n_errors += parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */

@@ -106,7 +106,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T[l]<t0>[u]/<t1>[u]/<d0>[u]|n  */
+	struct T {	/* -T[l]<t0>[<unit>]/<t1>[<unit>]/<d0>[<unit>]|n  */
 		bool active, log;
 		unsigned int n_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
@@ -151,7 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M<list>] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[<unit>][/<t1>[<unit>]/<dt>[<unit>]|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -312,12 +312,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Warning: Cannot specify -F for discs; ignored\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file or template\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Syntax error option -Z: Cannot be used with -Qi\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file or template\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
@@ -531,7 +531,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height;
 		  		  phi_solver = gauss_solver; break;
 		default:
-			GMT_Report (API, GMT_MSG_DEBUG, "Internal error: Shape not set?\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Shape not set - defaulting to Gaussian\n");
 			shape_func = gaussian_area_volume_height;
 			phi_solver = gauss_solver;
 			break;

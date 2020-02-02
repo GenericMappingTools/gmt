@@ -57,7 +57,7 @@ struct INSET_CTRL {
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct M {	/* -M<margin>[u] | <xmargin>[u]/<ymargin>[u]  | <wmargin>[u]/<emargin>[u]/<smargin>[u]/<nmargin>[u]  */
+	struct M {	/* -M<margin>[<unit>] | <xmargin>[<unit>]/<ymargin>[<unit>]  | <wmargin>[<unit>]/<emargin>[<unit>]/<smargin>[<unit>]/<nmargin>[<unit>]  */
 		bool active;
 		double margin[4];
 	} M;
@@ -148,7 +148,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: No margins given.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Bad number of margins given.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -188,19 +188,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	}
 	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -D: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->F.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -F: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->M.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->N.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -N: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 	}

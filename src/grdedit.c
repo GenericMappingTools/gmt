@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 					Ctrl->E.mode = opt->arg[0];
 				else {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax Error -E: Unrecognized modifier %c\n", opt->arg[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized modifier %c\n", opt->arg[0]);
 				}
 				break;
 			case 'G':	/* Separate output grid file */

@@ -517,7 +517,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 		if (gmt_M_is_dnan(tmin) || gmt_M_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
-			GMT_Report (API, GMT_MSG_WARNING, "warning: cruise %s no time records.\n", M.NGDC_id);
+			GMT_Report (API, GMT_MSG_WARNING, "Cruise %s no time records.\n", M.NGDC_id);
 			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
 			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
 			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);

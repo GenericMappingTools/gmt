@@ -24,8 +24,8 @@ Synopsis
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **a**\ *startdist*\ [unit] ]
-[ |-S|\ **b**\ *stopdist*\ [unit] ]
+[ |-S|\ **a**\ *startdist*\ [*unit*] ]
+[ |-S|\ **b**\ *stopdist*\ [*unit*] ]
 [ |-T|\ [**m**\|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *weight* ]
@@ -423,12 +423,12 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *startdist*\ [unit]
+**-Sa**\ *startdist*\ [*unit*]
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
     **k** for km, **m** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
-**-Sb**\ *stopdist*\ [unit]
+**-Sb**\ *stopdist*\ [*unit*]
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
     km, **m** for miles, **n** for nautical miles, or **u** for survey

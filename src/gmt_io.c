@@ -543,7 +543,7 @@ GMT_LOCAL void gmtio_select_all_ogr_if_requested (struct GMT_CTRL *GMT) {
 			for (kn = 0, found = false; !found && kn < GMT->current.io.OGR->n_aspatial; kn++)
 				found = (!strcmp (GMT->common.a.name[k], GMT->current.io.OGR->name[kn]));
 			if (!found) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -a: No such named aspatial item: %s.\n", GMT->common.a.name[k]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -a: No such named aspatial item: %s.\n", GMT->common.a.name[k]);
 				GMT_exit (GMT, GMT_NOT_OUTPUT_OBJECT); return;
 			}
 		}

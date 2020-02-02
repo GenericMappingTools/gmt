@@ -303,7 +303,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       m4  return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m8  return difference mtfx + diur - igrf, where x = msens (or 1 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m16 return difference mtfx + diur - igrf, where x != msens (or 2 if undefined).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[unit] Apply cable tow distance correction to mtf1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[<unit>] Apply cable tow distance correction to mtf1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to force selected anomalies to be recalculated even when the original\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
@@ -587,7 +587,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
 				if (opt->arg[1] == 'm' && gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
 				switch (opt->arg[0]) {

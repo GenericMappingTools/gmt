@@ -312,7 +312,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					if (j == 1) Ctrl->T.col = 0;
 				}
 				else if (c || opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_ERROR, "Error -T: Syntax is -T<inc>[+c<col>].\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Syntax is -T<inc>[+c<col>].\n");
 					n_errors++;
 				}
 				else {	/* Modern syntax and parsing */

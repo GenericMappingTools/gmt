@@ -713,7 +713,7 @@ Given as modifiers to a pen specification, one or more modifiers may be appended
 specification. The line attribute modifiers are:
 
 
-* **+o**\ *offset*\ [**u**]
+* **+o**\ *offset*\ [*unit*]
     Lines are normally drawn from the beginning to the end point. You can modify this behavior
     by requesting a gap between these terminal points and the start and end of the
     visible line.  Do this by specifying the desired offset between the terminal point and the

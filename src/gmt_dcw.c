@@ -619,7 +619,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				t++;	/* Now t is at first char afterwards */
 				while (t[0] && isdigit (t[0])) t++;	/* Wind pass all integers */
 				if (t[0] == '\0' || t[0] == '+') { /* The modifier could be +r<dpi> or +r<inc>, assume dpi */
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Error -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
 					r[0] = GMT_ASCII_US;	/* Change +r<dpi> to ASCII31<dpi> to pass strtok splitting */
 				}
@@ -659,14 +659,14 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->mode |= GMT_DCW_PLOT;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c: Unrecognized modifier +%s.\n", option, p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;
 					break;
 			}
 		}
 	}
 	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Gave +l or +L but no codes */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c: No country codes given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No country codes given\n", option);
 		n_errors++;
 	}
 	F->item = gmt_M_memory (GMT, F->item, F->n_items+1, struct GMT_DCW_ITEM *);	/* Add one more pointer space to the structure (NULL first time) */

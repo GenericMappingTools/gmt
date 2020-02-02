@@ -636,7 +636,7 @@ fonts can be found in the :doc:`gmt` man page.
         also choose **graph**\ , which adds a vector to the end of each axis.
         This works best when you reduce the number of axes plotted to one
         per dimension.  By default, the vector tip extends the length of each
-        axis by 7.5%. Alternatively, append ,\ *length*\ [**u**], where **u**
+        axis by 7.5%. Alternatively, append ,\ *length*\ [*unit*], where *unit*
         can be % (then *length* is the alternate extension in percent) or one
         of **c**, **i**, or **p** (then *length* is the absolute extension
         of the axis to the start of the vector base instead).  The vector stem
@@ -1049,13 +1049,13 @@ fonts can be found in the :doc:`gmt` man page.
     **TIME_IS_INTERVAL**
         Used when input calendar data should be truncated and adjusted to
         the middle of the relevant interval. In the following discussion,
-        the unit **u** can be one of these time units: (**y** year, **o**
+        the unit *unit* can be one of these time units: (**y** year, **o**
         month, **u** ISO week, **d** day, **h** hour, **m** minute, and
         **s** second). **TIME_IS_INTERVAL** can have any of the following
         three values: (1) OFF [Default]. No adjustment, time is decoded as
-        given. (2) +\ *n*\ **u**. Activate interval adjustment for input by
+        given. (2) +\ *n*\ *unit*. Activate interval adjustment for input by
         truncate to previous whole number of *n* units and then center time
-        on the following interval. (3) -*n*\ **u**. Same, but center time on
+        on the following interval. (3) -*n*\ *unit*. Same, but center time on
         the previous interval. For example, with **TIME_IS_INTERVAL** =
         +1o, an input data string like 1999-12 will be interpreted to mean
         1999-12-15T12:00:00.0 (exactly middle of December), while if

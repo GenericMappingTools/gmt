@@ -9371,7 +9371,7 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 				case 'm':  info->taper_mode = GMT_FFT_EXTEND_MIRROR_SYMMETRY; break;
 				case 't':	/* Set taper width */
 					if ((info->taper_width = atof (&p[1])) < 0.0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Error -%c: Negative taper width given\n", option);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Negative taper width given\n", option);
 						n_errors++;
 					}
 					break;
@@ -9386,7 +9386,7 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 					if (p[1] == 'p') info->polar = true;
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_ERROR, "Error -%c: Unrecognized modifier +%s.\n", option, p);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;
 					break;
 			}
@@ -9423,16 +9423,16 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 	info->set = true;	/* We parsed this option */
 	if (info->info_mode == GMT_FFT_SET) {
 		if (dim == 2U && (info->n_columns <= 0 || info->n_rows <= 0)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error -%c: n_columns and/or n_rows are <= 0\n", option);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -%c: n_columns and/or n_rows are <= 0\n", option);
 			n_errors++;
 		}
 		else if (dim == 1U && info->n_columns <= 0) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error -%c: n_columns is <= 0\n", option);
+			GMT_Report (API, GMT_MSG_ERROR, "Option -%c: n_columns is <= 0\n", option);
 			n_errors++;
 		}
 	}
 	if (info->taper_mode == GMT_FFT_EXTEND_NONE && info->taper_width == 100.0) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error -%c: +n requires +t with width << 100!\n", option);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -%c: +n requires +t with width << 100!\n", option);
 		n_errors++;
 	}
 	if (info->info_mode == GMT_FFT_LIST) {

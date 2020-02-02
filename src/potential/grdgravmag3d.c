@@ -427,7 +427,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
-	                                "Syntax error Cannot specify both -C and -H options\n");
+	                                "Cannot specify both -C and -H options\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
 	                                "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,

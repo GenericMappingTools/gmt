@@ -83,7 +83,7 @@ struct SURFACE_CTRL {
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct SRF_M {	/* -M<radius>[u] */
+	struct SRF_M {	/* -M<radius>[<unit>] */
 		bool active;
 		char *arg;
 	} M;
@@ -818,11 +818,11 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	if (C->set_limit[LO] == DATA)	/* Wanted to set lower limit based on minimum observed z value */
 		C->limit[LO] = C->data[kmin].z;
 	else if (C->set_limit[LO] == VALUE && C->limit[LO] > C->data[kmin].z)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your lower value is > than min data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your lower value is > than min data value.\n");
 	if (C->set_limit[HI] == DATA)	/* Wanted to set upper limit based on maximum observed z value */
 		C->limit[HI] = C->data[kmax].z;
 	else if (C->set_limit[HI] == VALUE && C->limit[HI] < C->data[kmax].z)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your upper value is < than max data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your upper value is < than max data value.\n");
 	return (0);
 }
 

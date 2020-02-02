@@ -347,7 +347,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
-[**t**]\ *stride*\ [*phase*][**u**].
+[**t**]\ *stride*\ [*phase*][*unit*].
 
 The **t** flag sets the axis
 item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.

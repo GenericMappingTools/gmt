@@ -877,7 +877,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
 	unsigned int prev;
 	if (last == 0) {	/* User error in requesting more items that presently on the stack */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Fatal error: Not enough items on the stack\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not enough items on the stack\n");
 		return UINT_MAX;	/* Error flag */
 	}
 	prev = last - 1;

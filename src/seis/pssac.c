@@ -183,7 +183,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +z<zero>: define zero line. From <zero> to top is positive portion, from <zero> to bottom is negative portion.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Vertical scaling\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <size>: each trace will scaled to <size>[u]. The default unit is PROJ_LENGTH_UNIT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <size>: each trace will scaled to <size>[<unit>]. The default unit is PROJ_LENGTH_UNIT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      The scale factor is defined as yscale = size*(north-south)/(depmax-depmin)/map_height \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <size>/<alpha>: \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> < 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to <size>[<u>].\n");
@@ -549,7 +549,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 			    continue;
 			}
 			if (In->text == NULL) {	/* Crazy safety valve but it should never get here*/
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: input pointer is NULL where it should not be, aborting\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Input pointer is NULL where it should not be, aborting\n");
 				for (n = 0; n < n_files; n++) free (L[n].file);
 				gmt_M_free (GMT, L);
 				return (GMT_PTR_IS_NULL);

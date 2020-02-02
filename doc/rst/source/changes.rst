@@ -905,7 +905,7 @@ changes to existing syntax will be backwards compatible:
 
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
-   scaling the output plots via **-A+s**\ [**m**]\ *width*\ [**u**][/\ *height*\ [**u**]],
+   scaling the output plots via **-A+s**\ [**m**]\ *width*\ [*unit*][/\ *height*\ [*unit*]],
    paint and outline the bounding box via **-A** modifiers **g**\ *fill* and **+p**\ *pen*,
    and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
