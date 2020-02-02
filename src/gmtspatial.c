@@ -1004,13 +1004,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 								case 'a':	case '\0':	Ctrl->Q.dir = +1;	break;	/* Ascending [Default] */
 								case 'd':	Ctrl->Q.dir = -1;	break;	/* Descending */
 								default:
-									GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
+									GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
 									n_errors++;
 									break;
 							}
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized modifier +%c\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized modifier +%c\n", p[0]);
 							n_errors++;
 							break;
 					}

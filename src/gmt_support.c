@@ -12565,7 +12565,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					P->padding[XHI] = P->padding[XLO];
 				}
 				else if (n != 4){
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
 				/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -12790,7 +12790,7 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 		done = (strchr (sep, (int)string[*pos]) != NULL);	/* true if this is our guy */
 		if (!done && err) {	/* Unrecognized modifier is an error, unless err is NULL */
 			if (option)
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c: Unrecognized modifier +%c\n", option, string[*pos]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%c\n", option, string[*pos]);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized modifier +%c\n", string[*pos]);
 			(*err)++;
@@ -15331,7 +15331,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, txt_x, gmt_M_type (GMT, GMT_IN, GMT_X), &A->x), txt_x);
 			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, txt_y, gmt_M_type (GMT, GMT_IN, GMT_Y), &A->y), txt_y);
 			if (n_errors)
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c: Could not parse geographic coordinates %s and/or %s\n", option, txt_x, txt_y);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Could not parse geographic coordinates %s and/or %s\n", option, txt_x, txt_y);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via map coordinates: %g, %g\n", A->x, A->y);
 			break;
@@ -15414,7 +15414,7 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
 		if (string[k] == '+' && !strchr (valid_modifiers, string[k+1])) {	/* Found an invalid modifier */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
 			n_errors++;
 		}
 	}

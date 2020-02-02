@@ -771,7 +771,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);		/* If true then input is in degrees and we must convert to km later on */
 
 	if (flat_earth && Ctrl->M.active[TALWANI3D_HOR]) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 

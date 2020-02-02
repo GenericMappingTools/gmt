@@ -561,7 +561,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			case 'M':	/* Margins between subplots */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Got nothing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: No margins given.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
@@ -573,7 +573,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Bad number of margins given.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns values in default project length unit, convert to inch */
@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
 			if (!noB) {
 				if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -B: Must either set -Bx and -By or -B that applies to both axes.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Must either set -Bx and -By or -B that applies to both axes.\n");
 					n_errors++;
 				}
 			}

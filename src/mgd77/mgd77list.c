@@ -587,7 +587,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
 				if (opt->arg[1] == 'm' && gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
 				switch (opt->arg[0]) {

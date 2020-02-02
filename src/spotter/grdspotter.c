@@ -346,7 +346,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 					Ctrl->Q.id = sval;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Must give valid file or ID value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Must give valid file or ID value\n");
 					n_errors++;
 				}
 				break;
@@ -361,7 +361,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 					Ctrl->T.active[UPPER] = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Error -T: Either use -Tt or -Tu<age>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Either use -Tt or -Tu<age>\n");
 					n_errors++;
 				}
 				break;
