@@ -659,7 +659,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error -D: No bin width specified and data are not integers\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -D: No bin width specified and data are not integers\n");
 		Return (GMT_PARSE_ERROR);
 	}
 	if (n_pitched < n_alloc) {

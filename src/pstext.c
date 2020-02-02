@@ -491,7 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -499,7 +499,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'h':	/* Segment header request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -507,7 +507,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'r':	/* Record number */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else if (p[1])
@@ -516,7 +516,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 't':	/* Use specified text string */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -527,7 +527,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'z':	/* z-column formatted */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_ERROR, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -611,14 +611,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 
 			case 'i':	/* Local -i option for pstext to select a specific word in the text */
 				if (opt->arg[0] != 't') {
-					GMT_Report (API, GMT_MSG_ERROR, "Error -i: Must give -it<word> from 0 (first) to nwords-1.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -i: Must give -it<word> from 0 (first) to nwords-1.\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->F.word = true;
 					Ctrl->F.w_col = atoi (&opt->arg[1]);
 					if (Ctrl->F.w_col < 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Error -it<word>: Must select <word> from 0 (first) to nwords-1.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -it<word>: Must select <word> from 0 (first) to nwords-1.\n");
 						n_errors++;
 					}
 					else
