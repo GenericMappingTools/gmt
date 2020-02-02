@@ -120,15 +120,13 @@ will briefly discuss the two most common techniques.
 All GMT gridding modules have in common the requirement that the
 user must specify the grid domain and output filename:
 
-  +-------------------------------+------------------------------------------------------------------------+
-  | Option                        | Purpose                                                                |
-  +===============================+========================================================================+
-  | **-R**\ *xmin/xmax/ymin/ymax* | The desired grid extent                                                |
-  +-------------------------------+------------------------------------------------------------------------+
-  | **-I**\ *xinc*\ [*yinc*]      | The grid spacing (append **m** or **s** for minutes or seconds of arc) |
-  +-------------------------------+------------------------------------------------------------------------+
-  | **-G**\ *gridfile*            | The output grid filename                                               |
-  +-------------------------------+------------------------------------------------------------------------+
+============================== =======================================================================
+Option                         Purpose
+============================== =======================================================================
+**-R**\ *xmin/xmax/ymin/ymax*  The desired grid extent
+**-I**\ *xinc*\ [*yinc*]       The grid spacing (append **m** or **s** for minutes or seconds of arc)
+**-G**\ *gridfile*             The output grid filename
+============================== =======================================================================
 
 Nearest neighbor gridding
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,15 +219,13 @@ and we do not have the time to explain it all here, please see
 *Smith and Wessel* [1990] for details.  Some of the most important
 switches for this module are indicated below.
 
-  +-------------------+-----------------------------------------------------------+
-  | Option            | Purpose                                                   |
-  +===================+===========================================================+
-  | **-A**\ *aspect*  | Sets aspect ratio for anisotropic grids.                  |
-  +-------------------+-----------------------------------------------------------+
-  | **-C**\ *limit*   | Sets convergence limit.  Default is 1/1000 of data range. |
-  +-------------------+-----------------------------------------------------------+
-  | **-T**\ *tension* | Sets the tension [Default is 0]                           |
-  +-------------------+-----------------------------------------------------------+
+================== ============================================================
+Option             Purpose
+================== ============================================================
+**-A**\ *aspect*   Sets aspect ratio for anisotropic grids.
+**-C**\ *limit*    Sets convergence limit.  Default is 1/1000 of data range.
+**-T**\ *tension*  Sets the tension [Default is 0]
+================== ============================================================
 
 Preprocessing
 -------------
@@ -246,13 +242,12 @@ for rough, non-Gaussian data (such as topography).  In addition
 to the required **-R** and **-I** switches, these preprocessors
 all take the same options shown below:
 
-  +----------------------------+--------------------------------------------------------------------+
-  | Option                     | Purpose                                                            |
-  +============================+====================================================================+
-  | **-r**                     | Choose pixel node registration [Default is gridline]               |
-  +----------------------------+--------------------------------------------------------------------+
-  | **-W**\ [**i**\|\ **o**]   | Append **i**\  or **o** to read or write weights in the 4th column |
-  +----------------------------+--------------------------------------------------------------------+
+=========================== ====================================================================
+Option                      Purpose
+=========================== ====================================================================
+**-r**                      Choose pixel node registration [Default is gridline]
+**-W**\ [**i**\|\ **o**]    Append **i**\  or **o** to read or write weights in the 4th column
+=========================== ====================================================================
 
 With respect to our ship data we preprocess it using the median method:
 
