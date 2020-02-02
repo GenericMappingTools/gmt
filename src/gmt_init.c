@@ -4366,7 +4366,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL;
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL, *c = NULL;
 	char txt_arr[11][GMT_LEN256];
 
 	if (args == NULL) {
@@ -4613,14 +4613,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.got_azimuths = false;
 				i = 0;
 			}
-			j = (int)strlen (args) - 1;
-			if (args[j] == 'r') {	/* Gave optional r for reverse (elevations, presumably) */
+			j = (int)strlen (args) - 1;	/* Last character */
+			if ((c = strstr (args, "+r")) || args[j] == 'r') {	/* Gave optional +r for reverse (elevations, presumably) (r is deprecated) */
 				GMT->current.proj.got_elevations = true;
-				args[j] = '\0';	/* Temporarily chop off the r */
+				if (c) c[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]r */
 			}
-			else if (args[j] == 'z') {	/* Gave optional z for annotating depths rather than radius */
+			else if ((c = strstr (args, "+z")) || aargs[j] == 'z') {	/* Gave optional +z for annotating depths rather than radius (z is deprecated) */
 				GMT->current.proj.z_down = true;
-				args[j] = '\0';	/* Temporarily chop off the z */
+				if (c) c[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]z */
 			}
 			else
 				GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
@@ -4636,8 +4636,12 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			else
 				error++;
-			if (GMT->current.proj.got_elevations) args[j] = 'r';	/* Put the r back in the argument */
-			if (GMT->current.proj.z_down) args[j] = 'z';	/* Put the z back in the argument */
+			if (GMT->current.proj.got_elevations) {
+				if (c) c[0] = '+'; else args[j] = 'r';	/* Put the r back in the argument */
+			}
+			if (GMT->current.proj.z_down) {
+				if (c) c[0] = '+'; else args[j] = 'z';	/* Put the z back in the argument */
+			}
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
 			break;
 
@@ -6447,12 +6451,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
-			gmt_message (GMT, "\t   -Jp|P[a]<scale>|<width>[/<base>][r|z] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P[a]<scale>|<width>[/<base>][+r|+z] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.\n");
 			gmt_message (GMT, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
 			gmt_message (GMT, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t     Append r to reverse radial direction (s/n must be in 0-90 range) or z to annotate depths rather than radius [Default]\n");
+			gmt_message (GMT, "\t     Append +r to reverse radial direction (s/n must be in 0-90 range) or +z to annotate depths rather than radius [Default]\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
@@ -6565,7 +6569,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			gmt_message (GMT, "\t   -Jp|P[a]<scl>|<width>[/<origin>][r|z] (Polar [azimuth] (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P[a]<scl>|<width>[/<origin>][+r|+z] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			gmt_message (GMT, "\t   (See psbasemap for more details on projection syntax)\n");
