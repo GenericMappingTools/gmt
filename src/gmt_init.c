@@ -1043,14 +1043,14 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.a.output = true;	/* We are producing, not reading an OGR/GMT file */
 		if (GMT->current.setting.io_seg_marker[GMT_OUT] != '>') {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-				"Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n",
+				"Option -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n",
 				GMT->current.setting.io_seg_marker[GMT_OUT]);
 			GMT->current.setting.io_seg_marker[GMT_OUT] = '>';
 		}
 	}
 	else if (GMT->current.setting.io_seg_marker[GMT_IN] != '>') {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING,
-			"Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n",
+			"Option -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n",
 			GMT->current.setting.io_seg_marker[GMT_IN]);
 		GMT->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
@@ -5155,7 +5155,7 @@ GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_S
 	if ((!strstr (text, "+t") && strchr (text, '/')) || strchr (text, '%')) {	/* GMT4 syntax */
 		char *c = NULL;
 		if (gmt_M_compat_check (GMT, 4)) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in Option -Sl: Sl<size>/<string>[%<font>] is deprecated syntax\n");
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Sl: Sl<size>/<string>[%<font>] is deprecated syntax\n");
 			if ((c = strchr (text, '%'))) {	/* Gave font name or number, too */
 				*c = 0;	/* Chop off the %font info */
 				c++;		/* Go to next character */
@@ -14406,7 +14406,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				len = (int)strlen (text_cp) - 1;
 				if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && len > 0 && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-					            "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
+					            "Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
 					if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
 						c++;	/* Skip over the colon */
 						p->f.f_off = gmt_M_to_inch (GMT, c);
