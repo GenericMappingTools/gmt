@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][*size*\ [**u**]]
+**-S**\ [*symbol*][*size*\ [*unit*]]
     Plot symbols (including vectors, pie slices, fronts, decorated or quoted lines).
     If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol

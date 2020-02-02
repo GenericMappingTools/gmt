@@ -83,11 +83,11 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *startdist*\ [**u**]
+**-Sa**\ *startdist*\ [*unit*]
     Do not plot data that are less than *startdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is 0 meters].
-**-Sb**\ *stopdist*\ [**u**]
+**-Sb**\ *stopdist*\ [*unit*]
     Do not plot data that are more than *stopdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is end of track].

@@ -14,11 +14,11 @@ Synopsis
 
 **gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ] [|-D|\ *dfile* ]
+[ |-C|\ *length*\ [*unit*]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\|\ **p**]]
+[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [*unit*]][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ] [ |-Z| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**]
+**-C**\ *length*\ [*unit*]/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -130,7 +130,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*\ [*unit*]][**+l**\ *length*\ [*unit*]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [*unit*]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -141,7 +141,7 @@ Optional Arguments
     In addition to line coordinates, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if a
     single grid is given via **-G**). You may append
-    **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then
+    **+i**\ *inc*\ [*unit*] to set the sampling interval; if not given then
     we default to half the minimum grid interval.  Instead of two coordinates
     you can specify an origin and one of **+a**, **+o**, or **+r**.
     The **+a** sets the azimuth of a profile of given
@@ -201,14 +201,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*radius*\ [**u**]][**+e**\|\ **p**]
+**-T**\ [*radius*\ [*unit*]][**+e**\|\ **p**]
    To be used with normal grid sampling, and limited to a single, non-IMG grid.
    If the nearest node to the input point is NaN, search outwards until we find
    the nearest non-NaN node and report that value instead.  Optionally specify
    a search radius which limits the consideration to points within this distance
    from the input point.  To report the location of the nearest node and its
    distance from the input point, append **+e**. The default unit for geographic
-   grid distances is spherical degrees.  Use *radius*\ [**u**] to change the unit
+   grid distances is spherical degrees.  Use *radius*\ [*unit*] to change the unit
    and give *radius* = 0 if you do not want to limit the radius search.
    To instead replace the input point with the coordinates of the nearest node, append **+p**.
 

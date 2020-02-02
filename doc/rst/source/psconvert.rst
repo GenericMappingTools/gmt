@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
+**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*\ [*unit*]/\ *height*\ [*unit*]][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **+n** to leave the BoundingBoxes as they are
     (e.g., to override any automatic setting of **-A** by **-W**).

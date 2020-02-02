@@ -21,7 +21,7 @@ Synopsis
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]
 [ |-N| ]
-[ |-S|\ [*symbol*][*size*\ [**u**] ]
+[ |-S|\ [*symbol*][*size*\ [*unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
