@@ -22,6 +22,8 @@
 
 #include <gdal_utils.h>
 
+GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename);
+
 GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
@@ -109,7 +111,8 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	GDALAllRegister();
 
-	hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
+	//hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
+	hSrcDS = gdal_vector (GMT, " ");
 
 	if (hSrcDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
@@ -117,7 +120,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	}
 
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
-	                             GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
+								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 
 	if (GDLL->G.active && Grid->header->registration == 0) {
@@ -125,7 +128,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 		dx = Grid->header->inc[0] / 2;		dy = Grid->header->inc[1] / 2;
 	}
 	sprintf(ext_opts, "-ot Float32 -txe %lf %lf -tye %lf %lf -outsize %d %d ",
-	        Grid->header->wesn[XLO]-dx, Grid->header->wesn[XHI]+dx, Grid->header->wesn[YLO]-dy,
+			Grid->header->wesn[XLO]-dx, Grid->header->wesn[XHI]+dx, Grid->header->wesn[YLO]-dy,
 			Grid->header->wesn[YHI]+dy, Grid->header->n_columns, Grid->header->n_rows);
 	strcat(ext_opts, GDLL->opts); 
 	if (!GDLL->G.active)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
@@ -169,9 +172,9 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
 		}
 		Grid->data = (float *)tmp;
-		gmt_grd_flip_vertical (Ctrl->data, (unsigned)nXSize, (unsigned)nYSize, 0, 1);
+		gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, 1);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
-		                    NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
+							NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
 			return GMT->parent->error;
 	}
 
@@ -179,6 +182,69 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALClose(hSrcDS);
 	GDALDestroyDriverManager();
 	return 0;
+}
+
+GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename) {
+	/* Write data into a GDAL Vector memory dataset */
+	GDALDriverH hDriver;
+	GDALDatasetH hDS;
+	OGRLayerH hLayer;
+	OGRFieldDefnH hFieldDefn;
+	OGRFeatureH hFeature;
+	OGRGeometryH hPt;
+
+	GDALAllRegister();
+
+	hDriver = GDALGetDriverByName("Memory");			/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
+
+	hDS = GDALCreate(hDriver, "mem", 0, 0, 0, GDT_Unknown, NULL);
+	if (hDS == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creation of MEM file failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	hLayer = GDALDatasetCreateLayer(hDS, "point_out", NULL, wkbPoint, NULL);
+	if (hLayer == NULL ) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Layer creation failed.\n");
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	hFieldDefn = OGR_Fld_Create("Name", OFTString);
+
+	OGR_Fld_SetWidth(hFieldDefn, 32);
+
+	if (OGR_L_CreateField(hLayer, hFieldDefn, TRUE) != OGRERR_NONE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creating Name field failed.\n");
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	OGR_Fld_Destroy(hFieldDefn);
+
+	//while (!feof(stdin) && fscanf( stdin, "%lf,%lf,%32s", &x, &y, szName) == 3) {
+
+		hFeature = OGR_F_Create(OGR_L_GetLayerDefn(hLayer));
+		OGR_F_SetFieldString(hFeature, OGR_F_GetFieldIndex(hFeature, "Name"), "0");
+
+		hPt = OGR_G_CreateGeometry(wkbPoint);
+		//OGR_G_SetPoint(hPt, 0, x, y, z);
+		OGR_G_SetPoint(hPt, 0, 4.1, 7.2, 3.0);
+
+		OGR_F_SetGeometry(hFeature, hPt);
+		OGR_G_DestroyGeometry(hPt);
+
+		if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
+			GDALDestroyDriverManager();
+			return NULL;
+		}
+		OGR_F_Destroy(hFeature);
+	//}
+
+	//GDALClose(hDS);
+	return hDS;
 }
 
 #endif		//defined(HAVE_GDAL) && ...
