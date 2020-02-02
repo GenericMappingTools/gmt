@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ **m**\|\ [**+w**]\ *mode_file* ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ]
-[ |-J|\ **X**\ *diameter* ]
+[ |-J|\ **X**\ *diameter*\ [*unit*] ]
 [ |-L|\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] ]
 [ |-M|\ *parameters* ]
 [ |-Q|\ *alpha* ]

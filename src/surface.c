@@ -83,7 +83,7 @@ struct SURFACE_CTRL {
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct SRF_M {	/* -M<radius>[u] */
+	struct SRF_M {	/* -M<radius>[<unit>] */
 		bool active;
 		char *arg;
 	} M;

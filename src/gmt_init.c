@@ -13185,7 +13185,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				norm = 2;
 				S->arg[strlen(S->arg)-1] = '\0';
 			}
-			radius = gmt_M_to_inch (GMT, &S->arg[k]);	/* Get the radius, now in inches */
+			radius = (S->arg[k]) ? gmt_M_to_inch (GMT, &S->arg[k]) : 0.5 * 7.5 / 2.54;	/* Get the radius or default to (7.5/2 cm), now in inches */
 			snprintf (j_code, GMT_LEN256, "X%gi", 2 * radius);
 			if ((opt = GMT_Make_Option (API, 'J', j_code)) == NULL) return NULL;		/* Failed to make -J option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failed to append -J option */
