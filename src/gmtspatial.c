@@ -80,7 +80,7 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -Aa<min_dist>[unit], -A[unit] */
+	struct A {	/* -Aa<min_dist>[<unit>], -A[<unit>] */
 		bool active;
 		unsigned int mode;
 		int smode;
@@ -743,9 +743,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][<unit>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][<unit>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<cpol>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);

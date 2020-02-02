@@ -656,7 +656,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 	 * New syntax: -T<width> [-Ll|h|b] [-W<pen>]
 	 * See logic in get_syntax. */
 	if (new_syntax (GMT, l_arg, t_arg, w_arg)) {
-		/* Process -T<width>[unit] [-Lb|h|l] [-W<pen>] */
+		/* Process -T<width>[<unit>] [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
 		if (l_arg) {	/* Gave -Lb|h|l */

@@ -928,7 +928,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Xa|r|f|c<off>[unit], -X[-|+]w[/<n>][-|+]<off>[unit], where
+	/* Syntax: -Xa|r|f|c<off>[<unit>], -X[-|+]w[/<n>][-|+]<off>[<unit>], where
 	 * w is the width of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
@@ -970,7 +970,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Ya|r|f|c<off>[unit], -Y[-|+]h[/<n>][-|+]<off>[unit], where
+	/* Syntax: -Ya|r|f|c<off>[<unit>], -Y[-|+]h[/<n>][-|+]<off>[<unit>], where
 	 * h is the height of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
@@ -4548,7 +4548,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT->current.proj.xyz_projection[GMT_X];
 				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
-				/* Assume -JX<width>[unit]d means a linear geographic plot so x = lon and y = lat */
+				/* Assume -JX<width>[<unit>]d means a linear geographic plot so x = lon and y = lat */
 				if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_LON) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
@@ -5148,7 +5148,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 }
 
 /*! Parse the arguments given to -Sl.  The allowed syntax is:
- * -Sl<size>[unit]+t<text>[+f<font<][+j<justify>] */
+ * -Sl<size>[<unit>]+t<text>[+f<font<][+j<justify>] */
 GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S) {
 
 	unsigned int pos = 0, k, j, slash, error = 0;
@@ -6769,7 +6769,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-g Use data point separations to determine if there are data gaps.\n");
 			gmt_message (GMT, "\t   Append x|X or y|Y to identify data gaps in x or y coordinates,\n");
 			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D means\n");
-			gmt_message (GMT, "\t   we first project the points (requires -J).  Append <gap>[unit][+n|p]; +n uses\n");
+			gmt_message (GMT, "\t   we first project the points (requires -J).  Append <gap>[<unit>][+n|p]; +n uses\n");
 			gmt_message (GMT, "\t   d=prev-curr, +p uses d=curr-prev [d=|curr-prev|]; d must exceed <gap> to detect a gap.\n");
 			gmt_message (GMT, "\t   For geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
 			gmt_message (GMT, "\t   For gaps based on mapped coordinates: choose unit from %s [%s].\n",
@@ -7054,7 +7054,7 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	gmt_message (GMT, "%s   %ss at intersections between %ss and lines in\n", pad, feature[kind], type[kind]);
 	gmt_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);
 	if (kind < 2) {
-		gmt_message (GMT, "%s   For all options, append +r<radius>[unit] to specify minimum\n", pad);
+		gmt_message (GMT, "%s   For all options, append +r<radius>[<unit>] to specify minimum\n", pad);
 		gmt_message (GMT, "%s   radial separation between labels [0]\n", pad);
 	}
 }
@@ -7145,7 +7145,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	if (mode)
 		gmt_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
 	if (mode & 2) {
-		gmt_message (GMT, "\t     +o<offset>[unit] Trim the line from the end inward by the specified amount.\n");
+		gmt_message (GMT, "\t     +o<offset>[<unit>] Trim the line from the end inward by the specified amount.\n");
 		gmt_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 		gmt_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
 	}
@@ -7351,9 +7351,9 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	gmt_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
 	gmt_message (GMT, "\t     +r to only draw right side of all specified vector heads [both sides].\n");
 	if (mode & 2) gmt_message (GMT, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
-	gmt_message (GMT, "\t     +t[b|e]<trim(s)>[unit] to shift begin or end position along vector by given amount [no shifting].\n");
+	gmt_message (GMT, "\t     +t[b|e]<trim(s)>[<unit>] to shift begin or end position along vector by given amount [no shifting].\n");
 	if (mode & 16) gmt_message (GMT, "\t     +z if (dx,dy) vector components are given instead of (azimuth,length) on input.\n");
-	if (mode & 16) gmt_message (GMT, "\t       Append <scale>[unit] to convert components to length in given unit.\n");
+	if (mode & 16) gmt_message (GMT, "\t       Append <scale>[<unit>] to convert components to length in given unit.\n");
 }
 
 /*! Use mode to control which options are displayed */
@@ -11890,7 +11890,7 @@ unsigned int gmtlib_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit)
 			unit = GMT_PT;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Length unit %c not supported - revert to default unit [%s]\n", (int)c, GMT->session.unit_name[unit]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Length <unit> %c not supported - revert to default unit [%s]\n", (int)c, GMT->session.unit_name[unit]);
 			break;
 	}
 
@@ -13181,7 +13181,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
 			double radius;
 			k = norm;
-			if (norm == 0 && S->arg[strlen(S->arg)-1] == 'n') {	/* Old-style -S<radius>[unit]n syntax */
+			if (norm == 0 && S->arg[strlen(S->arg)-1] == 'n') {	/* Old-style -S<radius>[<unit>]n syntax */
 				norm = 2;
 				S->arg[strlen(S->arg)-1] = '\0';
 			}
@@ -14061,7 +14061,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 1);
 		}
 	}
-	else if (text[0] == 'k' || text[0] == 'K') {	/* Custom symbol spec -Sk|K<path_to_custom_symbol>[/<size>[unit]]*/
+	else if (text[0] == 'k' || text[0] == 'K') {	/* Custom symbol spec -Sk|K<path_to_custom_symbol>[/<size>[<unit>]]*/
 		/* <path_to_custom_symbol> may contains slashes (UNIX) or backslashes (Windows) so we search from the end of the string: */
 		for (j = (int)strlen (text)-1; j > 0 && text[j] != '/'; --j);	/* Determine last slash */
 		if (j == 0) {	/* No slash, i.e., no symbol size given (and no UNIX path either) */

@@ -12034,7 +12034,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	/* Determine if we got an reference point or a region */
 
 	if (strchr ("gjJnx", text[0])) {	/* Did the reference point thing. */
-		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
+		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
@@ -12046,7 +12046,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw")) return (1);
 
-		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
+		/* Reference point args are +w<width>[<unit>][/<height>[<unit>]][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
 		/* Required modifier +w */
 		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
 			if (string[0] == '\0') {	/* Got nutin' */
@@ -12268,7 +12268,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 		}
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale length modifier +w<length>[unit] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale length modifier +w<length>[<unit>] is required\n", option);
 		error++;
 	}
 	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
@@ -12401,7 +12401,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			ms->size = gmt_M_to_inch (GMT, string);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length>[unit] is required\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length>[<unit>] is required\n", option);
 		error++;
 	}
 	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */

@@ -85,7 +85,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct GMTSELECT_C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
+	struct GMTSELECT_C {	/* [-C[-|=|+]<dist>[<unit>]/<ptfile>] */
 		bool active;
 		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
@@ -101,7 +101,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		bool active;
 		unsigned int inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
-	struct GMTSELECT_L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
+	struct GMTSELECT_L {	/* -L[p][-|=|+]<dist>[<unit>]/<lfile> */
 		bool active;
 		unsigned int end_mode;	/* Controls what happens beyond segment endpoints */
 		int mode;	/* Form of distance calculation (can be negative) */
