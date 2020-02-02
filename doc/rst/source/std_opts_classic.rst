@@ -40,7 +40,7 @@ Common Options (Classic Mode)
      - Filter data records that match the given pattern :ref:`(...) <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
      - Set formatting of ASCII input or output :ref:`(...) <-f_full>`
-   * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*[**+n**\|\ **p**]
+   * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
      - Segment data by detecting gaps :ref:`(...) <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - ASCII [*I*\|\ *O*] tables have header record[s] :ref:`(...) <-h_full>`
