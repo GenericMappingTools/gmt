@@ -429,7 +429,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 					if (opt->arg[0] == 'g') GMT->common.j.mode = GMT_GREATCIRCLE;
 					if (opt->arg[0] == 'e') GMT->common.j.mode = GMT_GEODESIC;
 					if (GMT->common.j.mode < 1 || GMT->common.j.mode > 3) {
-						GMT_Report (API, GMT_MSG_ERROR, "Error -C: Flag must be f, g, or e\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Flag must be f, g, or e\n");
 						n_errors++;
 					}
 				}
@@ -462,11 +462,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				Ctrl->N.active = true;
 				Ctrl->N.code[0] = opt->arg[0];
 				if (Ctrl->N.code[0] == 'm' && gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
 				}
 				if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.code[0])) {
-					GMT_Report (API, GMT_MSG_ERROR, "Error -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
 					n_errors++;
 				}
 				break;
@@ -1243,8 +1243,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
 					if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?')))
-						GMT_Message (API, GMT_TIME_NONE, "%s: Warning: %s\n", list[argno], line);
-					continue;
+						GMT_Message (API, GMT_TIME_NONE, "%s: %s\n", list[argno], line);
+					continue
 				}
 				if (!got_default_answer (line, answer)) continue;
 
@@ -1363,7 +1363,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				rec--;	/* E77 starts with rec = 1 for first data record */
 				if (has_time) {
 					if (!strcmp(timestamp,"NaN")) {
-						GMT_Report (API, GMT_MSG_WARNING, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
+						GMT_Report (API, GMT_MSG_WARNING, "%s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
 						if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {

@@ -792,7 +792,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
-			if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
+			if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}
 	}
 

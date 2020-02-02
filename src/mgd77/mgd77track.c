@@ -321,12 +321,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				}
 				else if ((t = strchr (opt->arg, ','))) {	/* Want label at regular spacing */
 					if (gmt_M_compat_check (GMT, 5)) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning -A: ,<inc> is deprecated, use +i<inc> instead\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -A: ,<inc> is deprecated, use +i<inc> instead\n");
 						if (get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
 						Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Error -A: Unexpected string %s\n", t);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unexpected string %s\n", t);
 						n_errors++;
 					}
 				}
@@ -338,14 +338,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Error -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Error -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -368,7 +368,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->F.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Error -T: append m, e, or neither\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -389,7 +389,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->G.value[GAP_N]  = urint (atof (&opt->arg[1]));
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
 						n_errors++;
 						break;
 				}
@@ -454,7 +454,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
-					GMT_Report (API, GMT_MSG_ERROR, "-TT|t|d takes 5 arguments\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = gmt_M_to_inch (GMT, ms);

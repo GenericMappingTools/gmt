@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 					Ctrl->F.fudge = atof (&opt->arg[1]);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Usage error: -Fd<delta_radius> or -Ff<factor>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: -Fd<delta_radius> or -Ff<factor>\n");
 					n_errors++;
 				}
 				break;

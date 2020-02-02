@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 				else
 					strncpy (text, opt->arg, GMT_LEN32-1);
 				if (gmt_validate_modifiers (GMT, text, opt->option, "as")) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -T: Syntax is -T[<dz>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dz>][+s][+a[<alpha>]] next time.\n");
 					n_errors++;
 				}
 				else {

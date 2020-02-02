@@ -689,12 +689,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		GMT->current.ps.active = false;	/* Come to our senses */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "-Z requires -G+i\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Option -Z requires -G+i\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                   "-T cannot work with -E, -G or -L\n");
-	n_errors += gmt_M_check_condition (GMT, geodetic_calc && Ctrl->I.active, "-A, -G, and -L cannot work with -I\n");
+	n_errors += gmt_M_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Options -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
-	n_errors += gmt_M_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "-p cannot work with -I\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Option -p cannot work with -I\n");
 	/* Must have -J */
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
 	                                   "Must specify -J option with selected form of -G or -L when unit is C\n");
@@ -1164,7 +1164,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 		if (In == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
-			GMT_Report (API, GMT_MSG_ERROR, "Internal error: input pointer is NULL where it should not be, aborting\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
 		}
 		if (first) {

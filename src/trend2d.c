@@ -98,7 +98,7 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 				break;
 		}
 		if (In == NULL) {	/* Crazy safety valve but it should never get here*/
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: input pointer is NULL where it should not be, aborting\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Input pointer is NULL where it should not be, aborting\n");
 			return (GMT_PTR_IS_NULL);
 		}
 		/* Data record to process */
