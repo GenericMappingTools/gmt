@@ -1882,7 +1882,7 @@ projections you may wish to specify the domain using the lower-left and upper-ri
 instead (similar to how the **-R** option works), by adding **+r**\ .  Some optional modifiers are available:
 
 #. Set inset size.  If you specified a reference point then you must also specify the inset dimensions with the
-   **+w**\ *width*[/*height*], where *height* defaults to *width* if not given.
+   **+w**\ *width*\ [/*height*], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
