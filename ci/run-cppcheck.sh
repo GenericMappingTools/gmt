@@ -10,7 +10,16 @@ CPPCHECK="cppcheck --error-exitcode=1 --std=c99 --force --quiet"
 
 if [ "$BUILD_REASON" == "Schedule" ]; then
     # Check all C codes for scheduled jobs
-    find . -name '*.[ch]' -exec ${CPPCHECK} {} +
+    find . -name '*.[ch]' \
+        ! -name 'PSL_ISO-*.h' \
+        ! -name 'PSL_ISOLatin*.h' \
+        ! -name 'PSL_Standard*.h' \
+        ! -name 'gmt_colornames.h' \
+        ! -name 'gmt_cpt_masters' \
+        ! -name 'gmt_datasets.h' \
+        ! -name 'gmt_media_name.h' \
+        ! -name 'gmt_unique.h' \
+        -exec ${CPPCHECK} {} +
 else
     # Check changed files only for PRs
     target_branch=${SYSTEM_PULLREQUEST_TARGETBRANCH:-master}
