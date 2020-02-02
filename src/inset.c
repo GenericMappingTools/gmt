@@ -57,7 +57,7 @@ struct INSET_CTRL {
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct M {	/* -M<margin>[u] | <xmargin>[u]/<ymargin>[u]  | <wmargin>[u]/<emargin>[u]/<smargin>[u]/<nmargin>[u]  */
+	struct M {	/* -M<margin>[<unit>] | <xmargin>[<unit>]/<ymargin>[<unit>]  | <wmargin>[<unit>]/<emargin>[<unit>]/<smargin>[<unit>]/<nmargin>[<unit>]  */
 		bool active;
 		double margin[4];
 	} M;

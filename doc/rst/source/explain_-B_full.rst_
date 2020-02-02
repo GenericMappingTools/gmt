@@ -63,7 +63,7 @@
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 
-    [**a**\|\ **f**\|\ **g**]\ *stride*\ [*±phase*][**u**].
+    [**a**\|\ **f**\|\ **g**]\ *stride*\ [*±phase*][*unit*].
 
     The leading **a** is used to specify the annotation and major tick
     spacing [Default], **f** for minor tick spacing, and **g** for

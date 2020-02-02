@@ -173,7 +173,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <size> is optional text size in points [9].  The font used is controlled by FONT_LABEL.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +i<inc>[unit] to place label every <inc> units apart; <unit> may be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +i<inc>[<unit>] to place label every <inc> units apart; <unit> may be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k (km) or n (nautical miles), or d (days), h (hours).\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
@@ -193,7 +193,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<stopdist> [End of cruise].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set attributes of marker items. Append T for new day marker, t for same\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <markersize>[<unit>],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default settings for the three marker types are:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%s,black,%g,%d,black\n",
 	             day_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,

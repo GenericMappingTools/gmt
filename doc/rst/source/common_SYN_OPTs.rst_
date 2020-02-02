@@ -6,9 +6,9 @@
 
 .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
 
-.. |SYN_OPT-X| replace:: |-X|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*\ [**u**]]
+.. |SYN_OPT-X| replace:: |-X|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*\ [*unit*]]
 
-.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*\ [**u**]]
+.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*\ [*unit*]]
 
 .. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
 

@@ -24,7 +24,7 @@ Synopsis
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
-[ |-S|\ [*symbol*][*size*\ [**u**] ]
+[ |-S|\ [*symbol*][*size*\ [*unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]

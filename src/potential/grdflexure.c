@@ -97,7 +97,7 @@ struct GRDFLEXURE_CTRL {
 		bool active;
 		double beta;	/* Fraction of moat w(x) filled in [1] */
 	} S;
-	struct T {	/* -T[l]<t0>[u]/<t1>[u]/<d0>[u]|n  */
+	struct T {	/* -T[l]<t0>[<unit>]/<t1>[<unit>]/<d0>[<unit>]|n  */
 		bool active, log;
 		unsigned int n_eval_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
@@ -189,7 +189,7 @@ GMT_LOCAL int compare_modeltimes (const void *time_1v, const void *time_2v) {
 }
 
 unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, struct GMT_MODELTIME **T_array) {
-	/* Parse -T<tfile>, -T<t0> or -T<t0>[u]/<t1>[u]/<dt>[u][+l] and return array of times.
+	/* Parse -T<tfile>, -T<t0> or -T<t0>[<unit>]/<t1>[<unit>]/<dt>[<unit>][+l] and return array of times.
 	 * The array times are all in years, while the unit and scale can change.  Programs that need
 	 * the time in year should use T_array[k].value while programs that need the original time and
 	 * unit specified by the user should use T_array[k].value * T_array[k].scale and T_array[k].unit.
@@ -238,7 +238,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		double e_time, i_time, e_scale, i_scale;
 		int n = sscanf (arg, "%[^/]/%[^/]/%s", A, B, C);
 		if (!(n == 3 || n == 1)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Must give -T<tfile>, -T<t0> or -T<t0>[u]/<t1>[u]/<dt>[u][+l]\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Must give -T<tfile>, -T<t0>[<unit>] or -T<t0>[<unit>]/<t1>[<unit>]/<dt>[<unit>][+l]\n");
 			return 0;
 		}
 		s_time = gmt_get_modeltime (A, &s_unit, &s_scale);
@@ -641,7 +641,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg] [%s]\n\n", GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<list>] [-M<tm>[<unit>]] [-N%s] [-S<beta>] [-T<t0>[<unit>[/<t1>[<unit>/<dt>[<unit>|<file>|<n>[+l]]]\n\t[%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n\n", GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -665,11 +665,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Give filename for output table with names of all grids (and model times) produced.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set Maxwell time for visco-elastic flexure (unit is years; append k for kyr and M for Myr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set Maxwell time for visco-elastic flexure (<unit> is years; append k for kyr and M for Myr).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify starved moat fraction in 0-1 range (1 = fully filled, 0 = no infill) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. <unit> is years; append k for kyr and M for Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that time axis is positive back in time.\n");

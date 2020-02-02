@@ -175,8 +175,8 @@ Optional Arguments
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
     You can also append one or more additional line attribute modifiers:
-    **+o**\ *offset*\ **u** will start and stop drawing the line the given distance offsets
-    from the end point.  Append unit **u** from **c**\|\ **i**\|\ **p** to
+    **+o**\ *offset*\ *unit* will start and stop drawing the line the given distance offsets
+    from the end point.  Append unit *unit* from **c**\|\ **i**\|\ **p** to
     indicate plot distance on the map or append map distance units instead (see below)
     [Cartesian distances];
     **+s** will draw the line using a Bezier spline [linear spline];

@@ -154,17 +154,17 @@ data point per sector inside the search radius, with each point weighted
 according to its distance from the node.
 The most important switches are listed below.
 
-  +---------------------------+----------------------------------------------------------------------------------+
-  | Option                    | Purpose                                                                          |
-  +===========================+==================================================================================+
-  | **-S**\ *radius*\ [**u**] | Sets search radius.  Append **u** for radius in that unit [Default is *x*-units] |
-  +---------------------------+----------------------------------------------------------------------------------+
-  | **-E**\ *empty*           | Assign this value to unconstrained nodes [Default is NaN]                        |
-  +---------------------------+----------------------------------------------------------------------------------+
-  | **-N**\ *sectors*         | Sector search, indicate number of sectors [Default is 4]                         |
-  +---------------------------+----------------------------------------------------------------------------------+
-  | **-W**                    | Read relative weights from the 4th column of input data                          |
-  +---------------------------+----------------------------------------------------------------------------------+
+  +----------------------------+-----------------------------------------------------------------------------------+
+  | Option                     | Purpose                                                                           |
+  +============================+===================================================================================+
+  | **-S**\ *radius*\ [*unit*] | Sets search radius.  Append *unit* for radius in that unit [Default is *x*-units] |
+  +----------------------------+-----------------------------------------------------------------------------------+
+  | **-E**\ *empty*            | Assign this value to unconstrained nodes [Default is NaN]                         |
+  +----------------------------+-----------------------------------------------------------------------------------+
+  | **-N**\ *sectors*          | Sector search, indicate number of sectors [Default is 4]                          |
+  +----------------------------+-----------------------------------------------------------------------------------+
+  | **-W**                     | Read relative weights from the 4th column of input data                           |
+  +----------------------------+-----------------------------------------------------------------------------------+
 
 We will grid the data in the file tut_ship.xyz which contains
 ship observations of bathymetry off Baja California.  We obtain the
