@@ -300,7 +300,7 @@ Geographical
        "south pole condition" is used at :math:`y_{min}`, else a default
        condition is used there.
 
-    "Pole conditions" use a 180º phase-shift of the data, requiring 180
+    "Pole conditions" use a 180° phase-shift of the data, requiring 180
     modulo :math:`x_{inc} = 0`.
 
 Default

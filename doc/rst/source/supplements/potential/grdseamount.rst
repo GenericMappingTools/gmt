@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
 [ |-C|\ **c**\|\ **d**\|\ **g**\|\ **p** ]
-[ |-D| ]
+[ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
 [ |-G|\ *grdfile* ]

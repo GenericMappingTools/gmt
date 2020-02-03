@@ -70,7 +70,7 @@ useful options:
 
 We will first make a plain contour map using 1 km as annotation
 interval and 250 m as contour interval.  We choose a 7-inch-wide
-Mercator plot and annotate the borders every 2º:
+Mercator plot and annotate the borders every 2°:
 
 .. literalinclude:: /_verbatim/GMT_tut_11.txt
 
