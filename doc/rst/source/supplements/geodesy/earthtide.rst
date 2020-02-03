@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ **x**\ \|\ **e**\ ,\ **y**\ \|\ **n**\ ,\ **z**\ \|\ **v**
+**-C**\ **x**\|\ **e**,\ **y**\|\ **n**,\ **z**\|\ **v**
     Select which component to write to individual grids. Requires **-G**.
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
