@@ -138,7 +138,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
     (i.e., your input has only data columns), give **-T** with
