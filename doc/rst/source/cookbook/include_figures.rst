@@ -239,7 +239,7 @@ files to PNG.
 The **-P** option of :doc:`/psconvert` may
 also come in handy. When you have *not* supplied the **-P** option in
 your first GMT plot command, your plot will be in Landscape mode. That
-means that the plot will be rotated 90º (anti-clockwise) to fit
+means that the plot will be rotated 90° (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
 option of :doc:`/psconvert` will undo that
 rotation, so that you do not have to do so within your document. This
@@ -287,7 +287,7 @@ you will need to rotate the plot as well. For example,
 
      \includegraphics[angle=-90,width=0.8\textwidth]{myplot}
 
-will rotate the image 90º clockwise and scale it such that its width
+will rotate the image 90° clockwise and scale it such that its width
 (after rotation) will be 80% of the width of the text column.
 
 GMT graphics in **PowerPoint**

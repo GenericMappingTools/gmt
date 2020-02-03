@@ -95,7 +95,7 @@ you, and *b* increasing up. Keep this sense of (*rgb*) as you look at the cube.
 
 Now tip the cube such that the black corner faces down and the white
 corner up. When looking from the top, you can see the hue, contoured in
-gray solid lines, running around in 360º counter-clockwise. It starts
+gray solid lines, running around in 360° counter-clockwise. It starts
 with shades of red (0), then goes through green (120) and blue (240),
 back to red.
 
