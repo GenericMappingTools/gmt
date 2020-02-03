@@ -4025,9 +4025,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, "aLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
-	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr ("aLlpSsu", text[k+1]))) k++;
+	gmt_handle5_plussign (GMT, text, "afLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +f, +p, +S|s or +u */
+	while (text[k] && !(text[k] == '+' && strchr ("afLlpSsu", text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
@@ -4080,6 +4080,12 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else if (!implicit)
 							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -B: The +a modifier only applies to the x and y axes; selection for %c-axis ignored\n", the_axes[no]);
+						break;
+					case 'f':	/* Select fancy annotatinos with trailing W|E|S|N */
+						if (!gmt_M_is_geographic (GMT, GMT_IN))
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -B: Cannot use +f for Cartesian basemaps - modifier ignored\n");
+						else
+							GMT->current.plot.calclock.geo.wesn = 1;
 						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
@@ -6289,9 +6295,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
 			gmt_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			gmt_message (GMT, "\t     The full axes specification is\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z][+a<angle>|n|p][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
 			gmt_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
 			gmt_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
@@ -6302,6 +6308,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
 			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
 			gmt_message (GMT, "\t     Cartesian y-axis takes optional +ap for parallel annotations [+an].\n");
+			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
 			gmt_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
@@ -6345,7 +6352,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg.\n");
 			gmt_message (GMT, "\t     Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value].\n");
 			gmt_message (GMT, "\t     Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear].\n");
-			gmt_message (GMT, "\t     See psbasemap man pages for more details and examples of all settings.\n");
+			gmt_message (GMT, "\t     See basemap man pages for more details and examples of all settings.\n");
 			break;
 
 		case 'b':	/* Condensed tickmark option */
@@ -6354,9 +6361,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
 			gmt_message (GMT, "\t     -B[<axes>][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
 			gmt_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>][+l<label>][+p<prefix>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings\n");
-			gmt_message (GMT, "\t   See psbasemap man page for more details and examples of all settings.\n");
+			gmt_message (GMT, "\t   See basemap man page for more details and examples of all settings.\n");
 			break;
 
 		case 'J':	/* Map projection option */
@@ -6573,7 +6580,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jp|P[a]<scl>|<width>[/<origin>][+r|+z] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
-			gmt_message (GMT, "\t   (See psbasemap for more details on projection syntax)\n");
+			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
 			break;
 
 		case 'I':	/* Near-common option for grid increments */
@@ -15187,16 +15194,27 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			if (!error) {
 				if (GMT->current.setting.run_mode == GMT_MODERN) {
-					if (item[0] == '\0')
-						error = gmtlib_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'x' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "xaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'y' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "yaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'z' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "zaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else
-						error = gmtlib_parse_B_option (GMT, item);
+					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
+					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
+					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */
+						c[0] = '\0';	/* Temporarily chop off these modifiers only */
+					code[0] = item[0]; code[1] = (item[0]) ? item[1] : '\0';
+					if (c) c[0] = '+';	/* Restore modifiers */
+					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
+						strcpy (args, "af");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'x' && code[1] == '\0') {	/* If indicating x we do -Bxaf */
+						strcpy (args, "xaf");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'y' && code[1] == '\0') {	/* If indicating y we do -Byaf */
+						strcpy (args, "yaf");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'z' && code[1] == '\0') {	/* If indicating z we do -Bzaf */
+						strcpy (args, "zaf");	if (c) strcat (args, c);
+					}
+					else	/* Keep what we got */
+						strcpy (args, item);
+					error = gmtlib_parse_B_option (GMT, args);
 				}
 				else
 					error = gmtlib_parse_B_option (GMT, item);
