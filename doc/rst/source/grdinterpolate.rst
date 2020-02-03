@@ -1,6 +1,5 @@
 .. index:: ! grdinterpolate
 .. include:: module_core_purpose.rst_
-.. include:: /explain_array.rst_
 
 **************
 grdinterpolate
