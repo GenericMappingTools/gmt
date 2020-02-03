@@ -17,7 +17,7 @@ Synopsis
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
 [ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
