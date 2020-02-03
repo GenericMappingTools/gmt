@@ -15194,9 +15194,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			if (!error) {
 				if (GMT->current.setting.run_mode == GMT_MODERN) {
-					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any, such as +f */
-					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Enable W|E|S|N suffices */
-					if (c) c[0] = '\0';	/* Temporarily chop off modifiers */
+					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
+					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
+					if (c == NULL || strchr ("aflLsSu", c[1])) {	/* Either we got no modifiers or we got the ones suitable for axes */
+						if (c) c[0] = '\0';	/* Temporarily chop off these modifiers only */
+					}
 					code[0] = item[0]; code[1] = (item[0]) ? item[1] : '\0';
 					if (c) c[0] = '+';	/* Restore modifiers */
 					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
