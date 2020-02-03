@@ -228,7 +228,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 					n_errors += gmt_parse_common_options (GMT, "r", 'r', "");
 					break;
 				}
-				GMT_Report (API, GMT_MSG_ERROR, "-F is experimental and unstable.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "-F is experimental and unstable.\n");
 				if ((c = strstr (opt->arg, "+d"))) {	/* Got modifier to also use input data */
 					c[0] = '\0';	/* Temporarily chop off modifier */
 					Ctrl->F.mode = 1;
@@ -264,7 +264,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 			case 'Q':
 				Ctrl->Q.active = true;
 				if (strchr (opt->arg, 'n')) {
-					GMT_Report (API, GMT_MSG_ERROR, "-Qn is experimental and unstable.\n");
+					GMT_Report (API, GMT_MSG_WARNING, "-Qn is experimental and unstable.\n");
 					Ctrl->Q.mode |= 1;
 				}
 				break;
