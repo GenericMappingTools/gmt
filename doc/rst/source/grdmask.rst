@@ -104,7 +104,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\ \|\ *xlim*\ /*ylim*
+**-S**\ *search\_radius*\|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
