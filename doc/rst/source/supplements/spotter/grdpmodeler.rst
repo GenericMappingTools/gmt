@@ -16,7 +16,6 @@ Synopsis
 [ *agegrdfile* ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrdfile* ]
-[ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]

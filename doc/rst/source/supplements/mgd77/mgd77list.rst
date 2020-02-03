@@ -389,9 +389,6 @@ Optional Arguments
     correction table mgd77_corrections.txt in the **$MGD77_HOME**
     directory]. For the format of this file, see CORRECTIONS below.
 
-**-n**
-    Issue a segment header record with cruise ID for each cruise.
-
 .. _-N:
 
 **-Nd**\|\ **s**\ *unit*

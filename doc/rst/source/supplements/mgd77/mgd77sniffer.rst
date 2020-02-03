@@ -78,7 +78,7 @@ Optional Arguments
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
-    limits. Append r to include all records (default omits records where
+    limits. Append *r* to include all records (default omits records where
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires

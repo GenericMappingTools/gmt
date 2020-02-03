@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]]
     By default, event label text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use this option to override these defaults by specifying up to three

@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color*\ [**+b**\|\ **+f**]
+**-G**\ *color*\ [**+b**\|\ **f**]
     This option only applies when a resulting 1-bit image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint

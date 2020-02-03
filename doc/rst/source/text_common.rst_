@@ -98,7 +98,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use this option to override these defaults by
