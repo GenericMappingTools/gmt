@@ -273,6 +273,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->I.active, "Option -C requires -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Option -N requires -Gc\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Can only select one terminator when using -Gc\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files allowed\n");
