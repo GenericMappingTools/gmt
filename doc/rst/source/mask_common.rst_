@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\ [*unit*]
+**-S**\ *search\_radius*
     Sets radius of influence. Grid nodes within *radius* of a data point
     are considered reliable. [Default is 0, which means that only grid
     cells with data in them are reliable]. Append the distance unit (see `Units`_).

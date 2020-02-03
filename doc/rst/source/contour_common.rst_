@@ -128,7 +128,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ [*unit*]][**+z**]
+**-Q**\ [*cut*][**+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
     (see `Units`_ for available units and how distances are computed),

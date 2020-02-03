@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt ternary** [ *table* ]
-[ **-JX**\ *width*\ [*unit*] ]
+[ **-JX**\ *width* ]
 [ |-R|\ *amin*\ /*amax*\ /*bmin*\ /*bmax*\ /*cmin*\ /*cmax* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -21,7 +21,7 @@ Synopsis
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]
 [ |-N| ]
-[ |-S|\ [*symbol*][*size*\ [*unit*] ]
+[ |-S|\ [*symbol*][*size* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]

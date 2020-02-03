@@ -78,7 +78,7 @@ Required Arguments
     **svga** (800 x 600), and **dvd** (640 x 480).
     Note: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
-    request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
+    request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
 
 .. _-N:

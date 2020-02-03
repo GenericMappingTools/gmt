@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][*size*\ [*unit*]][/*size_y*]
+**-S**\ [*symbol*][*size*][/*size_y*]
     Plot symbols. If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in

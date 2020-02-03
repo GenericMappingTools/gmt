@@ -8,9 +8,7 @@ GMT comes with several utilities that can create gridded data
 sets; we will discuss two such modules later this session.  The
 data sets needed for this tutorial are obtained via the Internet
 as they are needed.  Here, we will use :doc:`/grdcut` to obtain
-and extract a GMT-ready grid that we will next use for contouring:
-
-   ::
+and extract a GMT-ready grid that we will next use for contouring::
 
     gmt grdcut @earth_relief_05m -R-66/-60/30/35 -Gtut_bathy.nc -V
 
@@ -24,9 +22,7 @@ Learn about other programs that read netCDF files at the
 You can also obtain tut_bathy.nc from the GMT cache server as we are doing below.
 Feel free to open it in any other program and compare results with GMT.
 
-We first use the GMT module :doc:`/grdinfo` to see what's in this file:
-
-   ::
+We first use the GMT module :doc:`/grdinfo` to see what's in this file::
 
     gmt grdinfo @tut_bathy.nc
 
@@ -70,7 +66,7 @@ useful options:
 
 We will first make a plain contour map using 1 km as annotation
 interval and 250 m as contour interval.  We choose a 7-inch-wide
-Mercator plot and annotate the borders every 2º:
+Mercator plot and annotate the borders every 2°:
 
 .. literalinclude:: /_verbatim/GMT_tut_11.txt
 
@@ -152,24 +148,19 @@ data point per sector inside the search radius, with each point weighted
 according to its distance from the node.
 The most important switches are listed below.
 
-  +----------------------------+-----------------------------------------------------------------------------------+
-  | Option                     | Purpose                                                                           |
-  +============================+===================================================================================+
-  | **-S**\ *radius*\ [*unit*] | Sets search radius.  Append *unit* for radius in that unit [Default is *x*-units] |
-  +----------------------------+-----------------------------------------------------------------------------------+
-  | **-E**\ *empty*            | Assign this value to unconstrained nodes [Default is NaN]                         |
-  +----------------------------+-----------------------------------------------------------------------------------+
-  | **-N**\ *sectors*          | Sector search, indicate number of sectors [Default is 4]                          |
-  +----------------------------+-----------------------------------------------------------------------------------+
-  | **-W**                     | Read relative weights from the 4th column of input data                           |
-  +----------------------------+-----------------------------------------------------------------------------------+
+================== =====================================================================================
+Option             Purpose
+================== =====================================================================================
+**-S**\ *radius*   Sets search radius.  Append *unit* for radius in that unit [Default is *x*-units]
+**-E**\ *empty*    Assign this value to unconstrained nodes [Default is NaN]
+**-N**\ *sectors*  Sector search, indicate number of sectors [Default is 4]
+**-W**             Read relative weights from the 4th column of input data
+================== =====================================================================================
 
 We will grid the data in the file tut_ship.xyz which contains
 ship observations of bathymetry off Baja California.  We obtain the
 file via the cache server as before.
-We desire to make a 5' by 5' grid.  Running gmt info on @tut_ship.xyz yields
-
-   ::
+We desire to make a 5' by 5' grid.  Running gmt info on @tut_ship.xyz yields::
 
     tut_ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
 
@@ -249,15 +240,11 @@ Option                      Purpose
 **-W**\ [**i**\|\ **o**]    Append **i**\  or **o** to read or write weights in the 4th column
 =========================== ====================================================================
 
-With respect to our ship data we preprocess it using the median method:
-
-   ::
+With respect to our ship data we preprocess it using the median method::
 
     gmt blockmedian -R245/255/20/30 -I5m -V @tut_ship.xyz > ship_5m.xyz
 
-The output data can now be used with surface:
-
-   ::
+The output data can now be used with surface::
 
     gmt surface ship_5m.xyz -R245/255/20/30 -I5m -Gship.nc -V
 

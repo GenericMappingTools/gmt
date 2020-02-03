@@ -62,7 +62,7 @@ struct GRDVECTOR_CTRL {
 		bool active;
 		struct GMT_SYMBOL S;
 	} Q;
-	struct S {	/* -S[l]<scale>[<unit>] */
+	struct S {	/* -S[l]<scale> */
 		bool active;
 		bool constant;
 		char unit;
@@ -108,7 +108,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <gridx> <gridy> %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] %s[-N] %s%s[-Q<params>] [-S[i|l]<scale>[<unit>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] %s[-N] %s%s[-Q<params>] [-S[i|l]<scale>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W<pen>] [%s]\n\t[%s] [-Z] %s[%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors you may alternatively give data units per distance unit\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   by appending any of the units in %s to the scale.\n", GMT_DIM_UNITS);
 	GMT_Message (API, GMT_TIME_NONE, "\t   These are geovectors and their plot lengths depend on the projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale>[<unit>] to give the reciprocal scale, i.e., in %s/<unit> or km/<unit>\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., in %s/<unit> or km/<unit>\n",
 	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Vi to see the min, max, and mean vector length.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");

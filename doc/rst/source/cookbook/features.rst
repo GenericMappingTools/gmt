@@ -714,13 +714,13 @@ Given as modifiers to a pen specification, one or more modifiers may be appended
 specification. The line attribute modifiers are:
 
 
-* **+o**\ *offset*\ [*unit*]
+* **+o**\ *offset*
     Lines are normally drawn from the beginning to the end point. You can modify this behavior
     by requesting a gap between these terminal points and the start and end of the
     visible line.  Do this by specifying the desired offset between the terminal point and the
     start of the visible line.  Unless you are giving distances in Cartesian data units,
     please append the distance unit, **u**.  Depending on your desired effect, you can append
-    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Length units`_)) or map distance units,
+    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Dimension units`_)) or map distance units,
     such as **k**\ m, **d**\ egrees, and many other standard distance units listed in
     Section `GMT units`_.  If only one offset is given then it applies equally to both ends of
     the line.  Give two slash-separated distances to indicate different offsets at the
@@ -1608,7 +1608,7 @@ addition to the the required *refpoint* and anchor arguments specifying where th
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
 
-#. Scale bar length.  Required modifier is given with **+w**\ *length*\ [*unit*], where
+#. Scale bar length.  Required modifier is given with **+w**\ *length*, where
    *unit* is one of the recognized distance units.  An example might be **+w**\ 250n for
    a bar representing 250 nautical miles at the map scale origin.
 
@@ -1882,7 +1882,7 @@ projections you may wish to specify the domain using the lower-left and upper-ri
 instead (similar to how the **-R** option works), by adding **+r**\ .  Some optional modifiers are available:
 
 #. Set inset size.  If you specified a reference point then you must also specify the inset dimensions with the
-   **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
+   **+w**\ *width*\ [/*height*], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c

@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |-N|\ *sectors*\ [**+m**\ *min_sectors*]
 |SYN_OPT-R|
-|-S|\ *search_radius*\ [*unit*]
+|-S|\ *search_radius*
 [ |-E|\ *empty* ]
 [ |SYN_OPT-V| ]
 [ |-W| ]
@@ -79,7 +79,7 @@ Required Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*\ [*unit*]
+**-S**\ *search_radius*
     Sets the *search_radius* that determines which data points are
     considered close to a node. Append the distance unit (see `Units`_).
 

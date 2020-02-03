@@ -420,4 +420,4 @@ Exercises:
 
 #. At *y = 5*, add the sentence :math:`z^2 = x^2 + y^2`.
 
-#. At *y = 6*, add the sentence "It is 32º today".
+#. At *y = 6*, add the sentence "It is 32° today".

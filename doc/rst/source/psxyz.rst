@@ -23,7 +23,7 @@ Synopsis
 [ |-K| ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N| ] [ |-O| ] [ |-P| ] [ |-Q| ]
-[ |-S|\ [*symbol*][*size*\ [*unit*]][/*size_y*] ]
+[ |-S|\ [*symbol*][*size*][/*size_y*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

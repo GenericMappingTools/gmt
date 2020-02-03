@@ -94,7 +94,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outgrid> -T[<min>/<max>/]<inc>[<unit>][+n]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outgrid> -T[<min>/<max>/]<inc>[+n]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [%s] [%s] [-Zi<levels>|o] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);

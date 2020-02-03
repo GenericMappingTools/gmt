@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [*unit*]
+**-F**
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)

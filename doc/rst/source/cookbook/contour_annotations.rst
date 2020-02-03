@@ -86,7 +86,7 @@ a line to be labeled. The codes are:
     the grid's global maximum and minimum, respectively. For example,
     the *line* **LT**/**RB** is a diagonal from the upper left to the
     lower right map corner, while **Z-**/135W/15S is a line from the
-    grid minimum to the point (135ºW, 15ºS).
+    grid minimum to the point (135°W, 15°S).
 
 **L**:
     Same as **l** except we will treat the lines given as great circle

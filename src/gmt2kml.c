@@ -117,7 +117,7 @@ struct GMT2KML_CTRL {
 		unsigned int mode;
 		char *fmt;
 	} N;
-	struct Q {	/* -Qi|a<az> and -Qs<scale>[<unit>] */
+	struct Q {	/* -Qi|a<az> and -Qs<scale> */
 		bool active;
 		unsigned int mode, dmode;
 		char unit;
@@ -205,7 +205,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[<unit>]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					Ctrl->N.mode = NO_LABEL;
 				}
 				break;
-			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance [<unit>] */
+			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance  */
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'i': Ctrl->Q.mode = 1; Ctrl->Q.value[1] = atof (&opt->arg[1]); break;
