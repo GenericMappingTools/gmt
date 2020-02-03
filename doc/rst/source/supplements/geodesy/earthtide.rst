@@ -1,5 +1,6 @@
 .. index:: ! earthtide
 .. include:: ../module_supplements_purpose.rst_
+.. include:: /explain_array.rst_
 
 *********
 earthtide
