@@ -1,6 +1,5 @@
 .. index:: ! earthtide
 .. include:: ../module_supplements_purpose.rst_
-.. include:: /explain_array.rst_
 
 *********
 earthtide
@@ -113,6 +112,7 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
+.. include:: /explain_array.rst_
 
 Examples
 --------
