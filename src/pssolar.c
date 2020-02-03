@@ -492,24 +492,24 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
+			sprintf (record, "Sun current position:    Longitude = %f\tLatitude  = %f", -Sun->HourAngle, Sun->SolarDec);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
+			sprintf (record, "                         Azimuth   = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (Ctrl->I.position) {
 				if (isnan(Sun->Sunrise)) {
-					sprintf(record, "\tSunrise? No, not yet, sun is under the horizon.");
+					sprintf(record, "\nSunrise? No, not yet, sun is under the horizon.");
 					GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 				else {
 					hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
-					sprintf(record, "\tSunrise  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\n                         Sunrise   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
-					sprintf(record, "\tSunset   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "                         Sunset    = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
-					sprintf(record, "\tNoon     = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "                         Noon      = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
-					sprintf(record, "\tDuration = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "                         Duration  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 			}
 			gmt_M_free (GMT, Out);
