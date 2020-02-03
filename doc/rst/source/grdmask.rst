@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
-[ |-S|\ *search\_radius*\ \|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
