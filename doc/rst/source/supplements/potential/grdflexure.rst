@@ -18,9 +18,9 @@ Synopsis
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-M|\ **\ *tm*
-[ |-N|\ [**f**\|\ **q**\|\ **s**\|\ *nx*/*ny*][**+a**\|\ **d**\|\ **h**\|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][**+z**\ [**p**]]
+[ |-N|\ [**a**\|\ **f**\|\ **m**\|\ **r**\|\ **s**\|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+v**][**+w**\ [*suffix*]][**+z**\ [**p**]] ]
 [ |-S|\ *beta* ]
-[ |-T|\ **\ *t0*\ [/*t1*/*dt*\|\ *file*]\  \|\ *n*]\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
@@ -134,7 +134,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [/*t1*/*dt*\|\ *file*]\|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.

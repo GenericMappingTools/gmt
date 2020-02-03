@@ -18,7 +18,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -118,7 +118,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.

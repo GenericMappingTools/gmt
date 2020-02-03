@@ -16,7 +16,7 @@ Synopsis
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -139,7 +139,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 

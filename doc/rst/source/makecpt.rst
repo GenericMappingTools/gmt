@@ -24,7 +24,7 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
