@@ -94,7 +94,6 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [*misfitfile*]
-
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will

@@ -15,7 +15,7 @@ if [ "$BUILD_REASON" == "Schedule" ]; then
         ! -name 'PSL_ISOLatin*.h' \
         ! -name 'PSL_Standard*.h' \
         ! -name 'gmt_colornames.h' \
-        ! -name 'gmt_cpt_masters' \
+        ! -name 'gmt_cpt_masters.h' \
         ! -name 'gmt_datasets.h' \
         ! -name 'gmt_media_name.h' \
         ! -name 'gmt_unique.h' \

@@ -26,10 +26,9 @@ Required Arguments
 .. _-S:
 
 **-S**
-
-Selects the meaning of the columns in the data file and the figure to be plotted.  In all
-cases, the scales are in data units per length unit and sizes are in length units (default length
-unit is controlled by :term:`PROJ_LENGTH_UNIT` unless **c**, **i**, or **p** is appended).
+    Selects the meaning of the columns in the data file and the figure to be plotted.  In all
+    cases, the scales are in data units per length unit and sizes are in length units (default length
+    unit is controlled by :term:`PROJ_LENGTH_UNIT` unless **c**, **i**, or **p** is appended).
 
     **-Se**\ *velscale/confidence*\ [**+f**\ *font*]
 

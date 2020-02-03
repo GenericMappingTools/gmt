@@ -17,7 +17,7 @@ Synopsis
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
 [ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -138,7 +138,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
     (i.e., your input has only data columns), give **-T** with

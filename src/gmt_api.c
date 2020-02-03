@@ -8907,7 +8907,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			n_cols = api_vector_ncols (dim, def_direction);
 			if (n_cols == GMT_NOTSET) return_null (API, GMT_N_COLS_NOT_SET);
 	 		new_obj = gmt_create_vector (API->GMT, n_cols, def_direction);
-			if (pad) GMT_Report (API, GMT_MSG_WARNING, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
+			if (pad) GMT_Report (API, GMT_MSG_DEBUG, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = api_init_vector (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_VECTOR *V = api_return_address (new_obj, GMT_IS_VECTOR);	/* Get pointer to resource */
 				gmt_free_vector (API->GMT, &V, true);

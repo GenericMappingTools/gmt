@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]
-[ |-G|\ [*color*][**+b**\|\ **+f**\|\ **+t**] ]
+[ |-G|\ [*color*][**+b**\|\ **f**\|\ **t**] ]
 [ |-I| ]
 [ |-J|\ *parameters* ]
 [ |-K| ]

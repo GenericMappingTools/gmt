@@ -273,6 +273,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->I.active, "Option -C requires -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Option -N requires -Gc\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Can only select one terminator when using -Gc\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files allowed\n");
@@ -491,24 +492,30 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
+			sprintf (record, "Sun current position:");
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
+			sprintf (record, "\tLongitude = %f", -Sun->HourAngle);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tLatitude  = %f", Sun->SolarDec);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tAzimuth   = %.4f", Sun->SolarAzim);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tElevation = %.4f", Sun->SolarElevation);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (Ctrl->I.position) {
 				if (isnan(Sun->Sunrise)) {
-					sprintf(record, "\tSunrise? No, not yet, sun is under the horizon.");
+					sprintf(record, "\nSunrise? No, not yet, sun is under the horizon.");
 					GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 				else {
 					hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
-					sprintf(record, "\tSunrise  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\n\tSunrise   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
-					sprintf(record, "\tSunset   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tSunset    = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
-					sprintf(record, "\tNoon     = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tNoon      = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
-					sprintf(record, "\tDuration = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tDuration  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 			}
 			gmt_M_free (GMT, Out);

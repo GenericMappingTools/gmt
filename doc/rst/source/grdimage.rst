@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ] |-J|\ *parameters*
-[ |-G|\ *color*\ [**+b**\|\ **+f**] ]
+[ |-G|\ *color*\ [**+b**\|\ **f**] ]
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
